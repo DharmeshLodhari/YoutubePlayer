@@ -2436,6 +2436,25 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           } else {
             showToast(message: 'Coming soon');
           }
+          // showMoreAction = false;
+          //
+          // if (mounted) setState(() {});
+          //
+          // CustomerProfile? user;
+          //
+          // if (chatConversation!.isGroupConversation!) {
+          //   if (groupDetail!.participants.isEmpty) {
+          //     getGroupDetailFromServer();
+          //   }
+          //
+          //   user = await selectRecipientForAction();
+          // } else {
+          //   user = CustomerProfile.fromChatConversation(chatConversation!);
+          // }
+          //
+          // if (user != null) {
+          //   sendEnvelope(recipient: user);
+          // }
         });
   }
 
@@ -2476,6 +2495,25 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         } else {
           showToast(message: 'Coming soon');
         }
+        // showMoreAction = false;
+        //
+        // if (mounted) setState(() {});
+        //
+        // CustomerProfile? user;
+        //
+        // if (chatConversation!.isGroupConversation!) {
+        //   if (groupDetail!.participants.isEmpty) {
+        //     getGroupDetailFromServer();
+        //   }
+        //
+        //   user = await selectRecipientForAction();
+        // } else {
+        //   user = CustomerProfile.fromChatConversation(chatConversation!);
+        // }
+        //
+        // if (user != null) {
+        //   sendEnvelope(recipient: user, isEmpty: true);
+        // }
       },
     );
   }

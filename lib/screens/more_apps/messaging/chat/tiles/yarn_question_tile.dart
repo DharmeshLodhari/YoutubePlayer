@@ -295,6 +295,11 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   }
 
   Widget _buildPostCard() {
+    // debugPrint('Fola check 000 ::: ${yarnQuestionForChatModel.authorName}');
+    // debugPrint('Fola check 001 ::: ${yarnQuestionForChatModel.authorUsername}');
+    // debugPrint('Fola check 002 ::: ${yarnQuestionForChatModel.authorAvatar}');
+    // debugPrint('Fola check 003 ::: ${yarnQuestionForChatModel.title}');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -333,7 +338,9 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               decoration: BoxDecoration(shape: BoxShape.circle),
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: yarnQuestionForChatModel.authorAvatar!,
+                  imageUrl: yarnQuestionForChatModel.authorAvatar != null
+                      ? yarnQuestionForChatModel.authorAvatar!
+                      : '',
                   fit: BoxFit.cover,
                   errorWidget: imageErrorWidget,
                 ),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -7,13 +9,18 @@ import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
+import '../../../../../utils/my_audio_player.dart';
 import '../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../widget/dialog.dart';
 import '../../../../../widget/rounded_background_icon.dart';
@@ -29,7 +36,7 @@ class EnvelopeDetailScreen extends StatefulWidget {
 }
 
 class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   var arguments;
 
   bool isLoading = true;
@@ -50,12 +57,71 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   Envelope? envelope;
 
   bool isEmptyEnvelope = false;
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+  late ConfettiController _controllerCenter;
+  AssetsAudioPlayer audioPlayer = AssetsAudioPlayer();
+  // AudioPlayer player = AudioPlayer();
+  bool repeat = true;
+  MyAudioPlayer myAudioPlayer = MyAudioPlayer();
 
   @override
   void initState() {
     getEnvelopeAndUserData();
 
+    _controllerCenter =
+        ConfettiController(duration: const Duration(seconds: 5));
+
+    // audioPlayer.open(Audio('assets/sounds/coin_drop.mp3'),
+    //     pitch: 1.0, volume: 0.1, autoStart: false);
+
+    // final String moneyAmount = '10000';
+    final String moneyAmount = envelope!.amount!;
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 10000),
+    );
+    _animation =
+        Tween<double>(begin: 0, end: double.tryParse(moneyAmount)).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOut,
+      ),
+    );
+
     super.initState();
+  }
+
+  @override
+  Future<void> dispose() async {
+    _controller.stop();
+    _controllerCenter.stop();
+    // Stop audio
+    audioPlayer.stop();
+    // await myAudioPlayer.stopAudio();
+    super.dispose();
+  }
+
+  /// A custom Path to paint coins.
+  Path drawCoin(Size size) {
+    // Method to convert degree to radians
+    double degToRad(double deg) => deg * (pi / 180.0);
+
+    const numberOfPoints = 50;
+    final radius = size.width / 2;
+    final degreesPerStep = degToRad(360 / numberOfPoints);
+    final path = Path();
+    final fullAngle = degToRad(360);
+    path.moveTo(size.width / 2, size.height / 2);
+
+    for (double step = 0; step < fullAngle; step += degreesPerStep) {
+      final x = size.width / 2 + radius * cos(step);
+      final y = size.height / 2 + radius * sin(step);
+      path.lineTo(x, y);
+    }
+
+    path.close();
+    return path;
   }
 
   void getEnvelopeAndUserData() async {
@@ -120,6 +186,8 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
     return WillPopScope(
       onWillPop: () async {
+        // audioPlayer.stop();
+        // await myAudioPlayer.stopAudio();
         return await Future.value(true);
       },
       child: ColorfulSafeArea(
@@ -162,14 +230,40 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   Widget getTitle() {
+    String? name;
+    if (senderCustomer != null) {
+      name = senderCustomer!.displayName();
+    }
     return Text(
-      "Envelope from ${isAuthor ? "you" : senderCustomer!.displayName()}",
+      "Envelope from ${isAuthor ? "you" : name}",
       style: TextStyle(
           fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
     );
   }
 
   Widget getEnvelopeDetail() {
+    if (!isEmptyEnvelope) {
+      Future.delayed(Duration(seconds: 1), () async {
+        _controllerCenter.play();
+        _controller.forward();
+
+        // Play audio
+
+        // await myAudioPlayer.playAudio('assets/sounds/coin_drop.mp3');
+        // audioPlayer.play();
+        if (mounted) setState(() {});
+      });
+      Future.delayed(Duration(seconds: 14), () async {
+        // Stop audio
+
+        // audioPlayer.stop();
+        // await myAudioPlayer.stopAudio();
+        _controllerCenter.stop();
+        repeat = false;
+        if (mounted) setState(() {});
+      });
+    }
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 30),
@@ -182,23 +276,100 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         children: [
           isEmptyEnvelope
               ? Container()
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              : Stack(
                   children: [
-                    Text(
-                      "₦ ",
-                      style: TextStyle(
-                          fontFamily: "Roberto",
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          color: navyBlue),
+                    Visibility(
+                      visible: repeat,
+                      child: Container(
+                        margin: EdgeInsets.only(top: 140.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: ConfettiWidget(
+                            confettiController: _controllerCenter,
+                            blastDirectionality: BlastDirectionality.explosive,
+                            emissionFrequency: 0.85, // how often it should emit
+                            numberOfParticles: 5, // number of particles to emit
+                            gravity:
+                                0.15, // don't specify a direction, blast randomly
+                            shouldLoop:
+                                false, // start again as soon as the animation is finished
+                            colors: const [
+                              Colors.orange,
+                              Colors.orange,
+                              Colors.orange,
+                              Colors.orange,
+                              Colors.orange
+                            ], // manually specify the colors to be used
+                            createParticlePath:
+                                drawCoin, // define a custom shape/path.
+                            // draw3DCoin, // define a custom shape/path.
+                          ),
+                        ),
+                      ),
                     ),
-                    Text(
-                      "${moneyDisplayNormalizer(int.parse(envelope!.amount!))}",
-                      style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          color: navyBlue),
+                    // Container(
+                    //   margin: EdgeInsets.only(top: 30.0),
+                    //   child: Align(
+                    //     alignment: Alignment.center,
+                    //     child: Lottie.asset(
+                    //       'assets/lottie/coin splash.json',
+                    //       width: 200,
+                    //       height: 200,
+                    //       repeat: repeat,
+                    //       fit: BoxFit.fill,
+                    //     ),
+                    //   ),
+                    // ),
+                    Container(
+                      margin: EdgeInsets.only(top: 70.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "₦ ",
+                            style: TextStyle(
+                                fontFamily: "Roberto",
+                                fontSize: 32,
+                                fontWeight: FontWeight.w700,
+                                color: navyBlue),
+                          ),
+
+                          AnimatedBuilder(
+                            animation: _controller,
+                            builder: (BuildContext context, Widget? child) {
+                              final formattedMoney = moneyDisplayNormalizer(
+                                  _animation.value.toInt());
+
+                              return Text(
+                                formattedMoney,
+                                style: TextStyle(
+                                  fontSize: 34.0,
+                                  fontWeight: FontWeight.w700,
+                                  color: navyBlue,
+                                ),
+                              );
+                            },
+                          ),
+                          // Text(
+                          //   // "${moneyDisplayNormalizer(int.parse(envelope!.amount!))}",
+                          //   "${moneyDisplayNormalizer(int.parse('400000'))}",
+                          //   style: TextStyle(
+                          //       fontSize: 32,
+                          //       fontWeight: FontWeight.w700,
+                          //       color: navyBlue),
+                          // ),
+                        ],
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Lottie.asset(
+                        'assets/lottie/open_box.json',
+                        width: 250,
+                        height: 200,
+                        repeat: false,
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ],
                 ),
