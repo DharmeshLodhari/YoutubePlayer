@@ -5,23 +5,16 @@ class MyAudioPlayer {
 
   playAudio(String path) {
     audioPlayer = AssetsAudioPlayer();
-    audioPlayer!.open(Audio(path), pitch: 1.0, volume: 0.2);
+    audioPlayer!.open(
+      Audio(path),
+      pitch: 1.0,
+      volume: 0.9,
+      loopMode: LoopMode.single,
+    );
   }
 
   stopAudio() async {
     audioPlayer!.stop();
+    // audioPlayer!.dispose();
   }
 }
-
-// class MyAudioPlayer {
-//   AudioPlayer? audioPlayer;
-//
-//   Future<void> playAudio(String audioPath) async {
-//     audioPlayer = AudioPlayer();
-//     await audioPlayer!.play(audioPath, isLocal: true);
-//   }
-//
-//   Future<void> stopAudio() async {
-//     await audioPlayer!.stop();
-//   }
-// }

@@ -1010,25 +1010,6 @@ class _UserDashboardState extends State<UserDashboard> {
                         } else {
                           showToast(message: 'Coming soon');
                         }
-
-                        // BottomSheetPassCode(
-                        //     context: context,
-                        //     isValidCallback: () {
-                        //       if (bankAccountBloc.bankAccount == null ||
-                        //           bankAccountBloc.bankAccount!.bankName ==
-                        //               null) {
-                        //         Navigator.pop(context);
-                        //         showToast(
-                        //             message:
-                        //                 "Please add bank account first !!");
-                        //       } else {
-                        //         Navigator.pop(context);
-                        //         Navigator.pushNamed(context, Routes.PAYOUT);
-                        //       }
-                        //     },
-                        //     cancelCallBack: () {
-                        //       Navigator.pop(context);
-                        //     });
                       }),
                   bottomSheetItem(
                     title: "Cashout transactions",
