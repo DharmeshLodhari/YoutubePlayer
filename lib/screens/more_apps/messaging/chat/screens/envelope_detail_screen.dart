@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
@@ -9,15 +7,11 @@ import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/my_audio_player.dart';
@@ -36,7 +30,7 @@ class EnvelopeDetailScreen extends StatefulWidget {
 }
 
 class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   var arguments;
 
   bool isLoading = true;
@@ -59,21 +53,13 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   bool isEmptyEnvelope = false;
   late final AnimationController _controller;
   late final Animation<double> _animation;
-  late ConfettiController _controllerCenter;
-  AssetsAudioPlayer audioPlayer = AssetsAudioPlayer();
-  // AudioPlayer player = AudioPlayer();
   bool repeat = true;
+  bool showing = false;
   MyAudioPlayer myAudioPlayer = MyAudioPlayer();
 
   @override
   void initState() {
     getEnvelopeAndUserData();
-
-    _controllerCenter =
-        ConfettiController(duration: const Duration(seconds: 5));
-
-    // audioPlayer.open(Audio('assets/sounds/coin_drop.mp3'),
-    //     pitch: 1.0, volume: 0.1, autoStart: false);
 
     // final String moneyAmount = '10000';
     final String moneyAmount = envelope!.amount!;
@@ -95,33 +81,9 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   @override
   Future<void> dispose() async {
     _controller.stop();
-    _controllerCenter.stop();
     // Stop audio
-    audioPlayer.stop();
-    // await myAudioPlayer.stopAudio();
+    await myAudioPlayer.stopAudio();
     super.dispose();
-  }
-
-  /// A custom Path to paint coins.
-  Path drawCoin(Size size) {
-    // Method to convert degree to radians
-    double degToRad(double deg) => deg * (pi / 180.0);
-
-    const numberOfPoints = 50;
-    final radius = size.width / 2;
-    final degreesPerStep = degToRad(360 / numberOfPoints);
-    final path = Path();
-    final fullAngle = degToRad(360);
-    path.moveTo(size.width / 2, size.height / 2);
-
-    for (double step = 0; step < fullAngle; step += degreesPerStep) {
-      final x = size.width / 2 + radius * cos(step);
-      final y = size.height / 2 + radius * sin(step);
-      path.lineTo(x, y);
-    }
-
-    path.close();
-    return path;
   }
 
   void getEnvelopeAndUserData() async {
@@ -150,6 +112,29 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     }
 
     isLoading = false;
+
+    if (!isEmptyEnvelope) {
+      Future.delayed(Duration(seconds: 1), () async {
+        _controller.forward();
+
+        // Play audio
+        // await myAudioPlayer.playAudio('assets/sounds/coin_drop.mp3');
+        // await myAudioPlayer.playAudio('assets/sounds/coin_spill.mp3');
+        // await myAudioPlayer.playAudio('assets/sounds/coinpour.mp3');
+        await myAudioPlayer.playAudio('assets/sounds/raw.mp3');
+        // await myAudioPlayer.playAudio('assets/sounds/raw_join.mp3');
+        showing = true;
+        if (mounted) setState(() {});
+      });
+      Future.delayed(Duration(seconds: 14), () async {
+        // Stop audio
+        await myAudioPlayer.stopAudio();
+        repeat = false;
+        showing = false;
+        if (mounted) setState(() {});
+      });
+    }
+
     if (mounted) setState(() {});
   }
 
@@ -186,8 +171,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
     return WillPopScope(
       onWillPop: () async {
-        // audioPlayer.stop();
-        // await myAudioPlayer.stopAudio();
+        await myAudioPlayer.stopAudio();
         return await Future.value(true);
       },
       child: ColorfulSafeArea(
@@ -242,28 +226,6 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   Widget getEnvelopeDetail() {
-    if (!isEmptyEnvelope) {
-      Future.delayed(Duration(seconds: 1), () async {
-        _controllerCenter.play();
-        _controller.forward();
-
-        // Play audio
-
-        // await myAudioPlayer.playAudio('assets/sounds/coin_drop.mp3');
-        // audioPlayer.play();
-        if (mounted) setState(() {});
-      });
-      Future.delayed(Duration(seconds: 14), () async {
-        // Stop audio
-
-        // audioPlayer.stop();
-        // await myAudioPlayer.stopAudio();
-        _controllerCenter.stop();
-        repeat = false;
-        if (mounted) setState(() {});
-      });
-    }
-
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 30),
@@ -279,47 +241,21 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
               : Stack(
                   children: [
                     Visibility(
-                      visible: repeat,
+                      visible: showing,
                       child: Container(
-                        margin: EdgeInsets.only(top: 140.0),
+                        margin: EdgeInsets.only(top: 30.0),
                         child: Align(
                           alignment: Alignment.center,
-                          child: ConfettiWidget(
-                            confettiController: _controllerCenter,
-                            blastDirectionality: BlastDirectionality.explosive,
-                            emissionFrequency: 0.85, // how often it should emit
-                            numberOfParticles: 5, // number of particles to emit
-                            gravity:
-                                0.15, // don't specify a direction, blast randomly
-                            shouldLoop:
-                                false, // start again as soon as the animation is finished
-                            colors: const [
-                              Colors.orange,
-                              Colors.orange,
-                              Colors.orange,
-                              Colors.orange,
-                              Colors.orange
-                            ], // manually specify the colors to be used
-                            createParticlePath:
-                                drawCoin, // define a custom shape/path.
-                            // draw3DCoin, // define a custom shape/path.
+                          child: Lottie.asset(
+                            'assets/lottie/coin splash.json',
+                            width: 200,
+                            height: 200,
+                            repeat: repeat,
+                            fit: BoxFit.fill,
                           ),
                         ),
                       ),
                     ),
-                    // Container(
-                    //   margin: EdgeInsets.only(top: 30.0),
-                    //   child: Align(
-                    //     alignment: Alignment.center,
-                    //     child: Lottie.asset(
-                    //       'assets/lottie/coin splash.json',
-                    //       width: 200,
-                    //       height: 200,
-                    //       repeat: repeat,
-                    //       fit: BoxFit.fill,
-                    //     ),
-                    //   ),
-                    // ),
                     Container(
                       margin: EdgeInsets.only(top: 70.0),
                       child: Row(
