@@ -473,10 +473,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             padding: basketBloc.items.length == 0
                 ? EdgeInsets.all(0)
                 : EdgeInsets.all(4)),
-        child: Icon(
-          SlydoAppIcon.cart,
-          size: 16,
-          color: blackFont,
+        child: Center(
+          child: Icon(
+            SlydoAppIcon.cart,
+            size: 16,
+            color: blackFont,
+          ),
         ),
       ),
       onTap: () {

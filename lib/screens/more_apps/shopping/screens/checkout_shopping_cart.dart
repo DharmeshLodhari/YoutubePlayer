@@ -217,14 +217,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       fontSize: 16),
                 ),
                 onPressed: () {
-                  if (appConfigurationModel?.enableCheckout == true) {
-                    NavigationUtil.push(
-                      context,
-                      screen: CheckoutScreen(),
-                    );
-                  } else {
-                    showToast(message: 'Checkout not available now');
-                  }
+                  // if (appConfigurationModel?.enableCheckout == true) {
+                  NavigationUtil.push(
+                    context,
+                    screen: CheckoutScreen(),
+                  );
+                  // } else {
+                  //   showToast(message: 'Checkout not available now');
+                  // }
 
                   // if (basketBloc.items.length != 0) {
                   //   addNoteDialog();

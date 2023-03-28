@@ -872,9 +872,15 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   Widget _getSlideLists(
       BuildContext context, PaymentRequest paymentRequest, int index) {
+    String date;
+    if (paymentRequest.createdAt == null) {
+      date = ' - ';
+    } else {
+      date = paymentRequest.createdAt!;
+    }
+
     return Slidable(
-      key: Key(
-          "PaymentRequest:${paymentRequest.id! + paymentRequest.createdAt!}"),
+      key: Key("PaymentRequest:${paymentRequest.id! + date}"),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),

@@ -19,6 +19,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../../payment_loading_screen.dart';
+
 // ignore: must_be_immutable
 class SendEnvelope extends StatefulWidget {
   final arguments;
@@ -380,6 +382,8 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                 builder: (context) =>
                     Center(child: CircularLoadingIndicator()));
 
+            String? envelope = 'Empty Envelope';
+
             Map<String, dynamic> data = {
               "from_customer": userBloc.user.userName,
               "to_customer": chatConversation!.userName,
@@ -395,7 +399,19 @@ class _SendEnvelopeState extends State<SendEnvelope> {
               data["currency"] = userBloc.user.currency;
               data["amount"] = moneyInputNormalizer(amount.toString());
               data["category"] = "General";
+              envelope = 'Magic Envelope';
             }
+
+            //show loading screen
+            // Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PaymentLoadingScreen(
+                        text: 'Sending $envelope...',
+                        imagePath: 'assets/images/app_logo.png',
+                      )),
+            );
 
             await MessageAuth()
                 .sendEnvelope(isEmpty: isEmptyEnvelope!, data: data)

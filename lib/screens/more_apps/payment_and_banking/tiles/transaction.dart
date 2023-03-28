@@ -122,7 +122,7 @@ class PaymentRequestTile extends StatelessWidget {
               )
             : Container(),
         paymentRequest!.amount! >= amountLimit ? getTrailing() : Container(),
-        getDateTime(context)
+        paymentRequest!.createdAt == null ? SizedBox() : getDateTime(context)
       ],
     );
   }
