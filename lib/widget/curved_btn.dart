@@ -85,6 +85,8 @@ class CurvedButton extends StatelessWidget {
         onPressed();
         return;
       }
+      // onPressed();
+      // return;
     } else {
       onPressed();
     }

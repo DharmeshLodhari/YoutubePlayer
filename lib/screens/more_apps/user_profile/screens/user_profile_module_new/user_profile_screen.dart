@@ -108,7 +108,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
 
     searchedUser = user;
-    // debugPrint("Fola In Request:::${searchedUser!.userName}");
 
     checkCurrentUserIsInRequestList();
 
@@ -228,8 +227,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         isLoading: isLoading,
       );
     } else if (searchedUser != null) {
-      debugPrint("Fola In Request:::${searchedUser}");
-
       return BusinessProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,

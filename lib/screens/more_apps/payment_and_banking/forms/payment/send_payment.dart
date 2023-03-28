@@ -528,7 +528,9 @@ class _SendPaymentState extends State<SendPayment> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: userNameWithVerifiedIcon(
-                    name: _payee!.displayName()!,
+                    name: _payee!.displayName()! != null
+                        ? _payee!.displayName()!
+                        : '',
                     isVerified: true,
                     lengthToTruncateAt: 20,
                     textStyle: TextStyle(
