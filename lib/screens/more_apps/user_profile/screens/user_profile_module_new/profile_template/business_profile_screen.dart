@@ -71,7 +71,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
           apiCall: () async => await fetchPostData(searchedUserName),
         ),
         UserTab(
-          label: "Channel",
+          label: "Channels",
           child: channelTab(searchedUserName),
           apiCall: () async => await fetchChannelData(searchedUserName),
         ),
