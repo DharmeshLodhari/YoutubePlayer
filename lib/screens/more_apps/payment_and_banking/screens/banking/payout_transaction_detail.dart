@@ -5,8 +5,10 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../utils/global_key.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -25,6 +27,13 @@ class PayoutTransactionDetail extends StatefulWidget {
 class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   var arguments;
   Payout? payout;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  bool isLoading = false;
 
   _PayoutTransactionDetailState({this.arguments});
 
@@ -44,13 +53,50 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
       onWillPop: () async {
         return true;
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+      child: ScaffoldMessenger(
+        key: _scaffoldMessengerKey,
+        child: Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: Colors.white,
+          resizeToAvoidBottomInset: true,
+          appBar: appBar() as PreferredSizeWidget?,
+          // body: scaffoldBody(),
+          body: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: scaffoldBody()),
+        ),
       ),
     );
+  }
+
+  void _onRefresh() async {
+    //check network connectivity and if true then refresh the list
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        payout = null;
+
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted) {
+            fetchPayout();
+          }
+        });
+
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _refreshController.refreshCompleted();
+      }
+    });
   }
 
   Widget appBar() {

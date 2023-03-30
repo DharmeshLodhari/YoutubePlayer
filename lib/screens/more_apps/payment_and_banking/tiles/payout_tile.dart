@@ -40,6 +40,9 @@ class PayoutTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   getBankName(),
+                  SizedBox(
+                    height: 2.0,
+                  ),
                   getAccountName(),
                 ],
               ),
@@ -68,11 +71,14 @@ class PayoutTile extends StatelessWidget {
                         )
                       ],
                     ),
-                    getDateTime(context),
                     SizedBox(
                       height: 2.0,
                     ),
                     getPayoutStatus(),
+                    SizedBox(
+                      height: 2.0,
+                    ),
+                    getDateTime(context),
                   ],
                 ),
               ),
