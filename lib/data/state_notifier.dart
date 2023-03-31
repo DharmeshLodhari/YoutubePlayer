@@ -12,6 +12,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/more_apps/shopping/models/store.dart';
+import '../screens/more_apps/shopping/shopping_auth.dart';
 
 class UserBloc extends ChangeNotifier {
   // This block notify the change in user status and pass it round the app.
@@ -187,11 +188,13 @@ class BackgroundFetchStopBloc extends ChangeNotifier {
 
 class BasketBloc extends ChangeNotifier {
   int orderTotal = 0;
+  int orderTotalProductService = 0;
   int totalShippingCost = 0;
   Map<String, int?> userSelectedShippingOption = {};
 
   // will accept products and services
   List<Map<String, dynamic>> _items = [];
+  List<Map<dynamic, dynamic>> productOrService = [];
   int _total = 0;
 
   int get total => _total;
@@ -299,6 +302,12 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clear() {
+    _items.clear();
+
+    notifyListeners();
+  }
+
   void removeItemInBasketWithQty(var item) {
     var foundItem;
     try {
@@ -326,6 +335,27 @@ class BasketBloc extends ChangeNotifier {
     } catch (e) {
       debugPrint("Error 1:- $e");
     }
+  }
+
+  void buyProductOrServiceNow(String type, Map itemData) {
+    // clear();
+
+    // debugPrint('Folaaaa::: ${itemData.runtimeType}');
+    // Map<String, dynamic> map = itemData;
+    // _items.add(itemData);
+    productOrService.add(itemData);
+    notifyListeners();
+
+    // addItemToCart(item: itemData, type: type);
+  }
+
+  void resetShoppingCart() async {
+    List items = await ShoppingAuthService()
+        .getShoppingCart(); //Returns a list of product and services as a map
+    items.forEach((element) {
+      String type = element is Product ? "product" : "service";
+      addItemToCart(item: element, type: type);
+    });
   }
 }
 

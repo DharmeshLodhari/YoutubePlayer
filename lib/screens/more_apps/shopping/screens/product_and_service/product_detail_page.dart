@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -37,6 +38,7 @@ import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
+import '../checkout_screen.dart';
 
 class ProductDetailPage extends StatefulWidget {
   var arguments;
@@ -60,6 +62,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc? userBloc;
   late BasketBloc basketBloc;
+  // late ProductServiceBloc productServiceBloc;
   List<String?>? imgList = [];
 
   late bool isValidCustomer;
@@ -214,6 +217,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     basketBloc = Provider.of<BasketBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    // productServiceBloc =
+    //     Provider.of<ProductServiceBloc>(context, listen: false);
 
     isValidCustomer = userBloc?.user.userName != product!.seller;
     return WillPopScope(
@@ -1276,10 +1281,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   void navigateToSendPayment() {
-    Navigator.of(context).pushNamed(
-      Routes.SEND_PAYMENT,
-      arguments: {'isFromProfile': false, 'product': product},
-    );
+    basketBloc.productOrService.clear();
+    Map<dynamic, dynamic> result = {
+      "type": 'product',
+      "results": product!.toJson()
+    };
+
+    basketBloc.buyProductOrServiceNow('product', result);
+
+    // NavigationUtil.push(context, screen: CheckoutScreen());
+    NavigationUtil.push(context, screen: CheckoutProductService());
+
+    // Navigator.of(context).pushNamed(
+    //   Routes.SEND_PAYMENT,
+    //   arguments: {'isFromProfile': false, 'product': product},
+    // );
   }
 
   @override

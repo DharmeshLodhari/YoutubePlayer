@@ -11,6 +11,7 @@ import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -1315,10 +1316,19 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   void navigateToSendPayment() {
-    Navigator.of(context).pushNamed(
-      Routes.SEND_PAYMENT,
-      arguments: {'isFromProfile': false, 'service': service},
-    );
+    basketBloc.productOrService.clear();
+    Map<dynamic, dynamic> result = {
+      "type": 'service',
+      "results": service!.toJson()
+    };
+
+    basketBloc.buyProductOrServiceNow('service', result);
+
+    NavigationUtil.push(context, screen: CheckoutProductService());
+    // Navigator.of(context).pushNamed(
+    //   Routes.SEND_PAYMENT,
+    //   arguments: {'isFromProfile': false, 'service': service},
+    // );
   }
 
   @override
