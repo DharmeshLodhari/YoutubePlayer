@@ -64,11 +64,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
-    List items = await ShoppingAuthService().getShoppingCart();
-    items.forEach((element) {
-      String type = element is Product ? "product" : "service";
-      basketBloc.addItemToCart(item: element, type: type);
-    });
+    basketBloc.resetShoppingCart();
   }
 
   AppConfigurationModel? appConfigurationModel;

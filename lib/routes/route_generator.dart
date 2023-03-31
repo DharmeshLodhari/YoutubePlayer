@@ -150,6 +150,7 @@ import 'package:page_transition/page_transition.dart';
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/payout_transaction_detail.dart';
+import '../screens/more_apps/shopping/screens/checkout_screen.dart';
 import '../screens/more_apps/super_hub/search_services.dart';
 import '../screens/more_apps/super_hub/super_hub.dart';
 import '../screens/super_store/super_store.dart';
