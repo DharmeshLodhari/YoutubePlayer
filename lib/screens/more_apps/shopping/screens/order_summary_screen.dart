@@ -11,6 +11,7 @@ import '../../../../routes/route_constants.dart';
 import '../../../../widget/LoadingIndicator.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../user_profile/models/user.dart';
+import '../utils.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
   final ShippingAddress address;
@@ -140,7 +141,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
       debugPrint('ORDER LIST ---> ${element.toJson()}');
     });
 
-    bool ableToPay = await checkAccountBalance();
+    bool ableToPay = await checkAccountBalance(null, context);
     //
     // Create the orders
     if (ableToPay) {
@@ -179,14 +180,19 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
           Navigator.pushNamed(context, Routes.ORDERS_LIST);
           showToast(message: 'Order placed successfully');
         } else if (response.statusCode == 500) {
+          Navigator.pop(context);
           showToast(message: AppLocalization.of(context)!.serverError);
         } else {
           debugPrint("MakePaymentForCartOrder Unsuccessful");
+          showToast(message: AppLocalization.of(context)!.somethingWentWrong);
+          Navigator.pop(context);
         }
       } else {
         debugPrint(
           "Could Not Place The Order",
         );
+        showToast(message: AppLocalization.of(context)!.couldNotPlaceTheOrder);
+        Navigator.pop(context);
       }
     }
   }
@@ -285,28 +291,28 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     );
   }
 
-  Future<bool> checkAccountBalance() async {
-    BankAccountBloc bankAccountBloc =
-        Provider.of<BankAccountBloc>(context, listen: false);
-
-    if (bankAccountBloc.bankAccount == null ||
-        bankAccountBloc.bankAccount!.bankName == null) {
-      Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
-      showToast(message: "Please add bank account first !!");
-      return false;
-    } else {
-      double accountBalance = await getAccountBalance();
-      // Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
-      debugPrint("accountBalance:- $accountBalance");
-      double spendingAmount = basketBloc.total / 100;
-      debugPrint("spendingAmount:- $spendingAmount");
-      if (spendingAmount > accountBalance) {
-        showToast(message: "You don't have enough money in Slydo account!!");
-        return false;
-      }
-      return true;
-    }
-  }
+  // Future<bool> checkAccountBalance() async {
+  //   BankAccountBloc bankAccountBloc =
+  //       Provider.of<BankAccountBloc>(context, listen: false);
+  //
+  //   if (bankAccountBloc.bankAccount == null ||
+  //       bankAccountBloc.bankAccount!.bankName == null) {
+  //     Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+  //     showToast(message: "Please add bank account first !!");
+  //     return false;
+  //   } else {
+  //     double accountBalance = await getAccountBalance();
+  //     // Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+  //     debugPrint("accountBalance:- $accountBalance");
+  //     double spendingAmount = basketBloc.total / 100;
+  //     debugPrint("spendingAmount:- $spendingAmount");
+  //     if (spendingAmount > accountBalance) {
+  //       showToast(message: "You don't have enough money in Slydo account!!");
+  //       return false;
+  //     }
+  //     return true;
+  //   }
+  // }
 }
 
 // [

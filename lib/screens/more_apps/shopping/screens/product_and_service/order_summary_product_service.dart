@@ -10,7 +10,7 @@ import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/LoadingIndicator.dart';
 import '../../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../../user_profile/models/user.dart';
-import '../order_summary_screen.dart';
+import '../../utils.dart';
 
 class OrderSummaryProductService extends StatefulWidget {
   final ShippingAddress address;
@@ -123,51 +123,25 @@ class _OrderSummaryProductServiceState
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
 
-    Map data = {'note': 'places'};
+    var item = basketBloc.productOrService[0];
+
+    Map data = {'note': widget.address.shippingNote};
     data['address'] = widget.address.toJson();
     data['shipping_options'] = basketBloc.userSelectedShippingOption;
 
-    List<OrderDataModel> orderDataModelList = [];
+    data['shopped_item'] = [
+      {"id": item['results']['id'], "type": item['type']}
+    ];
 
-    Map<dynamic, dynamic> merchantNameMap = {};
-
-    for (var item in basketBloc.productOrService) {
-      // debugPrint('Fola product::: ${item}');
-      merchantNameMap = item['results'];
-      // merchantNameMap = item['results'].cast<String, String>();
-    }
-
-    merchantNameMap.values.forEach((merchantName) {
-      // print('fola buy now $key: $value');
-      // print('fola buy now $merchantName');
-
-      OrderDataModel orderDataModel = OrderDataModel(
-        merchantName: merchantName.toString(),
-        address: widget.address.toJson(),
-        shippingNote: widget.address.shippingNote,
-        shippingOption: basketBloc.userSelectedShippingOption[merchantName],
-      );
-
-      orderDataModelList.add(orderDataModel);
-    });
-
-    debugPrint('ORDER DATA LIST ---> $orderDataModelList');
-    orderDataModelList.forEach((element) {
-      debugPrint('ORDER LIST ---> ${element.toJson()}');
-    });
-
-    bool ableToPay = await checkAccountBalance();
+    bool ableToPay =
+        await checkAccountBalance(basketBloc.orderTotalProductService, context);
 
     //Create the orders
     if (ableToPay) {
-      var userOrders =
-          await ShoppingAuthService().placeOrderOfShoppingCart(data);
+      var userOrders = await ShoppingAuthService().placeSingleOrder(data);
 
       debugPrint('');
       if (userOrders != null) {
-        // basketBloc.items.clear(); // Shopping cart
-        basketBloc.total = 0; // clearing the total amount
-
         // Send the list of of orders for payment processing
         for (int i = 0; i < userOrders.length; i++) {
           orders.add(userOrders[i]["id"]);
@@ -182,13 +156,18 @@ class _OrderSummaryProductServiceState
           showToast(message: 'Order placed successfully');
         } else if (response.statusCode == 500) {
           showToast(message: AppLocalization.of(context)!.serverError);
+          Navigator.pop(context);
         } else {
           debugPrint("MakePaymentForCartOrder Unsuccessful");
         }
+        showToast(message: AppLocalization.of(context)!.somethingWentWrong);
+        Navigator.pop(context);
       } else {
         debugPrint(
           "Could Not Place The Order",
         );
+        showToast(message: AppLocalization.of(context)!.couldNotPlaceTheOrder);
+        Navigator.pop(context);
       }
     }
   }
@@ -285,28 +264,5 @@ class _OrderSummaryProductServiceState
         ],
       ),
     );
-  }
-
-  Future<bool> checkAccountBalance() async {
-    BankAccountBloc bankAccountBloc =
-        Provider.of<BankAccountBloc>(context, listen: false);
-
-    if (bankAccountBloc.bankAccount == null ||
-        bankAccountBloc.bankAccount!.bankName == null) {
-      Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
-      showToast(message: "Please add bank account first !!");
-      return false;
-    } else {
-      double accountBalance = await getAccountBalance();
-      // Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
-      debugPrint("accountBalance:- $accountBalance");
-      double spendingAmount = basketBloc.total / 100;
-      debugPrint("spendingAmount:- $spendingAmount");
-      if (spendingAmount > accountBalance) {
-        showToast(message: "You don't have enough money in Slydo account!!");
-        return false;
-      }
-      return true;
-    }
   }
 }

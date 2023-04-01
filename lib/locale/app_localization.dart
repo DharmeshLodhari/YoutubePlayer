@@ -447,6 +447,13 @@ class AppLocalization {
     );
   }
 
+  String get couldNotPlaceTheOrder {
+    return Intl.message(
+      "Could Not Place The Order",
+      name: "couldNotPlaceTheOrder",
+    );
+  }
+
   String get somethingWentWrong {
     return Intl.message(
       "Something went Wrong !!",
