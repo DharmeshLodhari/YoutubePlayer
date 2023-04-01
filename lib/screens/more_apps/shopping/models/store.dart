@@ -210,6 +210,7 @@ class Product {
       "available_from": this.availableFrom.toString(),
       "enable_in_superstore": this.enableInSuperStore,
       "cover": this.cover,
+      "seller": this.seller,
       "seller_fullname": this.sellerFullName,
       "seller_avatar": this.sellerAvatar,
       "currency": this.currency,

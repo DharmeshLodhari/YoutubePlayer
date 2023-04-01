@@ -1289,13 +1289,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     basketBloc.buyProductOrServiceNow('product', result);
 
-    // NavigationUtil.push(context, screen: CheckoutScreen());
     NavigationUtil.push(context, screen: CheckoutProductService());
-
-    // Navigator.of(context).pushNamed(
-    //   Routes.SEND_PAYMENT,
-    //   arguments: {'isFromProfile': false, 'product': product},
-    // );
   }
 
   @override

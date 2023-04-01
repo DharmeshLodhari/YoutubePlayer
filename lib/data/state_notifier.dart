@@ -340,13 +340,8 @@ class BasketBloc extends ChangeNotifier {
   void buyProductOrServiceNow(String type, Map itemData) {
     // clear();
 
-    // debugPrint('Folaaaa::: ${itemData.runtimeType}');
-    // Map<String, dynamic> map = itemData;
-    // _items.add(itemData);
     productOrService.add(itemData);
     notifyListeners();
-
-    // addItemToCart(item: itemData, type: type);
   }
 
   void resetShoppingCart() async {

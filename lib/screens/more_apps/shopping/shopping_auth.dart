@@ -825,8 +825,8 @@ class ShoppingAuthService extends AuthService {
     var jsonData = jsonDecode(response.body);
 
     debugPrint('URL :: $url');
-    debugPrint('BODY :: ${response.body}');
-    debugPrint('STATUS CO :: ${response.statusCode}');
+    debugPrint('BODY shipping:: ${response.body}');
+    debugPrint('STATUS CO  :: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       List jsonDataResult = jsonData['results'];
@@ -835,6 +835,8 @@ class ShoppingAuthService extends AuthService {
           .map((json) => ShippingOptionsModel.fromJson(json))
           .toList();
     } else {
+      debugPrint('BODY shipping 00:: ${response.body}');
+
       return Future.error(response.body);
     }
   }
@@ -914,6 +916,22 @@ class ShoppingAuthService extends AuthService {
   //place shopping cart order
   Future<dynamic> placeOrderOfShoppingCart(Map data) async {
     var url = AppConfig.baseUrl + "/api/v1/shopping-cart/";
+    var _data = jsonEncode(data);
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _data);
+    var jsonData = jsonDecode(response.body);
+
+    if (response.statusCode == 201) {
+      return jsonData;
+    } else {
+      return null;
+    }
+  }
+
+  //place single order
+  Future<dynamic> placeSingleOrder(Map data) async {
+    var url = AppConfig.baseUrl + "/api/v1/shopping-cart/buy-now/";
     var _data = jsonEncode(data);
 
     var headers = await getAuthHeaders();

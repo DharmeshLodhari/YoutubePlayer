@@ -24,6 +24,7 @@ class CheckoutProductService extends StatefulWidget {
 class _CheckoutProductServiceState extends State<CheckoutProductService> {
   String? deliveryOption;
   String? merchantFullName;
+  String? merchantUsername;
   String? type;
   late BasketBloc basketBloc;
   List<String> merchantFullNames = [];
@@ -54,24 +55,16 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
     for (var item in basketBloc.productOrService) {
       debugPrint('Fola product::: ${item}');
-      // debugPrint('Fola product 000::: ${item['results']}');
 
       result = item['results'];
       type = item['type'];
-      // if (type == 'product') {
-      //   // product = item['results'];
-      //   product = json.encode(item['results']) as Product?;
-      // } else if (type == 'service') {
-      //   service = json.encode(item['results']) as Service?;
-      // }
-
-      // debugPrint('Fola product 001::: ${type}');
-      // debugPrint('Fola product 002::: ${result}');
-      // debugPrint('Fola product 0022::: ${result!['seller_fullname']}');
 
       merchantFullName = type == 'product'
           ? result!['seller_fullname']
           : result!['provider_fullname'];
+
+      merchantUsername =
+          type == 'product' ? result!['seller'] : result!['provider'];
 
       if (mounted) setState(() {});
     }
@@ -124,7 +117,6 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
             SizedBox(height: 14),
             dropDownPickItemWidget(
               label: 'Merchant',
-              // selectedItem: result!['seller_fullname'],
               selectedItem: merchantFullName,
               onTap: () {},
             ),
@@ -171,9 +163,11 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                   ),
                   priceRow(
                       title: 'Shipping Fee',
-                      amount: shippingOption != null
-                          ? moneyDisplayNormalizer(shippingOption!.price)
-                          : '0.00'),
+                      amount: deliveryOption == 'Pickup'
+                          ? '0.00'
+                          : shippingOption != null
+                              ? moneyDisplayNormalizer(shippingOption!.price)
+                              : '0.00'),
                   Divider(thickness: 0.3, color: blackFont),
                   priceRow(
                     title: 'Order total',
@@ -192,7 +186,10 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
   int getOrderTotalPrice() {
     int? totalPrice;
-    if (shippingOption != null) {
+
+    if (deliveryOption == 'Pickup') {
+      totalPrice = int.tryParse(result!['price'])!;
+    } else if (shippingOption != null) {
       totalPrice = int.tryParse(result!['price'])! + shippingOption!.price;
     } else {
       totalPrice = int.tryParse(result!['price'])!;
@@ -278,8 +275,8 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
   onNextClicked() {
     if (shippingOption == null) {
-      String merchantName = merchantFullName!;
-      userSelectedShippingOption[merchantName] = null;
+      // String merchantName = merchantFullName!;
+      userSelectedShippingOption[merchantUsername!] = null;
     }
 
     basketBloc.orderTotalProductService += getOrderTotalPrice();
@@ -291,7 +288,6 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       NavigationUtil.pushReplacement(context,
           screen: UserAddressProductService(fromCheckoutScreen: true));
     } else {
-      // basketBloc.merchantNameMapCopy.remove(merchantFullName);
       resetData();
     }
   }
@@ -312,13 +308,14 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     );
     if (pickedDeliveryOption != null) {
       deliveryOption = pickedDeliveryOption;
+
       if (mounted) setState(() {});
       if (deliveryOption == 'Shipping/Delivery') {
         shippingOptionsLoading = true;
         if (mounted) setState(() {});
 
         ShoppingAuthService()
-            .getShippingOptions(merchantName: merchantFullName!)
+            .getShippingOptions(merchantName: merchantUsername!)
             .then(
           (value) {
             shippingOptionsLoading = false;
