@@ -1323,12 +1323,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     };
 
     basketBloc.buyProductOrServiceNow('service', result);
-
     NavigationUtil.push(context, screen: CheckoutProductService());
-    // Navigator.of(context).pushNamed(
-    //   Routes.SEND_PAYMENT,
-    //   arguments: {'isFromProfile': false, 'service': service},
-    // );
   }
 
   @override

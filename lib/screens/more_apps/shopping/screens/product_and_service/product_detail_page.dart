@@ -1288,7 +1288,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     };
 
     basketBloc.buyProductOrServiceNow('product', result);
-
     NavigationUtil.push(context, screen: CheckoutProductService());
   }
 

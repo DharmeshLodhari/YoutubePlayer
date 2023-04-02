@@ -127,13 +127,6 @@ class _AddAccountState extends State<AddAccount> {
                   SizedBox(
                     height: 30,
                   ),
-                  Text(
-                    AppLocalization.of(context)!.bankAccountTerms,
-                    style: TextStyle(color: darkGrey, fontSize: 14),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
                   InkWell(
                     onTap: () {
                       FocusScope.of(context).unfocus();

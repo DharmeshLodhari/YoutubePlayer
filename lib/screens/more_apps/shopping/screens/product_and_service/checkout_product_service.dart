@@ -88,6 +88,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
           size: 24,
         ),
         onPressed: () {
+          basketBloc.productOrService.clear();
           Navigator.pop(context);
         },
       ),
