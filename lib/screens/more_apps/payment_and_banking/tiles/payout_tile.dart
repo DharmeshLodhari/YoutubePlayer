@@ -105,7 +105,7 @@ class PayoutTile extends StatelessWidget {
 
   Widget getBankName() {
     return Text(
-      trimString(payout!.bankName!),
+      appendStringDot(payout!.bankName!),
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.w600,
@@ -172,7 +172,7 @@ class PayoutTile extends StatelessWidget {
 
   Widget getAccountName() {
     return Text(
-      trimString(payout!.accountName!),
+      appendStringDot(payout!.accountName!),
       style: TextStyle(
         color: darkGrey,
         fontWeight: FontWeight.w600,

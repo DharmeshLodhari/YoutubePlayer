@@ -47,7 +47,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               priceRow(
                 title: 'Order total',
-                amount: moneyDisplayNormalizer(basketBloc.orderTotal),
+                amount: moneyDisplayNormalizer(
+                    basketBloc.total + basketBloc.totalShippingCost),
               ),
               priceRow(
                   title: 'Total shipping cost',
@@ -120,9 +121,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
 
-    Map data = {'note': 'places'};
+    Map data = {'note': widget.address.shippingNote};
     data['address'] = widget.address.toJson();
     data['shipping_options'] = basketBloc.userSelectedShippingOption;
+
+    debugPrint('Fola data:::: ${data}');
 
     List<OrderDataModel> orderDataModelList = [];
     basketBloc.merchantNameMap.values.forEach((merchantName) {
@@ -142,13 +145,12 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     });
 
     bool ableToPay = await checkAccountBalance(null, context);
-    //
-    // Create the orders
+
+    //Create the orders
     if (ableToPay) {
       var userOrders =
           await ShoppingAuthService().placeOrderOfShoppingCart(data);
 
-      debugPrint('');
       if (userOrders != null) {
         basketBloc.items.clear(); // Shopping cart
         basketBloc.total = 0; // clearing the total amount
@@ -161,21 +163,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
         debugPrint('STATUS CODE :: ${response.statusCode}');
         if (response.statusCode == 200) {
-          // userOrders.forEach((userOrder) {
-          //   _auth.createReviewableRecord(
-          //     data: {
-          //       'provider': userOrder['merchant'],
-          //       'buyer':
-          //           Provider.of<UserBloc>(context, listen: false).user.userName,
-          //       'type':
-          //           userOrder['type'].toString().toLowerCase().startsWith('p')
-          //               ? 'products'
-          //               : 'services',
-          //       'id': userOrder['id'],
-          //     },
-          //   );
-          // });
-
           Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
           Navigator.pushNamed(context, Routes.ORDERS_LIST);
           showToast(message: 'Order placed successfully');

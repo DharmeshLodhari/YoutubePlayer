@@ -140,7 +140,6 @@ class _OrderSummaryProductServiceState
     if (ableToPay) {
       var userOrders = await ShoppingAuthService().placeSingleOrder(data);
 
-      debugPrint('');
       if (userOrders != null) {
         // Send the list of of orders for payment processing
         for (int i = 0; i < userOrders.length; i++) {

@@ -40,6 +40,7 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
   Country selectedCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
   late AddressBloc addressBloc;
+  late BasketBloc basketBloc;
   bool isLoading = false;
   int? pickedStateId;
   String? pickedStateValue;
@@ -78,6 +79,7 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
   @override
   Widget build(BuildContext context) {
     addressBloc = Provider.of<AddressBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -107,6 +109,7 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
           size: 24,
         ),
         onPressed: () {
+          basketBloc.productOrService.clear();
           Navigator.pop(context);
         },
       ),
@@ -234,16 +237,6 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
           val.length == 0 ? AppLocalization.of(context)!.invalidCity : null,
     );
   }
-
-  // Widget getState() {
-  //   return CustomizedTextFormField(
-  //     labelText: AppLocalization.of(context)!.state,
-  //     controller: stateController,
-  //     enabled: widget.customerName == null,
-  //     validator: (val) =>
-  //         val.length == 0 ? AppLocalization.of(context)!.invalidState : null,
-  //   );
-  // }
 
   Widget getCountryDropdown() {
     return Column(

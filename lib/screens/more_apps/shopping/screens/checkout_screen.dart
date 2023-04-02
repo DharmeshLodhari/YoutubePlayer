@@ -45,15 +45,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.initState();
 
     BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
-    basketBloc.merchantNameMapCopy.addAll(basketBloc.merchantNameMap);
-    basketBloc.orderTotal = 0;
-    basketBloc.totalShippingCost = 0;
+    basketBloc.merchantData.clear();
+    basketBloc.getAllMerchant();
   }
 
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
     checkoutScreenBloc = Provider.of<CheckoutScreenBloc>(context);
+
+    basketBloc.merchantNameMapCopy.addAll(basketBloc.merchantNameMap);
+    basketBloc.orderTotal = 0;
+    basketBloc.totalShippingCost = 0;
+
     return Scaffold(
       appBar: appBar(),
       body: _scaffoldBody(),
@@ -151,13 +155,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                   priceRow(
                       title: 'Shipping Fee',
-                      amount: shippingOption != null
-                          ? moneyDisplayNormalizer(shippingOption!.price)
-                          : '0.00'),
+                      amount: deliveryOption == 'Pickup' ||
+                              shippingOptions.isEmpty
+                          ? '0.00'
+                          : shippingOption != null
+                              ? moneyDisplayNormalizer(shippingOption!.price)
+                              : '0.00'),
                   Divider(thickness: 0.3, color: blackFont),
                   priceRow(
                     title: 'Order total',
-                    amount: moneyDisplayNormalizer(getOrderTotalPrice()),
+                    amount: deliveryOption == 'Pickup' ||
+                            shippingOptions.isEmpty
+                        ? moneyDisplayNormalizer(getSubTotalPrice())
+                        : shippingOption != null && deliveryOption != 'Pickup'
+                            ? moneyDisplayNormalizer(getOrderTotalPrice())
+                            : moneyDisplayNormalizer(getSubTotalPrice()),
                   ),
                   SizedBox(height: 20),
                 ],
@@ -229,7 +241,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget renderCurvedButton() {
-    if (basketBloc.merchantNameMapCopy.isEmpty) {
+    if (basketBloc.merchantData.isEmpty) {
       return getCurvedButton();
     }
     if (deliveryOption == 'Shipping/Delivery') {
@@ -258,21 +270,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   onNextClicked() {
-    if (shippingOption == null) {
-      String merchantName = basketBloc.merchantNameMapCopy[merchantFullName!]!;
-      userSelectedShippingOption[merchantName] = null;
-    }
-
     basketBloc.orderTotal += getOrderTotalPrice();
     basketBloc.totalShippingCost +=
         shippingOption != null ? shippingOption!.price : 0;
 
-    if (basketBloc.merchantNameMapCopy.length == 1) {
+    if (basketBloc.merchantData.length == 1) {
       basketBloc.userSelectedShippingOption = userSelectedShippingOption;
       NavigationUtil.pushReplacement(context,
           screen: UserAddress(fromCheckoutScreen: true));
     } else {
-      basketBloc.merchantNameMapCopy.remove(merchantFullName);
+      basketBloc.removeMerchant(merchantFullName!);
+      if (mounted) setState(() {});
       resetData();
     }
   }
@@ -288,8 +296,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   pickMerchantNames() async {
     merchantFullNames.clear();
 
-    basketBloc.merchantNameMapCopy.keys.forEach((element) {
-      merchantFullNames.add(element);
+    var allMerchants = basketBloc.merchantData;
+
+    allMerchants.forEach((element) {
+      merchantFullNames.add(element['name']!);
     });
 
     String? pickedMerchantName = await showPickItemDialog<String>(

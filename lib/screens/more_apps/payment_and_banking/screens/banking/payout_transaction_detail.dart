@@ -230,7 +230,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
 
   Widget getSender() {
     return Text(
-      payout!.bankName!,
+      appendStringDot(payout!.bankName!),
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,

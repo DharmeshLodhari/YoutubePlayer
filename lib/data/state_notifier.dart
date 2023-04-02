@@ -208,6 +208,7 @@ class BasketBloc extends ChangeNotifier {
 
   Map<String, String> merchantNameMap = {};
   Map<String, String> merchantNameMapCopy = {};
+  List<Map<String, String>> merchantData = [];
 
   set items(List value) {
     _items = value as List<Map<String, dynamic>>;
@@ -230,7 +231,7 @@ class BasketBloc extends ChangeNotifier {
     int subTotal = 0;
     items.forEach((element) {
       if (merchantUserName == element['item'].getMerchantUserName()) {
-        subTotal = int.parse(element['qty'].toString()) *
+        subTotal += int.parse(element['qty'].toString()) *
             int.parse(element['item'].price);
       }
     });
@@ -251,6 +252,30 @@ class BasketBloc extends ChangeNotifier {
     addItemInBasketWithQty(item, type);
     addMerchantName(item);
 
+    notifyListeners();
+  }
+
+  void getAllMerchant() {
+    //[{type: product, item: Instance of 'Product', qty: 2},
+    // {type: product, item: Instance of 'Product', qty: 1}]
+
+    for (var consumableData in items) {
+      if (consumableData['type'] == 'product') {
+        Product product = consumableData['item'];
+
+        merchantData.add(
+            {'name': product.sellerFullName!, 'username': product.seller!});
+      } else if (consumableData['type'] == 'service') {
+        Service service = consumableData['item'];
+
+        merchantData.add(
+            {'name': service.providerFullName!, 'username': service.provider!});
+      }
+    }
+  }
+
+  void removeMerchant(String name) {
+    merchantData.removeWhere((map) => map["name"] == name);
     notifyListeners();
   }
 
@@ -302,12 +327,6 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clear() {
-    _items.clear();
-
-    notifyListeners();
-  }
-
   void removeItemInBasketWithQty(var item) {
     var foundItem;
     try {
@@ -338,8 +357,6 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void buyProductOrServiceNow(String type, Map itemData) {
-    // clear();
-
     productOrService.add(itemData);
     notifyListeners();
   }
