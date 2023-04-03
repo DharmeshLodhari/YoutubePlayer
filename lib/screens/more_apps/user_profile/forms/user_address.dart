@@ -148,6 +148,8 @@ class _UserAddressState extends State<UserAddress> {
                     flexibleSpace(),
                     getAddressLineTwo(),
                     flexibleSpace(),
+                    getCity(),
+                    flexibleSpace(),
                     PickStateWidget(
                       initialStateValue: pickedStateValue,
                       afterOnChanged: (stateId, stateValue) {
@@ -157,10 +159,8 @@ class _UserAddressState extends State<UserAddress> {
                       disable: widget.customerName != null,
                     ),
                     flexibleSpace(),
-                    getCity(),
-                    flexibleSpace(),
-                    getCountryDropdown(),
-                    flexibleSpace(),
+                    Visibility(visible: false, child: getCountryDropdown()),
+                    // flexibleSpace(),
                     getDeliveryNote(),
                     Text(
                       errorMessage,
