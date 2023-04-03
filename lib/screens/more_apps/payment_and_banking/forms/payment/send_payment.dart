@@ -1044,59 +1044,54 @@ class _SendPaymentState extends State<SendPayment> {
                     data["conversation_id"] = conversationId;
                   }
 
-                  debugPrint("fola Data:- $data");
-                  debugPrint("fola Data product:- ${product!.name}");
-                  debugPrint("fola Data description:- ${product!.description}");
-                  debugPrint("fola Data type:- ${product!.type}");
+                  await _auth.makePayment(data).then((value) {
+                    debugPrint(
+                        "status code:- ${value.statusCode}  body:- ${value.body}");
 
-                  // await _auth.makePayment(data).then((value) {
-                  //   debugPrint(
-                  //       "status code:- ${value.statusCode}  body:- ${value.body}");
-                  //
-                  //   response = value;
-                  //   if (response.statusCode == 200) {
-                  //     popFromShoppingCart(product);
-                  //     //Pop Circular Progress Indicator
-                  //     Navigator.pop(context);
-                  //     //Pop send payment page
-                  //     Navigator.pop(context);
-                  //
-                  //     debugPrint(" isFromChat:- $isFromChat");
-                  //
-                  //     if (!isFromChat!) {
-                  //       Navigator.of(context).pushNamed(
-                  //         '/transactions',
-                  //       );
-                  //     }
-                  //   } else if (response.statusCode == 400) {
-                  //     Navigator.pop(context);
-                  //     setState(() {
-                  //       errorMessage = "${jsonDecode(value.body)["errors"]}";
-                  //
-                  //       showToast(message: errorMessage);
-                  //     });
-                  //   } else if (response.statusCode == 500) {
-                  //     Navigator.pop(context);
-                  //     setState(() {
-                  //       errorMessage = AppLocalization.of(context)!.serverError;
-                  //       showToast(message: errorMessage);
-                  //     });
-                  //   } else {
-                  //     Navigator.pop(context);
-                  //     if (response.statusCode == 406) {
-                  //       errorMessage = jsonDecode(value.body)[0];
-                  //       showToast(message: "$errorMessage");
-                  //       setState(() {});
-                  //     } else {
-                  //       debugPrint("ERROR:- ${response.body}");
-                  //       setState(() {
-                  //         errorMessage =
-                  //             AppLocalization.of(context)!.somethingWentWrong;
-                  //         showToast(message: "$errorMessage");
-                  //       });
-                  //     }
-                  //   }
-                  // });
+                    response = value;
+                    if (response.statusCode == 200) {
+                      popFromShoppingCart(product);
+                      //Pop Circular Progress Indicator
+                      Navigator.pop(context);
+                      //Pop send payment page
+                      Navigator.pop(context);
+
+                      debugPrint(" isFromChat:- $isFromChat");
+
+                      if (!isFromChat!) {
+                        Navigator.of(context).pushNamed(
+                          '/transactions',
+                        );
+                      }
+                    } else if (response.statusCode == 400) {
+                      Navigator.pop(context);
+                      setState(() {
+                        errorMessage = "${jsonDecode(value.body)["errors"]}";
+
+                        showToast(message: errorMessage);
+                      });
+                    } else if (response.statusCode == 500) {
+                      Navigator.pop(context);
+                      setState(() {
+                        errorMessage = AppLocalization.of(context)!.serverError;
+                        showToast(message: errorMessage);
+                      });
+                    } else {
+                      Navigator.pop(context);
+                      if (response.statusCode == 406) {
+                        errorMessage = jsonDecode(value.body)[0];
+                        showToast(message: "$errorMessage");
+                        setState(() {});
+                      } else {
+                        debugPrint("ERROR:- ${response.body}");
+                        setState(() {
+                          errorMessage =
+                              AppLocalization.of(context)!.somethingWentWrong;
+                          showToast(message: "$errorMessage");
+                        });
+                      }
+                    }
+                  });
                 },
                 cancelCallBack: () {
                   Navigator.pop(context);
