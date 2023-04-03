@@ -13,6 +13,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
@@ -748,6 +749,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
       scrollController: _textEditorScrollController,
       focusNode: textEditorTextFieldFocusNode,
       scrollBottomInset: 20,
+      embedBuilders: FlutterQuillEmbeds.builders(),
     );
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {

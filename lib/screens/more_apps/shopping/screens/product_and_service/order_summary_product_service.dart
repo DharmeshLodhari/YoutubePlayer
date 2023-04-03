@@ -147,7 +147,7 @@ class _OrderSummaryProductServiceState
         }
         var response = await _auth.makePaymentForCartOrder({"orders": orders});
 
-        debugPrint('STATUS CODE :: ${response.statusCode}');
+        // debugPrint('STATUS CODE :: ${response.statusCode}');
         if (response.statusCode == 200) {
           basketBloc.productOrService.clear();
           Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
