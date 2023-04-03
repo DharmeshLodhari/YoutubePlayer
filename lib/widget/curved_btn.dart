@@ -77,16 +77,16 @@ class CurvedButton extends StatelessWidget {
 
   onBtnPressed() {
     if (isPaymentBtn) {
-      // if (getIt<AppConfigurationBloc>().appConfigurationModel?.enablePayment ==
-      //     false) {
-      //   showToast(message: 'Payment not available at the moment');
-      //   return;
-      // } else {
-      //   onPressed();
-      //   return;
-      // }
-      onPressed();
-      return;
+      if (getIt<AppConfigurationBloc>().appConfigurationModel?.enablePayment ==
+          false) {
+        showToast(message: 'Payment not available at the moment');
+        return;
+      } else {
+        onPressed();
+        return;
+      }
+      // onPressed();
+      // return;
     } else {
       onPressed();
     }
