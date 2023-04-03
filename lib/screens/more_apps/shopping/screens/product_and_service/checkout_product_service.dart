@@ -276,7 +276,6 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
 
   onNextClicked() {
     if (shippingOption == null) {
-      // String merchantName = merchantFullName!;
       userSelectedShippingOption[merchantUsername!] = null;
     }
 
@@ -284,13 +283,9 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     basketBloc.totalShippingCost +=
         shippingOption != null ? shippingOption!.price : 0;
 
-    if (basketBloc.merchantNameMapCopy.length == 1) {
-      basketBloc.userSelectedShippingOption = userSelectedShippingOption;
-      NavigationUtil.pushReplacement(context,
-          screen: UserAddressProductService(fromCheckoutScreen: true));
-    } else {
-      resetData();
-    }
+    basketBloc.userSelectedShippingOption = userSelectedShippingOption;
+    NavigationUtil.pushReplacement(context,
+        screen: UserAddressProductService(fromCheckoutScreen: true));
   }
 
   resetData() {

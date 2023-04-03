@@ -323,7 +323,7 @@ class _YarnActionsState extends State<YarnActions> {
                     'isFromProfile': false,
                     'isFromChat': false,
                     'defaultReferenceText': 'Payment from  "${truncateString(
-                      str: widget.yarn.title!,
+                      str: widget.yarn.title != null ? widget.yarn.title! : '',
                       lengthToTruncateAt: 8,
                     )}\" yarn'
                   },

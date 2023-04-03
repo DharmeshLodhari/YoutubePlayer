@@ -62,7 +62,7 @@ String trimString(String input) {
 }
 
 String appendStringDot(String input) {
-  int maxLength = 25;
+  int maxLength = 20;
   String shortText =
       input.length > maxLength ? input.substring(0, maxLength) + "..." : input;
   return shortText;

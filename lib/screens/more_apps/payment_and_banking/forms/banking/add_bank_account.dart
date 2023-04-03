@@ -797,9 +797,7 @@ class _AddAccountState extends State<AddAccount> {
     next = "";
     previous = "";
     searchItemTextController.text = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-      bottomSheetStateSetterGlobal!(() {});
-    // if (mounted) setState(() {});
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {}
   }
 
   Widget buildBankList() {
