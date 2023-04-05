@@ -889,7 +889,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                           'isFromMoment': true,
                           'isFromYarn': false,
                           'defaultReferenceText':
-                              'Payment from Moment, Moment ID : "${widget.currentMoment.id != null ? widget.currentMoment.id! : ''}'
+                              'Payment from Moment, Moment ID : ${widget.currentMoment.id != null ? widget.currentMoment.id! : ''}'
                         },
                       );
                     } else {

@@ -325,7 +325,7 @@ class _YarnActionsState extends State<YarnActions> {
                     'isFromYarn': true,
                     'isFromMoment': false,
                     'defaultReferenceText':
-                        'Payment from Yarn, Yard ID : "${widget.yarn.id != null ? widget.yarn.id! : ''} '
+                        'Payment from Yarn, Yard ID : ${widget.yarn.id != null ? widget.yarn.id! : ''} '
                   },
                 );
               } else {

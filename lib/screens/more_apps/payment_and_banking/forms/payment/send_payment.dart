@@ -357,10 +357,15 @@ class _SendPaymentState extends State<SendPayment> {
                                     SizedBox(
                                       height: 20,
                                     ),
-                                    showMoreOption
-                                        ? getMoreOption()
-                                        : Container(),
-                                    getMoreOptionTrigger(),
+                                    if (isFromYarn == true ||
+                                        isFromMoment == true) ...[
+                                      SizedBox()
+                                    ] else ...[
+                                      showMoreOption
+                                          ? getMoreOption()
+                                          : Container(),
+                                      getMoreOptionTrigger(),
+                                    ],
                                     errorMessage == ""
                                         ? Container()
                                         : Text(
