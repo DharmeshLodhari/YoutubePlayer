@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../models/Topics/CommentDetails.dart';
+import '../utils/utils.dart';
 import 'yarn_options.dart';
 
 class AskReplyView extends StatelessWidget {
@@ -145,15 +146,6 @@ class AskReplyView extends StatelessWidget {
     return RichTextForTitle(
       description: replyCommentDetail!.comment ?? '',
     );
-    // return Text(
-    //   messageDecoderWithEmoji(replyCommentDetail!.comment!)!,
-    //   maxLines: 30,
-    //   style: TextStyle(
-    //     color: blackFont,
-    //     fontSize: 14,
-    //     fontWeight: FontWeight.w400,
-    //   ),
-    // );
   }
 
   Widget _buildTopActions() {

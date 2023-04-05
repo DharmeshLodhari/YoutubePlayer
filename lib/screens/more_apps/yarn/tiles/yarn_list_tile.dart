@@ -511,29 +511,9 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget _buildPostDescription() {
-    var newString = '';
-    var list = [];
+    var removedLink = '';
 
-    widget.yarn.body.toString().split(' ').forEach((ch) {
-      list.add(ch);
-      // print(ch);
-    });
-
-    list.forEach((data) {
-      if (data.toString().contains('.') &&
-          !data.toString().trim().contains('@') &&
-          !data.toString().trim().contains('..') &&
-          !data.toString().trim().startsWith('.') &&
-          !data.toString().trim().startsWith('http') &&
-          !data.toString().trim().contains('.\n') &&
-          !data.toString().trim().endsWith('.')) {
-        final replaceWith = 'http://' + data;
-
-        newString = newString + ' ' + replaceWith.toString();
-      } else {
-        newString = newString + ' ' + data.toString();
-      }
-    });
+    removedLink = removeLinksAndWords(widget.yarn.body!, []);
 
     if (isUrlPresent) {
       return Column(
@@ -543,7 +523,7 @@ class _YarnTileState extends State<YarnTile> {
             height: 5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(newString)! ?? '',
+            text: messageDecoderWithEmoji(removedLink)! ?? '',
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
             // atStyle: TextStyle(
@@ -631,7 +611,7 @@ class _YarnTileState extends State<YarnTile> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(newString)! ?? '',
+      text: messageDecoderWithEmoji(removedLink)! ?? '',
       style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
       // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,

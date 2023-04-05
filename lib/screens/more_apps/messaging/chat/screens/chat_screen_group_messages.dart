@@ -1423,7 +1423,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ),
       ),
       actions: [
-        if (chatConversation!.isGroupConversation!) ...[
+        if (chatConversation != null &&
+            chatConversation!.isGroupConversation!) ...[
           GestureDetector(
             onTap: () async {
               stopShakeDetector();

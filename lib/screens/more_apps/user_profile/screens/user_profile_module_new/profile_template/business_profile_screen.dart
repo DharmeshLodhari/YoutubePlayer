@@ -48,7 +48,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       searchedUser = widget.searchedUser!;
     }
 
-    debugPrint('Fola data::::${widget.searchedUser}');
     isOwner = widget.isOwner;
 
     // Define the tabs and their corresponding data for each user
