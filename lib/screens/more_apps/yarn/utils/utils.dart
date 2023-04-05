@@ -167,3 +167,18 @@ Widget assignTitleToAction({required String text, required Widget child}) {
     ),
   );
 }
+
+String removeLinksAndWords(String text, List<String> wordsToRemove) {
+  // Check for links and remove them with expect to @ and hash
+  final linkRegExp =
+      RegExp(r'\bhttps?://[^\s<>"]+|www\.[^\s<>"]+\b', caseSensitive: false);
+  text = text.replaceAll(linkRegExp, '');
+
+  // Remove any words that match any of the words in the list, ignoring case
+  for (String word in wordsToRemove) {
+    final wordRegExp = RegExp(r'\b' + word + r'\b', caseSensitive: false);
+    text = text.replaceAll(wordRegExp, '');
+  }
+
+  return text;
+}

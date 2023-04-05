@@ -228,6 +228,32 @@ class _YarnOptionsState extends State<YarnOptions> {
                   });
                 }),
           ]
+          // _buildTile(
+          //     icon: "yarn/bookmark",
+          //     title: 'Edit',
+          //     subTitle: 'Edit yarn',
+          //     onTap: () async {
+          //       NavigationUtil.push(context,
+          //           screen: AddOrEditYarn(
+          //             askCategories: yarnDashboardBloc.yarnCategories,
+          //             isYarn: true,
+          //             yarn: widget.yarnTopic,
+          //             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+          //             passedCategory: '',
+          //           )).then((value) {
+          //         debugPrint("THEN VALUE===$value");
+          //         if (value != null) {
+          //           if (value[0] == Types.Yarn) {
+          //             widget.onUpdate!(value[1]);
+          //             Navigator.of(context).pop();
+          //             // updateCurrentAskTapOnHome(index: 0);
+          //             // _pageViewController.jumpToPage(0);
+          //             // topicViewStateKey.currentState?.onRefresh();
+          //           }
+          //           // Navigator.of(context).pop();
+          //         }
+          //       });
+          //     }),
         ],
         SizedBox(
           height: 15,
