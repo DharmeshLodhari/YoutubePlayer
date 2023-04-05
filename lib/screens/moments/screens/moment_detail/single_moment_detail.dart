@@ -886,11 +886,10 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                           'recipient': widget.currentMoment.owner,
                           'isFromProfile': false,
                           'isFromChat': false,
+                          'isFromMoment': true,
+                          'isFromYarn': false,
                           'defaultReferenceText':
-                              'Payment from  "${truncateString(
-                            str: widget.currentMoment.text!,
-                            lengthToTruncateAt: 8,
-                          )}\" moment'
+                              'Payment from Moment, Moment ID : "${widget.currentMoment.id != null ? widget.currentMoment.id! : ''}'
                         },
                       );
                     } else {
