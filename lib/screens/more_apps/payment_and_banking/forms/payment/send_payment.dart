@@ -63,6 +63,8 @@ class _SendPaymentState extends State<SendPayment> {
 
   bool? isFromProfile = false;
   bool? isFromChat = false;
+  bool? isFromYarn = false;
+  bool? isFromMoment = false;
   bool isValidPayee = false;
   double? amount;
   String reference = "";
@@ -104,6 +106,16 @@ class _SendPaymentState extends State<SendPayment> {
     isFromChat = widget.arguments != null
         ? widget.arguments['isFromChat'] != null
             ? widget.arguments['isFromChat']
+            : false
+        : false;
+    isFromYarn = widget.arguments != null
+        ? widget.arguments['isFromYarn'] != null
+            ? widget.arguments['isFromYarn']
+            : false
+        : false;
+    isFromMoment = widget.arguments != null
+        ? widget.arguments['isFromMoment'] != null
+            ? widget.arguments['isFromMoment']
             : false
         : false;
     conversationId = widget.arguments != null
@@ -1039,6 +1051,16 @@ class _SendPaymentState extends State<SendPayment> {
                     "is_anonymous": sendMoneyAnonymous,
                     "made_from_chat": isFromChat ?? false,
                   };
+
+                  if (isFromYarn == true) {
+                    data['category'] = "Gift";
+                    data['description'] = "Merchandise Payment in Yarn";
+                  }
+
+                  if (isFromMoment == true) {
+                    data['category'] = "Gift";
+                    data['description'] = "Merchandise Payment in Moment";
+                  }
 
                   if (conversationId != null) {
                     data["conversation_id"] = conversationId;
