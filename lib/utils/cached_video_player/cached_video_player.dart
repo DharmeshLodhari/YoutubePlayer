@@ -70,7 +70,7 @@ class CachedVideoPlayerValue {
   final List<DurationRange> buffered;
 
   /// True if the video is playing. False if it's paused.
-  final bool isPlaying;
+  late final bool isPlaying;
 
   /// True if the video is looping.
   final bool isLooping;

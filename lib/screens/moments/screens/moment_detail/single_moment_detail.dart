@@ -880,6 +880,21 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                             .appConfigurationModel
                             ?.enablePayment ==
                         true) {
+                      if (widget.currentMoment.userSupported == true) {
+                        showToast(
+                            message: 'You have already supported this moment');
+                        return;
+                      }
+
+                      //pause video player when navigating to payment screen
+                      for (var video in widget.videoPlayerControllers) {
+                        if (video.value.isPlaying) {
+                          video.pause();
+                        } else {
+                          video.pause();
+                        }
+                      }
+
                       Navigator.of(context).pushNamed(
                         Routes.SEND_PAYMENT,
                         arguments: <String, dynamic>{
@@ -888,6 +903,9 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                           'isFromChat': false,
                           'isFromMoment': true,
                           'isFromYarn': false,
+                          'momentId': widget.currentMoment.id != null
+                              ? widget.currentMoment.id!
+                              : '',
                           'defaultReferenceText':
                               'Payment from Moment, Moment ID : ${widget.currentMoment.id != null ? widget.currentMoment.id! : ''}'
                         },
@@ -907,10 +925,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                 margin: EdgeInsets.only(right: 12),
                 padding: EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                    color: HexColor(
-                        widget.currentMoment.payMeButtonColor != null
-                            ? '#${widget.currentMoment.payMeButtonColor}'
-                            : '#3F61DB'),
+                    color: checkColor(),
                     borderRadius: BorderRadius.circular(6)),
                 child: Row(
                   children: [
@@ -958,5 +973,17 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
         child: CommentListWidget(momentID: momentID, index: index),
       ),
     );
+  }
+
+  Color checkColor() {
+    if (widget.currentMoment.payMeButtonColor != null) {
+      if (widget.currentMoment.userSupported == true) {
+        return HexColor('#808080');
+      } else {
+        return HexColor('#${widget.currentMoment.payMeButtonColor}');
+      }
+    } else {
+      return HexColor('#3F61DB');
+    }
   }
 }

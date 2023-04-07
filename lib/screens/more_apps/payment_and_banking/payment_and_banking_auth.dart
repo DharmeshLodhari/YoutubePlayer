@@ -719,6 +719,47 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
+  // update moment support list
+  Future<bool> updateMomentSupporter(
+      String momentId, String transactionId) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/social/moments/add-user-to-moment-supporters-list/$momentId/";
+    var headers = await getAuthHeaders();
+    late var response;
+    var _data = jsonEncode(transactionId);
+    try {
+      response = await httpPatch(url, headers: headers, body: _data);
+    } catch (e) {
+      debugPrint("update moment supporter : " + e.toString());
+    }
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // update yarn supporter list
+  Future<bool> updateYarnSupporter(String yarnId, String transactionId) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/social/ask/add-user-to-yarn-supporters-list/$yarnId/";
+    var headers = await getAuthHeaders();
+    late var response;
+    var _data = jsonEncode(transactionId);
+    try {
+      response = await httpPatch(url, headers: headers, body: _data);
+    } catch (e) {
+      debugPrint("update yarn supporter : " + e.toString());
+    }
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   //Send payment to backend
   Future<http.Response> makePayment(Map data) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/make-payment/";

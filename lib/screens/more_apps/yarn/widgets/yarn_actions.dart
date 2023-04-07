@@ -312,6 +312,11 @@ class _YarnActionsState extends State<YarnActions> {
           ? () {
               if (!isPayMeEnable) return;
 
+              if (widget.yarn.userSupported == true) {
+                showToast(message: 'You already supported this Yarn');
+                return;
+              }
+
               if (getIt<AppConfigurationBloc>()
                       .appConfigurationModel
                       ?.enablePayment ==
@@ -324,6 +329,7 @@ class _YarnActionsState extends State<YarnActions> {
                     'isFromChat': false,
                     'isFromYarn': true,
                     'isFromMoment': false,
+                    'yarnId': widget.yarn.id != null ? widget.yarn.id! : '',
                     'defaultReferenceText':
                         'Payment from Yarn, Yard ID : ${widget.yarn.id != null ? widget.yarn.id! : ''} '
                   },
