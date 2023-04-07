@@ -259,7 +259,9 @@ class _TransactionDetailState extends State<TransactionDetail> {
           transactionOrPayoutTile(
               'assets/images/payout/note.svg',
               AppLocalization.of(context)!.note,
-              messageDecoderWithEmoji(transaction!.note) ?? '---',
+              messageDecoderWithEmoji(
+                      appendStringDot(transaction!.note!, 35)) ??
+                  '---',
               false),
           transactionOrPayoutTile(
               'assets/images/payout/description.svg',

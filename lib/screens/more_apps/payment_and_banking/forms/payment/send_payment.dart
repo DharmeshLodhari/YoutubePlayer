@@ -1056,6 +1056,8 @@ class _SendPaymentState extends State<SendPayment> {
                     "is_anonymous": sendMoneyAnonymous,
                     "made_from_chat": isFromChat ?? false,
                   };
+                  bool updateYarnSupporter = false;
+                  bool updateMomentSupporter = false;
 
                   if (isFromYarn == true) {
                     data['category'] = "Gift";
@@ -1071,7 +1073,7 @@ class _SendPaymentState extends State<SendPayment> {
                     data["conversation_id"] = conversationId;
                   }
 
-                  await _auth.makePayment(data).then((value) {
+                  await _auth.makePayment(data).then((value) async {
                     debugPrint(
                         "status code:- ${value.statusCode}  body:- ${value.body}");
 
@@ -1079,6 +1081,31 @@ class _SendPaymentState extends State<SendPayment> {
                     if (response.statusCode == 200) {
                       popFromShoppingCart(product);
                       //Pop Circular Progress Indicator
+
+                      if (isFromYarn == true) {
+                        var jsonData = json.decode(response.body);
+
+                        updateYarnSupporter = await _auth.updateYarnSupporter(
+                            widget.arguments['yarnId'],
+                            jsonData['transaction_id']);
+
+                        if (updateYarnSupporter == false) {
+                          showToast(message: 'Unable to update yarn payment');
+                        }
+                      }
+
+                      if (isFromMoment == true) {
+                        var jsonData = json.decode(response.body);
+
+                        updateMomentSupporter =
+                            await _auth.updateMomentSupporter(
+                                widget.arguments['momentId'],
+                                jsonData['transaction_id']);
+
+                        if (updateMomentSupporter == false) {
+                          showToast(message: 'Unable to update moment payment');
+                        }
+                      }
                       Navigator.pop(context);
                       //Pop send payment page
                       Navigator.pop(context);

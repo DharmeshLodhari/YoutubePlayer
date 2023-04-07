@@ -97,6 +97,7 @@ class MomentsModel {
   String? payMeLabel;
   String? payMeButtonColor;
   bool? isPermanent;
+  bool? userSupported;
 
   MomentsModel(
       {this.id,
@@ -122,6 +123,7 @@ class MomentsModel {
       this.createdAt,
       this.expireAt,
       this.isPublic,
+      this.userSupported,
       this.isPermanent = false});
 
   // factory MomentsModel.fromExploreMoments(ExploreMomentsModel exploreMomentsModel) {
@@ -181,6 +183,7 @@ class MomentsModel {
       owner: json['owner'],
       createdAt: json['created_at'],
       expireAt: json['expire_at'],
+      userSupported: json['user_supported'] ?? false,
       isPublic: json['is_public'] ?? false,
       isPermanent: json['is_permanent'],
     );
@@ -211,6 +214,7 @@ class MomentsModel {
     map['created_at'] = createdAt;
     map['expire_at'] = expireAt;
     map['is_public'] = isPublic;
+    map['user_supported'] = userSupported;
     map['is_permanent'] = isPermanent;
     return map;
   }

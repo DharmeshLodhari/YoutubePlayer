@@ -52,7 +52,7 @@ class _UserFollowersViewState extends State<UserFollowersView> {
             userFollowers.addAll(tempList);
           });
         }
-        debugPrint("YARN TOPICS:- $userFollowers");
+        debugPrint("User Followers::: $userFollowers");
       }
     }
     if (userFollowers.isEmpty) {
@@ -80,5 +80,4 @@ class _UserFollowersViewState extends State<UserFollowersView> {
   Widget build(BuildContext context) {
     return followersWidget(userImages: userFollowers);
   }
-
 }

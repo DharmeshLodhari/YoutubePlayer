@@ -296,7 +296,7 @@ class Yarn extends Equatable {
         isSensitiveContent,
         isAdultContent,
         factChecked,
-        viewersAvatars
+        viewersAvatars,
       ];
 }
 

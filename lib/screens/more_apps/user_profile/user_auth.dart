@@ -83,7 +83,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    print('FETCH PROFILE WITH AUTH ::: $url ${response.body}');
+    print('FETCH CUSTOMER FOLLOWER ::: $url ${response.body}');
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 200) {
@@ -93,6 +93,10 @@ class UserAuth extends AuthService {
         UserFollowers userFollower = UserFollowers.fromJson(item);
         userFollowers.add(userFollower);
       }
+
+      debugPrint("CUSTOMER FOLLOWER COUNT::: ${jsonData['count']} ");
+      debugPrint("CUSTOMER FOLLOWER RESULT::: ${userFollowers.length} ");
+
       Map<String, dynamic> result = {
         "count": jsonData['count'],
         "next": jsonData['next'],
