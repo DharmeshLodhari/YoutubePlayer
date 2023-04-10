@@ -876,43 +876,44 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
         ? InkWell(
             onTap: getLoggedInUserName(context) != widget.currentMoment.owner
                 ? () async {
-                    if (getIt<AppConfigurationBloc>()
-                            .appConfigurationModel
-                            ?.enablePayment ==
-                        true) {
-                      if (widget.currentMoment.userSupported == true) {
-                        showToast(
-                            message: 'You have already supported this moment');
-                        return;
-                      }
-
-                      //pause video player when navigating to payment screen
-                      for (var video in widget.videoPlayerControllers) {
-                        if (video.value.isPlaying) {
-                          video.pause();
-                        } else {
-                          video.pause();
-                        }
-                      }
-
-                      Navigator.of(context).pushNamed(
-                        Routes.SEND_PAYMENT,
-                        arguments: <String, dynamic>{
-                          'recipient': widget.currentMoment.owner,
-                          'isFromProfile': false,
-                          'isFromChat': false,
-                          'isFromMoment': true,
-                          'isFromYarn': false,
-                          'momentId': widget.currentMoment.id != null
-                              ? widget.currentMoment.id!
-                              : '',
-                          'defaultReferenceText':
-                              'Payment from Moment, Moment ID : ${widget.currentMoment.id != null ? widget.currentMoment.id! : ''}'
-                        },
-                      );
-                    } else {
-                      showToast(message: 'Payment not available at the moment');
+                    // if (getIt<AppConfigurationBloc>()
+                    //         .appConfigurationModel
+                    //         ?.enablePayment ==
+                    //     true) {
+                    if (widget.currentMoment.userSupported == true) {
+                      showToast(
+                          message: 'You have already supported this moment');
+                      return;
                     }
+
+                    //pause video player when navigating to payment screen
+                    for (var video in widget.videoPlayerControllers) {
+                      if (video.value.isPlaying) {
+                        video.pause();
+                      } else {
+                        video.pause();
+                      }
+                    }
+
+                    Navigator.of(context).pushNamed(
+                      Routes.SEND_PAYMENT,
+                      arguments: <String, dynamic>{
+                        'recipient': widget.currentMoment.owner,
+                        'isFromProfile': false,
+                        'isFromChat': false,
+                        'isFromMoment': true,
+                        'isFromYarn': false,
+                        'callback': onCallback,
+                        'momentId': widget.currentMoment.id != null
+                            ? widget.currentMoment.id!
+                            : '',
+                        'defaultReferenceText':
+                            'Payment from Moment, Moment ID : ${widget.currentMoment.id != null ? widget.currentMoment.id! : ''}'
+                      },
+                    );
+                    // } else {
+                    //   showToast(message: 'Payment not available at the moment');
+                    // }
                   }
                 : () {
                     showToast(message: 'You cannot pay yourself');
@@ -957,6 +958,13 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
             ),
           )
         : SizedBox.shrink();
+  }
+
+  // callback function with a bool parameter for success moment payment
+  void onCallback(bool value) {
+    // Handle the callback value
+    widget.currentMoment.userSupported = value;
+    if (mounted) setState(() {});
   }
 
   void commentSheet(BuildContext context, String momentID,

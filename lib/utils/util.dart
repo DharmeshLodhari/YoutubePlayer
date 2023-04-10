@@ -1231,40 +1231,126 @@ Future<bool> checkStoragePermission() async {
   return false;
 }
 
-String toTimeAgoLabel({required DateTime dateTime}) {
+String? toTimeAgoLabel({required DateTime dateTime}) {
+  // final now = DateTime.now();
+  // final durationSinceNow = now.difference(dateTime);
+  // debugPrint('Now --> $now');
+  // debugPrint('DateTime --> $dateTime');
+  // debugPrint('DurationSincenow --> $durationSinceNow');
+  //
+  // final inDays = durationSinceNow.inDays;
+  // if (inDays >= 1) {
+  //   return (inDays / 7).floor() >= 1
+  //       ? 'last week'
+  //       : inDays >= 2
+  //           ? '$inDays days ago'
+  //           : 'yesterday';
+  // }
+  //
+  // final inHours = durationSinceNow.inHours;
+  // if (inHours >= 1) {
+  //   return inHours >= 2 ? '$inHours hours ago' : 'an hour ago';
+  // }
+  //
+  // final inMinutes = durationSinceNow.inMinutes;
+  // debugPrint('IN MINUTES --> $inMinutes');
+  //
+  // if (inMinutes >= 2) {
+  //   return inHours >= 2
+  //       ? '$inMinutes minutes ago'
+  //       : '${durationSinceNow.inMinutes} minutes ago';
+  // }
+  //
+  // final inSeconds = durationSinceNow.inSeconds;
+  // return (inSeconds >= 3 && inSeconds < 61)
+  //     ? '$inSeconds seconds ago'
+  //     : 'just now';
+
   final now = DateTime.now();
   final durationSinceNow = now.difference(dateTime);
   debugPrint('Now --> $now');
   debugPrint('DateTime --> $dateTime');
   debugPrint('DurationSincenow --> $durationSinceNow');
 
-  final inDays = durationSinceNow.inDays;
-  if (inDays >= 1) {
-    return (inDays / 7).floor() >= 1
-        ? 'last week'
-        : inDays >= 2
-            ? '$inDays days ago'
-            : 'yesterday';
-  }
-
-  final inHours = durationSinceNow.inHours;
-  if (inHours >= 1) {
-    return inHours >= 2 ? '$inHours hours ago' : 'an hour ago';
-  }
-
+  final inSeconds = durationSinceNow.inSeconds;
   final inMinutes = durationSinceNow.inMinutes;
-  debugPrint('IN MINUTES --> $inMinutes');
+  final inHours = durationSinceNow.inHours;
+  final inDays = durationSinceNow.inDays;
+  int inWeeks = 0;
+  int inFewMonths = 0;
+  int inYears = 0;
 
+  //check for years
+  if (inDays >= 364) {
+    inYears = (inDays / 364).round();
+
+    return inYears >= 2 ? '$inYears years ago' : '$inYears year ago';
+  }
+
+  //check for months
+  if (inDays > 30 && inDays < 365) {
+    inFewMonths = (inDays / 12).round();
+
+    return inFewMonths >= 2
+        ? '$inFewMonths months ago'
+        : '$inFewMonths month ago';
+  }
+
+  //check for weeks
+  if (inDays < 30 && inDays > 7) {
+    inWeeks = (inDays / 4).round();
+
+    return inWeeks >= 2 ? '$inWeeks weeks ago' : '$inWeeks week ago';
+  }
+
+  //check for days
+  if (inDays >= 1) {
+    // return inDays.toString();
+    String convertedDate = new DateFormat("dd/MM/yyyy").format(dateTime);
+    return convertedDate;
+  }
+
+  //check for hours
+  if (inHours <= 24) {
+    return inHours <= 1 ? '$inHours hours ago' : 'an hour ago';
+  }
+
+  //check for minutes
   if (inMinutes >= 2) {
     return inHours >= 2
         ? '$inMinutes minutes ago'
         : '${durationSinceNow.inMinutes} minutes ago';
   }
 
-  final inSeconds = durationSinceNow.inSeconds;
-  return (inSeconds >= 3 && inSeconds < 61)
-      ? '$inSeconds seconds ago'
-      : 'just now';
+  //check for seconds
+  if (inSeconds >= 3 && inSeconds < 61) {
+    return inSeconds >= 3 && inSeconds < 61
+        ? '$inSeconds seconds ago'
+        : 'just now';
+  }
+
+  debugPrint('IN MINUTES --> $inMinutes');
+}
+
+String elapsedTime({required DateTime dateTime}) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+
+  if (difference.inSeconds < 60) {
+    return '${difference.inSeconds} ${(difference.inSeconds == 1 ? 'second' : 'seconds')} ago';
+  } else if (difference.inMinutes < 60) {
+    return '${difference.inMinutes} ${(difference.inMinutes == 1 ? 'minute' : 'minutes')} ago';
+  } else if (difference.inHours < 24) {
+    return '${difference.inHours} ${(difference.inHours == 1 ? 'hour' : 'hours')} ago';
+  } else if (difference.inDays < 30) {
+    return '${difference.inDays} ${(difference.inDays == 1 ? 'day' : 'days')} ago';
+  } else if (difference.inDays < 365) {
+    final months = (difference.inDays / 30).floor();
+    return '$months ${(months == 1 ? 'month' : 'months')} ago';
+  } else {
+    final years = (difference.inDays / 365).floor();
+    return '$years ${(years == 1 ? 'year' : 'years')} ago';
+  }
 }
 
 String toTimeAgoLabelYarn({required DateTime dateTime}) {

@@ -392,7 +392,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget _buildPostDescription() {
     var removedLink = '';
 
-    removedLink = removeLinksAndWords(yarn.body!, []);
+    removedLink = removeLinksAndWords(yarn.body != null ? yarn.body! : '', []);
 
     if (isUrlPresent) {
       return Column(

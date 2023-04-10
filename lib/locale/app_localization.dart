@@ -1637,16 +1637,23 @@ class AppLocalization {
 
   String get transaction {
     return Intl.message(
-      "Transaction",
-      name: "transaction",
+      "Transactions",
+      name: "transactions",
     );
   }
 
   //transaction detail page
   String get myTransaction {
     return Intl.message(
-      "My Transaction",
+      "My Transactions",
       name: "myTransaction",
+    );
+  }
+
+  String get myPaymentRequests {
+    return Intl.message(
+      "My Payment Requests",
+      name: "myPaymentRequests",
     );
   }
 

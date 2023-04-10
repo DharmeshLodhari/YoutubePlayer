@@ -220,7 +220,8 @@ class _ReYarnTileState extends State<ReYarnTile> {
   Widget _buildPostDescription() {
     var removedLink = '';
 
-    removedLink = removeLinksAndWords(widget.yarn.body!, []);
+    removedLink = removeLinksAndWords(
+        widget.yarn.body != null ? widget.yarn.body! : '', []);
 
     if (isUrlPresent) {
       return Column(

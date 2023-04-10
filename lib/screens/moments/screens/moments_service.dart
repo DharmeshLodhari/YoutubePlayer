@@ -63,7 +63,7 @@ class MomentsService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint('URL MOMENTS:: $url');
+    debugPrint('URL MOMENTS getContactMoments:: $url');
     final headers = await getAuthHeaders();
 
     Response response = await httpGet(url, headers: headers);
@@ -77,8 +77,6 @@ class MomentsService extends AuthService {
 
       List<MomentsModel> momentsList = [];
       List jsonResult = jsonData['results'];
-
-      debugPrint('MOMENT LIST -> $jsonResult');
 
       jsonResult.forEach((json) {
         momentsList.add(MomentsModel.fromJson(json));
@@ -411,6 +409,11 @@ class MomentsService extends AuthService {
       List results = jsonData['results'];
 
       debugPrint('RESULT LENGTH -> ${results.length}');
+
+      for (var item in results) {
+        debugPrint('RESULT searched item moment:::: ${item}');
+      }
+
       return BasePaginationModel<List<SearchMomentModel>>.fromJson(
         jsonData,
         results.map((e) => SearchMomentModel.fromJson(e)).toList(),

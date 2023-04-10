@@ -306,8 +306,11 @@ class RouteGenerator {
           settings: settings,
         );
       case Routes.SEND_PAYMENT:
+        final args = settings.arguments as Map<String, dynamic>;
+
         return PageTransition(
           child: SendPayment(
+            callback: args['callback'],
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

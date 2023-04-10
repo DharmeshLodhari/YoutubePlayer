@@ -82,6 +82,7 @@ class _YarnTileState extends State<YarnTile> {
         isUrlPresent = true;
 
         linkToBePreview = linkData['links'][0];
+
         if (!linkToBePreview!.contains("http")) {
           linkToBePreview = "http://" + linkToBePreview!;
         }
@@ -513,7 +514,8 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildPostDescription() {
     var removedLink = '';
 
-    removedLink = removeLinksAndWords(widget.yarn.body!, []);
+    removedLink = removeLinksAndWords(
+        widget.yarn.body != null ? widget.yarn.body! : '', []);
 
     if (isUrlPresent) {
       return Column(
@@ -560,21 +562,23 @@ class _YarnTileState extends State<YarnTile> {
                   //   width: 0,
                   // );
 
-                  return InkWell(
-                    onTap: () {
-                      launchUrl(Uri.parse(linkToBePreview!));
-                    },
-                    child: Container(
-                      margin:
-                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
-                      child: Text(
-                        linkToBePreview!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: navyBlue, fontSize: 14),
-                      ),
+                  debugPrint('Fola link:::: ${linkToBePreview}');
+
+                return InkWell(
+                  onTap: () {
+                    launchUrl(Uri.parse(linkToBePreview!));
+                  },
+                  child: Container(
+                    margin:
+                        EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                    child: Text(
+                      linkToBePreview!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: navyBlue, fontSize: 14),
                     ),
-                  );
+                  ),
+                );
 
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
