@@ -943,7 +943,7 @@ class _UserDashboardState extends State<UserDashboard> {
               },
             ),
             bottomSheetItem(
-              title: "My Payment Request",
+              title: AppLocalization.of(context)!.myPaymentRequests,
               iconData: SlydoAppIcon.receive,
               onTap: () {
                 hideBalance();

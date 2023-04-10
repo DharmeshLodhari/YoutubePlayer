@@ -321,19 +321,20 @@ class _YarnActionsState extends State<YarnActions> {
                       .appConfigurationModel
                       ?.enablePayment ==
                   true) {
-                Navigator.of(context).pushNamed(
-                  Routes.SEND_PAYMENT,
-                  arguments: <String, dynamic>{
-                    'recipient': widget.yarn.author,
-                    'isFromProfile': false,
-                    'isFromChat': false,
-                    'isFromYarn': true,
-                    'isFromMoment': false,
-                    'yarnId': widget.yarn.id != null ? widget.yarn.id! : '',
-                    'defaultReferenceText':
-                        'Payment from Yarn, Yard ID : ${widget.yarn.id != null ? widget.yarn.id! : ''} '
-                  },
-                );
+              Navigator.of(context).pushNamed(
+                Routes.SEND_PAYMENT,
+                arguments: <String, dynamic>{
+                  'recipient': widget.yarn.author,
+                  'isFromProfile': false,
+                  'isFromChat': false,
+                  'isFromYarn': true,
+                  'isFromMoment': false,
+                  'callback': onCallback,
+                  'yarnId': widget.yarn.id != null ? widget.yarn.id! : '',
+                  'defaultReferenceText':
+                      'Payment from Yarn, Yard ID : ${widget.yarn.id != null ? widget.yarn.id! : ''} '
+                },
+              );
               } else {
                 showToast(message: 'Payment not available at the moment');
               }
@@ -360,6 +361,13 @@ class _YarnActionsState extends State<YarnActions> {
         ],
       ),
     );
+  }
+
+  // callback function with a bool parameter for success yarn payment
+  void onCallback(bool value) {
+    // Handle the callback value
+    widget.yarn.userSupported = value;
+    if (mounted) setState(() {});
   }
 
   String getCommentCount() {

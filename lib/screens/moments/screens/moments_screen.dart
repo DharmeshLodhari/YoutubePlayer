@@ -658,8 +658,6 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        debugPrint('clicked moment pals');
-
         NavigationUtil.push(
           context,
           screen: MomentsDetailsScreen(

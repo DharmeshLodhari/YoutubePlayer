@@ -17,7 +17,10 @@ Map<String, dynamic> detectLinkInText(String text) {
     // will match google.com
     if (link.startsWith("@") != true && !link.contains("..")) {
       // don't match @abiola.rasheed as a url
-      listOfLinks.add(link);
+      //remove double // if present
+      listOfLinks.add(removeDoubleSlash(link));
+
+      // debugPrint('Fola link 00000::: ${link}');
     }
   });
 
@@ -29,6 +32,13 @@ Map<String, dynamic> detectLinkInText(String text) {
     linkData["hasLink"] = true;
     return linkData;
   }
+}
+
+String removeDoubleSlash(String link) {
+  if (link.startsWith('//')) {
+    link = link.substring(2);
+  }
+  return link;
 }
 
 String? getPreviewIcon(String? url) {

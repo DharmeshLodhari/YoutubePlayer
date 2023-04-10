@@ -362,7 +362,8 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   Widget _buildPostDescription() {
     var removedLink = '';
 
-    removedLink = removeLinksAndWords(yarnComment.comment!, []);
+    removedLink = removeLinksAndWords(
+        yarnComment.comment != null ? yarnComment.comment! : '', []);
 
     if (isUrlPresent) {
       return Column(

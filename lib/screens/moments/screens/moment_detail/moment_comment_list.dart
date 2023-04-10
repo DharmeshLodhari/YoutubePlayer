@@ -231,7 +231,8 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                         ),
                         Text(' • '),
                         Text(
-                            MomentsUtils(). getGetMomentDetailDateTime(commentModel.createdAt!),
+                          MomentsUtils().getGetMomentDetailDateTime(
+                              commentModel.createdAt!)!,
                           textAlign: TextAlign.end,
                           style: TextStyle(
                             fontSize: 12,

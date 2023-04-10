@@ -32,8 +32,9 @@ import '../../payment_and_banking_auth.dart';
 // ignore: must_be_immutable
 class SendPayment extends StatefulWidget {
   var arguments;
+  final Function(bool)? callback;
 
-  SendPayment({this.arguments});
+  SendPayment({this.arguments, this.callback});
 
   // Declare a field that holds the userData.
   @override
@@ -1082,6 +1083,7 @@ class _SendPaymentState extends State<SendPayment> {
                       popFromShoppingCart(product);
                       //Pop Circular Progress Indicator
 
+                      ///check if page is from yarn
                       if (isFromYarn == true) {
                         var jsonData = json.decode(response.body);
 
@@ -1091,9 +1093,16 @@ class _SendPaymentState extends State<SendPayment> {
 
                         if (updateYarnSupporter == false) {
                           showToast(message: 'Unable to update yarn payment');
+                        } else {
+                          widget.callback!(true);
+                          Navigator.pop(context);
+                          //Pop send payment page
+                          Navigator.pop(context);
+                          return;
                         }
                       }
 
+                      ///check if page is from moment
                       if (isFromMoment == true) {
                         var jsonData = json.decode(response.body);
 
@@ -1104,8 +1113,15 @@ class _SendPaymentState extends State<SendPayment> {
 
                         if (updateMomentSupporter == false) {
                           showToast(message: 'Unable to update moment payment');
+                        } else {
+                          widget.callback!(true);
+                          Navigator.pop(context);
+                          //Pop send payment page
+                          Navigator.pop(context);
+                          return;
                         }
                       }
+
                       Navigator.pop(context);
                       //Pop send payment page
                       Navigator.pop(context);
