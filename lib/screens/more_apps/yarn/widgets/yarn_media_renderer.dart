@@ -175,7 +175,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
     bool isSingleImage = false,
   }) {
     return InkWell(
-      onTap: () {
+      onTap: () async{
         if (mediaType == 'video') {
           NavigationUtil.push(
             context,
@@ -201,7 +201,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
             }
           }
 
-          return SwipeImageGallery(
+          return await SwipeImageGallery(
             context: context,
             children: imageList,
             onSwipe: (index) {
