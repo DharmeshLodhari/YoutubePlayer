@@ -175,7 +175,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
       String? imagePoster,
       bool isSingleImage = false}) {
     return InkWell(
-      onTap: () async{
+      onTap: () async {
         if (mediaType == 'video') {
           NavigationUtil.push(
             context,
@@ -198,7 +198,7 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
             imageList.add(Image.network('${item.mediaUrl.toString()}'));
           }
 
-          return await SwipeImageGallery(
+          return SwipeImageGallery(
             context: context,
             children: imageList,
             onSwipe: (index) {
