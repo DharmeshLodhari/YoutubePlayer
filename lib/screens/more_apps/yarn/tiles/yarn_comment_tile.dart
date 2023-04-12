@@ -402,7 +402,8 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
     var removedLink = '';
 
     removedLink = removeLinksAndWords(
-        widget.yarn.body != null ? widget.yarn.body! : '', []);
+        widget.yarnComment.comment != null ? widget.yarnComment.comment! : '',
+        []);
 
     if (isUrlPresent) {
       return Column(

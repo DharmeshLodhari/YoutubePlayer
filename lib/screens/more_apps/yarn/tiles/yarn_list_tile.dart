@@ -71,7 +71,7 @@ class _YarnTileState extends State<YarnTile> {
     if (widget.yarn.body != null) {
       // widget.yarn.body =
       //     'Read this https://www.fastcompany.com/90828081/take-time-back-2023-planning-strategies';
-      // widget.yarn.body = 'Read this espn.com';
+      // widget.yarn.body = 'Read this now espn.com';
       // widget.yarn.body =
       //     'Read this https://www.simplilearn.com/building-career-in-mobile-app-development-article';
 
@@ -562,23 +562,21 @@ class _YarnTileState extends State<YarnTile> {
                   //   width: 0,
                   // );
 
-                  debugPrint('Fola link:::: ${linkToBePreview}');
-
-                return InkWell(
-                  onTap: () {
-                    launchUrl(Uri.parse(linkToBePreview!));
-                  },
-                  child: Container(
-                    margin:
-                        EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
-                    child: Text(
-                      linkToBePreview!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: navyBlue, fontSize: 14),
+                  return InkWell(
+                    onTap: () {
+                      launchUrl(Uri.parse(linkToBePreview!));
+                    },
+                    child: Container(
+                      margin:
+                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      child: Text(
+                        linkToBePreview!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: navyBlue, fontSize: 14),
+                      ),
                     ),
-                  ),
-                );
+                  );
 
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(

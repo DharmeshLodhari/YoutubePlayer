@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:Slydo/screens/blog/quill/custom_quill_embed.dart';
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
-import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
+// import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -288,7 +289,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       if (blogBodyTextJson != null) {
         return flutterQuill.QuillEditor.basic(
           controller: _quillController,
-          embedBuilders: FlutterQuillEmbeds.builders(),
+          embedBuilders: CustomQuillEmbed.builders(),
           readOnly: true,
         );
       } else {
