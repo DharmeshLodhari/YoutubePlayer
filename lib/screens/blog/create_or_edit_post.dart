@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/blog/quill/custom_quill_embed.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -13,7 +13,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
-import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
+// import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
+// import 'dart:html' show ImageElement, VideoElement;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
@@ -546,6 +547,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
         setState(() {
           _imagePath = croppedImage;
           isImagePicked = true;
+          debugPrint('Fola cropped:::: ${croppedImage}');
+          debugPrint('Fola cropped 000:::: ${_imagePath}');
         });
       }
     }
@@ -749,7 +752,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
       scrollController: _textEditorScrollController,
       focusNode: textEditorTextFieldFocusNode,
       scrollBottomInset: 20,
-      embedBuilders: FlutterQuillEmbeds.builders(),
+      embedBuilders: CustomQuillEmbed.builders(),
     );
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {
@@ -1065,6 +1068,9 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
         Navigator.pop(context);
 
         showToast(message: 'Media uploaded');
+
+        if (mounted) setState(() {});
+
         _quillBodyTextController.replaceText(
           index,
           length,
