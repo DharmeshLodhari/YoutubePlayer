@@ -1,6 +1,6 @@
 name: Slydo
 description: The slydo application.
-version: 2.0.2+43
+version: 2.0.3+44
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -11,7 +11,7 @@ dependencies:
   awesome_notifications: ^0.6.19
   badges: ^3.0.2
   cached_network_image: ^3.2.3
-  cached_video_player: ^2.0.4
+#  cached_video_player: ^2.0.4
   camera: 0.9.4+1
   carousel_slider: ^4.0.0
   charts_flutter:
@@ -86,7 +86,8 @@ dependencies:
   maps_launcher: ^2.0.1
   modal_progress_hud_nsn: ^0.3.0
   neat_periodic_task: ^2.0.0
-  open_file: ^3.2.1
+#  open_file: ^3.2.1
+  open_filex: ^3.4.0
   package_info: ^2.0.2
   package_info_plus: ^1.4.0
   page_transition: ^2.0.4
