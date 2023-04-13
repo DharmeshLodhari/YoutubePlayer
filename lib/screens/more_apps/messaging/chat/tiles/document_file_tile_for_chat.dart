@@ -12,7 +12,8 @@ import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_filex/open_filex.dart';
+// import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -314,7 +315,8 @@ class _FileTileForChatState extends State<FileTileForChat> {
     if (filePathInOs != null && filePathInOs != "") {
       log("FILE PATH:- $filePathInOs");
       try {
-        OpenResult openResult = await OpenFile.open(filePathInOs);
+        // OpenResult openResult = await OpenFile.open(filePathInOs);
+        OpenResult openResult = await OpenFilex.open(filePathInOs);
       } catch (error) {
         log("ERROR WHILE OPENING FILE:- $filePathInOs");
       }
