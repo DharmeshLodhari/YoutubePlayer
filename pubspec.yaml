@@ -10,8 +10,8 @@ dependencies:
   assets_audio_player: ^3.0.6
   awesome_notifications: ^0.6.19
   badges: ^3.0.2
-  cached_network_image: ^3.1.0
-  cached_video_player: ^2.0.3
+  cached_network_image: ^3.2.3
+  cached_video_player: ^2.0.4
   camera: 0.9.4+1
   carousel_slider: ^4.0.0
   charts_flutter:
