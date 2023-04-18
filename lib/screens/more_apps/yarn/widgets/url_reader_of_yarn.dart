@@ -4,11 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-// ignore: must_be_immutable
-
 Map<String, dynamic> detectLinkInText(String text) {
-  RegExp exp =
-      new RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.@]+\.[\w/\-?=%.]+');
+  RegExp exp = RegExp(
+      r'(?<!\d)(?:(?:https?|ftp):\/\/)?[\w/\-?=%.@]+\.[\w/\-?=%.]+(?!\d|\.\d+)',
+      caseSensitive: false);
   Iterable<RegExpMatch> matches = exp.allMatches(text);
   String link;
   List<String> listOfLinks = [];
@@ -18,9 +17,17 @@ Map<String, dynamic> detectLinkInText(String text) {
     if (link.startsWith("@") != true && !link.contains("..")) {
       // don't match @abiola.rasheed as a url
       //remove double // if present
-      listOfLinks.add(removeDoubleSlash(link));
-
-      // debugPrint('Fola link 00000::: ${link}');
+      List<String> parts = removeDoubleSlash(link).split('.');
+      bool ignoreLink = false;
+      for (String part in parts) {
+        if (part.contains(RegExp(r'\d'))) {
+          ignoreLink = true;
+          break;
+        }
+      }
+      if (!ignoreLink) {
+        listOfLinks.add(link);
+      }
     }
   });
 
