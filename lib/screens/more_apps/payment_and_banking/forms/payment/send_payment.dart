@@ -21,6 +21,7 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -89,6 +90,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   bool showMoreOption = false;
   VirtualAccount? virtualAccount;
+  late CachedVideoPlayerController controller;
 
   @override
   void initState() {
@@ -139,8 +141,7 @@ class _SendPaymentState extends State<SendPayment> {
         if (!_recipientFocus.hasFocus) {
           if (mounted) {
             setState(() {
-              _recipientController.text =
-                  _recipientController.text.toLowerCase();
+              _recipientController.text = _recipientController.text;
             });
           }
         }
@@ -410,6 +411,10 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget getMoreOption() {
+    AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: CachedVideoPlayer(controller));
+
     return Column(
       children: [
         getCategoryDropDown(),
@@ -598,7 +603,7 @@ class _SendPaymentState extends State<SendPayment> {
             if (!isFromProfile! && _payee != null) {
               recipient = _payee!.userName;
             } else {
-              recipient = val.toLowerCase();
+              recipient = val;
             }
           });
         }

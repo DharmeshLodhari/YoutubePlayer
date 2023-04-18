@@ -1232,40 +1232,6 @@ Future<bool> checkStoragePermission() async {
 }
 
 String? toTimeAgoLabel({required DateTime dateTime}) {
-  // final now = DateTime.now();
-  // final durationSinceNow = now.difference(dateTime);
-  // debugPrint('Now --> $now');
-  // debugPrint('DateTime --> $dateTime');
-  // debugPrint('DurationSincenow --> $durationSinceNow');
-  //
-  // final inDays = durationSinceNow.inDays;
-  // if (inDays >= 1) {
-  //   return (inDays / 7).floor() >= 1
-  //       ? 'last week'
-  //       : inDays >= 2
-  //           ? '$inDays days ago'
-  //           : 'yesterday';
-  // }
-  //
-  // final inHours = durationSinceNow.inHours;
-  // if (inHours >= 1) {
-  //   return inHours >= 2 ? '$inHours hours ago' : 'an hour ago';
-  // }
-  //
-  // final inMinutes = durationSinceNow.inMinutes;
-  // debugPrint('IN MINUTES --> $inMinutes');
-  //
-  // if (inMinutes >= 2) {
-  //   return inHours >= 2
-  //       ? '$inMinutes minutes ago'
-  //       : '${durationSinceNow.inMinutes} minutes ago';
-  // }
-  //
-  // final inSeconds = durationSinceNow.inSeconds;
-  // return (inSeconds >= 3 && inSeconds < 61)
-  //     ? '$inSeconds seconds ago'
-  //     : 'just now';
-
   final now = DateTime.now();
   final durationSinceNow = now.difference(dateTime);
   debugPrint('Now --> $now');

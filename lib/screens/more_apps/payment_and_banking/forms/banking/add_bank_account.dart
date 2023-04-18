@@ -396,6 +396,12 @@ class _AddAccountState extends State<AddAccount> {
       "is_default": isDefault,
     };
 
+    // debugPrint('Fola bank:::: ${data}');
+    // debugPrint('Fola bank:::: ${selectedBank!.name}');
+    // debugPrint('Fola bank 000:::: ${selectedBank!.providerCode}');
+    // debugPrint('Fola bank 002:::: ${selectedBank!.slug}');
+    // debugPrint('Fola bank 003:::: ${selectedBank!.shortName}');
+
     Map<String, dynamic>? result = await _auth.addBankAccount(data);
 
     isLoading = false;
@@ -427,8 +433,13 @@ class _AddAccountState extends State<AddAccount> {
       Navigator.of(context).popAndPushNamed('/bank-account-list');
     } else {
       dynamic jsonObject = jsonDecode(result['results']);
-      // debugPrint("Fola final 11::: ${jsonObject['non_field_errors'][0]}");
-      showToast(message: jsonObject['non_field_errors'][0].toString());
+
+      if (jsonObject.containsKey("non_field_errors")) {
+        showToast(message: jsonObject['non_field_errors'][0].toString());
+      } else if (jsonObject.containsKey("bank")) {
+        showToast(message: jsonObject['bank'][0].toString());
+      }
+
       isLoading = false;
       if (mounted) {
         setState(() {

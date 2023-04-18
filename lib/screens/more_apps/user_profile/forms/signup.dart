@@ -110,7 +110,7 @@ class _SignUpState extends State<SignUp> {
     });
 
     _userNameController.addListener(() {
-      if (_userNameController.text.isNotEmpty) {
+      if (_userNameController.text.toLowerCase().isNotEmpty) {
         debugPrint('USER NAME CTRL');
         Future.delayed(Duration(seconds: 2), () {
           if (_userNameController.text.length >= 4) {
@@ -571,7 +571,8 @@ class _SignUpState extends State<SignUp> {
       verifyingUsername = true;
     });
     try {
-      await UserAuth().fetchCustomerProfile(_userNameController.text);
+      await UserAuth()
+          .fetchCustomerProfile(_userNameController.text.toLowerCase());
       verifiedInput = true;
     } catch (e) {
       verifiedInput = false;
@@ -951,6 +952,7 @@ class _SignUpState extends State<SignUp> {
       String firstName = _firstNameController.text.toTitleCase().trim();
       String lastName = _lastNameController.text.toTitleCase().trim();
       String userName = _userNameController.text
+          .toLowerCase()
           .replaceAll(' ', '.')
           .replaceAll(multipleDotReg, '.')
           .toLowerCase()
