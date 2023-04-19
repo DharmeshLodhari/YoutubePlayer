@@ -411,10 +411,6 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   Widget getMoreOption() {
-    AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: CachedVideoPlayer(controller));
-
     return Column(
       children: [
         getCategoryDropDown(),

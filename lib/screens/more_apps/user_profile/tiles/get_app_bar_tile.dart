@@ -359,7 +359,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             : channelDetail!['group_name']);
 
     return Positioned(
-      top: 170,
+      top: 150,
       left: 20,
       right: 0,
       child: Column(
@@ -477,6 +477,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               followersWidget(userImages: userFollowers),
             ],
           ),
+          // SizedBox(height: 5),
         ],
       ),
     );
@@ -592,7 +593,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             children: [
               getFollowUnFollowWidget(),
               UserFollowersView(
-                userName: searchedUserName,
+                userName: searchedUser!.userName,
               ),
             ],
           ),
@@ -958,28 +959,30 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserBioStringWidget() {
-    if (searchedUser?.bio == null || searchedUser!.bio!.isEmpty)
+    if (searchedUser?.bio == null || searchedUser!.bio!.isEmpty) {
       return SizedBox.shrink();
-    return Container(
-      margin: EdgeInsets.only(right: 6),
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Linkify(
-            onOpen: _onOpen,
-            text: searchedUser?.bio == null
-                ? ''
-                : messageDecoderWithEmoji("${searchedUser?.bio}" "") ?? "",
-            textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 14),
-            maxLines: 6,
-          ),
-          SizedBox(height: 8),
-        ],
-      ),
-    );
+    } else {
+      return Container(
+        margin: EdgeInsets.only(right: 6),
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Linkify(
+              onOpen: _onOpen,
+              text: searchedUser?.bio == null
+                  ? ''
+                  : messageDecoderWithEmoji("${searchedUser?.bio}" "") ?? "",
+              textAlign: TextAlign.left,
+              style: TextStyle(fontSize: 14),
+              maxLines: 6,
+            ),
+            SizedBox(height: 8),
+          ],
+        ),
+      );
+    }
   }
 
   _onOpen(LinkableElement link) async {
