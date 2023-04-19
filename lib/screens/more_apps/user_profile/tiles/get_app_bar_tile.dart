@@ -359,7 +359,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             : channelDetail!['group_name']);
 
     return Positioned(
-      top: 150,
+      top: searchedUser?.bio == null || searchedUser!.bio!.isEmpty ? 180 : 150,
       left: 20,
       right: 0,
       child: Column(
@@ -1438,7 +1438,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                     customerProfileBloc.customer = fetchedUser;
                     Navigator.pop(context);
                     Navigator.of(context).pushNamed('/send-payment',
-                        arguments: <String, bool>{'isFromProfile': false});
+                        arguments: <String, dynamic>{
+                          'isFromProfile': false,
+                          'recipient': searchedUser!.userName
+                        });
                   });
                 } else {
                   showToast(message: 'Payment not available at the moment');
@@ -1457,7 +1460,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                       customerProfileBloc.customer = fetchedUser;
                       Navigator.pop(context);
                       Navigator.of(context).pushNamed('/request-payment',
-                          arguments: <String, bool>{
+                          arguments: <String, dynamic>{
+                            'recipient': searchedUser!.userName,
                             'isFromProfile': false,
                             'isRequest': true
                           });
