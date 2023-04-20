@@ -1,0 +1,1186 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/services/device_info.dart';
+import 'package:Slydo/services/location_service.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_video_player/cached_video_player.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import '../../../../../utils/navigation_util.dart';
+import '../../../../search_user.dart';
+import '../../payment_and_banking_auth.dart';
+
+class SlydoSlydoTransfer extends StatefulWidget {
+  var arguments;
+  final Function(bool)? callback;
+
+  SlydoSlydoTransfer({this.arguments, this.callback});
+
+  // Declare a field that holds the userData.
+  @override
+  _SlydoSlydoTransferState createState() => _SlydoSlydoTransferState();
+}
+
+class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
+  TextEditingController _recipientController = TextEditingController();
+  TextEditingController _amountController = TextEditingController();
+  late TextEditingController _referenceController;
+  FocusNode _recipientFocus = FocusNode();
+  late http.Response response;
+
+  final _auth = PaymentAndBankingAuth();
+  final _formKey = GlobalKey<FormState>();
+  final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
+  final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
+  CustomerProfile? _payee;
+  late UserBloc userBloc;
+  late CustomerProfileBloc customerProfileBloc;
+
+  //for Product payment
+  Product? product;
+
+  //for Service payment
+  Service? service;
+
+  bool? isFromProfile = false;
+  bool? isFromChat = false;
+  bool? isFromYarn = false;
+  bool? isFromMoment = false;
+  bool isValidPayee = false;
+  double? amount;
+  String reference = "";
+  String category = "";
+  String errorMessage = "";
+  String? recipient;
+  final locationService = LocationService();
+
+  String? conversationId;
+
+  //variables for categorie
+  bool isLoading = true;
+  List<String?> paymentCategories = [];
+  String? selectedCategory;
+  late BasketBloc basketBloc;
+
+  //variables for shoppingcart
+  int? itemIndex;
+
+  bool sendMoneyAnonymous = false;
+
+  bool showMoreOption = false;
+  VirtualAccount? virtualAccount;
+  late CachedVideoPlayerController controller;
+
+  @override
+  void initState() {
+    String? defaultReferenceText =
+        widget.arguments['defaultReferenceText'] != null
+            ? widget.arguments['defaultReferenceText']
+            : null;
+    _referenceController = TextEditingController(text: defaultReferenceText);
+    reference = _referenceController.text;
+
+    isFromProfile = widget.arguments != null
+        ? widget.arguments['isFromProfile'] != null
+            ? widget.arguments['isFromProfile']
+            : false
+        : false;
+    isFromChat = widget.arguments != null
+        ? widget.arguments['isFromChat'] != null
+            ? widget.arguments['isFromChat']
+            : false
+        : false;
+    isFromYarn = widget.arguments != null
+        ? widget.arguments['isFromYarn'] != null
+            ? widget.arguments['isFromYarn']
+            : false
+        : false;
+    isFromMoment = widget.arguments != null
+        ? widget.arguments['isFromMoment'] != null
+            ? widget.arguments['isFromMoment']
+            : false
+        : false;
+    conversationId = widget.arguments != null
+        ? widget.arguments['conversationId'] != null
+            ? widget.arguments['conversationId']
+            : null
+        : null;
+    product = widget.arguments != null ? widget.arguments['product'] : null;
+    service = widget.arguments != null ? widget.arguments['service'] : null;
+    itemIndex = widget.arguments != null ? widget.arguments['itemIndex'] : null;
+
+    if (product != null) {
+      setAllFieldProduct();
+    }
+    if (service != null) {
+      setAllFieldService();
+    }
+    _recipientFocus
+      ..addListener(() {
+        if (!_recipientFocus.hasFocus) {
+          if (mounted) {
+            setState(() {
+              _recipientController.text = _recipientController.text;
+            });
+          }
+        }
+      });
+    getRecipientProfileAndGetCategory();
+    getBankAccountDetail();
+    super.initState();
+  }
+
+  getRecipientProfileAndGetCategory() async {
+    if (widget.arguments['recipient'] != null) {
+      Provider.of<CustomerProfileBloc>(context, listen: false).customer =
+          await UserAuth().fetchCustomerProfile(widget.arguments['recipient']);
+      fetchCategory();
+    } else {
+      fetchCategory();
+    }
+  }
+
+  void getBankAccountDetail() async {
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+  }
+
+  void setAllFieldProduct() {
+    _amountController.text =
+        moneyDisplayNormalizer(int.parse(product!.price.toString()))
+            .replaceAll(",", "");
+
+    amount = double.parse(_amountController.text.replaceAll(',', ''));
+    _referenceController.text = product!.name!;
+    reference = _referenceController.text;
+    selectedCategory = "Shopping";
+    isValidPayee = true;
+  }
+
+  void setAllFieldService() {
+    _amountController.text =
+        moneyDisplayNormalizer(int.parse(service!.price.toString()));
+    amount = double.parse(_amountController.text.replaceAll(',', ''));
+    _referenceController.text = service!.name!;
+    reference = _referenceController.text;
+    selectedCategory = "Shopping";
+    isValidPayee = true;
+  }
+
+  void initializeDisplayCard() {
+    // if (!isFromProfile && product != null) {
+    if (!isFromProfile!) {
+      if (customerProfileBloc.customer != null) {
+        if (mounted) {
+          setState(() {
+            _payee = customerProfileBloc.customer;
+            recipient = _payee!.userName;
+            if (recipient != null) {
+              _recipientController.text = recipient!;
+            } else {
+              _recipientController.text = '';
+            }
+            UserAuth().fetchCustomerProfile(recipient).then((customerProfile) {
+              if (customerProfile != null) {
+                if (mounted) {
+                  setState(() {
+                    _payee = customerProfile;
+                    isValidPayee = _payee!.userName != userBloc.user.userName;
+                  });
+                }
+              }
+            });
+          });
+        }
+      }
+    }
+  }
+
+  void fetchCategory() async {
+    _auth.getPaymentCategory().then((result) {
+      if (mounted) {
+        setState(() {
+          List categoriesList = result["results"]["data"];
+          categoriesList.forEach((data) {
+            paymentCategories.add(data["name"]);
+          });
+          isLoading = false;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
+
+    return ScaffoldMessenger(
+      key: _sendPaymentScaffoldMessenger,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        key: _sendPaymentScaffold,
+        resizeToAvoidBottomInset: true,
+        body: scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget userProfileIcon() {
+    if (_payee != null || isValidPayee) {
+      return RoundedBackgroundIcon(
+        height: 34,
+        width: 34,
+        icon: Icon(
+          SlydoAppIcon.circle_user,
+          size: 16,
+          color: blackFont,
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, '/profile',
+              arguments: {"searchedUserName": _payee!.userName});
+        },
+        backgroundColor: iconBtnGrey,
+        enableMargin: true,
+      );
+    }
+    return Container(
+      height: 10,
+      width: 10,
+    );
+  }
+
+  Widget scaffoldBody() {
+    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+              child: Column(
+                children: [
+                  Card(
+                    elevation: 2,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    shadowColor: iconBtnGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: iconBtnGrey, width: 1)),
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
+                          child: Column(
+                            children: <Widget>[
+                              getDisplayCard(),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    getRecipientField(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    displayAmountField(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    if (isFromYarn == true ||
+                                        isFromMoment == true) ...[
+                                      SizedBox()
+                                    ] else ...[
+                                      showMoreOption
+                                          ? getMoreOption()
+                                          : Container(),
+                                      getMoreOptionTrigger(),
+                                    ],
+                                    errorMessage == ""
+                                        ? Container()
+                                        : Text(
+                                            errorMessage,
+                                            style: TextStyle(
+                                                color: mateRed,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                    errorMessage == ""
+                                        ? Container()
+                                        : SizedBox(
+                                            height: 20,
+                                          ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getSubmitButton(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+  }
+
+  Widget getMoreOption() {
+    return Column(
+      children: [
+        getCategoryDropDown(),
+        SizedBox(
+          height: 20,
+        ),
+        getReferenceField(),
+        SizedBox(
+          height: 20,
+        ),
+        isFromChat! ? Container() : sendMoneyAnonymouslySwitch(),
+      ],
+    );
+  }
+
+  Widget getMoreOptionTrigger() {
+    return GestureDetector(
+      onTap: () {
+        showMoreOption = !showMoreOption;
+        if (mounted) setState(() {});
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Icon(
+              showMoreOption
+                  ? Icons.keyboard_arrow_up_rounded
+                  : Icons.keyboard_arrow_down_rounded,
+              color: darkGrey,
+            ),
+            SizedBox(
+              width: 4,
+            ),
+            Text(
+              showMoreOption ? "less options" : "more options",
+              style: TextStyle(
+                  color: darkGrey, fontSize: 14, fontWeight: FontWeight.w600),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getUserProfileIcon() {
+    if (_payee != null || isValidPayee) {
+      return IconButton(
+        icon: Icon(Icons.person),
+        onPressed: () {
+          Navigator.pushNamed(context, '/profile',
+              arguments: {"searchedUserName": _payee!.userName});
+        },
+      );
+    }
+    return Container(
+      height: 1,
+      width: 1,
+    );
+  }
+
+  Widget showBackArrow() {
+    return IconButton(
+      icon: Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        _payee = null;
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget getDisplayCard() {
+    initializeDisplayCard();
+
+    var avatarImage;
+    var qrCodeImage;
+    if (_payee != null) {
+      Color borderColor = getUserTypeColor(user: _payee!);
+
+      avatarImage = Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context)
+                .pushNamed("/photo-viewer", arguments: _payee!.avatar);
+          },
+          child: ClipOval(
+            child: _payee!.avatar != null
+                ? CachedNetworkImage(
+                    imageUrl: _payee!.avatar!,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    errorWidget: imageErrorWidget,
+                  )
+                : SizedBox.shrink(),
+          ),
+        ),
+      );
+      setState(() {
+        isValidPayee = true;
+      });
+
+      qrCodeImage = GestureDetector(
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed("/photo-viewer", arguments: _payee!.qrCode);
+        },
+        child: CachedNetworkImage(
+          height: 48,
+          width: 48,
+          imageUrl: _payee!.qrCode ?? "",
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.fill,
+          filterQuality: FilterQuality.high,
+          errorWidget: imageErrorWidget,
+        ),
+      );
+    }
+
+    return _payee == null
+        ? Container()
+        : Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: userNameWithVerifiedIcon(
+                    name: _payee!.displayName() != null
+                        ? _payee!.displayName()!
+                        : '',
+                    isVerified: true,
+                    lengthToTruncateAt: 20,
+                    textStyle: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                  subtitle: Text(
+                    _payee!.userName != null ? _payee!.userName! : '',
+                    style: TextStyle(fontSize: 14, color: darkGrey),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  leading: avatarImage,
+                  trailing: qrCodeImage,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile',
+                        arguments: {"searchedUserName": _payee!.userName});
+                  },
+                ),
+              ),
+              Divider(
+                color: dividerColor,
+                height: 1,
+                thickness: 1,
+              ),
+            ],
+          );
+  }
+
+  Widget getRecipientField() {
+    return CustomizedTextFormField(
+      isReadOnly: true,
+      labelText: AppLocalization.of(context)!.recipient,
+      controller: _recipientController,
+      focusNode: _recipientFocus,
+      enabled: isFromProfile,
+      validator: (value) {
+        if (!isFromProfile! && value != _payee!.userName) {
+          return AppLocalization.of(context)!.invalidRecipient;
+        }
+        return null;
+      },
+      onChanged: (val) {
+        if (mounted) {
+          setState(() {
+            if (!isFromProfile! && _payee != null) {
+              recipient = _payee!.userName;
+            } else {
+              recipient = val;
+            }
+          });
+        }
+      },
+      onTap: () async {
+        CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: SearchUser());
+
+        if (userFound != null) {
+          _payee = userFound;
+          _recipientController.text = _payee!.userName!;
+          if (mounted) setState(() {});
+        }
+      },
+    );
+  }
+
+  Widget displayAmountField() {
+    return CustomizedTextFormField(
+      labelText: "Amount",
+      isAmountField: true,
+      enabled: product == null && service == null,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      controller: _amountController,
+      onChanged: (val) {
+        if (mounted) {
+          setState(() {
+            amount = double.parse(val.replaceAll(',', ''));
+          });
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double amount = double.parse(val.replaceAll(',', ''));
+            if (amount > 0.0) {
+              return null;
+            } else {
+              throw Exception("Invalid amount");
+            }
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.invalidAmount;
+      },
+      onTap: () async {
+        isValidPayee = false;
+        if (mounted) setState(() {});
+        if (recipient != null) {
+          recipient = recipient!.trim();
+
+          _recipientController.text = recipient!;
+          if (mounted) setState(() {});
+
+          var customerProfile =
+              await UserAuth().fetchCustomerProfileWithAuth(recipient);
+
+          _payee = customerProfile;
+          isValidPayee = _payee!.userName != userBloc.user.userName;
+
+          _recipientController.text = customerProfile.userName!;
+
+          if (mounted) setState(() {});
+        }
+      },
+    );
+  }
+
+  Widget getCategoryDropDown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          AppLocalization.of(context)!.category,
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: IgnorePointer(
+            ignoring: product != null || service != null,
+            child: ListTile(
+              dense: true,
+              title: Text(
+                selectedCategory != null ? selectedCategory! : "",
+                softWrap: false,
+                overflow: TextOverflow.fade,
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
+              ),
+              trailing: Icon(
+                Icons.keyboard_arrow_down,
+                color: darkGrey,
+              ),
+              onTap: () {
+                selectCategory();
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void selectCategory() async {
+    final pressedCategory = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: paymentCategories.map<Widget>((category) {
+                          if (selectedCategory == category) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  category!,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, category);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              category!,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCategory != null) {
+      selectedCategory = pressedCategory;
+      debugPrint("selected category $selectedCategory");
+      setState(() {});
+    }
+  }
+
+  Widget getReferenceField() {
+    return CustomizedTextFormField(
+      maxLines: 5,
+      maxLength: 255,
+      labelText: AppLocalization.of(context)!.reference,
+      textCapitalization: TextCapitalization.sentences,
+      controller: _referenceController,
+      enabled: product == null && service == null,
+      onChanged: (val) {
+        if (mounted) {
+          setState(() {
+            reference = val;
+          });
+        }
+      },
+    );
+  }
+
+  Widget sendMoneyAnonymouslySwitch() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Send money anonymously",
+          style: TextStyle(fontWeight: FontWeight.w400, color: darkGrey),
+        ),
+        Switch(
+          value: sendMoneyAnonymous,
+          onChanged: (value) {
+            sendMoneyAnonymous = value;
+            setState(() {});
+            if (value) sendMoneyAnonymousAlert();
+          },
+          activeTrackColor: navyBlueLight,
+          activeColor: navyBlue,
+          inactiveTrackColor: navyBlueLight,
+        ),
+      ],
+    );
+  }
+
+  void sendMoneyAnonymousAlert() async {
+    FeeStructure? feeStructure = await DatabaseHelper().getFeeStructure();
+
+    if (feeStructure == null) return;
+
+    String anonymousFee =
+        feeStructure.getFeeWithTax(type: FeesType.ANONYMOUS_TRANSACTION_FEE);
+
+    showDialog<String>(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) =>
+          StatefulBuilder(builder: (context, rentDurationStateSetter) {
+        return AlertDialog(
+          insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          contentPadding: EdgeInsets.zero,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          content: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: EdgeInsets.only(top: 16, bottom: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  color: Colors.white,
+                                  child: Text(
+                                    "Note",
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 12,
+                                ),
+                                Container(
+                                  color: Colors.white,
+                                  child: Text(
+                                    "This transaction will be done anonymously. Recipient will not see the sender information. This service will cost you ₦$anonymousFee.",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: "Roberto"),
+                                    textAlign: TextAlign.justify,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                child: Text("OK",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: blackFont,
+                                        fontWeight: FontWeight.w600)),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: (MediaQuery.of(context).size.width - 100) / 2,
+                top: -30,
+                child: ClipOval(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: dividerColor, width: 1.5),
+                        borderRadius: BorderRadius.circular(60)),
+                    height: 60,
+                    width: 60,
+                    child: Center(
+                      child: Image.asset(
+                        "assets/images/anonymous.png",
+                        height: 45,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget getSubmitButton() {
+    return CurvedButton(
+      onPressed: onSubmit,
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Send Payment",
+    );
+  }
+
+  void onSubmit() async {
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+    }
+
+    await Future.delayed(Duration(milliseconds: 500));
+
+    if (!isValidPayee) {
+      setState(() {
+        errorMessage = AppLocalization.of(context)!.invalidRecipient;
+        return;
+      });
+    }
+
+    if (_recipientController.text == _payee!.userName) {
+      if (!isValidPayee) {
+        setState(() {
+          errorMessage = AppLocalization.of(context)!.invalidRecipient;
+          return;
+        });
+      }
+
+      if (isValidPayee &&
+          _formKey.currentState!.validate() &&
+          validateDropdown()) {
+        if (userBloc.user.userName != recipient) {
+          var userLocation;
+          Map deviceData;
+
+          try {
+            BottomSheetPassCode(
+                context: context,
+                isValidCallback: () async {
+                  showDialog(
+                      context: context,
+                      builder: (context) => Center(child: SizedBox()));
+                  // Center(child: CircularLoadingIndicator()));
+
+                  if (Platform.isIOS) {
+                    userLocation = await locationService.getLocation();
+                  }
+
+                  double currentBalance = await getAccountBalance();
+
+                  double transactionalAmount = double.parse(amount.toString());
+
+                  debugPrint("AMOUNT:- ${amount.toString()}");
+
+                  //show loading screen
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PaymentLoadingScreen(
+                              text: 'Sending Payment...',
+                              imagePath: 'assets/images/app_logo.png',
+                            )),
+                  );
+
+                  await Future.delayed(Duration(seconds: 3));
+
+                  if (transactionalAmount > currentBalance) {
+                    Navigator.pop(context);
+
+                    errorMessage = "Insufficient funds !!";
+                    setState(() {});
+                    showToast(message: errorMessage);
+                    return;
+                  }
+
+                  deviceData = await getDeviceInfo();
+
+                  String description = 'General Payment';
+                  var data = {
+                    "from_customer": userBloc.user.userName,
+                    "to_customer": _recipientController.text.trim(),
+                    "currency": userBloc.user.currency,
+                    "amount": moneyInputNormalizer(amount.toString()),
+                    "category": selectedCategory!.trim(),
+                    "notes": reference.isEmpty ? description : reference.trim(),
+                    "description":
+                        reference.isEmpty ? description : reference.trim(),
+                    "latitude": Platform.isIOS ? userLocation.latitude : "",
+                    "longitude": Platform.isIOS ? userLocation.longitude : "",
+                    "deviceData": deviceData,
+                    "is_anonymous": sendMoneyAnonymous,
+                    "made_from_chat": isFromChat ?? false,
+                  };
+                  bool updateYarnSupporter = false;
+                  bool updateMomentSupporter = false;
+
+                  if (isFromYarn == true) {
+                    data['category'] = "Gift";
+                    data['description'] = "Merchandise Payment in Yarn";
+                  }
+
+                  if (isFromMoment == true) {
+                    data['category'] = "Gift";
+                    data['description'] = "Merchandise Payment in Moment";
+                  }
+
+                  if (conversationId != null) {
+                    data["conversation_id"] = conversationId;
+                  }
+
+                  await _auth.makePayment(data).then((value) async {
+                    debugPrint(
+                        "status code:- ${value.statusCode}  body:- ${value.body}");
+
+                    response = value;
+                    if (response.statusCode == 200) {
+                      popFromShoppingCart(product);
+                      //Pop Circular Progress Indicator
+
+                      ///check if page is from yarn
+                      if (isFromYarn == true) {
+                        var jsonData = json.decode(response.body);
+
+                        updateYarnSupporter = await _auth.updateYarnSupporter(
+                            widget.arguments['yarnId'],
+                            jsonData['transaction_id']);
+
+                        if (updateYarnSupporter == false) {
+                          showToast(message: 'Unable to update yarn payment');
+                        } else {
+                          widget.callback!(true);
+                          Navigator.pop(context);
+                          //Pop send payment page
+                          Navigator.pop(context);
+                          return;
+                        }
+                      }
+
+                      ///check if page is from moment
+                      if (isFromMoment == true) {
+                        var jsonData = json.decode(response.body);
+
+                        updateMomentSupporter =
+                            await _auth.updateMomentSupporter(
+                                widget.arguments['momentId'],
+                                jsonData['transaction_id']);
+
+                        if (updateMomentSupporter == false) {
+                          showToast(message: 'Unable to update moment payment');
+                        } else {
+                          widget.callback!(true);
+                          Navigator.pop(context);
+                          //Pop send payment page
+                          Navigator.pop(context);
+                          return;
+                        }
+                      }
+
+                      Navigator.pop(context);
+                      //Pop send payment page
+                      Navigator.pop(context);
+
+                      debugPrint(" isFromChat:- $isFromChat");
+
+                      if (!isFromChat!) {
+                        Navigator.of(context).pushNamed(
+                          '/transactions',
+                        );
+                      }
+                    } else if (response.statusCode == 400) {
+                      Navigator.pop(context);
+                      setState(() {
+                        errorMessage = "${jsonDecode(value.body)["errors"]}";
+
+                        showToast(message: errorMessage);
+                      });
+                    } else if (response.statusCode == 500) {
+                      Navigator.pop(context);
+                      setState(() {
+                        errorMessage = AppLocalization.of(context)!.serverError;
+                        showToast(message: errorMessage);
+                      });
+                    } else {
+                      Navigator.pop(context);
+                      if (response.statusCode == 406) {
+                        errorMessage = jsonDecode(value.body)[0];
+                        showToast(message: "$errorMessage");
+                        setState(() {});
+                      } else {
+                        debugPrint("ERROR:- ${response.body}");
+                        setState(() {
+                          errorMessage =
+                              AppLocalization.of(context)!.somethingWentWrong;
+                          showToast(message: "$errorMessage");
+                        });
+                      }
+                    }
+                  });
+                },
+                cancelCallBack: () {
+                  Navigator.pop(context);
+                  _sendPaymentScaffoldMessenger.currentState!
+                      .showSnackBar(SnackBar(
+                    content: Text(AppLocalization.of(context)!.invalidPassword),
+                  ));
+                });
+          } catch (e) {
+            debugPrint(e.toString());
+            showToast(message: e.toString());
+          }
+        } else {
+          showToast(message: AppLocalization.of(context)!.invalidRecipient);
+        }
+      }
+    } else {
+      var msg = AppLocalization.of(context)!.invalidRecipient;
+      showToast(message: msg);
+    }
+  }
+
+  void popFromShoppingCart(Product? product) {
+    if (itemIndex != null) {
+      try {
+        basketBloc.removeItemFromCart(basketBloc.items[itemIndex!]);
+      } catch (e) {
+        debugPrint("SendPayment PopFromShopping cart : " + e.toString());
+      }
+    }
+  }
+
+  bool validateDropdown() {
+    if (selectedCategory != null) {
+      return true;
+    } else {
+      selectedCategory = "General";
+      return true;
+    }
+  }
+
+  @override
+  void dispose() {
+    _recipientController.dispose();
+    _amountController.dispose();
+    _referenceController.dispose();
+    _recipientFocus.dispose();
+    super.dispose();
+  }
+
+  /// TODO: this function maybe deleted in future
+  void checkForUserDailyLimit() {
+    if (amount! >=
+        int.parse(
+            virtualAccount!.accountTier!.dailyCumulativeTransactionLimit!)) {
+      Navigator.pop(context);
+
+      errorMessage =
+          "you cannot exceed your payment limit of ${virtualAccount!.accountTier!.dailyCumulativeTransactionLimit} per transactions.";
+      setState(() {});
+      showToast(message: errorMessage);
+      return;
+    }
+  }
+}

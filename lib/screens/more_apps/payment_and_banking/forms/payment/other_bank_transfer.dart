@@ -1,42 +1,57 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/bank.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/bank_list.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import '../../../../../data/database_helper.dart';
 import '../../../../../data/environment.dart';
-import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
-import '../../../../../utils/slydo_app_icon_icons.dart';
+import '../../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../../../../../widget/dialog.dart';
 import '../../../../../widget/noItemInList.dart';
-import '../../../../../widget/rounded_background_icon.dart';
+import '../../../payment_loading_screen.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../../models/VirtualAccount.dart';
+import '../../models/bank.dart';
+import '../../models/bank_list.dart';
 import '../../models/transactions.dart';
 import '../../payment_and_banking_auth.dart';
+import 'package:http/http.dart' as http;
 
-class AddAccount extends StatefulWidget {
+// ignore: must_be_immutable
+class OtherBankTransfer extends StatefulWidget {
+  var arguments;
+  final Function(bool)? callback;
+
+  OtherBankTransfer({this.arguments, this.callback});
+
+  // Declare a field that holds the userData.
   @override
-  _AddAccountState createState() => _AddAccountState();
+  _OtherBankTransferState createState() => _OtherBankTransferState();
 }
 
-class _AddAccountState extends State<AddAccount> {
+class _OtherBankTransferState extends State<OtherBankTransfer> {
   final _auth = PaymentAndBankingAuth();
   late UserBloc userBloc;
   final _formKey = GlobalKey<FormState>();
   String errorMessage = "";
 
-  String bankName = 'first-bank-nigeria-limited';
+  String bankName = '';
   String accountName = "";
   String accountNumber = "";
+  String description = "";
+  String bankId = "";
   bool isDefault = false;
   List<Bank> banks = getBanks();
   bool isUserAgree = false;
@@ -53,59 +68,50 @@ class _AddAccountState extends State<AddAccount> {
   bool bottomSheetMounted = false;
   bool isItemLoading = false;
   final searchItemTextController = TextEditingController();
+  final accountNameTextController = TextEditingController();
+  final amountTextController = TextEditingController();
+  final accountNumberController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
   ScrollController _scrollController = new ScrollController();
+  double? amount;
+  late http.Response response;
+  VirtualAccount? virtualAccount;
+  bool isAccountFound = false;
 
   @override
   void initState() {
+    getBankAccountDetail();
+
     super.initState();
+  }
+
+  void getBankAccountDetail() async {
+    isLoading = true;
+    setState(() {});
+    await getAccountBalance();
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+    if (virtualAccount == null) {
+      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
+    }
+    if (virtualAccount != null) {
+      isAccountFound = true;
+    }
+    isLoading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
-      ),
-    );
-  }
-
-  Widget appBar() {
-    return AppBar(
-      elevation: 0,
+    return Scaffold(
       backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          if (isLoading) {
-            return;
-          }
-          Navigator.pop(context);
-        },
-      ),
-      title: Text(
-        "Add a bank account",
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
+      resizeToAvoidBottomInset: true,
+      body: scaffoldBody(),
     );
   }
 
@@ -114,95 +120,113 @@ class _AddAccountState extends State<AddAccount> {
       return _buildLoadingIndicator();
     }
 
+    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: Column(
-        children: [
-          Form(
-            key: _formKey,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 30,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      FocusScope.of(context).unfocus();
+      child: Container(
+        padding: EdgeInsets.symmetric(
+            horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+        child: Column(
+          children: [
+            Card(
+              elevation: 2,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              shadowColor: iconBtnGrey,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: iconBtnGrey, width: 1)),
+                child: Form(
+                  key: _formKey,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 30,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            FocusScope.of(context).unfocus();
 
-                      clearSearchedListItems();
-                      showSearchBankBottomSheet();
-                    },
-                    child: TextFormField(
-                      controller: bankController,
-                      enabled: false,
-                      style: TextStyle(
-                          // fontSize: 20,
-                          color: blackFont),
-                      decoration: InputDecoration(
-                        filled: true,
-                        // fillColor: blackFont,
-                        contentPadding: const EdgeInsets.only(
-                            left: 8, bottom: 0, top: 0, right: 15),
-                        hintText: 'Select Bank',
-                        hintStyle: TextStyle(
-                            // fontSize: 20,
-                            color: blackFont),
-                        suffixIcon: Icon(
-                          Icons.arrow_drop_down_outlined,
-                          color: blackFont,
-                        ),
-                        border: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 0,
-                            style: BorderStyle.none,
+                            clearSearchedListItems();
+                            showSearchBankBottomSheet();
+                          },
+                          child: TextFormField(
+                            controller: bankController,
+                            enabled: false,
+                            style: TextStyle(
+                                // fontSize: 20,
+                                color: blackFont),
+                            decoration: InputDecoration(
+                              filled: true,
+                              // fillColor: blackFont,
+                              contentPadding: const EdgeInsets.only(
+                                  left: 8, bottom: 0, top: 0, right: 15),
+                              hintText: 'Select Bank',
+                              hintStyle: TextStyle(
+                                  // fontSize: 20,
+                                  color: blackFont),
+                              suffixIcon: Icon(
+                                Icons.arrow_drop_down_outlined,
+                                color: blackFont,
+                              ),
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 0,
+                                  style: BorderStyle.none,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8.0),
+                                ),
+                              ),
+                            ),
                           ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(8.0),
-                          ),
                         ),
-                      ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getAccountNumber(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getAccountName(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        displayAmountField(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getDescription(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  getAccountNumber(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  checkButton(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  errorMessage != ""
-                      ? Column(
-                          children: [
-                            Text(
-                              errorMessage,
-                              style: TextStyle(color: mateRed, fontSize: 14),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        )
-                      : Container(),
-                  getUserAgreeCheckBoxWidget(),
+                ),
+              ),
+            ),
+            Container(
+              child: Column(
+                children: [
                   SizedBox(
                     height: 40,
                   ),
-                  isUserAgree
-                      ? getSubmitButton(userBloc.user.userName)
-                      : Container(
-                          height: 42,
-                        ),
+                  getSubmitButton(),
+                  SizedBox(
+                    height: 20,
+                  ),
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -279,6 +303,7 @@ class _AddAccountState extends State<AddAccount> {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.accountNumber,
       keyboardType: TextInputType.number,
+      controller: accountNumberController,
       validator: (val) => val.length < 10
           ? AppLocalization.of(context)!.validationTextMessage1
           : null,
@@ -288,103 +313,178 @@ class _AddAccountState extends State<AddAccount> {
             accountNumber = val;
           });
         }
+        if (val.toString().length == 10) {
+          verifyAccount();
+        } else {
+          accountNameTextController.text = '';
+          bankId = '';
+        }
+        if (mounted) setState(() {});
       },
     );
   }
 
-  Widget checkButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          AppLocalization.of(context)!.setDefaultAccountMsg,
-          style: TextStyle(
-              color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-        Switch(
-          value: isDefault,
-          onChanged: (value) {
-            if (mounted) {
-              setState(() {
-                isDefault = value;
-              });
+  Widget getAccountName() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.accountNameHint,
+      enabled: false,
+      controller: accountNameTextController,
+    );
+  }
+
+  Widget getDescription() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.reference,
+      keyboardType: TextInputType.text,
+      enabled: true,
+      onChanged: (val) {
+        if (mounted) {
+          setState(() {
+            description = val;
+          });
+        }
+      },
+    );
+  }
+
+  Widget displayAmountField() {
+    return CustomizedTextFormField(
+      labelText: "Amount",
+      isAmountField: true,
+      enabled: true,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      controller: amountTextController,
+      onChanged: (val) {
+        if (mounted) {
+          setState(() {
+            amount = double.parse(val.replaceAll(',', ''));
+          });
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double amount = double.parse(val.replaceAll(',', ''));
+            if (amount > 0.0) {
+              return null;
+            } else {
+              throw Exception("Invalid amount");
             }
-          },
-          activeTrackColor: navyBlue,
-          activeColor: Colors.white,
-          inactiveTrackColor: dividerColor,
-        ),
-      ],
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.invalidAmount;
+      },
+      onTap: () async {
+        if (mounted) setState(() {});
+      },
     );
   }
 
-  Widget getSubmitButton(String? userName) {
+  Widget getSubmitButton() {
     return CurvedButton(
-      onPressed: () {
-        onSubmit(userName);
-      },
+      onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: AppLocalization.of(context)!.submit,
+      text: "Send Payment",
     );
   }
 
-  void onSubmit(String? userName) async {
-    if (_formKey.currentState!.validate()) {
-      isLoading = true;
-      if (mounted) setState(() {});
+  void onSubmit() async {
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+    }
 
-      Map data = {
-        "bank_code": selectedBank!.providerCode,
-        "account_number": accountNumber,
-      };
+    if (bankId == "") {
+      showToast(message: "Bank Account not added yet");
+      return;
+    }
 
+    await Future.delayed(Duration(milliseconds: 500));
+
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    if (amount! <=
+        int.parse(
+            virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ??
+                "0")) {
       try {
-        Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
+        var data = {
+          "amount": moneyInputNormalizer(amount.toString()),
+          "currency": userBloc.user.currency,
+          "customer_bank_account": int.tryParse(bankId),
+          "description": description,
+        };
+        BottomSheetPassCode(
+            context: context,
+            isValidCallback: () {
+              showDialog(
+                  context: context,
+                  builder: (context) =>
+                      // Center(child: CircularLoadingIndicator()));
+                      Center(child: SizedBox()));
+              //show loading screen
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PaymentLoadingScreen(
+                          text: 'Bank Transfer Processing...',
+                          imagePath: 'assets/images/app_logo.png',
+                        )),
+              );
 
-        isLoading = false;
-        if (mounted) setState(() {});
+              _auth.accountPayout(data).then((value) {
+                response = value;
 
-        if (result == null) {
-          showToast(message: 'Unable to validate account');
-          return;
-        }
+                Navigator.pop(context);
 
-        var tempList = result['results'];
-
-        showDialogBox(
-          context: context,
-          actionOneTextColor: white,
-          actionOneBgColor: naturalGreen,
-          actionTwoTextColor: blackFont,
-          actionTwoBgColor: greyBorderColor,
-          title: AppLocalization.of(context)!.addAccount,
-          actionTwoText: AppLocalization.of(context)!.cancel,
-          actionOneText: AppLocalization.of(context)!.continueMsg,
-          description:
-              "Add this account details: \nAccount Number: ${tempList['account_number']} \nAccount Name: ${tempList['account_name']} \nBank Name: ${tempList['bank_name']}",
-          roundedBackgroundIcon: RoundedBackgroundIcon(
-            width: 90,
-            height: 90,
-            enableMargin: false,
-            image: Image.asset('assets/images/accept_dialog_icon.png'),
-          ),
-          leftButtonOnPressed: () {
-            onAddAccount(userName, tempList);
-          },
-        );
-      } catch (error) {
-        isLoading = false;
-        if (mounted) setState(() {});
-        // showToast(message: error.toString());
+                if (response.statusCode == 201) {
+                  Navigator.pop(context);
+                  Navigator.of(context).popAndPushNamed('/payout-list');
+                } else if (response.statusCode == 500) {
+                  Navigator.pop(context);
+                  if (mounted) {
+                    setState(() {
+                      errorMessage = AppLocalization.of(context)!.serverError;
+                      showToast(message: errorMessage);
+                    });
+                  }
+                } else {
+                  Navigator.pop(context);
+                  if (mounted) {
+                    setState(() {
+                      errorMessage =
+                          AppLocalization.of(context)!.somethingWentWrong;
+                      showToast(message: errorMessage);
+                    });
+                  }
+                }
+              });
+            },
+            cancelCallBack: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(AppLocalization.of(context)!.invalidPassword),
+              ));
+            });
+      } catch (e) {
+        debugPrint(e.toString());
+        showToast(message: e.toString());
       }
+    } else {
+      showToast(
+          message:
+              "Please Upgrade your account tier to make bigger transactions.");
     }
   }
 
   void onAddAccount(String? userName, Map tempList) async {
-    final BankAccountBloc bankAccountBloc =
-        Provider.of<BankAccountBloc>(context, listen: false);
-
     isLoading = true;
     if (mounted) setState(() {});
 
@@ -393,7 +493,7 @@ class _AddAccountState extends State<AddAccount> {
       "bank": selectedBank!.slug,
       "account_name": tempList['account_name'],
       "account_number": tempList['account_number'],
-      "is_default": isDefault,
+      "is_default": false,
     };
 
     Map<String, dynamic>? result = await _auth.addBankAccount(data);
@@ -407,24 +507,9 @@ class _AddAccountState extends State<AddAccount> {
     }
 
     if (result['status'] == 201) {
-      BankAccount _bankAccount;
-      await _auth.getBankAccounts().then((accounts) {
-        try {
-          _bankAccount = accounts[0];
-          if (_bankAccount != null) {
-            bankAccountBloc.bankAccount = _bankAccount;
-          }
-        } catch (e) {
-          isLoading = false;
-          if (mounted) {
-            setState(() {
-              errorMessage = AppLocalization.of(context)!.errorMsg1;
-            });
-          }
-        }
-      });
-      Navigator.pop(context);
-      Navigator.of(context).popAndPushNamed('/bank-account-list');
+      //get the id
+      var tempList = result['results'];
+      bankId = tempList['id'].toString();
     } else {
       dynamic jsonObject = jsonDecode(result['results']);
 
@@ -443,6 +528,61 @@ class _AddAccountState extends State<AddAccount> {
     }
   }
 
+  void verifyAccount() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    Map data = {
+      "bank_code": selectedBank!.providerCode,
+      "account_number": accountNumber,
+    };
+
+    try {
+      Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
+
+      isLoading = false;
+      if (mounted) setState(() {});
+
+      if (result == null) {
+        showToast(message: 'Unable to validate account');
+        return;
+      }
+
+      var tempList = result['results'];
+      // debugPrint('Fola verify::: ${tempList}');
+
+      showDialogBox(
+        context: context,
+        actionOneTextColor: white,
+        actionOneBgColor: naturalGreen,
+        actionTwoTextColor: blackFont,
+        actionTwoBgColor: greyBorderColor,
+        title: AppLocalization.of(context)!.addAccount,
+        actionTwoText: AppLocalization.of(context)!.cancel,
+        actionOneText: AppLocalization.of(context)!.continueMsg,
+        description:
+            "Add this account details: \nAccount Number: ${tempList['account_number']} \nAccount Name: ${tempList['account_name']} \nBank Name: ${tempList['bank_name']}",
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          width: 90,
+          height: 90,
+          enableMargin: false,
+          image: Image.asset('assets/images/accept_dialog_icon.png'),
+        ),
+        leftButtonOnPressed: () {
+          isLoading = true;
+          accountNameTextController.text = tempList['account_name'];
+          accountNumberController.text = tempList['account_number'];
+          onAddAccount(userBloc.user.userName, tempList);
+          if (mounted) setState(() {});
+        },
+      );
+    } catch (error) {
+      isLoading = false;
+      if (mounted) setState(() {});
+      // showToast(message: error.toString());
+    }
+  }
+
   Widget _buildLoadingIndicator() {
     return Opacity(
       opacity: isLoading ? 1.0 : 00,
@@ -455,66 +595,6 @@ class _AddAccountState extends State<AddAccount> {
               ),
             )
           : Container(),
-    );
-  }
-
-  Widget getUserAgreeCheckBoxWidget() {
-    return InkWell(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          ClipRRect(
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            child: SizedBox(
-              width: Checkbox.width - 1.5,
-              height: Checkbox.width - 1.5,
-              child: Container(
-                decoration: new BoxDecoration(
-                  border: Border.all(
-                    color: greyBorderColor,
-                    width: 1,
-                  ),
-                  borderRadius: new BorderRadius.circular(5),
-                ),
-                child: Theme(
-                  data: ThemeData(
-                    unselectedWidgetColor: Colors.transparent,
-                  ),
-                  child: Checkbox(
-                    value: isUserAgree,
-                    activeColor: navyBlue,
-                    checkColor: Colors.white,
-                    materialTapTargetSize: MaterialTapTargetSize.padded,
-                    onChanged: (value) {
-                      // if (mounted) {
-                      //   setState(() {
-                      //     isUserAgree = value;
-                      //   });
-                      // }
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 12,
-          ),
-          Expanded(
-              child: Text(
-            AppLocalization.of(context)!.bankAccountUserAgreeTerm,
-            style: TextStyle(color: blackFont, fontSize: 14),
-          ))
-        ],
-      ),
-      onTap: () {
-        if (mounted) {
-          isUserAgree = !isUserAgree;
-          setState(() {});
-        }
-      },
     );
   }
 

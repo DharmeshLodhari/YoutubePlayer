@@ -267,6 +267,8 @@ class _PayoutScreenState extends State<PayoutScreen> {
           var data = {
             "amount": moneyInputNormalizer(amount.toString()),
             "currency": userBloc.user.currency,
+            "customer_bank_account":
+                int.tryParse(bankAccountBloc.bankAccount!.uuid!),
           };
           BottomSheetPassCode(
               context: context,
