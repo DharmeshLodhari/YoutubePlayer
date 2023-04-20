@@ -156,12 +156,13 @@ class _BankAccountListState extends State<BankAccountList> {
       ),
       onTap: () {
         //for adding new account
-        if (bankAccountList.length < 2) {
-          Navigator.of(context).pushNamed('/add-account');
-        } else {
-          showToast(
-              message: AppLocalization.of(context)!.youCanAddMaximumTwoAccount);
-        }
+        // if (bankAccountList.length < 2) {
+        //   Navigator.of(context).pushNamed('/add-account');
+        // } else {
+        //   showToast(
+        //       message: AppLocalization.of(context)!.youCanAddMaximumTwoAccount);
+        // }
+        Navigator.of(context).pushNamed('/add-account');
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
