@@ -16,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../../widget/bottom_sheet_item.dart';
 import '../../../payment_loading_screen.dart';
 import '../../payment_and_banking_auth.dart';
 
@@ -195,18 +196,23 @@ class _PayoutScreenState extends State<PayoutScreen> {
                     bankAccountBloc.bankAccount!.accountNumber.toString()),
             style: TextStyle(color: darkGrey, fontSize: 12),
           ),
-          leading: CachedNetworkImage(
-            imageUrl: bankAccountBloc.bankAccount!.bankAvatar!,
-            height: 48,
-            width: 48,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            errorWidget: imageErrorWidget,
-            placeholder: (context, url) =>
-                bankAccountBloc.bankAccount!.bankAvatar == ""
-                    ? Icon(Icons.account_balance)
-                    : CircularLoadingIndicator(),
+          leading: GestureDetector(
+            onTap: () {
+              // showAllBankAccount(context);
+            },
+            child: CachedNetworkImage(
+              imageUrl: bankAccountBloc.bankAccount!.bankAvatar!,
+              height: 48,
+              width: 48,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
+              placeholder: (context, url) =>
+                  bankAccountBloc.bankAccount!.bankAvatar == ""
+                      ? Icon(Icons.account_balance)
+                      : CircularLoadingIndicator(),
+            ),
           ),
         ),
       ),
@@ -358,5 +364,52 @@ class _PayoutScreenState extends State<PayoutScreen> {
         });
       }
     });
+  }
+
+  void showAllBankAccount(BuildContext context) {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> generateBottomSheetItem() {
+    List<Widget> list = [];
+
+    list.add(
+      bottomSheetItem(
+        title: "Share",
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: "Share in Chat",
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: "Share As A Yarn",
+      ),
+    );
+
+    return list;
   }
 }
