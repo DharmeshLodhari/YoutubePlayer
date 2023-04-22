@@ -671,7 +671,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
             fillColor: Colors.white,
             filled: true,
             contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefixIcon: searchTypeSelection(),
+            // prefixIcon: searchTypeSelection(),
             prefix: Padding(
               padding: EdgeInsets.only(left: 12),
             ),

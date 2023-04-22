@@ -48,8 +48,8 @@ class UserDashboardItemTile extends StatelessWidget {
                     children: [
                       flexibleSpace(flex: 3),
                       RoundedBackgroundIcon(
-                        height: 50,
-                        width: 50,
+                        height: 40,
+                        width: 40,
                         image: iconWidget,
                         icon: Icon(
                           icon,
@@ -65,8 +65,8 @@ class UserDashboardItemTile extends StatelessWidget {
                         title,
                         style: TextStyle(
                             color: blackFont,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 10),
                       ),
                       flexibleSpace(flex: 3),
                     ],
