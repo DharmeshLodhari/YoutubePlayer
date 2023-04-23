@@ -123,10 +123,13 @@ class _HomeState extends State<Home> {
                 accountBalanceCard(),
                 // flexibleSpace(flex: 2),
                 SizedBox(
-                  height: 30,
+                  height: 10,
                 ),
                 _buildTabs(),
                 _buildPageView(),
+                SizedBox(
+                  height: 20,
+                ),
               ],
             ),
           ),
@@ -489,7 +492,7 @@ class _HomeState extends State<Home> {
           currentIndex: currentAskTapOnHome,
         ),
         SizedBox(
-          height: 16,
+          height: 10,
         ),
       ],
     );

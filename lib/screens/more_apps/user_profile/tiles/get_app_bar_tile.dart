@@ -1003,7 +1003,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     }
 
     try {
-      user = await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
+      user = await UserAuth()
+          .fetchCustomerProfileWithAuth(searchedUser!.userName.toString());
     } catch (e) {
       Navigator.pop(context);
       showToast(message: 'User not found');

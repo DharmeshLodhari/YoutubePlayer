@@ -91,7 +91,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   Widget forgotPasswordTitle() {
     return Container(
       child: Text(
-        "Forgot password",
+        AppLocalization.of(context)!.forgotPassword,
         style: TextStyle(
             fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
       ),

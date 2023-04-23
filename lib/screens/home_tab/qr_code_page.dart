@@ -60,7 +60,6 @@ class _QrCodePageState extends State<QrCodePage> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    // basketBloc = Provider.of<BasketBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     socketProvider = Provider.of<MainSocketProvider>(context);
 
@@ -85,10 +84,10 @@ class _QrCodePageState extends State<QrCodePage> {
       ),
       child: Column(
         children: <Widget>[
-          Container(height: 10),
+          Container(height: 5),
           _displayUserInfo(),
           SizedBox(
-            height: 15,
+            height: 10,
           ),
           _displayUserName(),
           _displayPaymentButtons(),

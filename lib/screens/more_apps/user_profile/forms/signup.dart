@@ -536,6 +536,9 @@ class _SignUpState extends State<SignUp> {
       maxLength: maxUsernameLength,
       labelText: isPersonalAccount ? "Username" : 'Business Username',
       keyboardType: TextInputType.text,
+      inputFormatters: [
+        FilteringTextInputFormatter.deny(RegExp(r"\s")),
+      ],
       validator: userNameValidator,
       suffixIcon: getUsernameSuffixIcon(),
     );
@@ -953,9 +956,9 @@ class _SignUpState extends State<SignUp> {
       String lastName = _lastNameController.text.toTitleCase().trim();
       String userName = _userNameController.text
           .toLowerCase()
-          .replaceAll(' ', '.')
-          .replaceAll(multipleDotReg, '.')
-          .toLowerCase()
+          // .replaceAll(' ', '.')
+          // .replaceAll(multipleDotReg, '.')
+          // .toLowerCase()
           .trim();
       String businessOrNickName =
           _businessOrNickNameController.text.toTitleCase().trim();

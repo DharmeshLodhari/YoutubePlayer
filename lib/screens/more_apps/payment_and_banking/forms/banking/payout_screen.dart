@@ -16,8 +16,10 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-import '../../../../../widget/bottom_sheet_item.dart';
+import '../../../../../widget/noItemInList.dart';
 import '../../../payment_loading_screen.dart';
+import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../../models/transactions.dart';
 import '../../payment_and_banking_auth.dart';
 
 class PayoutScreen extends StatefulWidget {
@@ -41,9 +43,27 @@ class _PayoutScreenState extends State<PayoutScreen> {
   VirtualAccount? virtualAccount;
   bool isAccountFound = false;
   bool isLoading = false;
+  StateSetter? bottomSheetStateSetterGlobal;
+  bool bottomSheetMounted = false;
+  int bottomSheetSearchIndex = 0;
+  ScrollController _scrollController = new ScrollController();
+  String? next = "", previous = "";
+  int count = 0;
+  bool noList = false;
+  List bankAccountList = [];
+  bool noItemInList = false;
+  BankAccount? selectedBank;
 
   @override
   void initState() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getList();
+      }
+    });
+
     getBankAccountDetail();
 
     super.initState();
@@ -53,6 +73,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     isLoading = true;
     setState(() {});
     await getAccountBalance();
+    getList();
     virtualAccount = await DatabaseHelper().getVirtualAccount();
     if (virtualAccount == null) {
       virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
@@ -183,35 +204,28 @@ class _PayoutScreenState extends State<PayoutScreen> {
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
-        child: ListTile(
-          dense: true,
-          title: Text(
-            bankAccountBloc.bankAccount!.bankName!,
-            style: TextStyle(
-                color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
-          ),
-          subtitle: Text(
-            getFormattedAccountNumber(
-                accountNumber:
-                    bankAccountBloc.bankAccount!.accountNumber.toString()),
-            style: TextStyle(color: darkGrey, fontSize: 12),
-          ),
-          leading: GestureDetector(
-            onTap: () {
-              // showAllBankAccount(context);
-            },
-            child: CachedNetworkImage(
-              imageUrl: bankAccountBloc.bankAccount!.bankAvatar!,
-              height: 48,
-              width: 48,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              errorWidget: imageErrorWidget,
-              placeholder: (context, url) =>
-                  bankAccountBloc.bankAccount!.bankAvatar == ""
-                      ? Icon(Icons.account_balance)
-                      : CircularLoadingIndicator(),
+        child: GestureDetector(
+          onTap: () {
+            showAllBankAccount(context);
+          },
+          child: ListTile(
+            dense: true,
+            title: Text(
+              bankAccountBloc.bankAccount!.bankName!,
+              style: TextStyle(
+                  color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            subtitle: Text(
+              getFormattedAccountNumber(
+                  accountNumber:
+                      bankAccountBloc.bankAccount!.accountNumber.toString()),
+              style: TextStyle(color: darkGrey, fontSize: 12),
+            ),
+            leading: GestureDetector(
+              onTap: () {
+                showAllBankAccount(context);
+              },
+              child: checkBankImage(bankAccountBloc.bankAccount!),
             ),
           ),
         ),
@@ -366,50 +380,374 @@ class _PayoutScreenState extends State<PayoutScreen> {
     });
   }
 
-  void showAllBankAccount(BuildContext context) {
-    showModalBottomSheet<void>(
+  Future<void> showAllBankAccount(BuildContext context) async {
+    var result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
+        useRootNavigator: true,
+        barrierColor: Colors.black54,
+        isScrollControlled: true,
         builder: (BuildContext context) {
-          return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-              ),
-              color: Colors.white,
-              margin: EdgeInsets.zero,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: generateBottomSheetItem(),
+          return StatefulBuilder(
+              builder: (context, StateSetter bottomSheetStateSetter) {
+            bottomSheetStateSetterGlobal = bottomSheetStateSetter;
+            bottomSheetMounted = true;
+
+            return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
                 ),
-              ));
+                color: Colors.white,
+                margin: EdgeInsets.zero,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.88,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Change Bank Account',
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Expanded(child: bottomSheetTabBar())
+                    ],
+                  ),
+                ));
+          });
         });
+    bottomSheetMounted = false;
+    if (result == null) {
+      // if (itemSearchTypeSelectionMenu!.isMenuOpen) {
+      //   itemSearchTypeSelectionMenu!.closeMenu();
+      // }
+    }
   }
 
-  List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+  Widget bottomSheetTabBar() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 8,
+        ),
+        Expanded(child: bottomSheetTabViews())
+      ],
+    );
+  }
 
-    list.add(
-      bottomSheetItem(
-        title: "Share",
+  Widget bottomSheetTabBars() {
+    return PreferredSize(
+        preferredSize: Size.fromHeight(50.0),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                bottomSheetSearchIndex = 0;
+                // clearSearchedListItems();
+                bottomSheetStateSetterGlobal!(() {});
+
+                if (mounted) setState(() {});
+                getList();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  shape: BoxShape.rectangle,
+                  color: bottomSheetSearchIndex == 0
+                      ? navyBlue.withOpacity(0.1)
+                      : Colors.white,
+                ),
+                child: Text(
+                  "From partner",
+                  style: TextStyle(
+                    color: bottomSheetSearchIndex == 0 ? navyBlue : blackFont,
+                    fontSize: 14,
+                    fontWeight: bottomSheetSearchIndex == 0
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                bottomSheetSearchIndex = 1;
+                // clearSearchedListItems();
+                bottomSheetStateSetterGlobal!(() {});
+                setState(() {});
+                getList();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  shape: BoxShape.rectangle,
+                  color: bottomSheetSearchIndex == 1
+                      ? navyBlue.withOpacity(0.1)
+                      : Colors.white,
+                ),
+                child: Text(
+                  "From Mine",
+                  style: TextStyle(
+                    color: bottomSheetSearchIndex == 1 ? navyBlue : blackFont,
+                    fontSize: 14,
+                    fontWeight: bottomSheetSearchIndex == 1
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget bottomSheetTabViews() {
+    return buildBankList();
+    // return pullToRefresh();
+  }
+
+  void getList() async {
+    Map<String, dynamic>? result =
+        await _auth.getBankAccountsPagination(next, previous);
+    if (result == null) {
+      isLoading = false;
+      return;
+    }
+    count = result['count'];
+    next = result['next'];
+    previous = result['previous'];
+    var tempList = result['results'];
+
+    if (mounted) {
+      setState(() {
+        bankAccountList.addAll(tempList);
+
+        for (BankAccount item in bankAccountList) {
+          if (item.isDefault == true) {
+            bankAccountBloc.bankAccount = item;
+          }
+        }
+      });
+    }
+
+    if (bankAccountList.isEmpty) {
+      if (mounted) {
+        setState(() {
+          noItemInList = true;
+        });
+      }
+    }
+  }
+
+  Widget buildBankList() {
+    return noItemInList
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.noResultFound,
+            isResult: true,
+          )
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            //+1 for progressbar
+            shrinkWrap: true,
+            itemCount: bankAccountList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == bankAccountList.length) {
+                return _buildIndicatorForBankList();
+              } else {
+                return GestureDetector(
+                  onTap: () {
+                    selectedBank = bankAccountList[index];
+                    bankAccountBloc.bankAccount = bankAccountList[index];
+
+                    if (mounted) setState(() {});
+                    Navigator.pop(context);
+
+                    FocusScope.of(context).requestFocus();
+                  },
+                  child: bankAccountTile(
+                    account: bankAccountList[index],
+                  ),
+                );
+              }
+            },
+            controller: _scrollController,
+          );
+  }
+
+  Widget _buildIndicatorForBankList() {
+    return Center(
+      child: isLoading
+          ? CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(navyBlue),
+              backgroundColor: Colors.transparent,
+            )
+          : Container(),
+    );
+  }
+
+  Widget bankAccountTile({required BankAccount account}) {
+    String? imageUrl;
+    if (account.bankAvatar == "") {
+      imageUrl = getInitials(account.bankName.toString()).toUpperCase();
+    } else {
+      String? url = account.bankAvatar;
+
+      imageUrl = url!.replaceAll('https//', 'https://');
+    }
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          dense: account.isDefault! ? true : false,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              getAccountName(account: account),
+              getAccountNumber(account: account)
+            ],
+          ),
+          subtitle: getBankName(account: account),
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.of(context)
+                  .pushNamed("/photo-viewer", arguments: imageUrl);
+            },
+            child: checkBankImage(account),
+          ),
+        ),
       ),
     );
+  }
 
-    list.add(
-      bottomSheetItem(
-        title: "Share in Chat",
-      ),
+  Widget getBankName({required BankAccount account}) {
+    if (account.isDefault!) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            trimString(account.bankName!),
+            maxLines: 1,
+            style: TextStyle(
+                color: darkGrey, fontWeight: FontWeight.normal, fontSize: 15),
+          ),
+        ],
+      );
+    }
+    return Text(
+      account.bankName!,
+      style: TextStyle(
+          color: darkGrey, fontWeight: FontWeight.normal, fontSize: 15),
     );
+  }
 
-    list.add(
-      bottomSheetItem(
-        title: "Share As A Yarn",
-      ),
+  Widget getAccountName({required BankAccount account}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          trimString(account.accountName!),
+          maxLines: 1,
+          style: TextStyle(
+              color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+      ],
     );
+  }
 
-    return list;
+  Widget getAccountNumber({required BankAccount account}) {
+    if (account.isDefault!) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            height: 4,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                getFormattedAccountNumber(
+                    accountNumber: account.accountNumber!.toString()),
+                style: TextStyle(color: darkGrey, fontSize: 12),
+              ),
+              Text(
+                AppLocalization.of(context)!.defaultMsg,
+                style: TextStyle(color: darkGrey, fontSize: 12),
+              ),
+            ],
+          ),
+          // SizedBox(
+          //   height: 2,
+          // ),
+        ],
+      );
+    }
+    return Column(
+      children: [
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          getFormattedAccountNumber(
+              accountNumber: account.accountNumber!.toString()),
+          style: TextStyle(color: darkGrey, fontSize: 12),
+        ),
+      ],
+    );
+  }
+
+  Widget checkBankImage(BankAccount account) {
+    String? url = account.bankAvatar;
+
+    String imageUrl = url!.replaceAll('https//', 'https://');
+    if (account.bankAvatar == "") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(account.bankName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          height: 48,
+          width: 48,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => imageUrl == ""
+              ? Icon(
+                  Icons.account_balance,
+                  size: 45,
+                  color: navyBlue,
+                )
+              : CircularLoadingIndicator(),
+          errorWidget: imageErrorWidget,
+        ),
+      );
+    }
   }
 }
