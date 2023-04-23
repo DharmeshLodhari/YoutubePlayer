@@ -362,35 +362,40 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                         SizedBox(
                           height: 20,
                         ),
-                        canDoSlydoTransfer(amount!, currentBalance!)
-                            ? getSubmitButton()
-                            : Container(
-                                child: Center(
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16.0),
-                                        child: Text.rich(TextSpan(
-                                            text: AppLocalization.of(context)!
-                                                .minimumTransfer,
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: blackFont,
-                                                fontWeight: FontWeight.w600),
-                                            children: <InlineSpan>[
-                                              TextSpan(
-                                                text: worldCurrencies[userBloc
-                                                        .user.currency!]! +
-                                                    moneyDisplayNormalizer(
-                                                        availableTransfer()),
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: blackFont,
-                                                    fontFamily: "Roboto",
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              )
-                                            ])))),
-                              ),
+                        if (amount == 0.0) ...[
+                          getSubmitButton()
+                        ] else ...[
+                          canDoSlydoTransfer(amount!, currentBalance!)
+                              ? getSubmitButton()
+                              : Container(
+                                  child: Center(
+                                      child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 16.0),
+                                          child: Text.rich(TextSpan(
+                                              text: AppLocalization.of(context)!
+                                                  .minimumTransfer,
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: blackFont,
+                                                  fontWeight: FontWeight.w600),
+                                              children: <InlineSpan>[
+                                                TextSpan(
+                                                  text: worldCurrencies[userBloc
+                                                          .user.currency!]! +
+                                                      moneyDisplayNormalizer(
+                                                          availableTransfer()),
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: blackFont,
+                                                      fontFamily: "Roboto",
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                )
+                                              ])))),
+                                ),
+                        ],
+
                         // getSubmitButton(),
                         SizedBox(
                           height: 20,
@@ -1286,10 +1291,10 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   }
 
   bool canDoSlydoTransfer(double amount, double balance) {
-    if (amount + 10.0 > balance) {
-      return false;
+    if (balance > amount + 10.0) {
+      return true;
     }
-    return true;
+    return false;
   }
 
   int availableTransfer() {
