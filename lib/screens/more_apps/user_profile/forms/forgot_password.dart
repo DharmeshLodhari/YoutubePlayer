@@ -346,7 +346,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       String phoneNumber =
           "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
 
-      UserAuth().registerPhoneNumber(phoneNumber).then((value) {
+      UserAuth().passwordResetOtp(phoneNumber).then((value) {
         Navigator.of(context).popAndPushNamed(
           "/verify-reset-password-otp",
           arguments: {

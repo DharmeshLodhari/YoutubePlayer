@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../data/currency.dart';
 import '../../../../../data/database_helper.dart';
 import '../../../../../data/environment.dart';
 import '../../../../../routes/route_constants.dart';
@@ -77,10 +78,11 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
   ScrollController _scrollController = new ScrollController();
-  double? amount;
+  int? amount = 0;
   late http.Response response;
   VirtualAccount? virtualAccount;
   bool isAccountFound = false;
+  int? accountBalance = 0;
 
   @override
   void initState() {
@@ -206,6 +208,10 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                         SizedBox(
                           height: 20,
                         ),
+                        noteForUser(),
+                        SizedBox(
+                          height: 20,
+                        ),
                       ],
                     ),
                   ),
@@ -218,7 +224,35 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                   SizedBox(
                     height: 40,
                   ),
-                  getSubmitButton(),
+                  canCashOut(amount!, accountBalance!)
+                      ? getSubmitButton()
+                      : Container(
+                          child: Center(
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: Text.rich(TextSpan(
+                                      text: AppLocalization.of(context)!
+                                          .minimumTransfer,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: blackFont,
+                                          fontWeight: FontWeight.w600),
+                                      children: <InlineSpan>[
+                                        TextSpan(
+                                          text: worldCurrencies[
+                                                  userBloc.user.currency!]! +
+                                              moneyDisplayNormalizer(
+                                                  displayPossibleCashOutAmount(
+                                                      accountBalance!)),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: blackFont,
+                                              fontFamily: "Roboto",
+                                              fontWeight: FontWeight.w600),
+                                        )
+                                      ])))),
+                        ),
                   SizedBox(
                     height: 20,
                   ),
@@ -360,7 +394,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = double.parse(val.replaceAll(',', ''));
+            amount = int.parse(val.replaceAll(",", "").split(".")[0]);
           });
         }
       },
@@ -1080,5 +1114,37 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
         ),
       );
     }
+  }
+
+  Widget noteForUser() {
+    return Center(
+      child: Text.rich(TextSpan(
+          text: AppLocalization.of(context)!.noteForUser2,
+          style: TextStyle(
+              fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
+          children: <InlineSpan>[
+            TextSpan(
+              text: worldCurrencies[userBloc.user.currency!]! +
+                  moneyDisplayNormalizer(2500),
+              style: TextStyle(
+                  fontSize: 12,
+                  color: blackFont,
+                  fontFamily: "Roboto",
+                  fontWeight: FontWeight.w600),
+            )
+          ])),
+    );
+  }
+
+  Future<void> getAccountBalance() async {
+    await _auth.getAccountBalance().then((value) {
+      var data = value!;
+      var spendableBalance = data["spendable_balance"];
+      if (mounted) {
+        setState(() {
+          accountBalance = spendableBalance;
+        });
+      }
+    });
   }
 }

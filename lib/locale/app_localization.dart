@@ -463,8 +463,22 @@ class AppLocalization {
 
   String get noteForUser {
     return Intl.message(
-      "you are about to transfer money into your bank account",
+      "you are about to transfer money into a bank account, this service will cost ",
       name: "noteForUser",
+    );
+  }
+
+  String get noteForUser2 {
+    return Intl.message(
+      "You are about to transfer money into a bank account, this service will cost ",
+      name: "noteForUser2",
+    );
+  }
+
+  String get minimumTransfer {
+    return Intl.message(
+      "Minimum Transferable Fund: ",
+      name: "minimumTransfer",
     );
   }
 
