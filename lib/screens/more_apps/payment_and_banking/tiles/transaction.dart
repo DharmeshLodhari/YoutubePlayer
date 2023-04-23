@@ -297,37 +297,40 @@ class TransactionTile extends StatelessWidget {
               fit: BoxFit.fitHeight,
             ),
           )
-        : Container(
-            height: 48,
-            width: 48,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                25,
-              ),
-              // border: Border.all(color: borderColor, width: 2),
-              border: Border.all(color: Colors.transparent, width: 0),
-            ),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(myGlobals.navigationKey.currentContext!)
-                    .pushNamed("/photo-viewer", arguments: transaction!.avatar);
-              },
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: transaction!.avatar!,
-                  height: 48,
-                  errorWidget: imageErrorWidget,
-                  width: 48,
-                  colorBlendMode: BlendMode.darken,
-                  fit: BoxFit.cover,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => transaction!.avatar == ""
-                      ? Icon(Icons.person)
-                      : CircularLoadingIndicator(),
-                ),
-              ),
-            ),
-          );
+        : checkBankImage(transaction!);
+  }
+
+  Widget checkBankImage(Transaction transaction) {
+    String? url = transaction.avatar;
+
+    String imageUrl = url!.replaceAll('https//', 'https://');
+    if (transaction.avatar == "" ||
+        transaction.avatar ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(transaction.displayToCustomer).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          height: 48,
+          errorWidget: imageErrorWidget,
+          width: 48,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => transaction.avatar == ""
+              ? Icon(Icons.person)
+              : CircularLoadingIndicator(),
+        ),
+      );
+    }
   }
 
   Widget getAmount() {

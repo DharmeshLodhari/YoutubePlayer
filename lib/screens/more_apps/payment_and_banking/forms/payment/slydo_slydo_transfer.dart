@@ -28,6 +28,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../../utils/navigation_util.dart';
 import '../../../../search_user.dart';
+import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../payment_and_banking_auth.dart';
 
 class SlydoSlydoTransfer extends StatefulWidget {
@@ -506,7 +507,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                     name: _payee!.displayName() != null
                         ? _payee!.displayName()!
                         : '',
-                    isVerified: true,
+                    isVerified: _payee!.isVerified,
                     lengthToTruncateAt: 20,
                     textStyle: TextStyle(
                         color: Colors.black,
@@ -519,7 +520,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
-                  leading: avatarImage,
+                  leading: checkImage(),
                   trailing: qrCodeImage,
                   onTap: () {
                     Navigator.pushNamed(context, '/profile',
@@ -748,6 +749,52 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       selectedCategory = pressedCategory;
       debugPrint("selected category $selectedCategory");
       setState(() {});
+    }
+  }
+
+  Widget checkImage() {
+    Color borderColor = getUserTypeColor(user: _payee!);
+    String? url = _payee!.avatar;
+
+    String imageUrl = url!.replaceAll('https//', 'https://');
+    if (_payee!.avatar == "" ||
+        _payee!.avatar ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(_payee!.fullName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context)
+                .pushNamed("/photo-viewer", arguments: imageUrl);
+          },
+          child: ClipOval(
+            child: _payee!.avatar != null
+                ? CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    errorWidget: imageErrorWidget,
+                  )
+                : SizedBox.shrink(),
+          ),
+        ),
+      );
     }
   }
 

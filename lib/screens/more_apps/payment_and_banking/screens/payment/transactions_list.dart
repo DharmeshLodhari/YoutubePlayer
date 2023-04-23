@@ -86,20 +86,6 @@ class _TransactionListState extends State<TransactionList> {
     });
   }
 
-  // refresh the list when lifecycle called onResume method
-  // void _onRefreshOnResume() {
-  //   _refreshBloc = Provider.of<RefreshBlocForTransaction>(context);
-  //   _refreshBloc!
-  //     ..addListener(() {
-  //       if (_refreshBloc!.isRefresh) {
-  //         if (mounted) {
-  //           _onRefresh();
-  //           _refreshBloc!.isRefresh = false;
-  //         }
-  //       }
-  //     });
-  // }
-
   _refresh() {
     count = 0;
     next = "";
@@ -172,28 +158,8 @@ class _TransactionListState extends State<TransactionList> {
     setState(() {});
   }
 
-  // void initializePopMenu() {
-  //   menu = CustomizedPopUpMenu(
-  //     buttonKey: _key,
-  //     context: context,
-  //     children: [
-  //       CustomizedPopUpMenuItem(title: "All", value: ""),
-  //       CustomizedPopUpMenuItem(title: "Received", value: "received"),
-  //       CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
-  //       CustomizedPopUpMenuItem(title: "Clear Date", value: filterValue),
-  //     ],
-  //     selectedIndex: selectedMenuItemIndex,
-  //     right: 16,
-  //   );
-  //   menu.onChange = menuItemSelectionChange;
-  //   menu.menuState = menuStateChange;
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // refresh the list when lifecycle called onResume method
-    // _onRefreshOnResume();
-
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     menu = CustomizedPopUpMenu(
       buttonKey: _key,

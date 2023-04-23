@@ -130,7 +130,7 @@ class PayoutTile extends StatelessWidget {
     String? url = payout!.bankLogo;
 
     String imageUrl = url!.replaceAll('https//', 'https://');
-    if (payout!.bankName! == "") {
+    if (payout!.bankLogo! == "") {
       return GestureDetector(
         onTap: () {
           Navigator.of(myGlobals.navigationKey.currentContext!).pushNamed(
