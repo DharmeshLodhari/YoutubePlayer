@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../../data/currency.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../search_user.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -68,7 +69,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   bool? isFromYarn = false;
   bool? isFromMoment = false;
   bool isValidPayee = false;
-  double? amount;
+  double? amount = 0.0;
   String reference = "";
   String category = "";
   String errorMessage = "";
@@ -91,6 +92,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   bool showMoreOption = false;
   VirtualAccount? virtualAccount;
   late CachedVideoPlayerController controller;
+  double? currentBalance = 0.0;
 
   @override
   void initState() {
@@ -163,6 +165,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
   void getBankAccountDetail() async {
     virtualAccount = await DatabaseHelper().getVirtualAccount();
+    // await getAccountBalance();
+    currentBalance = await getAccountBalance();
   }
 
   void setAllFieldProduct() {
@@ -325,6 +329,10 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                           : Container(),
                                       getMoreOptionTrigger(),
                                     ],
+                                    noteForUser(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
                                     errorMessage == ""
                                         ? Container()
                                         : Text(
@@ -354,7 +362,36 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                         SizedBox(
                           height: 20,
                         ),
-                        getSubmitButton(),
+                        canDoSlydoTransfer(amount!, currentBalance!)
+                            ? getSubmitButton()
+                            : Container(
+                                child: Center(
+                                    child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16.0),
+                                        child: Text.rich(TextSpan(
+                                            text: AppLocalization.of(context)!
+                                                .minimumTransfer,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: blackFont,
+                                                fontWeight: FontWeight.w600),
+                                            children: <InlineSpan>[
+                                              TextSpan(
+                                                text: worldCurrencies[userBloc
+                                                        .user.currency!]! +
+                                                    moneyDisplayNormalizer(
+                                                        availableTransfer()),
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: blackFont,
+                                                    fontFamily: "Roboto",
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              )
+                                            ])))),
+                              ),
+                        // getSubmitButton(),
                         SizedBox(
                           height: 20,
                         ),
@@ -1015,11 +1052,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                     userLocation = await locationService.getLocation();
                   }
 
-                  double currentBalance = await getAccountBalance();
-
-                  double transactionalAmount = double.parse(amount.toString());
-
-                  debugPrint("AMOUNT:- ${amount.toString()}");
+                  // double currentBalance = await getAccountBalance();
+                  // double transactionalAmount = double.parse(amount.toString());
 
                   //show loading screen
                   Navigator.pop(context);
@@ -1034,14 +1068,14 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
                   await Future.delayed(Duration(seconds: 3));
 
-                  if (transactionalAmount > currentBalance) {
-                    Navigator.pop(context);
-
-                    errorMessage = "Insufficient funds !!";
-                    setState(() {});
-                    showToast(message: errorMessage);
-                    return;
-                  }
+                  // if (transactionalAmount + 10.0 > currentBalance) {
+                  //   Navigator.pop(context);
+                  //
+                  //   errorMessage = "Insufficient funds !!";
+                  //   setState(() {});
+                  //   showToast(message: errorMessage);
+                  //   return;
+                  // }
 
                   deviceData = await getDeviceInfo();
 
@@ -1229,5 +1263,39 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       showToast(message: errorMessage);
       return;
     }
+  }
+
+  Widget noteForUser() {
+    return Center(
+      child: Text.rich(TextSpan(
+          text: AppLocalization.of(context)!.noteForUser2,
+          style: TextStyle(
+              fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
+          children: <InlineSpan>[
+            TextSpan(
+              text: worldCurrencies[userBloc.user.currency!]! +
+                  moneyDisplayNormalizer(1000),
+              style: TextStyle(
+                  fontSize: 12,
+                  color: blackFont,
+                  fontFamily: "Roboto",
+                  fontWeight: FontWeight.w600),
+            )
+          ])),
+    );
+  }
+
+  bool canDoSlydoTransfer(double amount, double balance) {
+    if (amount + 10.0 > balance) {
+      return false;
+    }
+    return true;
+  }
+
+  int availableTransfer() {
+    int value = 0;
+    value = currentBalance!.toInt() * 100 - 1000;
+
+    return value;
   }
 }

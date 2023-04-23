@@ -2375,3 +2375,35 @@ extension StringCasingExtension on String {
       .map((str) => str.toCapitalized())
       .join(' ');
 }
+
+bool canCashOut(int amount, int accountBalance) {
+  int payoutCharge = 2500; //transaction charges in kobo
+  int minimumAccountBalance =
+      1000; //the minimum a user's account can have at any time in kobo
+  int totalDeduction = 0;
+  int balanceAfterTransaction = 0;
+
+  totalDeduction = amount * 100 + payoutCharge;
+  balanceAfterTransaction = accountBalance - totalDeduction;
+
+  if (accountBalance >= totalDeduction &&
+      balanceAfterTransaction > minimumAccountBalance) {
+    return true;
+  }
+
+  return false;
+}
+
+int displayPossibleCashOutAmount(int accountBalance) {
+  int payoutCharge = 2500; //transaction charges in kobo
+  int minimumAccountBalance =
+      1000; //the minimum a user's account can have at any time in kobo
+  int possibleSendOutAmount = 0;
+
+  // accountBalance = 20000000000;
+
+  possibleSendOutAmount =
+      accountBalance - (payoutCharge + minimumAccountBalance);
+
+  return possibleSendOutAmount;
+}

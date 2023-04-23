@@ -287,6 +287,33 @@ class UserAuth extends AuthService {
     }
   }
 
+  // password reset OTP
+  Future<bool> passwordResetOtp(String phoneNumber) async {
+    var url = AppConfig.baseUrl + "/api/v1/sms/get-password-reset-token/";
+    var headers = getNonAuthHeader();
+    var data = {
+      "phone": phoneNumber,
+    };
+
+    debugPrint('password reset DATA ::: $data');
+
+    var _data = jsonEncode(data);
+    var response = await httpPost(url,
+        body: _data, headers: headers as Map<String, dynamic>?);
+
+    debugPrint('RESET PASSWORD OTP RESPONSE ::: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint("DATA SENT:- $data");
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      var jsonData = json.decode(response.body);
+      return Future.error(jsonData["error"]);
+    }
+  }
+
   Future<bool> canContinueRegistrationWithPhoneNumber(
       {required String phoneNumber}) async {
     String url = AppConfig.baseUrl + "/api/v1/user/verify-phone-number/";
