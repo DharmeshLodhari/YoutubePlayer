@@ -329,10 +329,6 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                           : Container(),
                                       getMoreOptionTrigger(),
                                     ],
-                                    noteForUser(),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
                                     errorMessage == ""
                                         ? Container()
                                         : Text(
@@ -1268,26 +1264,6 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       showToast(message: errorMessage);
       return;
     }
-  }
-
-  Widget noteForUser() {
-    return Center(
-      child: Text.rich(TextSpan(
-          text: AppLocalization.of(context)!.noteForUser2,
-          style: TextStyle(
-              fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
-          children: <InlineSpan>[
-            TextSpan(
-              text: worldCurrencies[userBloc.user.currency!]! +
-                  moneyDisplayNormalizer(1000),
-              style: TextStyle(
-                  fontSize: 12,
-                  color: blackFont,
-                  fontFamily: "Roboto",
-                  fontWeight: FontWeight.w600),
-            )
-          ])),
-    );
   }
 
   bool canDoSlydoTransfer(double amount, double balance) {
