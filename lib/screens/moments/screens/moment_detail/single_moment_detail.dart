@@ -74,6 +74,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('fola tag::: ${widget.currentMoment.tags}');
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -398,10 +399,12 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                         )
                       : SizedBox.shrink(),
                 ),
-                SizedBox(
-                  width: 300,
-                  child: getTags(),
-                ),
+                if (widget.currentMoment.tags!.isEmpty) ...[
+                  SizedBox(
+                    width: 300,
+                    child: getTags(),
+                  ),
+                ],
                 SizedBox(height: 9),
                 Row(
                   children: [
