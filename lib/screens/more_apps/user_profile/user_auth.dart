@@ -383,6 +383,12 @@ class UserAuth extends AuthService {
       "reset-token": resetToken,
       "phone-number": phoneNumber,
     };
+    // var data = {
+    //   "password1": '123457',
+    //   "password2": '123457',
+    //   "reset-token": '359927',
+    //   "phone-number": phoneNumber,
+    // };
     var _data = jsonEncode(data);
     debugPrint('_data :: $data');
     var response = await httpPatch(url,
