@@ -489,31 +489,6 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  // Widget appBar() {
-  //   return AppBar(
-  //     elevation: 0,
-  //     titleSpacing: 16,
-  //     backgroundColor: Colors.white,
-  //     automaticallyImplyLeading: false,
-  //     centerTitle: false,
-  //     leading: IconButton(
-  //       icon: Icon(
-  //         Icons.keyboard_arrow_left,
-  //         color: navyBlue,
-  //         size: 24,
-  //       ),
-  //       onPressed: () {
-  //         Navigator.pop(context);
-  //       },
-  //     ),
-  //     title: Text(
-  //       "Search",
-  //       style: TextStyle(
-  //           color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
-  //     ),
-  //   );
-  // }
-
   Widget _buildResultList() {
     return isSearchIsEmpty
         ? NoItemInList(
@@ -745,7 +720,9 @@ class _SearchModuleState extends State<SearchModule> {
   Widget getUserProfilePic(CustomerProfile user) {
     Color borderColor = getUserTypeColor(user: user);
 
-    if (user.avatar == "") {
+    if (user.avatar == "" ||
+        user.avatar ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return CircleAvatar(
         backgroundColor: navyBlue,
         radius: 25,

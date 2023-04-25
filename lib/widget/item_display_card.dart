@@ -97,99 +97,101 @@ class _DisplayProductState extends State<DisplayProduct> {
           child: Padding(
             padding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: 6.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Stack(
-                  children: [
-                    Container(
-                      height: 155,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        child: CachedNetworkImage(
-                          imageUrl: widget.product.cover!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          errorWidget: productAndServiceBigErrorWidget,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 10,
-                      bottom: 10,
-                      child: getRating(
-                          numberOfRating: widget.product.rating?.toInt()),
-                    ),
-                    displayShoppingCartControls(),
-                    // TODO: to be added in future
-                    // Positioned(right: 10, top: 10, child: favouriteIcon())
-                  ],
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Stack(
                     children: [
-                      Text(
-                        truncateString(
-                          str: widget.product.name!,
-                          lengthToTruncateAt: 16,
-                          showEllipsis: false,
-                        ),
-                        style: TextStyle(
-                          color: blackFont,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        '${widget.product.shortDescription}',
-                        style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontWeight: FontWeight.w400,
-                          fontSize: 10,
-                          color: yarnBlack,
+                      Container(
+                        height: 155,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          child: CachedNetworkImage(
+                            imageUrl: widget.product.cover!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorWidget: productAndServiceBigErrorWidget,
+                          ),
                         ),
                       ),
-                      SizedBox(
-                        height: 6,
+                      Positioned(
+                        left: 10,
+                        bottom: 10,
+                        child: getRating(
+                            numberOfRating: widget.product.rating?.toInt()),
                       ),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              worldCurrencies[widget.product.currency!]!,
-                              style: TextStyle(
-                                fontFamily: "Roboto",
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14.8,
-                                color: navyBlue,
-                              ),
-                            ),
-                            Text(
-                              moneyDisplayNormalizer(
-                                  int.parse(widget.product.price!)),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: navyBlue,
-                              ),
-                            ),
-                            Expanded(child: SizedBox(width: 40)),
-                            displayShoppingAddingToCartControl()
-                          ]),
+                      displayShoppingCartControls(),
+                      // TODO: to be added in future
+                      // Positioned(right: 10, top: 10, child: favouriteIcon())
                     ],
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          truncateString(
+                            str: widget.product.name!,
+                            lengthToTruncateAt: 16,
+                            showEllipsis: false,
+                          ),
+                          style: TextStyle(
+                            color: blackFont,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          '${widget.product.shortDescription}',
+                          style: TextStyle(
+                            fontFamily: "Roboto",
+                            fontWeight: FontWeight.w400,
+                            fontSize: 10,
+                            color: yarnBlack,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                worldCurrencies[widget.product.currency!]!,
+                                style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14.8,
+                                  color: navyBlue,
+                                ),
+                              ),
+                              Text(
+                                moneyDisplayNormalizer(
+                                    int.parse(widget.product.price!)),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: navyBlue,
+                                ),
+                              ),
+                              Expanded(child: SizedBox(width: 40)),
+                              displayShoppingAddingToCartControl()
+                            ]),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

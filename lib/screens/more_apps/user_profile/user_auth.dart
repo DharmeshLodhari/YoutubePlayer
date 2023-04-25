@@ -288,7 +288,7 @@ class UserAuth extends AuthService {
   }
 
   // password reset OTP
-  Future<bool> passwordResetOtp(String phoneNumber) async {
+  Future<http.Response> passwordResetOtp(String phoneNumber) async {
     var url = AppConfig.baseUrl + "/api/v1/sms/get-password-reset-token/";
     var headers = getNonAuthHeader();
     var data = {
@@ -303,15 +303,7 @@ class UserAuth extends AuthService {
 
     debugPrint('RESET PASSWORD OTP RESPONSE ::: ${response.body}');
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      debugPrint("DATA SENT:- $data");
-      debugPrint(
-          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-      var jsonData = json.decode(response.body);
-      return Future.error(jsonData["error"]);
-    }
+    return response;
   }
 
   Future<bool> canContinueRegistrationWithPhoneNumber(

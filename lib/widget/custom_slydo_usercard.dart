@@ -12,6 +12,7 @@ import '../locale/app_localization.dart';
 import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
+import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../screens/more_apps/user_profile/user_auth.dart';
 import '../utils/colors.dart';
 import '../utils/slydo_app_icon_icons.dart';
@@ -97,12 +98,19 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
   Widget getUserLeading(CustomerProfile user) {
     Color borderColor = getUserTypeColor(user: user);
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context)
-            .pushNamed(Routes.PHOTO_VIEWER, arguments: user.avatar);
-      },
-      child: Container(
+    if (user.avatar == "" ||
+        user.avatar ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(user.fullName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return Container(
         height: 48,
         width: 48,
         decoration: BoxDecoration(
@@ -126,8 +134,8 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget getSlidableWithCard(BuildContext context) {
