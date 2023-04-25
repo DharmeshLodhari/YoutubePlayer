@@ -2,10 +2,12 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:pinput/pin_put/pin_put.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
+import '../../../../widget/LoadingIndicator.dart';
 import '../user_auth.dart';
 
 // ignore: must_be_immutable
@@ -32,14 +34,16 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   TextEditingController? _newPasswordController;
   TextEditingController? _confirmPasswordController;
+  final FocusNode _pinPutFocusNode = FocusNode();
+  TextEditingController? _resetTokenController;
+  bool isLoading = false;
 
   @override
   void initState() {
     phoneNumber = arguments['phoneNumber'];
-    resetToken = arguments['resetToken'];
-
     _newPasswordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
+    _resetTokenController = TextEditingController();
 
     super.initState();
   }
@@ -73,27 +77,33 @@ class _ResetPasswordState extends State<ResetPassword> {
                     (AppBar().preferredSize.height +
                         MediaQuery.of(context).padding.top),
                 width: MediaQuery.of(context).size.width,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      resetPasswordTitle(),
-                      SizedBox(
-                        height: 20,
+                child: isLoading == true
+                    ? Center(child: CircularLoadingIndicator())
+                    : Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            resetPasswordTitle(),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            passwordPinFiled(),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            newPasswordWidget(),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            confirmPasswordWidget(),
+                            SizedBox(
+                              height: 40,
+                            ),
+                            resetPasswordButton(),
+                          ],
+                        ),
                       ),
-                      newPasswordWidget(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      confirmPasswordWidget(),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      resetPasswordButton(),
-                    ],
-                  ),
-                ),
               ),
             )));
   }
@@ -177,6 +187,47 @@ class _ResetPasswordState extends State<ResetPassword> {
     return null;
   }
 
+  Widget passwordPinFiled() {
+    BoxDecoration pinPutDecoration = BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: greyBorderColor));
+    BoxDecoration selectedDecoration = BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: navyBlue));
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "Reset Password OTP",
+            style: TextStyle(fontSize: 14, color: darkGrey),
+          ),
+          SizedBox(
+            height: 6.0,
+          ),
+          PinPut(
+            eachFieldWidth: 45,
+            eachFieldHeight: 45,
+            obscureText: '•',
+            validator: (val) => val!.length < 4
+                ? AppLocalization.of(context)!.invalidPassword
+                : null,
+            fieldsCount: 6,
+            focusNode: _pinPutFocusNode,
+            controller: _resetTokenController,
+            submittedFieldDecoration: pinPutDecoration,
+            selectedFieldDecoration: selectedDecoration,
+            followingFieldDecoration: pinPutDecoration,
+            pinAnimationType: PinAnimationType.scale,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.number,
+            textStyle: TextStyle(color: blackFont, fontSize: 35),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget resetPasswordButton() {
     return CurvedButton(
       onPressed: verifyPassword,
@@ -193,9 +244,14 @@ class _ResetPasswordState extends State<ResetPassword> {
     }
 
     if (_formKey.currentState!.validate()) {
+      isLoading = true;
+
+      resetToken = _resetTokenController!.text.trim();
+
       UserAuth()
           .resetPassword(newPassword, confirmPassword, phoneNumber, resetToken)
           .then((value) {
+        isLoading = false;
         if (value) {
           Navigator.popUntil(context, ModalRoute.withName(Routes.LOGIN));
         } else {
@@ -203,6 +259,7 @@ class _ResetPasswordState extends State<ResetPassword> {
         }
       }).catchError(
         (e) {
+          isLoading = false;
           showToast(message: e.toString());
         },
       );

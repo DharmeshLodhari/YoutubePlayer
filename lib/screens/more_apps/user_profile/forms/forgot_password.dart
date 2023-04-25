@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
+import '../../../../widget/LoadingIndicator.dart';
 import '../user_auth.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -27,6 +28,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   TextEditingController? phoneNumberController = TextEditingController();
   late http.Response response;
   String errorMessage = "";
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -65,29 +67,33 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     (AppBar().preferredSize.height +
                         MediaQuery.of(context).padding.top),
                 width: MediaQuery.of(context).size.width,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      forgotPasswordTitle(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      phoneNumberField(),
-                      isOTPSent
-                          ? SizedBox(
+                child: isLoading == true
+                    ? Center(child: CircularLoadingIndicator())
+                    : Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            forgotPasswordTitle(),
+                            SizedBox(
                               height: 20,
-                            )
-                          : Container(),
-                      isOTPSent ? getVerificationOTPWidget() : Container(),
-                      SizedBox(
-                        height: 20,
+                            ),
+                            phoneNumberField(),
+                            isOTPSent
+                                ? SizedBox(
+                                    height: 20,
+                                  )
+                                : Container(),
+                            isOTPSent
+                                ? getVerificationOTPWidget()
+                                : Container(),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            submitButton()
+                          ],
+                        ),
                       ),
-                      submitButton()
-                    ],
-                  ),
-                ),
               ),
             )));
   }
@@ -284,18 +290,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   Widget submitButton() {
-    // return ButtonTheme(
-    //   minWidth: double.infinity,
-    //   child: MaterialButton(
-    //     onPressed: isOTPSent ? verifyOTP : sendOTP,
-    //     textColor: Colors.white,
-    //     color: darkBlue(),
-    //     height: 50,
-    //     child: Text(isOTPSent
-    //         ? AppLocalization.of(context).verifyOtp
-    //         : AppLocalization.of(context).continueMsg),
-    //   ),
-    // );
     return CurvedButton(
       textColor: Colors.white,
       backgroundColor: navyBlue,
@@ -304,42 +298,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     );
   }
 
-  void verifyOTP() {
-    //for closing the keypad if it is open
-    if (FocusScope.of(context).hasFocus) {
-      FocusScope.of(context).unfocus();
-    }
-
-    if (_formKey.currentState!.validate()) {
-      String passwordToken = "true";
-
-      var phoneNumberFromTextField = phoneNumberController!.text.trim();
-
-      if (phoneNumberFromTextField.substring(0, 1) == "0") {
-        phoneNumberFromTextField =
-            phoneNumberFromTextField.replaceFirst("0", "");
-      }
-
-      String phoneNumber =
-          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
-
-      UserAuth()
-          .verifyPhoneNumber(phoneNumber, sentOTP, passwordToken)
-          .then((value) {
-        String? resetToken = value;
-
-        Navigator.of(context).popAndPushNamed('/reset-password',
-            arguments: {'phoneNumber': phoneNumber, "resetToken": resetToken});
-      });
-    }
-  }
-
   void sendOTP() {
     // for closing the keypad if it is open
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
     if (_formKey.currentState!.validate()) {
+      isLoading = true;
+
       var phoneNumberFromTextField = phoneNumberController!.text.trim();
 
       if (phoneNumberFromTextField.substring(0, 1) == "0") {
@@ -353,13 +319,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       UserAuth().passwordResetOtp(phoneNumber).then((value) {
         response = value;
 
+        isLoading = false;
+
         if (response.statusCode == 200) {
-          Navigator.of(context).popAndPushNamed(
-            "/verify-reset-password-otp",
-            arguments: {
-              "phoneNumber": phoneNumber,
-            },
-          );
+          Navigator.of(context).popAndPushNamed('/reset-password',
+              arguments: {'phoneNumber': phoneNumber});
         } else if (response.statusCode == 400) {
           setState(() {
             errorMessage = "${jsonDecode(value.body)["error"]}";
