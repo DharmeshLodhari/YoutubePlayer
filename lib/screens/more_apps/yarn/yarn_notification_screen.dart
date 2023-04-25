@@ -101,7 +101,7 @@ class _YarnNotificationState extends State<YarnNotification> {
         ),
         controller: refreshController,
         onRefresh: onRefresh,
-        child: _buildBody(),
+        child: _buildListView(),
       ),
     );
   }
@@ -133,60 +133,44 @@ class _YarnNotificationState extends State<YarnNotification> {
     );
   }
 
-  Widget _buildBody() {
-    return _checkIfNotificationIsNotNull();
-  }
-
-  Widget _checkIfNotificationIsNotNull() {
-    if (noList) {
-      return NoItemInList(
-        msg: AppLocalization.of(context)!.noResultFound,
-      );
-    } else {
-      return Expanded(
-        child: ListView.separated(
-          padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-          itemCount: notificationList.length + 1,
-          itemBuilder: (context, index) {
-            if (index == notificationList.length) {
-              return _buildLoadingIndicator();
-            }
-            return _buildListView(notificationList[index]);
-          },
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-        ),
+  Widget _buildListView() {
+    if (!noList) {
+      return ListView.separated(
+        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        itemCount: notificationList.length + 1,
+        itemBuilder: (context, index) {
+          if (index == notificationList.length) {
+            return _buildLoadingIndicator();
+          }
+          return AskNotificationView(
+            notification: notificationList[index],
+            onDeleteNotification: (Notifications notifications) {
+              int index = notificationList
+                  .indexWhere((element) => element.id == notifications.id);
+              if (index != -1) {
+                notificationList.removeAt(index);
+                //send callback to refresh notification count
+                widget.onDeleteNotification!(true);
+                if (mounted) setState(() {});
+              }
+              // onRefresh();
+            },
+          );
+        },
+        separatorBuilder: (context, index) {
+          return Divider();
+        },
       );
     }
+    return NoItemInList(
+      msg: AppLocalization.of(context)!.noResultFound,
+    );
   }
 
   Widget _buildLoadingIndicator() {
     return Opacity(
       opacity: isLoading ? 1.0 : 00,
       child: isLoading ? YarnShimmer() : Container(),
-    );
-  }
-
-  Widget _buildListView(Notifications notification) {
-    if (noList) {
-      return NoItemInList(
-        msg: AppLocalization.of(context)!.noResultFound,
-      );
-    }
-    return AskNotificationView(
-      notification: notification,
-      onDeleteNotification: (Notifications notifications) {
-        int index = notificationList
-            .indexWhere((element) => element.id == notifications.id);
-        if (index != -1) {
-          notificationList.removeAt(index);
-          //send callback to refresh notification count
-          widget.onDeleteNotification!(true);
-          if (mounted) setState(() {});
-        }
-        // onRefresh();
-      },
     );
   }
 
