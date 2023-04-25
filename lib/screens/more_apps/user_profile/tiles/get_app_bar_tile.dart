@@ -502,8 +502,17 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                     shape: BoxShape.circle),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: searchedUser!.avatar);
+                    String image = "";
+                    if (searchedUser!.avatar! == "" ||
+                        searchedUser!.avatar ==
+                            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+                      image =
+                          getInitials(searchedUser!.fullName!).toUpperCase();
+                    } else {
+                      image = searchedUser!.avatar!;
+                    }
+                    Navigator.of(context)
+                        .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
                   },
                   child: searchedUser?.type?.toLowerCase() != "user" &&
                           searchedUser?.rating != 0.0
@@ -622,7 +631,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         );
       }
     } else {
-      if (searchedUser!.avatar! == null) {
+      if (searchedUser!.avatar! == "" ||
+          searchedUser!.avatar ==
+              "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
         return CircleAvatar(
           backgroundColor: navyBlue,
           radius: 25,

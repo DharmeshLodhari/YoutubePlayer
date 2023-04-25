@@ -20,6 +20,8 @@ import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../yarn/widgets/url_reader_of_yarn.dart';
+
 // ignore: must_be_immutable
 class TextMessageRendererForChat extends StatefulWidget {
   Map<String, dynamic>? message;
@@ -185,27 +187,6 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     );
   }
 
-  Map<String, dynamic> detectLinkInMessages(String text) {
-    RegExp exp =
-        new RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
-    Iterable<RegExpMatch> matches = exp.allMatches(text);
-
-    List<String> listOfLinks = [];
-
-    matches.forEach((match) {
-      listOfLinks.add(text.substring(match.start, match.end));
-    });
-
-    Map<String, dynamic> linkData = {"hasLink": false, "links": listOfLinks};
-
-    if (listOfLinks.isEmpty) {
-      return linkData;
-    } else {
-      linkData["hasLink"] = true;
-      return linkData;
-    }
-  }
-
   Widget renderMessage({required Map<String, dynamic> message, bool? isSend}) {
     /// check if message is reply message then render reply UI of message
     /// {id: 58fb1dce-d430-4074-9b4c-6f06e856dd15, check_id: f42e6f87-891a-415a-ab57-0fcfd83fe1f1, conversation: {id: 9ae68069-b342-4e04-b568-602bde6fe901, group_name: null, banner: null, participants: [black, brijesh.sakariya], blocked_participants: null, is_group_conversation: false, updated_at: 2021-03-09T08:14:18.467461+01:00, created_at: 2021-03-09T08:14:18.467517+01:00}, author: black, text: teset123, read_by_author: true, read_by_recipient: false, was_edited: false, media: null, poster: null, updated_at: 2021-04-13T09:21:24.922145+01:00, created_at: 2021-04-13T09:21:24.922169+01:00, kind: text, deleted_for_recipient: false, deleted_for_author: false, delivered: true, meta_data: {}, replied_to: {id: 736ab0e9-1c57-4452-98b4-13664a262b81, check_id: 5da0bcd7-831d-4d02-97bd-dd9e1f78ebef, author: black, text: test, media: null, poster: null, kind: text, read_by_author: true, read_by_recipient: false, deleted_for_recipient: false, deleted_for_author: false, delivered: true, was_edited
@@ -219,8 +200,8 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           newMessage: message, isSend: isSend!, repliedTo: isReplyTo);
     }
 
-    Map<String, dynamic> linkData = detectLinkInMessages(
-        messageDecoderWithEmoji(message['text'].toString())!);
+    Map<String, dynamic> linkData =
+        detectLinkInText(messageDecoderWithEmoji(message['text'].toString())!);
 
     if (linkData["hasLink"]) {
       String linkToBePreview = linkData['links'][0];

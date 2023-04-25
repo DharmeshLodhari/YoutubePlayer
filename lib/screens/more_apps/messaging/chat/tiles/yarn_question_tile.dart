@@ -67,17 +67,6 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     super.initState();
 
     checkModel();
-    // if (momentForChatModel.video != null) {
-    //   isLoading = true;
-    //   if (mounted) setState(() {});
-    //   _mainVideoController = VideoPlayerController.network(
-    //     momentForChatModel.video!,
-    //     videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    //   )..initialize().then((_) {
-    //       isLoading = false;
-    //       if (mounted) setState(() {});
-    //     });
-    // }
   }
 
   void checkModel() {

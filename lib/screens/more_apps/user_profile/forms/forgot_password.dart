@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
@@ -5,7 +7,7 @@ import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
 import '../user_auth.dart';
@@ -23,6 +25,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   late Country _selectedDialogCountry;
 
   TextEditingController? phoneNumberController = TextEditingController();
+  late http.Response response;
+  String errorMessage = "";
 
   @override
   void initState() {
@@ -347,12 +351,38 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
 
       UserAuth().passwordResetOtp(phoneNumber).then((value) {
-        Navigator.of(context).popAndPushNamed(
-          "/verify-reset-password-otp",
-          arguments: {
-            "phoneNumber": phoneNumber,
-          },
-        );
+        response = value;
+
+        if (response.statusCode == 200) {
+          Navigator.of(context).popAndPushNamed(
+            "/verify-reset-password-otp",
+            arguments: {
+              "phoneNumber": phoneNumber,
+            },
+          );
+        } else if (response.statusCode == 400) {
+          setState(() {
+            errorMessage = "${jsonDecode(value.body)["error"]}";
+            showToast(message: errorMessage);
+          });
+        } else if (response.statusCode == 500) {
+          setState(() {
+            errorMessage = AppLocalization.of(context)!.serverError;
+            showToast(message: errorMessage);
+          });
+        } else {
+          if (response.statusCode == 406) {
+            errorMessage = jsonDecode(value.body)[0];
+            showToast(message: "$errorMessage");
+            setState(() {});
+          } else {
+            debugPrint("ERROR:- ${response.body}");
+            setState(() {
+              errorMessage = AppLocalization.of(context)!.somethingWentWrong;
+              showToast(message: "$errorMessage");
+            });
+          }
+        }
       });
     }
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
@@ -56,6 +57,8 @@ String appVersion = '';
 final logger = Logger();
 
 void main() async {
+  HttpOverrides.global = new MyHttpOverrides();
+
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -324,3 +327,12 @@ List<ChangeNotifierProvider> providersList = [
     value: ConnectionRequestListBloc(),
   ),
 ];
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}

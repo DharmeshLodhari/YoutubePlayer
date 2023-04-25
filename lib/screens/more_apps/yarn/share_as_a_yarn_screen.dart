@@ -1136,14 +1136,13 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
   void categoryAndroidSheet() {
     widget.askCategories = askCategoriesCopy;
-    debugPrint("CATEGORIES:- ${widget.askCategories}");
     androidBottomSheet(
       context: context,
       child: StatefulBuilder(
         builder: (context, changeState) {
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.75,
-            child: Wrap(
+            child: Column(
               children: [
                 CustomizedTextFormField(
                   hintText: 'Search category',
@@ -1238,10 +1237,9 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
       context: context,
       child: StatefulBuilder(
         builder: (context, changeState) {
-          return Padding(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: Wrap(
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
               children: [
                 CustomizedTextFormField(
                   hintText: 'Select age',

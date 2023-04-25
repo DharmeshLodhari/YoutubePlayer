@@ -560,7 +560,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           return Padding(
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: Wrap(
+            child: Column(
               children: [
                 CustomizedTextFormField(
                   hintText: 'Select age',
