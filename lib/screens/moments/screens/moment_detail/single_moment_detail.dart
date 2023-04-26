@@ -35,6 +35,8 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+
 class SingleMomentDetailScreen extends StatefulWidget {
   final List<MomentsModel> momentsModelList;
   final List<CachedVideoPlayerController> videoPlayerControllers;
@@ -74,7 +76,6 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('fola tag::: ${widget.currentMoment.tags}');
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -119,162 +120,153 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
           end: 15.0,
           bottom: MediaQuery.of(context).size.height * 0.04,
           child: Column(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(height: 16),
-                  isMyMoment()
-                      ? CustomMomentDetailButton(
-                          iconEnabled: true,
-                          iconData: Icons.more_horiz_outlined,
-                          text: '',
-                          onPressed: () {
-                            androidBottomSheet(
-                              context: context,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  momentVisibilityOption(widget.currentMoment),
-                                  momentPermanentOption(widget.currentMoment),
-                                  momentCommentingOption(widget.currentMoment),
-                                  momentLikeOption(widget.currentMoment),
-                                  bottomSheetItem(
-                                      title: 'Share in chat',
-                                      iconData: Icons.send_outlined,
-                                      onTap: () async {
-                                        await sendMomentToUserInChat(
-                                            momentsModel: widget.currentMoment);
-                                      }),
-                                  bottomSheetItem(
-                                    title: 'Delete',
-                                    iconData: Icons.delete,
-                                    onTap: () {
-                                      Navigator.pop(context);
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 16),
+              isMyMoment()
+                  ? CustomMomentDetailButton(
+                      iconEnabled: true,
+                      iconData: Icons.more_horiz_outlined,
+                      text: '',
+                      onPressed: () {
+                        androidBottomSheet(
+                          context: context,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              momentVisibilityOption(widget.currentMoment),
+                              momentPermanentOption(widget.currentMoment),
+                              momentCommentingOption(widget.currentMoment),
+                              momentLikeOption(widget.currentMoment),
+                              bottomSheetItem(
+                                  title: 'Share in chat',
+                                  iconData: Icons.send_outlined,
+                                  onTap: () async {
+                                    await sendMomentToUserInChat(
+                                        momentsModel: widget.currentMoment);
+                                  }),
+                              bottomSheetItem(
+                                title: 'Delete',
+                                iconData: Icons.delete,
+                                onTap: () {
+                                  Navigator.pop(context);
 
-                                      showDialogBox(
-                                        context: context,
-                                        actionOneTextColor: white,
-                                        actionOneBgColor: mateRed,
-                                        actionTwoTextColor: blackFont,
-                                        actionTwoBgColor: greyBorderColor,
-                                        title:
-                                            AppLocalization.of(context)!.delete,
-                                        actionTwoText:
-                                            AppLocalization.of(context)!.cancel,
-                                        actionOneText:
-                                            AppLocalization.of(context)!.delete,
-                                        description:
-                                            'Are you sure you want to delete this moment?',
-                                        roundedBackgroundIcon:
-                                            RoundedBackgroundIcon(
-                                          enableMargin: false,
-                                          width: 90,
-                                          height: 90,
-                                          image: Image.asset(
-                                              'assets/images/delete_dialog_icon.png'),
-                                        ),
-                                        leftButtonOnPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (dialogLoadingContext) =>
-                                                  LoadingIndicator());
-                                          MomentsService()
-                                              .deleteMoment(
-                                                  widget.currentMoment.id!)
-                                              .then(
-                                            (value) {
-                                              Navigator.pop(
-                                                  context); // Dismiss loading indicator
-                                              Navigator.pop(context);
-                                              showToast(
-                                                  message: 'Moment deleted');
-                                            },
-                                          ).catchError((e) {
-                                            Navigator.pop(context);
-                                            showToast(message: e.toString());
-                                          });
+                                  showDialogBox(
+                                    context: context,
+                                    actionOneTextColor: white,
+                                    actionOneBgColor: mateRed,
+                                    actionTwoTextColor: blackFont,
+                                    actionTwoBgColor: greyBorderColor,
+                                    title: AppLocalization.of(context)!.delete,
+                                    actionTwoText:
+                                        AppLocalization.of(context)!.cancel,
+                                    actionOneText:
+                                        AppLocalization.of(context)!.delete,
+                                    description:
+                                        'Are you sure you want to delete this moment?',
+                                    roundedBackgroundIcon:
+                                        RoundedBackgroundIcon(
+                                      enableMargin: false,
+                                      width: 90,
+                                      height: 90,
+                                      image: Image.asset(
+                                          'assets/images/delete_dialog_icon.png'),
+                                    ),
+                                    leftButtonOnPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (dialogLoadingContext) =>
+                                              LoadingIndicator());
+                                      MomentsService()
+                                          .deleteMoment(
+                                              widget.currentMoment.id!)
+                                          .then(
+                                        (value) {
+                                          Navigator.pop(
+                                              context); // Dismiss loading indicator
+                                          Navigator.pop(context);
+                                          showToast(message: 'Moment deleted');
                                         },
-                                      );
+                                      ).catchError((e) {
+                                        Navigator.pop(context);
+                                        showToast(message: e.toString());
+                                      });
                                     },
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        )
-                      : SizedBox.shrink(),
-                  _buildShareMomentOption(),
-                  CustomMomentDetailButton(
-                    iconEnabled: likeEnabled(),
-                    iconData: Icons.thumb_up,
-                    text: likeEnabled()
-                        ? int.parse(widget.currentMoment.likes.toString()) < 1
-                            ? ''
-                            : getFormattedViewCount(
-                                noOfViews: widget.currentMoment.likes!,
-                                addViewText: false)
-                        : '',
-                    onPressed: likeEnabled()
-                        ? () {
-                            MomentsService()
-                                .likeMoment(widget.currentMoment.id!)
-                                .then((value) {
-                              widget.currentMoment = value;
-                              if (mounted) setState(() {});
-                            });
-                          }
-                        : null,
-                  ),
-                  CustomMomentDetailButton(
-                    iconEnabled: likeEnabled(),
-                    iconData: Icons.thumb_down,
-                    text: likeEnabled()
-                        ? int.parse(widget.currentMoment.dislikes.toString()) <
-                                1
-                            ? ''
-                            : getFormattedViewCount(
-                                noOfViews: widget.currentMoment.dislikes!,
-                                addViewText: false,
-                              )
-                        : '',
-                    onPressed: likeEnabled()
-                        ? () {
-                            MomentsService()
-                                .dislikeMoment(widget.currentMoment.id!)
-                                .then((value) {
-                              widget.currentMoment = value;
-                              if (mounted) setState(() {});
-                            });
-                          }
-                        : null,
-                  ),
-                  CustomMomentDetailButton(
-                    iconEnabled: commentingEnabled(),
-                    iconData: Icons.messenger,
-                    text: commentingEnabled()
-                        ? getCommentCount(widget.index)
-                        : '',
-                    onPressed: commentingEnabled()
-                        ? () {
-                            commentSheet(
-                              context,
-                              widget.currentMoment.id!,
-                              index: widget.index,
-                            );
-                          }
-                        : null,
-                  ),
-                  CustomMomentDetailButton(
-                    iconEnabled: true,
-                    iconData: Icons.visibility_rounded,
-                    text: getFormattedViewCount(
-                      noOfViews: widget.currentMoment.views,
-                      addViewText: false,
-                    ),
-                    onPressed: null,
-                  ),
-                ],
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  : SizedBox.shrink(),
+              _buildShareMomentOption(),
+              CustomMomentDetailButton(
+                iconEnabled: likeEnabled(),
+                iconData: Icons.thumb_up,
+                text: likeEnabled()
+                    ? int.parse(widget.currentMoment.likes.toString()) < 1
+                        ? ''
+                        : getFormattedViewCount(
+                            noOfViews: widget.currentMoment.likes!,
+                            addViewText: false)
+                    : '',
+                onPressed: likeEnabled()
+                    ? () {
+                        MomentsService()
+                            .likeMoment(widget.currentMoment.id!)
+                            .then((value) {
+                          widget.currentMoment = value;
+                          if (mounted) setState(() {});
+                        });
+                      }
+                    : null,
+              ),
+              CustomMomentDetailButton(
+                iconEnabled: likeEnabled(),
+                iconData: Icons.thumb_down,
+                text: likeEnabled()
+                    ? int.parse(widget.currentMoment.dislikes.toString()) < 1
+                        ? ''
+                        : getFormattedViewCount(
+                            noOfViews: widget.currentMoment.dislikes!,
+                            addViewText: false,
+                          )
+                    : '',
+                onPressed: likeEnabled()
+                    ? () {
+                        MomentsService()
+                            .dislikeMoment(widget.currentMoment.id!)
+                            .then((value) {
+                          widget.currentMoment = value;
+                          if (mounted) setState(() {});
+                        });
+                      }
+                    : null,
+              ),
+              CustomMomentDetailButton(
+                iconEnabled: commentingEnabled(),
+                iconData: Icons.messenger,
+                text: commentingEnabled() ? getCommentCount(widget.index) : '',
+                onPressed: commentingEnabled()
+                    ? () {
+                        commentSheet(
+                          context,
+                          widget.currentMoment.id!,
+                          index: widget.index,
+                        );
+                      }
+                    : null,
+              ),
+              CustomMomentDetailButton(
+                iconEnabled: true,
+                iconData: Icons.visibility_rounded,
+                text: getFormattedViewCount(
+                  noOfViews: widget.currentMoment.views,
+                  addViewText: false,
+                ),
+                onPressed: null,
               ),
             ],
           ),
@@ -298,11 +290,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),
-                        child: getCircularUserAvatar(
-                          widget.currentMoment.avatar!,
-                          width: 35,
-                          height: 35,
-                        ),
+                        child: getUserProfilePic(widget.currentMoment.avatar!,
+                            widget.currentMoment.ownerName!),
                       ),
                     ),
                     SizedBox(width: 8),
@@ -995,6 +984,26 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
       }
     } else {
       return HexColor('#3F61DB');
+    }
+  }
+
+  Widget getUserProfilePic(String image, String fullName) {
+    if (image == "" ||
+        image ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 15,
+        child: Text(
+          getInitials(fullName).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w600),
+        ),
+      );
+    } else {
+      return SizedBox(
+        width: 35,
+        child: getCircularUserAvatar(image),
+      );
     }
   }
 }

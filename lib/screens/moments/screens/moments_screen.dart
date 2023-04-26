@@ -20,6 +20,7 @@ import '../../../services/app_config_bloc.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../more_apps/user_profile/models/user.dart';
+import '../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'moment_search_screen.dart';
 
 class MomentsScreen extends StatefulWidget {
@@ -295,7 +296,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
               child: SizedBox(
                   width: 30, height: 30, child: CircularLoadingIndicator()),
             )
-          : getCircularUserAvatar(userBloc.user.avatar!),
+          : getUserProfilePic(userBloc.user.avatar!, userBloc.user.fullName!),
     );
   }
 
@@ -667,35 +668,6 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
           ),
         );
       },
-      // onTap: isConnectionsMomentLoading
-      //     ? null
-      //     : () async {
-      //         if (mounted) {
-      //           setState(() {
-      //             isConnectionsMomentLoading = true;
-      //           });
-      //         }
-      //         for (int i = 0; i < widget.listOfConnectionsNames.length; i++) {
-      //           await getListOfMomentsModelList(
-      //               widget.listOfConnectionsNames[i]);
-      //
-      //           if (widget.listOfConnectionsNames[i] ==
-      //               widget.listOfConnectionsNames.last) {
-      //             if (mounted) {
-      //               setState(() {
-      //                 isConnectionsMomentLoading = false;
-      //               });
-      //             }
-      //             NavigationUtil.push(
-      //               context,
-      //               screen: MomentsDetailsScreen(
-      //                 indexOfMoment: widget.index,
-      //                 momentsModelList: listOfMomentsModelList,
-      //               ),
-      //             );
-      //           }
-      //         }
-      //       },
       child: SizedBox(
         width: 120,
         child: Card(
@@ -712,11 +684,8 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                 alignment: Alignment.topLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 4.0),
-                  child: SizedBox(
-                    width: 25,
-                    child:
-                        getCircularUserAvatar(widget.userMomentModel.avatar!),
-                  ),
+                  child: getUserProfilePic(widget.userMomentModel.avatar!,
+                      widget.userMomentModel.ownerName!),
                 ),
               ),
               Align(
@@ -846,11 +815,9 @@ class ExploreMomentsCard extends StatelessWidget {
                     alignment: Alignment.topLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 4.0),
-                      child: SizedBox(
-                        width: 25,
-                        child: getCircularUserAvatar(
-                            exploreMomentsModelList[index].avatar!),
-                      ),
+                      child: getUserProfilePic(
+                          exploreMomentsModelList[index].avatar!,
+                          exploreMomentsModelList[index].ownerName!),
                     ),
                   )
                 : SizedBox.shrink(),
@@ -997,4 +964,24 @@ Color getProfilePicBorderColor(User user) {
           ? starYellow
           : naturalGreen
       : navyBlue;
+}
+
+Widget getUserProfilePic(String image, String fullName) {
+  if (image == "" ||
+      image ==
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+    return CircleAvatar(
+      backgroundColor: navyBlue,
+      radius: 15,
+      child: Text(
+        getInitials(fullName).toUpperCase(),
+        style: TextStyle(color: white, fontWeight: FontWeight.w600),
+      ),
+    );
+  } else {
+    return SizedBox(
+      width: 25,
+      child: getCircularUserAvatar(image),
+    );
+  }
 }

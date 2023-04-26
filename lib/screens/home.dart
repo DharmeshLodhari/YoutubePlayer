@@ -21,6 +21,7 @@ import '../widget/LoadingIndicator.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../widget/rounded_background_icon.dart';
 import 'more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -140,7 +141,6 @@ class _HomeState extends State<Home> {
   }
 
   Widget _appBar() {
-    Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
     return AppBar(
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
@@ -148,24 +148,19 @@ class _HomeState extends State<Home> {
       centerTitle: false,
       leading: InkWell(
         onTap: () {
+          String? image = '';
+          if (userBloc.user.avatar! == "" ||
+              userBloc.user.avatar ==
+                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+            image = getInitials(userBloc.user.fullName!).toUpperCase();
+          } else {
+            image = userBloc.user.avatar!;
+          }
+
           Navigator.of(context)
-              .pushNamed(Routes.PHOTO_VIEWER, arguments: userBloc.user.avatar);
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
         },
-        child: Container(
-          height: 48,
-          width: 48,
-          padding: EdgeInsets.all(3),
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: borderColor, width: 1)),
-          child: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: userBloc.user.avatar!,
-              fit: BoxFit.cover,
-              errorWidget: imageErrorWidget,
-            ),
-          ),
-        ),
+        child: getUserProfilePic(),
       ),
       title: InkWell(
         key: tutorialUserProfileDetailKey,
@@ -201,6 +196,38 @@ class _HomeState extends State<Home> {
         SizedBox(width: 8.0),
       ],
     );
+  }
+
+  Widget getUserProfilePic() {
+    Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
+    if (userBloc.user.avatar! == "" ||
+        userBloc.user.avatar! ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(userBloc.user.fullName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return Container(
+        height: 48,
+        width: 48,
+        padding: EdgeInsets.all(3),
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: borderColor, width: 1)),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: userBloc.user.avatar!,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      );
+    }
   }
 
   Widget _searchBtn() {
