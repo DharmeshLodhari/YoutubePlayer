@@ -18,6 +18,7 @@ import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/models/user.dart';
+import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../models/Topics/yarn_model.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
@@ -193,21 +194,19 @@ class _ReYarnTileState extends State<ReYarnTile> {
   Widget _buildUserAvatar() {
     return InkWell(
       onTap: () {
-        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: widget.yarn.authorAvatar!);
+        String? image = '';
+        if (widget.yarn.authorAvatar! == "" ||
+            widget.yarn.authorAvatar! ==
+                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+          image = getInitials(widget.yarn.authorName!).toUpperCase();
+        } else {
+          image = widget.yarn.authorAvatar!;
+        }
+
+        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: image);
       },
-      child: Container(
-        height: 28,
-        width: 28,
-        decoration: BoxDecoration(shape: BoxShape.circle),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.yarn.authorAvatar!,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-          ),
-        ),
-      ),
+      child:
+          getUserProfilePic(widget.yarn.authorAvatar!, widget.yarn.authorName!),
     );
   }
 

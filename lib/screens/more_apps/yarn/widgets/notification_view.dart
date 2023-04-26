@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
+import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../models/Topics/Notifications.dart';
 import '../utils/utils.dart';
 
@@ -141,21 +142,22 @@ class AskNotificationView extends StatelessWidget {
   Widget _buildUserAvatar({required BuildContext context}) {
     return InkWell(
       onTap: () {
+        String? image = '';
+        if (notification!.authorAvatar == "" ||
+            notification!.authorAvatar ==
+                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+          image = getInitials(notification!.authorName!).toUpperCase();
+        } else {
+          image = notification!.authorAvatar;
+        }
+
+        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+
         Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
             arguments: notification!.authorAvatar ?? "");
       },
-      child: Container(
-        height: 36,
-        width: 36,
-        decoration: BoxDecoration(shape: BoxShape.circle),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: notification!.authorAvatar ?? "",
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-          ),
-        ),
-      ),
+      child: getUserProfilePic(
+          notification!.authorAvatar!, notification!.authorName!),
     );
   }
 

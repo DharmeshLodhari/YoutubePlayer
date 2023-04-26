@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../../utils/util.dart';
+import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 enum Types { Yarn, Question }
 
@@ -168,21 +169,6 @@ Widget assignTitleToAction({required String text, required Widget child}) {
   );
 }
 
-// String removeLinksAndWords(String text, List<String> wordsToRemove) {
-//   // Check for links and remove them with expect to @ and hash
-//   final linkRegExp =
-//       RegExp(r'\bhttps?://[^\s<>"]+|www\.[^\s<>"]+\b', caseSensitive: false);
-//   text = text.replaceAll(linkRegExp, '');
-//
-//   // Remove any words that match any of the words in the list, ignoring case
-//   for (String word in wordsToRemove) {
-//     final wordRegExp = RegExp(r'\b' + word + r'\b', caseSensitive: false);
-//     text = text.replaceAll(wordRegExp, '');
-//   }
-//
-//   return text;
-// }
-
 String removeLinksAndWords(String text, List<String> wordsToRemove) {
   // Check for links and remove them with expect to @ and hash
   final linkRegExp =
@@ -200,4 +186,24 @@ String removeLinksAndWords(String text, List<String> wordsToRemove) {
   }
 
   return text;
+}
+
+Widget getUserProfilePic(String image, String fullName) {
+  if (image == "" ||
+      image ==
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+    return CircleAvatar(
+      backgroundColor: navyBlue,
+      radius: 15,
+      child: Text(
+        getInitials(fullName).toUpperCase(),
+        style: TextStyle(color: white, fontWeight: FontWeight.w600),
+      ),
+    );
+  } else {
+    return SizedBox(
+      width: 25,
+      child: getCircularUserAvatar(image),
+    );
+  }
 }

@@ -156,18 +156,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": userBloc.user.userName});
       },
-      child: Container(
-        height: 35,
-        width: 35,
-        decoration: BoxDecoration(shape: BoxShape.circle),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar!,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-          ),
-        ),
-      ),
+      child: getUserProfilePic(userBloc.user.avatar!, userBloc.user.fullName!),
     );
   }
 

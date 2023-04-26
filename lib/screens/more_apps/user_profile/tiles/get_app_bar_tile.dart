@@ -1227,7 +1227,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               if (value) {
                 showToast(message: "Friend Request Sent !!");
               } else {
-                showToast(message: "Request Not Sent.. ");
+                showToast(message: "Request Sent Already.. ");
               }
               await getSearchedUser(load: false);
               isLoadingFriendRequest = false;
