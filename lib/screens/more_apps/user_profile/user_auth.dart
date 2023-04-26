@@ -276,6 +276,34 @@ class UserAuth extends AuthService {
 
     debugPrint('REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
 
+    if (response.statusCode == 200 || response.statusCode == 205) {
+      return true;
+    } else {
+      debugPrint("DATA SENT:- $data");
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      var jsonData = json.decode(response.body);
+      return Future.error(jsonData["error"]);
+    }
+  }
+
+  // it will resend OTP for registration the phone number to get OTP
+  Future<bool> registerResendOTP(String phoneNumber) async {
+    var url = AppConfig.baseUrl + " /api/v1/sms/resend-otp/";
+    var headers = getNonAuthHeader();
+    var data = {
+      "phone": phoneNumber,
+    };
+
+    debugPrint('PHONE NUMBER DATA ::: $data');
+
+    var _data = jsonEncode(data);
+    var response = await httpPost(url,
+        body: _data, headers: headers as Map<String, dynamic>?);
+
+    debugPrint(
+        'RESEND OTP REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
+
     if (response.statusCode == 200) {
       return true;
     } else {

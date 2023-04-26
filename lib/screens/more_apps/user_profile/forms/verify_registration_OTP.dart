@@ -1,13 +1,12 @@
 import 'dart:async';
-
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:otp_timer_button/otp_timer_button.dart';
 import 'package:pinput/pin_put/pin_put.dart';
-
 import '../../../../widget/LoadingIndicator.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
 
@@ -30,6 +29,8 @@ class _VerifyRegistrationOTPScreenState
   FocusNode? _pinPutFocusNode;
   TextEditingController? otpController;
   final _verifyOtpFormKey = GlobalKey<FormState>();
+  bool isLoading = false;
+  OtpTimerButtonController controller = OtpTimerButtonController();
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _VerifyRegistrationOTPScreenState
       phoneNumber = widget.arguments['phoneNumber'];
     }
     _pinPutFocusNode = FocusNode();
+
     super.initState();
   }
 
@@ -72,32 +74,45 @@ class _VerifyRegistrationOTPScreenState
                 (AppBar().preferredSize.height +
                     MediaQuery.of(context).padding.top),
             width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  flex: 6,
-                  child: Form(
-                    key: _verifyOtpFormKey,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          verifyOTPTitle(),
-                          flexibleSpace(flex: 1),
-                          expirationNote(),
-                          flexibleSpace(flex: 3),
-                          otpFillUpField(),
-                          flexibleSpace(flex: 2),
-                          verifyBtn(),
-                          flexibleSpace(flex: 1),
-                        ],
+            child: isLoading == true
+                ? Center(child: CircularLoadingIndicator())
+                : Column(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 6,
+                        child: Form(
+                          key: _verifyOtpFormKey,
+                          child: Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                verifyOTPTitle(),
+                                flexibleSpace(flex: 1),
+                                expirationNote(),
+                                flexibleSpace(flex: 3),
+                                otpFillUpField(),
+                                flexibleSpace(flex: 1),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: OtpTimerButton(
+                                    controller: controller,
+                                    onPressed: () => resendOTP(),
+                                    text: Text('Resend OTP'),
+                                    duration: 600,
+                                    backgroundColor: navyBlue,
+                                  ),
+                                ),
+                                flexibleSpace(flex: 2),
+                                verifyBtn(),
+                                flexibleSpace(flex: 1),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      flexibleSpace(flex: 4),
+                    ],
                   ),
-                ),
-                flexibleSpace(flex: 4),
-              ],
-            ),
           ),
         ),
       ),
@@ -110,6 +125,26 @@ class _VerifyRegistrationOTPScreenState
         "Verify OTP",
         style: TextStyle(
             fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
+      ),
+    );
+  }
+
+  Widget resendOTPTitle() {
+    return GestureDetector(
+      onTap: () {
+        isLoading = true;
+        resendOTP();
+      },
+      child: Align(
+        child: Container(
+          alignment: Alignment.centerRight,
+          child: Text(
+            "Resend OTP",
+            textAlign: TextAlign.end,
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.w700, color: mateRed),
+          ),
+        ),
       ),
     );
   }
@@ -137,7 +172,7 @@ class _VerifyRegistrationOTPScreenState
                 style: TextStyle(fontSize: 14, color: darkGrey),
               ),
               Text(
-                " 5 ",
+                " 10 ",
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
               Text(
@@ -291,6 +326,22 @@ class _VerifyRegistrationOTPScreenState
         showToast(message: response);
         break;
     }
+  }
+
+  void resendOTP() {
+    controller.loading();
+
+    UserAuth().registerPhoneNumber(phoneNumber!).then((value) {
+      // Navigator.of(context).pop();
+      Future.delayed(Duration(seconds: 2), () {
+        controller.startTimer();
+        showToast(message: "OTP resent to $phoneNumber");
+      });
+    }).catchError((error) {
+      controller.enableButton();
+
+      showToast(message: "$error");
+    });
   }
 }
 
