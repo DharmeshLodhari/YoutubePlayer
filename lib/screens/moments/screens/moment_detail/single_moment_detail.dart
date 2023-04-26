@@ -285,8 +285,18 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                   children: [
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                            arguments: widget.currentMoment.avatar);
+                        String? image = '';
+                        if (widget.currentMoment.avatar == "" ||
+                            widget.currentMoment.avatar ==
+                                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+                          image = getInitials(widget.currentMoment.ownerName!)
+                              .toUpperCase();
+                        } else {
+                          image = widget.currentMoment.avatar;
+                        }
+
+                        Navigator.of(context)
+                            .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),

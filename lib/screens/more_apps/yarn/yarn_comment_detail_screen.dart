@@ -1,4 +1,5 @@
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/moments/screens/moments_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
@@ -125,18 +126,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": userBloc.user.userName});
       },
-      child: Container(
-        height: 35,
-        width: 35,
-        decoration: BoxDecoration(shape: BoxShape.circle),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar ?? "",
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-          ),
-        ),
-      ),
+      child: getUserProfilePic(userBloc.user.avatar!, userBloc.user.fullName!),
     );
   }
 

@@ -20,6 +20,7 @@ import '../../../../utils/util.dart';
 import '../../shopping/models/store.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/models/user.dart';
+import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_comment_media_renderer.dart';
@@ -219,8 +220,16 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
   Widget _buildUserAvatar({required BuildContext context}) {
     return InkWell(
       onTap: () {
-        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: widget.yarnComment.authorAvatar!);
+        String? image = '';
+        if (widget.yarnComment.authorAvatar! == "" ||
+            widget.yarnComment.authorAvatar! ==
+                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+          image = getInitials(widget.yarnComment.authorName!).toUpperCase();
+        } else {
+          image = widget.yarnComment.authorAvatar!;
+        }
+
+        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: image);
       },
       child: Column(
         children: [
@@ -229,18 +238,8 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
               height: 10,
             ),
           ],
-          Container(
-            height: 36,
-            width: 36,
-            decoration: BoxDecoration(shape: BoxShape.circle),
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: widget.yarnComment.authorAvatar!,
-                fit: BoxFit.cover,
-                errorWidget: imageErrorWidget,
-              ),
-            ),
-          ),
+          getUserProfilePic(
+              widget.yarnComment.authorAvatar!, widget.yarnComment.authorName!)
         ],
       ),
     );
