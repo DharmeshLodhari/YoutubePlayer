@@ -300,7 +300,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 6.0),
-                        child: getUserProfilePic(widget.currentMoment.avatar!,
+                        child: MomentsUtils().getUserProfilePic(
+                            widget.currentMoment.avatar!,
                             widget.currentMoment.ownerName!),
                       ),
                     ),
@@ -994,26 +995,6 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
       }
     } else {
       return HexColor('#3F61DB');
-    }
-  }
-
-  Widget getUserProfilePic(String image, String fullName) {
-    if (image == "" ||
-        image ==
-            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-      return CircleAvatar(
-        backgroundColor: navyBlue,
-        radius: 15,
-        child: Text(
-          getInitials(fullName).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w600),
-        ),
-      );
-    } else {
-      return SizedBox(
-        width: 35,
-        child: getCircularUserAvatar(image),
-      );
     }
   }
 }

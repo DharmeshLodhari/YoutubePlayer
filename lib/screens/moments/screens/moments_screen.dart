@@ -2,6 +2,7 @@ import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
+import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -296,7 +297,8 @@ class _MomentsScreenState extends State<MomentsScreen> {
               child: SizedBox(
                   width: 30, height: 30, child: CircularLoadingIndicator()),
             )
-          : getUserProfilePic(userBloc.user.avatar!, userBloc.user.fullName!),
+          : MomentsUtils().getUserProfilePic(
+              userBloc.user.avatar!, userBloc.user.fullName!),
     );
   }
 
@@ -684,7 +686,8 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                 alignment: Alignment.topLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 4.0),
-                  child: getUserProfilePic(widget.userMomentModel.avatar!,
+                  child: MomentsUtils().getUserProfilePic(
+                      widget.userMomentModel.avatar!,
                       widget.userMomentModel.ownerName!),
                 ),
               ),
@@ -815,7 +818,7 @@ class ExploreMomentsCard extends StatelessWidget {
                     alignment: Alignment.topLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 4.0),
-                      child: getUserProfilePic(
+                      child: MomentsUtils().getUserProfilePic(
                           exploreMomentsModelList[index].avatar!,
                           exploreMomentsModelList[index].ownerName!),
                     ),
@@ -964,24 +967,4 @@ Color getProfilePicBorderColor(User user) {
           ? starYellow
           : naturalGreen
       : navyBlue;
-}
-
-Widget getUserProfilePic(String image, String fullName) {
-  if (image == "" ||
-      image ==
-          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-    return CircleAvatar(
-      backgroundColor: navyBlue,
-      radius: 15,
-      child: Text(
-        getInitials(fullName).toUpperCase(),
-        style: TextStyle(color: white, fontWeight: FontWeight.w600),
-      ),
-    );
-  } else {
-    return SizedBox(
-      width: 25,
-      child: getCircularUserAvatar(image),
-    );
-  }
 }
