@@ -77,8 +77,10 @@ class UserAuth extends AuthService {
     if (userName == null) {
       return {};
     }
-    var url =
-        AppConfig.baseUrl + "/api/v1/user/follow/followers/" + userName.trim();
+    var url = AppConfig.baseUrl +
+        "/api/v1/user/follow/followers/" +
+        userName.trim() +
+        "/";
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -1127,9 +1129,9 @@ class UserAuth extends AuthService {
     }
 
     if (isFollowingUser == true) {
-      url = AppConfig.baseUrl + "/api/v1/user/follow/following/$username";
+      url = AppConfig.baseUrl + "/api/v1/user/follow/following/$username/";
     } else {
-      url = AppConfig.baseUrl + "/api/v1/user/follow/followers/$username";
+      url = AppConfig.baseUrl + "/api/v1/user/follow/followers/$username/";
     }
 
     final headers = await getAuthHeaders();
