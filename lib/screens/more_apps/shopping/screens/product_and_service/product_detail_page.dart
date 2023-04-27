@@ -11,6 +11,7 @@ import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -32,6 +33,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../../widget/item_display_card.dart';
+import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../../user_profile/user_auth.dart';
 import '../../../yarn/models/share_as_yarn_model.dart';
 import '../../../yarn/share_as_a_yarn_screen.dart';
@@ -1148,21 +1150,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 leading: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pushNamed("/photo-viewer",
-                        arguments: product!.sellerAvatar);
+                    String? image = '';
+                    if (product!.sellerAvatar! == "" ||
+                        product!.sellerAvatar! ==
+                            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+                      image =
+                          getInitials(product!.sellerFullName!).toUpperCase();
+                    } else {
+                      image = product!.sellerAvatar!;
+                    }
+
+                    Navigator.of(context)
+                        .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
                   },
-                  child: Container(
-                    height: 48,
-                    width: 48,
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl: product!.sellerAvatar!,
-                        fit: BoxFit.fitHeight,
-                        errorWidget: imageErrorWidget,
-                        filterQuality: FilterQuality.high,
-                      ),
-                    ),
-                  ),
+                  child: getUserProfilePic(
+                      product!.sellerAvatar!, product!.sellerFullName!),
                 ),
                 title: userNameWithVerifiedIcon(
                   name: product!.sellerFullName ?? '',

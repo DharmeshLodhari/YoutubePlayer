@@ -8,6 +8,8 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+
 class CommentListWidget extends StatefulWidget {
   final int
       index; // This is the index of the moment in the (horizontal) moment list.
@@ -211,7 +213,8 @@ class _CommentListWidgetState extends State<CommentListWidget> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              getCircularUserAvatar(commentModel.authorAvatar!),
+              MomentsUtils().getUserProfilePic(
+                  commentModel.authorAvatar!, commentModel.authorUsername!),
               SizedBox(width: 15),
               Expanded(
                 child: Column(
