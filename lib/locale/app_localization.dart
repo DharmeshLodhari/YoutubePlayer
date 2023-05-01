@@ -70,6 +70,13 @@ class AppLocalization {
     );
   }
 
+  String get locationError {
+    return Intl.message(
+      "Location must contain atleast two character",
+      name: "locationError",
+    );
+  }
+
   String get errorMsg1 {
     return Intl.message(
       "An error has occured please try again",
@@ -238,6 +245,13 @@ class AppLocalization {
     return Intl.message(
       "Recipient",
       name: "recipient",
+    );
+  }
+
+  String get location {
+    return Intl.message(
+      "Location",
+      name: "location",
     );
   }
 
@@ -887,6 +901,13 @@ class AppLocalization {
     return Intl.message(
       "Your have reached the end of the list",
       name: "youHaveReachedBottomOfTheList",
+    );
+  }
+
+  String get youDontHaveAnyShippingOptionPleaseAddOne {
+    return Intl.message(
+      "You Don't have any Shipping Option Please Add one",
+      name: "youDontHaveAnyShippingOptionPleaseAddOne",
     );
   }
 
@@ -2776,6 +2797,34 @@ class AppLocalization {
     return Intl.message(
       "Edit post",
       name: "editPost",
+    );
+  }
+
+  String get shippingOptions {
+    return Intl.message(
+      "Shipping Options",
+      name: "shippingOptions",
+    );
+  }
+
+  String get addShippingOption {
+    return Intl.message(
+      "Add Shipping Option",
+      name: "addShippingOption",
+    );
+  }
+
+  String get modifyShippingOption {
+    return Intl.message(
+      "Modify Shipping Option",
+      name: "modifyShippingOption",
+    );
+  }
+
+  String get edit {
+    return Intl.message(
+      "Edit",
+      name: "edit",
     );
   }
 

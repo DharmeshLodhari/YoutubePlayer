@@ -2401,10 +2401,12 @@ int displayPossibleCashOutAmount(int accountBalance) {
       1000; //the minimum a user's account can have at any time in kobo
   int possibleSendOutAmount = 0;
 
-  // accountBalance = 20000000000;
-
   possibleSendOutAmount =
       accountBalance - (payoutCharge + minimumAccountBalance);
+
+  if (accountBalance == 0) {
+    possibleSendOutAmount = 0;
+  }
 
   return possibleSendOutAmount;
 }
