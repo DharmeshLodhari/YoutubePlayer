@@ -29,6 +29,7 @@ import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../screens/more_apps/messaging/chat/utils.dart';
 import '../screens/more_apps/payment_and_banking/models/transactions.dart';
+import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/image_crop.dart';
 import 'colors.dart';
@@ -2406,4 +2407,40 @@ int displayPossibleCashOutAmount(int accountBalance) {
       accountBalance - (payoutCharge + minimumAccountBalance);
 
   return possibleSendOutAmount;
+}
+
+Widget userImageUserInitialsPic(
+    String image, String fullName, double initialRadius, double imageWidth) {
+  if (image == "" ||
+      image ==
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+    return CircleAvatar(
+      backgroundColor: navyBlue,
+      radius: initialRadius,
+      child: Text(
+        getInitials(fullName).toUpperCase(),
+        style: TextStyle(
+            color: white, fontWeight: FontWeight.w600, fontSize: initialRadius),
+      ),
+    );
+  } else {
+    String? url = image;
+    String imageUrl = url.replaceAll('https//', 'https://');
+
+    return Container(
+      width: imageWidth,
+      height: imageWidth,
+      padding: EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        // border: Border.all(color: borderColor, width: 2),
+        shape: BoxShape.circle,
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: CachedNetworkImageProvider(
+            imageUrl,
+          ),
+        ),
+      ),
+    );
+  }
 }

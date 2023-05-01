@@ -11,6 +11,7 @@ import '../utils/util.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/noItemInList.dart';
 import 'more_apps/user_profile/models/user.dart';
+import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class SearchUser extends StatefulWidget {
   const SearchUser({Key? key}) : super(key: key);
@@ -163,33 +164,18 @@ class _SearchUserState extends State<SearchUser> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.of(context)
-            .pushNamed(Routes.PHOTO_VIEWER, arguments: user.avatar);
+        String? image = '';
+        if (user.avatar! == "" ||
+            user.avatar! ==
+                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+          image = getInitials(user.fullName!).toUpperCase();
+        } else {
+          image = user.avatar!;
+        }
+
+        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: image);
       },
-      child: Container(
-          height: 48,
-          width: 48,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                25,
-              ),
-              border: Border.all(color: borderColor, width: 2)),
-          child: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: user.avatar == "" ? defaultImage : user.avatar!,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.cover,
-              errorWidget: imageErrorWidget,
-              height: double.infinity,
-              filterQuality: FilterQuality.high,
-              placeholder: (context, _) => CachedNetworkImage(
-                imageUrl: defaultImage,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fitWidth,
-                filterQuality: FilterQuality.high,
-              ),
-            ),
-          )),
+      child: userImageUserInitialsPic(user.avatar!, user.fullName!, 25, 48),
     );
   }
 

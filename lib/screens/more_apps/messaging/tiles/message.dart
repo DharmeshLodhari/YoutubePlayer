@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../utils/colors.dart';
+import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 // ignore: must_be_immutable
 class MessageTile extends StatefulWidget {
@@ -75,25 +76,27 @@ class _MessageTileState extends State<MessageTile> {
       ),
       child: GestureDetector(
         onTap: () {
-          Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-              arguments: partialMessage!.senderAvatar);
+          String? image = '';
+          if (partialMessage!.senderAvatar == "" ||
+              partialMessage!.senderAvatar ==
+                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+            image = getInitials(partialMessage!.sender!).toUpperCase();
+          } else {
+            image = partialMessage!.senderAvatar;
+          }
+
+          Navigator.of(context)
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
         },
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: currentUserIsSender
+        child: userImageUserInitialsPic(
+            currentUserIsSender
                 ? partialMessage!.recipientAvatar!
                 : partialMessage!.senderAvatar!,
-            height: 48,
-            width: 48,
-            errorWidget: imageErrorWidget,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => partialMessage!.senderAvatar == ""
-                ? Icon(Icons.person)
-                : CircularLoadingIndicator(),
-          ),
-        ),
+            currentUserIsSender
+                ? partialMessage!.recipient!
+                : partialMessage!.sender!,
+            25,
+            48),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -156,30 +157,19 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getLeading() {
     return ClipOval(
-      child: transaction!.isAnonymous!
-          ? Container(
-              padding: EdgeInsets.all(4.0),
-              child: Image.asset(
-                "assets/images/anonymous.png",
-                height: 48,
-                width: 48,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fitHeight,
-              ),
-            )
-          : CachedNetworkImage(
-              imageUrl: transaction!.avatar!,
-              height: 48,
-              width: 48,
-              colorBlendMode: BlendMode.darken,
-              errorWidget: imageErrorWidget,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              placeholder: (context, url) => transaction!.avatar == ""
-                  ? Icon(Icons.person)
-                  : CircularLoadingIndicator(),
-            ),
-    );
+        child: transaction!.isAnonymous!
+            ? Container(
+                padding: EdgeInsets.all(4.0),
+                child: Image.asset(
+                  "assets/images/anonymous.png",
+                  height: 48,
+                  width: 48,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fitHeight,
+                ),
+              )
+            : userImageUserInitialsPic(
+                transaction!.avatar!, transaction!.displayToCustomer, 25, 48));
   }
 
   Widget getSender() {

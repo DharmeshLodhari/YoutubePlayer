@@ -13,8 +13,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
-// import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
-// import 'dart:html' show ImageElement, VideoElement;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';

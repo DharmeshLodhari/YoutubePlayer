@@ -1,6 +1,6 @@
 import 'package:Slydo/screens/blog/quill/image_embed_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:flutter_quill_extensions/embeds/embed_types.dart';
 import 'package:flutter_quill_extensions/embeds/toolbar/camera_button.dart';
 import 'package:flutter_quill_extensions/embeds/toolbar/formula_button.dart';

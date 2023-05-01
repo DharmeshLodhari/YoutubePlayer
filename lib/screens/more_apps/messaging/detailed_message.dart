@@ -1,16 +1,16 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
+import '../../../routes/route_constants.dart';
+import '../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'message_auth.dart';
 
 // ignore: must_be_immutable
@@ -194,23 +194,20 @@ class _DetailedMessageState extends State<DetailedMessage> {
       ),
       child: GestureDetector(
         onTap: () {
+          String? image = '';
+          if (message.senderAvatar == "" ||
+              message.senderAvatar ==
+                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+            image = getInitials(message.sender!).toUpperCase();
+          } else {
+            image = message.senderAvatar;
+          }
+
           Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: message.senderAvatar);
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
         },
-        child: ClipOval(
-          child: CachedNetworkImage(
-            errorWidget: imageErrorWidget,
-            imageUrl: message.senderAvatar!,
-            height: 48,
-            width: 48,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => message.senderAvatar == ""
-                ? Icon(Icons.person)
-                : CircularLoadingIndicator(),
-          ),
-        ),
+        child: userImageUserInitialsPic(
+            message.senderAvatar!, message.sender!, 25, 48),
       ),
     );
   }
