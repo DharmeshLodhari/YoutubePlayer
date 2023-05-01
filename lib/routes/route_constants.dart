@@ -160,4 +160,7 @@ class Routes {
   static const String SUPER_HUB = "/super-hub";
   static const String SEARCH_SERVICES = "/search-services";
   static const String SEARCH_YARN = "/search-yarn";
+  static const String SHIPPING_OPTIONS = "/Shipping-Options";
+  static const String ADD_SHIPPING_OPTIONS = "/add-shipping-Option";
+  static const String EDIT_SHIPPING_OPTIONS = "/edit-shipping-Option";
 }

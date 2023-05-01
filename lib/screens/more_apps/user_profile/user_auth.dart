@@ -291,7 +291,7 @@ class UserAuth extends AuthService {
 
   // it will resend OTP for registration the phone number to get OTP
   Future<bool> registerResendOTP(String phoneNumber) async {
-    var url = AppConfig.baseUrl + " /api/v1/sms/resend-otp/";
+    var url = AppConfig.baseUrl + "/api/v1/sms/resend-otp/";
     var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,

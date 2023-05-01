@@ -1,7 +1,5 @@
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/utils.dart';
 import 'package:flutter/material.dart';
-
 import '../../models/user.dart';
 import '../../user_auth.dart';
 

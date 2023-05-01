@@ -2,7 +2,6 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/other_
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/slydo_slydo_transfer.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import '../../tiles/payment_tab_selection.dart';
 
 class SendPayment extends StatefulWidget {

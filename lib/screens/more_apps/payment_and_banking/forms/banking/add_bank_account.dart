@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/bank.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/bank_list.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';

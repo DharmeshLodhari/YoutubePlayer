@@ -126,6 +126,9 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/shipping_options/add_shipping_options.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/shipping_options/edit_shipping_options.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/shipping_options/shipping_options_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/choose_subscription.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
@@ -1403,13 +1406,38 @@ class RouteGenerator {
           settings: settings,
         );
 
-      // case "/add-review":
-      //   return PageTransition(
-      //     child: AddReview(),
-      //     type: PageTransitionType.bottomToTop,
-      //     curve: Curves.ease,
-      //     settings: settings,
-      //   );
+      case Routes.SHIPPING_OPTIONS:
+        return PageTransition(
+          child: ShippingOptionsList(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.ADD_SHIPPING_OPTIONS:
+        final args = settings.arguments as Map<String, dynamic>;
+
+        return PageTransition(
+          child: AddShippingOptions(
+            callback: args['callback'],
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.EDIT_SHIPPING_OPTIONS:
+        final args = settings.arguments as Map<String, dynamic>;
+
+        return PageTransition(
+          child: EditShippingOptions(
+            callback: args['callback'],
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
 
       case Routes.REVIEW_LIST_SCREEN:
         return PageTransition(
