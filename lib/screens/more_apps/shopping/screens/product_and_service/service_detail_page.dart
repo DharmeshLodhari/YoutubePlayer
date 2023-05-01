@@ -12,7 +12,6 @@ import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
-import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -500,8 +499,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   Widget getUserProfile() {
     return GestureDetector(
-      child: getUserProfilePic(
-          service!.providerAvatar!, service!.providerFullName!),
+      child: userImageUserInitialsPic(
+          service!.providerAvatar!, service!.providerFullName!, 15, 35),
       onTap: () async {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": service!.provider});

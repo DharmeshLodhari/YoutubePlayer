@@ -26,7 +26,6 @@ import '../../../user_profile/screens/user_profile_module_new/profile_template/u
 import '../../models/VirtualAccount.dart';
 import '../../models/bank.dart';
 import '../../models/bank_list.dart';
-import '../../models/transactions.dart';
 import '../../payment_and_banking_auth.dart';
 import 'package:http/http.dart' as http;
 

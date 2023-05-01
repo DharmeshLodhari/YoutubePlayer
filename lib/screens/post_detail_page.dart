@@ -610,10 +610,20 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
 class _PostDetailPageScaffoldBodyState
     extends State<PostDetailPageScaffoldBody> {
   late User user;
+  bool showTag = false;
   @override
   Widget build(BuildContext context) {
     debugPrint('WIDGET POST --> ${widget.userPost.toJson()}');
     user = Provider.of<UserBloc>(context).user;
+
+    Map<int, String> map = widget.tags.asMap();
+
+    if (map[0] == '[]') {
+      showTag = false;
+    } else {
+      showTag = true;
+    }
+
     return widget.isLoading
         ? Center(
             child: CircularLoadingIndicator(),
@@ -676,10 +686,12 @@ class _PostDetailPageScaffoldBodyState
                         thickness: 1,
                         color: dividerColor,
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      blogChips(),
+                      if (showTag == true) ...[
+                        SizedBox(
+                          height: 20,
+                        ),
+                        blogChips(),
+                      ],
                       SizedBox(
                         height: 20,
                       ),
@@ -897,14 +909,8 @@ class _PostDetailPageScaffoldBodyState
         child: SizedBox(
           width: 40,
           height: 40,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: CachedNetworkImage(
-              fit: BoxFit.cover,
-              imageUrl: widget.posterImageUrl,
-              errorWidget: imageErrorWidget,
-            ),
-          ),
+          child: userImageUserInitialsPic(
+              widget.posterImageUrl, widget.authorName, 20, 40),
         ),
       ),
       title: Row(

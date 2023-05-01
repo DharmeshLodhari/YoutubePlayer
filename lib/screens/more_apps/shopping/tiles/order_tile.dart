@@ -89,20 +89,8 @@ class OrderTile extends StatelessWidget {
                         : order!.customerName
               });
         },
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: getAvatar()!,
-            height: 48,
-            width: 48,
-            errorWidget: productAndServiceErrorWidget,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => getAvatar() == ""
-                ? Icon(Icons.person)
-                : CircularLoadingIndicator(),
-          ),
-        ),
+        child: userImageUserInitialsPic(
+            getAvatar()!, getCustomerOrMerchant()!, 25, 48),
       ),
     );
   }
