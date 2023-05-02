@@ -115,6 +115,24 @@ class _PostDetailPageState extends State<PostDetailPage> {
     try {
       blogBodyTextJson = jsonDecode(userPost.text!);
 
+      // debugPrint('USER POST :: ${userPost.text}');
+      // debugPrint('USER POST 0000 :: ${blogBodyTextJson}');
+      // debugPrint('USER POST :: ${userPost.text.runtimeType}');
+
+      // Extract the word after "insert"
+      // RegExp regex = RegExp(r'"insert":"([^"]+)"');
+      // Match? match = regex.firstMatch(userPost.text!);
+      // String? wordAfterInsert = match?.group(1);
+
+      // // Recreate the string by replacing the string after "insert"
+      // String reformattedWord = messageDecoderWithEmoji(wordAfterInsert)!;
+      // String recreatedString =
+      //     userPost.text!.replaceAll(regex, '"insert": $reformattedWord');
+
+      // debugPrint('USER POST 111:: ${recreatedString}');
+
+      // blogBodyTextJson = jsonDecode(reformattedWord);
+
       _quillController = flutterQuill.QuillController(
         document: flutterQuill.Document.fromJson(blogBodyTextJson),
         selection: TextSelection.collapsed(offset: -1),
@@ -214,6 +232,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
               getBlogDetailsAndInitializeVideoController(userPost: userPost!);
             }
+
             return PostDetailPageScaffoldBody(
               userPost: userPost!,
               views: userPost?.views,
@@ -616,12 +635,27 @@ class _PostDetailPageScaffoldBodyState
     debugPrint('WIDGET POST --> ${widget.userPost.toJson()}');
     user = Provider.of<UserBloc>(context).user;
 
-    Map<int, String> map = widget.tags.asMap();
-
-    if (map[0] == '[]') {
-      showTag = false;
+    if (widget.tags is List<String>) {
+      print('myVariable is of type List<String>');
+      for (String item in widget.tags) {
+        if (hasAlphabeticCharacters(item)) {
+          showTag = true;
+          break;
+        }
+      }
+    } else if (widget.tags is List<List<String>>) {
+      List<List<String>> myList = widget.tags.cast<List<String>>();
+      print('myVariable is of type List<List<String>>');
+      for (List<String> innerList in myList) {
+        for (String item in innerList) {
+          if (hasAlphabeticCharacters(item)) {
+            showTag = true;
+            break;
+          }
+        }
+      }
     } else {
-      showTag = true;
+      print('myVariable is not of the expected types');
     }
 
     return widget.isLoading
@@ -705,6 +739,11 @@ class _PostDetailPageScaffoldBodyState
               ],
             ),
           );
+  }
+
+  bool hasAlphabeticCharacters(String item) {
+    RegExp regex = RegExp(r'[a-zA-Z]');
+    return regex.hasMatch(item);
   }
 
   _commentWidget() {
