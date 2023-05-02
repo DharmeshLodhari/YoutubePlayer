@@ -292,7 +292,7 @@ class _AddShippingOptionsState extends State<AddShippingOptions> {
           //Pop page back to shipping options list
           Navigator.pop(context);
 
-          showToast(message: 'Shipping Option Added');
+          showToast(message: 'Shipping Option Queued');
 
           return;
         } else if (response.statusCode == 400) {
