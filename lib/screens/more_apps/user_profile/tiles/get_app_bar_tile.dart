@@ -1345,7 +1345,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         list.add(
           bottomSheetItem(
             title: AppLocalization.of(context)!.shippingOptions,
-            iconData: SlydoAppIcon.shopping_category,
+            iconData: SlydoAppIcon.delivery_dining,
             onTap: () {
               Navigator.pop(context);
               Navigator.of(context).pushNamed(Routes.SHIPPING_OPTIONS);

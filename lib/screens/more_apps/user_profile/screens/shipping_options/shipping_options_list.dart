@@ -241,6 +241,8 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
         decoration: decorateBox(),
         child: ListTile(
           dense: true,
+          contentPadding:
+              EdgeInsets.only(top: 15.0, bottom: 15.0, left: 10.0, right: 10.0),
           trailing: getAmount(shippingModel: shippingModel),
           leading: getShippingOptionName(shippingModel: shippingModel),
         ),
@@ -360,7 +362,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
         ),
         leftButtonOnPressed: () => deleteShippingOption(shippingModel),
         rightButtonOnPressed: () {
-          return Navigator.pop(context);
+          return;
         });
   }
 
