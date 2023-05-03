@@ -1163,8 +1163,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     Navigator.of(context)
                         .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
                   },
-                  child: getUserProfilePic(
-                      product!.sellerAvatar!, product!.sellerFullName!),
+                  child: userImageUserInitialsPic(
+                      product!.sellerAvatar!, product!.sellerFullName!, 15, 35),
                 ),
                 title: userNameWithVerifiedIcon(
                   name: product!.sellerFullName ?? '',

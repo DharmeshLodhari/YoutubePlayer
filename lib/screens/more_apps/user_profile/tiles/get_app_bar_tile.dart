@@ -15,8 +15,6 @@ import 'package:Slydo/screens/more_apps/yarn/share_as_a_yarn_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -1284,6 +1282,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
+          debugPrint('fola check::: ${searchedUser!.type.toString()}');
           return Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1341,6 +1340,19 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           },
         ),
       );
+
+      if (searchedUser?.type?.toLowerCase() != "user") {
+        list.add(
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.shippingOptions,
+            iconData: SlydoAppIcon.delivery_dining,
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).pushNamed(Routes.SHIPPING_OPTIONS);
+            },
+          ),
+        );
+      }
     }
 
     if (searchedUser?.type?.toLowerCase() != "user") {
@@ -1383,7 +1395,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       bottomSheetItem(
         title: "Share in Chat",
         iconData: SlydoAppIcon.text_message,
-        isLast: searchedUser!.userName == userBloc.user.userName,
+        // isLast: searchedUser!.userName == userBloc.user.userName,
         onTap: () async {
           Navigator.pop(context);
           sendProfileToUsersInChat();
@@ -1395,7 +1407,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       bottomSheetItem(
         title: "Share As A Yarn",
         iconData: SlydoAppIconNew.dashboard_yarn,
-        isLast: searchedUser!.userName == userBloc.user.userName,
+        // isLast: searchedUser!.userName == userBloc.user.userName,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();

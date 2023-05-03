@@ -6,7 +6,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../locale/app_localization.dart';
 import '../../../routes/route_constants.dart';
-import '../../../utils/colors.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../../widget/LoadingIndicator.dart';

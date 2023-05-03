@@ -356,19 +356,24 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget _buildCategoryTypeChip() {
+    List<UserFollowers> viewers = [];
+
+    if (widget.yarn.viewersAvatars != null) {
+      for (ViewersAvatars avatars in widget.yarn.viewersAvatars!) {
+        UserFollowers follower = UserFollowers(avatar: avatars.avatar!);
+        viewers.add(follower);
+      }
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // getFollowersWidget(widget,
-        //     radiusSize: 28, radiusShift: 10, radiusHeight: 28, radiusWidth: 28),
         _checkCategoryTypeChip(),
-        Container(
-          child: getFollowersWidget(widget,
-              radiusSize: 28,
-              radiusShift: 10,
-              radiusHeight: 28,
-              radiusWidth: 28),
-        ),
+        if (viewers.length != 0) ...[
+          Container(
+            child: followersWidget(userImages: viewers),
+          ),
+        ],
       ],
     );
   }

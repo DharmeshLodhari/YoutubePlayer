@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/models/bank_list.dar
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/credit_card_data_model.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/kyc_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/shipping_option_list_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -313,6 +314,94 @@ class PaymentAndBankingAuth extends AuthService {
     } else {
       throw "Can't get https.";
     }
+  }
+
+  // List the users shipping options with pagination
+  Future<Map<String, dynamic>?> getShippingOptions(
+      String? next, String? previous) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/shipping-options/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    print('SHIPPING OPTIONS List DATA :::: ${json.decode(response.body)}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      List<ShippingOptionsListModel> shippingModelList = [];
+
+      for (var item in jsonData['results']) {
+        ShippingOptionsListModel shippingModel = ShippingOptionsListModel(
+          id: item["id"],
+          currency: item['currency'],
+          name: item['name'],
+          price: item['price'],
+          owner: item['owner'],
+        );
+        shippingModelList.add(shippingModel);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": shippingModelList
+      };
+      return result;
+    } else {
+      throw "Can't get https.";
+    }
+  }
+
+  //Add Shipping Option
+  Future<http.Response> addShippingOption(Map data) async {
+    var url = AppConfig.baseUrl + "/api/v1/shipping-options/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
+
+    print('ADD SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
+
+    return response;
+  }
+
+  //Delete Shipping Option
+  Future<bool?> deleteShippingOption(int shippingId) async {
+    String url = "";
+    if (shippingId != null) {
+      url = AppConfig.baseUrl + "/api/v1/shipping-options/$shippingId/";
+    }
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    if (response.statusCode == 204) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  //Edit Shipping Option
+  Future<http.Response> editShippingOption(Map data, int shippingId) async {
+    var url = AppConfig.baseUrl + "/api/v1/shipping-options/$shippingId/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPatch(url, headers: headers, body: _data);
+
+    print('EDIT SHIPPING OPTIONS List :::: ${json.decode(response.body)}');
+
+    return response;
   }
 
   Future<String> addCreditCard(CreditCardData creditCardData) async {

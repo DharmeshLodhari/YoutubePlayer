@@ -10,7 +10,7 @@ Widget getFollowersWidget(widget,
     double radiusWidth: 32}) {
   List<UserFollowers> viewers = [];
 
-  // debugPrint('Viewer 000:::: ${widget.yarn.viewersAvatars}');
+  debugPrint('Viewer 011:::: ${widget.yarn.viewersAvatars}');
 
   if (widget.yarn.viewersAvatars != null) {
     for (ViewersAvatars avatars in widget.yarn.viewersAvatars!) {
@@ -79,8 +79,9 @@ Widget buildStackedfollowersWidget(
     double radiusSize: 32,
     double radiusShift: 10}) {
   if (images!.length != 0) {
-    final items =
-        images.map((image) => buildImage(image.avatar ?? "")).toList();
+    final items = images
+        .map((image) => buildImage(image.avatar ?? '', image.fullName ?? ''))
+        .toList();
 
     return Padding(
       padding: EdgeInsets.only(right: 12),
@@ -107,7 +108,9 @@ Widget buildMultipleFollowersWidget(
       xShift: radiusShift,
       items: [
         ...List.generate(
-            4, (index) => buildImage(userImages![index].avatar ?? "")),
+            4,
+            (index) => buildImage(userImages![index].avatar ?? "",
+                userImages[index].fullName ?? '')),
         if (userImages != null && userImages.length != 4)
           buildfollowersCountWidget(userImages,
               radiusWidth: radiusWidth, radiusHeight: radiusHeight),

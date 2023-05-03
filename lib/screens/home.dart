@@ -160,7 +160,8 @@ class _HomeState extends State<Home> {
           Navigator.of(context)
               .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
         },
-        child: getUserProfilePic(),
+        child: userImageUserInitialsPic(
+            userBloc.user.avatar!, userBloc.user.fullName!, 25, 48),
       ),
       title: InkWell(
         key: tutorialUserProfileDetailKey,
@@ -196,38 +197,6 @@ class _HomeState extends State<Home> {
         SizedBox(width: 8.0),
       ],
     );
-  }
-
-  Widget getUserProfilePic() {
-    Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
-    if (userBloc.user.avatar! == "" ||
-        userBloc.user.avatar! ==
-            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-      return CircleAvatar(
-        backgroundColor: navyBlue,
-        radius: 25,
-        child: Text(
-          getInitials(userBloc.user.fullName!).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w700),
-        ),
-      );
-    } else {
-      return Container(
-        height: 48,
-        width: 48,
-        padding: EdgeInsets.all(3),
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: borderColor, width: 1)),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar!,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-          ),
-        ),
-      );
-    }
   }
 
   Widget _searchBtn() {

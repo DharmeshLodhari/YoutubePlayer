@@ -153,14 +153,11 @@ class _PostTileState extends State<PostTile> {
                                   SizedBox(
                                     width: 25,
                                     height: 25,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(50),
-                                      child: CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl: widget.post!.authorAvatar!,
-                                        errorWidget: imageErrorWidget,
-                                      ),
-                                    ),
+                                    child: userImageUserInitialsPic(
+                                        widget.post!.authorAvatar!,
+                                        widget.post!.authorName!,
+                                        15,
+                                        25),
                                   ),
                                   SizedBox(width: 8),
                                   userNameWithVerifiedIcon(
@@ -360,14 +357,11 @@ class _PostTileState extends State<PostTile> {
                                     SizedBox(
                                       width: 25,
                                       height: 25,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(50),
-                                        child: CachedNetworkImage(
-                                          fit: BoxFit.cover,
-                                          imageUrl: widget.post!.authorAvatar!,
-                                          errorWidget: imageErrorWidget,
-                                        ),
-                                      ),
+                                      child: userImageUserInitialsPic(
+                                          widget.post!.authorAvatar!,
+                                          widget.post!.authorName!,
+                                          15,
+                                          25),
                                     ),
                                     SizedBox(width: 8),
                                     userNameWithVerifiedIcon(

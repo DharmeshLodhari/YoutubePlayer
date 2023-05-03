@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -22,17 +23,17 @@ class StackedWidgets extends StatelessWidget {
     final allItems = items
         .asMap()
         .map((index, item) {
-      final left = size - xShift;
+          final left = size - xShift;
 
-      final value = Container(
-        width: size,
-        height: size,
-        child: item,
-        margin: EdgeInsets.only(left: left * index),
-      );
+          final value = Container(
+            width: size,
+            height: size,
+            child: item,
+            margin: EdgeInsets.only(left: left * index),
+          );
 
-      return MapEntry(index, value);
-    })
+          return MapEntry(index, value);
+        })
         .values
         .toList();
 
@@ -44,20 +45,48 @@ class StackedWidgets extends StatelessWidget {
   }
 }
 
-Widget buildImage(String urlImage) {
+Widget buildImage(String urlImage, String fullName) {
   final double borderSize = 2;
 
-  return ClipOval(
-    child: Container(
-      padding: EdgeInsets.all(borderSize),
-      color: Colors.white,
-      child: ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: urlImage,
-          fit: BoxFit.cover,
-          errorWidget: imageErrorWidget,
+  if (urlImage == "" ||
+      urlImage ==
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+    return CircleAvatar(
+      backgroundColor: navyBlue,
+      radius: 10,
+      child: Text(
+        getInitials(fullName).toUpperCase(),
+        style:
+            TextStyle(color: white, fontWeight: FontWeight.w600, fontSize: 10),
+      ),
+    );
+  } else {
+    return ClipOval(
+      child: Container(
+        padding: EdgeInsets.all(borderSize),
+        color: Colors.white,
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: urlImage,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
+
+  // return ClipOval(
+  //   child: Container(
+  //     padding: EdgeInsets.all(borderSize),
+  //     color: Colors.white,
+  //     child: ClipOval(
+  //       child: CachedNetworkImage(
+  //         imageUrl: urlImage,
+  //         fit: BoxFit.cover,
+  //         errorWidget: imageErrorWidget,
+  //       ),
+  //     ),
+  //   ),
+  // );
 }

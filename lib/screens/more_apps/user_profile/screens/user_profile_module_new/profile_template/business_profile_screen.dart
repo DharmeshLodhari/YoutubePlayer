@@ -1,12 +1,9 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/get_app_bar_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 
 class BusinessProfileScreen extends StatefulWidget {
