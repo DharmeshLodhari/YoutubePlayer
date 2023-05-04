@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -5,6 +7,7 @@ import 'package:Slydo/screens/home_tab/qr_code_page.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -14,9 +17,14 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:badges/badges.dart' as badges;
 import '../data/currency.dart';
+import '../data/database_helper.dart';
 import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
+import '../services/auth.dart';
+import '../services/secure_storage.dart';
+import '../utils/country_picker/country.dart';
+import '../utils/country_picker/utils.dart';
 import '../utils/navigation_util.dart';
 import '../widget/CustomBoxShadow.dart';
 import '../widget/LoadingIndicator.dart';
@@ -27,7 +35,10 @@ import '../widget/user_dashboard_item_tile.dart';
 import 'more_apps/messaging/button/message_nav_btn.dart';
 import 'more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'more_apps/super_blog/super_blog.dart';
+import 'more_apps/user_profile/models/SecureUser.dart';
+import 'more_apps/user_profile/models/user.dart';
 import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import 'more_apps/user_profile/user_auth.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -50,8 +61,9 @@ class _HomeState extends State<Home> {
   bool isBalanceHidden = true;
   late BankAccountBloc bankAccountBloc;
   bool isLoading = false;
-
+  final _auth = AuthService();
   bool storeLocked = true;
+  late DashboardBloc dashboardBloc;
 
   @override
   void initState() {
@@ -89,6 +101,7 @@ class _HomeState extends State<Home> {
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     socketProvider = Provider.of<MainSocketProvider>(context);
+    dashboardBloc = Provider.of<DashboardBloc>(context);
 
     if (userBloc.user.type != "User") {
       storeLocked = false;
@@ -247,17 +260,18 @@ class _HomeState extends State<Home> {
       centerTitle: false,
       leading: InkWell(
         onTap: () {
-          String? image = '';
-          if (userBloc.user.avatar! == "" ||
-              userBloc.user.avatar ==
-                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-            image = getInitials(userBloc.user.fullName!).toUpperCase();
-          } else {
-            image = userBloc.user.avatar!;
-          }
+          // String? image = '';
+          // if (userBloc.user.avatar! == "" ||
+          //     userBloc.user.avatar ==
+          //         "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+          //   image = getInitials(userBloc.user.fullName!).toUpperCase();
+          // } else {
+          //   image = userBloc.user.avatar!;
+          // }
 
-          Navigator.of(context)
-              .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+          // Navigator.of(context)
+          //     .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+          profileAndroidSheet();
         },
         child: userImageUserInitialsPic(
             userBloc.user.avatar!, userBloc.user.fullName!, 25, 48),
@@ -1041,6 +1055,108 @@ class _HomeState extends State<Home> {
       return "${appLocalization.goodEvening},";
     } else {
       return "${appLocalization.goodEvening},";
+    }
+  }
+
+  void profileAndroidSheet() {
+    androidBottomSheet(
+      context: context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.myProfile,
+            iconData: SlydoAppIcon.user,
+            onTap: () async {
+              await UserAuth()
+                  .fetchCustomerProfile(userBloc.user.userName)
+                  .then((user) {
+                if (mounted) {
+                  Navigator.pop(myGlobals.navigationKey.currentContext!);
+                  Navigator.pushNamed(myGlobals.navigationKey.currentContext!,
+                      Routes.USER_PROFILE,
+                      arguments: {"searchedUserName": user.userName});
+                }
+              });
+            },
+          ),
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.updateMyAvatar,
+            iconData: SlydoAppIcon.image,
+            onTap: () {
+              Navigator.pop(context);
+              pickImage();
+            },
+          ),
+          bottomSheetItem(
+            title: "Billing address",
+            iconData: SlydoAppIcon.location,
+            isLast: true,
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                Routes.USER_ADDRESS,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void pickImage() async {
+    String? croppedImage = await getCroppedImage(context);
+
+    if (croppedImage != null) {
+      try {
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        User? _user = await DatabaseHelper().getUser();
+
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        String countryFromPref = sharedPreferences.getString('country') ?? "NG";
+
+        Country country =
+            CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+
+        SecureUser secureUser = await SecureStorage().getUser();
+        String phoneNumber = secureUser.phoneNumber ?? "";
+        String password = secureUser.password ?? "";
+
+        if (phoneNumber != "") {
+          phoneNumber = "+" + country.phoneCode! + phoneNumber;
+        }
+
+        if (phoneNumber == "" || password == "") {
+          phoneNumber = _user?.phoneNumber ?? "";
+          password = _user?.password ?? "";
+        }
+
+        if (phoneNumber == "" || password == "") {
+          isLoading = false;
+          if (mounted) setState(() {});
+          return;
+        }
+
+        // Upload Image new image
+        await UserAuth().updateUserAvatar(File(croppedImage));
+
+        // Get new updated user data and set new user data to userBloc.
+        await _auth.authenticate(phoneNumber, password).then((value) {
+          userBloc.user = value;
+          isLoading = false;
+          if (mounted) setState(() {});
+          dashboardBloc.index = 0;
+        });
+      } catch (err) {
+        isLoading = false;
+        if (mounted) setState(() {});
+        // showToast(message: err.toString());
+        debugPrint("Cannot Update Avatar : " + err.toString());
+      }
     }
   }
 }

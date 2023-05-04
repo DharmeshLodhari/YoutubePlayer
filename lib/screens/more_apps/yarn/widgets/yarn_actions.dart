@@ -211,10 +211,8 @@ class _YarnActionsState extends State<YarnActions> {
 
     return InkWell(
       onTap: () {
-        debugPrint('Fola check reyarn 000::: ${widget.yarn.toJson()}');
-
         if (!canReYarnTemp) {
-          showToast(message: "You cannot ReYarn.");
+          showToast(message: "You cannot Reyarn.");
           return;
         }
 
@@ -224,7 +222,7 @@ class _YarnActionsState extends State<YarnActions> {
           } else {
             NavigationUtil.push(context,
                 screen: ShareAsAyarnScreen(
-                    appTitle: "ReYarn",
+                    appTitle: "Reyarn",
                     enableText: true,
                     isShare: false,
                     askCategories: yarnDashboardBloc.yarnCategories,
@@ -232,11 +230,11 @@ class _YarnActionsState extends State<YarnActions> {
                     yarnTopic: widget.yarn,
                     callback: (params) async {
                       createReYarn(params);
-                      showToast(message: "ReYarn successful");
+                      showToast(message: "Reyarn successful");
                     }));
           }
         } else {
-          showToast(message: "You cannot ReYarn.");
+          showToast(message: "You cannot Reyarn.");
         }
       },
       child: Row(
@@ -321,20 +319,20 @@ class _YarnActionsState extends State<YarnActions> {
                       .appConfigurationModel
                       ?.enablePayment ==
                   true) {
-              Navigator.of(context).pushNamed(
-                Routes.SEND_PAYMENT,
-                arguments: <String, dynamic>{
-                  'recipient': widget.yarn.author,
-                  'isFromProfile': false,
-                  'isFromChat': false,
-                  'isFromYarn': true,
-                  'isFromMoment': false,
-                  'callback': onCallback,
-                  'yarnId': widget.yarn.id != null ? widget.yarn.id! : '',
-                  'defaultReferenceText':
-                      'Payment from Yarn, Yard ID : ${widget.yarn.id != null ? widget.yarn.id! : ''} '
-                },
-              );
+                Navigator.of(context).pushNamed(
+                  Routes.SEND_PAYMENT,
+                  arguments: <String, dynamic>{
+                    'recipient': widget.yarn.author,
+                    'isFromProfile': false,
+                    'isFromChat': false,
+                    'isFromYarn': true,
+                    'isFromMoment': false,
+                    'callback': onCallback,
+                    'yarnId': widget.yarn.id != null ? widget.yarn.id! : '',
+                    'defaultReferenceText':
+                        'Payment from Yarn, Yard ID : ${widget.yarn.id != null ? widget.yarn.id! : ''} '
+                  },
+                );
               } else {
                 showToast(message: 'Payment not available at the moment');
               }
@@ -454,7 +452,7 @@ class _YarnActionsState extends State<YarnActions> {
       widget.yarn.userReyarned = !widget.yarn.userReyarned;
     });
     if (data != null) {
-      showToast(message: "Re yarn added successfully");
+      showToast(message: "Reyarn added successfully");
       widget.yarn.numberOfReYarn = (widget.yarn.numberOfReYarn ?? 0) + 1;
       widget.onReYarnAdded!(data);
       if (mounted) setState(() {});
