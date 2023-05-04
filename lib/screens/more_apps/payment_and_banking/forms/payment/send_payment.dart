@@ -92,7 +92,7 @@ class _SendPaymentState extends State<SendPayment> {
           tabTwo: 'Bank Transfer',
         ),
         SizedBox(
-          height: 16,
+          height: 10,
         ),
       ],
     );

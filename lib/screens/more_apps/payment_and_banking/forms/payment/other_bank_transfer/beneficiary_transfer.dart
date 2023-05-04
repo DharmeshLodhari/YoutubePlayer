@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 import '../../../../../../data/currency.dart';
 import '../../../../../../data/database_helper.dart';
+import '../../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../../widget/LoadingIndicator.dart';
 import '../../../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../../../../../../widget/noItemInList.dart';
@@ -44,6 +45,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   int? amount = 0;
   String errorMessage = "";
   String description = "";
+  String searchText = '';
   int? accountBalance = 0;
 
   VirtualAccount? virtualAccount;
@@ -57,9 +59,12 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   int count = 0;
   bool noList = false;
   List bankAccountList = [];
+  List bankAccountListStore = [];
   bool noItemInList = false;
   BankAccount? selectedBank;
   TextEditingController _amountController = TextEditingController();
+  final searchItemTextController = TextEditingController();
+  GlobalKey searchItemTextFormField = GlobalKey();
 
   @override
   void initState() {
@@ -72,6 +77,27 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     });
 
     getBankAccountDetail();
+
+    searchItemTextController.addListener(() {
+      if (searchItemTextController.text.length >= 3) {
+        searchText = searchItemTextController.text;
+
+        debugPrint('Fola:::: ${searchItemTextController.text.length}');
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+
+        // Call your search function here
+        searchBankList();
+      } else if (searchItemTextController.text.isEmpty) {
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+
+        clearSearchAndAllBanks();
+      }
+    });
 
     super.initState();
   }
@@ -138,7 +164,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
                           child: Column(
                             children: <Widget>[
                               SizedBox(
-                                height: 30,
+                                height: 20,
                               ),
                               getUserBankAccount(),
                               SizedBox(
@@ -220,27 +246,40 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
         decoration: decorateBox(),
         child: GestureDetector(
           onTap: () {
+            clearSearchAndAllBanks();
             showAllBankAccount(context);
           },
           child: ListTile(
             dense: true,
             title: Text(
-              bankAccountBloc.bankAccount!.bankName!,
+              appendStringDot(bankAccountBloc.bankAccount!.accountName!, 17),
+              maxLines: 1,
               style: TextStyle(
                   color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
             ),
-            subtitle: Text(
-              getFormattedAccountNumber(
-                  accountNumber:
-                      bankAccountBloc.bankAccount!.accountNumber.toString()),
-              style: TextStyle(color: darkGrey, fontSize: 12),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getFormattedAccountNumber(
+                      accountNumber: bankAccountBloc.bankAccount!.accountNumber
+                          .toString()),
+                  style: TextStyle(color: darkGrey, fontSize: 12),
+                ),
+                Text(
+                  appendStringDot(bankAccountBloc.bankAccount!.bankName!, 15),
+                  style: TextStyle(color: darkGrey, fontSize: 12),
+                ),
+              ],
             ),
             leading: GestureDetector(
               onTap: () {
+                clearSearchAndAllBanks();
                 showAllBankAccount(context);
               },
               child: checkBankImage(bankAccountBloc.bankAccount!),
             ),
+            trailing: Icon(Icons.keyboard_arrow_down),
           ),
         ),
       ),
@@ -298,7 +337,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   }
 
   void onSubmit() async {
-    //for closing the keypad if it is open
     FocusScope.of(context).unfocus();
 
     // duration for close keyboard and open passcode bottomsheet
@@ -451,13 +489,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
-                          'Change Bank Account',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15),
-                        ),
+                        child: searchBox(),
                       ),
                       SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
@@ -467,11 +499,90 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
           });
         });
     bottomSheetMounted = false;
-    if (result == null) {
-      // if (itemSearchTypeSelectionMenu!.isMenuOpen) {
-      //   itemSearchTypeSelectionMenu!.closeMenu();
-      // }
-    }
+    if (result == null) {}
+  }
+
+  Widget searchBox() {
+    return Container(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionTheme:
+              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+        ),
+        child: TextFormField(
+          key: searchItemTextFormField,
+          controller: searchItemTextController,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+          cursorWidth: 1.5,
+          cursorColor: navyBlue,
+          decoration: InputDecoration(
+            hintText: 'Search Beneficiary',
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            // prefixIcon: searchTypeSelection(),
+            prefix: Padding(
+              padding: EdgeInsets.only(left: 12),
+            ),
+            suffixIcon: searchIcon(),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+          onFieldSubmitted: (val) {
+            if (mounted) setState(() {});
+            FocusScope.of(context).unfocus();
+            searchText = val;
+
+            // Call your search function here
+            searchBankList();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: () {
+        FocusScope.of(context).unfocus();
+        // searchBankList();
+      },
+    );
   }
 
   Widget bottomSheetTabBar() {
@@ -555,7 +666,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
   Widget bottomSheetTabViews() {
     return buildBankList();
-    // return pullToRefresh();
   }
 
   void getList() async {
@@ -573,6 +683,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     if (mounted) {
       setState(() {
         bankAccountList.addAll(tempList);
+        bankAccountListStore.addAll(tempList);
 
         for (BankAccount item in bankAccountList) {
           if (item.isDefault == true) {
@@ -692,7 +803,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
       );
     }
     return Text(
-      account.bankName!,
+      appendStringDot(account.bankName!, 15),
       style: TextStyle(
           color: darkGrey, fontWeight: FontWeight.normal, fontSize: 15),
     );
@@ -706,7 +817,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
           height: 8,
         ),
         Text(
-          trimString(account.accountName!),
+          appendStringDot(account.accountName!, 20),
           maxLines: 1,
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -791,5 +902,24 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
         ),
       );
     }
+  }
+
+  void searchBankList() {
+    // Perform the search and update the bankAccountList
+    List filteredList = bankAccountList.where((account) {
+      // Customize the condition based on your search requirements
+      // return account.accountName.toString().toLowerCase().contains(searchText);
+      return account.bankName.toString().toLowerCase().contains(searchText);
+    }).toList();
+
+    setState(() {
+      bankAccountList = filteredList;
+    });
+  }
+
+  void clearSearchAndAllBanks() {
+    bankAccountList = bankAccountListStore;
+    searchText = '';
+    searchItemTextController.text = '';
   }
 }

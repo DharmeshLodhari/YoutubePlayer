@@ -74,7 +74,7 @@ class _OtherBankTabSelectionState extends State<OtherBankTabSelection> {
         children: [
           Container(
             margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            padding: EdgeInsets.symmetric(vertical: 12),
+            padding: EdgeInsets.symmetric(vertical: 2),
             child: Text(
               title,
               style: TextStyle(
