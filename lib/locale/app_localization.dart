@@ -679,6 +679,20 @@ class AppLocalization {
     );
   }
 
+  String get payment {
+    return Intl.message(
+      "Payment",
+      name: "payment",
+    );
+  }
+
+  String get businessTools {
+    return Intl.message(
+      "Business Tools",
+      name: "businessTools",
+    );
+  }
+
   String get useFourDigitNumber {
     return Intl.message(
       "Use 4 Digit Number",
@@ -1248,6 +1262,13 @@ class AppLocalization {
     return Intl.message(
       "Scan QR Code",
       name: "scanQrCode",
+    );
+  }
+
+  String get quickActions {
+    return Intl.message(
+      "Quick Actions",
+      name: "quickActions",
     );
   }
 

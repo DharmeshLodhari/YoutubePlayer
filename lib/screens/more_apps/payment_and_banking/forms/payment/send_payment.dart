@@ -88,6 +88,8 @@ class _SendPaymentState extends State<SendPayment> {
             if (mounted) setState(() {});
           },
           currentIndex: currentAskTapOnHome,
+          tabOne: 'Slydo Account',
+          tabTwo: 'Bank Transfer',
         ),
         SizedBox(
           height: 16,

@@ -1,32 +1,38 @@
 import 'dart:io';
-
-import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
-import '../../../../../data/currency.dart';
-import '../../../../../widget/noItemInList.dart';
-import '../../../payment_loading_screen.dart';
-import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../models/transactions.dart';
-import '../../payment_and_banking_auth.dart';
+import '../../../../../../data/currency.dart';
+import '../../../../../../data/database_helper.dart';
+import '../../../../../../widget/LoadingIndicator.dart';
+import '../../../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import '../../../../../../widget/noItemInList.dart';
+import '../../../../payment_loading_screen.dart';
+import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../../../models/VirtualAccount.dart';
+import '../../../models/transactions.dart';
+import '../../../payment_and_banking_auth.dart';
 
-class PayoutScreen extends StatefulWidget {
+// ignore: must_be_immutable
+class BeneficiaryTransfer extends StatefulWidget {
+  var arguments;
+  final Function(bool)? callback;
+
+  BeneficiaryTransfer({this.arguments, this.callback});
+
+  // Declare a field that holds the userData.
   @override
-  _PayoutScreenState createState() => _PayoutScreenState();
+  _BeneficiaryTransferState createState() => _BeneficiaryTransferState();
 }
 
-class _PayoutScreenState extends State<PayoutScreen> {
+class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   late http.Response response;
 
   final _auth = PaymentAndBankingAuth();
@@ -37,6 +43,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
   int? amount = 0;
   String errorMessage = "";
+  String description = "";
   int? accountBalance = 0;
 
   VirtualAccount? virtualAccount;
@@ -90,47 +97,16 @@ class _PayoutScreenState extends State<PayoutScreen> {
     userBloc = Provider.of<UserBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
-      ),
-    );
-  }
-
-  Widget appBar() {
-    return AppBar(
-      elevation: 0,
+    return Scaffold(
       backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          if (isLoading == true) {
-            return;
-          }
-          Navigator.pop(context);
-        },
-      ),
-      title: Text(
-        "Cashout",
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
+      resizeToAvoidBottomInset: true,
+      body: scaffoldBody(),
     );
   }
 
   Widget scaffoldBody() {
+    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+
     return isLoading
         ? Center(
             child: Container(
@@ -138,15 +114,32 @@ class _PayoutScreenState extends State<PayoutScreen> {
             ),
           )
         : SingleChildScrollView(
+            scrollDirection: Axis.vertical,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
               child: Column(
                 children: [
-                  isAccountFound
-                      ? Form(
-                          key: _formKey,
+                  Card(
+                    elevation: 2,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    shadowColor: iconBtnGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: iconBtnGrey, width: 1)),
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Column(
                             children: <Widget>[
+                              SizedBox(
+                                height: 30,
+                              ),
                               getUserBankAccount(),
                               SizedBox(
                                 height: 20,
@@ -155,76 +148,66 @@ class _PayoutScreenState extends State<PayoutScreen> {
                               SizedBox(
                                 height: 20,
                               ),
-                              noteForUser(),
+                              getDescription(),
                               SizedBox(
-                                height: 40,
+                                height: 20,
                               ),
-                              canCashOut(amount!, accountBalance!)
-                                  ? getSubmitButton()
-                                  : Container(
-                                      child: Center(
-                                          child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 16.0),
-                                              child: Text.rich(TextSpan(
-                                                  text: AppLocalization.of(
-                                                          context)!
-                                                      .minimumTransfer,
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: blackFont,
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                  children: <InlineSpan>[
-                                                    TextSpan(
-                                                      text: worldCurrencies[
-                                                              userBloc.user
-                                                                  .currency!]! +
-                                                          moneyDisplayNormalizer(
-                                                              displayPossibleCashOutAmount(
-                                                                  accountBalance!)),
-                                                      style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: blackFont,
-                                                          fontFamily: "Roboto",
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    )
-                                                  ])))),
-                                    ),
+                              noteForUser(),
                               SizedBox(
                                 height: 20,
                               ),
                             ],
                           ),
-                        )
-                      : Container(
-                          child: Center(
-                              child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: Text(
-                              "Please add Bank Account for cashout.",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: blackFont,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          )),
                         ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 40,
+                        ),
+                        canCashOut(amount!, accountBalance!)
+                            ? getSubmitButton()
+                            : Container(
+                                child: Center(
+                                    child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16.0),
+                                        child: Text.rich(TextSpan(
+                                            text: AppLocalization.of(context)!
+                                                .minimumTransfer,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: blackFont,
+                                                fontWeight: FontWeight.w600),
+                                            children: <InlineSpan>[
+                                              TextSpan(
+                                                text: worldCurrencies[userBloc
+                                                        .user.currency!]! +
+                                                    moneyDisplayNormalizer(
+                                                        displayPossibleCashOutAmount(
+                                                            accountBalance!)),
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: blackFont,
+                                                    fontFamily: "Roboto",
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              )
+                                            ])))),
+                              ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           );
-  }
-
-  Widget showBackArrow() {
-    return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
   }
 
   Widget getUserBankAccount() {
@@ -290,6 +273,21 @@ class _PayoutScreenState extends State<PayoutScreen> {
     );
   }
 
+  Widget getDescription() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.reference,
+      keyboardType: TextInputType.text,
+      enabled: true,
+      onChanged: (val) {
+        if (mounted) {
+          setState(() {
+            description = val;
+          });
+        }
+      },
+    );
+  }
+
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: onSubmit,
@@ -320,6 +318,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
             "currency": userBloc.user.currency,
             "customer_bank_account":
                 int.tryParse(bankAccountBloc.bankAccount!.uuid!),
+            "description": description,
           };
           BottomSheetPassCode(
               context: context,
@@ -335,7 +334,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => PaymentLoadingScreen(
-                            text: 'Payout Processing...',
+                            text: 'Bank Transfer Processing...',
                             imagePath: 'assets/images/app_logo.png',
                           )),
                 );
