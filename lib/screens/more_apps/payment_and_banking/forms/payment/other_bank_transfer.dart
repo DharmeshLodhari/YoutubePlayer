@@ -45,7 +45,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
 
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+          horizontal: 16, vertical: isScreenIsSmall ? 4 : 8),
       child: Column(
         children: [
           _buildTabs(),
@@ -68,7 +68,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
           currentIndex: currentAskTapOnHome,
         ),
         SizedBox(
-          height: 16,
+          height: 5,
         ),
       ],
     );
