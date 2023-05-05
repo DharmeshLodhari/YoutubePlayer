@@ -5,9 +5,12 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../../data/currency.dart';
 import '../../../../../../data/database_helper.dart';
@@ -15,6 +18,8 @@ import '../../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../../widget/LoadingIndicator.dart';
 import '../../../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../../../../../../widget/noItemInList.dart';
+import '../../../../../../widget/slide_action_button.dart';
+import '../../../../../../widget/vertical_list_item.dart';
 import '../../../../payment_loading_screen.dart';
 import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../../models/VirtualAccount.dart';
@@ -65,6 +70,10 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   TextEditingController _amountController = TextEditingController();
   final searchItemTextController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
+  //slidable tile
+  SlidableController? _slideController;
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -82,8 +91,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
       if (searchItemTextController.text.length >= 3) {
         searchText = searchItemTextController.text;
 
-        debugPrint('Fola:::: ${searchItemTextController.text.length}');
-
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
@@ -98,6 +105,11 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
         clearSearchAndAllBanks();
       }
     });
+
+    _slideController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
 
     super.initState();
   }
@@ -346,10 +358,8 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
       debugPrint(
           "virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ${virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!}");
 
-      if (amount! <=
-          int.parse(
-              virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ??
-                  "0")) {
+      if (canSendMoney(amount,
+          virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!)) {
         try {
           var data = {
             "amount": moneyInputNormalizer(amount.toString()),
@@ -665,7 +675,15 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   }
 
   Widget bottomSheetTabViews() {
-    return buildBankList();
+    return SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: buildBankList(context));
   }
 
   void getList() async {
@@ -682,6 +700,11 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
     if (mounted) {
       setState(() {
+        bankAccountList = [];
+        bankAccountListStore = [];
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
         bankAccountList.addAll(tempList);
         bankAccountListStore.addAll(tempList);
 
@@ -702,7 +725,45 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     }
   }
 
-  Widget buildBankList() {
+  // Widget buildBankList() {
+  //   return noItemInList
+  //       ? NoItemInList(
+  //           msg: AppLocalization.of(context)!.noResultFound,
+  //           isResult: true,
+  //         )
+  //       : ListView.builder(
+  //           padding: EdgeInsets.symmetric(vertical: 4),
+  //           //+1 for progressbar
+  //           shrinkWrap: true,
+  //           itemCount: bankAccountList.length + 1,
+  //           itemBuilder: (BuildContext context, int index) {
+  //             if (index == bankAccountList.length) {
+  //               return _buildIndicatorForBankList();
+  //             } else {
+  //               return GestureDetector(
+  //                 onTap: () {
+  //                   selectedBank = bankAccountList[index];
+  //                   bankAccountBloc.bankAccount = bankAccountList[index];
+
+  //                   if (mounted) setState(() {});
+  //                   Navigator.pop(context);
+
+  //                   FocusScope.of(context).requestFocus();
+  //                 },
+  //                 child: _getSlidableWithLists(
+  //                     context,
+  //                     bankAccountTile(
+  //                       account: bankAccountList[index],
+  //                     ),
+  //                     bankAccountList[index]),
+  //               );
+  //             }
+  //           },
+  //           controller: _scrollController,
+  //         );
+  // }
+
+  Widget buildBankList(BuildContext context) {
     return noItemInList
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noResultFound,
@@ -710,26 +771,16 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
-            //+1 for progressbar
             shrinkWrap: true,
             itemCount: bankAccountList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == bankAccountList.length) {
                 return _buildIndicatorForBankList();
               } else {
-                return GestureDetector(
-                  onTap: () {
-                    selectedBank = bankAccountList[index];
-                    bankAccountBloc.bankAccount = bankAccountList[index];
-
-                    if (mounted) setState(() {});
-                    Navigator.pop(context);
-
-                    FocusScope.of(context).requestFocus();
-                  },
-                  child: bankAccountTile(
-                    account: bankAccountList[index],
-                  ),
+                return _getSlidableWithLists(
+                  context,
+                  bankAccountTile(account: bankAccountList[index]),
+                  bankAccountList[index],
                 );
               }
             },
@@ -759,29 +810,38 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
       imageUrl = url!.replaceAll('https//', 'https://');
     }
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
-        child: ListTile(
-          dense: account.isDefault! ? true : false,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              getAccountName(account: account),
-              getAccountNumber(account: account)
-            ],
-          ),
-          subtitle: getBankName(account: account),
-          leading: GestureDetector(
-            onTap: () {
-              Navigator.of(context)
-                  .pushNamed("/photo-viewer", arguments: imageUrl);
-            },
-            child: checkBankImage(account),
+    return GestureDetector(
+      onTap: () {
+        selectedBank = account;
+        bankAccountBloc.bankAccount = account;
+        if (mounted) setState(() {});
+        Navigator.pop(context);
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        shadowColor: boxShadowTwo,
+        elevation: 0,
+        child: Container(
+          decoration: decorateBox(),
+          child: ListTile(
+            dense: account.isDefault! ? true : false,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                getAccountName(account: account),
+                getAccountNumber(account: account)
+              ],
+            ),
+            subtitle: getBankName(account: account),
+            leading: GestureDetector(
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamed("/photo-viewer", arguments: imageUrl);
+              },
+              child: checkBankImage(account),
+            ),
           ),
         ),
       ),
@@ -922,4 +982,135 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     searchText = '';
     searchItemTextController.text = '';
   }
+
+  // refresh the list when lifecycle called onResume method
+  void _onRefresh() async {
+    //check network connectivity and if true then refresh the list
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        count = 0;
+        next = "";
+        previous = "";
+        bankAccountList = [];
+        getList();
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  Widget _getSlidableWithLists(
+      BuildContext context, Widget bankAccountTile, BankAccount account) {
+    return Slidable(
+      controller: _slideController,
+      direction: Axis.horizontal,
+      actionPane: SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      child: VerticalListItem(bankAccountTile),
+      actions: listActionSlideActions(account: account),
+      secondaryActions: listSecondaryActions(account: account),
+    );
+  }
+
+  List<Widget> listSecondaryActions({required BankAccount account}) {
+    return [
+      SlideActionButton(
+          backgroundColor: naturalGreen,
+          icon: Icons.device_hub,
+          onTap: account.isDefault!
+              ? () {
+                  showToast(
+                      message: AppLocalization.of(context)!
+                          .thisAccountIsAlreadyDefaultAccount);
+                }
+              : () {
+                  updateBankAccount(account);
+                },
+          title: account.isDefault!
+              ? AppLocalization.of(context)!.defaultMsg
+              : AppLocalization.of(context)!.makeDefault,
+          slideController: _slideController),
+    ];
+  }
+
+  List<Widget> listActionSlideActions({BankAccount? account}) {
+    return [
+      SlideActionButton(
+          backgroundColor: mateRed,
+          icon: SlydoAppIcon.remove,
+          onTap: () {
+            deleteBankAccount(account);
+          },
+          title: AppLocalization.of(context)!.delete,
+          slideController: _slideController),
+    ];
+  }
+
+  void deleteBankAccount(BankAccount? account) {
+    {
+      if (bankAccountList.length == 1) {
+        showToast(
+            message:
+                AppLocalization.of(context)!.youCanNotDeleteOnlyBankAccount);
+      } else {
+        _auth.deleteBankAccount(account!.uuid!).then((value) {
+          if (value) {
+            showToast(
+                message:
+                    AppLocalization.of(context)!.accountDeletedSuccessfully);
+            if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+              bottomSheetStateSetterGlobal!(() {});
+            if (mounted) setState(() {});
+            _onRefresh();
+          } else {
+            showToast(
+                message: AppLocalization.of(context)!.accountIsNotDeleted);
+          }
+        }).catchError((error) {
+          showToast(message: error.toString());
+        });
+      }
+    }
+  }
+
+  void updateBankAccount(BankAccount account) {
+    Map data = {
+      "uuid": account.uuid,
+      "customer_username": userBloc.user.userName,
+      "bank": account.bankName,
+      "account_name": account.accountName,
+      "account_number": account.accountNumber,
+      "is_default": true,
+    };
+    _auth.updateBankAccount(data).then((value) {
+      if (value) {
+        showToast(
+            message: AppLocalization.of(context)!.accountUpdatedSuccessfully);
+        _auth.getBankAccounts().then((accounts) {
+          BankAccountBloc bankAccountBloc =
+              Provider.of<BankAccountBloc>(context, listen: false);
+          bankAccountBloc.bankAccount = accounts[0];
+          if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+            bottomSheetStateSetterGlobal!(() {});
+          if (mounted) setState(() {});
+        });
+        _onRefresh();
+      } else {
+        showToast(message: AppLocalization.of(context)!.accountIsNotUpdated);
+      }
+    }).catchError((error) {
+      showToast(message: error.toString());
+    });
+    _onRefresh();
+  }
+
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
+
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 }

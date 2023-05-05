@@ -52,6 +52,16 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       name: "business",
       tabs: [
         UserTab(
+          label: "Product",
+          child: productTab(widget.searchedUser, isOwner!),
+          apiCall: () async => await fetchProductData(searchedUserName),
+        ),
+        UserTab(
+          label: "Service",
+          child: serviceTab(widget.searchedUser, isOwner!),
+          apiCall: () async => await fetchServiceData(searchedUserName),
+        ),
+        UserTab(
           label: "Yarn",
           child: yarnTab(searchedUserName),
           apiCall: () async => await fetchYarnData(searchedUserName),
@@ -70,16 +80,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
           label: "Channels",
           child: channelTab(searchedUserName),
           apiCall: () async => await fetchChannelData(searchedUserName),
-        ),
-        UserTab(
-          label: "Product",
-          child: productTab(widget.searchedUser, isOwner!),
-          apiCall: () async => await fetchProductData(searchedUserName),
-        ),
-        UserTab(
-          label: "Service",
-          child: serviceTab(widget.searchedUser, isOwner!),
-          apiCall: () async => await fetchServiceData(searchedUserName),
         ),
         UserTab(
           label: "Review",

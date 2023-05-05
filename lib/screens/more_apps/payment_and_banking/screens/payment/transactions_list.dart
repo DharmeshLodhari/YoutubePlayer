@@ -44,11 +44,11 @@ class _TransactionListState extends State<TransactionList> {
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
   bool isFirstTime = true;
-  AppConfigurationModel? appConfigurationModel;
+  // AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
-    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+    // appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
     _pageViewController = PageController(initialPage: 0);
 
     super.initState();
