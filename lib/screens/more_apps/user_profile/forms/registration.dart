@@ -7,7 +7,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
-
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/LoadingIndicator.dart';
 

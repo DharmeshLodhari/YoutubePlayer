@@ -651,14 +651,12 @@ class _HomeState extends State<Home> {
             ],
           ),
           onTap: () {
+            hideBalance();
             if (getIt<AppConfigurationBloc>()
                     .appConfigurationModel
                     ?.enablePayment ==
                 true) {
-              Navigator.of(context)
-                  .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
-                'isFromProfile': true,
-              });
+              Navigator.pushNamed(context, Routes.ACCOUNTS);
             } else {
               showToast(message: 'Payment not available at the moment');
             }
@@ -692,6 +690,7 @@ class _HomeState extends State<Home> {
             ],
           ),
           onTap: () {
+            hideBalance();
             if (getIt<AppConfigurationBloc>()
                     .appConfigurationModel
                     ?.enablePayment ==
@@ -732,6 +731,7 @@ class _HomeState extends State<Home> {
             ],
           ),
           onTap: () {
+            hideBalance();
             NavigationUtil.push(context,
                 screen: QRCodeView(arguments: {'isRequest': false}));
           }),
@@ -764,6 +764,7 @@ class _HomeState extends State<Home> {
             ],
           ),
           onTap: () {
+            hideBalance();
             NavigationUtil.push(context, screen: QrCodePage());
           }),
     );
@@ -777,7 +778,16 @@ class _HomeState extends State<Home> {
             icon: SlydoAppIcon.transactions,
             title: AppLocalization.of(context)!.transaction,
             onTap: () {
-              transactionAndroidSheet();
+              hideBalance();
+              BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () {
+                    // Navigator.pop(context);
+                    Navigator.pushNamed(context, Routes.TRANSACTIONS);
+                  },
+                  cancelCallBack: () {
+                    Navigator.pop(context);
+                  });
             },
             iconColor: HexColor("#3F61DB"),
           ),
@@ -822,40 +832,6 @@ class _HomeState extends State<Home> {
         ),
       ],
     );
-  }
-
-  void transactionAndroidSheet() {
-    androidBottomSheet(
-        context: context,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            bottomSheetItem(
-              title: AppLocalization.of(context)!.myTransaction,
-              iconData: SlydoAppIcon.transactions,
-              onTap: () {
-                BottomSheetPassCode(
-                    context: context,
-                    isValidCallback: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, Routes.TRANSACTIONS);
-                    },
-                    cancelCallBack: () {
-                      Navigator.pop(context);
-                    });
-              },
-            ),
-            bottomSheetItem(
-              title: AppLocalization.of(context)!.myPaymentRequests,
-              iconData: SlydoAppIcon.receive,
-              onTap: () {
-                Navigator.pop(context);
-
-                Navigator.pushNamed(context, Routes.ACCOUNTS);
-              },
-            ),
-          ],
-        ));
   }
 
   Widget secondRowOfUserDashboardItem() {
@@ -905,6 +881,7 @@ class _HomeState extends State<Home> {
   }
 
   void storeItemAndroidSheet() {
+    hideBalance();
     showModalBottomSheet<void>(
         backgroundColor: Colors.transparent,
         context: context,
@@ -946,6 +923,7 @@ class _HomeState extends State<Home> {
   }
 
   void businessAndroidSheet() {
+    hideBalance();
     androidBottomSheet(
         context: context,
         child: Column(
@@ -986,6 +964,7 @@ class _HomeState extends State<Home> {
             title: AppLocalization.of(context)!.blogs,
             onTap: () {
               if (appConfigurationModel?.enableSuperBlog == true) {
+                hideBalance();
                 NavigationUtil.push(
                   context,
                   screen: SuperBlog(),
@@ -1008,6 +987,7 @@ class _HomeState extends State<Home> {
               // } else {
               //   showToast(message: 'Coming soon.');
               // }
+              hideBalance();
               Navigator.pushNamed(context, Routes.SUPER_HUB);
             },
             iconColor: HexColor("#9B51E0"),
@@ -1020,6 +1000,7 @@ class _HomeState extends State<Home> {
             title: "Utility",
             onTap: () {
               if (appConfigurationModel?.enableUtility == true) {
+                hideBalance();
                 Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
               } else {
                 showToast(message: 'Coming soon.');
@@ -1059,6 +1040,7 @@ class _HomeState extends State<Home> {
   }
 
   void profileAndroidSheet() {
+    hideBalance();
     androidBottomSheet(
       context: context,
       child: Column(

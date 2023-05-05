@@ -441,10 +441,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    if (amount! <=
-        int.parse(
-            virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ??
-                "0")) {
+    if (canSendMoney(amount,
+        virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!)) {
       try {
         var data = {
           "amount": moneyInputNormalizer(amount.toString()),
