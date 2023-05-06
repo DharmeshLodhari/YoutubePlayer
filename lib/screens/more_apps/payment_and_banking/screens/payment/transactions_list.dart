@@ -1,20 +1,14 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transactions/cash_out_transaction_list.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transactions/slydo_transaction_list.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
-import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
@@ -22,7 +16,7 @@ import '../../../../../services/app_config_bloc.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../search_user.dart';
 import '../../../user_profile/models/user.dart';
-import '../../payment_and_banking_auth.dart';
+import '../../tiles/payment_tab_selection.dart';
 
 class TransactionList extends StatefulWidget {
   @override
@@ -33,21 +27,11 @@ class _TransactionListState extends State<TransactionList> {
   final GlobalKey<ScaffoldState> _scaffoldTransactionKey =
       new GlobalKey<ScaffoldState>();
 
-  // Get list of users transactions
-  final _auth = PaymentAndBankingAuth();
-  SlidableController? _slideController;
-  int? count = 0;
-  String? next = "";
-  String? previous = "";
-  List transactionList = [];
-  ScrollController _scrollController = ScrollController();
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
-  bool isLoading = false;
-  bool noItemInList = false;
   RefreshBlocForTransaction? _refreshBloc;
   DateTimeRange? newDateTimeRange;
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+  late PageController _pageViewController;
+  int currentAskTapOnHome = 0;
 
   // variables for to getting filter transactions
   bool? moneyIn;
@@ -60,59 +44,14 @@ class _TransactionListState extends State<TransactionList> {
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
   bool isFirstTime = true;
-  AppConfigurationModel? appConfigurationModel;
+  // AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
-    // secureScreen();
-    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
-    getList();
+    // appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+    _pageViewController = PageController(initialPage: 0);
 
     super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
-        getList();
-      }
-    });
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
-
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      // initializePopMenu();
-    });
-  }
-
-  _refresh() {
-    count = 0;
-    next = "";
-    previous = "";
-    transactionList = [];
-    noItemInList = false;
-    isFirstTime = true;
-    isLoading = false;
-    if (mounted) setState(() {});
-    getList();
-  }
-
-  void _onRefresh() async {
-    //check network connectivity and if true then refresh the list
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refresh();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
   }
 
   void menuItemSelectionChange(String value, int index) {
@@ -150,7 +89,6 @@ class _TransactionListState extends State<TransactionList> {
     }
 
     setState(() {});
-    _onRefresh();
   }
 
   void menuStateChange(bool isOpen) {
@@ -191,7 +129,11 @@ class _TransactionListState extends State<TransactionList> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             getDateRangeText(),
-            Expanded(child: _buildTransactionList()),
+            SizedBox(
+              height: 15.0,
+            ),
+            _buildTabs(),
+            _buildPageView(),
           ],
         ),
       ),
@@ -278,7 +220,6 @@ class _TransactionListState extends State<TransactionList> {
 
             if (userFound != null) {
               userName = userFound.userName;
-              _refresh();
             }
           },
         ),
@@ -313,7 +254,7 @@ class _TransactionListState extends State<TransactionList> {
 
             if (newDateTimeRange != null) {
               setState(() {});
-              _onRefresh();
+              // _onRefresh();
             }
           },
         ),
@@ -368,95 +309,6 @@ class _TransactionListState extends State<TransactionList> {
     );
   }
 
-  Widget _buildTransactionList() {
-    return noItemInList
-        ? NoItemInList(
-            msg: AppLocalization.of(context)!.transactionHistoryEmpty,
-          )
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 4),
-              //+1 for progressbar
-              itemCount: transactionList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == transactionList.length) {
-                  return buildLoadingIndicator(isLoading: isLoading);
-                } else {
-                  return _getSlidableWithLists(
-                      context, transactionList[index], index);
-                }
-              },
-              controller: _scrollController,
-            ),
-          );
-  }
-
-  void getList() async {
-    if (!isLoading) {
-      if (next != null && !isLoading) {
-        if (mounted) {
-          setState(() {
-            isLoading = true;
-          });
-        }
-        Map<String, dynamic>? result = await _auth.getTransactions(
-          next,
-          previous,
-          moneyIn,
-          newDateTimeRange,
-          userName: userName,
-        );
-        if (result == null) {
-          isLoading = false;
-          return;
-        }
-        next = result['next'];
-        count = result['count'];
-        previous = result['previous'];
-        var tempList = result['results'];
-
-        isLoading = false;
-        transactionList.addAll(tempList);
-
-        if (mounted) setState(() {});
-
-        if (isFirstTime && next != null && next != "") {
-          isFirstTime = false;
-          getList();
-        }
-      }
-      if (transactionList.isEmpty) {
-        noItemInList = true;
-
-        if (mounted) setState(() {});
-      } else if (next == null && transactionList.length > 6) {
-        showReachedToBottomSnackBar();
-      }
-    }
-  }
-
-  void showReachedToBottomSnackBar() {
-    if (mounted) {
-      if (next == null &&
-          _scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
-      }
-    }
-  }
-
   Widget openGraph() {
     return IconButton(
       icon: Icon(
@@ -469,295 +321,49 @@ class _TransactionListState extends State<TransactionList> {
     );
   }
 
-  void handleSlideAnimationChanged(Animation<double>? value) {}
-
-  void handleSlideIsOpenChanged(bool? value) {}
-
-  List<Widget> listSecondaryActions(Transaction transaction) {
-    if (transaction.payee! == "slydo_envelope" ||
-        transaction.payee! == "slydo" ||
-        transaction.displayCustomer == "slydo" ||
-        transaction.displayCustomer == "slydo_envelope") {
-      return [];
-    }
-    if (transaction.isAnonymous!) return [];
-    return [
-      SlideActionButton(
-          backgroundColor: naturalGreen,
-          icon: SlydoAppIcon.send,
-          onTap: () async {
-            if (appConfigurationModel?.enablePayment == true) {
-              customerProfileBloc.customer =
-                  await UserAuth().fetchCustomerProfile(transaction.payee);
-              Navigator.of(context)
-                  .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
-                'isFromProfile': false,
-              });
-            } else {
-              showToast(message: 'Payment not available at the moment');
-            }
+  Widget _buildTabs() {
+    return Column(
+      children: [
+        PaymentTabSelection(
+          onTap: (index) {
+            currentAskTapOnHome = index;
+            _pageViewController.jumpToPage(currentAskTapOnHome);
+            if (mounted) setState(() {});
           },
-          title: AppLocalization.of(context)!.send,
-          slideController: _slideController),
-    ];
-  }
-
-  List<Widget> listActionSlideActions(Transaction transaction) {
-    if (transaction.payee! == "slydo_envelope" ||
-        transaction.payee! == "slydo" ||
-        transaction.displayCustomer == "slydo" ||
-        transaction.displayCustomer == "slydo_envelope") {
-      return [];
-    }
-    if (transaction.isAnonymous!) return [];
-
-    return [
-      SlideActionButton(
-          backgroundColor: navyBlue,
-          icon: SlydoAppIcon.receive,
-          onTap: () async {
-            if (appConfigurationModel?.enablePayment == true) {
-              customerProfileBloc.customer =
-                  await UserAuth().fetchCustomerProfile(transaction.payee);
-              Navigator.of(context).pushNamed(
-                Routes.REQUEST_PAYMENT,
-                arguments: <String, bool>{
-                  'isFromProfile': false,
-                  'isRequest': true
-                },
-              );
-            } else {
-              showToast(message: 'Payment is not currently available');
-            }
-          },
-          title: AppLocalization.of(context)!.request,
-          slideController: _slideController),
-    ];
-  }
-
-  Widget _getSlidableWithLists(
-      BuildContext context, Transaction transaction, int index) {
-    return Slidable(
-      key: Key(transaction.payee!),
-      controller: _slideController,
-      direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
-      actionExtentRatio: 0.25,
-      child: VerticalListItem(
-        transaction,
-        key: Key(
-            "Transaction:${transaction.amount.toString() + transaction.createdAt!}"),
-      ),
-      actions: listActionSlideActions(transaction),
-      secondaryActions: listSecondaryActions(transaction),
+          currentIndex: currentAskTapOnHome,
+          tabOne: 'Slydo',
+          tabTwo: 'Cashout',
+        ),
+        SizedBox(
+          height: 10,
+        ),
+      ],
     );
+  }
+
+  Widget _buildPageView() {
+    return Expanded(
+      child: PageView(
+        onPageChanged: (currentPage) {
+          updateCurrentAskTapOnHome(index: currentPage);
+        },
+        controller: _pageViewController,
+        children: [
+          SlydoTransactionList(),
+          CashoutTransactionsList(),
+        ],
+      ),
+    );
+  }
+
+  void updateCurrentAskTapOnHome({required int index}) {
+    setState(() {
+      currentAskTapOnHome = index;
+    });
   }
 
   @override
   void dispose() {
-    // unsecureScreen();
-    _refreshController.dispose();
-    _scrollController.dispose();
     super.dispose();
-  }
-}
-
-class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.transaction, {this.key}) : super(key: key);
-
-  final Transaction transaction;
-  final Key? key;
-
-  @override
-  _VerticalListItemState createState() => _VerticalListItemState();
-}
-
-class _VerticalListItemState extends State<VerticalListItem> {
-  bool isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () =>
-          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-              ? Slidable.of(context)?.open()
-              : Slidable.of(context)?.close(),
-      onDoubleTap: () {
-        if (widget.transaction.payee == "slydo_envelope" ||
-            widget.transaction.payee == "slydo" ||
-            widget.transaction.displayCustomer == "slydo" ||
-            widget.transaction.displayCustomer == "slydo_envelope") {
-          return;
-        }
-
-        if (widget.transaction.payee != "Slydo" &&
-            widget.transaction.payee != "Private") {
-          debugPrint(widget.transaction.payee);
-          Navigator.pushNamed(context, Routes.USER_PROFILE,
-              arguments: {"searchedUserName": widget.transaction.payee});
-        }
-      },
-      onLongPress: () {
-        if (mounted) {
-          setState(() {
-            if (isExpanded) {
-              isExpanded = false;
-            } else {
-              isExpanded = true;
-            }
-          });
-        }
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
-        child: TransactionTile(
-          transaction: widget.transaction,
-          expandedWidget: expandedWidget(),
-          key: widget.key,
-        ),
-      ),
-    );
-  }
-
-  Widget expandedWidget() {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 300),
-      height: isExpanded ? 48 : 0,
-      curve: Curves.fastOutSlowIn,
-      child: isExpanded
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Container(
-                  height: 1,
-                  color: dividerColor,
-                ),
-                Expanded(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Expanded(child: sendMessageButton()),
-                      Container(
-                        width: 1,
-                        color: dividerColor,
-                        height: 48,
-                      ),
-                      Expanded(child: blockUserButton()),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          : Container(),
-    );
-  }
-
-  Widget sendMessageButton() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        splashColor: Colors.white,
-        highlightColor: Colors.white,
-      ),
-      child: InkWell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            RoundedBackgroundIcon(
-              backgroundColor: navyBlue.withOpacity(0.1),
-              icon: Icon(
-                SlydoAppIcon.message,
-                color: navyBlue,
-                size: 14,
-              ),
-              width: 32,
-              height: 32,
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              AppLocalization.of(context)!.message,
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black),
-            )
-          ],
-        ),
-        onTap: () {
-          UserAuth()
-              .fetchCustomerProfile(widget.transaction.payee)
-              .then((user) {
-            if (mounted) {
-              setState(() {
-                isExpanded = false;
-              });
-            }
-            Navigator.of(context).pushNamed('/compose_message', arguments: {
-              'recipient': user.userName,
-              'subject': "",
-            });
-          });
-        },
-      ),
-    );
-  }
-
-  Widget blockUserButton() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        splashColor: Colors.white,
-        highlightColor: Colors.white,
-      ),
-      child: InkWell(
-        onTap: () {
-          UserAuth()
-              .fetchCustomerProfile(widget.transaction.payee)
-              .then((user) {
-            UserAuth().blockUser(user).then((result) {
-              if (mounted) {
-                setState(() {
-                  isExpanded = false;
-                });
-              }
-              if (result) {
-                showToast(
-                    message: "${widget.transaction.payee} " +
-                        AppLocalization.of(context)!.isBlocked);
-              } else {
-                showToast(
-                  message: AppLocalization.of(context)!.error,
-                );
-              }
-            });
-          });
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            RoundedBackgroundIcon(
-              backgroundColor: mateRed.withOpacity(0.1),
-              icon: Icon(
-                SlydoAppIcon.remove,
-                color: mateRed,
-                size: 14,
-              ),
-              width: 32,
-              height: 32,
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              AppLocalization.of(context)!.blockUser,
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black),
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

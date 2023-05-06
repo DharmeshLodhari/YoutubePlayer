@@ -442,7 +442,7 @@ Widget transactionOrPayoutTile(
     {Transaction? transaction,
     Widget? trailingWidget,
     TextStyle? subtitleTextStyle}) {
-  debugPrint("Fola ==>$subtitle");
+  // debugPrint("Fola ==>$subtitle");
 
   String? status = "";
   if (subtitle == 'Paid' || subtitle == 'Settled') {
@@ -2445,4 +2445,9 @@ Widget userImageUserInitialsPic(
       ),
     );
   }
+}
+
+bool canSendMoney(int? amount, String? limit) {
+  // virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!
+  return amount! <= int.parse("500000" ?? "0");
 }

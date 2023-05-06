@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 class PaymentTabSelection extends StatefulWidget {
   final Function(int) onTap;
   final int currentIndex;
+  String? tabOne;
+  String? tabTwo;
 
-  const PaymentTabSelection(
-      {required this.onTap, this.currentIndex = 0, Key? key})
+  PaymentTabSelection(
+      {required this.onTap,
+      this.currentIndex = 0,
+      this.tabOne,
+      this.tabTwo,
+      Key? key})
       : super(key: key);
 
   @override
@@ -31,14 +37,14 @@ class _PaymentTabSelectionState extends State<PaymentTabSelection> {
             child: buildTabItem(
                 onTap: widget.onTap,
                 tabIndex: 0,
-                title: 'Slydo Account',
+                title: widget.tabOne!,
                 currentIndex: widget.currentIndex),
           ),
           Expanded(
             child: buildTabItem(
                 onTap: widget.onTap,
                 tabIndex: 1,
-                title: 'Bank Transfer',
+                title: widget.tabTwo!,
                 currentIndex: widget.currentIndex),
           ),
         ],

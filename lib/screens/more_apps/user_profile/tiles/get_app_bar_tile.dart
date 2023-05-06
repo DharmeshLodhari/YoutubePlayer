@@ -1355,26 +1355,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       }
     }
 
-    if (searchedUser?.type?.toLowerCase() != "user") {
-      list.add(
-        bottomSheetItem(
-          title: "Terms and Condition",
-          iconData: Icons.insert_link_sharp,
-          onTap: () async {
-            Navigator.pop(context);
-            String termsAndConditionUrl =
-                "https://slydo.co/store/terms-and-conditions/${searchedUser?.userName}/";
-            try {
-              if (!await launchUrl(Uri.parse(termsAndConditionUrl)))
-                throw 'Could not launch $termsAndConditionUrl';
-            } catch (error) {
-              debugPrint("Error:- $error");
-            }
-          },
-        ),
-      );
-    }
-
     list.add(
       bottomSheetItem(
         title: "Share",
@@ -1475,7 +1455,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             bottomSheetItem(
                 title: "Request",
                 iconData: SlydoAppIcon.receive,
-                isLast: true,
+                // isLast: true,
                 onTap: () {
                   if (appConfigurationModel?.enablePayment == true) {
                     UserAuth()
@@ -1497,7 +1477,27 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ],
         );
       }
-      if (userBloc.user.type == "User") {
+      if (searchedUser?.type?.toLowerCase() != "user") {
+        list.add(
+          bottomSheetItem(
+            title: "Terms and Condition",
+            iconData: Icons.insert_link_sharp,
+            onTap: () async {
+              Navigator.pop(context);
+              String termsAndConditionUrl =
+                  "https://slydo.co/store/terms-and-conditions/${searchedUser?.userName}/";
+              try {
+                if (!await launchUrl(Uri.parse(termsAndConditionUrl)))
+                  throw 'Could not launch $termsAndConditionUrl';
+              } catch (error) {
+                debugPrint("Error:- $error");
+              }
+            },
+          ),
+        );
+      }
+      if (userBloc.user.type == "User" &&
+          userBloc.user.userName == searchedUser!.userName) {
         list.add(
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
