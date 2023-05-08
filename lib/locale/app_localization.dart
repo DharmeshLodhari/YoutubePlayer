@@ -1777,6 +1777,13 @@ class AppLocalization {
     );
   }
 
+  String get emptyBeneficiary {
+    return Intl.message(
+      "Beneficiary List is Empty",
+      name: "emptyBeneficiary",
+    );
+  }
+
   String get invoiceEmpty {
     return Intl.message(
       "Invoice empty",
