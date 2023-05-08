@@ -151,101 +151,108 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
               child: CircularLoadingIndicator(),
             ),
           )
-        : SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-              child: Column(
-                children: [
-                  Card(
-                    elevation: 2,
-                    margin: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    shadowColor: iconBtnGrey,
-                    child: Container(
-                      decoration: BoxDecoration(
+        : noItemInList
+            ? NoItemInList(
+                msg: AppLocalization.of(context)!.emptyBeneficiary,
+              )
+            : SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+                  child: Column(
+                    children: [
+                      Card(
+                        elevation: 2,
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: iconBtnGrey, width: 1)),
-                      child: Form(
-                        key: _formKey,
+                        ),
+                        shadowColor: iconBtnGrey,
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: 20,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: iconBtnGrey, width: 1)),
+                          child: Form(
+                            key: _formKey,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getUserBankAccount(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  displayAmountField(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getDescription(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  noteForUser(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
                               ),
-                              getUserBankAccount(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              displayAmountField(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              getDescription(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              noteForUser(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  Container(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 40,
-                        ),
-                        canCashOut(amount!, accountBalance!)
-                            ? getSubmitButton()
-                            : Container(
-                                child: Center(
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16.0),
-                                        child: Text.rich(TextSpan(
-                                            text: AppLocalization.of(context)!
-                                                .minimumTransfer,
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: blackFont,
-                                                fontWeight: FontWeight.w600),
-                                            children: <InlineSpan>[
-                                              TextSpan(
-                                                text: worldCurrencies[userBloc
-                                                        .user.currency!]! +
-                                                    moneyDisplayNormalizer(
-                                                        displayPossibleCashOutAmount(
-                                                            accountBalance!)),
+                      Container(
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 40,
+                            ),
+                            canCashOut(amount!, accountBalance!)
+                                ? getSubmitButton()
+                                : Container(
+                                    child: Center(
+                                        child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 16.0),
+                                            child: Text.rich(TextSpan(
+                                                text:
+                                                    AppLocalization.of(context)!
+                                                        .minimumTransfer,
                                                 style: TextStyle(
                                                     fontSize: 12,
                                                     color: blackFont,
-                                                    fontFamily: "Roboto",
                                                     fontWeight:
                                                         FontWeight.w600),
-                                              )
-                                            ])))),
-                              ),
-                        SizedBox(
-                          height: 20,
+                                                children: <InlineSpan>[
+                                                  TextSpan(
+                                                    text: worldCurrencies[
+                                                            userBloc.user
+                                                                .currency!]! +
+                                                        moneyDisplayNormalizer(
+                                                            displayPossibleCashOutAmount(
+                                                                accountBalance!)),
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: blackFont,
+                                                        fontFamily: "Roboto",
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  )
+                                                ])))),
+                                  ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          );
+                ),
+              );
   }
 
   Widget getUserBankAccount() {
