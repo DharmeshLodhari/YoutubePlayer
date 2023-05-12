@@ -11,6 +11,7 @@ class Routes {
   static const String REGISTRATION = "/registration";
   static const String VERIFY_RESET_DEVICE_OTP = "/verify-reset-device-otp";
   static const String VERIFY_RESET_PASSWORD_OTP = "/verify-reset-password-otp";
+  static const String ACCOUNT_TYPE = "/account-type";
   static const String SIGN_UP = "/register";
   static const String ADD_DOCUMENT = "/add-document";
   static const String HOME = "/home";

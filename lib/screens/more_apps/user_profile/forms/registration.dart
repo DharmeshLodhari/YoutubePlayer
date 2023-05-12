@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
@@ -28,8 +29,10 @@ class _RegistrationState extends State<Registration> {
   bool showButton = false;
   bool isUserAgree = false;
 
+
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
       onWillPop: () {
         if (FocusScope.of(context).hasFocus) {
@@ -78,7 +81,8 @@ class _RegistrationState extends State<Registration> {
                     phoneNumberField(),
                     SizedBox(height: 12),
                     getUserAgreeCheckBoxWidget(),
-                    SizedBox(height: 40),
+                    SizedBox(height: 12),
+
                     continueBtn(),
                     SizedBox(
                       height: 20,
@@ -394,4 +398,6 @@ class _RegistrationState extends State<Registration> {
       ],
     );
   }
+
 }
+

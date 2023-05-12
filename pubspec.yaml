@@ -91,7 +91,6 @@ dependencies:
   modal_progress_hud_nsn: ^0.3.0
   neat_periodic_task: ^2.0.0
 #  open_file: ^3.2.1
-  otp_timer_button: ^1.1.0
   open_filex: ^3.4.0
   package_info: ^2.0.2
   package_info_plus: ^1.4.0

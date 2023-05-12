@@ -37,7 +37,6 @@ import 'more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/models/SecureUser.dart';
 import 'more_apps/user_profile/models/user.dart';
-import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class Home extends StatefulWidget {
