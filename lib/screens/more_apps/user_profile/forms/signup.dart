@@ -47,6 +47,7 @@ class _SignUpState extends State<SignUp> {
 
   String? phoneNumber = '';
   String password = '';
+  String otpCode = '';
 
   late TextEditingController _bvnController;
   late TextEditingController _firstNameController;
@@ -55,6 +56,7 @@ class _SignUpState extends State<SignUp> {
   late TextEditingController _userNameController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
+  late TextEditingController _accountTypeController;
 
   DateTime dob = DateTime.now();
   String? gender;
@@ -80,8 +82,13 @@ class _SignUpState extends State<SignUp> {
   @override
   void initState() {
     phoneNumber = arguments['phoneNumber'];
+    otpCode = arguments['otpCode'];
+    accountType = arguments['accountType'];
 
     debugPrint('Phone number -> $phoneNumber');
+    debugPrint('accountType -> $accountType');
+    debugPrint('otpCode -> $otpCode');
+
     _bvnController = TextEditingController();
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
@@ -89,6 +96,12 @@ class _SignUpState extends State<SignUp> {
     _userNameController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
+    _accountTypeController = TextEditingController();
+
+    _accountTypeController.text = accountType!;
+    accountTypeChosen = true;
+    isPersonalAccount = accountType == 'Personal';
+    getSubscriptionList();
 
     _businessOrNickNameController.addListener(() {
       String name = _businessOrNickNameController.text;
@@ -185,46 +198,47 @@ class _SignUpState extends State<SignUp> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Text(
-                                'Account type',
-                                style: TextStyle(color: darkGrey, fontSize: 14),
-                              ),
-                              SizedBox(height: 6),
-                              Container(
-                                height: 50,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 14.0),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: dividerColor),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: DropdownButton2(
-                                  isExpanded: true,
-                                  value: accountType,
-                                  dropdownDecoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  hint: Text('Select an account type'),
-                                  underline: SizedBox.shrink(),
-                                  items: ['Personal', 'Business', 'Developer']
-                                      .map((String item) {
-                                    return DropdownMenuItem(
-                                      value: item,
-                                      child: Text(item),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      accountType = value!;
-                                      accountTypeChosen = true;
-                                      isPersonalAccount =
-                                          accountType == 'Personal';
-                                      clearAllFields();
-                                      getSubscriptionList();
-                                    });
-                                  },
-                                ),
-                              ),
+                              // Text(
+                              //   'Account type',
+                              //   style: TextStyle(color: darkGrey, fontSize: 14),
+                              // ),
+                              // SizedBox(height: 6),
+                              accountTypeField(),
+                              // Container(
+                              //   height: 50,
+                              //   padding: const EdgeInsets.symmetric(
+                              //       horizontal: 14.0),
+                              //   decoration: BoxDecoration(
+                              //     border: Border.all(color: dividerColor),
+                              //     borderRadius: BorderRadius.circular(10),
+                              //   ),
+                              //   child: DropdownButton2(
+                              //     isExpanded: true,
+                              //     value: accountType,
+                              //     dropdownDecoration: BoxDecoration(
+                              //       borderRadius: BorderRadius.circular(14),
+                              //     ),
+                              //     hint: Text('Select an account type'),
+                              //     underline: SizedBox.shrink(),
+                              //     items: ['Personal', 'Business', 'Developer']
+                              //         .map((String item) {
+                              //       return DropdownMenuItem(
+                              //         value: item,
+                              //         child: Text(item),
+                              //       );
+                              //     }).toList(),
+                              //     onChanged: (String? value) {
+                              //       setState(() {
+                              //         accountType = value!;
+                              //         accountTypeChosen = true;
+                              //         isPersonalAccount =
+                              //             accountType == 'Personal';
+                              //         clearAllFields();
+                              //         getSubscriptionList();
+                              //       });
+                              //     },
+                              //   ),
+                              // ),
                               Visibility(
                                 visible: accountTypeChosen,
                                 child: accountType == 'Personal'
@@ -457,6 +471,15 @@ class _SignUpState extends State<SignUp> {
         style: TextStyle(
             fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
       ),
+    );
+  }
+
+  Widget accountTypeField() {
+    return CustomizedTextFormField(
+      controller: _accountTypeController,
+      labelColor: darkGrey,
+      labelText: 'Account type',
+      keyboardType: TextInputType.name,
     );
   }
 
@@ -976,6 +999,7 @@ class _SignUpState extends State<SignUp> {
         "nickname": businessOrNickName,
         "password1": _passwordController.text.trim(),
         "password2": _confirmPasswordController.text.trim(),
+        "otp_code": otpCode,
       };
 
       if (accountType != 'Personal') {
