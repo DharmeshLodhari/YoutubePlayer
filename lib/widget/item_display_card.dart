@@ -1,20 +1,27 @@
-import 'dart:math';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
+import '../routes/route_constants.dart';
 import '../screens/more_apps/shopping/shopping_auth.dart';
+import '../screens/more_apps/user_profile/models/user.dart';
+import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../screens/more_apps/user_profile/user_auth.dart';
 import '../screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import '../screens/more_apps/yarn/share_as_a_yarn_screen.dart';
+import '../screens/more_apps/yarn/utils/utils.dart';
+import '../screens/more_apps/yarn/utils/yarn_enum.dart';
 import '../screens/more_apps/yarn/yarn_auth.dart';
 import '../screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import '../utils/navigation_util.dart';
@@ -323,7 +330,6 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   void addProductToCart() async {
-    debugPrint('Product available::::: ${widget.product.isAvailable}');
     if (isOwner) {
       return showToast(
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
@@ -909,5 +915,377 @@ class _DisplayServiceState extends State<DisplayService> {
                 showToast(message: "Share in Yarn successfully created");
               }
             }));
+  }
+}
+
+
+class FindBusiness extends StatefulWidget {
+  CustomerProfile customerProfile;
+  final Function()? onProductRefresh;
+  final TileRenderPlace tileRenderPlace;
+  final Function(String, bool) callback;
+
+  FindBusiness(
+      {Key? key,
+        required this.customerProfile,
+        this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
+        this.onProductRefresh,
+        required this.callback})
+      : super(key: key);
+
+  @override
+  State<FindBusiness> createState() => _FindBusinessState();
+}
+
+class _FindBusinessState extends State<FindBusiness> {
+
+  bool isLoadingFollowingAction = false;
+  late UserBloc userBloc;
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+
+    return getNearByBusiness();
+  }
+
+  Widget getNearByBusiness(){
+
+    return Card(
+      semanticContainer: true,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      margin: EdgeInsets.zero,
+      shadowColor: boxShadow,
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topCenter,
+            children: [
+
+              Container(
+                height: getContainerHeight(
+                    widget.tileRenderPlace, context),
+                  child: getWallpaper()),
+              Positioned(
+                left: 10,
+                top: getContainerHeight(
+                    widget.tileRenderPlace, context) - 20,
+                child: InkWell(
+                  onTap: () {
+                    String? image = '';
+                    if (widget.customerProfile.avatar! == "" ||
+                        widget.customerProfile.avatar! ==
+                            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+                      image = getInitials(widget.customerProfile.fullName!).toUpperCase();
+                    } else {
+                      image = widget.customerProfile.avatar!;
+                    }
+
+                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                  },
+                  child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularUserColorImage(imageUrl: widget.customerProfile.avatar!, name: widget.customerProfile.fullName!)),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            padding: EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, Routes.USER_PROFILE,
+                            arguments: {"searchedUserName": widget.customerProfile.userName});
+                      },
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  appendStringDot(messageDecoderWithEmoji(
+                                      widget.customerProfile.userName ?? "") ??
+                                      "", 20),
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: yarnBlack),
+                                )),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: userNameWithVerifiedIcon(
+                                  name: "@${widget.customerProfile.userName ?? ''}",
+                                  isVerified: widget.customerProfile.isVerified,
+                                  textStyle: TextStyle(
+                                    fontSize: 14,
+                                    color: HexColor("#151515"),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  verifiedIconColor: verifyGreen,
+                                  verifiedIconSize: 15),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: getFollowUnFollowBtn(),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10.0,),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(60),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 5, vertical: 2),
+                  child: getRating(
+                      numberOfRating:
+                      widget.customerProfile.rating.toInt()),
+                ),
+
+                if(widget.customerProfile.bio!.isNotEmpty || widget.customerProfile.bio != null)...[
+                  SizedBox(height: 10.0,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          messageDecoderWithEmoji(widget.customerProfile.bio) ?? "",
+
+                          style: TextStyle(
+                            fontSize: getFontSize(
+                                widget.tileRenderPlace, context),
+                            fontWeight: FontWeight.w600,
+                            color: blackFont,
+                          ),
+                          maxLines: 3,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+
+              ],
+            ),
+          ),
+          SizedBox(height: 10.0,),
+        ],
+      ),
+    );
+  }
+
+  Widget getFollowUnFollowBtn() {
+
+    if (isLoadingFollowingAction) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 14),
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularLoadingIndicator(),
+        ),
+      );
+    }
+
+    if (widget.customerProfile.userName! == userBloc.user.userName) {
+      return SizedBox.shrink();
+    }
+    if (widget.customerProfile.isFollowing != null &&
+        widget.customerProfile.isFollowing == true) {
+      return InkWell(
+        onTap: () {
+          isLoadingFollowingAction = true;
+          if (mounted) setState(() {});
+          UserAuth()
+              .followOrUnfollowUser(widget.customerProfile.userName!,
+              shouldFollow: false)
+              .then((value) async {
+            if (value == true) {
+              // await getSearchedUser(load: false);
+              // Call the callback function and pass the username and bool as false
+              widget.callback(widget.customerProfile.userName!, false);
+            }
+            isLoadingFollowingAction = false;
+            if (mounted) setState(() {});
+          }).catchError((e) {
+            isLoadingFollowingAction = false;
+            if (mounted) setState(() {});
+            showToast(message: e.toString());
+          });
+        },
+        child: Container(
+          height: 30,
+          width: 80,
+          margin: EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+              color: blackFont,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(color: HexColor("#292929"), width: 1)),
+          child: Center(
+            child: Text(
+              'Following',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return InkWell(
+      onTap: () {
+        isLoadingFollowingAction = true;
+        if (mounted) setState(() {});
+        UserAuth()
+            .followOrUnfollowUser(widget.customerProfile.userName!, shouldFollow: true)
+            .then((value) async {
+          if (value == true) {
+            // await getSearchedUser(load: false);
+            // Call the callback function and pass the username and bool as true
+            widget.callback(widget.customerProfile.userName!, true);
+          }
+          isLoadingFollowingAction = false;
+          if (mounted) setState(() {});
+        }).catchError((e) {
+          isLoadingFollowingAction = true;
+          if (mounted) setState(() {});
+          showToast(message: e.toString());
+        });
+      },
+      child: Container(
+        height: 30,
+        width: 80,
+        margin: EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: HexColor("#292929"), width: 1)),
+        child: Center(
+          child: Text(
+            'Follow',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getWallpaper() {
+      return ClipRRect(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(10),
+        topRight: Radius.circular(10),
+      ),
+      child: widget.customerProfile.wallpaper == "" ||
+          widget.customerProfile.wallpaper == null
+          ? Image.asset(
+        "assets/images/default_user_wallpaper.png",
+        width: double.infinity,
+        fit: BoxFit.cover,
+      )
+          :
+      GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed("/photo-viewer",
+              arguments: widget.customerProfile.wallpaper);
+        },
+        child:
+        Container(
+          color: navyBlue,
+          child: CachedNetworkImage(
+            width: double.infinity,
+            // height: double.infinity,
+            errorWidget: wallpaperErrorWidget,
+            imageUrl: widget.customerProfile.wallpaper!,
+            fit: BoxFit.cover,
+            placeholder: (context, url) =>
+                Center(child: CircularLoadingIndicator()),
+            color: blackFont.withOpacity(0.4),
+            colorBlendMode: BlendMode.darken,
+            filterQuality: FilterQuality.high,
+          ),
+        ),
+      ),
+
+    );
+  }
+
+  Future<void> getSearchedUser({bool load = true}) async {
+    late CustomerProfile user;
+
+    if (load) {
+      isLoadingFollowingAction = true;
+      if (mounted) setState(() {});
+    }
+
+    try {
+      user = await UserAuth()
+          .fetchCustomerProfileWithAuth(widget.customerProfile.userName!.toString());
+    } catch (e) {
+      Navigator.pop(context);
+      showToast(message: 'User not found');
+    }
+
+    widget.customerProfile = user;
+
+
+    isLoadingFollowingAction = false;
+    if (mounted) setState(() {});
+  }
+
+}
+
+class CircularUserColorImage extends StatelessWidget {
+  final String imageUrl;
+  final String name;
+
+  const CircularUserColorImage({required this.imageUrl, required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipOval(
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: naturalGreen,
+            width: 3.0,
+          ),
+        ),
+        child: getUserProfilePic(imageUrl, name),
+
+      ),
+    );
   }
 }

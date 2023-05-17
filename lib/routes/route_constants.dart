@@ -146,6 +146,7 @@ class Routes {
   static const String SUPER_STORE = "/shopping";
   static const String SHOPPING_CATEGORY = "/shopping-category";
   static const String SEARCH_PRODUCT = "/search-product";
+  static const String SEARCH_NEAR_BY_BUSINESS = "/search-near-by-business";
   static const String REVIEWS = "/reviews";
   static const String MIX_CART_ITEM = "/mix-cart-item";
   static const String ADD_EDIT_USER_BIO = "/add-edit-user-bio";

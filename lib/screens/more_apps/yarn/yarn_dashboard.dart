@@ -1,7 +1,6 @@
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/category_chip.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
@@ -264,6 +263,8 @@ class _YarnDashboardState extends State<YarnDashboard> {
               if (mounted) setState(() {});
             },
             currentIndex: currentAskTapOnHome,
+            firstTab: 'Latest',
+            secondTab: 'Trending',
           ),
           SizedBox(
             height: 16,

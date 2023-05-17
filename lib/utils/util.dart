@@ -2368,6 +2368,22 @@ List<String> getLgs({required String? state}) {
   return lgs;
 }
 
+List<String> getLga({required List<String>? states}) {
+  if (states == null) {
+    return [];
+  }
+
+  List<String> lgs = [];
+  for (int i = 0; i < nigeriaStateAndLg.length; i++) {
+    if (states.contains(nigeriaStateAndLg[i]['state'])) {
+      lgs.addAll(nigeriaStateAndLg[i]['lgas']);
+    }
+  }
+
+  return lgs;
+}
+
+
 extension StringCasingExtension on String {
   String toCapitalized() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';

@@ -23,6 +23,8 @@ class SearchItemWithFilterModelForSuperStore {
   List<String> categories;
   int? minPrice;
   int? maxPrice;
+  List<String> state;
+  List<String> lga;
   String? rating;
   String? sortBy;
 
@@ -31,7 +33,10 @@ class SearchItemWithFilterModelForSuperStore {
     this.categories = const [],
     this.minPrice,
     required this.searchedText,
+    this.state = const [],
+    this.lga = const [],
     this.maxPrice,
     this.rating,
   });
 }
+

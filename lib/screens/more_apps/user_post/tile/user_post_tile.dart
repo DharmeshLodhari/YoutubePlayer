@@ -529,7 +529,7 @@ class _PostTileState extends State<PostTile> {
         onTap: () {
           Navigator.pop(context);
           var shareBody =
-              "https://merchant.slydo.co/${widget.post!.authorUsername}/blog/${widget.post!.id}";
+              "https://slydo.co/${widget.post!.authorUsername}/blog/${widget.post!.id}";
           Share.share(shareBody, subject: "${widget.post!.authorName}");
         },
       ),
