@@ -1282,7 +1282,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
-          debugPrint('fola check::: ${searchedUser!.type.toString()}');
           return Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1362,7 +1361,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         onTap: () {
           Navigator.pop(context);
           String merchantUrl =
-              'https://merchant.slydo.co/${searchedUser!.userName!}/payme';
+              'https://slydo.co/${searchedUser!.userName!}/payme';
           var shareBody = userBloc.user.type != 'User'
               ? merchantUrl
               : "https://slydo.co/" + searchedUser!.userName!;

@@ -5,6 +5,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -1360,6 +1361,117 @@ class ShoppingAuthService extends AuthService {
       debugPrint(
           "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
       return Future.value(<ServiceCategory>[]);
+    }
+  }
+
+  // merchant list
+  Future<Map<String, dynamic>?> listOfMerchant(String? next, String? previous,
+      {String? userName, bool otherDeals = false}) async {
+    debugPrint('CALLING MERCHANT LIST');
+    var url = '';
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/user/merchant-list/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER MERCHANT LIST ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<CustomerProfile> customerProfileList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        // debugPrint('MERCHANT LIST 000---> ${item}');
+
+        CustomerProfile customerProfile = CustomerProfile.fromJson(item);
+        customerProfileList.add(customerProfile);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": customerProfileList
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  //search filter for merchant
+  Future<Map<String, dynamic>?> searchMerchant(
+      String? next, String? previous,
+      {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    debugPrint('STATE BY Search -> ${filterOptions.state}');
+
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/user/merchant-list/?search=${filterOptions.searchedText}";
+
+      if (filterOptions.state.isNotEmpty) {
+        url = url + "&categories=${filterOptions.state.join(',')}";
+      }
+      if (filterOptions.lga.isNotEmpty) {
+        url = url + "&categories=${filterOptions.lga.join(',')}";
+      }
+      if (filterOptions.categories.isNotEmpty) {
+        url = url + "&categories=${filterOptions.categories.join(',')}";
+      }
+
+      url = Uri.encodeFull(url);
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint('SEARCH FILTER URL ---> $url');
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
+    debugPrint('SEARCH FILTER BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<CustomerProfile> customerProfileList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        CustomerProfile customerProfile = CustomerProfile.fromJson(item);
+        customerProfileList.add(customerProfile);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": customerProfileList
+      };
+      debugPrint("result:- $result");
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      List<CustomerProfile> customerProfileList = [];
+      Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": customerProfileList
+      };
+      return result;
     }
   }
 }

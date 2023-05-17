@@ -157,6 +157,7 @@ import '../screens/more_apps/payment_and_banking/screens/banking/payout_transact
 import '../screens/more_apps/shopping/screens/checkout_screen.dart';
 import '../screens/more_apps/super_hub/search_services.dart';
 import '../screens/more_apps/super_hub/super_hub.dart';
+import '../screens/super_store/search_nearby_business.dart';
 import '../screens/super_store/super_store.dart';
 
 class RouteGenerator {
@@ -1352,6 +1353,14 @@ class RouteGenerator {
       case Routes.SEARCH_PRODUCT:
         return PageTransition(
           child: SearchProduct(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.SEARCH_NEAR_BY_BUSINESS:
+        return PageTransition(
+          child: SearchNearByBusiness(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

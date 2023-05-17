@@ -8,6 +8,7 @@ import "package:http/http.dart" as http;
 
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
+import '../shopping/models/store.dart';
 import '../user_profile/models/user.dart';
 import 'models/Topics/CommentDetails.dart';
 import 'models/Topics/Notifications.dart';
@@ -22,6 +23,11 @@ class YarnAuth extends AuthService {
     categories.color = item['color'];
     categories.image = item['image'];
 
+    return categories;
+  }
+
+  ProductCategory createProductCategories(String item) {
+    ProductCategory categories = ProductCategory(messageDecoderWithEmoji(item)!);
     return categories;
   }
 
@@ -62,6 +68,53 @@ class YarnAuth extends AuthService {
         "next": jsonData["next"],
         "previous": jsonData["previous"],
         "results": askCategories
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Get all Product Categories
+  Future<Map<String, dynamic>?> getProductCategories(
+      String? next, String previous) async {
+    debugPrint("CALLING PRODUCT CATEGORIES");
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/products/choices/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      List<ProductCategory> productCategories = [];
+      var jsonData = json.decode(response.body);
+
+      // debugPrint("JSON CATEGORIES::- $jsonData");
+
+      for (var item in jsonData["results"]) {
+        ProductCategory categories = createProductCategories(item);
+        productCategories.add(categories);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": productCategories
       };
 
       return result;
@@ -291,6 +344,7 @@ class YarnAuth extends AuthService {
 
       // debugPrint("GET DATA yarn list:- $jsonData");
       for (var item in jsonData["results"]) {
+
         Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
 
@@ -1277,10 +1331,10 @@ class YarnAuth extends AuthService {
   }
 
   // ADD LIKE TO YARN
-  Future<Map<String, dynamic>?> addLikeComment(String postId) async {
+  Future<Map<String, dynamic>?> addLikeComment(String commentId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/comments/like/$postId/";
+    url = AppConfig.baseUrl + "/api/v1/social/comments/like/$commentId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();

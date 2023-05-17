@@ -4,6 +4,8 @@ import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../shopping/models/store.dart';
+
 class YarnDashboardBloc extends ChangeNotifier {
   int? currentTabIndex = 0;
   String? categoryToAskOn = '';
@@ -28,6 +30,10 @@ class YarnDashboardBloc extends ChangeNotifier {
   List<Yarn> _createYarnTopicList = [];
   List<Yarn> _deleteYarnTopicList = [];
   List<Yarn> _reYarnTopicList = [];
+
+  List<ProductCategory> _productCategories = [];
+  List<ProductCategory> get productCategories => _productCategories;
+
 
   void addCreateYarnTopicList(List<Yarn> yarn) {
     _createYarnTopicList.addAll(yarn);
@@ -73,6 +79,12 @@ class YarnDashboardBloc extends ChangeNotifier {
   void addCategories(List<YarnCategories> cat) {
     _yarnCategories = [];
     _yarnCategories.addAll(cat);
+    notifyListeners();
+  }
+
+  void addProductCategories(List<ProductCategory> cat) {
+    _productCategories = [];
+    _productCategories.addAll(cat);
     notifyListeners();
   }
 

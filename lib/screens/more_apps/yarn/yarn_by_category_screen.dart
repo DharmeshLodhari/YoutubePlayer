@@ -266,6 +266,8 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
               if (mounted) setState(() {});
             },
             currentIndex: currentAskTapOnHome,
+            firstTab: 'Latest',
+            secondTab: 'Trending',
           ),
           SizedBox(
             height: 16,

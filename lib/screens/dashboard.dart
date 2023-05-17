@@ -11,6 +11,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
@@ -92,6 +93,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
 
     getAllCategories();
+    getProductCategories();
 
     PushNotificationService().initialize();
     ListRefresher().initialize();
@@ -111,6 +113,14 @@ class _DashboardState extends State<Dashboard> {
     if (result != null && mounted) {
       yarnDashboardBloc.addCategories(result['results']);
     }
+  }
+
+  void getProductCategories() async {
+    Map<String, dynamic>? result = await YarnAuth().getProductCategories("", "");
+    if (result != null && mounted) {
+      yarnDashboardBloc.addProductCategories(result['results']);
+    }
+
   }
 
   void fetchConnections() async {
