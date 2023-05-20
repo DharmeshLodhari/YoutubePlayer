@@ -18,8 +18,9 @@ import '../more_apps/shopping/shopping_auth.dart';
 
 class ShopListScreen extends StatefulWidget {
   Function(bool)? onPageRefresh;
+  String? category;
 
-  ShopListScreen({Key? key, this.onPageRefresh,}) : super(key: key);
+  ShopListScreen({Key? key, this.onPageRefresh, this.category}) : super(key: key);
 
   @override
   State<ShopListScreen> createState() => ShopListScreenState();
@@ -49,6 +50,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
   ScrollController _todayDealScrollController = new ScrollController();
   ScrollController _productScrollController = new ScrollController();
+  String _currentCategory = '';
 
   AppBar appBar() {
     return AppBar(
@@ -75,14 +77,16 @@ class ShopListScreenState extends State<ShopListScreen> {
   @override
   void initState() {
     super.initState();
-    getProductList();
+    _currentCategory = widget.category!;
+
+    getProductList(_currentCategory);
 
     getTodaysDealProducts();
     _productScrollController.addListener(() {
       if (_productScrollController.position.pixels ==
           _productScrollController.position.maxScrollExtent &&
           _productScrollController.position.pixels != 0) {
-        getProductList();
+        getProductList(_currentCategory);
       }
     });
     _todayDealScrollController.addListener(() {
@@ -94,14 +98,25 @@ class ShopListScreenState extends State<ShopListScreen> {
     });
   }
 
-  void getProductList() async {
+  @override
+  void didUpdateWidget(ShopListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.category != _currentCategory) {
+      _currentCategory = widget.category!;
+      debugPrint('CALLING OTHER ::: $_currentCategory');
+      _refreshPage(); // Reload shop list when category changes
+    }
+  }
+
+
+  void getProductList(String category) async {
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
         isProductLoading = true;
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious, otherDeals: true);
+            .listOfProduct(productNext, productPrevious, _currentCategory, otherDeals: true);
 
         if (result == null) {
           noProductInList = true;
@@ -209,9 +224,10 @@ class ShopListScreenState extends State<ShopListScreen> {
     isTodayDealLoading = false;
     todaysDealList = [];
 
-    getProductList();
+    getProductList(_currentCategory);
     getTodaysDealProducts();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +239,9 @@ class ShopListScreenState extends State<ShopListScreen> {
         widget.onPageRefresh!(true);
         if (mounted) setState(() {});
       }
+
     });
+
 
     return ScaffoldMessenger(
       key: _productScaffoldMessengerKey,
@@ -602,7 +620,6 @@ class ShopListScreenState extends State<ShopListScreen> {
       ),
     );
   }
-
 
 }
 

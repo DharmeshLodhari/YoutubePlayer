@@ -1,26 +1,21 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/widget/noItemInList.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:shimmer/shimmer.dart';
-import '../../data/currency.dart';
 import '../../data/state_notifier.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
-import '../more_apps/shopping/models/ShoppingProduct.dart';
-import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 import '../more_apps/user_profile/models/user.dart';
 import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 
 class FindBusinessListScreen extends StatefulWidget {
   Function(bool)? onPageRefresh;
+  String? category;
 
-  FindBusinessListScreen({Key? key, this.onPageRefresh,}) : super(key: key);
+  FindBusinessListScreen({Key? key, this.onPageRefresh, this.category}) : super(key: key);
 
   @override
   State<FindBusinessListScreen> createState() => FindBusinessListScreenState();
@@ -41,8 +36,9 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
 
   RefreshController _refreshController =
   RefreshController(initialRefresh: false);
-
   ScrollController _scrollController = new ScrollController();
+  String _currentCategory = '';
+
 
   AppBar appBar() {
     return AppBar(
@@ -69,6 +65,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
   @override
   void initState() {
     super.initState();
+    _currentCategory = widget.category!;
     getNearByBusinessList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -77,6 +74,16 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         getNearByBusinessList();
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(FindBusinessListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.category != _currentCategory) {
+      _currentCategory = widget.category!;
+      debugPrint('CALLING OTHER ::: $_currentCategory');
+      // _refreshPage(); // Reload find business list when category changes
+    }
   }
 
   void getNearByBusinessList() async {

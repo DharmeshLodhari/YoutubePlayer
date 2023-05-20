@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-
 import '../../../../utils/colors.dart';
 
-class CategoryChip extends StatelessWidget {
+
+class CategoryChip extends StatefulWidget {
   CategoryChip({
     Key? key,
     this.onTap,
@@ -10,7 +10,8 @@ class CategoryChip extends StatelessWidget {
     this.categoryColor,
     this.selectedCategoryTextColor,
     this.borderColor,
-    this.isIconShow = false
+    this.isIconShow = false,
+    this.selected = false,
   }) : super(key: key);
 
   final GestureTapCallback? onTap;
@@ -19,11 +20,38 @@ class CategoryChip extends StatelessWidget {
   final Color? selectedCategoryTextColor;
   final Color? borderColor;
   final bool? isIconShow;
+  final bool selected;
+
+  @override
+  _CategoryChipState createState() => _CategoryChipState();
+}
+
+class _CategoryChipState extends State<CategoryChip> {
+  Color? chipColor;
+  String? chipTitle;
+
+  @override
+  void initState() {
+    super.initState();
+    chipColor = widget.categoryColor;
+    chipTitle = widget.title;
+  }
+
+  @override
+  void didUpdateWidget(CategoryChip oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selected != oldWidget.selected) {
+      setState(() {
+        // Change the color when selected
+        chipColor = widget.selected ? darkGreyYarn : widget.categoryColor;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Stack(
         alignment: Alignment.topRight,
         children: [
@@ -31,19 +59,22 @@ class CategoryChip extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: categoryColor,
-              border:
-              Border.all(color: borderColor ?? Color(0xFFFFFFFF), width: 0.5),
+              color: chipColor,
+              border: Border.all(
+                color: widget.borderColor ?? Color(0xFFFFFFFF),
+                width: 0.5,
+              ),
             ),
             child: Text(
-              title ?? "",
+              chipTitle ?? "",
               style: TextStyle(
-                  color: selectedCategoryTextColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600),
+                color: widget.selectedCategoryTextColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-          if(isIconShow ?? false)...[
+          if (widget.isIconShow ?? false) ...[
             Positioned(
               top: 0,
               right: 0,
@@ -51,12 +82,9 @@ class CategoryChip extends StatelessWidget {
                 height: 15,
                 width: 15,
                 decoration: BoxDecoration(
-                    color: HexColor("#3F61DB"),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                        color: HexColor("#FFFFFF"),
-                        width: 2
-                    )
+                  color: HexColor("#3F61DB"),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: HexColor("#FFFFFF"), width: 2),
                 ),
                 child: Center(
                   child: Icon(
@@ -67,9 +95,10 @@ class CategoryChip extends StatelessWidget {
                 ),
               ),
             ),
-          ]
+          ],
         ],
-      )
+      ),
     );
   }
 }
+

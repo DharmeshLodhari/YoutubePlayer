@@ -89,7 +89,7 @@ class _UserProductListState extends State<UserProductList> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious,
+            .listOfProduct(productNext, productPrevious, "",
                 userName: widget.user!.userName);
 
         if (result == null) {

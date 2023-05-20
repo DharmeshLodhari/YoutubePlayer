@@ -31,6 +31,7 @@ class _SuperStoreState extends State<SuperStore> {
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   bool _tabsVisible = true;
+  String categoryName = '';
 
 
   @override
@@ -207,16 +208,6 @@ class _SuperStoreState extends State<SuperStore> {
       children: [
 
         if (_tabsVisible) ...[
-          ProductCategorySelection(),
-          SizedBox(height: 14),
-          Divider(
-            height: 0,
-            thickness: 0.5,
-            color: greySecondaryYarn,
-          ),
-          SizedBox(height: 8),
-        ],
-        if (_tabsVisible) ...[
           YarnTabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
@@ -232,6 +223,21 @@ class _SuperStoreState extends State<SuperStore> {
             height: 16,
           ),
         ],
+        if (_tabsVisible) ...[
+          ProductCategorySelection(
+            callback: (category, val){
+              categoryName = category;
+              if(mounted)setState(() {});
+            },
+          ),
+          SizedBox(height: 14),
+          Divider(
+            height: 0,
+            thickness: 0.5,
+            color: greySecondaryYarn,
+          ),
+          SizedBox(height: 8),
+        ],
 
       ],
     );
@@ -245,13 +251,14 @@ class _SuperStoreState extends State<SuperStore> {
         },
         controller: _pageViewController,
         children: [
-
           ShopListScreen(
             onPageRefresh: (bool data) {
               if (data == true) {
                 _showTabs(true);
               }
             },
+            category: categoryName,
+
           ),
           FindBusinessListScreen(
             onPageRefresh: (bool data) {
@@ -259,8 +266,8 @@ class _SuperStoreState extends State<SuperStore> {
                 _showTabs(true);
               }
             },
+            category: categoryName,
           )
-
         ],
       ),
     );
