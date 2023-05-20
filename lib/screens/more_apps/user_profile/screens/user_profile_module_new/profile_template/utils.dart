@@ -145,7 +145,7 @@ fetchProductData(String? searchedUserName) async {
   Map<String, dynamic>? data;
   try {
     data = await ShoppingAuthService()
-        .listOfProduct("", "", userName: searchedUserName);
+        .listOfProduct("", "", "", userName: searchedUserName);
   } catch (error) {}
   if (data != null) {
     debugPrint('IS SHOW PRODUCT ---> $data');

@@ -9,8 +9,12 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../shop_category_screen.dart';
+
 class ProductCategorySelection extends StatefulWidget {
-  const ProductCategorySelection({Key? key}) : super(key: key);
+  final Function(String, bool)? callback;
+
+   ProductCategorySelection({Key? key, this.callback}) : super(key: key);
 
   @override
   State<ProductCategorySelection> createState() => _ProductCategorySelectionState();
@@ -22,6 +26,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
   String? previous = "";
   bool noCategoriesList = false;
   int? count = 0;
+  String selectedCategory = 'All';
 
   late YarnDashboardBloc yarnDashboardBloc;
 
@@ -38,6 +43,8 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
   }
 
   Widget _buildMain() {
+
+
     if (yarnDashboardBloc.productCategories.isEmpty) {
       return Container();
     }
@@ -49,13 +56,6 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
           SizedBox(
             width: 16,
           ),
-          CategoryChip(
-            onTap: () {},
-            title: 'All',
-            categoryColor: darkGreyYarn,
-            selectedCategoryTextColor: HexColor("#000000"),
-            borderColor: greySecondaryYarn,
-          ),
           ...List.generate(
             yarnDashboardBloc.productCategories.length,
             (i) {
@@ -66,20 +66,21 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
                   ),
                   CategoryChip(
                     onTap: () {
-                      // NavigationUtil.push(
-                      //   context,
-                      //   screen: YarnCategoryScreen(
-                      //     askCategories: yarnDashboardBloc.productCategories[i],
-                      //   ),
-                      // );
+                        // Call the callback function and pass the values
+                        widget.callback!(yarnDashboardBloc.productCategories[i].name, true);
+                        selectedCategory = yarnDashboardBloc.productCategories[i].name;
+
+                        if(mounted)setState(() {});
+
                     },
                     title: yarnDashboardBloc.productCategories[i].name,
                     categoryColor:
-                        yarnDashboardBloc.productCategories[i].name == 'All'
-                            ? greySecondaryYarn
+                    selectedCategory == yarnDashboardBloc.productCategories[i].name
+                            ? darkGreyYarn
                             : greyBackground,
                     selectedCategoryTextColor: HexColor("#000000"),
                     borderColor: greySecondaryYarn,
+                    selected: selectedCategory == yarnDashboardBloc.productCategories[i].name,
                   ),
                 ],
               );

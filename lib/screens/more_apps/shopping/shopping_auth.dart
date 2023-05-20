@@ -287,7 +287,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List Products
-  Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous,
+  Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous, String? category,
       {String? userName, bool otherDeals = false}) async {
     debugPrint('CALLING PRODUCT');
     var url = "";
@@ -304,6 +304,15 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
+    if(category != ""){
+      var cat = messageDecoderWithEmoji(category);
+      if(category == "All"){
+        url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
+      }else{
+        url = AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
+      }
+
+    }
     debugPrint(url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -311,8 +320,23 @@ class ShoppingAuthService extends AuthService {
     debugPrint('CALLING OTHER DEALS ---> ${response.body}');
 
     if (response.statusCode == 200) {
+
+      if (!response.body.contains('results')) {
+
+        Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
       List<Product> productList = [];
       var jsonData = json.decode(response.body);
+
       for (var item in jsonData["results"]) {
         Product product = createProduct(item);
         productList.add(product);
@@ -325,7 +349,10 @@ class ShoppingAuthService extends AuthService {
         "results": productList
       };
 
+      debugPrint('CALLING OTHER check ---> ${result}');
+
       return result;
+
     } else if (response.statusCode == 500) {
       return null;
     } else {
