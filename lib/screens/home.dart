@@ -298,6 +298,7 @@ class _HomeState extends State<Home> {
       height: 36,
       width: 36,
       child: InkWell(
+        key: tutorialSettingsKey,
         child: Card(
           elevation: 0,
           // color: blackFont,
@@ -806,6 +807,7 @@ class _HomeState extends State<Home> {
     return Row(
       children: [
         Expanded(
+          key: tutorialTransactionKey,
           child: UserDashboardItemTile(
             icon: SlydoAppIcon.transactions,
             title: AppLocalization.of(context)!.transaction,
@@ -828,6 +830,7 @@ class _HomeState extends State<Home> {
           width: 12,
         ),
         Expanded(
+          key: tutorialWalletKey,
           child: UserDashboardItemTile(
             icon: Icons.account_balance_wallet_rounded,
             title: AppLocalization.of(context)!.wallet,
@@ -841,6 +844,7 @@ class _HomeState extends State<Home> {
           width: 12,
         ),
         Expanded(
+          key: tutorialOrderKey,
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.cart,
           title: "Orders",
@@ -853,6 +857,7 @@ class _HomeState extends State<Home> {
           width: 12,
         ),
         Expanded(
+          key: tutorialInboxKey,
           child: UserDashboardItemTile(
             iconWidget: MessageNavBtn(),
             title: "Inbox",
@@ -870,6 +875,7 @@ class _HomeState extends State<Home> {
     return Row(
       children: [
         Expanded(
+
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.store,
           title: "My Store",
@@ -906,6 +912,7 @@ class _HomeState extends State<Home> {
         ),
         SizedBox(width: 12),
         Expanded(
+          key: tutorialBlogsKey,
           child: UserDashboardItemTile(
             icon: SlydoAppIcon.news_moreapps,
             title: AppLocalization.of(context)!.blogs,
@@ -1022,6 +1029,7 @@ class _HomeState extends State<Home> {
     return Row(
       children: [
         Expanded(
+          key: tutorialServicesKey,
           child: UserDashboardItemTile(
             icon: SlydoAppIconNew.vector_1,
             title: AppLocalization.of(context)!.services,
