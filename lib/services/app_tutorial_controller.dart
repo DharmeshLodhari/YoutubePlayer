@@ -8,21 +8,21 @@ GlobalKey tutorialUserProfileDetailKey = GlobalKey();
 GlobalKey tutorialSendPaymentKey = GlobalKey();
 GlobalKey tutorialRequestPaymentKey = GlobalKey();
 GlobalKey tutorialQrCodeKey = GlobalKey();
-GlobalKey tutorialRequestPaymentListKey = GlobalKey();
 GlobalKey tutorialSearchItemsKey = GlobalKey();
-GlobalKey tutorialExploreItemsKey = GlobalKey();
 GlobalKey tutorialShoppingCartKey = GlobalKey();
-GlobalKey tutorialExploreKey = GlobalKey();
 GlobalKey tutorialScanQrCodeKey = GlobalKey();
 GlobalKey tutorialChatMessageKey = GlobalKey();
-GlobalKey tutorialMessageKey = GlobalKey();
 GlobalKey tutorialSuperStoreKey = GlobalKey();
 GlobalKey tutorialYarnKey = GlobalKey();
 GlobalKey tutorialMomentKey = GlobalKey();
+GlobalKey tutorialTransactionKey = GlobalKey();
+GlobalKey tutorialWalletKey = GlobalKey();
+GlobalKey tutorialOrderKey = GlobalKey();
+GlobalKey tutorialInboxKey = GlobalKey();
+GlobalKey tutorialBlogsKey = GlobalKey();
+GlobalKey tutorialServicesKey = GlobalKey();
+GlobalKey tutorialSettingsKey = GlobalKey();
 
-GlobalKey keyButton3 = GlobalKey();
-GlobalKey keyButton4 = GlobalKey();
-GlobalKey keyButton5 = GlobalKey();
 
 class AppTutorialController {
   static final AppTutorialController _instance =
@@ -229,41 +229,77 @@ class AppTutorialController {
         ]);
   }
 
-  // TargetFocus _getPaymentRequestListTutorial() {
-  //   return TargetFocus(
-  //       identify: "Target 6",
-  //       keyTarget: tutorialRequestPaymentListKey,
-  //       shape: ShapeLightFocus.RRect,
-  //
-  //       // color: navyBlue,
-  //       contents: [
-  //         TargetContent(
-  //             align: ContentAlign.top,
-  //             child: Container(
-  //               child: Column(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: <Widget>[
-  //                   Text(
-  //                     "Payment Request List",
-  //                     style: TextStyle(
-  //                         fontWeight: FontWeight.bold,
-  //                         color: Colors.white,
-  //                         fontSize: 20.0),
-  //                   ),
-  //                   Padding(
-  //                     padding: const EdgeInsets.only(top: 10.0),
-  //                     child: Text(
-  //                       "Click here to see the list of all your payment request.",
-  //                       style: TextStyle(color: Colors.white),
-  //                     ),
-  //                   ),
-  //                   nextButton()
-  //                 ],
-  //               ),
-  //             ))
-  //       ]);
-  // }
+  TargetFocus _getTransactionTutorial() {
+    return TargetFocus(
+        identify: "Target 5",
+        keyTarget: tutorialTransactionKey,
+        shape: ShapeLightFocus.RRect,
+
+        // color: navyBlue,
+        contents: [
+          TargetContent(
+              align: ContentAlign.top,
+              child: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Transactions",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 20.0),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Text(
+                        "Access all your completed and pending transactions.",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    nextButton()
+                  ],
+                ),
+              ))
+        ]);
+  }
+
+  TargetFocus _getWalletTutorial() {
+    return TargetFocus(
+        identify: "Target 6",
+        keyTarget: tutorialWalletKey,
+        shape: ShapeLightFocus.RRect,
+
+        // color: navyBlue,
+        contents: [
+          TargetContent(
+              align: ContentAlign.top,
+              child: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Wallet",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 20.0),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Text(
+                        "Fund your Slydo account with direct transfers or debit card.",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    nextButton()
+                  ],
+                ),
+              ))
+        ]);
+  }
 
   TargetFocus _getSearchItemTutorial() {
     return TargetFocus(
@@ -363,7 +399,7 @@ class AppTutorialController {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to navigate to Yarn timeline",
+                    "Connect with others and stay up to date on worldwide trends.",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -439,7 +475,7 @@ class AppTutorialController {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to chat with friends and family.",
+                    "View and exchange messages with buyers, sellers and friends.",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -452,10 +488,10 @@ class AppTutorialController {
     );
   }
 
-  TargetFocus _getExploreTutorial() {
+  TargetFocus _getSettingsTutorial() {
     return TargetFocus(
       identify: "Target 12",
-      keyTarget: tutorialExploreItemsKey,
+      keyTarget: tutorialSettingsKey,
       shape: ShapeLightFocus.RRect,
 
       // color: navyBlue,
@@ -468,7 +504,7 @@ class AppTutorialController {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Explore",
+                  "Settings",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -477,7 +513,7 @@ class AppTutorialController {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to explore more functionalities in the app.",
+                    "Control and manage every account function.",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -515,7 +551,7 @@ class AppTutorialController {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to navigate to the Slydo Super Store",
+                    "Check out an unlimited variety of goods available for sale.",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -553,7 +589,159 @@ class AppTutorialController {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to navigate to the Moment Timeline",
+                    "Share and view unforgettable memories.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  TargetFocus _getOrderTutorial() {
+    return TargetFocus(
+      identify: "Target 15",
+      keyTarget: tutorialOrderKey,
+      shape: ShapeLightFocus.RRect,
+      alignSkip: Alignment.bottomLeft,
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Orders",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "View all open and closed orders.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  TargetFocus _getInboxTutorial() {
+    return TargetFocus(
+      identify: "Target 16",
+      keyTarget: tutorialInboxKey,
+      shape: ShapeLightFocus.RRect,
+      alignSkip: Alignment.bottomLeft,
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Inbox",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Check all sent and received messages.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  TargetFocus _getBlogsTutorial() {
+    return TargetFocus(
+      identify: "Target 17",
+      keyTarget: tutorialBlogsKey,
+      shape: ShapeLightFocus.RRect,
+      alignSkip: Alignment.bottomLeft,
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Blogs",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Discover insightful write upd on your preferred topics and many more.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  TargetFocus _getServicesTutorial() {
+    return TargetFocus(
+      identify: "Target 18",
+      keyTarget: tutorialServicesKey,
+      shape: ShapeLightFocus.RRect,
+      alignSkip: Alignment.bottomLeft,
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Services",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Take a look at all services offered by Slydo users at the best prices.",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -572,13 +760,20 @@ class AppTutorialController {
     _targets.add(_getRequestPaymentTutorial());
     _targets.add(_getQrCodeTutorial());
     _targets.add(_getScanQrCodeTutorial());
-    // _targets.add(_getPaymentRequestListTutorial());
+
     _targets.add(_getSearchItemTutorial());
     _targets.add(_getShoppingCartTutorial());
-    _targets.add(_getExploreTutorial());
+    _targets.add(_getSettingsTutorial());
     _targets.add(_getYarnTutorial());
     _targets.add(_getSuperStoreTutorial());
     _targets.add(_getMomentTutorial());
     _targets.add(_getChatMessagesTutorial());
+
+    _targets.add(_getOrderTutorial());
+    _targets.add(_getServicesTutorial());
+    _targets.add(_getTransactionTutorial());
+    _targets.add(_getInboxTutorial());
+    _targets.add(_getWalletTutorial());
+    _targets.add(_getBlogsTutorial());
   }
 }
