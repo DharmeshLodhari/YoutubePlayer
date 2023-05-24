@@ -222,6 +222,11 @@ class TrendingListScreenState extends State<TrendingListScreen> {
                   screen: YarnDetailScreen(yarn: yarnTopicList[index].reYarn!),
                 );
               },
+              reloadView: (bool val){
+                if(val == true){
+                  onPostRefresh();
+                }
+              },
             ),
           );
         },

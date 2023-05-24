@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ class YarnOptions extends StatefulWidget {
   Function(Yarn)? onDeleteYarn;
   Function(YarnComment)? onDeleteComment;
   Function(Yarn)? onUpdate;
+  Function(bool)? reloadView;
 
   YarnOptions(
       {this.yarnTopic,
@@ -42,6 +44,7 @@ class YarnOptions extends StatefulWidget {
       this.isShareOption = false,
       this.onDeleteYarn,
       this.onUpdate,
+        this.reloadView,
       this.onDeleteComment});
 
   @override
@@ -393,6 +396,29 @@ class _YarnOptionsState extends State<YarnOptions> {
                       type: "yarn",
                     ));
               }),
+          SizedBox(
+            height: 15,
+          ),
+          _buildTile(
+              icon: "yarn/block",
+              title: 'Block Account',
+              subTitle: 'Block this account',
+              onTap: () {
+
+                var user = CustomerProfile();
+                user.userName = widget.yarnTopic!.author;
+                user.fullName = widget.yarnTopic!.authorName;
+                user.type = "";
+                user.nickName = "";
+
+                Future<bool?> check = blockUserAlert(context, user);
+                if(check == true){
+                  widget.reloadView!(true);
+                  Navigator.pop(context);
+
+                }
+
+              }),
         ]
       ],
     );
@@ -424,6 +450,28 @@ class _YarnOptionsState extends State<YarnOptions> {
                       type: "comment",
                     ));
               }),
+          // SizedBox(
+          //   height: 15,
+          // ),
+          // _buildTile(
+          //     icon: "yarn/block",
+          //     title: 'Block Account',
+          //     subTitle: 'Block this account',
+          //     onTap: () {
+          //
+          //       var user = CustomerProfile();
+          //       user.userName = widget.commentDetail!.authorUsername;
+          //       user.fullName = widget.commentDetail!.authorName;
+          //       user.type = "";
+          //       user.nickName = "";
+          //
+          //       Future<bool?> check = blockUserAlert(context, user);
+          //       if(check == true){
+          //         widget.onUpdate!(widget.yarnTopic!);
+          //         Navigator.pop(context);
+          //       }
+          //
+          //     }),
         ],
       ],
     );
