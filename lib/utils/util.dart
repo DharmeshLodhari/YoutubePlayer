@@ -29,8 +29,11 @@ import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../screens/more_apps/messaging/chat/utils.dart';
 import '../screens/more_apps/payment_and_banking/models/transactions.dart';
+import '../screens/more_apps/user_profile/models/user.dart';
 import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../screens/more_apps/user_profile/user_auth.dart';
 import '../widget/LoadingIndicator.dart';
+import '../widget/dialog.dart';
 import '../widget/image_crop.dart';
 import 'colors.dart';
 import 'common.dart';
@@ -2466,4 +2469,48 @@ Widget userImageUserInitialsPic(
 bool canSendMoney(int? amount, String? limit) {
   // virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!
   return amount! <= int.parse("500000" ?? "0");
+}
+
+Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
+  bool? result = await showDialogBox(
+    context: context,
+    roundedBackgroundIcon: RoundedBackgroundIcon(
+      backgroundColor: mateRed.withOpacity(0.08),
+      borderRadius: 20,
+      width: 48,
+      height: 48,
+      icon: Icon(
+        SlydoAppIcon.block,
+        color: mateRed,
+        size: 16,
+      ),
+      enableMargin: false,
+    ),
+    actionOneBgColor: mateRed,
+    actionOneTextColor: Colors.white,
+    actionTwoBgColor: greyBorderColor,
+    actionTwoTextColor: blackFont,
+    title: AppLocalization.of(context)!.block,
+    description: AppLocalization.of(context)!.areYouSureWantToBlock +
+        " ${user.displayName()}",
+    actionOneText: AppLocalization.of(context)!.block,
+    actionTwoText: AppLocalization.of(context)!.cancel,
+    // rightButtonOnPressed: Navigator.pop(context),
+  );
+  if (result != null && result) {
+    bool done = await UserAuth().blockUser(user);
+
+    if (done) {
+      showSnackbar(
+          context,  message:
+      "${user.displayName()} " +
+              AppLocalization.of(context)!.isBlockedSuccessfully);
+      return true;
+
+    } else {
+      showSnackbar(context, message: AppLocalization.of(context)!.error);
+      return false;
+    }
+  }
+  return null;
 }

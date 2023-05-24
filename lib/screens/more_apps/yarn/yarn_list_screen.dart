@@ -323,6 +323,11 @@ class YarnListScreenState extends State<YarnListScreen> {
                 );
               },
               checkIfReyarned: yarnDashboardBloc.reYarnTopicList,
+              reloadView: (bool val){
+                if(val == true){
+                  onRefresh();
+                }
+              },
             ),
           );
         },

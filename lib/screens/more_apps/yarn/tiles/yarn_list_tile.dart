@@ -40,6 +40,7 @@ class YarnTile extends StatefulWidget {
   final Color? backGroundColor;
   bool? minusComment;
   List<Yarn>? checkIfReyarned;
+  Function(bool)? reloadView;
 
   YarnTile(
       {required this.yarn,
@@ -49,7 +50,8 @@ class YarnTile extends StatefulWidget {
       this.onReYarn,
       this.navigateToReyarn,
       this.minusComment,
-      this.checkIfReyarned});
+      this.checkIfReyarned,
+      this.reloadView});
 
   @override
   State<YarnTile> createState() => _YarnTileState();
@@ -203,6 +205,8 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget _buildUserInfoRow() {
+    var author = messageDecoderWithEmoji(
+        widget.yarn.authorName ?? "") ?? '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -249,9 +253,7 @@ class _YarnTileState extends State<YarnTile> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          messageDecoderWithEmoji(
-                                  widget.yarn.authorName ?? "") ??
-                              "",
+                          appendStringDot(author, 25),
                           style: TextStyle(
                               fontSize: 14,
                               color: yarnBlack,
@@ -317,9 +319,13 @@ class _YarnTileState extends State<YarnTile> {
                         },
                         onUpdate: (Yarn yarn) {
                           widget.onUpdateYarn!(yarn);
-                          // widget.yarn = yarn;
-                          // if(mounted) setState(() {});
                         },
+                        reloadView: (bool val){
+                          if(val == true){
+                            widget.reloadView!(true);
+                          }
+                        },
+
                       ),
                     );
                   },

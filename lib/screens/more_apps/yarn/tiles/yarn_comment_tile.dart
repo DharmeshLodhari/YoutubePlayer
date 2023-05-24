@@ -517,6 +517,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
     );
   }
 
+  //like, comment, dislike, share, pay
   Widget _buildTopActions({required BuildContext context}) {
     return YarnCommentActions(
       comment: widget.yarnComment,

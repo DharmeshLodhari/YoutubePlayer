@@ -1,8 +1,6 @@
 import 'dart:convert';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
@@ -18,7 +16,6 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_report_screen.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
-import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -35,6 +32,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../more_apps/user_profile/models/user.dart';
 import '../../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class SingleMomentDetailScreen extends StatefulWidget {
@@ -514,6 +512,27 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
                         ));
 
                     toggleMediaPlayingState();
+                  },
+                ),
+                bottomSheetItem(
+                  title: 'Block Account',
+                  iconData: Icons.block,
+                  onTap: () async {
+
+                    toggleMediaPlayingState();
+                    var user = CustomerProfile();
+                    user.userName = widget.currentMoment.owner;
+                    user.fullName = widget.currentMoment.ownerName;
+                    user.type = "";
+                    user.nickName = "";
+
+                    Future<bool?> check = blockUserAlert(context, user);
+                    if(check == true){
+
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    }
+
                   },
                 ),
               ],

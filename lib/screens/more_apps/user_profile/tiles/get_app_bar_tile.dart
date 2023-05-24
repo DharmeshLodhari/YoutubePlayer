@@ -1454,7 +1454,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             bottomSheetItem(
                 title: "Request",
                 iconData: SlydoAppIcon.receive,
-                // isLast: true,
                 onTap: () {
                   if (appConfigurationModel?.enablePayment == true) {
                     UserAuth()
@@ -1473,6 +1472,19 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                     showToast(message: 'Payment not available at the moment');
                   }
                 }),
+            bottomSheetItem(
+              title: "Block Account",
+              iconData: SlydoAppIcon.block,
+              onTap: () async {
+                Navigator.pop(context);
+                Future<bool?> check = blockUserAlert(context, searchedUser!);
+                if(check == true){
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+
+              },
+            ),
           ],
         );
       }
