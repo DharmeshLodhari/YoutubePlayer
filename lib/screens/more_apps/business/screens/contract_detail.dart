@@ -79,7 +79,7 @@ class _ContractDetailState extends State<ContractDetail> {
   @pragma(
       'vm:entry-point') // To avoid tree shaking in release mode for Android.
   static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
+      String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('contract_downloader_send_port')!;
     send.send([id, status, progress]);

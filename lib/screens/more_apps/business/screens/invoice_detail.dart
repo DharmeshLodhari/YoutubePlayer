@@ -85,7 +85,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   @pragma(
       'vm:entry-point') // To avoid tree shaking in release mode for Android.
   static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
+      String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('invoice_downloader_send_port')!;
     send.send([id, status, progress]);
