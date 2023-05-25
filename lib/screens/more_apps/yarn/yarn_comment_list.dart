@@ -41,6 +41,8 @@ class _YarnCommentListState extends State<YarnCommentList> {
   void initState() {
     getAllComments();
 
+    debugPrint('Fola check two');
+
     super.initState();
   }
 

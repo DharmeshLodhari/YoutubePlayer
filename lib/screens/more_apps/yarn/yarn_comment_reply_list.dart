@@ -106,6 +106,8 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
                             yarn: widget.yarn,
                             yarnComment: yarnComment,
                             openReply: false,
+                            commentType: 'commentComment',
+                            commentAuthor: widget.yarnComment.authorUsername,
                             onDeleteComment: (YarnComment yarnCmt) {
                               int index = yarnComments.indexWhere(
                                   (element) => element.id == yarnCmt.id);
@@ -203,9 +205,8 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
             yarnComments.addAll(tempList);
           });
         }
-        debugPrint(
-            "YARN TOPICS comment:- ${widget.yarnComment.authorUsername}");
-        debugPrint("YARN TOPICS comment 00:- ${widget.yarnComment.comment}");
+
+
       }
       if (yarnComments.isEmpty) {
         if (mounted) {
