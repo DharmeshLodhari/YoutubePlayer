@@ -39,6 +39,7 @@ class YarnCommentTile extends StatefulWidget {
   bool? minusComment;
   String? pinnedCommentId;
   String? commentType;
+  String? commentAuthor;
 
   YarnCommentTile({
     required this.yarn,
@@ -52,6 +53,7 @@ class YarnCommentTile extends StatefulWidget {
     this.minusComment,
     this.pinnedCommentId,
     this.commentType,
+    this.commentAuthor,
   });
 
   @override
@@ -367,13 +369,39 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
   String? getReplyingUsername() {
     String? username;
 
-    // debugPrint('Comment reply:::: ${widget.yarnComment.comment}');
-    // debugPrint('Comment reply:::: ${item.comment}');
+    // if(widget.commentType == 'commentComment'){
+    //   if (widget.yarnCommentReply != null ) {
+    //     debugPrint('Comment reply author 000:::: ${widget.yarnCommentReply!.authorUsername}');
+    //     // username = widget.yarn.author;
+    //     username = widget.yarnCommentReply!.authorUsername;
+    //     // username = widget.commentAuthor;
+    //     // username = 'fola';
+    //   }
+    //   else {
+    //     debugPrint('Comment reply author 001:::: ${widget.commentAuthor}');
+    //     // username = widget.commentAuthor;
+    //   }
+    //   return "@$username";
+    // }
 
     if (widget.yarnCommentReply != null) {
-      username = widget.yarnCommentReply!.authorUsername;
-    } else {
+      // debugPrint('Comment reply author 002:::: ${widget.yarnCommentReply!.authorUsername}');
+      debugPrint('Comment reply 002::::');
+      // username = widget.yarnCommentReply!.authorUsername;
+      // username = widget.yarnAuthor;
       username = widget.yarn.author;
+    }
+    else {
+      if(widget.commentType == 'commentComment'){
+        debugPrint('Comment reply 003::::');
+        username = widget.commentAuthor;
+        // username = widget.yarn.author;
+      }else{
+        debugPrint('Comment reply 004::::');
+        username = widget.yarn.author;
+      }
+      // debugPrint('Comment reply author 003:::: ${widget.yarn.author}');
+      // username = widget.yarn.author;
     }
     return "@$username";
   }
