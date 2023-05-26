@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../routes/route_constants.dart';
+import '../screens/user_profile_module_new/profile_template/utils.dart';
 
 // ignore: must_be_immutable
 class UserTile extends StatefulWidget {
@@ -19,35 +20,6 @@ class UserTile extends StatefulWidget {
 class _UserTileState extends State<UserTile> {
   @override
   Widget build(BuildContext context) {
-    Widget avatarImage;
-
-    Color borderColor = getUserTypeColor(user: widget.user!);
-
-    avatarImage = GestureDetector(
-      onTap: () {
-        Navigator.of(context)
-            .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
-      },
-      child: Container(
-          height: 48,
-          width: 48,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                25,
-              ),
-              border: Border.all(color: borderColor, width: 2)),
-          child: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: widget.user!.avatar == ""
-                  ? defaultImage
-                  : widget.user!.avatar!,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              errorWidget: imageErrorWidget,
-            ),
-          )),
-    );
 
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -63,11 +35,48 @@ class _UserTileState extends State<UserTile> {
             isVerified: widget.user!.isVerified,
           ),
           subtitle: getSubtitle(context),
-          leading: avatarImage,
+          leading: getAvatar(),
         ),
       ),
     );
     return tile;
+  }
+
+  Widget getAvatar() {
+    Color borderColor = getUserTypeColorByType(type: widget.user!.type!);
+
+    if (widget.user!.avatar == null || widget.user!.avatar == "") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(widget.user!.fullName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            25,
+          ),
+          border: Border.all(color: borderColor, width: 2),
+        ),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: widget.user!.avatar == "" || widget.user!.avatar == null
+                ? defaultImage
+                : widget.user!.avatar!,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      );
+    }
   }
 
   Widget getSubtitle(BuildContext context) {
