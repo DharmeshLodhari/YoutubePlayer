@@ -69,7 +69,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   late bool isValidCustomer;
   bool isOtherItemFetched = false;
   bool isOtherItemIsEmpty = true;
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   List<dynamic> sellersOtherItems = [];
 
@@ -1133,7 +1133,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ),
           onTap: () {
-            Clipboard.setData(new ClipboardData(text: service!.qrCode));
+            Clipboard.setData(ClipboardData(text: service!.qrCode!));
             showToast(message: AppLocalization.of(context)!.copied);
           },
         ),

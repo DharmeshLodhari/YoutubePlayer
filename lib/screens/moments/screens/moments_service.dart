@@ -6,8 +6,10 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
+import "package:http/http.dart" as http;
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
+import '../../more_apps/yarn/models/Topics/CommentDetails.dart';
 import '../models/comment_model.dart';
 
 class MomentsService extends AuthService {
@@ -18,7 +20,7 @@ class MomentsService extends AuthService {
     }
 
     if (next == "") {
-      url = AppConfig.baseUrl + '/api/v1/social/moments/explore/';
+      url = '${AppConfig.baseUrl}/api/v1/social/moments/explore/';
     } else {
       url = getSecureUrl(url: next);
     }
@@ -58,7 +60,7 @@ class MomentsService extends AuthService {
     }
 
     if (next == "") {
-      url = AppConfig.baseUrl + '/api/v1/social/moments/';
+      url = '${AppConfig.baseUrl}/api/v1/social/moments/';
     } else {
       url = getSecureUrl(url: next);
     }
@@ -103,9 +105,9 @@ class MomentsService extends AuthService {
     late String url;
 
     if (fromUserProfile == true) {
-      url = AppConfig.baseUrl + "/api/v1/social/moments/public/$ownerName/";
+      url = "${AppConfig.baseUrl}/api/v1/social/moments/public/$ownerName/";
     } else {
-      url = AppConfig.baseUrl + "/api/v1/social/moments/user/$ownerName/";
+      url = "${AppConfig.baseUrl}/api/v1/social/moments/user/$ownerName/";
     }
 
     debugPrint("MY MOMENTS URL ::: $url");
@@ -125,7 +127,7 @@ class MomentsService extends AuthService {
   }
 
   Future<List<MomentsModel>> getSingleMoment({required String momentId}) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/moments/$momentId/";
+    String url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
 
     final headers = await getAuthHeaders();
 
@@ -140,12 +142,12 @@ class MomentsService extends AuthService {
       return Future.error('Something went wrong');
     }
   }
+  
 
-  Future<BasePaginationModel<List<CommentModel>>> getMomentComments(
-      {required String? nextUrl, required String momentID}) async {
-    String? url = AppConfig.baseUrl +
-        "/api/v1/social/moments/comments/$momentID/?page_size=8";
-    print("COMMENT URL:- ${url}");
+  Future<Map<String, dynamic>?> getMomentComments(
+       String? nextUrl,  String momentID) async {
+    String? url = "${AppConfig.baseUrl}/api/v1/social/moments/comments/$momentID/?page_size=8";
+    debugPrint("COMMENT URL:- $url");
     if (nextUrl != null) {
       url = getSecureUrl(url: nextUrl);
     }
@@ -154,45 +156,328 @@ class MomentsService extends AuthService {
 
     Response response = await httpGet(url, headers: headers);
 
+    Map<String, dynamic>? pinnedYarn = await getPinnedComment(momentID);
+
     debugPrint('COMMENTS MOMENTS ::: ${response.statusCode}');
     debugPrint('COMMENTS MOMENTS ::: ${response.body}');
+    debugPrint('COMMENTS MOMENTS PINNED ::: ${pinnedYarn}');
     if (response.statusCode == 200) {
+
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
 
-      return BasePaginationModel<List<CommentModel>>.fromJson(
-        jsonData,
-        results.map((e) => CommentModel.fromJson(e)).toList(),
-      );
+      if (pinnedYarn == null) {
+      } else {
+        if (pinnedYarn.isNotEmpty) {
+          pinnedYarn['pinned'] = true;
+
+          List<dynamic> pinnedYarnList = [pinnedYarn];
+          // debugPrint('COMMENTS MOMENTS PINNED ::: ${pinnedYarnList}');
+
+          results = pinnedYarnList + results;
+        }
+      }
+
+      List<YarnComment> commentDetails = [];
+      for (var item in results) {
+        YarnComment replyCommentDetail = YarnComment.fromJson(item);
+        commentDetails.add(replyCommentDetail);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "results": commentDetails
+      };
+
+      return result;
     } else {
       return Future.error('Something went wrong');
     }
   }
 
-  Future<bool> addCommentToMoment(
-      {required String momentID, required Map<String, String> data}) async {
-    String url =
-        AppConfig.baseUrl + "/api/v1/social/moments/add-comments/$momentID/";
 
-    debugPrint('MOMENT ID -> $momentID');
-    final headers = await getAuthHeaders();
+  // ADD COMMENT TO Moment
+  Future<YarnComment?> addCommentToMoment(
+      String commentId, Map<String, dynamic> body) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url = "${AppConfig.baseUrl}/api/v1/social/moments/add-comments/$commentId/";
+    debugPrint(url);
 
-    var _data = jsonEncode(data);
+    var headers = await getAuthHeaders();
 
-    Response response = await httpPost(url, headers: headers, body: _data);
+    var request = http.MultipartRequest("POST", Uri.parse(url));
 
-    debugPrint('ADD COMMENTS MOMENTS ::: ${response.statusCode}');
-    debugPrint('ADD COMMENTS MOMENTS ::: ${response.body}');
+    // debugPrint(
+    //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    Map<String, String> payload = {
+      "comment": messageDecoderWithEmoji(body['comment']) ?? "",
+      "is_reply": jsonEncode(body['is_reply']),
+      "author_username": body['author_username'] ?? "",
+      "enable_payme": jsonEncode(body['enable_payme'] ?? false),
+      "enable_commenting": jsonEncode(body['enable_commenting'] ?? false),
+      "is_adult_content": jsonEncode(body['is_adult_content'] ?? false),
+      "is_sensitive_content": jsonEncode(body['is_sensitive_content'] ?? false),
+      "age_restriction": jsonEncode(body['age_restriction'] ?? 13),
+      "media_count": jsonEncode(
+          body['media_count'] != null ? body['media_count'].length : 0),
+    };
+
+    if (body['attachment'] != null) {
+      payload['attachment'] =
+          jsonEncode(Map<String, dynamic>.from(body['attachment']));
+    }
+
+    request.fields.addAll(payload);
+    List<MultipartFile> newList = [];
+    List<MultipartFile> thumbnailList = [];
+    if (body['media_count'].isNotEmpty) {
+      debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
+      for (int i = 0; i < body['media_count'].length; i++) {
+        debugPrint("MEDIA TYPE::: ${body['media_count'][i].mediaType}");
+        var multipartFile;
+        var thumbnailImage;
+        if (body['media_count'][i].mediaType == 'image') {
+          // Add fields
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile!.path;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", body['media_count'][i].mediaFile!.path);
+        } else if (body['media_count'][i].mediaType == 'video') {
+          // Add fields
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile!.path;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", body['media_count'][i].mediaFile!.path);
+          // Add Poster Fields
+          request.fields["mediaposter_$i"] =
+              body['media_count'][i].mediaPoster ?? '';
+
+          thumbnailImage = await http.MultipartFile.fromPath(
+              "mediaposter_$i", body['media_count'][i].mediaPoster ?? '');
+          thumbnailList.add(thumbnailImage);
+        }
+        else if(body['media_count'][i].mediaType == 'gif'){
+          // Add fields
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", body['media_count'][i].mediaFile);
+        }
+
+        // Add multipart to newList
+        newList.add(multipartFile);
+      }
+      // Add multipart to request
+      request.files.addAll(newList);
+      request.files.addAll(thumbnailList);
+    }
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+
+    var responseBody = await response.stream.bytesToString();
+
     if (response.statusCode == 200) {
-      return true;
+      YarnComment yarnComment =
+      YarnComment.fromJson(json.decode(responseBody));
+
+      return yarnComment;
+    } else if (response.statusCode == 500) {
+      return null;
     } else {
-      return Future.error('Something went wrong');
+      return null;
     }
   }
+
+  // ADD REPLY COMMENT TO Moment
+  Future<YarnComment?> addReplyToComment(
+      String commentId, Map<String, dynamic> body) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url =
+        "${AppConfig.baseUrl}/api/v1/social/moments/reply-comments/$commentId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    // debugPrint(
+    //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    Map<String, String> payload = {
+      "comment": messageDecoderWithEmoji(body['comment']) ?? "",
+      "is_reply": jsonEncode(body['is_reply']),
+      "author_username": body['author_username'] ?? "",
+      "enable_payme": jsonEncode(body['enable_payme'] ?? false),
+      "enable_commenting": jsonEncode(body['enable_commenting'] ?? false),
+      "is_adult_content": jsonEncode(body['is_adult_content'] ?? false),
+      "is_sensitive_content": jsonEncode(body['is_sensitive_content'] ?? false),
+      "age_restriction": jsonEncode(body['age_restriction'] ?? 13),
+      "media_count": jsonEncode(
+          body['media_count'] != null ? body['media_count'].length : 0),
+    };
+
+    if (body['attachment'] != null) {
+      payload['attachment'] =
+          jsonEncode(Map<String, dynamic>.from(body['attachment']));
+    }
+
+    request.fields.addAll(payload);
+    List<MultipartFile> newList = [];
+    List<MultipartFile> thumbnailList = [];
+    if (body['media_count'].isNotEmpty) {
+      debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
+      for (int i = 0; i < body['media_count'].length; i++) {
+        debugPrint("MEDIA TYPE::: ${body['media_count'][i].mediaType}");
+        var multipartFile;
+        var thumbnailImage;
+        if (body['media_count'][i].mediaType == 'image') {
+          // Add fields
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile!.path;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", body['media_count'][i].mediaFile!.path);
+        } else if (body['media_count'][i].mediaType == 'video') {
+          // Add fields
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile!.path;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", body['media_count'][i].mediaFile!.path);
+          // Add Poster Fields
+          request.fields["mediaposter_$i"] =
+              body['media_count'][i].mediaPoster ?? '';
+
+          thumbnailImage = await http.MultipartFile.fromPath(
+              "mediaposter_$i", body['media_count'][i].mediaPoster ?? '');
+          thumbnailList.add(thumbnailImage);
+        }
+
+        // Add multipart to newList
+        newList.add(multipartFile);
+      }
+      // Add multipart to request
+      request.files.addAll(newList);
+      request.files.addAll(thumbnailList);
+    }
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+
+    var responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 200) {
+      YarnComment yarnComment =
+      YarnComment.fromJson(json.decode(responseBody));
+
+      return yarnComment;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getAllComments(String commentId) async {
+    debugPrint("CALLING ALL COMMENTS");
+    String url = "";
+    url =
+        "${AppConfig.baseUrl}/api/v1/social/moments/reply-comments/$commentId/";
+
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    Map<String, dynamic>? pinnedYarn = await getPinnedComment(commentId);
+
+    debugPrint(
+        "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body.toString()}");
+    if (response.statusCode == 200) {
+      List<YarnComment> commentsDetails = [];
+      var jsonData = json.decode(response.body);
+
+      debugPrint('COMMENTS RESPONSE CODE::: $jsonData');
+
+      List<dynamic> results = jsonData['results'];
+      debugPrint('COMMENTS RESPONSE agian CODE::: $results');
+
+      if (pinnedYarn == null) {
+      } else {
+        if (pinnedYarn.isNotEmpty) {
+          pinnedYarn['pinned'] = true;
+
+          List<dynamic> pinnedYarnList = [pinnedYarn];
+
+          results = pinnedYarnList + results;
+        }
+      }
+
+      for (var item in results) {
+        YarnComment commentsDetail = YarnComment.fromJson(item);
+        debugPrint('Fola test getAllComments::: ${item}');
+
+        commentsDetails.add(commentsDetail);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": commentsDetails
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // get pinned comment
+  Future<Map<String, dynamic>?> getPinnedComment(String yarnId) async {
+    debugPrint("CALLING PINNED COMMENT");
+    String url = "";
+    url = "${AppConfig.baseUrl}/api/v1/social/moments/pinned-comment/$yarnId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE PINNED GET CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      return data;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
 
   Future<bool> createMoment(
       {required CreateMomentModel createMomentModel}) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/moments/";
+    String url = "${AppConfig.baseUrl}/api/v1/social/moments/";
 
     final headers = await getAuthHeaders();
 
@@ -257,7 +542,7 @@ class MomentsService extends AuthService {
 
   Future<MomentsModel> updateMoment(
       {required String momentId, required Map<String, dynamic> data}) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/moments/$momentId/";
+    var url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpPatch(
       url,
@@ -289,7 +574,7 @@ class MomentsService extends AuthService {
   }
 
   Future<MomentsModel> likeMoment(String momentId) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/moments/like/$momentId/";
+    var url = "${AppConfig.baseUrl}/api/v1/social/moments/like/$momentId/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers);
 
@@ -318,8 +603,7 @@ class MomentsService extends AuthService {
   }
 
   Future<bool> updateMomentView(String momentId) async {
-    var url = AppConfig.baseUrl +
-        "/api/v1/social/moments/update-moment-view/$momentId/";
+    var url = "${AppConfig.baseUrl}/api/v1/social/moments/update-moment-view/$momentId/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -344,7 +628,7 @@ class MomentsService extends AuthService {
   }
 
   Future<MomentsModel> dislikeMoment(String momentId) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/moments/dislike/$momentId/";
+    var url = "${AppConfig.baseUrl}/api/v1/social/moments/dislike/$momentId/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers);
 
@@ -373,7 +657,7 @@ class MomentsService extends AuthService {
   }
 
   Future<bool> deleteMoment(String momentId) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/moments/$momentId/";
+    var url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
 
@@ -395,8 +679,7 @@ class MomentsService extends AuthService {
     if (nextPage != null) {
       url = getSecureUrl(url: nextPage);
     } else {
-      url = AppConfig.baseUrl +
-          "/api/v1/social/moments/search/?q=$searchText&page_size=10";
+      url = "${AppConfig.baseUrl}/api/v1/social/moments/search/?q=$searchText&page_size=10";
     }
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);

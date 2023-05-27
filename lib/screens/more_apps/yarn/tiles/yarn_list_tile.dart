@@ -332,7 +332,7 @@ class _YarnTileState extends State<YarnTile> {
                 );
               },
               child: Icon(
-                Icons.more_horiz_rounded,
+                Icons.more_horiz_outlined,
                 color: darkGreyYarn,
               ),
             )

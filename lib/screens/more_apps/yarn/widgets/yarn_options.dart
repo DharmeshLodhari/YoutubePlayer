@@ -16,6 +16,8 @@ import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/dialog.dart';
 import '../../../../widget/rounded_background_icon.dart';
+import '../../../moments/models/moments_model.dart';
+import '../../../moments/screens/moment_detail/moment_comment.screen.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../add_or_edit_yarn_screen.dart';
@@ -35,6 +37,10 @@ class YarnOptions extends StatefulWidget {
   Function(Yarn)? onDeleteYarn;
   Function(YarnComment)? onDeleteComment;
   Function(Yarn)? onUpdate;
+  Function(YarnComment, bool)? onUpdateMomentComment;
+  Function(bool)? minusComment;
+  String? momentUsername;
+  MomentsModel? moment;
   Function(bool)? reloadView;
 
   YarnOptions(
@@ -44,7 +50,11 @@ class YarnOptions extends StatefulWidget {
       this.isShareOption = false,
       this.onDeleteYarn,
       this.onUpdate,
-        this.reloadView,
+      this.minusComment,
+      this.onUpdateMomentComment,
+      this.momentUsername,
+      this.moment,
+      this.reloadView,
       this.onDeleteComment});
 
   @override
@@ -84,11 +94,11 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   Widget _buildMoreOption() {
     return Container(
-      padding: EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Text(
@@ -96,14 +106,14 @@ class _YarnOptionsState extends State<YarnOptions> {
             style: TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w600, color: navyBlue),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Divider(
             thickness: 1,
             color: HexColor("#EBEDFC"),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           ..._buildMoreOptionList(),
@@ -139,18 +149,36 @@ class _YarnOptionsState extends State<YarnOptions> {
           _buildTile(
               icon: "yarn/delete",
               title: 'Delete',
-              subTitle: 'Delete this comment',
+              subTitle: '',
               onTap: () {
                 showDeleteYarnCommentDialog();
               }),
+          const SizedBox(
+            height: 8,
+          ),
+          _buildTile(
+              icon: "yarn/reply",
+              title: 'Reply',
+              subTitle: '',
+              onTap: () {
+                NavigationUtil.pop(context);
+                NavigationUtil.push(
+                  context,
+                  screen: MomentCommentScreen(
+                    yarnComment: widget.commentDetail,
+                    momentId: widget.commentDetail?.id,
+                    minusComment: widget.minusComment,
+                  ),
+                );
+              }),
 
           ///Do a check for original post author
-          if (widget.yarnTopic!.author ==
-              widget.commentDetail!.authorUsername) ...[
-            SizedBox(height: 15),
+          if (widget.yarnTopic?.author ==
+              widget.commentDetail?.authorUsername) ...[
+            const SizedBox(height: 15),
 
             ///check if comment is pinned
-            if (widget.commentDetail!.pinned == true) ...[
+            if (widget.commentDetail?.pinned == true) ...[
               _buildTile(
                   icon: "yarn/unpinned",
                   title: 'Unpin Comment',
@@ -169,6 +197,32 @@ class _YarnOptionsState extends State<YarnOptions> {
                   }),
             ]
           ],
+
+          if (widget.moment?.owner == widget.commentDetail?.authorUsername) ...[
+            const SizedBox(height: 10),
+
+            // /check if comment is pinned
+            if (widget.commentDetail?.pinned == true) ...[
+              _buildTile(
+                  icon: "yarn/unpinned",
+                  title: 'Unpin Comment',
+                  subTitle: '',
+                  onTap: () {
+                    deletePinnedComment(
+                        widget.moment!.id, widget.commentDetail!.id,
+                        isComment: true);
+                  }),
+            ] else ...[
+              _buildTile(
+                  icon: "yarn/pinned",
+                  title: 'Pin Comment',
+                  subTitle: '',
+                  onTap: () {
+                    pinComment(widget.moment!.id, widget.commentDetail!.id,
+                        isComment: true);
+                  }),
+            ]
+          ]
         ] else ...[
           _buildTile(
               icon: "yarn/report",
@@ -178,8 +232,11 @@ class _YarnOptionsState extends State<YarnOptions> {
                 Navigator.pop(context);
                 NavigationUtil.push(context,
                     screen: AddReportScreen(
-                      object: widget.commentDetail!.toJson(),
+                      object: widget.moment != null
+                          ? widget.moment!.toJson()
+                          : widget.commentDetail!.toJson(),
                       type: "comment",
+                      isCommentMoment: false,
                     ));
               }),
         ],
@@ -203,7 +260,7 @@ class _YarnOptionsState extends State<YarnOptions> {
                   'Once you accept this answer, your bounty \nreward will be sent to this user.'),
         ] else ...[
           if (currentTime.difference(messageCreatedTime) <
-              Duration(minutes: 5)) ...[
+              const Duration(minutes: 5)) ...[
             _buildTile(
                 icon: "yarn/bookmark",
                 title: 'Edit',
@@ -232,7 +289,7 @@ class _YarnOptionsState extends State<YarnOptions> {
                 }),
           ]
         ],
-        SizedBox(
+        const SizedBox(
           height: 15,
         ),
         if (widget.yarnTopic!.saveId != null) ...[
@@ -246,7 +303,7 @@ class _YarnOptionsState extends State<YarnOptions> {
               removeSavedYarn(widget.yarnTopic!.saveId.toString());
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
         ],
@@ -265,7 +322,7 @@ class _YarnOptionsState extends State<YarnOptions> {
               await YarnAuth().toggleCommenting(widget.yarnTopic!.id!, mstatus);
               showToast(message: 'Commenting updated..');
             }),
-        SizedBox(
+        const SizedBox(
           height: 15,
         ),
         _buildTile(
@@ -371,7 +428,7 @@ class _YarnOptionsState extends State<YarnOptions> {
               },
             ),
           ],
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           _buildTile(
@@ -381,7 +438,7 @@ class _YarnOptionsState extends State<YarnOptions> {
               onTap: () {
                 addUserVisibilityOption("not-interested");
               }),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           _buildTile(
@@ -394,9 +451,10 @@ class _YarnOptionsState extends State<YarnOptions> {
                     screen: AddReportScreen(
                       object: widget.yarnTopic!.toJson(),
                       type: "yarn",
+                      isCommentMoment: false,
                     ));
               }),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           _buildTile(
@@ -404,7 +462,6 @@ class _YarnOptionsState extends State<YarnOptions> {
               title: 'Block Account',
               subTitle: 'Block this account',
               onTap: () {
-
                 var user = CustomerProfile();
                 user.userName = widget.yarnTopic!.author;
                 user.fullName = widget.yarnTopic!.authorName;
@@ -412,12 +469,10 @@ class _YarnOptionsState extends State<YarnOptions> {
                 user.nickName = "";
 
                 Future<bool?> check = blockUserAlert(context, user);
-                if(check == true){
+                if (check == true) {
                   widget.reloadView!(true);
                   Navigator.pop(context);
-
                 }
-
               }),
         ]
       ],
@@ -441,37 +496,83 @@ class _YarnOptionsState extends State<YarnOptions> {
           _buildTile(
               icon: "yarn/report",
               title: 'Report comment',
-              subTitle: 'I’m concerned about this post',
+              subTitle: '',
               onTap: () {
                 Navigator.pop(context);
                 NavigationUtil.push(context,
                     screen: AddReportScreen(
-                      object: widget.commentDetail!.toJson(),
+                      object: widget.moment != null
+                          ? widget.moment!.toJson()
+                          : widget.commentDetail!.toJson(),
                       type: "comment",
+                      isCommentMoment: true,
                     ));
               }),
+
+          const SizedBox(
+            height: 8,
+          ),
+          _buildTile(
+              icon: "yarn/reply",
+              title: 'Reply',
+              subTitle: '',
+              onTap: () {
+                NavigationUtil.pop(context);
+                NavigationUtil.push(
+                  context,
+                  screen: MomentCommentScreen(
+                    yarnComment: widget.commentDetail,
+                    momentId: widget.commentDetail?.id,
+                    minusComment: widget.minusComment,
+                  ),
+                );
+              }),
+          const SizedBox(
+            height: 8,
+          ),
+          // if (getLoggedInUserName(context) == widget.moment?.owner) ...[
+          //   if (widget.commentDetail?.pinned == true) ...[
+          //     _buildTile(
+          //         icon: "yarn/unpinned",
+          //         title: 'Unpin Comment',
+          //         subTitle: '',
+          //         onTap: () {
+          //           deletePinnedComment(
+          //               widget.moment!.id, widget.commentDetail!.id, isComment: true);
+          //         }),
+          //   ] else ...[
+          //     _buildTile(
+          //         icon: "yarn/pinned",
+          //         title: 'Pin Comment',
+          //         subTitle: '',
+          //         onTap: () {
+          //           pinComment(widget.moment!.id, widget.commentDetail!.id,
+          //               isComment: true);
+          //         }),
+          //   ]
+          // ]
+
           // SizedBox(
           //   height: 15,
           // ),
-          // _buildTile(
-          //     icon: "yarn/block",
-          //     title: 'Block Account',
-          //     subTitle: 'Block this account',
-          //     onTap: () {
-          //
-          //       var user = CustomerProfile();
-          //       user.userName = widget.commentDetail!.authorUsername;
-          //       user.fullName = widget.commentDetail!.authorName;
-          //       user.type = "";
-          //       user.nickName = "";
-          //
-          //       Future<bool?> check = blockUserAlert(context, user);
-          //       if(check == true){
-          //         widget.onUpdate!(widget.yarnTopic!);
-          //         Navigator.pop(context);
-          //       }
-          //
-          //     }),
+          _buildTile(
+              icon: "yarn/block",
+              title: 'Block Account',
+              subTitle: '',
+              onTap: () {
+                var user = CustomerProfile();
+                user.userName = widget.commentDetail!.authorUsername;
+                user.fullName = widget.commentDetail!.authorName;
+                user.type = "";
+                user.nickName = "";
+
+                Future<bool?> check = blockUserAlert(context, user);
+                if (check == true) {
+                  // widget.onUpdate!(widget.yarnTopic!);
+                  widget.onUpdateMomentComment!(widget.commentDetail!, true);
+                  Navigator.pop(context);
+                }
+              }),
         ],
       ],
     );
@@ -521,7 +622,7 @@ class _YarnOptionsState extends State<YarnOptions> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
             Container(
@@ -537,7 +638,7 @@ class _YarnOptionsState extends State<YarnOptions> {
                 width: 20,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 15,
             ),
             Column(
@@ -636,7 +737,7 @@ class _YarnOptionsState extends State<YarnOptions> {
 
     Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": 'yarn',
@@ -698,24 +799,40 @@ class _YarnOptionsState extends State<YarnOptions> {
     }
   }
 
-  Future<void> pinComment(String? yarnId, String? commentId) async {
-    bool? data = await YarnAuth().pinComment(yarnId!, commentId!);
+  Future<void> pinComment(String? yarnId, String? commentId,
+      {bool isComment = false}) async {
+    bool? data =
+        await YarnAuth().pinComment(yarnId!, commentId!, isComment: isComment);
     if (data != null && data) {
       showToast(message: "Comment pinned successfully");
-      widget.onUpdate!(widget.yarnTopic!);
       Navigator.pop(context);
+      if (isComment == false) {
+        widget.onUpdate!(widget.yarnTopic!);
+      } else {
+        widget.onUpdateMomentComment!(widget.commentDetail!, true);
+      }
+      // Navigator.pop(context);
+
     } else {
       showToast(message: "Comment pinned failed");
       Navigator.pop(context);
     }
   }
 
-  Future<void> deletePinnedComment(String? yarnId, String? commentId) async {
-    bool? data = await YarnAuth().deletePinnedComment(yarnId!, commentId!);
+  Future<void> deletePinnedComment(String? yarnId, String? commentId,
+      {bool isComment = false}) async {
+    bool? data = await YarnAuth()
+        .deletePinnedComment(yarnId!, commentId!, isComment: isComment);
     if (data != null && data) {
       showToast(message: "Pinned Comment remove successfully");
-      widget.onUpdate!(widget.yarnTopic!);
-      Navigator.pop(context);
+
+      if (isComment == false) {
+        Navigator.pop(context);
+        widget.onUpdate!(widget.yarnTopic!);
+      } else {
+        Navigator.pop(context);
+        widget.onUpdateMomentComment!(widget.commentDetail!, false);
+      }
     } else {
       showToast(message: "Pinned Comment removal failed");
       Navigator.pop(context);

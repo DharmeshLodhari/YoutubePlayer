@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/screens/pick_attachment_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -38,11 +40,11 @@ class PreviewMomentScreen extends StatefulWidget {
 
 class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   late UserBloc userBloc;
-  bool isPublic = false;
-  bool enableLikes = false;
+  bool isPublic = true;
+  bool enableLikes = true;
   bool enablePayMe = false;
-  bool enableCommenting = false;
-  bool isPermanent = false;
+  bool enableCommenting = true;
+  bool isPermanent = true;
   List<String> userTags = [];
   String? pickedAttachmentType;
   late String fileType;
@@ -69,6 +71,10 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   AttachmentItemModel? attachmentItemModel;
   late FocusNode focusNode;
   String payMeLabel = 'Pay Me';
+
+  bool isMore = false;
+  bool isOnMore = false;
+
   void changeColor(Color color) {
     pickedColor = color;
     debugPrint('PICKED COLOR ::: $pickedColor');
@@ -112,365 +118,445 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
+      backgroundColor: lightGrey,
       appBar: appBar(),
-      body: Stack(
-        fit: StackFit.expand,
+      body: ListView(
+        // fit: StackFit.expand,
         children: [
           mediaRenderer(),
-          DraggableScrollableSheet(
-              minChildSize: 0.2,
-              maxChildSize: 1,
-              initialChildSize: 0.2,
-              builder: (context, scrollController) {
-                return SingleChildScrollView(
-                  controller: scrollController,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+          Container(
+            decoration: BoxDecoration(
+              color: lightGrey,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Align(
+                  //   alignment: Alignment.center,
+                  //   child: Container(
+                  //     width: 80,
+                  //     height: 8,
+                  //     decoration: BoxDecoration(
+                  //       color: greyBorderColor,
+                  //       borderRadius: BorderRadius.circular(50),
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    maxLength: 255,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      hoverColor: white,
+                      hintText: 'Enter caption...',
+                      border: InputBorder.none,
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: greyBorderColor,
+                          width: 1.0,
+                        ),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: greyBorderColor,
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: navyBlue,
+                          width: 1.0,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: greyBorderColor,
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: greyBorderColor,
+                          width: 1.0,
+                        ),
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              width: 80,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: greyBorderColor,
-                                borderRadius: BorderRadius.circular(50),
+                    onChanged: (value) {
+                      momentTitle = value;
+                    },
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Visibility(
+                          visible: !isMore,
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: greyBackground,
+                                ),
+                                child: SvgPicture.asset(
+                                  "yarn/world".toSVG(),
+                                  height: 10,
+                                  width: 10,
+                                ),
                               ),
+                              SizedBox(
+                                width: 6,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: greyBackground,
+                                ),
+                                child: SvgPicture.asset(
+                                  "yarn/dark_comment".toSVG(),
+                                  height: 10,
+                                  width: 10,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 6,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: greyBackground,
+                                ),
+                                child: SvgPicture.asset(
+                                  "yarn/thumbsup".toSVG(),
+                                  height: 10,
+                                  width: 10,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 6,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(12.0),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: greyBackground,
+                                ),
+                                child: SvgPicture.asset(
+                                  "yarn/infinity".toSVG(),
+                                  height: 6,
+                                  width: 6,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 6,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: greyBackground,
+                                ),
+                                child: SvgPicture.asset(
+                                  "yarn/black_logo".toSVG(),
+                                  height: 10,
+                                  width: 10,
+                                ),
+                              ),
+                            ],
+                          )),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isMore = !isMore;
+                            isOnMore = !isOnMore;
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              'More option',
+                              style: TextStyle(
+                                  color: darkGreyYarn,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          TextFormField(
-                            maxLength: 255,
-                            maxLines: 5,
-                            decoration: InputDecoration(
-                              hintText: 'Enter caption...',
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 12),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: greyBorderColor,
-                                  width: 1.0,
-                                ),
-                              ),
-                              disabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: greyBorderColor,
-                                  width: 1.0,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: navyBlue,
-                                  width: 1.0,
-                                ),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: greyBorderColor,
-                                  width: 1.0,
-                                ),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: greyBorderColor,
-                                  width: 1.0,
-                                ),
-                              ),
+                            SizedBox(
+                              width: 10,
                             ),
+                            Icon(
+                              isMore
+                                  ? Icons.keyboard_arrow_down_sharp
+                                  : Icons.keyboard_arrow_up_sharp,
+                              color: darkGreyYarn,
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Visibility(
+                    visible: isOnMore,
+                    child: Column(
+                      children: [
+                        previewMomentSwitchOptions(
+                          icon: 'yarn/world',
+                          title: 'Public',
+                          description:
+                              'If you make this moment public, it will be available to everyone under slydo network',
+                          switchBtn: Switch(
+                            value: isPublic,
                             onChanged: (value) {
-                              momentTitle = value;
-                            },
-                          ),
-                          previewMomentSwitchOptions(
-                            title: 'Make Moment Public',
-                            description:
-                                'If you make the post public, it will be available to everyone under the Slydo network',
-                            switchBtn: Switch(
-                              value: isPublic,
-                              onChanged: (value) {
-                                setState(() {
-                                  isPublic = value;
-                                });
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          previewMomentSwitchOptions(
-                            title: 'Enable likes',
-                            description:
-                                'Enable this to allow others like your post',
-                            switchBtn: Switch(
-                              value: enableLikes,
-                              onChanged: (value) {
-                                setState(() {
-                                  enableLikes = value;
-                                });
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          previewMomentSwitchOptions(
-                            title: 'Enable Commenting',
-                            description:
-                                'Enable this to allow others comment on your post',
-                            switchBtn: Switch(
-                              value: enableCommenting,
-                              onChanged: (value) {
-                                setState(() {
-                                  enableCommenting = value;
-                                });
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          previewMomentSwitchOptions(
-                            title: 'Permanent',
-                            description:
-                                'If you make a moment Permanent it will stay forever till you delete it',
-                            switchBtn: Switch(
-                              value: isPermanent,
-                              onChanged: (value) {
-                                setState(() {
-                                  isPermanent = value;
-                                });
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          TextFieldTags(
-                            initialTags: userTags,
-                            tagsStyler: textFieldTagStyler,
-                            validator: (value) {
-                              return null;
-                            },
-                            textFieldStyler: textFieldStyler,
-                            onTag: (tag) {
                               setState(() {
-                                userTags.add(tag);
-                                userTags = userTags.toSet().toList();
+                                isPublic = !isPublic;
+                                print(value.toString());
                               });
-                              userTags.removeWhere((tag) => tag.isEmpty);
                             },
-                            onDelete: (tag) {
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        previewMomentSwitchOptions(
+                          title: 'Enable likes',
+                          icon: 'yarn/dark_comment',
+                          description:
+                              'Enable this to allow others like your post',
+                          switchBtn: Switch(
+                            value: enableLikes,
+                            onChanged: (value) {
                               setState(() {
-                                userTags.remove(tag);
+                                enableLikes = !enableLikes;
                               });
-                              userTags.removeWhere((tag) => tag.isEmpty);
                             },
                           ),
-                          appConfigurationModel?.enablePayment == true
-                              ? previewMomentSwitchOptions(
-                                  title: 'Enable Payment',
-                                  description:
-                                      'Enable this to allow other users to support your work by making a donation.',
-                                  switchBtn: Switch(
-                                    value: enablePayMe,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        enablePayMe = value;
-                                      });
-                                    },
-                                  ),
-                                )
-                              : SizedBox.shrink(),
-                          SizedBox(height: 20),
-                          dropDownPickItemWidget(
-                            label: 'Pick attachment',
-                            selectedItem: pickedAttachmentType,
-                            onTap: () => pickAttachmentWidget(),
+                        ),
+                        SizedBox(height: 30),
+                        previewMomentSwitchOptions(
+                          icon: 'yarn/thumbsup',
+                          title: 'Enable Comments',
+                          description:
+                              'Enable this to allow others comment on your moment',
+                          switchBtn: Switch(
+                            value: enableCommenting,
+                            onChanged: (value) {
+                              setState(() {
+                                enableCommenting = !enableCommenting;
+                              });
+                            },
                           ),
-                          Visibility(
-                            visible: attachmentItemModel != null,
-                            child: CustomizedTextFormField(
-                              isReadOnly: true,
-                              controller: pickedAttachmentTFCtrl,
-                            ),
+                        ),
+                        SizedBox(height: 30),
+                        previewMomentSwitchOptions(
+                          title: 'Make Permanent',
+                          icon: 'yarn/infinity',
+                          description:
+                              'If you make a moment Permanent it will stay forever till you delete it',
+                          switchBtn: Switch(
+                            value: isPermanent,
+                            onChanged: (value) {
+                              setState(() {
+                                isPermanent = !isPermanent;
+                              });
+                            },
                           ),
-                          Visibility(
-                            visible: showUrlTextField,
+                        ),
+                        SizedBox(height: 30),
+                        appConfigurationModel?.enablePayment == true
+                            ? previewMomentSwitchOptions(
+                                icon: 'yarn/black_logo',
+                                title: 'Enable Payment',
+                                description:
+                                    'Enable this to allow other users to support your work by making a donation.',
+                                switchBtn: Switch(
+                                  value: enablePayMe,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      enablePayMe = value;
+                                    });
+                                  },
+                                ),
+                              )
+                            : SizedBox.shrink(),
+                        SizedBox(height: 20),
+                        dropDownPickItemWidget(
+                          label: 'Pick attachment',
+                          selectedItem: pickedAttachmentType,
+                          onTap: () => pickAttachmentWidget(),
+                        ),
+                        Visibility(
+                          visible: attachmentItemModel != null,
+                          child: CustomizedTextFormField(
+                            isReadOnly: true,
+                            controller: pickedAttachmentTFCtrl,
+                          ),
+                        ),
+                        Visibility(
+                          visible: showUrlTextField,
+                          child: Column(
+                            children: [
+                              CustomizedTextFormField(
+                                hintText: 'Enter Url',
+                                controller: urlTextCtrl,
+                              ),
+                              CustomizedTextFormField(
+                                hintText: 'Enter a title for your url',
+                                controller: titleOfLinkCtrl,
+                                maxLength: 15,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Focus(
+                          focusNode: focusNode,
+                          child: Visibility(
+                            visible: enablePayMe,
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                CustomizedTextFormField(
-                                  hintText: 'Enter Url',
-                                  controller: urlTextCtrl,
+                                SizedBox(height: 12),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    children: [
+                                      Text('Button Preview'),
+                                      SizedBox(height: 6),
+                                      payMeBtn(),
+                                    ],
+                                  ),
                                 ),
                                 CustomizedTextFormField(
-                                  hintText: 'Enter a title for your url',
-                                  controller: titleOfLinkCtrl,
+                                  controller: payMeCtrl,
                                   maxLength: 15,
+                                  hintText: 'Enter pay me label...',
                                 ),
+                                SizedBox(height: 8),
+                                Text('Pick button color',
+                                    textAlign: TextAlign.left),
+                                SizedBox(height: 2),
+                                Text(
+                                  'Pick a color to display as your payment button color',
+                                  style: TextStyle(
+                                    color: blackFont.withOpacity(0.5),
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                InkWell(
+                                  onTap: () async {
+                                    //This is to dismiss the keyboard first, wait for 200 milliseconds
+                                    // for the keyboard to be fully dismissed before showing the dialog.
+                                    //To avoid overflow errors on the dialog.
+                                    focusNode.unfocus();
+                                    await Future.delayed(
+                                        Duration(milliseconds: 200));
+                                    bool? _pickedColor = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text('Pick your color'),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            ColorPicker(
+                                              onColorChanged: changeColor,
+                                              pickerColor: pickedColor,
+                                            ),
+                                            CurvedButton(
+                                              text: 'Select',
+                                              onPressed: () {
+                                                Navigator.pop(context, true);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                    if (_pickedColor != null &&
+                                        _pickedColor == true) {
+                                      // Calling setState here so that ONLY if they click the select button
+                                      // in the dialog should the color of the container change.
+
+                                      setState(() {});
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/color_picker_image.png',
+                                        width: 40,
+                                        height: 40,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Container(
+                                          padding: EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                          ),
+                                          child: Text(
+                                            '#${pickedColor.value.toRadixString(16)}'
+                                                .toUpperCase(),
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: blackFont,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 20),
                               ],
                             ),
                           ),
-                          Focus(
-                            focusNode: focusNode,
-                            child: Visibility(
-                              visible: enablePayMe,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  SizedBox(height: 12),
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Column(
-                                      children: [
-                                        Text('Button Preview'),
-                                        SizedBox(height: 6),
-                                        payMeBtn(),
-                                      ],
-                                    ),
-                                  ),
-                                  CustomizedTextFormField(
-                                    controller: payMeCtrl,
-                                    maxLength: 15,
-                                    hintText: 'Enter pay me label...',
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text('Pick button color',
-                                      textAlign: TextAlign.left),
-                                  SizedBox(height: 2),
-                                  Text(
-                                    'Pick a color to display as your payment button color',
-                                    style: TextStyle(
-                                      color: blackFont.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  InkWell(
-                                    onTap: () async {
-                                      //This is to dismiss the keyboard first, wait for 200 milliseconds
-                                      // for the keyboard to be fully dismissed before showing the dialog.
-                                      //To avoid overflow errors on the dialog.
-                                      focusNode.unfocus();
-                                      await Future.delayed(
-                                          Duration(milliseconds: 200));
-                                      bool? _pickedColor =
-                                          await showDialog<bool>(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                          title: Text('Pick your color'),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              ColorPicker(
-                                                onColorChanged: changeColor,
-                                                pickerColor: pickedColor,
-                                              ),
-                                              CurvedButton(
-                                                text: 'Select',
-                                                onPressed: () {
-                                                  Navigator.pop(context, true);
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                      if (_pickedColor != null &&
-                                          _pickedColor == true) {
-                                        // Calling setState here so that ONLY if they click the select button
-                                        // in the dialog should the color of the container change.
-
-                                        setState(() {});
-                                      }
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/images/color_picker_image.png',
-                                          width: 40,
-                                          height: 40,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Expanded(
-                                          child: Container(
-                                            padding: EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                            ),
-                                            child: Text(
-                                              '#${pickedColor.value.toRadixString(16)}'
-                                                  .toUpperCase(),
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: blackFont,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 80),
-                          CurvedButton(
-                            text: 'Submit',
-                            onPressed: () async {
-                              if (enablePayMe && payMeCtrl.text.isEmpty) {
-                                showToast(
-                                    message: 'Payment label cannot be empty');
-                                return;
-                              }
-
-                              if (pickedAttachmentType == 'Url' &&
-                                  (urlTextCtrl.text.isEmpty ||
-                                      (!await canLaunchUrl(
-                                          Uri.parse(urlTextCtrl.text))))) {
-                                showToast(message: 'Please enter a valid url');
-                                return;
-                              }
-                              showDialogBox(
-                                context: context,
-                                actionOneTextColor: blackFont,
-                                actionTwoBgColor: navyBlue,
-                                actionTwoTextColor: Colors.white,
-                                actionOneBgColor: greyBorderColor,
-                                title: AppLocalization.of(context)!.post,
-                                actionTwoText:
-                                    AppLocalization.of(context)!.post,
-                                actionOneText:
-                                    AppLocalization.of(context)!.notNow,
-                                description:
-                                    'Are you sure you want to post\nyour moment now?',
-                                roundedBackgroundIcon: RoundedBackgroundIcon(
-                                  enableMargin: false,
-                                  width: 90,
-                                  height: 90,
-                                  image: Image.asset(
-                                    'assets/images/accept_dialog_icon.png',
-                                    color: navyBlue,
-                                  ),
-                                ),
-                                rightButtonOnPressed: () {
-                                  postMoment();
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        TextFieldTags(
+                          initialTags: userTags,
+                          tagsStyler: textFieldTagStyler,
+                          validator: (value) {
+                            return null;
+                          },
+                          textFieldStyler: textFieldStyler,
+                          onTag: (tag) {
+                            setState(() {
+                              userTags.add(tag);
+                              userTags = userTags.toSet().toList();
+                            });
+                            userTags.removeWhere((tag) => tag.isEmpty);
+                          },
+                          onDelete: (tag) {
+                            setState(() {
+                              userTags.remove(tag);
+                            });
+                            userTags.removeWhere((tag) => tag.isEmpty);
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                );
-              }),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -784,7 +870,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   Widget payMeBtn() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
           color: HexColor('#${pickedColor.value.toRadixString(16)}'),
           borderRadius: BorderRadius.circular(10)),
@@ -796,10 +882,10 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
             width: 30,
             height: 30,
           ),
-          SizedBox(width: 4),
+          const SizedBox(width: 4),
           Text(
             payMeLabel,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
               fontWeight: FontWeight.w600,
@@ -812,25 +898,65 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   Widget previewMomentSwitchOptions({
     required String title,
+    required String icon,
     required String description,
     required Switch switchBtn,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(title),
-            SizedBox(height: 30, child: switchBtn),
-          ],
-        ),
-        Text(
-          description,
-          style: TextStyle(
-            color: blackFont.withOpacity(0.5),
+    return Container(
+      // height: 300,
+      padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: white,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: icon == 'yarn/infinity'
+                ? EdgeInsets.fromLTRB(14, 18, 12, 18)
+                : EdgeInsets.all(16.0),
+            decoration: new BoxDecoration(
+              shape: BoxShape.circle,
+              color: lightGrey,
+            ),
+            child: SvgPicture.asset(
+              icon.toSVG(),
+              height: icon == 'yarn/infinity' ? 14 : 20,
+              width: icon == 'yarn/infinity' ? 14 : 20,
+            ),
           ),
-        ),
-      ],
+          SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: SizedBox(
+              // width: 200,
+              // height: 65.0,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: blackFont),
+                  ),
+                  Text(
+                    description,
+                    style: TextStyle(
+                        color: blackFont.withOpacity(0.5), fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 30, child: switchBtn),
+        ],
+      ),
     );
   }
 
@@ -857,19 +983,66 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           fontWeight: FontWeight.bold,
         ),
       ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: CurvedButton(
+            width: 100,
+            height: 10,
+            borderRadius: 20,
+            text: 'Submit',
+            fontSize: 14,
+            onPressed: () async {
+              if (enablePayMe && payMeCtrl.text.isEmpty) {
+                showToast(message: 'Payment label cannot be empty');
+                return;
+              }
+
+              if (pickedAttachmentType == 'Url' &&
+                  (urlTextCtrl.text.isEmpty ||
+                      (!await canLaunchUrl(Uri.parse(urlTextCtrl.text))))) {
+                showToast(message: 'Please enter a valid url');
+                return;
+              }
+              showDialogBox(
+                context: context,
+                actionOneTextColor: blackFont,
+                actionTwoBgColor: navyBlue,
+                actionTwoTextColor: Colors.white,
+                actionOneBgColor: greyBorderColor,
+                title: AppLocalization.of(context)!.post,
+                actionTwoText: AppLocalization.of(context)!.post,
+                actionOneText: AppLocalization.of(context)!.notNow,
+                description: 'Are you sure you want to post\nyour moment now?',
+                roundedBackgroundIcon: RoundedBackgroundIcon(
+                  enableMargin: false,
+                  width: 90,
+                  height: 90,
+                  image: Image.asset(
+                    'assets/images/accept_dialog_icon.png',
+                    color: navyBlue,
+                  ),
+                ),
+                rightButtonOnPressed: () {
+                  postMoment();
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
   Widget mediaRenderer() {
     if (fileType == "image") {
       return ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
+        borderRadius: BorderRadius.circular(10),
         child: Image.file(
           File(widget.filePath),
-          fit: BoxFit.cover,
+          height: 250,
+          width: 60,
+          fit: BoxFit.fitHeight,
           cacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
         ),
       );
@@ -880,7 +1053,11 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       }
       return ClipRRect(
         borderRadius: BorderRadius.circular(20),
-        child: VideoPlayer(videoPlayerController!),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(100, 10, 100, 10),
+          child:
+              SizedBox(height: 250, child: VideoPlayer(videoPlayerController!)),
+        ),
       );
     }
 
@@ -965,7 +1142,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                 : payMeCtrl.text
             : null,
         payMeButtonColor:
-            enablePayMe ? '${pickedColor.value.toRadixString(16)}' : null,
+            enablePayMe ? pickedColor.value.toRadixString(16) : null,
         attachmentMap: getAttachmentMap(),
       ),
     )
@@ -1026,8 +1203,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       switch (pickedAttachmentOption) {
         case 'Blog':
           var attachmentItemModelResult = await NavigationUtil.push(context,
-              screen:
-                  PickAttachmentScreen(attachmentType: AttachmentType.Blog));
+              screen: const PickAttachmentScreen(
+                  attachmentType: AttachmentType.Blog));
           if (attachmentItemModelResult != null) {
             if (mounted) {
               setState(() {
@@ -1039,8 +1216,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           break;
         case 'Product':
           var attachmentItemModelResult = await NavigationUtil.push(context,
-              screen:
-                  PickAttachmentScreen(attachmentType: AttachmentType.Product));
+              screen: const PickAttachmentScreen(
+                  attachmentType: AttachmentType.Product));
           if (attachmentItemModelResult != null) {
             if (mounted) {
               setState(() {
@@ -1053,8 +1230,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           break;
         case 'Service':
           var attachmentItemModelResult = await NavigationUtil.push(context,
-              screen:
-                  PickAttachmentScreen(attachmentType: AttachmentType.Service));
+              screen: const PickAttachmentScreen(
+                  attachmentType: AttachmentType.Service));
           if (attachmentItemModelResult != null) {
             if (mounted) {
               setState(() {
@@ -1080,7 +1257,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         await showDialog<AttachmentItemModel>(
       context: context,
       builder: (context) => AlertDialog(
-        insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         contentPadding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         content: Container(

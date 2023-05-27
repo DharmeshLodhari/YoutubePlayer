@@ -11,7 +11,6 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
@@ -178,7 +177,7 @@ class _DashboardState extends State<Dashboard> {
 
       if (receivedNotification.buttonKeyPressed == "reject_nudge") {
         Map<String, dynamic> data = {
-          "check_id": Uuid().v4(),
+          "check_id": const Uuid().v4(),
           "conversation_id": payload!['conversation_id'],
           "author": payload['recipient'],
           "recipient": payload['author'],
@@ -365,7 +364,7 @@ class _DashboardState extends State<Dashboard> {
     return badges.Badge(
       badgeContent: getBadgeContent(),
       position: badges.BadgePosition.topEnd(end: 6, top: 6),
-      badgeAnimation: badges.BadgeAnimation.rotation(
+      badgeAnimation: const badges.BadgeAnimation.rotation(
         animationDuration: Duration(seconds: 1),
         colorChangeAnimationDuration: Duration(seconds: 1),
         loopAnimation: false,
@@ -376,12 +375,12 @@ class _DashboardState extends State<Dashboard> {
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
         padding: basketBloc.items.length == 0
-            ? EdgeInsets.all(0)
-            : EdgeInsets.all(4),
+            ? const EdgeInsets.all(0)
+            : const EdgeInsets.all(4),
         elevation: 0,
       ),
       // ignore: required onPressed
-      child: Center(
+      child: const Center(
         child: Icon(
           Icons.shopping_cart,
           color: Colors.white,
@@ -396,7 +395,7 @@ class _DashboardState extends State<Dashboard> {
     }
     return Text(
       getBadgeCount().toString(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
@@ -455,17 +454,17 @@ class _DashboardState extends State<Dashboard> {
         key: myGlobals.scaffoldKey,
         backgroundColor: whiteBackground,
         body: PageView(
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           controller: _dashboardBloc.pageController,
           onPageChanged: (index) {
             _dashboardBloc.index = index;
             FocusScope.of(context).unfocus();
           },
           children: <Widget>[
-            KeepAlivePage(child: Home(), wantKeepAlive: false),
-            KeepAlivePage(child: YarnDashboard(), wantKeepAlive: true),
-            KeepAlivePage(child: SuperStore(), wantKeepAlive: true),
-            KeepAlivePage(child: MomentsScreen(), wantKeepAlive: true),
+            KeepAlivePage(wantKeepAlive: false, child: Home()),
+            KeepAlivePage(wantKeepAlive: true, child: YarnDashboard()),
+            KeepAlivePage(wantKeepAlive: true, child: const SuperStore()),
+            KeepAlivePage(wantKeepAlive: true, child: const MomentsScreen()),
             KeepAlivePage(child: ConnectionDashboard()),
           ],
         ),
@@ -632,7 +631,7 @@ class _DashboardState extends State<Dashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
 
@@ -644,13 +643,13 @@ class _DashboardState extends State<Dashboard> {
                 size: 16,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700),

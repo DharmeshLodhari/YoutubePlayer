@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
@@ -7,28 +10,29 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/ask_reply_view.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_actions.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:like_button/like_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
-import '../../shopping/models/store.dart';
-import '../../user_post/models/user_post.dart';
-import '../../user_profile/models/user.dart';
-import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../models/Topics/CommentDetails.dart';
-import '../widgets/url_reader_of_yarn.dart';
-import '../widgets/yarn_comment_media_renderer.dart';
-import '../widgets/yarn_options.dart';
-import '../yarn_comment_detail_screen.dart';
+import '../../more_apps/shopping/models/store.dart';
+import '../../more_apps/user_post/models/user_post.dart';
+import '../../more_apps/user_profile/models/user.dart';
+import '../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../../more_apps/yarn/models/Topics/CommentDetails.dart';
+import '../../more_apps/yarn/widgets/url_reader_of_yarn.dart';
+import '../../more_apps/yarn/widgets/yarn_comment_media_renderer.dart';
+import '../../more_apps/yarn/widgets/yarn_options.dart';
+import '../../more_apps/yarn/yarn_auth.dart';
+import '../screens/moment_detail/moment_comment.screen.dart';
 
-class YarnCommentTile extends StatefulWidget {
-  final Yarn yarn;
+class MomentCommentTile extends StatefulWidget {
   final YarnComment yarnComment;
   final YarnComment? yarnCommentReply;
   List<YarnComment>? commentDetailsList = [];
@@ -36,13 +40,16 @@ class YarnCommentTile extends StatefulWidget {
   final bool? isCommentDetail;
   final Function(YarnComment)? onDeleteComment;
   final Function(Yarn)? onUpdate;
-  bool? minusComment;
+  final Function(YarnComment, bool)? onCommentUpdate;
+  Function(bool)? minusComment;
   String? pinnedCommentId;
+  String? momentUsername;
+  String? momentId;
   String? commentType;
-  String? commentAuthor;
+  MomentsModel? moment;
 
-  YarnCommentTile({
-    required this.yarn,
+  MomentCommentTile({
+    Key? key,
     required this.yarnComment,
     this.yarnCommentReply,
     this.commentDetailsList,
@@ -50,17 +57,20 @@ class YarnCommentTile extends StatefulWidget {
     this.isCommentDetail = false,
     this.onDeleteComment,
     this.onUpdate,
+    this.onCommentUpdate,
     this.minusComment,
     this.pinnedCommentId,
+    this.momentUsername,
+    this.momentId,
     this.commentType,
-    this.commentAuthor,
-  });
+    this.moment,
+  }) : super(key: key);
 
   @override
-  State<YarnCommentTile> createState() => _YarnCommentTileState();
+  State<MomentCommentTile> createState() => _MomentCommentTileState();
 }
 
-class _YarnCommentTileState extends State<YarnCommentTile> {
+class _MomentCommentTileState extends State<MomentCommentTile> {
   bool isUrlPresent = false;
   String? linkToBePreview;
   bool isMediaPresent = false;
@@ -77,17 +87,9 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
 
         linkToBePreview = linkData['links'][0];
         if (!linkToBePreview!.contains("http")) {
-          linkToBePreview = "http://" + linkToBePreview!;
+          linkToBePreview = "http://${linkToBePreview!}";
         }
       }
-    }
-
-    if (widget.yarnComment.media.isNotEmpty) {
-      isMediaPresent = true;
-    }
-
-    if (widget.yarnComment.attachment != null) {
-      isAttachmentPresent = true;
     }
 
     if (widget.yarnComment.media.isNotEmpty) {
@@ -103,40 +105,20 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        if (!(widget.isCommentDetail ?? false)) {
-          NavigationUtil.push(
-            context,
-            screen: YarnCommentDetailScreen(
-              yarn: widget.yarn,
-              yarnComment: widget.yarnComment,
-            ),
-          );
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.only(top: 12),
-        child: Column(
-          children: [
-            _buildUserInfoRow(context: context),
-            const SizedBox(
-              height: 15,
-            ),
-            IntrinsicHeight(
+
+    return Container(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        children: [
+          _buildUserInfoRow(context: context),
+          const SizedBox(
+            height: 5,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 34.0),
+            child: IntrinsicHeight(
               child: Row(
                 children: [
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  Container(
-                    width: 1,
-                    color: greySecondaryYarn,
-                    height: double.infinity,
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +126,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                         if (widget.yarnComment.comment != null) ...[
                           _buildCommentDescription(),
                           const SizedBox(
-                            height: 8,
+                            height: 2,
                           ),
                         ],
                         if (isMediaPresent) ...[
@@ -160,19 +142,15 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                             height: 8,
                           ),
                         ],
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        _buildTopActions(context: context),
+                        bottomSheetCommentIcons(),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            _buildReplyCommentView(context: context),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -294,13 +272,6 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                   const SizedBox(
                     width: 4,
                   ),
-                  Text(
-                    "@${widget.yarnComment.authorUsername!}",
-                    style: TextStyle(fontSize: 12, color: yarnBlack),
-                  ),
-                  const SizedBox(
-                    width: 4,
-                  ),
                   ClipOval(
                     child: Container(
                       height: 4,
@@ -312,7 +283,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                     width: 4,
                   ),
                   Text(
-                    '${getGetYarnQuestionDateTime(widget.yarnComment.createdAt!)}',
+                    getGetYarnQuestionDateTime(widget.yarnComment.createdAt!),
                     overflow: TextOverflow.fade,
                     style: TextStyle(
                         fontSize: 12,
@@ -322,10 +293,6 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                 ],
               ),
             ),
-            const SizedBox(
-              height: 3,
-            ),
-            _buildRepliedText(),
           ],
         )),
         InkWell(
@@ -343,11 +310,24 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                   color: Colors.white,
                   margin: EdgeInsets.zero,
                   child: YarnOptions(
-                    yarnTopic: widget.yarn,
+                    moment: widget.moment,
                     commentDetail: widget.yarnComment,
                     isComment: true,
+                    momentUsername: widget.momentUsername,
                     onDeleteComment: (YarnComment yarnComment) {
                       widget.onDeleteComment!(yarnComment);
+                      if (widget.onCommentUpdate != null) {
+                        widget.onCommentUpdate!(yarnComment, true);
+                      }
+
+                      if (mounted) setState(() {});
+                    },
+                    onUpdateMomentComment: (YarnComment yarnComment, bool val) {
+                      widget.onCommentUpdate!(yarnComment, val);
+                      if (widget.onCommentUpdate != null) {
+                        widget.onCommentUpdate!(yarnComment, val);
+                      }
+                      if (mounted) setState(() {});
                     },
                     onUpdate: (Yarn yarn) {
                       widget.onUpdate!(yarn);
@@ -358,68 +338,9 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
             );
           },
           child: const Icon(
-            Icons.more_horiz_rounded,
+            Icons.more_vert_rounded,
             color: Color(0xFF4B545A),
           ),
-        ),
-      ],
-    );
-  }
-
-  String? getReplyingUsername() {
-    String? username;
-
-    // if(widget.commentType == 'commentComment'){
-    //   if (widget.yarnCommentReply != null ) {
-    //     debugPrint('Comment reply author 000:::: ${widget.yarnCommentReply!.authorUsername}');
-    //     // username = widget.yarn.author;
-    //     username = widget.yarnCommentReply!.authorUsername;
-    //     // username = widget.commentAuthor;
-    //     // username = 'fola';
-    //   }
-    //   else {
-    //     debugPrint('Comment reply author 001:::: ${widget.commentAuthor}');
-    //     // username = widget.commentAuthor;
-    //   }
-    //   return "@$username";
-    // }
-
-    if (widget.yarnCommentReply != null) {
-      // debugPrint('Comment reply author 002:::: ${widget.yarnCommentReply!.authorUsername}');
-      debugPrint('Comment reply 002::::');
-      // username = widget.yarnCommentReply!.authorUsername;
-      // username = widget.yarnAuthor;
-      username = widget.yarn.author;
-    }
-    else {
-      if(widget.commentType == 'commentComment'){
-        debugPrint('Comment reply 003::::');
-        username = widget.commentAuthor;
-        // username = widget.yarn.author;
-      }else{
-        debugPrint('Comment reply 004::::');
-        username = widget.yarn.author;
-      }
-      // debugPrint('Comment reply author 003:::: ${widget.yarn.author}');
-      // username = widget.yarn.author;
-    }
-    return "@$username";
-  }
-
-  Widget _buildRepliedText() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          "Replying to ",
-          style: TextStyle(fontSize: 12, color: yarnBlack),
-        ),
-        Expanded(
-          child: userNameWithVerifiedIcon(
-              name: getReplyingUsername()!,
-              isVerified: false,
-              textStyle: TextStyle(
-                  fontSize: 13, fontWeight: FontWeight.w500, color: navyBlue)),
         ),
       ],
     );
@@ -437,10 +358,10 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(
-            height: 5,
+            height: 2.5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(removedLink)!,
+            text: messageDecoderWithEmoji(removedLink)! ?? '',
             style: TextStyle(
                 color: blackFont, fontSize: 12, fontFamily: "OpenSans"),
             // atStyle: TextStyle(
@@ -475,14 +396,14 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
               key: ValueKey("${linkToBePreview}233"),
               url: linkToBePreview!,
               builder: (info) {
-                if (info == null)
+                if (info == null) {
                   return InkWell(
                     onTap: () {
                       launchUrl(Uri.parse(linkToBePreview!));
                     },
                     child: Container(
-                      margin:
-                          const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 10.0, bottom: 10.0),
                       child: Text(
                         linkToBePreview!,
                         maxLines: 1,
@@ -491,6 +412,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                       ),
                     ),
                   );
+                }
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
                     imageUrl: info.image!,
@@ -500,11 +422,12 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                 }
 
                 final WebInfo webInfo = info as WebInfo;
-                if (!WebAnalyzer.isNotEmpty(webInfo.title))
+                if (!WebAnalyzer.isNotEmpty(webInfo.title)) {
                   return const SizedBox(
                     height: 0,
                     width: 0,
                   );
+                }
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -526,7 +449,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(removedLink)!,
+      text: messageDecoderWithEmoji(removedLink)! ?? '',
       style: TextStyle(color: blackFont, fontSize: 12, fontFamily: "OpenSans"),
       // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,
@@ -545,43 +468,151 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
     );
   }
 
-  //like, comment, dislike, share, pay
-  Widget _buildTopActions({required BuildContext context}) {
-    return YarnCommentActions(
-      comment: widget.yarnComment,
-      yarn: widget.yarn,
-      isCommentDetail: widget.isCommentDetail ?? false,
-      minusComment: widget.minusComment,
-      commentType: widget.commentType,
-    );
+  Future<bool> addLikeToComment() async {
+    Map<String, dynamic>? data =
+        await YarnAuth().addLikeComment(widget.yarnComment.id!);
+    setState(() {
+      widget.yarnComment.userLike = !widget.yarnComment.userLike!;
+      widget.yarnComment.userDisLike = false;
+    });
+    if (data != null) {
+      setState(() {
+        widget.yarnComment.likes = data['likes'];
+        widget.yarnComment.dislike = data['dislikes'];
+      });
+      return true;
+    }
+    return false;
   }
 
-  Widget _buildReplyCommentView({required BuildContext context}) {
-    if (widget.openReply! &&
-        widget.commentDetailsList!.isNotEmpty &&
-        widget.commentDetailsList != null) {
-      return Column(
-        children: widget.commentDetailsList!.map((replyCommentDetail) {
-          return InkWell(
-            onTap: () {
-              NavigationUtil.push(
-                context,
-                screen: YarnCommentDetailScreen(
-                  yarn: widget.yarn,
-                  yarnComment: replyCommentDetail,
+  Future<bool> addDisLikeToComment() async {
+    Map<String, dynamic>? data =
+        await YarnAuth().addDisLikeComment(widget.yarnComment.id!);
+    setState(() {
+      widget.yarnComment.userDisLike = !widget.yarnComment.userDisLike!;
+      widget.yarnComment.userLike = false;
+    });
+    if (data != null) {
+      setState(() {
+        widget.yarnComment.likes = data['likes'];
+        widget.yarnComment.dislike = data['dislikes'];
+      });
+      return true;
+    }
+    return false;
+  }
+
+  Widget bottomSheetCommentIcons() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              LikeButton(
+                size: 15,
+                circleColor: CircleColor(start: red, end: red),
+                bubblesColor: BubblesColor(
+                  dotPrimaryColor: red,
+                  dotSecondaryColor: red,
                 ),
+                onTap: (isLike) {
+                  return addLikeToComment();
+                },
+                likeBuilder: (bool isLiked) {
+                  return SvgPicture.asset(
+                    widget.yarnComment.userLike!
+                        ? "yarn/likeAfter".toSVG()
+                        : "yarn/likeBefore".toSVG(),
+                    color:
+                        widget.yarnComment.userLike == true ? red : blackFont,
+                    height: 15,
+                    width: 15,
+                  );
+                },
+                likeCount: widget.yarnComment.likes,
+                countBuilder: (_, __, ___) {
+                  int count = widget.yarnComment.likes!;
+                  return Text(
+                    count == 0 ? '' : count.toString(),
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        color: darkGreyYarn),
+                  );
+                },
+              ),
+            ],
+          ),
+          const SizedBox(
+            width: 25,
+          ),
+          LikeButton(
+            size: 15,
+            circleColor: CircleColor(start: starYellow, end: starYellow),
+            bubblesColor: BubblesColor(
+              dotPrimaryColor: starYellow,
+              dotSecondaryColor: starYellow,
+            ),
+            onTap: (isLike) {
+              return addDisLikeToComment();
+            },
+            likeBuilder: (bool isLiked) {
+              return SvgPicture.asset(
+                widget.yarnComment.userDisLike!
+                    ? "yarn/unlikeAfter".toSVG()
+                    : "yarn/unlikeBefore".toSVG(),
+                color: widget.yarnComment.userDisLike! ? starYellow : blackFont,
+                height: 15,
+                width: 15,
               );
             },
-            child: AskReplyView(
-              yarnTopic: widget.yarn,
-              commentDetail: widget.yarnComment,
-              replyCommentDetail: replyCommentDetail,
+            likeCount: widget.yarnComment.dislike,
+            countBuilder: (_, __, ___) {
+              int count = widget.yarnComment.dislike!;
+              return Text(
+                count == 0 ? '' : count.toString(),
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: blackFont),
+              );
+            },
+          ),
+          const SizedBox(
+            width: 25,
+          ),
+          if (widget.isCommentDetail == true) ...[
+            GestureDetector(
+              onTap: () => NavigationUtil.push(
+                context,
+                screen: MomentCommentScreen(
+                  yarnComment: widget.yarnComment,
+                  momentId: widget.momentId,
+                  minusComment: widget.minusComment,
+                ),
+              ),
+              child: Row(
+                children: [
+                  SvgPicture.asset("yarn/yarn_comment".toSVG()),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  // ignore: unrelated_type_equality_checks
+                  widget.yarnComment.replyCount == '0' ||
+                          // ignore: unrelated_type_equality_checks
+                          widget.yarnComment.replyCount == '0'
+                      ? const SizedBox.shrink()
+                      : Text(
+                          '${widget.yarnComment.replyCount ?? widget.yarnComment.replyCount}'),
+                ],
+              ),
             ),
-          );
-        }).toList(),
-      );
-    }
-    return const SizedBox();
+          ]
+        ],
+      ),
+    );
   }
 
   bool isComments(BuildContext context) {
@@ -590,7 +621,8 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
 
     DateTime currentTime = DateTime.now();
     if (getLoggedInUserName(context) == widget.yarnComment.authorUsername) {
-      if (currentTime.difference(messageCreatedTime) < const Duration(minutes: 3)) {
+      if (currentTime.difference(messageCreatedTime) <
+          const Duration(minutes: 3)) {
         return true;
       } else {
         return false;
@@ -601,6 +633,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
   }
 
   Widget _buildPinned({required BuildContext context}) {
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

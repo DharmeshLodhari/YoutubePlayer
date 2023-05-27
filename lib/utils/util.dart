@@ -215,8 +215,8 @@ getLoggedInUserName(BuildContext context) {
 Widget getCircularUserAvatar(
   String imgUrl, {
   Color borderColor = Colors.black,
-  double width = 30,
-  double height = 30,
+  double width = 27,
+  double height = 27,
 }) {
   return Container(
     width: width,
@@ -371,7 +371,7 @@ BoxDecoration decorateBox(
     borderRadius: BorderRadius.all(
       Radius.circular(borderRadius),
     ),
-    border: new Border.all(
+    border: Border.all(
         color: borderColor != null ? borderColor : lightGrey,
         width: 1.0,
         style: BorderStyle.solid),
@@ -601,10 +601,10 @@ Widget getChatSettingTitle() {
 }
 
 Widget buildLoadingIndicator({required bool isLoading}) {
-  return new Padding(
+  return Padding(
     padding: const EdgeInsets.all(8.0),
-    child: new Center(
-      child: new Opacity(
+    child: Center(
+      child: Opacity(
         opacity: isLoading ? 1.0 : 00,
         child: CircularLoadingIndicator(),
       ),
@@ -746,7 +746,7 @@ String formatDurationInSeconds({Duration? duration}) {
 }
 
 String dateToString(DateTime date) {
-  var formatter = new DateFormat('yyyy-MM-dd');
+  var formatter = DateFormat('yyyy-MM-dd');
   var formatted = formatter.format(date);
   return formatted;
 }
@@ -927,7 +927,7 @@ String? validateSlydoName(String userInput) {
 }
 
 Widget userNameWithVerifiedIcon({
-  required String name,
+  String? name,
   required bool? isVerified,
   int lengthToTruncateAt = 25,
   double verifiedIconSize = 18,
@@ -1276,7 +1276,7 @@ String? toTimeAgoLabel({required DateTime dateTime}) {
   //check for days
   if (inDays >= 1) {
     // return inDays.toString();
-    String convertedDate = new DateFormat("dd/MM/yyyy").format(dateTime);
+    String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
     return convertedDate;
   }
 
@@ -1333,7 +1333,7 @@ String toTimeAgoLabelYarn({required DateTime dateTime}) {
   final inDays = durationSinceNow.inDays;
   if (inDays >= 1) {
     // return inDays.toString();
-    String convertedDate = new DateFormat("dd/MM/yyyy").format(dateTime);
+    String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
     return convertedDate;
   }
 

@@ -864,6 +864,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
+    log('message......mesaaager  ooooo. ${response.statusCode}');
     if (response.statusCode == 200) {
       return true;
     }
