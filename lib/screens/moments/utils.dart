@@ -15,9 +15,9 @@ class MomentsUtils {
             "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return CircleAvatar(
         backgroundColor: navyBlue,
-        radius: 15,
+        radius: 12,
         child: Text(
-          getInitials(fullName).toUpperCase(),
+          getInitials(fullName??"").toUpperCase(),
           style: TextStyle(color: white, fontWeight: FontWeight.w600),
         ),
       );

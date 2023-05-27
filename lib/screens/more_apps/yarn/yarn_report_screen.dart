@@ -12,7 +12,12 @@ import 'yarn_dashboard_bloc.dart';
 class AddReportScreen extends StatefulWidget {
   Map<String, dynamic>? object;
   String? type;
-  AddReportScreen({this.object, this.type});
+  bool? isCommentMoment;
+  AddReportScreen({
+    this.object,
+    this.type,
+    this.isCommentMoment,
+  });
 
   @override
   State<AddReportScreen> createState() => _AddReportScreenState();
@@ -196,7 +201,11 @@ class _AddReportScreenState extends State<AddReportScreen> {
               if (selectedViolationType == null) {
                 showToast(message: "Selected reason to proceed");
               } else {
-                addReport();
+                if (widget.isCommentMoment == false) {
+                  addReport();
+                } else {
+                  reportCommentInMoment();
+                }
               }
             },
           ),
@@ -299,6 +308,34 @@ class _AddReportScreenState extends State<AddReportScreen> {
     );
   }
 
+  Future<void> reportCommentInMoment() async {
+    Map<String, dynamic> data = {
+      "object": widget.object,
+      "type": widget.type,
+      "violation_type": selectedViolationType!.id,
+      "reported_by": userBloc.user.userName,
+      "report": messageDecoderWithEmoji(textController.text)
+    };
+    await YarnAuth()
+        .reportCommentMoment(
+      widget.object!['id'],
+      data,
+    )
+        .then((value) {
+      if (value != null) {
+        if (value == true) {
+          Navigator.pop(context);
+          showToast(message: "Reported Successfully");
+        }
+      } else {
+        showToast(message: 'Server error, report failed');
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+  }
+
   Future<void> addReport() async {
     Map<String, dynamic> data = {
       "object": widget.object,
@@ -307,7 +344,12 @@ class _AddReportScreenState extends State<AddReportScreen> {
       "reported_by": userBloc.user.userName,
       "report": messageDecoderWithEmoji(textController.text)
     };
-    await YarnAuth().addReport(widget.object!['id'], data).then((value) {
+    await YarnAuth()
+        .addReport(
+      widget.object!['id'],
+      data,
+    )
+        .then((value) {
       if (value != null) {
         if (value == true) {
           Navigator.pop(context);

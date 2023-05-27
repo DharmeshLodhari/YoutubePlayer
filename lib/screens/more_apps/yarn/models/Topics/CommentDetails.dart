@@ -101,7 +101,7 @@ class YarnComment {
     final map = <String, dynamic>{};
     map['id'] = id;
     map['author_avatar'] = authorAvatar;
-    map['comment'] = messageDecoderWithEmoji(comment);
+    map['comment'] = messageDecoderWithEmoji(comment) ?? '';
     map['author_username'] = authorUsername;
     map['author_name'] = authorName;
     map['is_reply'] = isReply;

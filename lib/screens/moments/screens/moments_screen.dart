@@ -3,12 +3,13 @@ import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,6 @@ import '../../../services/app_config_bloc.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../more_apps/user_profile/models/user.dart';
-import '../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'moment_search_screen.dart';
 
 class MomentsScreen extends StatefulWidget {
@@ -264,6 +264,16 @@ class _MomentsScreenState extends State<MomentsScreen> {
         ),
       ),
       actions: [
+        IconButton(
+          icon: Icon(
+            SlydoAppIcon.search,
+            color: darkGrey,
+            size: 14,
+          ),
+          onPressed: () {
+            NavigationUtil.push(context, screen: MomentSearchScreen());
+          },
+        ),
         addMomentsBtn(),
         SizedBox(width: 10),
         myMomentsBtn(),
@@ -326,25 +336,25 @@ class _MomentsScreenState extends State<MomentsScreen> {
         child: ListView(
           controller: _exploreScrollController,
           children: [
-            InkWell(
-              onTap: () {
-                NavigationUtil.push(context, screen: MomentSearchScreen());
-              },
-              child: IgnorePointer(
-                child: CustomizedTextFormField(
-                  hintText: 'Search moment',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      SlydoAppIcon.search,
-                      color: darkGrey,
-                      size: 14,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
+            // InkWell(
+            //   onTap: () {
+            //     NavigationUtil.push(context, screen: MomentSearchScreen());
+            //   },
+            //   child: IgnorePointer(
+            //     child: CustomizedTextFormField(
+            //       hintText: 'Search moment',
+            //       suffixIcon: IconButton(
+            //         icon: Icon(
+            //           SlydoAppIcon.search,
+            //           color: darkGrey,
+            //           size: 14,
+            //         ),
+            //         onPressed: () {},
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // SizedBox(height: 16),
             contactMomentsListWidget(),
             SizedBox(height: 16),
             adverts(),
@@ -685,7 +695,7 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
               Align(
                 alignment: Alignment.topLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 4.0),
+                  padding: const EdgeInsets.only(left: 2.0, top: 5.0),
                   child: MomentsUtils().getUserProfilePic(
                       widget.userMomentModel.avatar!,
                       widget.userMomentModel.ownerName!),
@@ -754,10 +764,7 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                       alignment: Alignment.topRight,
                       child: Padding(
                         padding: const EdgeInsets.only(right: 4.0),
-                        child: Icon(
-                          Icons.play_circle_filled_outlined,
-                          color: Colors.white,
-                        ),
+                        child: SvgPicture.asset("yarn/cam_vec".toSVG()),
                       ),
                     )
                   : SizedBox.shrink(),
@@ -817,7 +824,7 @@ class ExploreMomentsCard extends StatelessWidget {
                 ? Align(
                     alignment: Alignment.topLeft,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 4.0),
+                      padding: const EdgeInsets.only(left: 8.0, top: 10),
                       child: MomentsUtils().getUserProfilePic(
                           exploreMomentsModelList[index].avatar!,
                           exploreMomentsModelList[index].ownerName!),
@@ -833,7 +840,7 @@ class ExploreMomentsCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     userNameWithVerifiedIcon(
-                      name: exploreMomentsModelList[index].ownerName!,
+                      name: exploreMomentsModelList[index].ownerName ?? '',
                       isVerified: false,
                       textStyle: TextStyle(
                         fontSize: 12,
@@ -874,11 +881,8 @@ class ExploreMomentsCard extends StatelessWidget {
                 ? Align(
                     alignment: Alignment.topRight,
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Icon(
-                        Icons.play_circle_filled_outlined,
-                        color: Colors.white,
-                      ),
+                      padding: const EdgeInsets.only(right: 8.0, top: 12.0),
+                      child: SvgPicture.asset("yarn/cam_vec".toSVG()),
                     ),
                   )
                 : SizedBox.shrink(),

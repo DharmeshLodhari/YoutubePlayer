@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/single_moment_detail.dart';
 import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';

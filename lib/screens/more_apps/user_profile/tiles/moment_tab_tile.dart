@@ -215,7 +215,8 @@ class _MomentsTabState extends State<MomentsTab> {
                               owner: e.owner,
                               avatar: e.avatar,
                               moments: [myMomentsList[index]],
-                              ownerName: e.ownerName),
+                              // ownerName: e.ownerName,
+                              ),
                         )
                         .toList(),
                   );

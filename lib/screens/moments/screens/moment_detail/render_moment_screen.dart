@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_video_player.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
@@ -10,11 +12,14 @@ class RenderMoment extends StatefulWidget {
   final MomentsModel momentsModel;
   final List<CachedVideoPlayerController> videoPlayerControllers;
   final List<PhotoViewController> photoViewController;
+  
+  final void Function() onRightSwipe;
 
   const RenderMoment(
       {Key? key,
       required this.momentsModel,
       required this.videoPlayerControllers,
+      required this.onRightSwipe,
       required this.photoViewController})
       : super(key: key);
 
@@ -29,6 +34,38 @@ class RenderMomentState extends State<RenderMoment> {
   GlobalKey<MomentVideoPlayerState> _momentVideoPlayerKey =
       GlobalKey<MomentVideoPlayerState>();
   PhotoViewController photoViewController = PhotoViewController();
+
+  // Timer? _timer;
+  // int _start = 10;
+
+  // void startTimer() {
+  //   const oneSec = const Duration(seconds: 1);
+  //   _timer = new Timer.periodic(
+  //     oneSec,
+  //     (Timer timer) {
+  //       if(widget.momentsModel.mediaType=='video'){
+  //         // widget.momentsModel.media
+  //       }
+  //       if (_start == 0) {
+  //         setState(() {
+  //           widget.onRightSwipe();
+  //           timer.cancel();
+  //         });
+  //       } else {
+  //         setState(() {
+  //           _start--;
+  //         });
+  //       }
+  //     },
+  //   );
+  // }
+
+  // @override
+  // void dispose() {
+  //   _timer?.cancel();
+  //   super.dispose();
+  // }
+
 
   @override
   void initState() {
@@ -48,6 +85,7 @@ class RenderMomentState extends State<RenderMoment> {
     debugPrint('GLAD IMAGE MEDIATYPE -> ${widget.momentsModel.id}');
     debugPrint('GLAD IMAGE -> ${widget.momentsModel.media!}');
     if (widget.momentsModel.gif != null) {
+
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.gif!,
         fit: BoxFit.fitWidth,
@@ -74,7 +112,7 @@ class RenderMomentState extends State<RenderMoment> {
       return MomentVideoPlayer(
           key: _momentVideoPlayerKey,
           momentsModel: widget.momentsModel,
-          videoPlayerControllers: widget.videoPlayerControllers);
+          videoPlayerControllers: widget.videoPlayerControllers,);
     } else {
       return Container(
         decoration: BoxDecoration(

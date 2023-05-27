@@ -1,17 +1,23 @@
+import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomMomentDetailButton extends StatelessWidget {
   final String text;
+  final String? svgImage;
   final bool iconEnabled;
-  final IconData iconData;
+  final bool? isSvgIcon;
+  final IconData? iconData;
   final Function()? onPressed;
 
-  const CustomMomentDetailButton(
+  CustomMomentDetailButton(
       {Key? key,
-      required this.iconData,
+      this.iconData,
       required this.iconEnabled,
       required this.text,
-      required this.onPressed})
+      required this.onPressed,
+      this.isSvgIcon = false,
+      this.svgImage})
       : super(key: key);
 
   @override
@@ -22,25 +28,46 @@ class CustomMomentDetailButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 2.0),
         child: Column(
           children: [
-            Container(
-              padding: EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white38,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(0.0, 0),
-                    color: Colors.black.withOpacity(0.6),
+            isSvgIcon == false
+                ? Container(
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0.0, 0),
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      ],
+                      // borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: Icon(
+                      iconData,
+                      size: 20,
+                      color: iconEnabled ? Colors.white : Colors.white38,
+                    ),
+                  )
+                : Container(
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0.0, 0),
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      ],
+                      // borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: SvgPicture.asset(
+                      '$svgImage'.toSVG(),
+                      color: iconEnabled ? Colors.white : Colors.white38,
+                      height: 20,
+                      width: 20,
+                    ),
                   ),
-                ],
-                // borderRadius: BorderRadius.circular(40),
-              ),
-              child: Icon(
-                iconData,
-                size: 20,
-                color: iconEnabled ? Colors.white : Colors.white38,
-              ),
-            ),
             const SizedBox(height: 4),
             Text(
               text,

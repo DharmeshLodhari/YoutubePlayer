@@ -1124,7 +1124,7 @@ class AppLocalization {
 
   String get previewMoment {
     return Intl.message(
-      "Preview Moment",
+      "Moment",
       name: "previewMoment",
     );
   }

@@ -31,20 +31,20 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
 
   @override
   void initState() {
-    debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!}');
+    debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!.length}');
     // videoPlayerManager = VideoPlayerManager();
     // videoPlayerManager.init(widget.momentsModel.media!);
     _controller = CachedVideoPlayerController.network(
       widget.momentsModel.media!,
-    )..initialize().then((value) {
-        _controller.play();
+    )..initialize().then((value) async {
+        await _controller.play();
         initialized = true;
-        _controller.setLooping(true);
         setState(() {});
       }).catchError((e) {
         Navigator.pop(context);
         showToast(message: 'Unable to display moment');
       });
+
     widget.videoPlayerControllers.add(_controller);
     super.initState();
   }

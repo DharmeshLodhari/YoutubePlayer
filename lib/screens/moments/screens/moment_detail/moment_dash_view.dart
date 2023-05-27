@@ -3,6 +3,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../../utils/colors.dart';
+
 class MomentDashView extends StatefulWidget {
   final int currentPageViewIndex;
   final int lengthOfMoment;
@@ -17,22 +19,34 @@ class MomentDashView extends StatefulWidget {
   _MomentDashViewState createState() => _MomentDashViewState();
 }
 
-class _MomentDashViewState extends State<MomentDashView> {
+class _MomentDashViewState extends State<MomentDashView>
+    with TickerProviderStateMixin {
+  late AnimationController controller;
   Timer? timer;
   double widthFactor = 0;
 
   @override
   void initState() {
-    super.initState();
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (widthFactor.toInt() >= 1) {
-        timer.cancel();
-      }
-      widthFactor += 0.1;
+    // timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    //   if (widthFactor.toInt() >= 1) {
+    //     timer.cancel();
+    //   }
+    //   widthFactor += 0.1;
 
-      if (mounted) setState(() {});
-      debugPrint('WIDTH FACTOR -> ${widthFactor.toInt()}');
-    });
+    //   if (mounted) setState(() {});
+    //   debugPrint('WIDTH FACTOR -> ${widthFactor.toInt()}');
+    // });
+    controller = AnimationController(
+      /// [AnimationController]s can be created with `vsync: this` because of
+      /// [TickerProviderStateMixin].
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..addListener(() {
+        setState(() {});
+      });
+
+    controller.repeat(reverse: false);
+    super.initState();
   }
 
   @override
@@ -46,13 +60,13 @@ class _MomentDashViewState extends State<MomentDashView> {
   }
 
   List<Widget> dashes(int lengthOfMoment, int currentIndex) {
-    debugPrint('DASHES ---> ');
+    // debugPrint('DASHES ---> ');
     List<Widget> widgets = [];
     for (int i = 0; i < lengthOfMoment; i++) {
       Widget widget = Expanded(
         child: Container(
           height: 4,
-          margin: EdgeInsets.symmetric(horizontal: 2),
+          margin: EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
@@ -60,11 +74,14 @@ class _MomentDashViewState extends State<MomentDashView> {
                 offset: Offset(0, 0),
               ),
             ],
-            color: currentIndex >= i
-                ? Colors.white
-                : Colors.white.withOpacity(0.5),
+            color: currentIndex >= i ? navyBlue : white,
             borderRadius: BorderRadius.circular(10),
           ),
+          // child: LinearProgressIndicator(
+          //   value: controller.value,
+          //   semanticsLabel: 'Linear progress indicator',
+          //   backgroundColor: white,
+          // ),
         ),
       );
 

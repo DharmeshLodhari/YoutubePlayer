@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:Slydo/main.dart';
 import 'package:Slydo/services/auth.dart';
@@ -27,7 +28,8 @@ class YarnAuth extends AuthService {
   }
 
   ProductCategory createProductCategories(String item) {
-    ProductCategory categories = ProductCategory(messageDecoderWithEmoji(item)!);
+    ProductCategory categories =
+        ProductCategory(messageDecoderWithEmoji(item)!);
     return categories;
   }
 
@@ -40,7 +42,7 @@ class YarnAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/social/ask/list-categories/";
+      url = "${AppConfig.baseUrl}/api/v1/social/ask/list-categories/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -87,7 +89,7 @@ class YarnAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/products/choices/";
+      url = "${AppConfig.baseUrl}/api/v1/products/choices/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -129,7 +131,7 @@ class YarnAuth extends AuthService {
   Future<Map<String, dynamic>?> getUsersCategories() async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/user-interest/";
+    url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -158,7 +160,7 @@ class YarnAuth extends AuthService {
   Future<UserYarnSettings?> getUserYarnSettings() async {
     debugPrint("CALLING YARN SETTINGS");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/user-interest/";
+    url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -186,7 +188,7 @@ class YarnAuth extends AuthService {
   Future<UserYarnSettings?> updateUserYarnSettings(Map body) async {
     debugPrint("CALLING YARN SETTINGS");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/user-interest/";
+    url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -214,7 +216,7 @@ class YarnAuth extends AuthService {
   Future<Map<String, dynamic>?> saveUsersCategories(String body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/user-interest/";
+    url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -244,8 +246,8 @@ class YarnAuth extends AuthService {
       String categoryId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl +
-        "/api/v1/social/ask/user-single-interest/$categoryId/";
+    url =
+        "${AppConfig.baseUrl}/api/v1/social/ask/user-single-interest/$categoryId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -275,8 +277,8 @@ class YarnAuth extends AuthService {
       String categoryId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl +
-        "/api/v1/social/ask/user-single-interest/$categoryId/";
+    url =
+        "${AppConfig.baseUrl}/api/v1/social/ask/user-single-interest/$categoryId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -317,18 +319,18 @@ class YarnAuth extends AuthService {
     if (next == "") {
       if (isType) {
         if (categoryId != null) {
-          url = AppConfig.baseUrl +
-              "/api/v1/social/ask/$latestTrending/?$type=$isType&category=$categoryId";
+          url =
+              "${AppConfig.baseUrl}/api/v1/social/ask/$latestTrending/?$type=$isType&category=$categoryId";
         } else {
           if (latestTrending != null) {
-            url = AppConfig.baseUrl + "/api/v1/social/ask/$latestTrending/";
+            url = "${AppConfig.baseUrl}/api/v1/social/ask/$latestTrending/";
           } else {
-            url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType";
+            url = "${AppConfig.baseUrl}/api/v1/social/ask/?$type=$isType";
           }
         }
       } else {
         url =
-            AppConfig.baseUrl + "/api/v1/social/ask/$type/?username=$userName";
+            "${AppConfig.baseUrl}/api/v1/social/ask/$type/?username=$userName";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -344,7 +346,6 @@ class YarnAuth extends AuthService {
 
       // debugPrint("GET DATA yarn list:- $jsonData");
       for (var item in jsonData["results"]) {
-
         Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
 
@@ -379,7 +380,7 @@ class YarnAuth extends AuthService {
     }
     if (next == "") {
       url =
-          AppConfig.baseUrl + "/api/v1/social/ask/user-yarn-visibility-options";
+          "${AppConfig.baseUrl}/api/v1/social/ask/user-yarn-visibility-options";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -420,8 +421,8 @@ class YarnAuth extends AuthService {
     debugPrint("REMOVING SAVED YARN ID");
     String url = "";
     if (savedYarnID != null) {
-      url = AppConfig.baseUrl +
-          "/api/v1/social/ask/user-saved-or-hidden-yarns/$savedYarnID/";
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/ask/user-saved-or-hidden-yarns/$savedYarnID/";
     }
 
     var headers = await getAuthHeaders();
@@ -441,7 +442,7 @@ class YarnAuth extends AuthService {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (yarnId != null) {
-      url = AppConfig.baseUrl + "/api/v1/social/ask/$yarnId";
+      url = "${AppConfig.baseUrl}/api/v1/social/ask/$yarnId";
     }
     debugPrint(url);
 
@@ -466,7 +467,7 @@ class YarnAuth extends AuthService {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (yarnId != null) {
-      url = AppConfig.baseUrl + "/api/v1/social/ask/$yarnId/";
+      url = "${AppConfig.baseUrl}/api/v1/social/ask/$yarnId/";
     }
     debugPrint(url);
 
@@ -490,12 +491,12 @@ class YarnAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl +
-          "/api/v1/social/ask/?question=$isQuestion&search=$searchText";
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/ask/?question=$isQuestion&search=$searchText";
 
       if (categoryId != null) {
-        url = AppConfig.baseUrl +
-            "/api/v1/social/ask/?question=$isQuestion&search=$searchText&categoryId=$categoryId";
+        url =
+            "${AppConfig.baseUrl}/api/v1/social/ask/?question=$isQuestion&search=$searchText&categoryId=$categoryId";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -529,10 +530,8 @@ class YarnAuth extends AuthService {
   //edit Yarn and Question
   Future editYarnAndQuestion(Yarn yarn) async {
     var headers = await getAuthHeaders();
-    var url = AppConfig.baseUrl +
-        "/api/v1/social/ask/" +
-        yarn.id.toString() +
-        "/edit-yarn-or-question/";
+    var url =
+        "${AppConfig.baseUrl}/api/v1/social/ask/${yarn.id}/edit-yarn-or-question/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -716,7 +715,7 @@ class YarnAuth extends AuthService {
     debugPrint("CALLING REYARN");
 
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/reyarn/";
+    url = "${AppConfig.baseUrl}/api/v1/social/ask/reyarn/";
     debugPrint(url);
 
     var response = await _createYarn(reYarn, url);
@@ -750,7 +749,7 @@ class YarnAuth extends AuthService {
   Future<dynamic> addYarnAndQuestion(Yarn addYarnAndQuestion, String s) async {
     debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
     var headers = await getAuthHeaders();
-    var url = AppConfig.baseUrl + "/api/v1/social/ask/";
+    var url = "${AppConfig.baseUrl}/api/v1/social/ask/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -861,10 +860,8 @@ class YarnAuth extends AuthService {
   }
 
   Future<bool> deleteYarnMedia(String mediaId) async {
-    var url = AppConfig.baseUrl +
-        "/api/v1/social/ask/delete-yarn-media/" +
-        mediaId +
-        "/";
+    var url =
+        "${AppConfig.baseUrl}/api/v1/social/ask/delete-yarn-media/$mediaId/";
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
@@ -883,7 +880,7 @@ class YarnAuth extends AuthService {
     debugPrint("CALLING ALL CATEGORIES");
 
     String url =
-        AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$yarnId/";
+        "${AppConfig.baseUrl}/api/v1/social/ask/yarn-comments/$yarnId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -982,10 +979,10 @@ class YarnAuth extends AuthService {
     }
     if (next == "") {
       if (sortBy != null) {
-        url = AppConfig.baseUrl +
-            "/api/v1/social/ask/yarn-comments/$yarnId/?sort_by=$sortBy";
+        url =
+            "${AppConfig.baseUrl}/api/v1/social/ask/yarn-comments/$yarnId/?sort_by=$sortBy";
       } else {
-        url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$yarnId/";
+        url = "${AppConfig.baseUrl}/api/v1/social/ask/yarn-comments/$yarnId/";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -1043,7 +1040,7 @@ class YarnAuth extends AuthService {
   Future<Map<String, dynamic>?> toggleCommenting(
       String? yarnId, bool status) async {
     String url =
-        getSecureUrl(url: AppConfig.baseUrl + "/api/v1/social/ask/$yarnId/");
+        getSecureUrl(url: "${AppConfig.baseUrl}/api/v1/social/ask/$yarnId/");
     var headers = await getAuthHeaders();
     var response = await httpPatch(url,
         headers: headers, body: jsonEncode({"enable_commenting": status}));
@@ -1054,7 +1051,7 @@ class YarnAuth extends AuthService {
   Future<bool?> deleteComment(String commentId) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/comments/$commentId/";
+    url = "${AppConfig.baseUrl}/api/v1/social/comments/$commentId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1070,11 +1067,17 @@ class YarnAuth extends AuthService {
   }
 
   // Pin Single Comment
-  Future<bool?> pinComment(String yarnId, String commentId) async {
+  Future<bool?> pinComment(String yarnId, String commentId,
+      {bool? isComment}) async {
     debugPrint("CALLING POST TO PIN COMMENT");
     String url = "";
-    url = AppConfig.baseUrl +
-        "/api/v1/social/ask/pinned-comment/$yarnId/$commentId/";
+    if (isComment == false) {
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/ask/pinned-comment/$yarnId/$commentId/";
+    } else {
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/moments/pinned-comment/$yarnId/$commentId/";
+    }
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1096,7 +1099,7 @@ class YarnAuth extends AuthService {
   Future<Map<String, dynamic>?> getPinnedComment(String yarnId) async {
     debugPrint("CALLING PINNED COMMENT");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/pinned-comment/$yarnId/";
+    url = "${AppConfig.baseUrl}/api/v1/social/ask/pinned-comment/$yarnId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1116,11 +1119,18 @@ class YarnAuth extends AuthService {
   }
 
   // DELETE PINNED COMMENT
-  Future<bool?> deletePinnedComment(String yarnId, String commentId) async {
+  Future<bool?> deletePinnedComment(String yarnId, String commentId,
+      {bool? isComment}) async {
     debugPrint("CALLING DELETE PIN COMMENT");
     String url = "";
-    url = AppConfig.baseUrl +
-        "/api/v1/social/ask/pinned-comment/$yarnId/$commentId/";
+    if (isComment == false) {
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/ask/pinned-comment/$yarnId/$commentId/";
+    } else {
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/moments/pinned-comment/$yarnId/$commentId/";
+    }
+
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1143,8 +1153,8 @@ class YarnAuth extends AuthService {
       String commentId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl +
-        "/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
+    url =
+        "${AppConfig.baseUrl}/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1247,11 +1257,11 @@ class YarnAuth extends AuthService {
     }
     if (next == "") {
       if (sortBy != null) {
-        url = AppConfig.baseUrl +
-            "/api/v1/social/ask/reply-a-yarn-comment/$commentId/?sort_by=$sortBy";
+        url =
+            "${AppConfig.baseUrl}/api/v1/social/ask/reply-a-yarn-comment/$commentId/?sort_by=$sortBy";
       } else {
-        url = AppConfig.baseUrl +
-            "/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
+        url =
+            "${AppConfig.baseUrl}/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -1288,7 +1298,7 @@ class YarnAuth extends AuthService {
   Future<Map<String, dynamic>?> addLike(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/up-vote/$postId/";
+    url = "${AppConfig.baseUrl}/api/v1/social/ask/up-vote/$postId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1311,7 +1321,7 @@ class YarnAuth extends AuthService {
   Future<Map<String, dynamic>?> addDisLike(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/down-vote/$postId/";
+    url = "${AppConfig.baseUrl}/api/v1/social/ask/down-vote/$postId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1334,7 +1344,7 @@ class YarnAuth extends AuthService {
   Future<Map<String, dynamic>?> addLikeComment(String commentId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/comments/like/$commentId/";
+    url = "${AppConfig.baseUrl}/api/v1/social/comments/like/$commentId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1354,10 +1364,10 @@ class YarnAuth extends AuthService {
   }
 
   // ADD DISLIKE TO YARN
-  Future<Map<String, dynamic>?> addDisLikeComment(String postId) async {
+  Future<Map<String, dynamic>?> addDisLikeComment(String commentId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/comments/dislike/$postId/";
+    url = "${AppConfig.baseUrl}/api/v1/social/comments/dislike/$commentId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1376,12 +1386,44 @@ class YarnAuth extends AuthService {
     }
   }
 
+  // Add Report to Momnet coment
+  Future<bool?> reportCommentMoment(String postId, Map<String, dynamic> body) async {
+    debugPrint("CALLING ALL REPORT");
+    String url = "";
+    // if (isMomentComment = false) {
+    url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
+    // } else {
+    //   url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
+    // }
+    debugPrint('url$url');
+    debugPrint('report body::: ${body}');
+
+    var headers = await getAuthHeaders();
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+  
   // Add Report to YARN
   Future<bool?> addReport(String postId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL REPORT");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/report/$postId/";
-    debugPrint(url);
+    // if (isMomentComment = false) {
+    url = "${AppConfig.baseUrl}/api/v1/social/ask/report/$postId/";
+    // } else {
+    //   url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
+    // }
+    debugPrint('url$url');
     debugPrint('report body::: ${body}');
 
     var headers = await getAuthHeaders();
@@ -1409,8 +1451,8 @@ class YarnAuth extends AuthService {
 
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl +
-        "/api/v1/social/ask/user-yarn-visibility-options/$topicId/";
+    url =
+        "${AppConfig.baseUrl}/api/v1/social/ask/user-yarn-visibility-options/$topicId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -1431,8 +1473,7 @@ class YarnAuth extends AuthService {
 
   Future<Map<String, dynamic>?> searchUser(
       String? next, String? previous, String searchText) async {
-    String url =
-        AppConfig.baseUrl + "/api/v1/search/users/?search=" + searchText;
+    String url = "${AppConfig.baseUrl}/api/v1/search/users/?search=$searchText";
     if (next == null) {
       return null;
     }
@@ -1475,7 +1516,7 @@ class YarnAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/social/ask/notifications/";
+      url = "${AppConfig.baseUrl}/api/v1/social/ask/notifications/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -1513,7 +1554,7 @@ class YarnAuth extends AuthService {
   Future<bool?> deleteNotification(String? notificationId) async {
     debugPrint("CALLING DELETE NOTIFICATION");
     String url =
-        AppConfig.baseUrl + "/api/v1/social/ask/notifications/$notificationId/";
+        "${AppConfig.baseUrl}/api/v1/social/ask/notifications/$notificationId/";
 
     debugPrint(url);
 

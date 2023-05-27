@@ -520,8 +520,7 @@ class _UserLoginState extends State<UserLogin> {
       phoneNumber =
           "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
       password = passwordController!.text.trim();
-
-      await _auth.authenticate(phoneNumber, password).then((value) async {
+          await _auth.authenticate(phoneNumber, password).then((value) async {
         _user = value;
         if (_user.fullName != null) {
           //method call for storing user info into shared preference

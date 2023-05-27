@@ -1,4 +1,6 @@
 // This model is to show the moments on the moment's homepage.
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
 class UserMomentModel {
@@ -58,7 +60,7 @@ class ExploreMomentsModel {
     required this.owner,
     required this.avatar,
     required this.moments,
-    required this.ownerName,
+     this.ownerName,
   });
   factory ExploreMomentsModel.fromJson(Map<String, dynamic> json) {
     List moments = json['moments'];
@@ -285,3 +287,36 @@ class SearchMomentModel extends Equatable {
     return data;
   }
 }
+
+class MomentMedia {
+  File? mediaFile;
+  File? posterFile;
+  String? mediaType;
+  String? mediaPoster;
+  String? id;
+  String? mediaUrl;
+
+  MomentMedia({
+    this.mediaFile,
+    this.mediaType,
+    this.mediaPoster,
+    this.posterFile,
+  });
+
+  MomentMedia.fromJson(dynamic json) {
+    id = json['id'];
+    mediaUrl = json['file'] ?? json['mediaUrl'];
+    mediaType = json['type'] ?? json['mediaType'];
+    mediaPoster = json['image_poster'] ?? json['mediaPoster'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "mediaUrl": mediaUrl,
+      "mediaType": mediaType,
+      "mediaPoster": mediaPoster,
+    };
+  }
+}
+
