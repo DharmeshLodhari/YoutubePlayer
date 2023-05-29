@@ -1701,7 +1701,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       return false;
     }
 
-    if (chatConversation!.userName!.toLowerCase() == 'slydo') {
+    if (chatConversation!.userName.toString().toLowerCase() == 'slydo') {
       return true;
     }
 

@@ -1417,6 +1417,10 @@ class ShoppingAuthService extends AuthService {
         // debugPrint('MERCHANT LIST 000---> ${item}');
 
         CustomerProfile customerProfile = CustomerProfile.fromJson(item);
+
+        // debugPrint('MERCHANT LIST 000---> ${customerProfile.toJson()}');
+        // debugPrint('MERCHANT LIST 001---> ${item}');
+
         customerProfileList.add(customerProfile);
       }
 
@@ -1450,10 +1454,10 @@ class ShoppingAuthService extends AuthService {
           "/api/v1/user/merchant-list/?search=${filterOptions.searchedText}";
 
       if (filterOptions.state.isNotEmpty) {
-        url = url + "&categories=${filterOptions.state.join(',')}";
+        url = url + "&state=${filterOptions.state.join(',')}";
       }
       if (filterOptions.lga.isNotEmpty) {
-        url = url + "&categories=${filterOptions.lga.join(',')}";
+        url = url + "&city=${filterOptions.lga.join(',')}";
       }
       if (filterOptions.categories.isNotEmpty) {
         url = url + "&categories=${filterOptions.categories.join(',')}";
@@ -1470,13 +1474,16 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
-    debugPrint('SEARCH FILTER BODY ---> ${response.body}');
+    // debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
     if (response.statusCode == 200) {
       List<CustomerProfile> customerProfileList = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
         CustomerProfile customerProfile = CustomerProfile.fromJson(item);
+
+        debugPrint('SEARCH FILTER BODY ---> ${customerProfile.toJson()}');
+
         customerProfileList.add(customerProfile);
       }
 

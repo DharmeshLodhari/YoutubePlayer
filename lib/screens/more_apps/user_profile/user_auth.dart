@@ -685,7 +685,6 @@ class UserAuth extends AuthService {
   }
 
   ///Friends List
-
   Future<Map<String, dynamic>?> contacts(String? next, String? previous) async {
     var url = AppConfig.baseUrl + "/api/v1/user/contacts/";
     if (next == null) {
@@ -702,6 +701,9 @@ class UserAuth extends AuthService {
       var jsonData = json.decode(response.body) ?? {};
       debugPrint('USER CONTACTS :::: $jsonData');
 
+      for(var item in jsonData["results"]) {
+        debugPrint('USER CONTACTS 000 :::: ${item}');
+      }
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],

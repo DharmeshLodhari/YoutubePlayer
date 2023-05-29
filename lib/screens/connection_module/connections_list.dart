@@ -394,7 +394,7 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {
-    if (user.userName!.toLowerCase() == 'slydo') {
+    if (user.userName.toString().toLowerCase() == 'slydo') {
       return [];
     }
 
@@ -421,7 +421,7 @@ class _ConnectionListState extends State<ConnectionList> {
       ChatConversation chatConversation, int index) {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    if (chatConversation.userName!.toLowerCase() == 'slydo') {
+    if (chatConversation.userName.toString().toLowerCase() == 'slydo') {
       return [];
     }
 
@@ -599,7 +599,7 @@ class _ConnectionListState extends State<ConnectionList> {
   Widget _getSlidableWithLists(
       BuildContext context, ChatConversation user, int index) {
     return Slidable(
-      key: Key(user.userName!),
+      key: Key(user.userName ?? ''),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
