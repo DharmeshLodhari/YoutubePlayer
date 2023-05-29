@@ -54,7 +54,7 @@ class ChatConversation {
       isVerified: json['is_verified'] ?? false,
       conversationId: json['conversation_id'],
       description: json['description'] ?? "",
-      fullName: json['full_name'],
+      fullName: json['full_name'] != null ? json['full_name'] : '',
       isGroupConversation: json['is_group_conversation'],
       createdAt: json['created_at'] ?? DateTime.now().toUtc().toIso8601String(),
       mutedParticipants: json['muted_participants'] != null
@@ -68,7 +68,7 @@ class ChatConversation {
           ? ''
           : json['qr_code'],
       type: json['type'],
-      userName: json['username'],
+      userName: json['username'] != null ? json['username'] : '',
     );
   }
 
