@@ -4,6 +4,7 @@ import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_video_player.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
@@ -116,7 +117,7 @@ class RenderMomentState extends State<RenderMoment> {
     } else {
       return Container(
         decoration: BoxDecoration(
-          color: Color(0XFFdcdcdc).withOpacity(0.5),
+          color: blackFont.withOpacity(0.5),
           borderRadius: BorderRadius.circular(10),
         ),
       );
