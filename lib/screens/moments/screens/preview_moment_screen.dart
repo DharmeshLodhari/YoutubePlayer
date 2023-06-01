@@ -203,81 +203,89 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     children: [
                       Visibility(
                           visible: !isMore,
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: new BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: greyBackground,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isMore = !isMore;
+                                isOnMore = !isOnMore;
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: new BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: greyBackground,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    "yarn/world".toSVG(),
+                                    height: 10,
+                                    width: 10,
+                                  ),
                                 ),
-                                child: SvgPicture.asset(
-                                  "yarn/world".toSVG(),
-                                  height: 10,
-                                  width: 10,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 6,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: new BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: greyBackground,
-                                ),
-                                child: SvgPicture.asset(
-                                  "yarn/dark_comment".toSVG(),
-                                  height: 10,
-                                  width: 10,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 6,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: new BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: greyBackground,
-                                ),
-                                child: SvgPicture.asset(
-                                  "yarn/thumbsup".toSVG(),
-                                  height: 10,
-                                  width: 10,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 6,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(12.0),
-                                decoration: new BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: greyBackground,
-                                ),
-                                child: SvgPicture.asset(
-                                  "yarn/infinity".toSVG(),
-                                  height: 6,
+                                SizedBox(
                                   width: 6,
                                 ),
-                              ),
-                              SizedBox(
-                                width: 6,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(10.0),
-                                decoration: new BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: greyBackground,
+                                Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: new BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: greyBackground,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    "yarn/dark_comment".toSVG(),
+                                    height: 10,
+                                    width: 10,
+                                  ),
                                 ),
-                                child: SvgPicture.asset(
-                                  "yarn/black_logo".toSVG(),
-                                  height: 10,
-                                  width: 10,
+                                SizedBox(
+                                  width: 6,
                                 ),
-                              ),
-                            ],
+                                Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: new BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: greyBackground,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    "yarn/thumbsup".toSVG(),
+                                    height: 10,
+                                    width: 10,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 6,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(12.0),
+                                  decoration: new BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: greyBackground,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    "yarn/infinity".toSVG(),
+                                    height: 6,
+                                    width: 6,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 6,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: new BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: greyBackground,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    "yarn/black_logo".toSVG(),
+                                    height: 10,
+                                    width: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
                           )),
                       GestureDetector(
                         onTap: () {
