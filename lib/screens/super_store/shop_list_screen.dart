@@ -1,5 +1,4 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -43,14 +42,15 @@ class ShopListScreenState extends State<ShopListScreen> {
   late BasketBloc basketBloc;
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
-  new GlobalKey<ScaffoldMessengerState>();
+  GlobalKey<ScaffoldMessengerState>();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
   RefreshController(initialRefresh: false);
 
-  ScrollController _todayDealScrollController = new ScrollController();
-  ScrollController _productScrollController = new ScrollController();
+  final ScrollController _todayDealScrollController = ScrollController();
+  final ScrollController _productScrollController = ScrollController();
   String _currentCategory = '';
+  late DashboardBloc _dashboardBloc;
 
   AppBar appBar() {
     return AppBar(
@@ -104,7 +104,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     if (widget.category != _currentCategory) {
       _currentCategory = widget.category!;
       debugPrint('CALLING OTHER ::: $_currentCategory');
-      _refreshPage(); // Reload shop list when category changes
+      // _refreshPage(); // Reload shop list when category changes
     }
   }
 
@@ -150,7 +150,7 @@ class ShopListScreenState extends State<ShopListScreen> {
         _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
           Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -228,10 +228,24 @@ class ShopListScreenState extends State<ShopListScreen> {
     getTodaysDealProducts();
   }
 
-
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
+
+    /// check if super store bottom navigation is clicked
+    /// scroll back to the top of the page
+    if (_dashboardBloc.topYarn == true) {
+      _dashboardBloc.topYarn = false;
+      if (_productScrollController.hasClients) {
+        final position = _productScrollController.position.minScrollExtent;
+        _productScrollController.animateTo(
+          position,
+          duration: Duration(milliseconds: 1),
+          curve: Curves.easeOut,
+        );
+      }
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_productScrollController.position.pixels == 0) {
@@ -264,8 +278,8 @@ class ShopListScreenState extends State<ShopListScreen> {
                 children: [
 
                   SizedBox(height: todaysDealsSizeBox),
-                  todaysDealsEmpty ? SizedBox.shrink() : getTodaysDealList(),
-                  todaysDealsEmpty ? SizedBox.shrink() : SizedBox(height: 20),
+                  todaysDealsEmpty ? const SizedBox.shrink() : getTodaysDealList(),
+                  todaysDealsEmpty ? const SizedBox.shrink() : const SizedBox(height: 20),
                   superStoreProducts(),
                   const SizedBox(height: 16),
                   isProductLoading
@@ -274,9 +288,9 @@ class ShopListScreenState extends State<ShopListScreen> {
                     highlightColor: greyBorderColor,
                     child: GridView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       gridDelegate:
-                      SliverGridDelegateWithMaxCrossAxisExtent(
+                      const SliverGridDelegateWithMaxCrossAxisExtent(
                         mainAxisSpacing: 14,
                         mainAxisExtent: 180,
                         crossAxisSpacing: 15,
@@ -293,14 +307,16 @@ class ShopListScreenState extends State<ShopListScreen> {
                       },
                     ),
                   )
-                      : SizedBox.shrink(),
+                      : const SizedBox.shrink(),
                   Visibility(
                     visible: !isProductLoading &&
                         !isTodayDealLoading &&
                         todaysDealList.isEmpty &&
                         productList.isEmpty,
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
+                    child: Center(
+                      child: NoItemInList(
+                        msg: AppLocalization.of(context)!.noResultFound,
+                      ),
                     ),
                   ),
                 ],
@@ -314,17 +330,17 @@ class ShopListScreenState extends State<ShopListScreen> {
 
   Widget superStoreProducts() {
     if (productList.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return productNext == "" && isProductLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         noProductInList
-            ? SizedBox.shrink()
+            ? const SizedBox.shrink()
             : todaysDealsEmpty
-            ? SizedBox.shrink()
+            ? const SizedBox.shrink()
             : Text(
           "Other deals",
           style: TextStyle(
@@ -333,11 +349,11 @@ class ShopListScreenState extends State<ShopListScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        noProductInList ? SizedBox.shrink() : SizedBox(height: 16),
+        noProductInList ? const SizedBox.shrink() : const SizedBox(height: 16),
         GridView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
             mainAxisSpacing: 22,
             mainAxisExtent: 274,
             crossAxisSpacing: 15,
@@ -358,7 +374,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     return Column(
       children: [
         todaysDealsEmpty
-            ? SizedBox.shrink()
+            ? const SizedBox.shrink()
             : Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -402,7 +418,7 @@ class ShopListScreenState extends State<ShopListScreen> {
         Container(
           height: 280,
           child: ListView.builder(
-            padding: EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.only(bottom: 6),
             scrollDirection: Axis.horizontal,
             controller: _todayDealScrollController,
             itemCount: todaysDealList.length + 1,
@@ -417,7 +433,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                     child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: 3,
                       itemBuilder: (context, index) {
                         return SizedBox(
@@ -432,7 +448,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                     ),
                   ),
                 )
-                    : SizedBox.shrink();
+                    : const SizedBox.shrink();
               } else {
                 ShoppingProduct shoppingProduct = todaysDealList[index];
                 return DisplayProduct(
@@ -473,15 +489,15 @@ class ShopListScreenState extends State<ShopListScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          margin: EdgeInsets.only(top: 20, right: 14),
+          margin: const EdgeInsets.only(top: 20, right: 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10),
                       topRight: Radius.circular(10),
                     ),
@@ -494,9 +510,9 @@ class ShopListScreenState extends State<ShopListScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Padding(
-                padding: EdgeInsets.only(left: 10, bottom: 10),
+                padding: const EdgeInsets.only(left: 10, bottom: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -510,7 +526,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                       ),
                       maxLines: 2,
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
@@ -581,8 +597,8 @@ class ShopListScreenState extends State<ShopListScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(

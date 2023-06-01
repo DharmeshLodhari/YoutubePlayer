@@ -701,9 +701,6 @@ class UserAuth extends AuthService {
       var jsonData = json.decode(response.body) ?? {};
       debugPrint('USER CONTACTS :::: $jsonData');
 
-      for(var item in jsonData["results"]) {
-        debugPrint('USER CONTACTS 000 :::: ${item}');
-      }
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],

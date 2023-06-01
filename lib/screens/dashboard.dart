@@ -494,6 +494,8 @@ class _DashboardState extends State<Dashboard> {
           if (index == 1) {
             _dashboardBloc.topYarn = true;
             // debugPrint('Dashboard Yarn clicked:::: ${_dashboardBloc.top}');
+          }else if(index == 2){
+            _dashboardBloc.topStore = true;
           }
         },
         items: [

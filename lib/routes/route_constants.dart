@@ -165,4 +165,5 @@ class Routes {
   static const String SHIPPING_OPTIONS = "/Shipping-Options";
   static const String ADD_SHIPPING_OPTIONS = "/add-shipping-Option";
   static const String EDIT_SHIPPING_OPTIONS = "/edit-shipping-Option";
+  static const String NEAR_BY_LIST_SCREEN = "/near-by-list-screen";
 }

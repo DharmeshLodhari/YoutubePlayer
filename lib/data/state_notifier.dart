@@ -437,6 +437,7 @@ class DashboardBloc extends ChangeNotifier {
 
   int get index => _index;
   bool topYarn = false;
+  bool topStore = false;
 
   PageController get pageController => _pageController;
 

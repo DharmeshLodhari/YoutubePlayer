@@ -150,22 +150,22 @@ class _SuperStoreState extends State<SuperStore> {
           )),
       SizedBox(width: 15),
 
-      RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            // NavigationUtil.push(
-            //   context,
-            //   screen: YarnSettingsScreen(),
-            // );
-          },
-          height: 20,
-          width: 20,
-          icon: SvgPicture.asset(
-            "store/filter".toSVG(),
-            height: 20,
-            width: 20,
-          )),
-      SizedBox(width: 20),
+      // RoundedBackgroundIcon(
+      //     backgroundColor: Colors.transparent,
+      //     onTap: () {
+      //       // NavigationUtil.push(
+      //       //   context,
+      //       //   screen: YarnSettingsScreen(),
+      //       // );
+      //     },
+      //     height: 20,
+      //     width: 20,
+      //     icon: SvgPicture.asset(
+      //       "store/filter".toSVG(),
+      //       height: 20,
+      //       width: 20,
+      //     )),
+      // SizedBox(width: 20),
     ];
   }
 
