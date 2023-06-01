@@ -134,7 +134,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                       // Positioned(right: 10, top: 10, child: favouriteIcon())
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   Padding(
@@ -155,11 +155,15 @@ class _DisplayProductState extends State<DisplayProduct> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 4,
                         ),
                         Text(
-                          '${widget.product.shortDescription}',
+                          truncateString(
+                            str: widget.product.shortDescription!,
+                            lengthToTruncateAt: 60,
+                            showEllipsis: true,
+                          ),
                           style: TextStyle(
                             fontFamily: "Roboto",
                             fontWeight: FontWeight.w400,
@@ -167,7 +171,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                             color: yarnBlack,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 6,
                         ),
                         Row(
@@ -191,7 +195,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                   color: navyBlue,
                                 ),
                               ),
-                              Expanded(child: SizedBox(width: 40)),
+                              const Expanded(child: SizedBox(width: 40)),
                               displayShoppingAddingToCartControl()
                             ]),
                       ],
@@ -212,7 +216,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -220,7 +224,7 @@ class _DisplayProductState extends State<DisplayProduct> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -311,18 +315,18 @@ class _DisplayProductState extends State<DisplayProduct> {
 
   Widget getFavouriteIcon() {
     return !isOwner
-        ? Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
+        ? const Padding(
+            padding: EdgeInsets.only(bottom: 4.0),
             child: InkWell(
               child: Icon(Icons.favorite_border),
             ),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   Widget favouriteIcon() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4.0),
+    return const Padding(
+      padding: EdgeInsets.only(bottom: 4.0),
       child: InkWell(
         child: Icon(Icons.favorite_border),
       ),
@@ -363,7 +367,7 @@ class _DisplayProductState extends State<DisplayProduct> {
           right: 10,
           bottom: 5,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 7, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 6),
             height: 25,
             decoration: BoxDecoration(
                 color: white, borderRadius: BorderRadius.circular(20)),
@@ -381,7 +385,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                       width: 17,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   Text(
@@ -393,7 +397,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                       color: yarnBlack,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   GestureDetector(
@@ -559,7 +563,7 @@ class _DisplayServiceState extends State<DisplayService> {
                     Container(
                       height: 155,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(10),
                             bottomLeft: Radius.circular(10),
                             bottomRight: Radius.circular(10),
@@ -585,7 +589,7 @@ class _DisplayServiceState extends State<DisplayService> {
                     // Positioned(right: 10, top: 10, child: favouriteIcon())
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Padding(
@@ -606,7 +610,7 @@ class _DisplayServiceState extends State<DisplayService> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 4,
                       ),
                       Text(
@@ -641,7 +645,7 @@ class _DisplayServiceState extends State<DisplayService> {
                               color: navyBlue,
                             ),
                           ),
-                          Expanded(child: SizedBox(width: 50)),
+                          const Expanded(child: SizedBox(width: 50)),
                           displayShoppingAddingToCartControl()
                         ],
                       ),
@@ -657,8 +661,8 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   Widget favouriteIcon() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4.0),
+    return const Padding(
+      padding: EdgeInsets.only(bottom: 4.0),
       child: InkWell(
         child: Icon(Icons.favorite_border),
       ),
@@ -671,7 +675,7 @@ class _DisplayServiceState extends State<DisplayService> {
           right: 10,
           bottom: 5,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 7, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 6),
             height: 25,
             decoration: BoxDecoration(
                 color: white, borderRadius: BorderRadius.circular(20)),
@@ -689,7 +693,7 @@ class _DisplayServiceState extends State<DisplayService> {
                       width: 17,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   Text(
@@ -701,7 +705,7 @@ class _DisplayServiceState extends State<DisplayService> {
                       color: yarnBlack,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   GestureDetector(
@@ -771,7 +775,7 @@ class _DisplayServiceState extends State<DisplayService> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -779,7 +783,7 @@ class _DisplayServiceState extends State<DisplayService> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -995,15 +999,16 @@ class _FindBusinessState extends State<FindBusiness> {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: image);
                   },
                   child: SizedBox(
-                      width: 50,
-                      height: 50,
+                      width: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 40 :50,
+                      height: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 40 :50,
                       child: CircularUserColorImage(imageUrl: widget.customerProfile.avatar!, name: widget.customerProfile.fullName!)),
                 ),
               ),
             ],
           ),
           Container(
-            padding: EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
+            padding: widget.tileRenderPlace == TileRenderPlace.YarnProductService? EdgeInsets.only(left: 15, top: 10, bottom: 5, right: 15)
+                :  EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -1026,7 +1031,7 @@ class _FindBusinessState extends State<FindBusiness> {
                                   appendStringDot(messageDecoderWithEmoji(
                                       widget.customerProfile.userName ?? "") ??
                                       "", 20),
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: yarnBlack),
+                                  style: TextStyle(fontSize: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 12 : 16, fontWeight: FontWeight.w700, color: yarnBlack),
                                 )),
                             Align(
                               alignment: Alignment.centerLeft,
@@ -1034,12 +1039,12 @@ class _FindBusinessState extends State<FindBusiness> {
                                   name: "@${widget.customerProfile.userName ?? ''}",
                                   isVerified: widget.customerProfile.isVerified,
                                   textStyle: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 11 : 14,
                                     color: HexColor("#151515"),
                                     fontWeight: FontWeight.w500,
                                   ),
                                   verifiedIconColor: verifyGreen,
-                                  verifiedIconSize: 15),
+                                  verifiedIconSize: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 12 : 15),
                             ),
                           ],
                         ),
@@ -1051,21 +1056,20 @@ class _FindBusinessState extends State<FindBusiness> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10.0,),
+                SizedBox(height: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 5.0 :10.0,),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(60),
                   ),
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 5, vertical: 2),
+                  padding: widget.tileRenderPlace == TileRenderPlace.YarnProductService ? EdgeInsets.symmetric(horizontal: 3, vertical: 1) :  EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   child: getRating(
                       numberOfRating:
                       widget.customerProfile.rating.toInt()),
                 ),
 
                 if(widget.customerProfile.bio!.isNotEmpty || widget.customerProfile.bio != null)...[
-                  SizedBox(height: 10.0,),
+                  const SizedBox(height: 10.0,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -1091,7 +1095,7 @@ class _FindBusinessState extends State<FindBusiness> {
               ],
             ),
           ),
-          SizedBox(height: 10.0,),
+           SizedBox(height: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 5.0 :10.0,),
         ],
       ),
     );
@@ -1101,7 +1105,7 @@ class _FindBusinessState extends State<FindBusiness> {
 
     if (isLoadingFollowingAction) {
       return Padding(
-        padding: EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 14),
         child: SizedBox(
           width: 20,
           height: 20,
@@ -1111,7 +1115,7 @@ class _FindBusinessState extends State<FindBusiness> {
     }
 
     if (widget.customerProfile.userName! == userBloc.user.userName) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     if (widget.customerProfile.isFollowing != null &&
         widget.customerProfile.isFollowing == true) {
@@ -1139,13 +1143,13 @@ class _FindBusinessState extends State<FindBusiness> {
         child: Container(
           height: 30,
           width: 80,
-          margin: EdgeInsets.symmetric(vertical: 8),
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
               color: blackFont,
               borderRadius: BorderRadius.circular(50),
               border: Border.all(color: HexColor("#292929"), width: 1)),
-          child: Center(
+          child: const Center(
             child: Text(
               'Following',
               style: TextStyle(
@@ -1182,12 +1186,12 @@ class _FindBusinessState extends State<FindBusiness> {
       child: Container(
         height: 30,
         width: 80,
-        margin: EdgeInsets.symmetric(vertical: 8),
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
             border: Border.all(color: HexColor("#292929"), width: 1)),
-        child: Center(
+        child: const Center(
           child: Text(
             'Follow',
             style: TextStyle(
@@ -1203,7 +1207,7 @@ class _FindBusinessState extends State<FindBusiness> {
 
   Widget getWallpaper() {
       return ClipRRect(
-      borderRadius: BorderRadius.only(
+      borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(10),
         topRight: Radius.circular(10),
       ),
@@ -1266,11 +1270,12 @@ class _FindBusinessState extends State<FindBusiness> {
 
 }
 
+
 class CircularUserColorImage extends StatelessWidget {
   final String imageUrl;
   final String name;
 
-  const CircularUserColorImage({required this.imageUrl, required this.name});
+  const CircularUserColorImage({Key? key, required this.imageUrl, required this.name}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

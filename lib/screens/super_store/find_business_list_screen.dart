@@ -1,14 +1,16 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../data/state_notifier.dart';
+import '../../routes/route_constants.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
+import '../../widget/noItemInList.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 import '../more_apps/user_profile/models/user.dart';
+import '../more_apps/yarn/utils/yarn_enum.dart';
 import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 
 class FindBusinessListScreen extends StatefulWidget {
@@ -24,56 +26,50 @@ class FindBusinessListScreen extends StatefulWidget {
 class FindBusinessListScreenState extends State<FindBusinessListScreen> {
 
   List<CustomerProfile> customerProfileList = [];
+  List<CustomerProfile> customerProfileListNearBy = [];
   bool isFindBusinessLoading = false;
+  bool isNearbyLoading = false;
   bool noFindBusinessInList = false;
+  bool noNearByInList = false;
   int? findBusinessCount = 0;
   String? findBusinessNext = "";
   String? findBusinessPrevious = "";
-  late BasketBloc basketBloc;
+  int? nearByCount = 0;
+  String? nearByNext = "";
+  String? nearByPrevious = "";
+  late DashboardBloc _dashboardBloc;
 
   final GlobalKey<ScaffoldMessengerState> _findBusinessScaffoldMessengerKey =
-  new GlobalKey<ScaffoldMessengerState>();
+  GlobalKey<ScaffoldMessengerState>();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
   RefreshController(initialRefresh: false);
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
+  // final ScrollController _scrollControllerNearBy = ScrollController();
   String _currentCategory = '';
 
-
-  AppBar appBar() {
-    return AppBar(
-      elevation: 0,
-      titleSpacing: 16,
-      backgroundColor: Colors.white,
-      automaticallyImplyLeading: false,
-      centerTitle: false,
-      title: Text(
-        'Nearby Business',
-        style: TextStyle(
-          color: blackFont,
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        // _cartBtn(),
-        // SizedBox(width: 12),
-      ],
-    );
-  }
 
   @override
   void initState() {
     super.initState();
     _currentCategory = widget.category!;
     getNearByBusinessList();
+    getSuggestionBusinessList();
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        getNearByBusinessList();
+        getSuggestionBusinessList();
       }
     });
+    // _scrollControllerNearBy.addListener(() {
+    //   if (_scrollControllerNearBy.position.pixels ==
+    //       _scrollControllerNearBy.position.maxScrollExtent &&
+    //       _scrollControllerNearBy.position.pixels != 0) {
+    //     getNearByBusinessList();
+    //   }
+    // });
   }
 
   @override
@@ -81,19 +77,73 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     super.didUpdateWidget(oldWidget);
     if (widget.category != _currentCategory) {
       _currentCategory = widget.category!;
-      debugPrint('CALLING OTHER ::: $_currentCategory');
-      // _refreshPage(); // Reload find business list when category changes
+      if (mounted) {
+        setState(() {});
+      }
+      _refreshPage(); // Reload find business list when category changes
     }
   }
 
   void getNearByBusinessList() async {
+    if (!isNearbyLoading) {
+      if (nearByNext != null && !isNearbyLoading) {
+        isNearbyLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfMerchant(nearByNext, nearByPrevious, _currentCategory, nearBy: true);
+
+        if (result == null) {
+          noNearByInList = true;
+
+          isNearbyLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        nearByCount = result['count'];
+        nearByNext = result['next'];
+        nearByPrevious = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noNearByInList = false;
+            isNearbyLoading = false;
+            customerProfileListNearBy.addAll(tempList);
+          });
+        }
+
+        // for(var item in customerProfileListNearBy){
+        //   debugPrint('Fola near by:::: ${item.toJson()}');
+        // }
+
+      }
+      if (customerProfileListNearBy.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noNearByInList = true;
+          });
+        }
+      } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
+        _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+          content:
+          Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  void getSuggestionBusinessList() async {
     if (!isFindBusinessLoading) {
       if (findBusinessNext != null && !isFindBusinessLoading) {
         isFindBusinessLoading = true;
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfMerchant(findBusinessNext, findBusinessPrevious, otherDeals: true);
+            .listOfMerchant(findBusinessNext, findBusinessPrevious, _currentCategory, nearBy: false);
 
         if (result == null) {
           noFindBusinessInList = true;
@@ -117,6 +167,10 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
           });
         }
 
+        // for(var item in customerProfileList){
+        //   debugPrint('Fola suggest by:::: ${item.toJson()}');
+        // }
+
       }
       if (customerProfileList.isEmpty) {
         if (mounted) {
@@ -128,7 +182,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
           Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -155,14 +209,41 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     findBusinessCount = 0;
     findBusinessPrevious = "";
     isFindBusinessLoading = false;
+    isNearbyLoading = false;
+    nearByNext = "";
+    nearByCount = 0;
+    nearByPrevious = "";
     customerProfileList = [];
+    customerProfileListNearBy = [];
 
     getNearByBusinessList();
+    getSuggestionBusinessList();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    basketBloc = Provider.of<BasketBloc>(context);
+
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
+
+    /// check if super store bottom navigation is clicked
+    /// scroll back to the top of the page
+    if (_dashboardBloc.topYarn == true) {
+      _dashboardBloc.topYarn = false;
+      if (_scrollController.hasClients) {
+        final position = _scrollController.position.minScrollExtent;
+        _scrollController.animateTo(
+          position,
+          duration: Duration(milliseconds: 1),
+          curve: Curves.easeOut,
+        );
+      }
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.position.pixels == 0) {
@@ -176,7 +257,6 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
       key: _findBusinessScaffoldMessengerKey,
       child: Scaffold(
         backgroundColor: lightGrey,
-        // appBar: appBar(),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -188,59 +268,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
               ),
               controller: _refreshController,
               onRefresh: _onRefresh,
-              child: ListView.separated(
-                physics: ClampingScrollPhysics(),
-                padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                controller: _scrollController,
-                itemCount: customerProfileList.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == customerProfileList.length) {
-                    return _buildLoadingIndicator();
-                  }
-
-                  return InkWell(
-                    onTap: () async {
-
-                      if (mounted) setState(() {});
-                    },
-                    child: FindBusiness(
-                        customerProfile: customerProfileList[index],
-                      callback: (username, value) {
-                          //create a list to edit
-                        List<CustomerProfile> customerProfileListEdit = customerProfileList;
-
-                        // modify customerProfileList for the username and refresh the list
-                        // set the isFollowing for that particular user
-                        customerProfileListEdit.forEach((customer) {
-                          if (customer.userName == username) {
-                            customer.isFollowing = value; // Modify the isFollowing property
-                          }
-                        });
-
-                        customerProfileList = [];
-                        customerProfileList = customerProfileListEdit;
-
-                        if(mounted)setState(() {});
-
-                      },
-                    ),
-                  );
-                },
-                separatorBuilder: (context, int) {
-                  return Column(
-                    children: [
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Divider(
-                        height: 0,
-                        thickness: 0.5,
-                        color: greySecondaryYarn,
-                      ),
-                    ],
-                  );
-                },
-              ),
+              child: bodyList(),
             ),
           ),
         ),
@@ -248,10 +276,197 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     );
   }
 
+
   Widget _buildLoadingIndicator() {
     return Opacity(
       opacity: isFindBusinessLoading ? 1.0 : 00,
-      child: isFindBusinessLoading ? YarnShimmer() : Container(),
+      child: isFindBusinessLoading ? const YarnShimmer() : Container(),
+    );
+  }
+
+  Widget bodyList(){
+
+    if(isFindBusinessLoading && isNearbyLoading){
+      return  _buildLoadingIndicator();
+    }else{
+      return Column(
+        children: [
+
+          if(customerProfileListNearBy.isNotEmpty)...[
+            const SizedBox(height: 10.0,),
+            Container(
+              margin: const EdgeInsets.only(left: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    "Nearby Business",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      color: blackFont,
+                    ),
+                  ),
+                  GestureDetector(
+                    child: Row(
+                      children: [
+                        Text(
+                          "View more",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: blackFont),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward_ios_sharp,
+                            size: 14, color: blackFont),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pushNamed(Routes.NEAR_BY_LIST_SCREEN,
+                          arguments: {"customerProfile": customerProfileListNearBy,
+                            "count": nearByCount,
+                            "next": nearByNext
+                          });
+
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10.0,),
+            nearByBuildView(),
+          ],
+
+          if(customerProfileList.isNotEmpty)...[
+            const SizedBox(height: 10.0,),
+            Container(
+              margin: const EdgeInsets.only(left: 15.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Suggestions",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: blackFont,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20.0,),
+            suggestionBuildView(),
+          ],
+
+          Visibility(
+            visible: !isFindBusinessLoading &&
+                !isNearbyLoading &&
+                customerProfileList.isEmpty &&
+                customerProfileListNearBy.isEmpty,
+            child: Center(
+              child: NoItemInList(
+                msg: AppLocalization.of(context)!.noResultFound,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+  }
+
+
+  Widget suggestionBuildView() {
+
+    return Expanded(
+      child: ListView.separated(
+        physics: const ClampingScrollPhysics(),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        controller: _scrollController,
+        itemCount: customerProfileList.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == customerProfileList.length) {
+            return _buildLoadingIndicator();
+          }
+
+          return FindBusiness(
+            customerProfile: customerProfileList[index],
+            tileRenderPlace: TileRenderPlace.YarnTimeLine,
+            callback: (username, value) {
+              //create a list to edit
+              List<CustomerProfile> customerProfileListEdit = customerProfileList;
+
+              // modify customerProfileList for the username and refresh the list
+              // set the isFollowing for that particular user
+              customerProfileListEdit.forEach((customer) {
+                if (customer.userName == username) {
+                  customer.isFollowing = value; // Modify the isFollowing property
+                }
+              });
+
+              customerProfileList = [];
+              customerProfileList = customerProfileListEdit;
+
+              if(mounted)setState(() {});
+
+            },
+          );
+        },
+        separatorBuilder: (context, int) {
+          return Column(
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              Divider(
+                height: 0,
+                thickness: 0.5,
+                color: greySecondaryYarn,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget nearByBuildView() {
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (var item in customerProfileListNearBy)
+            Container(
+              width: 300,
+              // height: 200,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              child: FindBusiness(
+                customerProfile: item,
+                tileRenderPlace: TileRenderPlace.YarnProductService,
+                callback: (username, value) {
+                  //create a list to edit
+                  List<CustomerProfile> customerProfileListEdit = customerProfileListNearBy;
+
+                  // modify customerProfileList for the username and refresh the list
+                  // set the isFollowing for that particular user
+                  customerProfileListEdit.forEach((customer) {
+                    if (customer.userName == username) {
+                      customer.isFollowing = value; // Modify the isFollowing property
+                    }
+                  });
+
+                  customerProfileListNearBy = [];
+                  customerProfileListNearBy = customerProfileListEdit;
+
+                  if(mounted)setState(() {});
+
+                },
+              ),
+            )
+
+        ],
+      ),
     );
   }
 

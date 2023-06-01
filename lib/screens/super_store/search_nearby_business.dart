@@ -1,11 +1,9 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import '../../../../../utils/util.dart';
 import '../../../../../widget/customized_dropdown_field.dart';
@@ -28,8 +26,8 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
   String? lga;
   List<CustomerProfile> nearByBusiness = [];
 
-  GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+  final GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
   GlobalKey<ScaffoldMessengerState>();
 
   bool isLoading = false;
@@ -38,7 +36,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
   int? count = 0;
   String? next = "";
   String? previous = "";
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";

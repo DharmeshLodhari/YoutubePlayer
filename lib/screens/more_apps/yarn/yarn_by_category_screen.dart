@@ -91,6 +91,8 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
 
   Widget _buildFloatingActionButton() {
     return SpeedDial(
+      backgroundColor: yarnBlack,
+      activeBackgroundColor: HexColor("#FFFFFF"),
       child: InkWell(
         onTap: () async {
           NavigationUtil.push(context,
@@ -116,13 +118,11 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
             }
           });
         },
-        child: Icon(
+        child: const Icon(
           SlydoAppIconNew.dashboard_yarn,
           color: Colors.white,
         ),
       ),
-      backgroundColor: yarnBlack,
-      activeBackgroundColor: HexColor("#FFFFFF"),
     );
   }
 

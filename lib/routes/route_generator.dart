@@ -157,6 +157,7 @@ import '../screens/more_apps/payment_and_banking/screens/banking/payout_transact
 import '../screens/more_apps/shopping/screens/checkout_screen.dart';
 import '../screens/more_apps/super_hub/search_services.dart';
 import '../screens/more_apps/super_hub/super_hub.dart';
+import '../screens/super_store/near_by_list_screen.dart';
 import '../screens/super_store/search_nearby_business.dart';
 import '../screens/super_store/super_store.dart';
 
@@ -1499,6 +1500,16 @@ class RouteGenerator {
       case Routes.WEB_VIEW:
         return PageTransition(
           child: CustomWebView(webUrl: settings.arguments as String),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.NEAR_BY_LIST_SCREEN:
+        return PageTransition(
+          child: NearByListScreen(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

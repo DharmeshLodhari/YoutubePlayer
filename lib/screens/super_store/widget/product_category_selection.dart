@@ -53,7 +53,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
           ...List.generate(
@@ -61,7 +61,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
             (i) {
               return Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   CategoryChip(

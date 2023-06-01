@@ -309,7 +309,7 @@ class ShoppingAuthService extends AuthService {
       if(category == "All"){
         url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
       }else{
-        url = AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
+        url += AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
       }
 
     }
@@ -1392,18 +1392,31 @@ class ShoppingAuthService extends AuthService {
   }
 
   // merchant list
-  Future<Map<String, dynamic>?> listOfMerchant(String? next, String? previous,
-      {String? userName, bool otherDeals = false}) async {
+  Future<Map<String, dynamic>?> listOfMerchant(String? next, String? previous, String category,
+      {String? userName, bool nearBy = false}) async {
     debugPrint('CALLING MERCHANT LIST');
+
     var url = '';
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/user/merchant-list/";
+
+      if (nearBy == true) {
+        url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/?nearby=true";
+      } else if (nearBy == false) {
+        url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/?suggestions=true";
+      }
+      if(category == '' || category == 'All'){
+        // url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/";
+      }else{
+        url += "?categories=$category/";
+      }
+
     } else {
       url = getSecureUrl(url: next);
     }
+
     debugPrint(url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -1418,7 +1431,7 @@ class ShoppingAuthService extends AuthService {
 
         CustomerProfile customerProfile = CustomerProfile.fromJson(item);
 
-        // debugPrint('MERCHANT LIST 000---> ${customerProfile.toJson()}');
+        debugPrint('MERCHANT LIST 000---> ${customerProfile.toJson()}');
         // debugPrint('MERCHANT LIST 001---> ${item}');
 
         customerProfileList.add(customerProfile);
@@ -1450,17 +1463,24 @@ class ShoppingAuthService extends AuthService {
     debugPrint('STATE BY Search -> ${filterOptions.state}');
 
     if (next == "") {
-      url = AppConfig.baseUrl +
-          "/api/v1/user/merchant-list/?search=${filterOptions.searchedText}";
+      url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/";
+
+      if (filterOptions.searchedText!.isNotEmpty) {
+        url += '?search=${filterOptions.searchedText}';
+      }else{
+        url += '?search=${filterOptions.searchedText}';
+      }
+
+      if (filterOptions.categories.isNotEmpty) {
+        url += '&categories=${filterOptions.categories.join(',')}';
+      }
 
       if (filterOptions.state.isNotEmpty) {
-        url = url + "&state=${filterOptions.state.join(',')}";
+        url += '&state=${filterOptions.state.join(',')}';
       }
+
       if (filterOptions.lga.isNotEmpty) {
-        url = url + "&city=${filterOptions.lga.join(',')}";
-      }
-      if (filterOptions.categories.isNotEmpty) {
-        url = url + "&categories=${filterOptions.categories.join(',')}";
+        url += '&city=${filterOptions.lga.join(',')}';
       }
 
       url = Uri.encodeFull(url);
