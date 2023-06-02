@@ -27,6 +27,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../../../../data/currency.dart';
+import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../search_user.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -306,23 +307,23 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                             children: <Widget>[
                               getDisplayCard(),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
                                 child: Column(
                                   children: [
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     getRecipientField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     displayAmountField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     if (isFromYarn == true ||
                                         isFromMoment == true) ...[
-                                      SizedBox()
+                                      const SizedBox()
                                     ] else ...[
                                       showMoreOption
                                           ? getMoreOption()
@@ -340,7 +341,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                           ),
                                     errorMessage == ""
                                         ? Container()
-                                        : SizedBox(
+                                        : const SizedBox(
                                             height: 20,
                                           ),
                                   ],
@@ -355,7 +356,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                   Container(
                     child: Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         if (amount == 0.0) ...[
@@ -393,7 +394,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                         ],
 
                         // getSubmitButton(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                       ],
@@ -409,11 +410,11 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     return Column(
       children: [
         getCategoryDropDown(),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         getReferenceField(),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         isFromChat! ? Container() : sendMoneyAnonymouslySwitch(),
@@ -428,7 +429,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         if (mounted) setState(() {});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -438,7 +439,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                   : Icons.keyboard_arrow_down_rounded,
               color: darkGrey,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(
@@ -455,7 +456,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
   Widget getUserProfileIcon() {
     if (_payee != null || isValidPayee) {
       return IconButton(
-        icon: Icon(Icons.person),
+        icon: const Icon(Icons.person),
         onPressed: () {
           Navigator.pushNamed(context, '/profile',
               arguments: {"searchedUserName": _payee!.userName});
@@ -470,7 +471,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         _payee = null;
         Navigator.pop(context);
@@ -508,7 +509,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                     filterQuality: FilterQuality.high,
                     errorWidget: imageErrorWidget,
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
           ),
         ),
       );
@@ -538,7 +539,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         : Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: userNameWithVerifiedIcon(
@@ -547,7 +548,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                         : '',
                     isVerified: _payee!.isVerified,
                     lengthToTruncateAt: 20,
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
@@ -601,7 +602,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       },
       onTap: () async {
         CustomerProfile? userFound =
-            await NavigationUtil.push(context, screen: SearchUser());
+            await NavigationUtil.push(context, screen: const SearchUser());
 
         if (userFound != null) {
           _payee = userFound;
@@ -618,7 +619,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       isAmountField: true,
       enabled: product == null && service == null,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
@@ -675,7 +676,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
           AppLocalization.of(context)!.category,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -684,7 +685,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: IgnorePointer(
             ignoring: product != null || service != null,
@@ -718,7 +719,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -829,7 +830,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                     filterQuality: FilterQuality.high,
                     errorWidget: imageErrorWidget,
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
           ),
         ),
       );
@@ -891,7 +892,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       builder: (context) =>
           StatefulBuilder(builder: (context, rentDurationStateSetter) {
         return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           contentPadding: EdgeInsets.zero,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -910,13 +911,13 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: EdgeInsets.only(top: 16, bottom: 8),
+                      padding: const EdgeInsets.only(top: 16, bottom: 8),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 16,
                             ),
                             child: Column(
@@ -935,7 +936,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                         fontWeight: FontWeight.w700),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 12,
                                 ),
                                 Container(
@@ -1016,7 +1017,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       FocusScope.of(context).unfocus();
     }
 
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     if (!isValidPayee) {
       setState(() {
@@ -1046,7 +1047,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                 isValidCallback: () async {
                   showDialog(
                       context: context,
-                      builder: (context) => Center(child: SizedBox()));
+                      builder: (context) => const Center(child: SizedBox()));
                   // Center(child: CircularLoadingIndicator()));
 
                   if (Platform.isIOS) {
@@ -1067,7 +1068,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                             )),
                   );
 
-                  await Future.delayed(Duration(seconds: 3));
+                  await Future.delayed(const Duration(seconds: 3));
 
                   // if (transactionalAmount + 10.0 > currentBalance) {
                   //   Navigator.pop(context);
@@ -1168,9 +1169,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                       debugPrint(" isFromChat:- $isFromChat");
 
                       if (!isFromChat!) {
-                        Navigator.of(context).pushNamed(
-                          '/transactions',
-                        );
+                        Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
+                            arguments: {'page': 0});
                       }
                     } else if (response.statusCode == 400) {
                       Navigator.pop(context);
@@ -1277,6 +1277,14 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     int value = 0;
     value = currentBalance!.toInt() * 100 - 1000;
 
-    return value;
+    if (value < 0) {
+      // print("The number is negative.");
+      return 0;
+    } else {
+      // print("The number is non-negative.");
+      return value;
+    }
+
+
   }
 }

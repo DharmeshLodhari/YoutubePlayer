@@ -476,7 +476,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
                 if (response.statusCode == 201) {
                   Navigator.pop(context);
-                  Navigator.of(context).popAndPushNamed('/payout-list');
+                  Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
+                      arguments: {'page': 1});
                 } else if (response.statusCode == 500) {
                   Navigator.pop(context);
                   if (mounted) {

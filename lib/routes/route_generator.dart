@@ -283,7 +283,9 @@ class RouteGenerator {
         );
       case Routes.TRANSACTIONS:
         return PageTransition(
-          child: TransactionList(),
+          child: TransactionList(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
