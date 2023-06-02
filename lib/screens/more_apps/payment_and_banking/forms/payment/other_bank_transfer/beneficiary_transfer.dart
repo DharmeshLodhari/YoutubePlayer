@@ -14,6 +14,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../../data/currency.dart';
 import '../../../../../../data/database_helper.dart';
+import '../../../../../../routes/route_constants.dart';
 import '../../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../../widget/LoadingIndicator.dart';
 import '../../../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
@@ -401,7 +402,8 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
                   if (response.statusCode == 201) {
                     Navigator.pop(context);
-                    Navigator.of(context).popAndPushNamed('/payout-list');
+                    Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
+                        arguments: {'page': 1});
                   } else if (response.statusCode == 500) {
                     Navigator.pop(context);
                     if (mounted) {

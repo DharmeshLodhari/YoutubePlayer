@@ -9,16 +9,17 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
-import '../../../../../services/app_config_bloc.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../search_user.dart';
 import '../../../user_profile/models/user.dart';
 import '../../tiles/payment_tab_selection.dart';
 
 class TransactionList extends StatefulWidget {
+  var arguments;
+
+  TransactionList({Key? key, this.arguments}) : super(key: key);
+
   @override
   _TransactionListState createState() => _TransactionListState();
 }
@@ -27,7 +28,6 @@ class _TransactionListState extends State<TransactionList> {
   final GlobalKey<ScaffoldState> _scaffoldTransactionKey =
       new GlobalKey<ScaffoldState>();
 
-  RefreshBlocForTransaction? _refreshBloc;
   DateTimeRange? newDateTimeRange;
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
   late PageController _pageViewController;
@@ -44,12 +44,13 @@ class _TransactionListState extends State<TransactionList> {
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
   bool isFirstTime = true;
-  // AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
-    // appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
-    _pageViewController = PageController(initialPage: 0);
+
+    _pageViewController = PageController(initialPage: widget.arguments['page'] ?? 0);
+
+    currentAskTapOnHome = widget.arguments['page'] ?? 0;
 
     super.initState();
   }

@@ -816,8 +816,8 @@ class _HomeState extends State<Home> {
               BottomSheetPassCode(
                   context: context,
                   isValidCallback: () {
-                    // Navigator.pop(context);
-                    Navigator.pushNamed(context, Routes.TRANSACTIONS);
+                    Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
+                        arguments: {'page': 0});
                   },
                   cancelCallBack: () {
                     Navigator.pop(context);
