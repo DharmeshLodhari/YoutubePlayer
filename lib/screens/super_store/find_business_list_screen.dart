@@ -45,8 +45,10 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
   final RefreshController _refreshController =
   RefreshController(initialRefresh: false);
   final ScrollController _scrollController = ScrollController();
-  // final ScrollController _scrollControllerNearBy = ScrollController();
+  ScrollController scrollController = ScrollController();
   String _currentCategory = '';
+  // Define a boolean variable to track if the app bar is expanded or not
+  bool _isAppBarExpanded = true;
 
 
   @override
@@ -63,13 +65,21 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         getSuggestionBusinessList();
       }
     });
-    // _scrollControllerNearBy.addListener(() {
-    //   if (_scrollControllerNearBy.position.pixels ==
-    //       _scrollControllerNearBy.position.maxScrollExtent &&
-    //       _scrollControllerNearBy.position.pixels != 0) {
-    //     getNearByBusinessList();
-    //   }
-    // });
+    // Listen for scroll offset changes
+    scrollController.addListener(() {
+      if (scrollController.offset > 0 && _isAppBarExpanded) {
+        // App bar is not expanded
+        setState(() {
+          _isAppBarExpanded = false;
+        });
+      } else if (scrollController.offset <= 0 && !_isAppBarExpanded) {
+        // App bar is expanded
+        setState(() {
+          _isAppBarExpanded = true;
+        });
+      }
+    });
+
   }
 
   @override
@@ -284,97 +294,131 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     );
   }
 
-  Widget bodyList(){
 
-    if(isFindBusinessLoading && isNearbyLoading){
-      return  _buildLoadingIndicator();
-    }else{
-      return Column(
-        children: [
+  Widget bodyList() {
 
-          if(customerProfileListNearBy.isNotEmpty)...[
-            const SizedBox(height: 10.0,),
-            Container(
-              margin: const EdgeInsets.only(left: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    "Nearby Business",
+    if (isFindBusinessLoading && isNearbyLoading) {
+      return _buildLoadingIndicator();
+    } else {
+      return NestedScrollView(
+        controller: scrollController,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverOverlapAbsorber(
+              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+              sliver: SliverAppBar(
+                floating: true,
+                elevation: 0,
+                stretch: true,
+                automaticallyImplyLeading: false,
+                titleSpacing: 0,
+                title:
+                Column(
+                  children: [
+                    const SizedBox(height: 20.0,),
+                    Container(
+                      margin: const EdgeInsets.only(left: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            "Nearby Business",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
+                              color: blackFont,
+                            ),
+                          ),
+                          GestureDetector(
+                            child: Row(
+                              children: [
+                                Text(
+                                  "View more",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                      color: blackFont),
+                                ),
+                                SizedBox(width: 8),
+                                Icon(Icons.arrow_forward_ios_sharp,
+                                    size: 14, color: blackFont),
+                              ],
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(Routes.NEAR_BY_LIST_SCREEN,
+                                  arguments: {"customerProfile": customerProfileListNearBy,
+                                    "count": nearByCount,
+                                    "next": nearByNext
+                                  });
+
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 50.0,),
+                  ],
+                ),
+                // Text(_isAppBarExpanded ? '' : 'check', style: TextStyle(
+                //   fontWeight: FontWeight.w700,
+                //   fontSize: 18,
+                //   color: blackFont,
+                // ),),
+                expandedHeight: 300, // Set the desired expanded height of the app bar
+                backgroundColor: Colors.transparent,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Column(
+                    children: [
+                      if(customerProfileListNearBy.isNotEmpty)...[
+                        const SizedBox(height: 10.0,),
+                        nearByBuildView(),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ];
+        },
+        body:
+        Column(
+          children: [
+            if (customerProfileList.isNotEmpty) ...[
+              // const SizedBox(height: 10.0,),
+               Container(
+                margin: const EdgeInsets.only(left: 15.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Suggestions",
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18,
                       color: blackFont,
                     ),
                   ),
-                  GestureDetector(
-                    child: Row(
-                      children: [
-                        Text(
-                          "View more",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: blackFont),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(Icons.arrow_forward_ios_sharp,
-                            size: 14, color: blackFont),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.of(context).pushNamed(Routes.NEAR_BY_LIST_SCREEN,
-                          arguments: {"customerProfile": customerProfileListNearBy,
-                            "count": nearByCount,
-                            "next": nearByNext
-                          });
-
-                    },
-                  ),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(height: 10.0,),
-            nearByBuildView(),
-          ],
-
-          if(customerProfileList.isNotEmpty)...[
-            const SizedBox(height: 10.0,),
-            Container(
-              margin: const EdgeInsets.only(left: 15.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Suggestions",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
-                  ),
+              const SizedBox(height: 20.0,),
+              suggestionBuildView(),
+            ],
+            Visibility(
+              visible: !isFindBusinessLoading &&
+                  !isNearbyLoading &&
+                  customerProfileList.isEmpty &&
+                  customerProfileListNearBy.isEmpty,
+              child: Center(
+                child: NoItemInList(
+                  msg: AppLocalization.of(context)!.noResultFound,
                 ),
               ),
             ),
-            const SizedBox(height: 20.0,),
-            suggestionBuildView(),
           ],
+        ),
 
-          Visibility(
-            visible: !isFindBusinessLoading &&
-                !isNearbyLoading &&
-                customerProfileList.isEmpty &&
-                customerProfileListNearBy.isEmpty,
-            child: Center(
-              child: NoItemInList(
-                msg: AppLocalization.of(context)!.noResultFound,
-              ),
-            ),
-          ),
-        ],
       );
     }
-
   }
-
 
   Widget suggestionBuildView() {
 
