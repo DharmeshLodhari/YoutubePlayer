@@ -223,31 +223,6 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     return tabs;
   }
 
-  Widget appBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          // searchedUser = null;
-          Navigator.pop(context);
-        },
-      ),
-      title: widget.isLoading
-          ? SizedBox.shrink()
-          : userNameWithVerifiedIcon(
-              name: searchedUser!.displayName()!,
-              isVerified: searchedUser!.isVerified),
-    );
-  }
-
   Future<void> dispose() async {
     super.dispose();
     scrollController!.dispose();

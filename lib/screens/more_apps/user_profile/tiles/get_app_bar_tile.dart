@@ -1364,7 +1364,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               'https://slydo.co/${searchedUser!.userName!}/payme';
           var shareBody = userBloc.user.type != 'User'
               ? merchantUrl
-              : "https://slydo.co/" + searchedUser!.userName!;
+              : "https://slydo.co/store/" + searchedUser!.userName!;
           Share.share(shareBody, subject: "${searchedUser!.displayName()}");
         },
       ),
@@ -1594,4 +1594,5 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               }
             }));
   }
+
 }
