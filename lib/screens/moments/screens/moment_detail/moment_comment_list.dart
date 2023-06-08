@@ -22,11 +22,14 @@ class CommentListWidget extends StatefulWidget {
   final String momentID;
   final String username;
   final MomentsModel? moment;
+  final Function(bool, int)? callbackUpdateCommentCount;
+
   const CommentListWidget(
       {Key? key,
       required this.index,
       required this.momentID,
       required this.username,
+        this.callbackUpdateCommentCount,
       this.moment})
       : super(key: key);
 
@@ -219,6 +222,8 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                 for (var user in yarnComments) {
                   if (user.id == yarnComment.id) {
                     user.replyCount = user.replyCount! + 1; // Modify the count
+                    // // update comment count by add +1
+                    // widget.callbackUpdateCommentCount!(true);
                     if (mounted) setState(() {});
                   }
                 }
@@ -239,6 +244,9 @@ class _CommentListWidgetState extends State<CommentListWidget> {
               yarnComments.removeWhere((comment) => comment.id == yarnCmt.id);
 
               yarnComment.replyCount != 0 ? yarnComment.replyCount! - 1 : 0;
+
+              // update comment count by subtracting -1
+              widget.callbackUpdateCommentCount!(false, yarnComment.replyCount!.toInt());
               if (mounted) setState(() {});
             },
             onCommentUpdate: (YarnComment yarnCmt, bool val) {
@@ -248,13 +256,21 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                 final model = yarnComments.removeAt(modelIndex);
                 model.pinned = val;
                 yarnComments.insert(0, model);
-                // getListOfComments();
+
                 Navigator.pop(context);
                 if (mounted) setState(() {});
               }
 
 
             },
+            callbackUpdateCommentCount: (value){
+              if(value == true){
+                //increase the count by for the single moment detail + 1
+                widget.callbackUpdateCommentCount!(true, 1);
+              }
+
+            },
+
           ),
         ),
         const SizedBox(
@@ -371,6 +387,8 @@ class _CommentListWidgetState extends State<CommentListWidget> {
 
         //update the comment list
         yarnComments.add(yarnComment);
+        // update comment count by adding +1
+        widget.callbackUpdateCommentCount!(true, 1);
 
         if (mounted) setState(() {});
       }

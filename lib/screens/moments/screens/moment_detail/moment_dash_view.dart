@@ -42,7 +42,7 @@ class _MomentDashViewState extends State<MomentDashView>
       vsync: this,
       duration: const Duration(seconds: 5),
     )..addListener(() {
-        setState(() {});
+        // setState(() {});
       });
 
     controller.repeat(reverse: false);

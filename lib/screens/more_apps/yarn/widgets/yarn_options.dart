@@ -42,6 +42,7 @@ class YarnOptions extends StatefulWidget {
   String? momentUsername;
   MomentsModel? moment;
   Function(bool)? reloadView;
+  final Function(bool)? callbackUpdateCommentCount;
 
   YarnOptions(
       {this.yarnTopic,
@@ -55,6 +56,7 @@ class YarnOptions extends StatefulWidget {
       this.momentUsername,
       this.moment,
       this.reloadView,
+        this.callbackUpdateCommentCount,
       this.onDeleteComment});
 
   @override

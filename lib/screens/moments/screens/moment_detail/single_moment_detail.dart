@@ -49,6 +49,7 @@ class SingleMomentDetailScreen extends StatefulWidget {
   final void Function() onRightSwipe;
   final void Function() onMomentPop;
 
+
   MomentsModel currentMoment;
 
   SingleMomentDetailScreen({
@@ -71,11 +72,12 @@ class SingleMomentDetailScreen extends StatefulWidget {
 class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     with TickerProviderStateMixin {
   late AnimationController controller;
-  GlobalKey<RenderMomentState> _renderMomentStateKey =
+  final GlobalKey<RenderMomentState> _renderMomentStateKey =
       GlobalKey<RenderMomentState>();
 
   bool _isLiked = false;
   bool _isDisLiked = false;
+  late MomentsBloc momentsBloc;
 
   void toggleMediaPlayingState() {
     _renderMomentStateKey.currentState?.toggleMediaPlayingState();
@@ -146,6 +148,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    momentsBloc = Provider.of<MomentsBloc>(context, listen: false);
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -1009,7 +1013,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     String commentCount = '';
 
     try {
-      MomentsBloc momentsBloc = Provider.of<MomentsBloc>(context);
+
       if (momentsBloc.numberOfComments[index] >= 1) {
         commentCount = getFormattedViewCount(
           noOfViews: momentsBloc.numberOfComments[index],
@@ -1272,6 +1276,20 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
           index: index,
           username: currentMoment!.ownerName!,
           moment: widget.currentMoment,
+          callbackUpdateCommentCount: (value, num){
+            if(value == true){
+
+              momentsBloc.numberOfComments[index] = momentsBloc.numberOfComments[index] + 1;
+              if(mounted)setState(() {});
+
+            }else{
+
+              momentsBloc.numberOfComments[index] = num == 1 ? momentsBloc.numberOfComments[index] - 1:
+              momentsBloc.numberOfComments[index] - num;
+              if(mounted)setState(() {});
+            }
+
+          },
         ),
       ),
     );

@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
@@ -47,6 +46,7 @@ class MomentCommentTile extends StatefulWidget {
   String? momentId;
   String? commentType;
   MomentsModel? moment;
+  final Function(bool)? callbackUpdateCommentCount;
 
   MomentCommentTile({
     Key? key,
@@ -64,6 +64,7 @@ class MomentCommentTile extends StatefulWidget {
     this.momentId,
     this.commentType,
     this.moment,
+    this.callbackUpdateCommentCount,
   }) : super(key: key);
 
   @override
@@ -361,7 +362,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
             height: 2.5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(removedLink)! ?? '',
+            text: messageDecoderWithEmoji(removedLink)!,
             style: TextStyle(
                 color: blackFont, fontSize: 12, fontFamily: "OpenSans"),
             // atStyle: TextStyle(
@@ -449,7 +450,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(removedLink)! ?? '',
+      text: messageDecoderWithEmoji(removedLink)!,
       style: TextStyle(color: blackFont, fontSize: 12, fontFamily: "OpenSans"),
       // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,
@@ -591,6 +592,12 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
                   yarnComment: widget.yarnComment,
                   momentId: widget.momentId,
                   minusComment: widget.minusComment,
+                  callbackUpdateCommentCount: (value){
+                    if(value == true){
+                      //increase the count by for the single moment detail + 1
+                      widget.callbackUpdateCommentCount!(true);
+                    }
+                  },
                 ),
               ),
               child: Row(
@@ -637,12 +644,10 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          child: Icon(
-            Icons.push_pin,
-            color: greySecondaryYarn,
-            size: 15,
-          ),
+        Icon(
+          Icons.push_pin,
+          color: greySecondaryYarn,
+          size: 15,
         ),
         const SizedBox(
           width: 5,
