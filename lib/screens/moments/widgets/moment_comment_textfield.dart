@@ -264,7 +264,6 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     }
   }
 
-
   Widget getCommentBoxWithOptions() {
     return Container(
       padding: const EdgeInsets.only(top: 5),
@@ -447,7 +446,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                   }
                 },
                 child: Padding(
-                  padding: const EdgeInsets.only(left: .5),
+                  padding:
+                      EdgeInsets.only(left: selectedImages.isEmpty ? .5 : 10),
                   child: SvgPicture.asset("yarn/images".toSVG()),
                 )),
           ],
@@ -464,7 +464,6 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
 
     return items;
   }
-
 
   Widget moreActionBtn() {
     return IconButton(
@@ -534,8 +533,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     return Container(
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionTheme:
-              const TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+          textSelectionTheme: const TextSelectionThemeData()
+              .copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -670,8 +669,9 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     productOrServiceCount = 0;
     productOrServiceNext = "";
     productOrServicePrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
       bottomSheetStateSetterGlobal!(() {});
+    }
     if (mounted) setState(() {});
   }
 
@@ -682,8 +682,9 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
       if (productOrServiceNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await MessageAuth()
@@ -699,8 +700,9 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
@@ -715,14 +717,16 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
           }
         });
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
       if (searchedProductAndService.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
       }
     }
@@ -782,7 +786,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                 searchProductOrService();
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -811,7 +816,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                 searchProductOrService();
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -1098,8 +1104,9 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         selectedMedia
             .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
 
-        if (widget.addedSelectedMedia != null)
+        if (widget.addedSelectedMedia != null) {
           widget.addedSelectedMedia!(selectedMedia);
+        }
         if (mounted) setState(() {});
       } else if (mediaType == 'video') {
         var videoFilePath =
@@ -1341,8 +1348,9 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
             readOnly: widget.readOnly,
             onTap: widget.onTap ??
                 () {
-                  if (widget.resetScrollingValue != null)
+                  if (widget.resetScrollingValue != null) {
                     widget.resetScrollingValue!(false);
+                  }
                 },
             decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
@@ -1367,7 +1375,6 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
       ),
     );
   }
-
 
   Widget checkIfProductService() {
     return Container(
@@ -1409,7 +1416,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     //display services
     if (productServicePreview.runtimeType.toString() == 'Service') {
       return Container(
-        margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        margin: const EdgeInsets.only(
+            left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: YarnServiceTile(
           service: serviceMode,
           tileRenderPlace: TileRenderPlace.YarnProductService,
@@ -1419,7 +1427,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     //display product
     else if (productServicePreview.runtimeType.toString() == 'Product') {
       return Container(
-        margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        margin: const EdgeInsets.only(
+            left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: YarnProductTile(
           product: productMode,
           tileRenderPlace: TileRenderPlace.YarnProductService,
@@ -1430,7 +1439,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     else if (productServicePreview.runtimeType.toString() ==
         'CustomerProfile') {
       return Container(
-        margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        margin: const EdgeInsets.only(
+            left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: YarnCustomerPostTile(
           customerProfile: customerProfileMode,
           showAuthorDetails: true,
@@ -1441,7 +1451,8 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     //display blog post
     else if (productServicePreview.runtimeType.toString() == 'UserPost') {
       return Container(
-        margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        margin: const EdgeInsets.only(
+            left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: PostTile(
           post: userPostMode,
           showAuthorDetails: true,
@@ -1701,7 +1712,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     } else {
       results = await MessageAuth()
           .searchGIF(
-          query: _gifController.text.trim(), isSticker: _isMessageIsSticker)
+              query: _gifController.text.trim(), isSticker: _isMessageIsSticker)
           .catchError((error) {
         debugPrint("ERROR:- $error");
       });
@@ -1741,57 +1752,55 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     );
   }
 
-
   Widget gifPreviewList() {
     return SizedBox(
       height: MediaQuery.of(context).size.height / 3,
       child: _isGIFLoading
           ? Center(child: CircularLoadingIndicator())
           : GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 2,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-        ),
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              ///send the chosen gif using callback and clear the gif search view
-              //_gifs[index].images!.original!.url //this is where the gif is saved temporary
-              widget.addedSelectedGif!(_gifs[index]);
-
-              _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
-              _isMessageIsSticker = false;
-              _gifController.clear();
-              if (mounted) setState(() {});
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(3),
-              child: CachedNetworkImage(
-                width: MediaQuery.of(context).size.width / 2,
-                imageUrl: _gifs[index].images!.previewGif!.url!,
-                fit: BoxFit.fill,
-                errorWidget: imageErrorWidget,
-                placeholder: (context, url) => Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    child: Center(child: CircularLoadingIndicator())),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 2,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
               ),
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    ///send the chosen gif using callback and clear the gif search view
+                    //_gifs[index].images!.original!.url //this is where the gif is saved temporary
+                    widget.addedSelectedGif!(_gifs[index]);
+
+                    _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+                    _isMessageIsSticker = false;
+                    _gifController.clear();
+                    if (mounted) setState(() {});
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: CachedNetworkImage(
+                      width: MediaQuery.of(context).size.width / 2,
+                      imageUrl: _gifs[index].images!.previewGif!.url!,
+                      fit: BoxFit.fill,
+                      errorWidget: imageErrorWidget,
+                      placeholder: (context, url) => Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: Center(child: CircularLoadingIndicator())),
+                    ),
+                  ),
+                );
+              },
+              itemCount: _gifs.length,
             ),
-          );
-        },
-        itemCount: _gifs.length,
-      ),
     );
   }
-
-
 }
 
 class CustomShape extends CustomClipper<Rect> {
   @override
-  Rect getClip(Size size) => const Offset(0, -2) & Size(size.width, size.height);
+  Rect getClip(Size size) =>
+      const Offset(0, -2) & Size(size.width, size.height);
   @override
   bool shouldReclip(covariant CustomClipper<Rect> oldClipper) => true;
 }

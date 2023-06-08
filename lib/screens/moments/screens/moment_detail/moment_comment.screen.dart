@@ -18,18 +18,21 @@ import '../../models/moments_model.dart';
 import '../../tiles/moment_comment_tile.dart';
 import '../moments_service.dart';
 
-// ignore: must_be_immutable
+
 //reply to comment for moment, full screen
 class MomentCommentScreen extends StatefulWidget {
   MomentCommentScreen(
       {Key? key, this.yarnComment, this.momentId,
-        this.addedSelectedMedia, this.minusComment, this.onDeleteComment})
+        this.addedSelectedMedia, this.minusComment,
+        this.callbackUpdateCommentCount,
+        this.onDeleteComment})
       : super(key: key);
   YarnComment? yarnComment;
   String? momentId;
   Function(List<MomentMedia>)? addedSelectedMedia;
   Function(bool)? minusComment;
   final Function(YarnComment)? onDeleteComment;
+  final Function(bool)? callbackUpdateCommentCount;
 
 
   @override
@@ -182,12 +185,14 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
                               //if false add 1 to comment count
                               yarnComment.replyCount! + 1;
                               widget.minusComment!(false);
+
                               if(mounted)setState(() {});
                             }
                             else if(value == true){
                               //if true subtract 1 to comment count
                               yarnComment.replyCount != 0 ? yarnComment.replyCount! - 1 : 0;
                               widget.minusComment!(true);
+
                               if(mounted)setState(() {});
                             }
                           },
@@ -201,7 +206,12 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
                               if (mounted) setState(() {});
                             }
 
-                            // getAllComments();
+                          },
+                          callbackUpdateCommentCount: (value){
+                            if(value == true){
+                              //increase the count by for the single moment detail + 1
+                              widget.callbackUpdateCommentCount!(true);
+                            }
 
                           },
                         ),
@@ -394,6 +404,8 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
 
         //update this current list
         yarnComments.add(yarnComment);
+        // update comment count by add +1
+        widget.callbackUpdateCommentCount!(true);
 
         if (mounted) setState(() {});
       }
