@@ -1,24 +1,17 @@
-import 'dart:convert';
 
-import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../data/currency.dart';
-import '../../../../data/environment.dart';
 import '../../../../data/state_notifier.dart';
-import '../../../../locale/app_localization.dart';
 import '../../../../utils/colors.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
-import '../../../../widget/customized_textform_field.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({Key? key}) : super(key: key);

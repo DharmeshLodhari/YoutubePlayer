@@ -77,6 +77,8 @@ double getItemHeight(TileRenderPlace tileRenderPlace, BuildContext context) {
       return MediaQuery.of(context).size.width / 2.0;
     case TileRenderPlace.YarnProductService:
       return MediaQuery.of(context).size.width / 2.0;
+    case TileRenderPlace.Thiny:
+      return MediaQuery.of(context).size.width / 3.0;
   }
 }
 
@@ -88,6 +90,8 @@ double getSizeBoxHeight(TileRenderPlace tileRenderPlace, BuildContext context) {
       return 6;
     case TileRenderPlace.YarnProductService:
       return 6;
+    case TileRenderPlace.Thiny:
+      return 4;
   }
 }
 
@@ -99,6 +103,8 @@ double getFontSize(TileRenderPlace tileRenderPlace, BuildContext context) {
       return 12;
     case TileRenderPlace.YarnProductService:
       return 10;
+    case TileRenderPlace.Thiny:
+      return 8;
   }
 }
 
@@ -111,6 +117,8 @@ double getContainerHeight(
       return 120;
     case TileRenderPlace.YarnProductService:
       return 100;
+    case TileRenderPlace.Thiny:
+      return 80;
   }
 }
 
@@ -123,6 +131,8 @@ double getWallPaperCoverHeight(
       return 110;
     case TileRenderPlace.YarnProductService:
       return 100;
+    case TileRenderPlace.Thiny:
+      return 80;
   }
 }
 
@@ -134,6 +144,8 @@ double getAvatarTop(TileRenderPlace tileRenderPlace, BuildContext context) {
       return 80;
     case TileRenderPlace.YarnProductService:
       return 60;
+    case TileRenderPlace.Thiny:
+      return 40;
   }
 }
 
@@ -145,6 +157,8 @@ double getButtonSize(TileRenderPlace tileRenderPlace, BuildContext context) {
       return 36;
     case TileRenderPlace.YarnProductService:
       return 30;
+    case TileRenderPlace.Thiny:
+      return 20;
   }
 }
 

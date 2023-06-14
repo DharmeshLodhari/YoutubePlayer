@@ -315,7 +315,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                 title:
                 Column(
                   children: [
-                    const SizedBox(height: 20.0,),
+                    const SizedBox(height: 30.0,),
                     Container(
                       margin: const EdgeInsets.only(left: 10.0),
                       child: Row(
@@ -364,13 +364,13 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                 //   fontSize: 18,
                 //   color: blackFont,
                 // ),),
-                expandedHeight: 300, // Set the desired expanded height of the app bar
+                expandedHeight: 250, // Set the desired expanded height of the app bar
                 backgroundColor: Colors.transparent,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Column(
                     children: [
                       if(customerProfileListNearBy.isNotEmpty)...[
-                        const SizedBox(height: 10.0,),
+                        const SizedBox(height: 30.0,),
                         nearByBuildView(),
                       ],
                     ],
@@ -380,8 +380,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
             ),
           ];
         },
-        body:
-        Column(
+        body: Column(
           children: [
             if (customerProfileList.isNotEmpty) ...[
               // const SizedBox(height: 10.0,),
@@ -435,7 +434,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
 
           return FindBusiness(
             customerProfile: customerProfileList[index],
-            tileRenderPlace: TileRenderPlace.YarnTimeLine,
+            tileRenderPlace: TileRenderPlace.YarnProductService,
             callback: (username, value) {
               //create a list to edit
               List<CustomerProfile> customerProfileListEdit = customerProfileList;
@@ -482,12 +481,12 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         children: [
           for (var item in customerProfileListNearBy)
             Container(
-              width: 300,
+              width: 200,
               // height: 200,
               margin: const EdgeInsets.symmetric(horizontal: 8),
               child: FindBusiness(
                 customerProfile: item,
-                tileRenderPlace: TileRenderPlace.YarnProductService,
+                tileRenderPlace: TileRenderPlace.Thiny,
                 callback: (username, value) {
                   //create a list to edit
                   List<CustomerProfile> customerProfileListEdit = customerProfileListNearBy;

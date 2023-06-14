@@ -999,15 +999,15 @@ class _FindBusinessState extends State<FindBusiness> {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: image);
                   },
                   child: SizedBox(
-                      width: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 40 :50,
-                      height: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 40 :50,
+                      width: widget.tileRenderPlace == TileRenderPlace.Thiny? 40 :50,
+                      height: widget.tileRenderPlace == TileRenderPlace.Thiny? 40 :50,
                       child: CircularUserColorImage(imageUrl: widget.customerProfile.avatar!, name: widget.customerProfile.fullName!)),
                 ),
               ),
             ],
           ),
           Container(
-            padding: widget.tileRenderPlace == TileRenderPlace.YarnProductService? EdgeInsets.only(left: 15, top: 10, bottom: 5, right: 15)
+            padding: widget.tileRenderPlace == TileRenderPlace.Thiny? EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
                 :  EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1030,39 +1030,42 @@ class _FindBusinessState extends State<FindBusiness> {
                                 child: Text(
                                   appendStringDot(messageDecoderWithEmoji(
                                       widget.customerProfile.userName ?? "") ??
-                                      "", 20),
-                                  style: TextStyle(fontSize: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 12 : 16, fontWeight: FontWeight.w700, color: yarnBlack),
+                                      "", widget.tileRenderPlace == TileRenderPlace.Thiny ? 13 : 20),
+                                  style: TextStyle(fontSize: widget.tileRenderPlace == TileRenderPlace.Thiny? 12 : 16, fontWeight: FontWeight.w700, color: yarnBlack),
                                 )),
                             Align(
                               alignment: Alignment.centerLeft,
                               child: userNameWithVerifiedIcon(
-                                  name: "@${widget.customerProfile.userName ?? ''}",
+                                  name: appendStringDot(messageDecoderWithEmoji(
+                                      '@${widget.customerProfile.userName}') ??
+                                      "", widget.tileRenderPlace == TileRenderPlace.Thiny ? 13 : 20),
                                   isVerified: widget.customerProfile.isVerified,
                                   textStyle: TextStyle(
-                                    fontSize: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 11 : 14,
+                                    fontSize: widget.tileRenderPlace == TileRenderPlace.Thiny? 11 : 14,
                                     color: HexColor("#151515"),
                                     fontWeight: FontWeight.w500,
                                   ),
                                   verifiedIconColor: verifyGreen,
-                                  verifiedIconSize: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 12 : 15),
+                                  verifiedIconSize: widget.tileRenderPlace == TileRenderPlace.Thiny? 12 : 15),
                             ),
                           ],
                         ),
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      // padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: getFollowUnFollowBtn(),
                     ),
                   ],
                 ),
-                SizedBox(height: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 5.0 :10.0,),
+                SizedBox(height: widget.tileRenderPlace == TileRenderPlace.Thiny? 2.0 :5.0,),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(60),
                   ),
-                  padding: widget.tileRenderPlace == TileRenderPlace.YarnProductService ? EdgeInsets.symmetric(horizontal: 3, vertical: 1) :  EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding: widget.tileRenderPlace == TileRenderPlace.Thiny ? EdgeInsets.symmetric(horizontal: 3, vertical: 1)
+                      :  EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   child: getRating(
                       numberOfRating:
                       widget.customerProfile.rating.toInt()),
@@ -1083,7 +1086,7 @@ class _FindBusinessState extends State<FindBusiness> {
                             fontWeight: FontWeight.w600,
                             color: blackFont,
                           ),
-                          maxLines: 3,
+                          maxLines: 2,
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1095,7 +1098,7 @@ class _FindBusinessState extends State<FindBusiness> {
               ],
             ),
           ),
-           SizedBox(height: widget.tileRenderPlace == TileRenderPlace.YarnProductService? 5.0 :10.0,),
+           SizedBox(height: widget.tileRenderPlace == TileRenderPlace.Thiny? 5.0 :10.0,),
         ],
       ),
     );
@@ -1141,19 +1144,19 @@ class _FindBusinessState extends State<FindBusiness> {
           });
         },
         child: Container(
-          height: 30,
-          width: 80,
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          height: widget.tileRenderPlace == TileRenderPlace.Thiny ? 20 : 30,
+          width: widget.tileRenderPlace == TileRenderPlace.Thiny ? 60 : 80,
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
               color: blackFont,
               borderRadius: BorderRadius.circular(50),
               border: Border.all(color: HexColor("#292929"), width: 1)),
-          child: const Center(
+          child:  Center(
             child: Text(
               'Following',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: widget.tileRenderPlace == TileRenderPlace.Thiny ? 10 : 12,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),
@@ -1184,18 +1187,18 @@ class _FindBusinessState extends State<FindBusiness> {
         });
       },
       child: Container(
-        height: 30,
-        width: 80,
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        height: widget.tileRenderPlace == TileRenderPlace.Thiny ? 20 : 30,
+        width: widget.tileRenderPlace == TileRenderPlace.Thiny ? 60 : 80,
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
             border: Border.all(color: HexColor("#292929"), width: 1)),
-        child: const Center(
+        child:  Center(
           child: Text(
             'Follow',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: widget.tileRenderPlace == TileRenderPlace.Thiny ? 11 : 13,
               color: Colors.black,
               fontWeight: FontWeight.w600,
             ),

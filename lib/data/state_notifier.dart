@@ -255,24 +255,28 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  //get the list of merchant username and name without repetition
   void getAllMerchant() {
-    //[{type: product, item: Instance of 'Product', qty: 2},
-    // {type: product, item: Instance of 'Product', qty: 1}]
 
     for (var consumableData in items) {
       if (consumableData['type'] == 'product') {
         Product product = consumableData['item'];
 
-        merchantData.add(
-            {'name': product.sellerFullName!, 'username': product.seller!});
+        var username = product.seller!;
+        if (!merchantData.any((merchant) => merchant['username'] == username)) {
+          merchantData.add({'name': product.sellerFullName!, 'username': username});
+        }
       } else if (consumableData['type'] == 'service') {
         Service service = consumableData['item'];
 
-        merchantData.add(
-            {'name': service.providerFullName!, 'username': service.provider!});
+        var username = service.provider!;
+        if (!merchantData.any((merchant) => merchant['username'] == username)) {
+          merchantData.add({'name': service.providerFullName!, 'username': username});
+        }
       }
     }
   }
+
 
   void removeMerchant(String name) {
     merchantData.removeWhere((map) => map["name"] == name);

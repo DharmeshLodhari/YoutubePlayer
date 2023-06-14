@@ -12,6 +12,7 @@ import '../../widget/item_display_card.dart';
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/user_profile/models/search_user_item_with_filter.dart';
 import '../more_apps/user_profile/models/user.dart';
+import '../more_apps/yarn/utils/yarn_enum.dart';
 
 
 class SearchNearByBusiness extends StatefulWidget {
@@ -158,7 +159,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
           ),
         );
       }
@@ -258,8 +259,8 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           backgroundColor: iconBtnGrey,
           enableMargin: true,
         )
-            : SizedBox.shrink(),
-        SizedBox(width: 16),
+            : const SizedBox.shrink(),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -269,10 +270,10 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       child: Column(
         children: [
 
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           searchBox(),
-          SizedBox(height: 12),
-          isLoading ? CircularProgressIndicator() : SizedBox.shrink(),
+          const SizedBox(height: 12),
+          isLoading ? const CircularProgressIndicator() : const SizedBox.shrink(),
           isSearchIsEmpty
               ? Expanded(
             child: NoItemInList(
@@ -292,26 +293,30 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                 children: nearByBusiness
                     .map(
                       (product) => Container(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                         vertical: 8, horizontal: 16),
-                    child: FindBusiness(customerProfile: product,
-                      callback: (username, value) {
-                        //create a list to edit
-                        List<CustomerProfile> customerProfileList = nearByBusiness;
-                        // modify customerProfileList for the username and refresh the list
-                        // set the isFollowing for that particular user
-                        customerProfileList.forEach((customer) {
-                          if (customer.userName == username) {
-                            customer.isFollowing = value; // Modify the isFollowing property
-                          }
-                        });
+                    child: Container(
+                      margin: const EdgeInsets.all(8.0),
+                      child: FindBusiness(customerProfile: product,
+                        tileRenderPlace: TileRenderPlace.YarnProductService,
+                        callback: (username, value) {
+                          //create a list to edit
+                          List<CustomerProfile> customerProfileList = nearByBusiness;
+                          // modify customerProfileList for the username and refresh the list
+                          // set the isFollowing for that particular user
+                          customerProfileList.forEach((customer) {
+                            if (customer.userName == username) {
+                              customer.isFollowing = value; // Modify the isFollowing property
+                            }
+                          });
 
-                        nearByBusiness = [];
-                        nearByBusiness = customerProfileList;
+                          nearByBusiness = [];
+                          nearByBusiness = customerProfileList;
 
-                        if(mounted)setState(() {});
+                          if(mounted)setState(() {});
 
-                      },
+                        },
+                      ),
                     ),
 
                   ),
@@ -326,7 +331,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -374,8 +379,8 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
             hintText: "Search Business Near by you",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(
@@ -422,7 +427,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20)),
@@ -430,7 +435,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                   color: Colors.white,
                   margin: EdgeInsets.zero,
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
@@ -441,31 +446,31 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                               fontWeight: FontWeight.w700,
                               color: blackFont),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         getCategoryField(bottomSheetSetState),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         getPickedCategoryNames(),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         getStateDropDownField(bottomSheetSetState),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         getPickedStates(),
-                        SizedBox(height: 24),
+                        const SizedBox(height: 24),
                         if(pickedStateList.isNotEmpty)...[
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           getLgaDropDownField(bottomSheetSetState),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           getPickedLga(),
                         ],
                         // SizedBox(height: 20),
-                        SizedBox(height: 50),
+                        const SizedBox(height: 50),
                         Row(
                           children: [
                             Expanded(child: getClearAllBtn()),
-                            SizedBox(width: 20),
+                            const SizedBox(width: 20),
                             Expanded(child: getFilterSubmitBtn()),
                           ],
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                       ],
                     ),
                   ),
@@ -503,8 +508,8 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         children: pickedCategoryList
             .map(
               (e) => Container(
-            margin: EdgeInsets.all(6),
-            padding: EdgeInsets.all(12),
+            margin: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
                 color: greyBorderColor,
                 borderRadius: BorderRadius.circular(12)),
@@ -549,10 +554,10 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 InkWell(
                   onTap: () {},
-                  child: Text(
+                  child: const Text(
                     '',
                     textAlign: TextAlign.right,
                     style: TextStyle(color: Colors.red),
@@ -707,10 +712,10 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 InkWell(
                   onTap: () {},
-                  child: Text(
+                  child: const Text(
                     '',
                     textAlign: TextAlign.right,
                     style: TextStyle(color: Colors.red),
@@ -770,8 +775,8 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         children: pickedStateList
             .map(
               (e) => Container(
-            margin: EdgeInsets.all(6),
-            padding: EdgeInsets.all(12),
+            margin: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
                 color: greyBorderColor,
                 borderRadius: BorderRadius.circular(12)),
@@ -845,10 +850,10 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 InkWell(
                   onTap: () {},
-                  child: Text(
+                  child: const Text(
                     '',
                     textAlign: TextAlign.right,
                     style: TextStyle(color: Colors.red),
@@ -908,8 +913,8 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         children: pickedLgaList
             .map(
               (e) => Container(
-            margin: EdgeInsets.all(6),
-            padding: EdgeInsets.all(12),
+            margin: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
                 color: greyBorderColor,
                 borderRadius: BorderRadius.circular(12)),
