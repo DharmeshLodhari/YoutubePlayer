@@ -366,7 +366,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           Row(
             children: [
               AnimatedContainer(
-                width: 96,
+                width: 48,
                 duration: Duration(milliseconds: 500),
                 decoration: BoxDecoration(
                     border: Border.all(color: white, width: 3),
@@ -493,10 +493,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           Row(
             children: [
               AnimatedContainer(
-                width: 96,
+                width: 48,
                 duration: Duration(milliseconds: 500),
                 decoration: BoxDecoration(
-                    border: Border.all(color: borderColor, width: 3),
+                    // border: Border.all(color: borderColor, width: 3),
                     shape: BoxShape.circle),
                 child: GestureDetector(
                   onTap: () {
@@ -610,6 +610,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserProfilePic() {
+    Color borderColor = getUserTypeColorByType(type: searchedUser!.type!);
+
     if (widget.userType == 'channel') {
       if (widget.channelDetail!['avatar'] == null) {
         return CircleAvatar(
@@ -641,6 +643,27 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ),
         );
       } else {
+        return Container(
+          height: 48,
+          width: 48,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2),
+          ),
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: searchedUser!.avatar! == "" || searchedUser!.avatar! == null
+                  ? defaultImage
+                  : searchedUser!.avatar!,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
+            ),
+          ),
+        );
         return CircleAvatar(
           radius: 25,
           backgroundImage: CachedNetworkImageProvider(
