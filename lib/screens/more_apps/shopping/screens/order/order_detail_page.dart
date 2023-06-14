@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../utils/date_time_and_money_converter.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../../user_profile/forms/user_address.dart';
@@ -68,6 +69,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
     fetchOrder(order!.id.toString());
+
+    debugPrint('Fola order::: ${order}');
     super.initState();
   }
 
@@ -160,11 +163,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
       actions: <Widget>[
         locationBtn(),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
         noteSheetBtn(),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
         changeOrderStatusSheetBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -217,7 +220,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -256,7 +259,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         enableMargin: true,
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget scaffoldBody() {
@@ -275,7 +278,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     getOrderDetail(),
                     Expanded(
                       child: ListView.builder(
-                        padding: EdgeInsets.symmetric(vertical: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                         itemCount: items.length,
                         itemBuilder: (BuildContext context, int index) =>
                             getItemTile(index),
@@ -326,7 +329,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               ),
                             ),
                           )
-                        : SizedBox.shrink(),
+                        : const SizedBox.shrink(),
                   ],
                 ),
         ),
@@ -336,7 +339,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget statusIconButton() {
     return IconButton(
-      icon: Icon(Icons.settings),
+      icon: const Icon(Icons.settings),
       onPressed: () {
         showChangeStatusAndroidSheet();
       },
@@ -345,7 +348,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget getOrderDetail() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           checkoutWidget(),
@@ -356,7 +359,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget noteIconButton() {
     return IconButton(
-      icon: Icon(Icons.event_note),
+      icon: const Icon(Icons.event_note),
       onPressed: () {
         showNoteAndroidSheet();
       },
@@ -370,7 +373,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         isScrollControlled: true,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -380,7 +383,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               child: Container(
                 height: MediaQuery.of(context).size.height / 2 +
                     MediaQuery.of(context).viewInsets.bottom,
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -413,7 +416,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             children: <Widget>[
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: Text(
                     getOrderNote(),
                     style: TextStyle(
@@ -433,11 +436,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 30,
         ),
         getNoteAddTextField(),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         addNoteBtn(),
@@ -508,7 +511,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             return Card(
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
@@ -516,7 +519,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 color: Colors.white,
                 margin: EdgeInsets.zero,
                 child: Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     vertical: 18,
                   ),
                   child: Column(
@@ -641,15 +644,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       color: navyBlue,
       elevation: 1,
-      margin: EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: navyBlue),
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 18,
             ),
             Row(
@@ -657,7 +660,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 Expanded(
                   child: Text(
                     AppLocalization.of(context)!.total + " : ",
-                    style: TextStyle(fontSize: 14, color: Colors.white),
+                    style: const TextStyle(fontSize: 14, color: Colors.white),
                   ),
                 ),
                 Expanded(
@@ -665,7 +668,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     children: [
                       Text(
                         worldCurrencies[order!.currency!]!,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontFamily: "Roboto",
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -673,7 +676,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       ),
                       Text(
                         moneyDisplayNormalizer(order!.totalPrice),
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
@@ -685,13 +688,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ),
             Row(
               children: [
-                Expanded(
+                const Expanded(
                     child: Text("Order No:- ",
                         style: TextStyle(fontSize: 14, color: Colors.white))),
                 Expanded(
                     child: Text(
                   "${"Ref # :" + (order?.id ?? "")}",
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontFamily: "Roboto",
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -701,13 +704,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ),
             Row(
               children: [
-                Expanded(
+                const Expanded(
                     child: Text("Order Status:- ",
                         style: TextStyle(fontSize: 14, color: Colors.white))),
                 Expanded(
                     child: Text(
                   "${order?.status ?? ""}",
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontFamily: "Roboto",
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -715,7 +718,24 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 )),
               ],
             ),
-            SizedBox(
+            Row(
+              children: [
+                const Expanded(
+                    child: Text("Date & Time:- ",
+                        style: TextStyle(fontSize: 14, color: Colors.white))),
+                Expanded(
+                    child: Text(
+                        convertTimestampToDateTime(order!.createdAt!),
+                  // "${order?.createdAt ?? ""}",
+                  style: const TextStyle(
+                      fontFamily: "Roboto",
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                )),
+              ],
+            ),
+            const SizedBox(
               height: 18,
             ),
           ],
@@ -749,7 +769,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(itemTile, item),
       actions: listActionSlideActions(index),
@@ -877,7 +897,7 @@ class VerticalListItem extends StatelessWidget {
         }
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
     );

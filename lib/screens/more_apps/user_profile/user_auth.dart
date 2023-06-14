@@ -583,6 +583,8 @@ class UserAuth extends AuthService {
 
     http.Response response = await httpGet(url, headers: headers);
 
+    debugPrint('FETCH STATE RESPONSE ::: ${response.body}');
+
     if (response.statusCode == 200) {
       List responseBody = jsonDecode(response.body);
       return responseBody.map((e) => StatesModel.fromJson(e)).toList();

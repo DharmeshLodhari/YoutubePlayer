@@ -3,7 +3,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../data/currency.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
@@ -302,12 +301,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   //   }
   // }
 }
-
-// [
-// {"black": {"addrress": {"address_line": ""}, "shipping-option":5, "note": "the note"},
-// {"cameraman": {"addrress": {"address_line": ""}, "shipping-option":1, "note": "A note"},
-// {"tamara": {"addrress": {"address_line": ""}, "shipping-option":2, "note": "My note"},
-// ]
 
 // {black: {address: {city: Lagos, state: Lagos, country: Nigeria, shipping_note: Just in note, address_line_1: No 2, Adebowale close, Akute, address_line_2: Omole estate, Berger, country_iso_code: NG}, shipping-option: null, note: Just in note}}
 class OrderDataModel {
