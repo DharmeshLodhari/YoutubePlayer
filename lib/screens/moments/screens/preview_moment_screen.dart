@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/screens/pick_attachment_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
@@ -40,6 +39,8 @@ class PreviewMomentScreen extends StatefulWidget {
 
 class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   late UserBloc userBloc;
+  bool isText = false;
+  bool isTapped = false;
   bool isPublic = true;
   bool enableLikes = true;
   bool enablePayMe = false;
@@ -145,7 +146,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                   //     ),
                   //   ),
                   // ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     maxLength: 255,
                     maxLines: 5,
@@ -153,8 +154,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                       hoverColor: white,
                       hintText: 'Enter caption...',
                       border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 12),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -193,9 +194,15 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     ),
                     onChanged: (value) {
                       momentTitle = value;
+                      if (value.isNotEmpty) {
+                        isText = true;
+                      } else {
+                        isText = false;
+                      }
+                      setState(() {});
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Row(
@@ -224,7 +231,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                     width: 10,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 6,
                                 ),
                                 Container(
@@ -239,22 +246,20 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                     width: 10,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 6,
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.all(10.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: greyBackground,
-                                  ),
-                                  child: SvgPicture.asset(
-                                    "yarn/thumbsup".toSVG(),
-                                    height: 10,
-                                    width: 10,
-                                  ),
-                                ),
-                                SizedBox(
+                                    padding: const EdgeInsets.all(10.0),
+                                    // decoration: BoxDecoration(
+
+                                    // ),
+                                    child: SvgPicture.asset(
+                                      "yarn/thumbsup".toSVG(),
+                                      height: 10,
+                                      width: 10,
+                                    )),
+                                const SizedBox(
                                   width: 6,
                                 ),
                                 Container(
@@ -269,7 +274,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                     width: 6,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 6,
                                 ),
                                 Container(
@@ -303,7 +308,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Icon(
@@ -317,7 +322,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                       )
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Visibility(
@@ -339,7 +344,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         previewMomentSwitchOptions(
                           title: 'Enable likes',
                           icon: 'yarn/dark_comment',
@@ -354,7 +359,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         previewMomentSwitchOptions(
                           icon: 'yarn/thumbsup',
                           title: 'Enable Comments',
@@ -369,7 +374,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         previewMomentSwitchOptions(
                           title: 'Make Permanent',
                           icon: 'yarn/infinity',
@@ -384,7 +389,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         appConfigurationModel?.enablePayment == true
                             ? previewMomentSwitchOptions(
                                 icon: 'yarn/black_logo',
@@ -400,8 +405,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                   },
                                 ),
                               )
-                            : SizedBox.shrink(),
-                        SizedBox(height: 20),
+                            : const SizedBox.shrink(),
+                        const SizedBox(height: 20),
                         dropDownPickItemWidget(
                           label: 'Pick attachment',
                           selectedItem: pickedAttachmentType,
@@ -438,13 +443,13 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                SizedBox(height: 12),
+                                const SizedBox(height: 12),
                                 Align(
                                   alignment: Alignment.center,
                                   child: Column(
                                     children: [
-                                      Text('Button Preview'),
-                                      SizedBox(height: 6),
+                                      const Text('Button Preview'),
+                                      const SizedBox(height: 6),
                                       payMeBtn(),
                                     ],
                                   ),
@@ -454,17 +459,17 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                   maxLength: 15,
                                   hintText: 'Enter pay me label...',
                                 ),
-                                SizedBox(height: 8),
-                                Text('Pick button color',
+                                const SizedBox(height: 8),
+                                const Text('Pick button color',
                                     textAlign: TextAlign.left),
-                                SizedBox(height: 2),
+                                const SizedBox(height: 2),
                                 Text(
                                   'Pick a color to display as your payment button color',
                                   style: TextStyle(
                                     color: blackFont.withOpacity(0.5),
                                   ),
                                 ),
-                                SizedBox(height: 20),
+                                const SizedBox(height: 20),
                                 InkWell(
                                   onTap: () async {
                                     //This is to dismiss the keyboard first, wait for 200 milliseconds
@@ -472,11 +477,11 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                     //To avoid overflow errors on the dialog.
                                     focusNode.unfocus();
                                     await Future.delayed(
-                                        Duration(milliseconds: 200));
+                                        const Duration(milliseconds: 200));
                                     bool? _pickedColor = await showDialog<bool>(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: Text('Pick your color'),
+                                        title: const Text('Pick your color'),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -509,11 +514,11 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                         width: 40,
                                         height: 40,
                                       ),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                       Expanded(
                                         child: Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: const BoxDecoration(
                                             color: Colors.white,
                                           ),
                                           child: Text(
@@ -529,12 +534,12 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 20),
+                                const SizedBox(height: 20),
                               ],
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30,
                         ),
                         TextFieldTags(
@@ -568,7 +573,6 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         ],
       ),
     );
-
   }
 
   Widget payMeBtn() {
@@ -607,7 +611,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   }) {
     return Container(
       // height: 300,
-      padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
+      padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: white,
@@ -618,8 +622,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         children: [
           Container(
             padding: icon == 'yarn/infinity'
-                ? EdgeInsets.fromLTRB(14, 18, 12, 18)
-                : EdgeInsets.all(16.0),
+                ? const EdgeInsets.fromLTRB(14, 18, 12, 18)
+                : const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: lightGrey,
@@ -630,7 +634,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
               width: icon == 'yarn/infinity' ? 14 : 20,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
           Expanded(
@@ -687,60 +691,62 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         ),
       ),
       actions: [
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: CurvedButton(
-            width: 100,
-            height: 10,
-            borderRadius: 20,
-            text: 'Submit',
-            fontSize: 14,
-            onPressed: () async {
-              if (enablePayMe && payMeCtrl.text.isEmpty) {
-                showToast(message: 'Payment label cannot be empty');
-                return;
-              }
+        isText == false
+            ? const SizedBox.shrink()
+            : Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: CurvedButton(
+                  width: 100,
+                  height: 10,
+                  borderRadius: 20,
+                  text: 'Submit',
+                  fontSize: 14,
+                  onPressed: () async {
+                    if (enablePayMe && payMeCtrl.text.isEmpty) {
+                      showToast(message: 'Payment label cannot be empty');
+                      return;
+                    }
 
-              if (pickedAttachmentType == 'Url' &&
-                  (urlTextCtrl.text.isEmpty ||
-                      (!await canLaunchUrl(Uri.parse(urlTextCtrl.text))))) {
-                showToast(message: 'Please enter a valid url');
-                return;
-              }
-              showDialogBox(
-                context: context,
-                actionOneTextColor: blackFont,
-                actionTwoBgColor: navyBlue,
-                actionTwoTextColor: Colors.white,
-                actionOneBgColor: greyBorderColor,
-                title: AppLocalization.of(context)!.post,
-                actionTwoText: AppLocalization.of(context)!.post,
-                actionOneText: AppLocalization.of(context)!.notNow,
-                description: 'Are you sure you want to post\nyour moment now?',
-                roundedBackgroundIcon: RoundedBackgroundIcon(
-                  enableMargin: false,
-                  width: 90,
-                  height: 90,
-                  image: Image.asset(
-                    'assets/images/accept_dialog_icon.png',
-                    color: navyBlue,
-                  ),
+                    if (pickedAttachmentType == 'Url' &&
+                        (urlTextCtrl.text.isEmpty ||
+                            (!await canLaunchUrl(
+                                Uri.parse(urlTextCtrl.text))))) {
+                      showToast(message: 'Please enter a valid url');
+                      return;
+                    }
+                    showDialogBox(
+                      context: context,
+                      actionOneTextColor: blackFont,
+                      actionTwoBgColor: navyBlue,
+                      actionTwoTextColor: Colors.white,
+                      actionOneBgColor: greyBorderColor,
+                      title: AppLocalization.of(context)!.post,
+                      actionTwoText: AppLocalization.of(context)!.post,
+                      actionOneText: AppLocalization.of(context)!.notNow,
+                      description:
+                          'Are you sure you want to post\nyour moment now?',
+                      roundedBackgroundIcon: RoundedBackgroundIcon(
+                        enableMargin: false,
+                        width: 90,
+                        height: 90,
+                        image: Image.asset(
+                          'assets/images/accept_dialog_icon.png',
+                          color: navyBlue,
+                        ),
+                      ),
+                      rightButtonOnPressed: () {
+                        postMoment();
+                      },
+                    );
+                  },
                 ),
-                rightButtonOnPressed: () {
-                  postMoment();
-                },
-              );
-            },
-          ),
-        ),
+              ),
       ],
     );
   }
 
-
   Widget mediaRenderer() {
     if (fileType == "image") {
-
       return Container(
         width: 60,
         height: 250,
@@ -751,20 +757,47 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           ),
         ),
       );
-
     }
     if (fileType == "video") {
       if (isVideoLoading) {
         return Center(child: CircularLoadingIndicator());
       }
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(100, 10, 100, 10),
-          child:
-              SizedBox(height: 250, child: VideoPlayer(videoPlayerController!)),
-        ),
-      );
+      // return ClipRRect(
+      //   borderRadius: BorderRadius.circular(20),
+      //   child: Padding(
+      //     padding: const EdgeInsets.fromLTRB(100, 10, 100, 10),
+      return Container(
+          width: 60,
+          height: 250,
+          child: Center(
+            child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isTapped = !isTapped;
+                    if (isTapped == true) {
+                      videoPlayerController?.play();
+                    } else {
+                      videoPlayerController?.pause();
+                    }
+                  });
+                },
+                child: CornerRadiusVideo(
+                    widget: Stack(children: [
+                  VideoPlayer(videoPlayerController!),
+                  isTapped == false
+                      ? Align(
+                          alignment: Alignment.center,
+                          child: SvgPicture.asset(
+                            "yarn/cam_vec".toSVG(),
+                            height: 50,
+                            width: 50,
+                          ),
+                        )
+                      : const SizedBox.shrink()
+                ]))),
+          ));
+      //   ),
+      // );
     }
 
     return Container();
@@ -785,7 +818,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     await videoPlayerController?.initialize();
     await videoPlayerController?.setLooping(false);
 
-    await videoPlayerController?.play();
+    await videoPlayerController?.pause();
 
     // debugPrint("path=> ${File(widget.filePath)}");
     // videoPlayerController = VideoPlayerController.file(File(widget.filePath));
@@ -1037,4 +1070,3 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 }
 
 enum AttachmentType { Blog, Product, Service }
-
