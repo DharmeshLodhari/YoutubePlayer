@@ -401,7 +401,6 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
       scrollDirection: Axis.horizontal,
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
-        // var _index = 1;
 
         return SingleMomentDetailScreen(
           momentsModelList: widget.momentsModelList,
@@ -411,13 +410,14 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
           currentMoment: widget.momentsModelList[index],
           onLeftSwipe: () {
             _pageCtrl!.previousPage(
-                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+                duration: const Duration(milliseconds: 200), curve: Curves.easeIn);
           },
           onRightSwipe: () {
             _pageCtrl!.nextPage(
-                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+                duration: const Duration(milliseconds: 200), curve: Curves.easeIn);
           },
           onMomentPop: widget.onMomentPop,
+          pageCtrl: _pageCtrl!,
         );
       },
     );

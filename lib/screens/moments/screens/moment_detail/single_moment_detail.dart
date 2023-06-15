@@ -7,7 +7,6 @@ import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_comment_list.dart';
-import 'package:Slydo/screens/moments/screens/moment_detail/moment_dash_view.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/render_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
@@ -52,6 +51,8 @@ class SingleMomentDetailScreen extends StatefulWidget {
 
   MomentsModel currentMoment;
 
+  final PageController pageCtrl;
+
   SingleMomentDetailScreen({
     Key? key,
     required this.index,
@@ -61,6 +62,7 @@ class SingleMomentDetailScreen extends StatefulWidget {
     required this.currentMoment,
     required this.onLeftSwipe,
     required this.onRightSwipe,
+    required this.pageCtrl,
     required this.onMomentPop,
   }) : super(key: key);
 
@@ -74,6 +76,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   late AnimationController controller;
   final GlobalKey<RenderMomentState> _renderMomentStateKey =
       GlobalKey<RenderMomentState>();
+  PageController? pageController;
 
   bool _isLiked = false;
   bool _isDisLiked = false;
@@ -127,17 +130,36 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
+    if (widget.currentMoment.mediaType == 'video' &&
+        widget.videoPlayerControllers.isEmpty) {
+      controller = AnimationController(
+        vsync: this,
+        duration:
+            Duration(seconds: widget.currentMoment.duration ?? 30),
+      )..addListener(() {
+          setState(() {});
+        });
+    } else if (widget.currentMoment.mediaType == 'video' &&
+        widget.videoPlayerControllers.isNotEmpty) {
+      controller = AnimationController(
+        vsync: this,
+        duration:
+            Duration(seconds: widget.currentMoment.duration ?? 30),
+      )..addListener(() {
+          setState(() {});
+        });
+    } else {
+      controller = AnimationController(
+        vsync: this,
+        duration: const Duration(seconds: 10),
+      )..addListener(() {
+          setState(() {});
+        });
+    }
+    controller.animateTo(5.0);
+    pageController = widget.pageCtrl;
+
     super.initState();
-    // });
-    controller = AnimationController(
-      /// [AnimationController]s can be created with `vsync: this` because of
-      /// [TickerProviderStateMixin].
-      vsync: this,
-      duration: const Duration(seconds: 5),
-    )..addListener(() {
-        setState(() {});
-      });
   }
 
   @override
@@ -159,16 +181,23 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
           momentsModel: widget.currentMoment,
           videoPlayerControllers: widget.videoPlayerControllers,
           photoViewController: widget.photoViewController,
+          index: widget.index,
+          pageCtrl: widget.pageCtrl,
+          controller: controller,
+          momentsModelList: widget.momentsModelList,
         ),
-        Align(
-          alignment: Alignment.topCenter,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: MomentDashView(
-                currentPageViewIndex: widget.index,
-                lengthOfMoment: widget.momentsModelList.length),
-          ),
-        ),
+        // Align(
+        //   alignment: Alignment.topCenter,
+        //   child: Padding(
+        //     padding: const EdgeInsets.only(top: 8.0),
+        //     child: MomentDashView(
+        //       currentPageViewIndex: widget.index,
+        //       lengthOfMoment: widget.momentsModelList.length,
+        //       controller: controller,
+        //       pageController: widget.pageCtrl,
+        //     ),
+        //   ),
+        // ),
         Positioned(
           top: 0,
           bottom: 0,
@@ -552,7 +581,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                             },
                             child: Text(
                               messageDecoderWithEmoji(
-                                  '${widget.currentMoment.ownerName!}')!,
+                                  widget.currentMoment.ownerName!)!,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -749,7 +778,6 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                   title: 'Block Account',
                   iconData: Icons.block,
                   onTap: () async {
-
                     toggleMediaPlayingState();
                     var user = CustomerProfile();
                     user.userName = widget.currentMoment.owner;
@@ -758,12 +786,10 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                     user.nickName = "";
 
                     Future<bool?> check = blockUserAlert(context, user);
-                    if(check == true){
-
+                    if (check == true) {
                       Navigator.pop(context);
                       Navigator.pop(context);
                     }
-
                   },
                 ),
               ],
