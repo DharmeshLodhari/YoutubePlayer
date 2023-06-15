@@ -12,6 +12,7 @@ class CreateMomentModel {
   String? payMeLabel;
   String? payMeButtonColor;
   Map<String, String>? attachmentMap;
+  int? duration;
 
   CreateMomentModel({
     this.url,
@@ -24,6 +25,7 @@ class CreateMomentModel {
     this.enablePayMe = false,
     this.mediaPoster,
     this.userTags,
+    this.duration,
     required this.filePath,
     required this.isPublic,
     required this.text,

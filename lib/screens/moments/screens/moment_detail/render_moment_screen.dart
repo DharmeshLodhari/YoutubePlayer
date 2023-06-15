@@ -7,66 +7,47 @@ import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:photo_view/photo_view.dart';
+
+import 'moment_dash_view.dart';
 
 class RenderMoment extends StatefulWidget {
   final MomentsModel momentsModel;
   final List<CachedVideoPlayerController> videoPlayerControllers;
   final List<PhotoViewController> photoViewController;
-  
+  final List<MomentsModel> momentsModelList;
+
   final void Function() onRightSwipe;
+  final int index;
+  final PageController pageCtrl;
+  final AnimationController controller;
 
   const RenderMoment(
       {Key? key,
       required this.momentsModel,
       required this.videoPlayerControllers,
       required this.onRightSwipe,
-      required this.photoViewController})
+      required this.photoViewController,
+      required this.index,
+      required this.pageCtrl,
+      required this.controller,
+      required this.momentsModelList})
       : super(key: key);
 
   @override
   RenderMomentState createState() => RenderMomentState(key: key);
 }
 
-class RenderMomentState extends State<RenderMoment> {
+class RenderMomentState extends State<RenderMoment>
+    with TickerProviderStateMixin {
   Key? key;
   RenderMomentState({this.key});
 
   GlobalKey<MomentVideoPlayerState> _momentVideoPlayerKey =
       GlobalKey<MomentVideoPlayerState>();
   PhotoViewController photoViewController = PhotoViewController();
-
-  // Timer? _timer;
-  // int _start = 10;
-
-  // void startTimer() {
-  //   const oneSec = const Duration(seconds: 1);
-  //   _timer = new Timer.periodic(
-  //     oneSec,
-  //     (Timer timer) {
-  //       if(widget.momentsModel.mediaType=='video'){
-  //         // widget.momentsModel.media
-  //       }
-  //       if (_start == 0) {
-  //         setState(() {
-  //           widget.onRightSwipe();
-  //           timer.cancel();
-  //         });
-  //       } else {
-  //         setState(() {
-  //           _start--;
-  //         });
-  //       }
-  //     },
-  //   );
-  // }
-
-  // @override
-  // void dispose() {
-  //   _timer?.cancel();
-  //   super.dispose();
-  // }
-
+  double? value;
 
   @override
   void initState() {
@@ -86,7 +67,6 @@ class RenderMomentState extends State<RenderMoment> {
     debugPrint('GLAD IMAGE MEDIATYPE -> ${widget.momentsModel.id}');
     debugPrint('GLAD IMAGE -> ${widget.momentsModel.media!}');
     if (widget.momentsModel.gif != null) {
-
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.gif!,
         fit: BoxFit.fitWidth,
@@ -95,25 +75,88 @@ class RenderMomentState extends State<RenderMoment> {
     }
 
     if (widget.momentsModel.mediaType == "image") {
-      return PhotoView(
-        //To be able to zoom the image.
-        imageProvider: NetworkImage(widget.momentsModel.media!),
-        controller: photoViewController,
-      );
-
-      return CachedNetworkImage(
-        imageUrl: widget.momentsModel.media!,
-        fit: BoxFit.fitWidth,
-        memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
-        placeholder: (context, _) {
-          return Container(color: Colors.grey);
-        },
+      return Stack(
+        children: [
+          GestureDetector(
+            onLongPress: () {
+              widget.controller.stop();
+            },
+            onLongPressCancel: () {
+              widget.controller.animateBack(value!);
+            },
+            child: PhotoView(
+              //To be able to zoom the image.
+              imageProvider: NetworkImage(widget.momentsModel.media!),
+              controller: photoViewController,
+              loadingBuilder: (context, event) {
+                if (event?.cumulativeBytesLoaded == null ||
+                    event?.expectedTotalBytes == null) {
+                  value = 0.0;
+                } else {
+                  value =
+                      event!.cumulativeBytesLoaded / event.expectedTotalBytes!;
+                }
+                return Center(
+                  child: SpinKitRing(
+                    lineWidth: 3.5,
+                    color: navyBlue,
+                    size: 45,
+                  ),
+                );
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: MomentDashView(
+                currentPageViewIndex: widget.index,
+                lengthOfMoment: widget.momentsModelList.length,
+                controller: widget.controller,
+                pageController: widget.pageCtrl,
+                value: value ?? 0,
+              ),
+            ),
+          )
+        ],
       );
     } else if (widget.momentsModel.mediaType == "video") {
-      return MomentVideoPlayer(
-          key: _momentVideoPlayerKey,
-          momentsModel: widget.momentsModel,
-          videoPlayerControllers: widget.videoPlayerControllers,);
+      if (widget.videoPlayerControllers.isNotEmpty &&
+          widget
+                  .videoPlayerControllers[
+                      widget.videoPlayerControllers.length - 1]
+                  .value
+                  .isPlaying ==
+              true) {
+        value = 1.0;
+      } else {
+        value = 0.0;
+      }
+      return Stack(
+        children: [
+          MomentVideoPlayer(
+            key: _momentVideoPlayerKey,
+            momentsModel: widget.momentsModel,
+            videoPlayerControllers: widget.videoPlayerControllers,
+            controller: widget.controller,
+            value:value,
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: MomentDashView(
+                currentPageViewIndex: widget.index,
+                lengthOfMoment: widget.momentsModelList.length,
+                controller: widget.controller,
+                pageController: widget.pageCtrl,
+                value: value ?? 0,
+              ),
+            ),
+          )
+        ],
+      );
     } else {
       return Container(
         decoration: BoxDecoration(

@@ -865,25 +865,25 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     MomentsService()
         .createMoment(
       createMomentModel: CreateMomentModel(
-        enableLike: enableLikes,
-        enableCommenting: enableCommenting,
-        isPermanent: isPermanent,
-        enablePayMe: enablePayMe,
-        isPublic: isPublic,
-        userTags: newUserTags,
-        mediaPoster: generatedVideoThumbnail,
-        filePath: widget.filePath,
-        text: momentTitle,
-        url: urlTextCtrl.text,
-        payMeLabel: enablePayMe
-            ? payMeCtrl.text.isEmpty
-                ? 'Pay Me'
-                : payMeCtrl.text
-            : null,
-        payMeButtonColor:
-            enablePayMe ? pickedColor.value.toRadixString(16) : null,
-        attachmentMap: getAttachmentMap(),
-      ),
+          enableLike: enableLikes,
+          enableCommenting: enableCommenting,
+          isPermanent: isPermanent,
+          enablePayMe: enablePayMe,
+          isPublic: isPublic,
+          userTags: newUserTags,
+          mediaPoster: generatedVideoThumbnail,
+          filePath: widget.filePath,
+          text: momentTitle,
+          url: urlTextCtrl.text,
+          payMeLabel: enablePayMe
+              ? payMeCtrl.text.isEmpty
+                  ? 'Pay Me'
+                  : payMeCtrl.text
+              : null,
+          payMeButtonColor:
+              enablePayMe ? pickedColor.value.toRadixString(16) : null,
+          attachmentMap: getAttachmentMap(),
+          duration: videoPlayerController!.value.duration.inSeconds),
     )
         .then((momentPosted) {
       if (momentPosted == true) {
