@@ -154,6 +154,19 @@ import 'package:page_transition/page_transition.dart';
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/payout_transaction_detail.dart';
+import '../screens/more_apps/service_hub/models/active_job_listing.dart';
+import '../screens/more_apps/service_hub/models/jobs.dart';
+import '../screens/more_apps/service_hub/screens/applicant_list.dart';
+import '../screens/more_apps/service_hub/screens/categories_list.dart';
+import '../screens/more_apps/service_hub/screens/category_jobs_list.dart';
+import '../screens/more_apps/service_hub/screens/create_jobs.dart';
+import '../screens/more_apps/service_hub/screens/edit_job.dart';
+import '../screens/more_apps/service_hub/screens/job_detail.dart';
+import '../screens/more_apps/service_hub/screens/job_search.dart';
+import '../screens/more_apps/service_hub/screens/my_job_details.dart';
+import '../screens/more_apps/service_hub/screens/my_jobs_list.dart';
+import '../screens/more_apps/service_hub/screens/preview_job_detail.dart';
+import '../screens/more_apps/service_hub/screens/search_filter.dart';
 import '../screens/more_apps/service_hub/screens/search_services.dart';
 import '../screens/more_apps/service_hub/service_hub_dashboard.dart';
 import '../screens/more_apps/shopping/screens/checkout_screen.dart';
@@ -1035,7 +1048,97 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Movie Route
+    // Find jobs
+      case Routes.CATEGORY_JOBS:
+        return PageTransition(
+            child: JobsCategoryJobsList(
+              categoryId: settings.arguments as String,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.CATEGORIES_LIST:
+        return PageTransition(
+            child: CategoriesList(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOB_DETAILS:
+        return PageTransition(
+            child: JobsJobDetail(
+              activeListingData: settings.arguments as ActiveListingData,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.MY_JOB_DETAILS:
+        return PageTransition(
+            child: MyJobsDetails(
+              jobDetails: settings.arguments as Map,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOB_SEARCH_FILTER:
+        return PageTransition(
+            child: JobsSearchFilter(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOBS_CREATE:
+        return PageTransition(
+            child: JobsCreateJobs(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOBS_PREVIEW_DETAIL:
+        return PageTransition(
+            child: JobsPreviewJobDetail(
+              jobDetails: settings.arguments as Map,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.MY_JOBS:
+        return PageTransition(
+            child: JobsMyJobsList(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOBS_SEARCH:
+        return PageTransition(
+            child: JobsSearch(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOBS_APPLICANT_LIST:
+        return PageTransition(
+            child: ApplicantList(
+              job: settings.arguments as JobModel?,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.EDIT_JOB:
+        return PageTransition(
+            child: EditJob(
+              job: settings.arguments as JobModel?,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+    /// Movie Route
 
       case Routes.MOVIES:
         return PageTransition(
