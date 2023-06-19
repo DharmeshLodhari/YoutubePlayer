@@ -883,7 +883,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           payMeButtonColor:
               enablePayMe ? pickedColor.value.toRadixString(16) : null,
           attachmentMap: getAttachmentMap(),
-          duration: videoPlayerController!.value.duration.inSeconds),
+          duration: videoPlayerController!.value.duration.inSeconds.toString()),
     )
         .then((momentPosted) {
       if (momentPosted == true) {

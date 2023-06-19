@@ -99,11 +99,6 @@ class _MomentDashViewState extends State<MomentDashView>
         }
       }
     }
-<<<<<<< HEAD
-=======
-    print(
-        'effectiveness...............$currentIndex and ${controller.value.toString()}');
->>>>>>> master
 
     return widgets;
   }
