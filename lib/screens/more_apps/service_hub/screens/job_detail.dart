@@ -1,0 +1,544 @@
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
+
+import '../models/active_job_listing.dart';
+
+class JobsJobDetail extends StatefulWidget {
+  const JobsJobDetail({Key? key, required this.activeListingData})
+      : super(key: key);
+  final ActiveListingData activeListingData;
+
+  @override
+  State<JobsJobDetail> createState() => _JobsJobDetailState();
+}
+
+class _JobsJobDetailState extends State<JobsJobDetail> {
+  CarouselController controller = CarouselController();
+  int currentIndex = 0;
+  String getFormatedDate(ActiveListingData args) {
+    return DateFormat('dd-MM-yyyy')
+        .format(DateTime.parse(args.job!.creationDate!));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // final args =
+    //     ModalRoute.of(context)!.settings.arguments as ActiveListingData;
+    return Scaffold(
+      backgroundColor: lightGrey,
+      appBar: appBar(),
+      // bottomSheet: ,
+      body: Column(
+        children: [
+          if (widget.activeListingData.job!.pictures!.length > 0)
+            customImageSlider(widget.activeListingData),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: detailsRow(widget.activeListingData),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          acceptBtn()
+        ],
+      ),
+    );
+  }
+
+  Row detailsRow(ActiveListingData args) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      // mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 30,
+              ),
+              Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: CustomText(title: 'Category'),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(flex: 2, child: CustomText(title: 'Date')),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          "${args.job!.category!.name}",
+                          style: TextStyle(
+                            color: Color(0xff75818f),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          // width: 122,
+                          height: 34,
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Color(0xfffafbff),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                                size: 18,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                getFormatedDate(args),
+                                style: TextStyle(
+                                  color: Color(0xff030e36),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(flex: 3, child: CustomText(title: 'Fee')),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(flex: 2, child: CustomText(title: 'Location')),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          "#${args.job!.pay}",
+                          style: TextStyle(
+                            color: Color(0xff3e61da),
+                            fontSize: 14,
+                            fontFamily: "Open Sans",
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          "${args.job!.location}",
+                          style: TextStyle(
+                            color: Color(0xff75818f),
+                            fontSize: 14,
+                            fontFamily: "Open Sans",
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(flex: 3, child: CustomText(title: 'posted by')),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(flex: 2, child: CustomText(title: 'Status')),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: Text(
+                          "${args.job!.ownerName}",
+                          style: TextStyle(
+                            color: Color(0xff75818f),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 54,
+                        height: 20,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3.60),
+                          color: Color(0xff46ce7c).withOpacity(0.2),
+                        ),
+                        child: Text(
+                          "${args.job!.status}",
+                          style: TextStyle(
+                            color: Color(0xff46ce7c),
+                            fontSize: 10.80,
+                            fontFamily: "Open Sans",
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: SizedBox(),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(title: 'Accepted By'),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Text(
+                    "200+",
+                    style: TextStyle(
+                      color: Color(0xff75818f),
+                      fontSize: 14,
+                      fontFamily: "Open Sans",
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(title: 'Description'),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Text(
+                    "${args.job!.description}",
+                    style: TextStyle(
+                      color: Color(0xff8d92a3),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Color(0x143e61da),
+          ),
+          child: SvgPicture.asset(
+            'assets/images/message.svg',
+            height: 17,
+            width: 17,
+            fit: BoxFit.none,
+          ),
+        )
+      ],
+    );
+  }
+
+  CarouselSlider customImageSlider(ActiveListingData args) {
+    return CarouselSlider.builder(
+      carouselController: controller,
+      itemCount: args.job!.pictures!.length,
+      itemBuilder: (context, index, realIndex) {
+        return Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  // image: DecorationImage(
+                  //   image: NetworkImage(
+                  //     "${args.job!.pictures![index].image}",
+                  //   ),
+                  //   fit: BoxFit.cover,
+                  //   //   width: MediaQuery.of(context).size.width,
+                  // ),
+                  ),
+              child: CachedNetworkImage(
+                imageUrl: "${args.job!.pictures![index].image}",
+                placeholder: (context, url) =>
+                    Center(child: new CircularProgressIndicator()),
+                errorWidget: (context, url, error) =>
+                    Center(child: new Icon(Icons.error)),
+              ),
+            ),
+            Positioned(
+              bottom: 10,
+              left: MediaQuery.of(context).size.width * 0.45,
+              child: Row(
+                children: List.generate(
+                    4,
+                    (index) => Container(
+                          width: 8.0,
+                          height: 8.0,
+                          margin: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 2.0),
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: currentIndex == index
+                                  ? navyBlue
+                                  : Color(0xffBEC2F4)),
+                        )),
+              ),
+            )
+          ],
+        );
+      },
+      options: CarouselOptions(
+          height: 260,
+          aspectRatio: 2,
+          viewportFraction: 1,
+          initialPage: 0,
+          enableInfiniteScroll: true,
+          reverse: false,
+          // autoPlay: true,
+          autoPlayInterval: Duration(seconds: 3),
+          autoPlayAnimationDuration: Duration(milliseconds: 800),
+          autoPlayCurve: Curves.fastOutSlowIn,
+          enlargeCenterPage: true,
+          scrollDirection: Axis.horizontal,
+          onPageChanged: onPageFunction),
+    );
+  }
+
+  Container acceptBtn() {
+    return Container(
+      width: 223,
+      height: 44,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Color(0xff3e61da),
+      ),
+      child: Text(
+        "Accept",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontFamily: "Open Sans",
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  onPageFunction(index, reason) {
+    currentIndex = index;
+    setState(() {});
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 16,
+      backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Job Details",
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      actions: [
+        Image.asset(
+          'assets/images/qr_code.png',
+          height: 20,
+          width: 20,
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        _moreOptionBtn(),
+        SizedBox(width: 12),
+      ],
+    );
+  }
+
+  Widget _moreOptionBtn() {
+    return IconButton(
+      icon: Icon(
+        Icons.more_vert,
+        size: 20,
+        color: blackFont,
+      ),
+      onPressed: () {
+        showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Color(0xfffafbff),
+                          ),
+                          child: SvgPicture.asset(
+                            'assets/images/copy_links.svg',
+                            height: 20,
+                            width: 20,
+                            fit: BoxFit.none,
+                          )),
+                      title: Text(
+                        "Copy link",
+                        style: TextStyle(
+                          color: Color(0xff030e36),
+                          fontSize: 16,
+                          fontFamily: "Open Sans",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      leading: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Color(0xfffafbff),
+                        ),
+                        child: Icon(
+                          Icons.share,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                      ),
+                      title: Text(
+                        "Send Via",
+                        style: TextStyle(
+                          color: Color(0xff030e36),
+                          fontSize: 16,
+                          fontFamily: "Open Sans",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      leading: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Color(0xfffafbff),
+                        ),
+                        child: Icon(
+                          Icons.send,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                      ),
+                      title: Text(
+                        "Share in chat",
+                        style: TextStyle(
+                          color: Color(0xff030e36),
+                          fontSize: 16,
+                          fontFamily: "Open Sans",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            });
+      },
+    );
+  }
+}
+
+class CustomText extends StatelessWidget {
+  const CustomText({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: TextStyle(
+        color: Color(0xff030e36),
+        fontSize: 12,
+        fontFamily: "Open Sans",
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+}

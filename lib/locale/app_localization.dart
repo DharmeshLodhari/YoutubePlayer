@@ -1522,6 +1522,29 @@ class AppLocalization {
     );
   }
 
+  // jobs
+
+  String get findJobs {
+    return Intl.message(
+      "Find Jobs",
+      name: "find jobs",
+    );
+  }
+
+  String get posted {
+    return Intl.message(
+      "Posted",
+      name: "posted",
+    );
+  }
+
+  String get applied {
+    return Intl.message(
+      "Applied",
+      name: "applied",
+    );
+  }
+
   String get find {
     return Intl.message(
       "Find",
@@ -1909,6 +1932,27 @@ class AppLocalization {
     return Intl.message(
       "Product Added Successfully",
       name: "productAddedSuccessfully",
+    );
+  }
+
+  String get jobListedSuccessfully {
+    return Intl.message(
+      "Job Listed Successfully",
+      name: "jobListtedSuccessfully",
+    );
+  }
+
+  String get jobRemovedFromListing {
+    return Intl.message(
+      "Job Removed From Listing Successfully",
+      name: "jobRemovedFromListingSuccessfully",
+    );
+  }
+
+  String get appliedForJobSuccessfully {
+    return Intl.message(
+      "Job Applied Successfully",
+      name: "jobAppliedSuccessfully",
     );
   }
 
@@ -3213,6 +3257,87 @@ class AppLocalization {
       name: "contactRequestSent",
     );
   }
+
+  //find jobs
+  String get categories {
+    return Intl.message(
+      "Categories",
+      name: "categories",
+    );
+  }
+
+  String get from {
+    return Intl.message(
+      "From",
+      name: "from",
+    );
+  }
+
+  String get jobTitle {
+    return Intl.message(
+      "Job Title",
+      name: "job title",
+    );
+  }
+
+  String get jobAddedSuccessfully {
+    return Intl.message(
+      "Job Added Successfully",
+      name: "jobAddedSuccessfully",
+    );
+  }
+
+  String get jobEditedSuccessfully {
+    return Intl.message(
+      "Job Edited Successfully",
+      name: "jobEditedSuccessfully",
+    );
+  }
+
+  String get wantToGetDone {
+    return Intl.message(
+      "What do you want to get done",
+      name: "whatDoYouWantToGetDone",
+    );
+  }
+
+  String get jobCategoryFit {
+    return Intl.message(
+      "Which category best fit this task?",
+      name: "whichCategoryBestFitThisTask?",
+    );
+  }
+
+  String get jobTiming {
+    return Intl.message(
+      "Timing",
+      name: "timing",
+    );
+  }
+
+
+  String get tuskFee {
+    return Intl.message(
+      "Task Fee",
+      name: "taskFee",
+    );
+  }
+
+  String get howToDoIt {
+    return Intl.message(
+      "How can this task be done?",
+      name: "howCanThisTaskBeDone?",
+    );
+  }
+
+
+  String get yourBudget {
+    return Intl.message(
+      "Your Budget",
+      name: "yourBudget",
+    );
+  }
+
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {

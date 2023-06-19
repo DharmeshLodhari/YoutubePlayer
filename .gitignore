@@ -60,9 +60,7 @@ ios/fastlane/metadata/trade_representative_contact_information
 /android/upload_certificate.pem
 /ios/Podfile.lock
 .gradle
-linux
-macos
-windows
-web
-android
-ios/Runner.xcodeproj/project.xcworkspace/
+
+fvm_config.json
+launch.json
+flutter_sdk

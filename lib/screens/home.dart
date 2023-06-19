@@ -84,7 +84,7 @@ class _HomeState extends State<Home> {
         bool result =
             await _sharedPreferences.setBool("isAppTutorialDone", true);
         debugPrint("result:- $result");
-        await Future.delayed(Duration(milliseconds: 1500)).then((value) {
+        await Future.delayed(const Duration(milliseconds: 1500)).then((value) {
           AppTutorialController().showTutorial(context);
         });
       }
@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
 
   Widget _foregroundScreen() {
     return Container(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
         left: 16,
         right: 16,
       ),
@@ -137,12 +137,12 @@ class _HomeState extends State<Home> {
           Container(height: 10),
           _appBar(),
           // flexibleSpace(flex: 1),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           accountBalanceCard(),
 
-          SizedBox(
+          const SizedBox(
             height: 25,
           ),
 
@@ -163,11 +163,11 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   _displayPaymentButtons(),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Padding(
@@ -183,7 +183,7 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   firstRowOfUserDashboardItem(),
@@ -193,7 +193,7 @@ class _HomeState extends State<Home> {
             ),
           ),
 
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
         ],
@@ -252,11 +252,11 @@ class _HomeState extends State<Home> {
       ),
       actions: <Widget>[
         _searchBtn(),
-        SizedBox(width: 4.0),
+        const SizedBox(width: 4.0),
         _cartBtn(),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         _settingBtn(),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
       ],
     );
   }
@@ -302,7 +302,7 @@ class _HomeState extends State<Home> {
         child: Card(
           elevation: 0,
           // color: blackFont,
-          margin: EdgeInsets.symmetric(vertical: 10),
+          margin: const EdgeInsets.symmetric(vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -329,7 +329,7 @@ class _HomeState extends State<Home> {
         badgeContent: getBadgeContent(),
         position: badges.BadgePosition.topEnd(
             end: getBadgeCount().length == 1 ? -5 : 0, top: 0),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -340,7 +340,7 @@ class _HomeState extends State<Home> {
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
           padding: basketBloc.items.length == 0
-              ? EdgeInsets.all(0)
+              ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
                   right: 6,
@@ -371,7 +371,7 @@ class _HomeState extends State<Home> {
     }
     return Text(
       getBadgeCount(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
@@ -390,7 +390,7 @@ class _HomeState extends State<Home> {
         shadowColor: boxShadowTwo,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.only(left: 10.0, right: 10.0),
+        margin: const EdgeInsets.only(left: 10.0, right: 10.0),
         child: Container(
           width: double.infinity,
           decoration: decorateBox(color: navyBlue),
@@ -407,7 +407,7 @@ class _HomeState extends State<Home> {
                   "Account Balance",
                   style: TextStyle(fontSize: 14, color: white),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 accountBalanceUI()
@@ -591,12 +591,12 @@ class _HomeState extends State<Home> {
                   "request_payment".toSVG(),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Text(
                 appLocalization.request,
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -630,12 +630,12 @@ class _HomeState extends State<Home> {
                   child: SvgPicture.asset(
                     "send_payment".toSVG(),
                   )),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Text(
                 appLocalization.send,
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -671,10 +671,10 @@ class _HomeState extends State<Home> {
                   "scan_qr".toSVG(),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
-              Text(
+              const Text(
                 "Scan",
                 style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
               ),
@@ -704,10 +704,10 @@ class _HomeState extends State<Home> {
                 child: SvgPicture.asset("qr_code".toSVG(),
                     width: 20, height: 20, fit: BoxFit.scaleDown),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
-              Text(
+              const Text(
                 "QR Code",
                 style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
               ),
@@ -724,7 +724,7 @@ class _HomeState extends State<Home> {
     if (userBloc.user.type.toString().toLowerCase() == 'user') {
       return Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Row(
@@ -738,7 +738,7 @@ class _HomeState extends State<Home> {
                       hideBalance();
                       NavigationUtil.push(
                         context,
-                        screen: SuperBlog(),
+                        screen: const SuperBlog(),
                       );
                     } else {
                       showToast(message: 'Feature not available at the moment');
@@ -747,7 +747,7 @@ class _HomeState extends State<Home> {
                   iconColor: HexColor("#F35B46"),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: UserDashboardItemTile(
                   icon: SlydoAppIcon.utility,
@@ -763,7 +763,7 @@ class _HomeState extends State<Home> {
                   iconColor: HexColor("#FFAB00"),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: UserDashboardItemTile(
                   icon: SlydoAppIconNew.vector_1,
@@ -780,9 +780,9 @@ class _HomeState extends State<Home> {
                   iconColor: HexColor("#9B51E0"),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(child: Container()),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
             ],
           ),
         ],
@@ -790,11 +790,11 @@ class _HomeState extends State<Home> {
     } else {
       return Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           secondRowOfUserDashboardItem(),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           thirdRowOfUserDashboardItem(),
@@ -826,7 +826,7 @@ class _HomeState extends State<Home> {
             iconColor: HexColor("#3F61DB"),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
         Expanded(
@@ -840,7 +840,7 @@ class _HomeState extends State<Home> {
             iconColor: HexColor("#F35B46"),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
         Expanded(
@@ -853,13 +853,13 @@ class _HomeState extends State<Home> {
           },
           iconColor: HexColor("#FFAB00"),
         )),
-        SizedBox(
+        const SizedBox(
           width: 12,
         ),
         Expanded(
           key: tutorialInboxKey,
           child: UserDashboardItemTile(
-            iconWidget: MessageNavBtn(),
+            iconWidget: const MessageNavBtn(),
             title: "Inbox",
             onTap: () {
               Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
@@ -891,7 +891,7 @@ class _HomeState extends State<Home> {
           },
           iconColor: HexColor("#46CE7C"),
         )),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: UserDashboardItemTile(
             icon: Icons.business_center_rounded,
@@ -910,7 +910,7 @@ class _HomeState extends State<Home> {
             iconColor: HexColor("#5218E9"),
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           key: tutorialBlogsKey,
           child: UserDashboardItemTile(
@@ -921,7 +921,7 @@ class _HomeState extends State<Home> {
                 hideBalance();
                 NavigationUtil.push(
                   context,
-                  screen: SuperBlog(),
+                  screen: const SuperBlog(),
                 );
               } else {
                 showToast(message: 'Feature not available at the moment');
@@ -930,7 +930,7 @@ class _HomeState extends State<Home> {
             iconColor: HexColor("#F35B46"),
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: UserDashboardItemTile(
             icon: SlydoAppIcon.utility,
@@ -957,7 +957,7 @@ class _HomeState extends State<Home> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -965,7 +965,7 @@ class _HomeState extends State<Home> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -1045,17 +1045,17 @@ class _HomeState extends State<Home> {
             iconColor: HexColor("#9B51E0"),
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: Container(),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: Container(),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(child: Container()),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
       ],
     );
   }

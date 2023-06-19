@@ -12,7 +12,7 @@ class CreateMomentModel {
   String? payMeLabel;
   String? payMeButtonColor;
   Map<String, String>? attachmentMap;
-  String? duration;
+  int? duration;
 
   CreateMomentModel({
     this.url,
