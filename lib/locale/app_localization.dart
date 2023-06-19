@@ -1124,7 +1124,7 @@ class AppLocalization {
 
   String get previewMoment {
     return Intl.message(
-      "Preview Moment",
+      "Moment",
       name: "previewMoment",
     );
   }
@@ -1774,6 +1774,13 @@ class AppLocalization {
     return Intl.message(
       "Empty List",
       name: "emptyList",
+    );
+  }
+
+  String get emptyBeneficiary {
+    return Intl.message(
+      "Beneficiary List is Empty",
+      name: "emptyBeneficiary",
     );
   }
 

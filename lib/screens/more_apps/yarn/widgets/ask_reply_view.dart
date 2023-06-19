@@ -135,7 +135,7 @@ class AskReplyView extends StatelessWidget {
           style: TextStyle(fontSize: 10, color: HexColor("#030F36")),
         ),
         TextSpan(
-          text: "@${commentDetail!.authorUsername}",
+          text: "@${replyCommentDetail!.authorUsername}",
           style: TextStyle(fontSize: 10, color: HexColor("#3F61DB")),
         ),
       ]),

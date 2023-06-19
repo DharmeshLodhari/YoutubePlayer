@@ -77,6 +77,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
 
   AppBar appBar() {
     return AppBar(
+      centerTitle: false,
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
@@ -92,7 +93,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
         },
       ),
       title: Text(
-        "Search moment",
+        "Search",
         style: TextStyle(
           color: blackFont,
           fontSize: 18,
@@ -279,7 +280,7 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
             Align(
               alignment: Alignment.topLeft,
               child: Padding(
-                padding: const EdgeInsets.only(left: 4.0),
+                padding: const EdgeInsets.only(left: 8.0, top: 10),
                 child: SizedBox(
                   width: 25,
                   child:
@@ -326,21 +327,27 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                       ),
                     ),
                     SizedBox(height: 3),
-                    Text(
-                      truncateString(
-                        str: messageDecoderWithEmoji(
-                            widget.searchMomentModel.text!)!,
-                        lengthToTruncateAt: 74,
-                      ),
-                      style: TextStyle(
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 4.0,
-                            color: blackFont,
-                            offset: Offset(0.0, 0),
-                          ),
-                        ],
+                    SizedBox(
+                      width: 100,
+                      child: Text(
+                        truncateString(
+                          str: messageDecoderWithEmoji(
+                              widget.searchMomentModel.text!)!,
+                          lengthToTruncateAt: 74,
+                        ),
+                      
+                        style: TextStyle(
+                          
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 4.0,
+                              color: blackFont,
+                              offset: Offset(0.0, 0),
+                            ),
+                          ],
+                          overflow: TextOverflow.ellipsis
+                        ),
                       ),
                     )
                     // Text(

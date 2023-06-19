@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/single_moment_detail.dart';
 import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
@@ -402,7 +401,6 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
       scrollDirection: Axis.horizontal,
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
-        // var _index = 1;
 
         return SingleMomentDetailScreen(
           momentsModelList: widget.momentsModelList,
@@ -412,13 +410,14 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
           currentMoment: widget.momentsModelList[index],
           onLeftSwipe: () {
             _pageCtrl!.previousPage(
-                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+                duration: const Duration(milliseconds: 200), curve: Curves.easeIn);
           },
           onRightSwipe: () {
             _pageCtrl!.nextPage(
-                duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+                duration: const Duration(milliseconds: 200), curve: Curves.easeIn);
           },
           onMomentPop: widget.onMomentPop,
+          pageCtrl: _pageCtrl!,
         );
       },
     );

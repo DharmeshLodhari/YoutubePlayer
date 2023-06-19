@@ -9,10 +9,15 @@ import 'package:flutter/material.dart';
 class MomentVideoPlayer extends StatefulWidget {
   final MomentsModel momentsModel;
   final List<CachedVideoPlayerController> videoPlayerControllers;
-  const MomentVideoPlayer(
+  final AnimationController controller;
+  double? value;
+
+  MomentVideoPlayer(
       {Key? key,
       required this.momentsModel,
-      required this.videoPlayerControllers})
+      required this.videoPlayerControllers,
+      required this.value,
+      required this.controller})
       : super(key: key);
 
   @override
@@ -31,20 +36,20 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
 
   @override
   void initState() {
-    debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!}');
+    debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!.length}');
     // videoPlayerManager = VideoPlayerManager();
     // videoPlayerManager.init(widget.momentsModel.media!);
     _controller = CachedVideoPlayerController.network(
       widget.momentsModel.media!,
-    )..initialize().then((value) {
-        _controller.play();
+    )..initialize().then((value) async {
+        await _controller.play();
         initialized = true;
-        _controller.setLooping(true);
         setState(() {});
       }).catchError((e) {
         Navigator.pop(context);
         showToast(message: 'Unable to display moment');
       });
+
     widget.videoPlayerControllers.add(_controller);
     super.initState();
   }
@@ -52,18 +57,21 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
   void toggleVideoPlayer() {
     if (_controller.value.isPlaying) {
       _controller.pause();
+      widget.controller.stop();
     } else {
       _controller.play();
+      widget.controller.animateBack(widget.value!);
     }
   }
 
   @override
   void dispose() async {
-    super.dispose();
     //await videoPlayerManager.dispose();
     try {
       _controller.dispose();
     } catch (error) {}
+
+    super.dispose();
   }
 
   @override
@@ -79,11 +87,13 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
             child: InkWell(
               onTap: () {
                 if (_controller.value.isPlaying) {
-                  _controller.pause();
+                  widget.controller.stop();
                   showMediaIconFor2Seconds();
+                  _controller.pause();
                 } else {
                   _controller.play();
                   showMediaIconFor2Seconds();
+                  widget.controller.animateBack(widget.value!);
                 }
               },
               child: Stack(

@@ -159,17 +159,6 @@ class _ConnectionListState extends State<ConnectionList> {
     );
   }
 
-  // Widget getRefreshIndicator() {
-  //   return RefreshIndicator(
-  //     backgroundColor: Colors.white,
-  //     color: navyBlue,
-  //     onRefresh: refreshList,
-  //     child: Container(
-  //       color: lightGrey,
-  //       child: _buildConnectionsList(),
-  //     ),
-  //   );
-  // }
   Widget getRefreshIndicator() {
     return StreamBuilder<bool?>(
         initialData: false,
@@ -275,53 +264,6 @@ class _ConnectionListState extends State<ConnectionList> {
       ),
     );
   }
-
-  // Widget _buildConnectionsList() {
-  //   if (isLoading) {
-  //     return Center(
-  //       child: CircularLoadingIndicator(),
-  //     );
-  //   }
-  //
-  //   if (_connectionListBloc.connectionUsers.length == 0) {
-  //     return NoItemInList(
-  //       msg: "No connection found !!",
-  //       isResult: true,
-  //     );
-  //   }
-  //   try {
-  //     return ListView.builder(
-  //       padding: EdgeInsets.symmetric(
-  //         vertical: 4,
-  //       ),
-  //       //+1 for progressbar
-  //       itemCount: _connectionListBloc.connectionUsers.length,
-  //       physics: const BouncingScrollPhysics(
-  //           parent: AlwaysScrollableScrollPhysics()),
-  //       itemBuilder: (BuildContext context, int index) {
-  //         return _getSlidableWithLists(
-  //             context, _connectionListBloc.connectionUsers[index], index);
-  //       },
-  //       controller: _scrollController,
-  //     );
-  //   } catch (error) {
-  //     debugPrint("ERROR=>:- $error");
-  //     return ListView.builder(
-  //       padding: EdgeInsets.symmetric(
-  //         vertical: 4,
-  //       ),
-  //       //+1 for progressbar
-  //       itemCount: _connectionListBloc.connectionUsers.length,
-  //       physics: const BouncingScrollPhysics(
-  //           parent: AlwaysScrollableScrollPhysics()),
-  //       itemBuilder: (BuildContext context, int index) {
-  //         return _getSlidableWithLists(
-  //             context, _connectionListBloc.connectionUsers[index], index);
-  //       },
-  //       controller: _scrollController,
-  //     );
-  //   }
-  // }
 
   /// If appConfigurationModel.groupChatWorks is false (i.e, we want to disable the groupChat feature),
   /// remove groupChat conversations from the list of connections.
@@ -452,7 +394,7 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {
-    if (user.userName!.toLowerCase() == 'slydo') {
+    if (user.userName.toString().toLowerCase() == 'slydo') {
       return [];
     }
 
@@ -479,7 +421,7 @@ class _ConnectionListState extends State<ConnectionList> {
       ChatConversation chatConversation, int index) {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    if (chatConversation.userName!.toLowerCase() == 'slydo') {
+    if (chatConversation.userName.toString().toLowerCase() == 'slydo') {
       return [];
     }
 
@@ -657,7 +599,7 @@ class _ConnectionListState extends State<ConnectionList> {
   Widget _getSlidableWithLists(
       BuildContext context, ChatConversation user, int index) {
     return Slidable(
-      key: Key(user.userName!),
+      key: Key(user.userName ?? ''),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),

@@ -37,7 +37,6 @@ import 'more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/models/SecureUser.dart';
 import 'more_apps/user_profile/models/user.dart';
-import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class Home extends StatefulWidget {
@@ -164,64 +163,13 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   ),
-
                   SizedBox(
                     height: 10,
                   ),
                   _displayPaymentButtons(),
-
                   SizedBox(
                     height: 20,
                   ),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        appLocalization.payment,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: HexColor("#808080")),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  firstRowOfUserDashboardItem(),
-
-                  //second row
-                  if (userBloc.user.type.toString().toLowerCase() !=
-                      'user') ...[
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          appLocalization.businessTools,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: HexColor("#808080")),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    secondRowOfUserDashboardItem(),
-                  ],
-
-                  //third row
-                  SizedBox(
-                    height: 20,
-                  ),
-
                   Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Align(
@@ -230,15 +178,16 @@ class _HomeState extends State<Home> {
                         appLocalization.explore,
                         style: TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: HexColor("#808080")),
+                            fontWeight: FontWeight.w700,
+                            color: HexColor("#151515")),
                       ),
                     ),
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  thirdRowOfUserDashboardItem(),
+                  firstRowOfUserDashboardItem(),
+                  checkUser(),
                 ],
               ),
             ),
@@ -349,6 +298,7 @@ class _HomeState extends State<Home> {
       height: 36,
       width: 36,
       child: InkWell(
+        key: tutorialSettingsKey,
         child: Card(
           elevation: 0,
           // color: blackFont,
@@ -770,10 +720,94 @@ class _HomeState extends State<Home> {
     );
   }
 
+  checkUser() {
+    if (userBloc.user.type.toString().toLowerCase() == 'user') {
+      return Column(
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: UserDashboardItemTile(
+                  icon: SlydoAppIcon.news_moreapps,
+                  title: AppLocalization.of(context)!.blogs,
+                  onTap: () {
+                    if (appConfigurationModel?.enableSuperBlog == true) {
+                      hideBalance();
+                      NavigationUtil.push(
+                        context,
+                        screen: SuperBlog(),
+                      );
+                    } else {
+                      showToast(message: 'Feature not available at the moment');
+                    }
+                  },
+                  iconColor: HexColor("#F35B46"),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: UserDashboardItemTile(
+                  icon: SlydoAppIcon.utility,
+                  title: "Utility",
+                  onTap: () {
+                    if (appConfigurationModel?.enableUtility == true) {
+                      hideBalance();
+                      Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
+                    } else {
+                      showToast(message: 'Coming soon.');
+                    }
+                  },
+                  iconColor: HexColor("#FFAB00"),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: UserDashboardItemTile(
+                  icon: SlydoAppIconNew.vector_1,
+                  title: AppLocalization.of(context)!.services,
+                  onTap: () {
+                    // if (appConfigurationModel?.enableUtility == true) {
+                    //   Navigator.pushNamed(context, Routes.SUPER_HUB);
+                    // } else {
+                    //   showToast(message: 'Coming soon.');
+                    // }
+                    hideBalance();
+                    Navigator.pushNamed(context, Routes.SUPER_HUB);
+                  },
+                  iconColor: HexColor("#9B51E0"),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(child: Container()),
+              SizedBox(width: 12),
+            ],
+          ),
+        ],
+      );
+    } else {
+      return Column(
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          secondRowOfUserDashboardItem(),
+          SizedBox(
+            height: 20,
+          ),
+          thirdRowOfUserDashboardItem(),
+        ],
+      );
+    }
+  }
+
   Widget firstRowOfUserDashboardItem() {
     return Row(
       children: [
         Expanded(
+          key: tutorialTransactionKey,
           child: UserDashboardItemTile(
             icon: SlydoAppIcon.transactions,
             title: AppLocalization.of(context)!.transaction,
@@ -782,8 +816,8 @@ class _HomeState extends State<Home> {
               BottomSheetPassCode(
                   context: context,
                   isValidCallback: () {
-                    // Navigator.pop(context);
-                    Navigator.pushNamed(context, Routes.TRANSACTIONS);
+                    Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
+                        arguments: {'page': 0});
                   },
                   cancelCallBack: () {
                     Navigator.pop(context);
@@ -796,6 +830,7 @@ class _HomeState extends State<Home> {
           width: 12,
         ),
         Expanded(
+          key: tutorialWalletKey,
           child: UserDashboardItemTile(
             icon: Icons.account_balance_wallet_rounded,
             title: AppLocalization.of(context)!.wallet,
@@ -809,6 +844,7 @@ class _HomeState extends State<Home> {
           width: 12,
         ),
         Expanded(
+          key: tutorialOrderKey,
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.cart,
           title: "Orders",
@@ -821,6 +857,7 @@ class _HomeState extends State<Home> {
           width: 12,
         ),
         Expanded(
+          key: tutorialInboxKey,
           child: UserDashboardItemTile(
             iconWidget: MessageNavBtn(),
             title: "Inbox",
@@ -838,6 +875,7 @@ class _HomeState extends State<Home> {
     return Row(
       children: [
         Expanded(
+
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.store,
           title: "My Store",
@@ -873,9 +911,41 @@ class _HomeState extends State<Home> {
           ),
         ),
         SizedBox(width: 12),
-        Expanded(child: Container()),
+        Expanded(
+          key: tutorialBlogsKey,
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.news_moreapps,
+            title: AppLocalization.of(context)!.blogs,
+            onTap: () {
+              if (appConfigurationModel?.enableSuperBlog == true) {
+                hideBalance();
+                NavigationUtil.push(
+                  context,
+                  screen: SuperBlog(),
+                );
+              } else {
+                showToast(message: 'Feature not available at the moment');
+              }
+            },
+            iconColor: HexColor("#F35B46"),
+          ),
+        ),
         SizedBox(width: 12),
-        Expanded(child: Container()),
+        Expanded(
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.utility,
+            title: "Utility",
+            onTap: () {
+              if (appConfigurationModel?.enableUtility == true) {
+                hideBalance();
+                Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
+              } else {
+                showToast(message: 'Coming soon.');
+              }
+            },
+            iconColor: HexColor("#FFAB00"),
+          ),
+        ),
       ],
     );
   }
@@ -959,25 +1029,7 @@ class _HomeState extends State<Home> {
     return Row(
       children: [
         Expanded(
-          child: UserDashboardItemTile(
-            icon: SlydoAppIcon.news_moreapps,
-            title: AppLocalization.of(context)!.blogs,
-            onTap: () {
-              if (appConfigurationModel?.enableSuperBlog == true) {
-                hideBalance();
-                NavigationUtil.push(
-                  context,
-                  screen: SuperBlog(),
-                );
-              } else {
-                showToast(message: 'Feature not available at the moment');
-              }
-            },
-            iconColor: HexColor("#F35B46"),
-          ),
-        ),
-        SizedBox(width: 12),
-        Expanded(
+          key: tutorialServicesKey,
           child: UserDashboardItemTile(
             icon: SlydoAppIconNew.vector_1,
             title: AppLocalization.of(context)!.services,
@@ -995,19 +1047,11 @@ class _HomeState extends State<Home> {
         ),
         SizedBox(width: 12),
         Expanded(
-          child: UserDashboardItemTile(
-            icon: SlydoAppIcon.utility,
-            title: "Utility",
-            onTap: () {
-              if (appConfigurationModel?.enableUtility == true) {
-                hideBalance();
-                Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
-              } else {
-                showToast(message: 'Coming soon.');
-              }
-            },
-            iconColor: HexColor("#FFAB00"),
-          ),
+          child: Container(),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: Container(),
         ),
         SizedBox(width: 12),
         Expanded(child: Container()),

@@ -366,7 +366,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           Row(
             children: [
               AnimatedContainer(
-                width: 96,
+                width: 48,
                 duration: Duration(milliseconds: 500),
                 decoration: BoxDecoration(
                     border: Border.all(color: white, width: 3),
@@ -493,10 +493,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           Row(
             children: [
               AnimatedContainer(
-                width: 96,
+                width: 48,
                 duration: Duration(milliseconds: 500),
                 decoration: BoxDecoration(
-                    border: Border.all(color: borderColor, width: 3),
+                    // border: Border.all(color: borderColor, width: 3),
                     shape: BoxShape.circle),
                 child: GestureDetector(
                   onTap: () {
@@ -610,6 +610,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserProfilePic() {
+    Color borderColor = getUserTypeColorByType(type: searchedUser!.type!);
+
     if (widget.userType == 'channel') {
       if (widget.channelDetail!['avatar'] == null) {
         return CircleAvatar(
@@ -641,6 +643,27 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ),
         );
       } else {
+        return Container(
+          height: 48,
+          width: 48,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2),
+          ),
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: searchedUser!.avatar! == "" || searchedUser!.avatar! == null
+                  ? defaultImage
+                  : searchedUser!.avatar!,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
+            ),
+          ),
+        );
         return CircleAvatar(
           radius: 25,
           backgroundImage: CachedNetworkImageProvider(
@@ -1282,7 +1305,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
-          debugPrint('fola check::: ${searchedUser!.type.toString()}');
           return Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -1362,10 +1384,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         onTap: () {
           Navigator.pop(context);
           String merchantUrl =
-              'https://merchant.slydo.co/${searchedUser!.userName!}/payme';
+              'https://slydo.co/${searchedUser!.userName!}/payme';
           var shareBody = userBloc.user.type != 'User'
               ? merchantUrl
-              : "https://slydo.co/" + searchedUser!.userName!;
+              : "https://slydo.co/store/" + searchedUser!.userName!;
           Share.share(shareBody, subject: "${searchedUser!.displayName()}");
         },
       ),
@@ -1455,7 +1477,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             bottomSheetItem(
                 title: "Request",
                 iconData: SlydoAppIcon.receive,
-                // isLast: true,
                 onTap: () {
                   if (appConfigurationModel?.enablePayment == true) {
                     UserAuth()
@@ -1474,6 +1495,19 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                     showToast(message: 'Payment not available at the moment');
                   }
                 }),
+            bottomSheetItem(
+              title: "Block Account",
+              iconData: SlydoAppIcon.block,
+              onTap: () async {
+                Navigator.pop(context);
+                Future<bool?> check = blockUserAlert(context, searchedUser!);
+                if(check == true){
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+
+              },
+            ),
           ],
         );
       }
@@ -1583,4 +1617,5 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               }
             }));
   }
+
 }

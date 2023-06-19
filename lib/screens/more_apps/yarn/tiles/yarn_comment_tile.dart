@@ -39,6 +39,7 @@ class YarnCommentTile extends StatefulWidget {
   bool? minusComment;
   String? pinnedCommentId;
   String? commentType;
+  String? commentAuthor;
 
   YarnCommentTile({
     required this.yarn,
@@ -52,6 +53,7 @@ class YarnCommentTile extends StatefulWidget {
     this.minusComment,
     this.pinnedCommentId,
     this.commentType,
+    this.commentAuthor,
   });
 
   @override
@@ -114,17 +116,17 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         }
       },
       child: Container(
-        padding: EdgeInsets.only(top: 12),
+        padding: const EdgeInsets.only(top: 12),
         child: Column(
           children: [
             _buildUserInfoRow(context: context),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
             IntrinsicHeight(
               child: Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
                   Container(
@@ -132,7 +134,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                     color: greySecondaryYarn,
                     height: double.infinity,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
                   Expanded(
@@ -141,24 +143,24 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                       children: [
                         if (widget.yarnComment.comment != null) ...[
                           _buildCommentDescription(),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
                         ],
                         if (isMediaPresent) ...[
                           _buildImagesRow(),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
                         ],
                         if (isAttachmentPresent &&
                             widget.yarnComment.attachment != null) ...[
                           _buildAttachment(),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
                         ],
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         _buildTopActions(context: context),
@@ -212,7 +214,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else {
-      childWidget = SizedBox();
+      childWidget = const SizedBox();
     }
     return childWidget;
   }
@@ -234,7 +236,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       child: Column(
         children: [
           if (widget.yarnComment.pinned == true) ...[
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ],
@@ -252,7 +254,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         Row(
           children: [
             _buildUserAvatar(context: context),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
           ],
@@ -264,7 +266,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
             if (widget.yarnComment.pinned == true) ...[
               _buildPinned(context: context),
             ],
-            SizedBox(
+            const SizedBox(
               height: 3,
             ),
             InkWell(
@@ -289,14 +291,14 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
                   Text(
                     "@${widget.yarnComment.authorUsername!}",
                     style: TextStyle(fontSize: 12, color: yarnBlack),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
                   ClipOval(
@@ -306,7 +308,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                       color: yarnBlack,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
                   Text(
@@ -320,7 +322,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 3,
             ),
             _buildRepliedText(),
@@ -333,7 +335,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
               context: context,
               builder: (BuildContext context) {
                 return Card(
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20)),
@@ -355,7 +357,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
               },
             );
           },
-          child: Icon(
+          child: const Icon(
             Icons.more_horiz_rounded,
             color: Color(0xFF4B545A),
           ),
@@ -367,13 +369,39 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
   String? getReplyingUsername() {
     String? username;
 
-    // debugPrint('Comment reply:::: ${widget.yarnComment.comment}');
-    // debugPrint('Comment reply:::: ${item.comment}');
+    // if(widget.commentType == 'commentComment'){
+    //   if (widget.yarnCommentReply != null ) {
+    //     debugPrint('Comment reply author 000:::: ${widget.yarnCommentReply!.authorUsername}');
+    //     // username = widget.yarn.author;
+    //     username = widget.yarnCommentReply!.authorUsername;
+    //     // username = widget.commentAuthor;
+    //     // username = 'fola';
+    //   }
+    //   else {
+    //     debugPrint('Comment reply author 001:::: ${widget.commentAuthor}');
+    //     // username = widget.commentAuthor;
+    //   }
+    //   return "@$username";
+    // }
 
     if (widget.yarnCommentReply != null) {
-      username = widget.yarnCommentReply!.authorUsername;
-    } else {
+      // debugPrint('Comment reply author 002:::: ${widget.yarnCommentReply!.authorUsername}');
+      debugPrint('Comment reply 002::::');
+      // username = widget.yarnCommentReply!.authorUsername;
+      // username = widget.yarnAuthor;
       username = widget.yarn.author;
+    }
+    else {
+      if(widget.commentType == 'commentComment'){
+        debugPrint('Comment reply 003::::');
+        username = widget.commentAuthor;
+        // username = widget.yarn.author;
+      }else{
+        debugPrint('Comment reply 004::::');
+        username = widget.yarn.author;
+      }
+      // debugPrint('Comment reply author 003:::: ${widget.yarn.author}');
+      // username = widget.yarn.author;
     }
     return "@$username";
   }
@@ -408,7 +436,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           YarnSmartText(
@@ -432,7 +460,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
               });
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -454,7 +482,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                     },
                     child: Container(
                       margin:
-                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                          const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
                       child: Text(
                         linkToBePreview!,
                         maxLines: 1,
@@ -483,7 +511,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                     color: Colors.white,
                   ),
                   padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  margin: const EdgeInsets.only(bottom: 4, top: 8),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -517,6 +545,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
     );
   }
 
+  //like, comment, dislike, share, pay
   Widget _buildTopActions({required BuildContext context}) {
     return YarnCommentActions(
       comment: widget.yarnComment,
@@ -552,7 +581,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         }).toList(),
       );
     }
-    return SizedBox();
+    return const SizedBox();
   }
 
   bool isComments(BuildContext context) {
@@ -561,7 +590,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
 
     DateTime currentTime = DateTime.now();
     if (getLoggedInUserName(context) == widget.yarnComment.authorUsername) {
-      if (currentTime.difference(messageCreatedTime) < Duration(minutes: 3)) {
+      if (currentTime.difference(messageCreatedTime) < const Duration(minutes: 3)) {
         return true;
       } else {
         return false;
@@ -582,7 +611,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
             size: 15,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 5,
         ),
         Expanded(

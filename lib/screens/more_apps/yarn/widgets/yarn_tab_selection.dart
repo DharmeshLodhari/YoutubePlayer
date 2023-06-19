@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 class YarnTabSelection extends StatefulWidget {
   final Function(int) onTap;
   final int currentIndex;
+  String firstTab = '';
+  String secondTab = '';
 
-  const YarnTabSelection({required this.onTap, this.currentIndex = 0, Key? key})
+   YarnTabSelection({required this.onTap, this.currentIndex = 0, required this.firstTab, required this.secondTab, Key? key})
       : super(key: key);
   @override
   State<YarnTabSelection> createState() => _YarnTabSelectionState();
@@ -29,14 +31,14 @@ class _YarnTabSelectionState extends State<YarnTabSelection> {
             child: buildTabItem(
                 onTap: widget.onTap,
                 tabIndex: 0,
-                title: 'Latest',
+                title: widget.firstTab,
                 currentIndex: widget.currentIndex),
           ),
           Expanded(
             child: buildTabItem(
                 onTap: widget.onTap,
                 tabIndex: 1,
-                title: 'Trending',
+                title: widget.secondTab,
                 currentIndex: widget.currentIndex),
           ),
         ],

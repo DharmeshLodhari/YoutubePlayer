@@ -29,8 +29,11 @@ import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../screens/more_apps/messaging/chat/utils.dart';
 import '../screens/more_apps/payment_and_banking/models/transactions.dart';
+import '../screens/more_apps/user_profile/models/user.dart';
 import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../screens/more_apps/user_profile/user_auth.dart';
 import '../widget/LoadingIndicator.dart';
+import '../widget/dialog.dart';
 import '../widget/image_crop.dart';
 import 'colors.dart';
 import 'common.dart';
@@ -212,8 +215,8 @@ getLoggedInUserName(BuildContext context) {
 Widget getCircularUserAvatar(
   String imgUrl, {
   Color borderColor = Colors.black,
-  double width = 30,
-  double height = 30,
+  double width = 27,
+  double height = 27,
 }) {
   return Container(
     width: width,
@@ -368,7 +371,7 @@ BoxDecoration decorateBox(
     borderRadius: BorderRadius.all(
       Radius.circular(borderRadius),
     ),
-    border: new Border.all(
+    border: Border.all(
         color: borderColor != null ? borderColor : lightGrey,
         width: 1.0,
         style: BorderStyle.solid),
@@ -598,10 +601,10 @@ Widget getChatSettingTitle() {
 }
 
 Widget buildLoadingIndicator({required bool isLoading}) {
-  return new Padding(
+  return Padding(
     padding: const EdgeInsets.all(8.0),
-    child: new Center(
-      child: new Opacity(
+    child: Center(
+      child: Opacity(
         opacity: isLoading ? 1.0 : 00,
         child: CircularLoadingIndicator(),
       ),
@@ -743,7 +746,7 @@ String formatDurationInSeconds({Duration? duration}) {
 }
 
 String dateToString(DateTime date) {
-  var formatter = new DateFormat('yyyy-MM-dd');
+  var formatter = DateFormat('yyyy-MM-dd');
   var formatted = formatter.format(date);
   return formatted;
 }
@@ -924,7 +927,7 @@ String? validateSlydoName(String userInput) {
 }
 
 Widget userNameWithVerifiedIcon({
-  required String name,
+  String? name,
   required bool? isVerified,
   int lengthToTruncateAt = 25,
   double verifiedIconSize = 18,
@@ -1273,7 +1276,7 @@ String? toTimeAgoLabel({required DateTime dateTime}) {
   //check for days
   if (inDays >= 1) {
     // return inDays.toString();
-    String convertedDate = new DateFormat("dd/MM/yyyy").format(dateTime);
+    String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
     return convertedDate;
   }
 
@@ -1330,7 +1333,7 @@ String toTimeAgoLabelYarn({required DateTime dateTime}) {
   final inDays = durationSinceNow.inDays;
   if (inDays >= 1) {
     // return inDays.toString();
-    String convertedDate = new DateFormat("dd/MM/yyyy").format(dateTime);
+    String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
     return convertedDate;
   }
 
@@ -2368,6 +2371,22 @@ List<String> getLgs({required String? state}) {
   return lgs;
 }
 
+List<String> getLga({required List<String>? states}) {
+  if (states == null) {
+    return [];
+  }
+
+  List<String> lgs = [];
+  for (int i = 0; i < nigeriaStateAndLg.length; i++) {
+    if (states.contains(nigeriaStateAndLg[i]['state'])) {
+      lgs.addAll(nigeriaStateAndLg[i]['lgas']);
+    }
+  }
+
+  return lgs;
+}
+
+
 extension StringCasingExtension on String {
   String toCapitalized() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
@@ -2450,4 +2469,48 @@ Widget userImageUserInitialsPic(
 bool canSendMoney(int? amount, String? limit) {
   // virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!
   return amount! <= int.parse("500000" ?? "0");
+}
+
+Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
+  bool? result = await showDialogBox(
+    context: context,
+    roundedBackgroundIcon: RoundedBackgroundIcon(
+      backgroundColor: mateRed.withOpacity(0.08),
+      borderRadius: 20,
+      width: 48,
+      height: 48,
+      icon: Icon(
+        SlydoAppIcon.block,
+        color: mateRed,
+        size: 16,
+      ),
+      enableMargin: false,
+    ),
+    actionOneBgColor: mateRed,
+    actionOneTextColor: Colors.white,
+    actionTwoBgColor: greyBorderColor,
+    actionTwoTextColor: blackFont,
+    title: AppLocalization.of(context)!.block,
+    description: AppLocalization.of(context)!.areYouSureWantToBlock +
+        " ${user.displayName()}",
+    actionOneText: AppLocalization.of(context)!.block,
+    actionTwoText: AppLocalization.of(context)!.cancel,
+    // rightButtonOnPressed: Navigator.pop(context),
+  );
+  if (result != null && result) {
+    bool done = await UserAuth().blockUser(user);
+
+    if (done) {
+      showSnackbar(
+          context,  message:
+      "${user.displayName()} " +
+              AppLocalization.of(context)!.isBlockedSuccessfully);
+      return true;
+
+    } else {
+      showSnackbar(context, message: AppLocalization.of(context)!.error);
+      return false;
+    }
+  }
+  return null;
 }

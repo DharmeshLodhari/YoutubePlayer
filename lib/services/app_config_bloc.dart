@@ -75,25 +75,49 @@ class AppConfigurationModel {
     this.enableWalletTopupWithCreditCard = false,
   });
 
+  // factory AppConfigurationModel.fromJson(Map<String, dynamic> json) {
+  //   return AppConfigurationModel(
+  //     id: json['id'] ?? '1',
+  //     country: json['country_name'] ?? 'Nigeria',
+  //     enableCheckout: json['enable_checkout'] ?? false,
+  //     freeSubscription: json['free_subscription'] ?? false,
+  //     enablePaidGroupChat: json['enable_paid_group_chat'] ?? false,
+  //     enableAsk: json['enable_ask'] ?? false,
+  //     enableSuperBlog: json['enable_super_blog'] ?? false,
+  //     enablePayment: json['enable_payment'] ?? false,
+  //     enableMoment: json['enable_moments'] ?? false,
+  //     enableAddUserCreditCard: json['enable_add_user_credit_card'] ?? false,
+  //     enableCashout: json['enable_cashout'] ?? false,
+  //     enableContract: json['enable_contract'] ?? false,
+  //     enableEmptyEnvelope: json['enable_empty_envelope'] ?? false,
+  //     enableGroupChat: json['enable_group_chat'] ?? false,
+  //     enableInvoice: json['enable_invoice'] ?? false,
+  //     enableLocationSharing: json['enable_location_sharing'] ?? false,
+  //     enableMagicEnvelope: json['enable_magic_envelope'] ?? false,
+  //     enableUtility: json['enable_utility'] ?? false,
+  //     enableWalletTopupWithCreditCard:
+  //         json['enable_wallet_topup_with_credit_card'] ?? false,
+  //   );
+  // }
   factory AppConfigurationModel.fromJson(Map<String, dynamic> json) {
     return AppConfigurationModel(
       id: json['id'] ?? '1',
       country: json['country_name'] ?? 'Nigeria',
-      enableCheckout: json['enable_checkout'] ?? false,
+      enableCheckout: true,
       freeSubscription: json['free_subscription'] ?? false,
       enablePaidGroupChat: json['enable_paid_group_chat'] ?? false,
       enableAsk: json['enable_ask'] ?? false,
       enableSuperBlog: json['enable_super_blog'] ?? false,
-      enablePayment: json['enable_payment'] ?? false,
+      enablePayment: true,
       enableMoment: json['enable_moments'] ?? false,
       enableAddUserCreditCard: json['enable_add_user_credit_card'] ?? false,
-      enableCashout: json['enable_cashout'] ?? false,
+      enableCashout: true,
       enableContract: json['enable_contract'] ?? false,
-      enableEmptyEnvelope: json['enable_empty_envelope'] ?? false,
+      enableEmptyEnvelope: true,
       enableGroupChat: json['enable_group_chat'] ?? false,
       enableInvoice: json['enable_invoice'] ?? false,
       enableLocationSharing: json['enable_location_sharing'] ?? false,
-      enableMagicEnvelope: json['enable_magic_envelope'] ?? false,
+      enableMagicEnvelope: true,
       enableUtility: json['enable_utility'] ?? false,
       enableWalletTopupWithCreditCard:
           json['enable_wallet_topup_with_credit_card'] ?? false,

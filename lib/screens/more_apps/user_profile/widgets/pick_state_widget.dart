@@ -41,6 +41,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
         dynamic state = userBioDetail!.userAddress!.state;
         if (state is Map) {
           stateId = state['id'];
+          debugPrint('Fola states 0000::: ${state['id']}');
         } else {
           stateId = state;
         }
@@ -56,6 +57,8 @@ class _PickStateWidgetState extends State<PickStateWidget> {
     UserAuth().getStates().then((value) {
       value.forEach((element) {
         states.add(element.name!);
+        debugPrint('Fola states::: ${element.name!}');
+
         statesMap[element.id!] = element.name!;
       });
 
@@ -95,34 +98,36 @@ class _PickStateWidgetState extends State<PickStateWidget> {
             border: Border.all(color: dividerColor),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: IgnorePointer(
-            ignoring: disableDropDown == true ? true : widget.disable,
-            child: DropdownButton2(
-                isExpanded: true,
-                value: pickedStateValue,
-                underline: SizedBox.shrink(),
-                dropdownDecoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: blackFont,
-                  fontWeight: FontWeight.w600,
-                ),
-                items: states.map((String item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(item),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  pickedStateValue = value;
-                  int id = statesMap.keys
-                      .firstWhere((element) => statesMap[element] == value);
-                  stateId = id;
-                  if (mounted) setState(() {});
-                  widget.afterOnChanged(stateId, pickedStateValue);
-                }),
+          child: Center(
+            child: IgnorePointer(
+              ignoring: disableDropDown == true ? true : widget.disable,
+              child: DropdownButton2(
+                  isExpanded: true,
+                  value: pickedStateValue,
+                  underline: SizedBox.shrink(),
+                  dropdownDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  items: states.map((String item) {
+                    return DropdownMenuItem(
+                      value: item,
+                      child: Text(item),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    pickedStateValue = value;
+                    int id = statesMap.keys
+                        .firstWhere((element) => statesMap[element] == value);
+                    stateId = id;
+                    if (mounted) setState(() {});
+                    widget.afterOnChanged(stateId, pickedStateValue);
+                  }),
+            ),
           ),
         ),
       ],

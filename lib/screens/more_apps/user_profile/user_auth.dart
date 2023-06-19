@@ -583,6 +583,8 @@ class UserAuth extends AuthService {
 
     http.Response response = await httpGet(url, headers: headers);
 
+    debugPrint('FETCH STATE RESPONSE ::: ${response.body}');
+
     if (response.statusCode == 200) {
       List responseBody = jsonDecode(response.body);
       return responseBody.map((e) => StatesModel.fromJson(e)).toList();
@@ -685,7 +687,6 @@ class UserAuth extends AuthService {
   }
 
   ///Friends List
-
   Future<Map<String, dynamic>?> contacts(String? next, String? previous) async {
     var url = AppConfig.baseUrl + "/api/v1/user/contacts/";
     if (next == null) {
@@ -864,6 +865,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
+    log('message......mesaaager  ooooo. ${response.statusCode}');
     if (response.statusCode == 200) {
       return true;
     }

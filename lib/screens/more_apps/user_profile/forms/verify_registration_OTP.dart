@@ -5,7 +5,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:otp_timer_button/otp_timer_button.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import '../../../../widget/LoadingIndicator.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
@@ -23,14 +22,17 @@ class VerifyRegistrationOTPScreen extends StatefulWidget {
 
 class _VerifyRegistrationOTPScreenState
     extends State<VerifyRegistrationOTPScreen> {
-  int _timerCount = 30;
 
   String? phoneNumber = '';
   FocusNode? _pinPutFocusNode;
   TextEditingController? otpController;
   final _verifyOtpFormKey = GlobalKey<FormState>();
   bool isLoading = false;
-  OtpTimerButtonController controller = OtpTimerButtonController();
+  bool showResend = false;
+
+  Timer? _timer;
+  int _duration = 10 * 60; // 10 minutes in seconds
+  bool _isRunning = false;
 
   @override
   void initState() {
@@ -40,7 +42,55 @@ class _VerifyRegistrationOTPScreenState
     }
     _pinPutFocusNode = FocusNode();
 
+    startTimer();
+
     super.initState();
+  }
+
+  void startTimer() {
+    setState(() {
+      _isRunning = true;
+    });
+
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_duration > 0) {
+          _duration--;
+        } else {
+          stopTimer();
+        }
+      });
+    });
+  }
+
+  void stopTimer() {
+    _timer?.cancel();
+    setState(() {
+      showResend = true;
+      _isRunning = false;
+    });
+  }
+
+  void restartTimer() {
+    stopTimer();
+    setState(() {
+      showResend = false;
+      _duration = 10 * 60; // Reset duration to 10 minutes
+    });
+  }
+
+  String getTimerText() {
+    int minutes = _duration ~/ 60;
+    int seconds = _duration % 60;
+    String minutesStr = (minutes < 10) ? '0$minutes' : '$minutes';
+    String secondsStr = (seconds < 10) ? '0$seconds' : '$seconds';
+    return '$minutesStr:$secondsStr';
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -94,13 +144,8 @@ class _VerifyRegistrationOTPScreenState
                                 flexibleSpace(flex: 1),
                                 Align(
                                   alignment: Alignment.centerRight,
-                                  child: OtpTimerButton(
-                                    controller: controller,
-                                    onPressed: () => resendOTP(),
-                                    text: Text('Resend OTP'),
-                                    duration: 600,
-                                    backgroundColor: navyBlue,
-                                  ),
+                                  child: resendOtp(),
+
                                 ),
                                 flexibleSpace(flex: 2),
                                 verifyBtn(),
@@ -129,34 +174,8 @@ class _VerifyRegistrationOTPScreenState
     );
   }
 
-  Widget resendOTPTitle() {
-    return GestureDetector(
-      onTap: () {
-        isLoading = true;
-        resendOTP();
-      },
-      child: Align(
-        child: Container(
-          alignment: Alignment.centerRight,
-          child: Text(
-            "Resend OTP",
-            textAlign: TextAlign.end,
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.w700, color: mateRed),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget expirationNote() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      if (_timerCount != 0) {
-        setState(() {
-          _timerCount -= 1;
-        });
-      }
-    });
+
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,9 +191,10 @@ class _VerifyRegistrationOTPScreenState
                 style: TextStyle(fontSize: 14, color: darkGrey),
               ),
               Text(
-                " 10 ",
+                getTimerText(),
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
+
               Text(
                 "minutes.",
                 style: TextStyle(fontSize: 14, color: darkGrey),
@@ -185,6 +205,24 @@ class _VerifyRegistrationOTPScreenState
       ),
     );
   }
+
+  Widget resendOtp(){
+    return  GestureDetector(
+      onTap: (){
+        showResend == false ? null : reSendOtpCode();
+      },
+      child: Container(
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+            color: showResend == true ? navyBlue : greySecondaryYarn,
+            borderRadius: BorderRadius.all(Radius.circular(10))
+        ),
+        child: Text('Resend OTP', style: TextStyle(fontSize: 14, color: Colors.white)),
+      ),
+    );
+  }
+
+
 
   Widget otpFillUpField() {
     BoxDecoration navyBlueBorder = BoxDecoration(
@@ -263,9 +301,11 @@ class _VerifyRegistrationOTPScreenState
 
         debugPrint('Phone number verify -> $phoneNumber');
 
-        Navigator.of(context).popAndPushNamed(Routes.SIGN_UP, arguments: {
-          'phoneNumber': phoneNumber,
-        });
+        // Navigator.of(context).popAndPushNamed(Routes.SIGN_UP, arguments: {
+        //   'phoneNumber': phoneNumber,
+        // });
+        Navigator.of(context).popAndPushNamed(Routes.ACCOUNT_TYPE,
+            arguments: {'phoneNumber': phoneNumber, 'otpCode': enteredOTP});
       }).catchError((e) {
         Navigator.pop(context);
         showToast(message: 'ERROR -> ${e.toString()}');
@@ -328,71 +368,17 @@ class _VerifyRegistrationOTPScreenState
     }
   }
 
-  void resendOTP() {
-    controller.loading();
+  void reSendOtpCode() {
 
     UserAuth().registerPhoneNumber(phoneNumber!).then((value) {
       // Navigator.of(context).pop();
       Future.delayed(Duration(seconds: 2), () {
-        controller.startTimer();
+        startTimer();
+        showResend = false;
         showToast(message: "OTP resent to $phoneNumber");
       });
     }).catchError((error) {
-      controller.enableButton();
-
       showToast(message: "$error");
     });
   }
 }
-
-// class ExpirationNoteWidget extends StatefulWidget {
-//   const ExpirationNoteWidget({Key? key}) : super(key: key);
-//
-//   @override
-//   State<ExpirationNoteWidget> createState() => _ExpirationNoteWidgetState();
-// }
-//
-// class _ExpirationNoteWidgetState extends State<ExpirationNoteWidget> {
-//   @override
-//   void initState() {
-//     super.initState();
-//     Timer.periodic(Duration(seconds: 1), (timer) {
-//       if (_timerCount != 0) {
-//         setState(() {
-//           _timerCount -= 1;
-//         });
-//       }
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: <Widget>[
-//           Text(
-//             "Please enter the code sent to your phone number.",
-//             style: TextStyle(fontSize: 14, color: darkGrey),
-//           ),
-//           Row(
-//             children: <Widget>[
-//               Text(
-//                 "This code will expire in",
-//                 style: TextStyle(fontSize: 14, color: darkGrey),
-//               ),
-//               Text(
-//                 " $_timerCount ",
-//                 style: TextStyle(fontSize: 14, color: Colors.red),
-//               ),
-//               Text(
-//                 "seconds.",
-//                 style: TextStyle(fontSize: 14, color: darkGrey),
-//               ),
-//             ],
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

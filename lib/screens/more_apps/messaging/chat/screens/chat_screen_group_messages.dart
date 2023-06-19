@@ -167,7 +167,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   String? productOrServicePrevious = "";
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
   GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
@@ -1554,12 +1554,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         if (mounted) setState(() {});
         return;
       } else {
-        DateTime now = new DateTime.now();
-        DateTime today = new DateTime(now.year, now.month, now.day);
+        DateTime now = DateTime.now();
+        DateTime today = DateTime(now.year, now.month, now.day);
         DateTime yesterday = now.subtract(Duration(days: 1));
 
         DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]).toLocal();
-        DateTime lastSeenDate = new DateTime(lastSeenDateTime.year,
+        DateTime lastSeenDate = DateTime(lastSeenDateTime.year,
             lastSeenDateTime.month, lastSeenDateTime.day);
 
         String lastSeenDateString =
@@ -1701,7 +1701,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       return false;
     }
 
-    if (chatConversation!.userName!.toLowerCase() == 'slydo') {
+    if (chatConversation!.userName.toString().toLowerCase() == 'slydo') {
       return true;
     }
 
@@ -4610,8 +4610,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
 
     if (textToBeCopy != null) {
-      Clipboard.setData(new ClipboardData(
-          text: messageDecoderWithEmoji(textToBeCopy.toString())));
+      Clipboard.setData(ClipboardData(
+          text: messageDecoderWithEmoji(textToBeCopy.toString())!));
       showToast(message: "Message copied !!");
     }
   }
@@ -4654,7 +4654,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     debugPrint(
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation!.conversationId}");
     if (chatConversation != null && chatConversation!.conversationId != null) {
-      Map<String, dynamic> data = new Map<String, dynamic>();
+      Map<String, dynamic> data = Map<String, dynamic>();
 
       Map<String, dynamic> oldMessageData = jsonDecode(editingMessage!);
       debugPrint("old Data :- $oldMessageData");

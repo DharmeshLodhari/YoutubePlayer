@@ -1,4 +1,6 @@
 // This model is to show the moments on the moment's homepage.
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
 class UserMomentModel {
@@ -58,7 +60,7 @@ class ExploreMomentsModel {
     required this.owner,
     required this.avatar,
     required this.moments,
-    required this.ownerName,
+    this.ownerName,
   });
   factory ExploreMomentsModel.fromJson(Map<String, dynamic> json) {
     List moments = json['moments'];
@@ -98,6 +100,7 @@ class MomentsModel {
   String? payMeButtonColor;
   bool? isPermanent;
   bool? userSupported;
+  int? duration;
 
   MomentsModel(
       {this.id,
@@ -124,6 +127,7 @@ class MomentsModel {
       this.expireAt,
       this.isPublic,
       this.userSupported,
+      this.duration,
       this.isPermanent = false});
 
   // factory MomentsModel.fromExploreMoments(ExploreMomentsModel exploreMomentsModel) {
@@ -183,6 +187,7 @@ class MomentsModel {
       owner: json['owner'],
       createdAt: json['created_at'],
       expireAt: json['expire_at'],
+      duration: json['duration'],
       userSupported: json['user_supported'] ?? false,
       isPublic: json['is_public'] ?? false,
       isPermanent: json['is_permanent'],
@@ -215,6 +220,7 @@ class MomentsModel {
     map['expire_at'] = expireAt;
     map['is_public'] = isPublic;
     map['user_supported'] = userSupported;
+    map['duration'] = duration;
     map['is_permanent'] = isPermanent;
     return map;
   }
@@ -283,5 +289,37 @@ class SearchMomentModel extends Equatable {
     data['avatar'] = this.avatar;
     data['owner_name'] = this.ownerName;
     return data;
+  }
+}
+
+class MomentMedia {
+  File? mediaFile;
+  File? posterFile;
+  String? mediaType;
+  String? mediaPoster;
+  String? id;
+  String? mediaUrl;
+
+  MomentMedia({
+    this.mediaFile,
+    this.mediaType,
+    this.mediaPoster,
+    this.posterFile,
+  });
+
+  MomentMedia.fromJson(dynamic json) {
+    id = json['id'];
+    mediaUrl = json['file'] ?? json['mediaUrl'];
+    mediaType = json['type'] ?? json['mediaType'];
+    mediaPoster = json['image_poster'] ?? json['mediaPoster'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "mediaUrl": mediaUrl,
+      "mediaType": mediaType,
+      "mediaPoster": mediaPoster,
+    };
   }
 }

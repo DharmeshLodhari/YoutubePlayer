@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
@@ -8,7 +7,6 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:video_player/video_player.dart';
 
@@ -376,8 +374,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   setUpVideoPlayer() async {
     videoPlayerController = VideoPlayerController.file(File(videoPath!),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
-      ..initialize().then((_) => videoPlayerController?.play())
-      ..setLooping(true);
+      ..initialize().then((_) => videoPlayerController?.pause());
   }
 
   Widget showCapturedMedia() {

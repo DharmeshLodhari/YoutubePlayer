@@ -239,7 +239,8 @@ Widget dropDownPickItemWidget(
         label ?? '',
         style: TextStyle(
           color: blackFont,
-          fontWeight: FontWeight.w400,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
         ),
       ),
       SizedBox(height: 5),

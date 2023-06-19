@@ -112,6 +112,7 @@ import 'package:Slydo/screens/more_apps/taxi/trip_ended.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/account_type.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/change_password.dart';
@@ -156,6 +157,8 @@ import '../screens/more_apps/payment_and_banking/screens/banking/payout_transact
 import '../screens/more_apps/shopping/screens/checkout_screen.dart';
 import '../screens/more_apps/super_hub/search_services.dart';
 import '../screens/more_apps/super_hub/super_hub.dart';
+import '../screens/super_store/near_by_list_screen.dart';
+import '../screens/super_store/search_nearby_business.dart';
 import '../screens/super_store/super_store.dart';
 
 class RouteGenerator {
@@ -239,6 +242,15 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      case Routes.ACCOUNT_TYPE:
+        return PageTransition(
+          child: AccountType(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
       case Routes.SIGN_UP:
         return PageTransition(
           child: SignUp(
@@ -271,7 +283,9 @@ class RouteGenerator {
         );
       case Routes.TRANSACTIONS:
         return PageTransition(
-          child: TransactionList(),
+          child: TransactionList(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1347,6 +1361,14 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case Routes.SEARCH_NEAR_BY_BUSINESS:
+        return PageTransition(
+          child: SearchNearByBusiness(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       /// Review
 
       case Routes.REVIEWS:
@@ -1480,6 +1502,16 @@ class RouteGenerator {
       case Routes.WEB_VIEW:
         return PageTransition(
           child: CustomWebView(webUrl: settings.arguments as String),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.NEAR_BY_LIST_SCREEN:
+        return PageTransition(
+          child: NearByListScreen(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

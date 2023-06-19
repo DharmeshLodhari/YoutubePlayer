@@ -180,7 +180,6 @@ class SavedYarnState extends State<SavedYarn> {
                   NavigationUtil.push(
                     context,
                     screen: SearchScreen(
-                        // askCategory: widget.askCategories,
                         ),
                   );
                 },

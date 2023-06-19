@@ -14,6 +14,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../../data/currency.dart';
 import '../../../../../../data/database_helper.dart';
+import '../../../../../../routes/route_constants.dart';
 import '../../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../../widget/LoadingIndicator.dart';
 import '../../../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
@@ -151,101 +152,108 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
               child: CircularLoadingIndicator(),
             ),
           )
-        : SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-              child: Column(
-                children: [
-                  Card(
-                    elevation: 2,
-                    margin: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    shadowColor: iconBtnGrey,
-                    child: Container(
-                      decoration: BoxDecoration(
+        : noItemInList
+            ? NoItemInList(
+                msg: AppLocalization.of(context)!.emptyBeneficiary,
+              )
+            : SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+                  child: Column(
+                    children: [
+                      Card(
+                        elevation: 2,
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: iconBtnGrey, width: 1)),
-                      child: Form(
-                        key: _formKey,
+                        ),
+                        shadowColor: iconBtnGrey,
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: 20,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: iconBtnGrey, width: 1)),
+                          child: Form(
+                            key: _formKey,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getUserBankAccount(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  displayAmountField(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getDescription(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  noteForUser(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
                               ),
-                              getUserBankAccount(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              displayAmountField(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              getDescription(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              noteForUser(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  Container(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 40,
-                        ),
-                        canCashOut(amount!, accountBalance!)
-                            ? getSubmitButton()
-                            : Container(
-                                child: Center(
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16.0),
-                                        child: Text.rich(TextSpan(
-                                            text: AppLocalization.of(context)!
-                                                .minimumTransfer,
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: blackFont,
-                                                fontWeight: FontWeight.w600),
-                                            children: <InlineSpan>[
-                                              TextSpan(
-                                                text: worldCurrencies[userBloc
-                                                        .user.currency!]! +
-                                                    moneyDisplayNormalizer(
-                                                        displayPossibleCashOutAmount(
-                                                            accountBalance!)),
+                      Container(
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 40,
+                            ),
+                            canCashOut(amount!, accountBalance!)
+                                ? getSubmitButton()
+                                : Container(
+                                    child: Center(
+                                        child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 16.0),
+                                            child: Text.rich(TextSpan(
+                                                text:
+                                                    AppLocalization.of(context)!
+                                                        .minimumTransfer,
                                                 style: TextStyle(
                                                     fontSize: 12,
                                                     color: blackFont,
-                                                    fontFamily: "Roboto",
                                                     fontWeight:
                                                         FontWeight.w600),
-                                              )
-                                            ])))),
-                              ),
-                        SizedBox(
-                          height: 20,
+                                                children: <InlineSpan>[
+                                                  TextSpan(
+                                                    text: worldCurrencies[
+                                                            userBloc.user
+                                                                .currency!]! +
+                                                        moneyDisplayNormalizer(
+                                                            displayPossibleCashOutAmount(
+                                                                accountBalance!)),
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: blackFont,
+                                                        fontFamily: "Roboto",
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  )
+                                                ])))),
+                                  ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          );
+                ),
+              );
   }
 
   Widget getUserBankAccount() {
@@ -394,7 +402,8 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
                   if (response.statusCode == 201) {
                     Navigator.pop(context);
-                    Navigator.of(context).popAndPushNamed('/payout-list');
+                    Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
+                        arguments: {'page': 1});
                   } else if (response.statusCode == 500) {
                     Navigator.pop(context);
                     if (mounted) {

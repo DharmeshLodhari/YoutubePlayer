@@ -3,40 +3,64 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../../utils/cached_video_player/cached_video_player.dart';
+import '../../../../utils/colors.dart';
+
 class MomentDashView extends StatefulWidget {
   final int currentPageViewIndex;
   final int lengthOfMoment;
+  final AnimationController controller;
+  final PageController pageController;
+  double value;
 
-  const MomentDashView(
+  MomentDashView(
       {Key? key,
       required this.currentPageViewIndex,
-      required this.lengthOfMoment})
+      required this.lengthOfMoment,
+      required this.controller,
+      required this.value,
+      required this.pageController})
       : super(key: key);
 
   @override
   _MomentDashViewState createState() => _MomentDashViewState();
 }
 
-class _MomentDashViewState extends State<MomentDashView> {
+class _MomentDashViewState extends State<MomentDashView>
+    with TickerProviderStateMixin {
+  late AnimationController controller;
   Timer? timer;
   double widthFactor = 0;
+  PageController? _pageController;
+  double? v;
 
   @override
   void initState() {
-    super.initState();
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (widthFactor.toInt() >= 1) {
-        timer.cancel();
-      }
-      widthFactor += 0.1;
+    controller = AnimationController(vsync: this);
+    _pageController = widget.pageController;
+    v = widget.value;
+    if (widget.value == 1.0) {
+      controller = widget.controller;
+    } else {
+      controller.lowerBound;
+    }
 
-      if (mounted) setState(() {});
-      debugPrint('WIDTH FACTOR -> ${widthFactor.toInt()}');
-    });
+    super.initState();
   }
+
+  // @override
+  // void dispose() {
+  //   widget.videoPlayerControllers![0].dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    v = widget.value;
+    
+    if (widget.value == 1.0) {
+      controller = widget.controller;
+    }
     return Container(
       height: 50,
       child: Row(
@@ -45,31 +69,38 @@ class _MomentDashViewState extends State<MomentDashView> {
     );
   }
 
+
   List<Widget> dashes(int lengthOfMoment, int currentIndex) {
-    debugPrint('DASHES ---> ');
+    // debugPrint('DASHES ---> ');
     List<Widget> widgets = [];
     for (int i = 0; i < lengthOfMoment; i++) {
       Widget widget = Expanded(
         child: Container(
-          height: 4,
-          margin: EdgeInsets.symmetric(horizontal: 2),
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.5),
-                offset: Offset(0, 0),
-              ),
-            ],
-            color: currentIndex >= i
-                ? Colors.white
-                : Colors.white.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(10),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          child: LinearProgressIndicator(
+            value: currentIndex >= i
+                ? controller.value
+                : controller.lowerBound,
+            semanticsLabel: 'Linear progress indicator',
+            backgroundColor: currentIndex > i ? Colors.blue[900] : white,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[900]!),
           ),
         ),
       );
-
       widgets.add(widget);
+
+      if (controller.value == 1.0) {
+        _pageController?.nextPage(
+            duration: const Duration(milliseconds: 50), curve: Curves.easeIn);
+        controller.reset();
+        if (currentIndex == lengthOfMoment) {
+          break;
+        }
+      }
     }
+    print(
+        'effectiveness...............$currentIndex and ${controller.value.toString()}');
+
     return widgets;
   }
 }

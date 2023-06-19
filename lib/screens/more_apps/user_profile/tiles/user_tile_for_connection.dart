@@ -88,7 +88,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         child: ListTile(
           dense: true,
           title: userNameWithVerifiedIcon(
-            name: widget.user!.fullName!,
+            name: widget.user!.fullName ?? '',
             isVerified: widget.user?.isVerified,
             verifiedIconColor: verifyGreen,
           ),

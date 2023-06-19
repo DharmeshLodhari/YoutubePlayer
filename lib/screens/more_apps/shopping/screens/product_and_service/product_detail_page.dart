@@ -69,7 +69,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   late bool isValidCustomer;
 
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   List<dynamic> sellersOtherItems = [];
 
@@ -1026,7 +1026,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                 ),
           onTap: () {
-            Clipboard.setData(new ClipboardData(text: product!.qrCode));
+            Clipboard.setData(ClipboardData(text: product!.qrCode!));
             showToast(message: AppLocalization.of(context)!.copied);
           },
         ),

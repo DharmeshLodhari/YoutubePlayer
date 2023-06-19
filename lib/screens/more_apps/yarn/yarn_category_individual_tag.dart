@@ -266,6 +266,8 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
               if (mounted) setState(() {});
             },
             currentIndex: currentAskTapOnHome,
+            firstTab: 'Latest',
+            secondTab: 'Trending',
           ),
           SizedBox(
             height: 16,

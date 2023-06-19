@@ -5,6 +5,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -286,7 +287,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List Products
-  Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous,
+  Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous, String? category,
       {String? userName, bool otherDeals = false}) async {
     debugPrint('CALLING PRODUCT');
     var url = "";
@@ -303,6 +304,15 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
+    if(category != ""){
+      var cat = messageDecoderWithEmoji(category);
+      if(category == "All"){
+        url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
+      }else{
+        url += AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
+      }
+
+    }
     debugPrint(url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -310,8 +320,23 @@ class ShoppingAuthService extends AuthService {
     debugPrint('CALLING OTHER DEALS ---> ${response.body}');
 
     if (response.statusCode == 200) {
+
+      if (!response.body.contains('results')) {
+
+        Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
       List<Product> productList = [];
       var jsonData = json.decode(response.body);
+
       for (var item in jsonData["results"]) {
         Product product = createProduct(item);
         productList.add(product);
@@ -324,7 +349,10 @@ class ShoppingAuthService extends AuthService {
         "results": productList
       };
 
+      debugPrint('CALLING OTHER check ---> ${result}');
+
       return result;
+
     } else if (response.statusCode == 500) {
       return null;
     } else {
@@ -1360,6 +1388,144 @@ class ShoppingAuthService extends AuthService {
       debugPrint(
           "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
       return Future.value(<ServiceCategory>[]);
+    }
+  }
+
+  // merchant list
+  Future<Map<String, dynamic>?> listOfMerchant(String? next, String? previous, String category,
+      {String? userName, bool nearBy = false}) async {
+    debugPrint('CALLING MERCHANT LIST');
+
+    var url = '';
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+
+      if (nearBy == true) {
+        url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/?nearby=true";
+      } else if (nearBy == false) {
+        url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/?suggestions=true";
+      }
+      if(category == '' || category == 'All'){
+        // url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/";
+      }else{
+        url += "?categories=$category/";
+      }
+
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER MERCHANT LIST ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<CustomerProfile> customerProfileList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        // debugPrint('MERCHANT LIST 000---> ${item}');
+
+        CustomerProfile customerProfile = CustomerProfile.fromJson(item);
+
+        debugPrint('MERCHANT LIST 000---> ${customerProfile.toJson()}');
+        // debugPrint('MERCHANT LIST 001---> ${item}');
+
+        customerProfileList.add(customerProfile);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": customerProfileList
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  //search filter for merchant
+  Future<Map<String, dynamic>?> searchMerchant(
+      String? next, String? previous,
+      {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    debugPrint('STATE BY Search -> ${filterOptions.state}');
+
+    if (next == "") {
+      url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/";
+
+      if (filterOptions.searchedText!.isNotEmpty) {
+        url += '?search=${filterOptions.searchedText}';
+      }else{
+        url += '?search=${filterOptions.searchedText}';
+      }
+
+      if (filterOptions.categories.isNotEmpty) {
+        url += '&categories=${filterOptions.categories.join(',')}';
+      }
+
+      if (filterOptions.state.isNotEmpty) {
+        url += '&state=${filterOptions.state.join(',')}';
+      }
+
+      if (filterOptions.lga.isNotEmpty) {
+        url += '&city=${filterOptions.lga.join(',')}';
+      }
+
+      url = Uri.encodeFull(url);
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint('SEARCH FILTER URL ---> $url');
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
+    // debugPrint('SEARCH FILTER BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<CustomerProfile> customerProfileList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        CustomerProfile customerProfile = CustomerProfile.fromJson(item);
+
+        debugPrint('SEARCH FILTER BODY ---> ${customerProfile.toJson()}');
+
+        customerProfileList.add(customerProfile);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": customerProfileList
+      };
+      debugPrint("result:- $result");
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      List<CustomerProfile> customerProfileList = [];
+      Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": customerProfileList
+      };
+      return result;
     }
   }
 }

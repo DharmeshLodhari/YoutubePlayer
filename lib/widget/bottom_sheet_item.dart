@@ -11,7 +11,8 @@ Widget bottomSheetItem(
     Widget? extraWidget,
     double iconSize = 14}) {
   return InkWell(
-    child: Container(
+    onTap: onTap as void Function()?,
+    child: SizedBox(
       width: double.infinity,
       child: Padding(
         padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
@@ -28,22 +29,24 @@ Widget bottomSheetItem(
                     width: 32,
                     height: 32,
                   )
-                : RoundedBackgroundIcon(
-                    icon: icon,
-                    backgroundColor: lightGrey,
-                    width: 32,
-                    height: 32,
+                : Padding(
+                    padding: const EdgeInsets.only(left: 7.4),
+                    child: RoundedBackgroundIcon(
+                      icon: icon,
+                      backgroundColor: lightGrey,
+                      width: 12,
+                      height: 12,
+                    ),
                   ),
-            SizedBox(width: 16),
+            SizedBox(width: icon != null ? 28 : 16),
             Text(
               title,
               style: TextStyle(fontSize: 16, color: blackFont),
             ),
-            extraWidget != null ? extraWidget : SizedBox.shrink(),
+            extraWidget ?? const SizedBox.shrink(),
           ],
         ),
       ),
     ),
-    onTap: onTap as void Function()?,
   );
 }

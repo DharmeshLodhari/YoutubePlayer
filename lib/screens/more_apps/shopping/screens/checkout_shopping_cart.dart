@@ -199,38 +199,39 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 width: 10,
               ),
             ),
-            Expanded(
-              child: MaterialButton(
-                height: 40,
-                color: navyBlue,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+            MaterialButton(
+              height: 40,
+              color: navyBlue,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              child: SizedBox(
+                width: 66,
                 child: Text(
                   "Checkout",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
-                      fontSize: 16),
+                      fontSize: 14),
                 ),
-                onPressed: () {
-                  if (appConfigurationModel?.enableCheckout == true) {
-                    NavigationUtil.push(
-                      context,
-                      screen: CheckoutScreen(),
-                    );
-                  } else {
-                    showToast(message: 'Checkout not available now');
-                  }
-
-                  // if (basketBloc.items.length != 0) {
-                  //   addNoteDialog();
-                  // } else {
-                  //   showToast(
-                  //       message: AppLocalization.of(context)!
-                  //           .pleaseAddSomeItemsFirst);
-                  // }
-                },
               ),
+              onPressed: () {
+                if (appConfigurationModel?.enableCheckout == true) {
+                  NavigationUtil.push(
+                    context,
+                    screen: CheckoutScreen(),
+                  );
+                } else {
+                  showToast(message: 'Checkout not available now');
+                }
+
+                // if (basketBloc.items.length != 0) {
+                //   addNoteDialog();
+                // } else {
+                //   showToast(
+                //       message: AppLocalization.of(context)!
+                //           .pleaseAddSomeItemsFirst);
+                // }
+              },
             )
           ],
         ),

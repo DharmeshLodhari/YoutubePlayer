@@ -1,25 +1,21 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
+import 'package:Slydo/screens/super_store/shop_list_screen.dart';
+import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/noItemInList.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:badges/badges.dart' as badges;
-import '../../data/currency.dart';
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
 import '../../utils/util.dart';
-import '../../widget/item_display_card.dart';
 import '../../widget/rounded_background_icon.dart';
-import '../more_apps/shopping/models/ShoppingProduct.dart';
-import '../more_apps/shopping/models/store.dart';
-import '../more_apps/shopping/shopping_auth.dart';
+import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
+import '../more_apps/yarn/yarn_setting_screen.dart';
 
 class SuperStore extends StatefulWidget {
   const SuperStore({Key? key}) : super(key: key);
@@ -29,580 +25,265 @@ class SuperStore extends StatefulWidget {
 }
 
 class _SuperStoreState extends State<SuperStore> {
-  bool todaysDealsEmpty = false;
-  bool isTodayDealLoading = false;
-  double todaysDealsSizeBox = 0;
-  List<ShoppingProduct> todaysDealList = [];
 
-  List<Product> productList = [];
-  bool isProductLoading = false;
-  bool noProductInList = false;
   int? productCount = 0;
-  String? todayDealNext = "";
-  String? productNext = "";
-  String? todayDealPrevious = "";
-  String? productPrevious = "";
   late BasketBloc basketBloc;
+  late PageController _pageViewController;
+  int currentAskTapOnHome = 0;
+  bool _tabsVisible = true;
+  String categoryName = '';
 
-  final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
-
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
-
-  ScrollController _todayDealScrollController = new ScrollController();
-  ScrollController _productScrollController = new ScrollController();
-
-  AppBar appBar() {
-    return AppBar(
-      elevation: 0,
-      titleSpacing: 16,
-      backgroundColor: Colors.white,
-      automaticallyImplyLeading: false,
-      centerTitle: false,
-      title: Text(
-        AppLocalization.of(context)!.superStore,
-        style: TextStyle(
-          color: blackFont,
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      actions: [
-        _cartBtn(),
-        SizedBox(width: 12),
-      ],
-    );
-  }
 
   @override
   void initState() {
+    _pageViewController = PageController(initialPage: 0);
     super.initState();
-    getProductList();
 
-    getTodaysDealProducts();
-    _productScrollController.addListener(() {
-      if (_productScrollController.position.pixels ==
-              _productScrollController.position.maxScrollExtent &&
-          _productScrollController.position.pixels != 0) {
-        getProductList();
-      }
-    });
-    _todayDealScrollController.addListener(() {
-      if (_todayDealScrollController.position.pixels ==
-              _todayDealScrollController.position.maxScrollExtent &&
-          _todayDealScrollController.position.pixels != 0) {
-        getTodaysDealProducts();
-      }
-    });
   }
 
-  void getProductList() async {
-    if (!isProductLoading) {
-      if (productNext != null && !isProductLoading) {
-        isProductLoading = true;
-        if (mounted) setState(() {});
-
-        Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious, otherDeals: true);
-
-        if (result == null) {
-          noProductInList = true;
-
-          isProductLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
-          return;
-        }
-
-        productCount = result['count'];
-        productNext = result['next'];
-        productPrevious = result['previous'];
-        var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            noProductInList = false;
-            isProductLoading = false;
-            productList.addAll(tempList);
-          });
-        }
-      }
-      if (productList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noProductInList = true;
-          });
-        }
-      } else if (productNext == null && productList.length > 6) {
-        _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
-      }
+  void _showTabs(bool visible) {
+    if (_tabsVisible != visible) {
+      setState(() {
+        _tabsVisible = visible;
+      });
     }
-  }
-
-  void getTodaysDealProducts() async {
-    if (!isTodayDealLoading) {
-      if (todayDealNext != null && !isTodayDealLoading) {
-        isTodayDealLoading = true;
-        if (mounted) setState(() {});
-
-        Map<String, dynamic>? result = await ShoppingAuthService()
-            .getProductListForSuperStore(todayDealNext, todayDealPrevious,
-                todaysDeal: true);
-
-        if (result == null) {
-          todaysDealsEmpty = true;
-          todaysDealsSizeBox = 22;
-          isTodayDealLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
-          return;
-        }
-
-        todayDealNext = result['next'];
-        todayDealPrevious = result['previous'];
-        var tempList = result['results'];
-
-        todaysDealsEmpty = false;
-        isTodayDealLoading = false;
-        todaysDealList.addAll(tempList);
-
-        if (mounted) setState(() {});
-      }
-      if (todaysDealList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            todaysDealsEmpty = true;
-          });
-        }
-      }
-    }
-  }
-
-  void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        _refreshPage();
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
-  }
-
-  _refreshPage() {
-    productNext = "";
-    productCount = 0;
-    productPrevious = "";
-    isProductLoading = false;
-    productList = [];
-
-    todayDealNext = "";
-    todayDealPrevious = "";
-    isTodayDealLoading = false;
-    todaysDealList = [];
-
-    getProductList();
-    getTodaysDealProducts();
   }
 
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
 
-    return ScaffoldMessenger(
-      key: _productScaffoldMessengerKey,
-      child: Scaffold(
-        backgroundColor: lightGrey,
-        appBar: appBar(),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: ListView(
-                controller: _productScrollController,
-                children: [
-                  searchBox(),
-                  SizedBox(height: 16),
-                  SizedBox(height: todaysDealsSizeBox),
-                  todaysDealsEmpty ? SizedBox.shrink() : getTodaysDealList(),
-                  todaysDealsEmpty ? SizedBox.shrink() : SizedBox(height: 20),
-                  superStoreProducts(),
-                  const SizedBox(height: 16),
-                  isProductLoading
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                              mainAxisSpacing: 14,
-                              mainAxisExtent: 180,
-                              crossAxisSpacing: 15,
-                              maxCrossAxisExtent: 200,
-                            ),
-                            itemCount: 2,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : SizedBox.shrink(),
-                  Visibility(
-                    visible: !isProductLoading &&
-                        !isTodayDealLoading &&
-                        todaysDealList.isEmpty &&
-                        productList.isEmpty,
-                    child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: _buildAppBar() as PreferredSizeWidget,
+      body: _buildBody(),
+    );
+
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: Text(
+        AppLocalization.of(context)!.superStore,
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: yarnBlack,
+          height: 1.3,
         ),
+      ),
+      centerTitle: false,
+      titleSpacing: 16,
+      shadowColor: greySecondaryYarn,
+      actions: currentAskTapOnHome == 0 ? _buildAppBarActionsShopList() : _buildAppBarActionsFindBusiness(),
+      elevation: 0.5,
+    );
+  }
+
+  List<Widget> _buildAppBarActionsShopList() {
+    return [
+      RoundedBackgroundIcon(
+          backgroundColor: Colors.transparent,
+          onTap: () {
+            Navigator.of(context).pushNamed("/search-product");
+          },
+          height: 15,
+          width: 15,
+          icon: SvgPicture.asset(
+            "yarn/search".toSVG(),
+            height: 12,
+            width: 12,
+          )),
+      SizedBox(width: 20),
+      _cartBtn(),
+      SizedBox(width: 20),
+
+      RoundedBackgroundIcon(
+          backgroundColor: Colors.transparent,
+          onTap: () {
+            NavigationUtil.push(
+              context,
+              screen: YarnSettingsScreen(),
+            );
+          },
+          height: 15,
+          width: 15,
+          icon: SvgPicture.asset(
+            "yarn/setting".toSVG(),
+            height: 12,
+            width: 12,
+          )),
+      SizedBox(width: 20),
+    ];
+  }
+
+  List<Widget> _buildAppBarActionsFindBusiness() {
+    return [
+      RoundedBackgroundIcon(
+          backgroundColor: Colors.transparent,
+          onTap: () {
+            Navigator.pushNamed(context, Routes.SEARCH_NEAR_BY_BUSINESS);
+          },
+          height: 15,
+          width: 15,
+          icon: SvgPicture.asset(
+            "yarn/search".toSVG(),
+            height: 12,
+            width: 12,
+          )),
+      SizedBox(width: 15),
+      RoundedBackgroundIcon(
+          backgroundColor: Colors.transparent,
+          onTap: () {
+            // NavigationUtil.push(
+            //   context,
+            //   screen: YarnSettingsScreen(),
+            // );
+          },
+          height: 20,
+          width: 20,
+          icon: SvgPicture.asset(
+            "store/location".toSVG(),
+            height: 15,
+            width: 15,
+          )),
+      SizedBox(width: 15),
+
+      // RoundedBackgroundIcon(
+      //     backgroundColor: Colors.transparent,
+      //     onTap: () {
+      //       // NavigationUtil.push(
+      //       //   context,
+      //       //   screen: YarnSettingsScreen(),
+      //       // );
+      //     },
+      //     height: 20,
+      //     width: 20,
+      //     icon: SvgPicture.asset(
+      //       "store/filter".toSVG(),
+      //       height: 20,
+      //       width: 20,
+      //     )),
+      // SizedBox(width: 20),
+    ];
+  }
+
+  Widget _buildBody() {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollNotification) {
+        /// Check if the scroll direction is horizontal
+        if (scrollNotification is ScrollNotification &&
+            scrollNotification.metrics.axis == Axis.horizontal) {
+          // Disable horizontal scrolling
+          return true;
+        }
+
+        if (scrollNotification is ScrollUpdateNotification) {
+          if (scrollNotification.scrollDelta! > 0 && _tabsVisible) {
+            // Scrolling down
+            _showTabs(false);
+          } else if (scrollNotification.scrollDelta! < 0 && !_tabsVisible) {
+            // Scrolling up
+            _showTabs(true);
+          }
+        }
+
+        return true;
+      },
+      child: Column(
+        children: [
+          SizedBox(
+            height: 16,
+          ),
+          _buildCategoryAndTabs(),
+          _buildPageView(),
+        ],
       ),
     );
   }
 
-  Widget superStoreProducts() {
-    if (productList.isEmpty) {
-      return SizedBox.shrink();
-    }
-    return productNext == "" && isProductLoading
-        ? SizedBox.shrink()
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              noProductInList
-                  ? SizedBox.shrink()
-                  : todaysDealsEmpty
-                      ? SizedBox.shrink()
-                      : Text(
-                          "Other deals",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: blackFont,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-              noProductInList ? SizedBox.shrink() : SizedBox(height: 16),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 22,
-                  mainAxisExtent: 274,
-                  crossAxisSpacing: 15,
-                  maxCrossAxisExtent: 200,
-                ),
-                itemCount: productList.length,
-                itemBuilder: (context, index) {
-                  return SuperStoreSingleCard(
-                    product: productList[index],
-                  );
-                },
-              ),
-            ],
-          );
-  }
-
-  Widget getTodaysDealList() {
+  Widget _buildCategoryAndTabs() {
     return Column(
       children: [
-        todaysDealsEmpty
-            ? SizedBox.shrink()
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Text(
-                        "Today's deal",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                          color: blackFont,
-                        ),
-                      ),
-                      Icon(
-                        Icons.bolt_rounded,
-                        color: mateRed,
-                      ),
-                    ],
-                  ),
-                  // GestureDetector(
-                  //   child: Row(
-                  //     children: [
-                  //       Text(
-                  //         "See all",
-                  //         style: TextStyle(
-                  //             fontWeight: FontWeight.w600,
-                  //             fontSize: 14,
-                  //             color: navyBlue),
-                  //       ),
-                  //       SizedBox(width: 8),
-                  //       Icon(Icons.arrow_forward_ios_sharp,
-                  //           size: 14, color: navyBlue),
-                  //     ],
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.of(context).pushNamed("/shopping-category");
-                  //   },
-                  // ),
-                ],
-              ),
-        Container(
-          height: 280,
-          child: ListView.builder(
-            padding: EdgeInsets.only(bottom: 6),
-            scrollDirection: Axis.horizontal,
-            controller: _todayDealScrollController,
-            itemCount: todaysDealList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == todaysDealList.length) {
-                return isTodayDealLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: SizedBox(
-                          height: 100,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: 3,
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                width: 160,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      )
-                    : SizedBox.shrink();
-              } else {
-                ShoppingProduct shoppingProduct = todaysDealList[index];
-                return DisplayProduct(
-                  giveRightPadding: true,
-                  product: Product(
-                      id: shoppingProduct.id,
-                      name: shoppingProduct.name,
-                      price: shoppingProduct.price.toString(),
-                      currency: shoppingProduct.currency,
-                      cover: shoppingProduct.cover,
-                      isAvailable: shoppingProduct.isAvailable,
-                      seller: shoppingProduct.seller,
-                      sellerFullName: shoppingProduct.sellerFullname,
-                      shortDescription: shoppingProduct.shortDescription),
-                );
-              }
+
+        if (_tabsVisible) ...[
+          YarnTabSelection(
+            onTap: (index) {
+              currentAskTapOnHome = index;
+              _pageViewController.jumpToPage(currentAskTapOnHome);
+              _showTabs(true);
+              if (mounted) setState(() {});
+            },
+            currentIndex: currentAskTapOnHome,
+            firstTab: 'Shop',
+            secondTab: 'Find Business',
+          ),
+          SizedBox(
+            height: 16,
+          ),
+        ],
+        if (_tabsVisible) ...[
+          ProductCategorySelection(
+            callback: (category, val){
+              categoryName = category;
+              if(mounted)setState(() {});
             },
           ),
-        ),
+          SizedBox(height: 14),
+          Divider(
+            height: 0,
+            thickness: 0.5,
+            color: greySecondaryYarn,
+          ),
+          SizedBox(height: 8),
+        ],
+
       ],
     );
   }
 
-  Widget todaysDealWidget({required ShoppingProduct product}) {
-    return GestureDetector(
-      onTap: () {
-        ShoppingAuthService().getProduct(product.id!).then((value) {
-          Navigator.pushNamed(context, '/product',
-              arguments: {"product": value});
-        });
-      },
-      child: SizedBox(
-        width: 160,
-        child: Card(
-          elevation: 12,
-          color: Colors.white,
-          shadowColor: lightGrey.withOpacity(0.4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildPageView() {
+    return Expanded(
+      child: PageView(
+        onPageChanged: (currentPage) {
+          updateCurrentAskTapOnHome(index: currentPage);
+        },
+        controller: _pageViewController,
+        children: [
+          ShopListScreen(
+            onPageRefresh: (bool data) {
+              if (data == true) {
+                _showTabs(true);
+              }
+            },
+            category: categoryName,
+
           ),
-          margin: EdgeInsets.only(top: 20, right: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    child: CachedNetworkImage(
-                      imageUrl: product.cover!,
-                      errorWidget: productAndServiceErrorWidget,
-                      memCacheHeight:
-                          (MediaQuery.of(context).size.height * 0.6).toInt(),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.only(left: 10, bottom: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      product.name!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: blackFont,
-                      ),
-                      maxLines: 2,
-                    ),
-                    SizedBox(height: 5),
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: worldCurrencies[product.currency!]!,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: blackFont,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: truncateString(
-                              str: moneyDisplayNormalizer(
-                                  int.parse(product.price.toString())),
-                              lengthToTruncateAt: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+          FindBusinessListScreen(
+            onPageRefresh: (bool data) {
+              if (data == true) {
+                _showTabs(true);
+              }
+            },
+            category: categoryName,
+          )
+        ],
       ),
     );
   }
 
-  Widget searchBox() {
-    return Container(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          textSelectionTheme: TextSelectionThemeData(
-            selectionHandleColor: navyBlue,
-          ),
-        ),
-        child: InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed("/search-product");
-          },
-          child: IgnorePointer(
-            ignoring: true,
-            child: TextFormField(
-              readOnly: true,
-              style: TextStyle(
-                fontSize: 16,
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-              ),
-              cursorWidth: 1.5,
-              cursorColor: navyBlue,
-              decoration: InputDecoration(
-                hintStyle: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: darkGrey,
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    SlydoAppIcon.search,
-                    color: darkGrey,
-                    size: 14,
-                  ),
-                  onPressed: () {},
-                ),
-                hintText: "Search",
-                fillColor: Colors.white,
-                filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
-                  padding: EdgeInsets.only(left: 16),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: navyBlue,
-                    width: 1.0,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: dividerColor,
-                    width: 1.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  void updateCurrentAskTapOnHome({required int index}) {
+    setState(() {
+      currentAskTapOnHome = index;
+    });
   }
+
 
   Widget _cartBtn() {
     return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
+      height: 30,
+      width: 30,
       icon: badges.Badge(
         badgeContent: getBadgeContent(),
         badgeAnimation: badges.BadgeAnimation.rotation(
@@ -660,104 +341,4 @@ class _SuperStoreState extends State<SuperStore> {
   }
 }
 
-class SuperStoreSingleCard extends StatelessWidget {
-  final Product product;
-  const SuperStoreSingleCard({Key? key, required this.product})
-      : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return DisplayProduct(product: product, giveRightPadding: false);
-    // return Stack(
-    //   children: [
-    //     InkWell(
-    //       onTap: () {
-    //         Navigator.pushNamed(
-    //           context,
-    //           Routes.PRODUCT,
-    //           arguments: {"product": product},
-    //         );
-    //       },
-    //       child: Card(
-    //         elevation: 12,
-    //         color: Colors.white,
-    //         shadowColor: lightGrey.withOpacity(0.4),
-    //         shape: RoundedRectangleBorder(
-    //           borderRadius: BorderRadius.circular(12),
-    //         ),
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.center,
-    //           children: [
-    //             Padding(
-    //               padding: const EdgeInsets.all(16.0),
-    //               child: ClipRRect(
-    //                 borderRadius: BorderRadius.only(
-    //                   topLeft: Radius.circular(12),
-    //                   topRight: Radius.circular(12),
-    //                 ),
-    //                 child: CachedNetworkImage(
-    //                   height: 150,
-    //                   width: double.infinity,
-    //                   errorWidget: productAndServiceBigErrorWidget,
-    //                   imageUrl: product.serverImages![0]!,
-    //                   memCacheHeight:
-    //                       (MediaQuery.of(context).size.height * 0.6).toInt(),
-    //                 ),
-    //               ),
-    //             ),
-    //             const SizedBox(height: 6),
-    //             Text(
-    //               truncateString(str: product.name!, lengthToTruncateAt: 15),
-    //               style: TextStyle(
-    //                 fontSize: 16,
-    //                 fontWeight: FontWeight.w400,
-    //               ),
-    //             ),
-    //             Padding(
-    //               padding: const EdgeInsets.symmetric(vertical: 6.0),
-    //               child: Row(
-    //                 mainAxisSize: MainAxisSize.min,
-    //                 children: <Widget>[
-    //                   Expanded(
-    //                     child: RichText(
-    //                       textAlign: TextAlign.center,
-    //                       text: TextSpan(
-    //                         text: worldCurrencies[product.currency!]!,
-    //                         style: TextStyle(
-    //                             fontSize: 16.0,
-    //                             color: navyBlue,
-    //                             fontWeight: FontWeight.bold),
-    //                         children: [
-    //                           TextSpan(
-    //                             text: truncateString(
-    //                               str: moneyDisplayNormalizer(
-    //                                   int.parse(product.price.toString())),
-    //                               lengthToTruncateAt: 16,
-    //                             ),
-    //                           ),
-    //                         ],
-    //                       ),
-    //                     ),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //             Align(
-    //               alignment: Alignment.center,
-    //               child: Row(
-    //                 mainAxisAlignment: MainAxisAlignment.center,
-    //                 children: [
-    //                   getRating(
-    //                       numberOfRating: product.rating!.toInt(),
-    //                       starSize: 14),
-    //                 ],
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
-  }
-}

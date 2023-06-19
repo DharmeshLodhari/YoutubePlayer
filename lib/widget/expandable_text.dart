@@ -18,7 +18,7 @@ class _ExpandableTextState extends State<ExpandableText>
   Widget build(BuildContext context) {
     return Stack(clipBehavior: Clip.none, children: <Widget>[
       AnimatedSize(
-        vsync: this,
+        // vsync: this,
         duration: const Duration(milliseconds: 500),
         child: ConstrainedBox(
           constraints: widget.isExpanded

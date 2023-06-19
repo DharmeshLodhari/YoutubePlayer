@@ -9,6 +9,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -47,6 +48,7 @@ class _SignUpState extends State<SignUp> {
 
   String? phoneNumber = '';
   String password = '';
+  String otpCode = '';
 
   late TextEditingController _bvnController;
   late TextEditingController _firstNameController;
@@ -55,6 +57,7 @@ class _SignUpState extends State<SignUp> {
   late TextEditingController _userNameController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
+  late TextEditingController _accountTypeController;
 
   DateTime dob = DateTime.now();
   String? gender;
@@ -76,12 +79,18 @@ class _SignUpState extends State<SignUp> {
   RegExp multipleDotReg = RegExp(r'\.{2,}');
 
   int maxUsernameLength = 30;
+  bool isUserAgree = false;
 
   @override
   void initState() {
     phoneNumber = arguments['phoneNumber'];
+    otpCode = arguments['otpCode'];
+    accountType = arguments['accountType'];
 
     debugPrint('Phone number -> $phoneNumber');
+    debugPrint('accountType -> $accountType');
+    debugPrint('otpCode -> $otpCode');
+
     _bvnController = TextEditingController();
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
@@ -89,6 +98,12 @@ class _SignUpState extends State<SignUp> {
     _userNameController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
+    _accountTypeController = TextEditingController();
+
+    _accountTypeController.text = accountType!;
+    accountTypeChosen = true;
+    isPersonalAccount = accountType == 'Personal';
+    getSubscriptionList();
 
     _businessOrNickNameController.addListener(() {
       String name = _businessOrNickNameController.text;
@@ -185,46 +200,7 @@ class _SignUpState extends State<SignUp> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Text(
-                                'Account type',
-                                style: TextStyle(color: darkGrey, fontSize: 14),
-                              ),
-                              SizedBox(height: 6),
-                              Container(
-                                height: 50,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 14.0),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: dividerColor),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: DropdownButton2(
-                                  isExpanded: true,
-                                  value: accountType,
-                                  dropdownDecoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  hint: Text('Select an account type'),
-                                  underline: SizedBox.shrink(),
-                                  items: ['Personal', 'Business', 'Developer']
-                                      .map((String item) {
-                                    return DropdownMenuItem(
-                                      value: item,
-                                      child: Text(item),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      accountType = value!;
-                                      accountTypeChosen = true;
-                                      isPersonalAccount =
-                                          accountType == 'Personal';
-                                      clearAllFields();
-                                      getSubscriptionList();
-                                    });
-                                  },
-                                ),
-                              ),
+                              accountTypeField(),
                               Visibility(
                                 visible: accountTypeChosen,
                                 child: accountType == 'Personal'
@@ -262,7 +238,8 @@ class _SignUpState extends State<SignUp> {
                                 Container(),
                               SizedBox(height: 20),
                               getGenderField(),
-                              // SizedBox(height: 20),
+                              SizedBox(height: 20),
+                              registrationTermsAndCondition(),
                               // bvnField(),
                               SizedBox(height: 40),
                               registerBtn(),
@@ -314,10 +291,6 @@ class _SignUpState extends State<SignUp> {
         ),
         confirmPasswordField(),
         SizedBox(
-          height: 20,
-        ),
-        registrationTermsAndCondition(),
-        SizedBox(
           height: 40,
         ),
         nextBtn(),
@@ -351,10 +324,6 @@ class _SignUpState extends State<SignUp> {
         passwordInstruction(),
         SizedBox(height: 20),
         confirmPasswordField(),
-        SizedBox(
-          height: 20,
-        ),
-        registrationTermsAndCondition(),
         SizedBox(
           height: 40,
         ),
@@ -457,6 +426,15 @@ class _SignUpState extends State<SignUp> {
         style: TextStyle(
             fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
       ),
+    );
+  }
+
+  Widget accountTypeField() {
+    return CustomizedTextFormField(
+      controller: _accountTypeController,
+      labelColor: darkGrey,
+      labelText: 'Account type',
+      keyboardType: TextInputType.name,
     );
   }
 
@@ -735,36 +713,103 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget registrationTermsAndCondition() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text(
-            "By clicking Register, you are agreeing to our",
-            style: TextStyle(fontSize: 14, color: blackFont),
-          ),
-          InkWell(
-            child: Text(
-              "Terms and Conditions",
-              style: TextStyle(
-                  fontSize: 14, color: navyBlue, fontWeight: FontWeight.w600),
+          ClipRRect(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            child: SizedBox(
+              width: Checkbox.width - 1.5,
+              height: Checkbox.width - 1.5,
+              child: Container(
+                decoration: new BoxDecoration(
+                  border: Border.all(
+                    color: greyBorderColor,
+                    width: 1,
+                  ),
+                  borderRadius: new BorderRadius.circular(5),
+                ),
+                child: Theme(
+                  data: ThemeData(
+                    unselectedWidgetColor: Colors.transparent,
+                  ),
+                  child: Checkbox(
+                    value: isUserAgree,
+                    activeColor: navyBlue,
+                    checkColor: Colors.white,
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                    onChanged: (value) {
+                      // if (mounted) {
+                      //   setState(() {
+                      //     isUserAgree = value;
+                      //   });
+                      // }
+                    },
+                  ),
+                ),
+              ),
             ),
-            onTap: () {
-              launch('http://slydo.co/terms');
-            },
           ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: 'By checking the box, you are agreeing to our ',
+                      style: TextStyle(fontSize: 14, color: blackFont),),
+                    TextSpan(
+                      text: 'Terms & Conditions, ',
+                      style: TextStyle(fontSize: 14, color: navyBlue, fontWeight: FontWeight.w600),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          launch('http://https://slydo.co/termsandconditions');
+                        },
+                    ),
+                    TextSpan(
+                      text: 'Privacy Policy',
+                      style: TextStyle(fontSize: 14, color: navyBlue, fontWeight: FontWeight.w600),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          launch('http://https://slydo.co/privacypolicy');
+                        },
+                    ),
+                    TextSpan(text: ' which includes our ', style: TextStyle(fontSize: 14, color: blackFont),),
+                    TextSpan(
+                      text: 'EULA terms.',
+                      style: TextStyle(fontSize: 14, color: navyBlue, fontWeight: FontWeight.w600),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          launch('http://https://slydo.co/termsandconditions');
+                        },
+                    ),
+                  ],
+                ),
+              ),
+          )
         ],
       ),
+      onTap: () {
+        if (mounted) {
+          isUserAgree = !isUserAgree;
+          setState(() {});
+        }
+      },
     );
   }
 
+
   Widget registerBtn() {
-    return CurvedButton(
+    return isUserAgree == true ? CurvedButton(
       onPressed: registerUser,
       text: "Register",
       textColor: Colors.white,
       backgroundColor: navyBlue,
-    );
+    ) : SizedBox.shrink();
   }
 
   bool showButton = false;
@@ -976,6 +1021,7 @@ class _SignUpState extends State<SignUp> {
         "nickname": businessOrNickName,
         "password1": _passwordController.text.trim(),
         "password2": _confirmPasswordController.text.trim(),
+        "otp_code": otpCode,
       };
 
       if (accountType != 'Personal') {
