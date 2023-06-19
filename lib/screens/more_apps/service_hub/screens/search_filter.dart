@@ -1,0 +1,956 @@
+import 'dart:io';
+
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
+import 'package:Slydo/screens/more_apps/service_hub/models/job_location_model.dart';
+import 'package:Slydo/screens/more_apps/service_hub/models/list_of_categories.dart';
+// import 'package:Slydo/screens/more_apps/service_hub/screens/jobs_job_detail.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:lottie/lottie.dart';
+import 'package:shimmer/shimmer.dart';
+
+class JobsSearchFilter extends StatefulWidget {
+  const JobsSearchFilter({Key? key}) : super(key: key);
+
+  @override
+  State<JobsSearchFilter> createState() => _JobsSearchFilterState();
+}
+
+class _JobsSearchFilterState extends State<JobsSearchFilter> {
+  TextEditingController _controller = TextEditingController();
+  String productPrice = "";
+  String priceFrom = "";
+  String priceTo = "";
+  String? selectedSorting;
+  List<String> sortByList = [
+    "Oldest",
+    "Most Recent",
+    "Price Low to High",
+    "Price High to Low"
+  ];
+  bool isSelected = false;
+  String? selected;
+  String? selectedCategory;
+  String? displayCategory;
+  String? selectedState;
+  String? displayState;
+  bool isCategoryLoading = false;
+  bool isLocationLoading = false;
+  String? categoryNext = "";
+  String? locationNext = "";
+  String? categoryPrevious = "";
+  String? locationPrevious = "";
+  bool noCatinList = false;
+  bool noLocinList = false;
+  int? categoryCount = 0;
+  int? locationCount = 0;
+  List<CategoryListData?> categoriesList = [];
+  List<CategoryListData?> categoriesListCopy = [];
+  List<LocationData?> locationsList = [];
+  List<LocationData?> locationsListCopy = [];
+  List<String> categoriesNameList = [];
+  final GlobalKey<ScaffoldMessengerState> _filterScaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+  ScrollController _categoriesScrollController = ScrollController();
+  ScrollController _locationScrollController = ScrollController();
+
+  final List<String> items = [
+    'Item1',
+    'Item2',
+    'Item3',
+    'Item4',
+  ];
+  List<String> selectedItems = [];
+  Map<String, dynamic> filterMap = {
+    'category': "",
+    'sortby': "",
+    'priceFrom': '',
+    'priceTo': '',
+    'location': ''
+  };
+
+  void getCategoriesList() async {
+    if (!isCategoryLoading) {
+      if (categoryNext != null && !isCategoryLoading) {
+        isCategoryLoading = true;
+        if (mounted) setState(() {});
+
+        var result = await ServiceHubAuthService()
+            .getListOfCategories(categoryNext, categoryPrevious);
+
+        if (result == null) {
+          noCatinList = true;
+
+          isCategoryLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        categoryCount = result.count;
+        categoryNext = result.next;
+        categoryPrevious = result.previous;
+        var tempList = result.results;
+        if (mounted) {
+          setState(() {
+            noCatinList = false;
+            isCategoryLoading = false;
+            categoriesList.addAll(tempList!);
+            categoriesListCopy = categoriesList;
+            tempList.forEach((element) {
+              categoriesNameList.add(element.name!);
+            });
+          });
+        }
+      }
+      if (categoriesList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noCatinList = true;
+          });
+        }
+      } else if (categoryNext == null && categoriesList.length > 6) {
+        _filterScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  void getLocationList() async {
+    if (!isLocationLoading) {
+      if (locationNext != null && !isLocationLoading) {
+        isLocationLoading = true;
+        if (mounted) setState(() {});
+
+        var result = await ServiceHubAuthService()
+            .getJobLocation(locationNext, locationPrevious);
+
+        if (result == null) {
+          noLocinList = true;
+
+          isLocationLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        locationCount = result.count;
+        locationNext = result.next;
+        locationPrevious = result.previous;
+        var tempList = result.results;
+        if (mounted) {
+          setState(() {
+            noLocinList = false;
+            isLocationLoading = false;
+            locationsList.addAll(tempList!);
+            locationsListCopy = locationsList;
+            tempList.forEach((element) {
+              categoriesNameList.add(element.name!);
+            });
+          });
+        }
+      }
+      if (locationsList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noLocinList = true;
+          });
+        }
+      } else if (locationNext == null && locationsList.length > 6) {
+        _filterScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCategoriesList();
+    getLocationList();
+    _categoriesScrollController.addListener(() {
+      if (_categoriesScrollController.position.pixels ==
+              _categoriesScrollController.position.maxScrollExtent &&
+          _categoriesScrollController.position.pixels != 0) {
+        getCategoriesList();
+      }
+    });
+    _locationScrollController.addListener(() {
+      if (_locationScrollController.position.pixels ==
+              _locationScrollController.position.maxScrollExtent &&
+          _locationScrollController.position.pixels != 0) {
+        getLocationList();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaffoldMessenger(
+      key: _filterScaffoldMessengerKey,
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        appBar: appBar(),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              getFilterField(context),
+              isCategoryLoading
+                  ? Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: 14,
+                          mainAxisExtent: 180,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : SizedBox.shrink(),
+              Visibility(
+                visible: !isCategoryLoading && categoriesList.isEmpty,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Lottie.asset('assets/lottie/no_moment_lottie.json'),
+                      SizedBox(height: 20),
+                      Text('No items at the moment'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getFilterField(BuildContext context) {
+    if (categoriesList.isEmpty) {
+      return SizedBox.shrink();
+    }
+    return categoryNext == "" && isCategoryLoading
+        ? SizedBox.shrink()
+        : Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Container(
+              // width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Color(0xfffafbff),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x0c31378c),
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
+                  ),
+                ],
+                color: Colors.white,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text(
+                  //   AppLocalization.of(context)!.categories,
+                  //   style: TextStyle(
+                  //     color: Color(0xff75818f),
+                  //     fontSize: 14,
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 6,
+                  // ),
+                  getCategoryField(),
+                  // FilterDropdown(
+                  //   selectedFilter: selectedCategory,
+                  //   hintText: "Choose category",
+                  //   list: categoriesNameList,
+                  //   onChangedCallback: (value) {
+                  //     selectedCategory = value!;
+                  //     filterMap['category'] = selectedCategory!;
+                  //     setState(() {});
+                  //   },
+                  // ),
+                  SizedBox(
+                    height: 18,
+                  ),
+                  FilterDropdown(
+                    selectedFilter: selectedSorting,
+                    hintText: "Sort by",
+                    list: sortByList,
+                    onChangedCallback: (value) {
+                      selectedSorting = value.toString();
+                      filterMap['sortby'] = selectedSorting!;
+                      setState(() {});
+                    },
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    AppLocalization.of(context)!.price,
+                    style: TextStyle(
+                      color: Color(0xff75818f),
+                      fontSize: 12,
+                      fontFamily: "Open Sans",
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  getPriceFieldRow(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  getLocationField(),
+                  Text(
+                    "State",
+                    style: TextStyle(
+                      color: Color(0xff75818f),
+                      fontSize: 14,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  getMutliSelectDropdown(),
+                  SizedBox(
+                    height: 60,
+                  ),
+                  getBtnRow()
+                ],
+              ),
+            ),
+          );
+  }
+
+  Widget getCategoryField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.categories,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          displayCategory != null ? displayCategory! : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          categoryAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  void categoryAndroidSheet() {
+    categoriesList = categoriesListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Choose category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      categoriesList = categoriesListCopy
+                          .where((element) => element!.name!
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      categoriesList = categoriesListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child: NotificationListener<ScrollEndNotification>(
+                    onNotification: (scrollEnd) {
+                      final metrics = scrollEnd.metrics;
+                      if (metrics.atEdge) {
+                        bool isTop = metrics.pixels == 0;
+                        if (!isTop) {
+                          print('At the bottom');
+                          changeState(() {});
+                        }
+                      }
+                      return true;
+                    },
+                    child: ListView.builder(
+                      controller: _categoriesScrollController,
+                      shrinkWrap: true,
+                      itemCount: categoriesList.length,
+                      itemBuilder: (context, index) {
+                        CategoryListData category = categoriesList[index]!;
+                        // if (selectedCategory == category.name) {
+                        //   return Container(
+                        //     color: selectedListItemBackgroundBlue,
+                        //     child: ListTile(
+                        //       dense: true,
+                        //       title: Text(
+                        //         "${category.name}",
+                        //         overflow: TextOverflow.fade,
+                        //         softWrap: false,
+                        //         style: TextStyle(
+                        //             color: navyBlue,
+                        //             fontSize: 16,
+                        //             fontWeight: FontWeight.w600),
+                        //       ),
+                        //       trailing: Icon(
+                        //         SlydoAppIcon.checked,
+                        //         color: navyBlue,
+                        //         size: 12,
+                        //       ),
+                        //       onTap: () {
+                        //         pressedCategory = category as CategoryListData?;
+                        //         Navigator.pop(context);
+                        //         if (pressedCategory != null) {
+                        //           selectedProductCategory = pressedCategory;
+                        //           productCategory = selectedProductCategory!.name!;
+                        //           setState(() {});
+                        //         }
+                        //       },
+                        //     ),
+                        //   );
+                        // }
+                        return ListTile(
+                          title: Text(
+                            "${category.name}",
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            selectedCategory = category.slug;
+                            displayCategory = category.name;
+                            // pressedCategory = category;
+                            Navigator.pop(context);
+                            // if (pressedCategory != null) {
+                            //   selectedProductCategory = pressedCategory;
+                            //   productCategory = selectedProductCategory!.name!;
+                            setState(() {});
+                            // }
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getLocationField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.state,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          displayCategory != null ? displayCategory! : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          locationAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  void locationAndroidSheet() {
+    locationsList = locationsListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Choose State',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      locationsList = locationsListCopy
+                          .where((element) => element!.name!
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      locationsList = locationsListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child: NotificationListener<ScrollEndNotification>(
+                    onNotification: (scrollEnd) {
+                      final metrics = scrollEnd.metrics;
+                      if (metrics.atEdge) {
+                        bool isTop = metrics.pixels == 0;
+                        if (!isTop) {
+                          print('At the bottom');
+                          changeState(() {});
+                        }
+                      }
+                      return true;
+                    },
+                    child: ListView.builder(
+                      controller: _locationScrollController,
+                      shrinkWrap: true,
+                      itemCount: locationsList.length,
+                      itemBuilder: (context, index) {
+                        LocationData location = locationsList[index]!;
+                        // if (selectedCategory == category.name) {
+                        //   return Container(
+                        //     color: selectedListItemBackgroundBlue,
+                        //     child: ListTile(
+                        //       dense: true,
+                        //       title: Text(
+                        //         "${category.name}",
+                        //         overflow: TextOverflow.fade,
+                        //         softWrap: false,
+                        //         style: TextStyle(
+                        //             color: navyBlue,
+                        //             fontSize: 16,
+                        //             fontWeight: FontWeight.w600),
+                        //       ),
+                        //       trailing: Icon(
+                        //         SlydoAppIcon.checked,
+                        //         color: navyBlue,
+                        //         size: 12,
+                        //       ),
+                        //       onTap: () {
+                        //         pressedCategory = category as CategoryListData?;
+                        //         Navigator.pop(context);
+                        //         if (pressedCategory != null) {
+                        //           selectedProductCategory = pressedCategory;
+                        //           productCategory = selectedProductCategory!.name!;
+                        //           setState(() {});
+                        //         }
+                        //       },
+                        //     ),
+                        //   );
+                        // }
+                        return ListTile(
+                          title: Text(
+                            "${location.name}",
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            selectedState = location.slug;
+                            displayState = location.name;
+                            // pressedCategory = category;
+                            Navigator.pop(context);
+                            // if (pressedCategory != null) {
+                            //   selectedProductCategory = pressedCategory;
+                            //   productCategory = selectedProductCategory!.name!;
+                            setState(() {});
+                            // }
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Row getPriceFieldRow() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: getAmountFromField(),
+        ),
+        SizedBox(
+          width: 15,
+        ),
+        Expanded(
+          flex: 1,
+          child: getAmountToField(),
+        ),
+      ],
+    );
+  }
+
+  Container getMutliSelectDropdown() {
+    return Container(
+      height: 50,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(
+          Radius.circular(8),
+        ),
+        border: Border.all(color: Color(0xff3e61da)),
+        color: Colors.white,
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton(
+          icon: Icon(Icons.keyboard_arrow_down),
+          items: items.map((item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              //disable default onTap to avoid closing menu when selecting an item
+              enabled: false,
+              child: StatefulBuilder(
+                builder: (context, menuSetState) {
+                  final _isSelected = selectedItems.contains(item);
+                  return InkWell(
+                    onTap: () {
+                      _isSelected
+                          ? selectedItems.remove(item)
+                          : selectedItems.add(item);
+
+                      print('stores $selectedItems');
+                      filterMap['location'] = selectedItems.toString();
+                      setState(() {});
+                      //This rebuilds the StatefulWidget to update the button's text
+                      setState(() {});
+                      //This rebuilds the dropdownMenu Widget to update the check mark
+                      menuSetState(() {});
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          _isSelected
+                              ? Container(
+                                  width: 18,
+                                  height: 18,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: navyBlue),
+                                  child: Icon(
+                                    Icons.check,
+                                    color: white,
+                                    size: 10,
+                                  ),
+                                )
+                              : Container(
+                                  width: 18,
+                                  height: 18,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: greyBorderColor,
+                                      )
+                                      // color: navyBlue,
+                                      ),
+                                  // child: Icon(
+                                  //   Icons.check,
+                                  //   color: white,
+                                  //   size: 10,
+                                  // ),
+                                ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              item,
+                              style: TextStyle(
+                                color: Color(0xff54595e),
+                                fontSize: 16,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          }).toList(),
+          onChanged: (val) {},
+          value: selectedItems.isEmpty ? null : selectedItems.last,
+          selectedItemBuilder: (context) {
+            return items.map(
+              (item) {
+                return Container(
+                  alignment: AlignmentDirectional.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    selectedItems.join(', '),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    maxLines: 1,
+                  ),
+                );
+              },
+            ).toList();
+          },
+        ),
+      ),
+    );
+  }
+
+  Row getBtnRow() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: CurvedButton(
+            onPressed: () {
+              filterMap = {
+                'category': "",
+                'sortby': "",
+                'priceFrom': '',
+                'priceTo': '',
+                'location': ''
+              };
+              selectedCategory = null;
+              selectedSorting = null;
+              priceFrom = '';
+              priceTo = '';
+              selectedItems.clear();
+              setState(() {});
+            },
+            text: "Clear All",
+            backgroundColor: Color(0xfff4f5f6),
+            textColor: blackFont,
+          ),
+        ),
+        SizedBox(
+          width: 25,
+        ),
+        Expanded(
+          flex: 1,
+          child: CurvedButton(
+            onPressed: () {
+              print('stores $priceFrom $priceTo');
+              print('stores $filterMap');
+              Navigator.pop(context, filterMap);
+            },
+            text: "Apply",
+          ),
+        ),
+        SizedBox(
+          height: 70,
+        ),
+      ],
+    );
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 16,
+      backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Filter",
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget getAmountFromField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.from,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            priceFrom = double.parse(val.replaceAll(',', '')).toString();
+            filterMap['priceFrom'] = moneyInputNormalizer(priceFrom).toString();
+            setState(() {});
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  Widget getAmountToField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.to,
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            priceTo = double.parse(val.replaceAll(',', '')).toString();
+            filterMap['prictTo'] = moneyInputNormalizer(priceTo).toString();
+            setState(() {});
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+}
+
+class FilterDropdown extends StatelessWidget {
+  const FilterDropdown({
+    Key? key,
+    required this.selectedFilter,
+    required this.list,
+    required this.onChangedCallback,
+    required this.hintText,
+  }) : super(key: key);
+
+  final String? selectedFilter;
+  final List list;
+  final void Function(String?) onChangedCallback;
+  final String hintText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 44,
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Color(0xffdce0e7),
+          width: 1,
+        ),
+        color: Colors.white,
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton(
+          value: selectedFilter,
+          icon: Icon(Icons.keyboard_arrow_down),
+          hint: Text(
+            hintText,
+            style: TextStyle(
+              color: Color(0xff75818f),
+              fontSize: 16,
+              fontFamily: "Open Sans",
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          items: list.map((val) {
+            return DropdownMenuItem<String>(
+              value: val,
+              child: Text(val),
+            );
+          }).toList(),
+          onChanged: onChangedCallback,
+        ),
+      ),
+    );
+  }
+}

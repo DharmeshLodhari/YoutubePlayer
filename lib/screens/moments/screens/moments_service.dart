@@ -142,11 +142,11 @@ class MomentsService extends AuthService {
       return Future.error('Something went wrong');
     }
   }
+  
 
   Future<Map<String, dynamic>?> getMomentComments(
-      String? nextUrl, String momentID) async {
-    String? url =
-        "${AppConfig.baseUrl}/api/v1/social/moments/comments/$momentID/?page_size=8";
+       String? nextUrl,  String momentID) async {
+    String? url = "${AppConfig.baseUrl}/api/v1/social/moments/comments/$momentID/?page_size=8";
     debugPrint("COMMENT URL:- $url");
     if (nextUrl != null) {
       url = getSecureUrl(url: nextUrl);
@@ -162,6 +162,7 @@ class MomentsService extends AuthService {
     debugPrint('COMMENTS MOMENTS ::: ${response.body}');
     debugPrint('COMMENTS MOMENTS PINNED ::: ${pinnedYarn}');
     if (response.statusCode == 200) {
+
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
 
@@ -194,6 +195,7 @@ class MomentsService extends AuthService {
       return Future.error('Something went wrong');
     }
   }
+
 
   // ADD COMMENT TO Moment
   Future<YarnComment?> addCommentToMoment(
@@ -258,9 +260,11 @@ class MomentsService extends AuthService {
           thumbnailImage = await http.MultipartFile.fromPath(
               "mediaposter_$i", body['media_count'][i].mediaPoster ?? '');
           thumbnailList.add(thumbnailImage);
-        } else if (body['media_count'][i].mediaType == 'gif') {
+        }
+        else if(body['media_count'][i].mediaType == 'gif'){
           // Add fields
-          request.fields["mediafile_$i"] = body['media_count'][i].mediaFile;
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile;
           // Create multipart using filepath, string or bytes
           multipartFile = await http.MultipartFile.fromPath(
               "mediafile_$i", body['media_count'][i].mediaFile);
@@ -284,7 +288,8 @@ class MomentsService extends AuthService {
     var responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200) {
-      YarnComment yarnComment = YarnComment.fromJson(json.decode(responseBody));
+      YarnComment yarnComment =
+      YarnComment.fromJson(json.decode(responseBody));
 
       return yarnComment;
     } else if (response.statusCode == 500) {
@@ -378,7 +383,8 @@ class MomentsService extends AuthService {
     var responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200) {
-      YarnComment yarnComment = YarnComment.fromJson(json.decode(responseBody));
+      YarnComment yarnComment =
+      YarnComment.fromJson(json.decode(responseBody));
 
       return yarnComment;
     } else if (response.statusCode == 500) {
@@ -468,6 +474,7 @@ class MomentsService extends AuthService {
     }
   }
 
+
   Future<bool> createMoment(
       {required CreateMomentModel createMomentModel}) async {
     String url = "${AppConfig.baseUrl}/api/v1/social/moments/";
@@ -496,9 +503,6 @@ class MomentsService extends AuthService {
     if (createMomentModel.payMeButtonColor != null) {
       request.fields["payme_button_color"] =
           createMomentModel.payMeButtonColor!;
-    }
-    if (createMomentModel.filePath.contains('.mp4')) {
-      request.fields["duration"] = createMomentModel.duration!;
     }
 
     request.fields["enable_payme"] = jsonEncode(createMomentModel.enablePayMe);
@@ -599,8 +603,7 @@ class MomentsService extends AuthService {
   }
 
   Future<bool> updateMomentView(String momentId) async {
-    var url =
-        "${AppConfig.baseUrl}/api/v1/social/moments/update-moment-view/$momentId/";
+    var url = "${AppConfig.baseUrl}/api/v1/social/moments/update-moment-view/$momentId/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -676,8 +679,7 @@ class MomentsService extends AuthService {
     if (nextPage != null) {
       url = getSecureUrl(url: nextPage);
     } else {
-      url =
-          "${AppConfig.baseUrl}/api/v1/social/moments/search/?q=$searchText&page_size=10";
+      url = "${AppConfig.baseUrl}/api/v1/social/moments/search/?q=$searchText&page_size=10";
     }
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
