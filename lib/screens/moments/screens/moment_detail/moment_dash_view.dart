@@ -1,10 +1,11 @@
 //The dashes at the top of the moment's page (similar to Whatsapp's)
+// ignore_for_file: must_be_immutable
+
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import '../../../../utils/cached_video_player/cached_video_player.dart';
 import '../../../../utils/colors.dart';
+
 
 class MomentDashView extends StatefulWidget {
   final int currentPageViewIndex;
@@ -98,8 +99,11 @@ class _MomentDashViewState extends State<MomentDashView>
         }
       }
     }
+<<<<<<< HEAD
+=======
     print(
         'effectiveness...............$currentIndex and ${controller.value.toString()}');
+>>>>>>> master
 
     return widgets;
   }
