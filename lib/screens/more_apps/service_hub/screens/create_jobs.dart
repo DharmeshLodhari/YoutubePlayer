@@ -460,6 +460,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget addImages() {
+
     return Container(
       height: 100,
       child: ListView.builder(
@@ -468,11 +469,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         itemCount: jobImages.length + 1,
         itemBuilder: (context, index) => Container(
           padding: const EdgeInsets.only(right: 6),
-          child: index != jobImages.length
-              ? showImage(index)
-              : jobImages.length != imageCount
-                  ? addImageButton()
-                  : null,
+          child: index == 0
+              ? addImageButton()
+              : index <= jobImages.length
+              ? showImage(index - 1)
+              : SizedBox.shrink(),
         ),
       ),
     );
