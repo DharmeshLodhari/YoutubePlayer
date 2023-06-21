@@ -715,8 +715,7 @@ String formatDate(DateTime? dateTime) {
   if (dateTime == null) {
     return '';
   }
-  String date =
-      "${dateTime.day} ${monthName[dateTime.month - 1]}, ${dateTime.year}";
+  String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
   return date;
 }
@@ -2386,7 +2385,6 @@ List<String> getLga({required List<String>? states}) {
   return lgs;
 }
 
-
 extension StringCasingExtension on String {
   String toCapitalized() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
@@ -2501,12 +2499,10 @@ Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
     bool done = await UserAuth().blockUser(user);
 
     if (done) {
-      showSnackbar(
-          context,  message:
-      "${user.displayName()} " +
+      showSnackbar(context,
+          message: "${user.displayName()} " +
               AppLocalization.of(context)!.isBlockedSuccessfully);
       return true;
-
     } else {
       showSnackbar(context, message: AppLocalization.of(context)!.error);
       return false;

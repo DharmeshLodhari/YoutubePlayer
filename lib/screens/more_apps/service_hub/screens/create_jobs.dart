@@ -18,10 +18,13 @@ import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
+
+import '../models/job_location_model.dart';
 
 // import '../shopping_auth.dart';
 
@@ -51,7 +54,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   String jobTitle = "";
   String jobDescription = "";
   String budget = "";
-  String location = "";
+  String locationState = "select state";
+  String? locationSelected;
 
   String productDescription = "";
   String productShortDescription = "";
@@ -90,10 +94,21 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   String? categoryPrevious = "";
   bool noCatinList = false;
   int? categoryCount = 0;
+
+  bool isLocationLoading = false;
+  bool noLocinList = false;
+  int? locationCount = 0;
+  String? locationNext = "";
+  String? locationPrevious = "";
+  List<LocationData?> locationsList = [];
+  List<LocationData?> locationsListCopy = [];
+
   List<CategoryListData?> categoriesList = [];
+
   List<CategoryListData?> categoriesListCopy = [];
   List<String> categoriesNameList = [];
   ScrollController _categoryScrollController = ScrollController();
+  ScrollController _locationScrollController = ScrollController();
 
   final List<String> items = [
     'Item1',
@@ -121,7 +136,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           }
           return;
         }
-
         categoryCount = result.count;
         categoryNext = result.next;
         categoryPrevious = result.previous;
@@ -148,13 +162,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
   }
-
-  submitJobData() {}
 
   @override
   void deactivate() {
@@ -165,7 +177,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   @override
   void initState() {
     getCategoriesList();
-    super.initState();
+    getLocationList();
     _categoryScrollController.addListener(() {
       if (_categoryScrollController.position.pixels ==
               _categoryScrollController.position.maxScrollExtent &&
@@ -173,24 +185,18 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         getCategoriesList();
       }
     });
+    _locationScrollController.addListener(() {
+      if (_locationScrollController.position.pixels ==
+              _locationScrollController.position.maxScrollExtent &&
+          _locationScrollController.position.pixels != 0) {
+        getLocationList();
+      }
+    });
+
+    super.initState();
   }
-
-  // void getCategories() async {
-  //   isLoading = true;
-  //   if (mounted) setState(() {});
-
-  //   try {
-  //     // productCategories = await ShoppingAuthService().getProductCategories();
-  // productCategoriesCopy = productCategories;
-  //   } catch (e) {
-  //     productCategories = [];
-  //     productCategoriesCopy = [];
-  //   }
-
-  //   isLoading = false;
-  //   if (mounted) setState(() {});
-  // }
-
+  
+  
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -216,7 +222,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
-      centerTitle: true,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
@@ -228,10 +233,20 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         },
       ),
       title: Text(
-        "Create Request",
+        "Create Job Request",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 12.0),
+          child: GestureDetector(
+            onTap: () => pickImage(),
+            child: SvgPicture.asset('assets/images/cam_pic.svg',
+                height: 20, width: 20),
+          ),
+        )
+      ],
     );
   }
 
@@ -242,50 +257,56 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Center(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 10),
-                      addImages(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
+                      jobImages.isEmpty ? const SizedBox.shrink() : addImages(),
+                      const SizedBox(height: 14),
                       addJobTitleField(),
-                      SizedBox(
-                        height: 10,
+                      const SizedBox(
+                        height: 20,
                       ),
                       addWorkField(),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      getTimingRadioBtn(),
-                      SizedBox(
-                        height: 10,
+                      const SizedBox(
+                        height: 20,
                       ),
                       getCategoryField(),
-                      // SizedBox(height: 10),
-                      // getProductConditionField(),
-                      SizedBox(height: 16),
-                      getStartDateField(),
-                      SizedBox(height: 10),
-                      getEndDateField(),
-                      SizedBox(height: 15),
-                      getTaskFeeRadioBtn(),
-                      SizedBox(
-                        height: 15,
+                      const SizedBox(
+                        height: 20,
                       ),
-                      getAmountField(),
-                      SizedBox(height: 10),
+                      getTimingRadioBtn(),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          getPickDateStart(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            dateText: 'Start Date',
+                          ),
+                          getPickDateEnd(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            dateText: 'End Date',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      getTaskFeeRadioBtn(),
+                      const SizedBox(height: 15),
                       getTaskMethodRadioBtn(),
-                      SizedBox(
-                        height: 15,
+                      const SizedBox(height: 20),
+                      getAmountField(),
+                      const SizedBox(
+                        height: 20,
                       ),
                       getLocationField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 40),
                       getPreviewButton(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -298,7 +319,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Timing'),
+        Text(
+          'Timing',
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         getTimingRadioRow(),
       ],
     );
@@ -308,7 +333,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Task Fee'),
+        Text(
+          'Task Fee',
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
+        ),
         getTaskFeeRadionRow(),
       ],
     );
@@ -318,7 +347,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('How can this task be done?'),
+        Text(
+          'How can this task be done?',
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
+        ),
         getTaskMethodRow(),
       ],
     );
@@ -417,47 +450,9 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     );
   }
 
-  // Row getRadioBtn(String value, String groupVal) {
-  //   return Row(
-  //     children: [
-  //       Radio(
-  //         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-  //         visualDensity: const VisualDensity(
-  //           horizontal: VisualDensity.minimumDensity,
-  //           vertical: VisualDensity.minimumDensity,
-  //         ),
-  //         value: value,
-  //         groupValue: groupVal,
-  //         onChanged: (String? value) {
-  //           setState(() {
-  //             groupVal = value!;
-  //           });
-  //         },
-  //       ),
-  //       SizedBox(
-  //         width: 5,
-  //       ),
-  //       GestureDetector(
-  //         onTap: () {
-  //           setState(() {
-  //             groupVal = value;
-  //           });
-  //         },
-  //         child: Text(
-  //           value,
-  //           style: TextStyle(
-  //             color: Colors.black,
-  //             fontSize: 14,
-  //           ),
-  //         ),
-  //       )
-  //     ],
-  //   );
-  // }
-
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -472,7 +467,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         scrollDirection: Axis.horizontal,
         itemCount: jobImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != jobImages.length
               ? showImage(index)
               : jobImages.length != imageCount
@@ -489,7 +484,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -503,7 +498,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                   SlydoAppIcon.add_image,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -565,7 +560,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
               decoration: BoxDecoration(
@@ -582,10 +577,10 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -611,6 +606,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   Widget addJobTitleField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.jobTitle,
+      labelColor: blackFont,
+      hintText: 'what\'s the name of the job',
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -624,17 +621,27 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget getLocationField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.location,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.location;
-      },
-      onChanged: (val) {
-        location = val;
-      },
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.location,
+      titleColor: blackFont,
+      fontWeight: FontWeight.bold,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          locationState,
+          style: TextStyle(
+              color: darkGrey.withOpacity(0.9),
+              fontSize: 16,
+              fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          loccationAndroidSheet();
+        },
+      ),
     );
   }
 
@@ -667,12 +674,16 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.jobCategoryFit,
+      titleColor: blackFont,
+      fontWeight: FontWeight.bold,
       child: ListTile(
         dense: true,
         title: Text(
-          displayCategory != null ? displayCategory! : "",
+          displayCategory != null ? displayCategory! : "select category",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: darkGrey.withOpacity(0.9),
+              fontSize: 16,
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -680,7 +691,79 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         ),
         onTap: () {
           categoryAndroidSheet();
-          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  void loccationAndroidSheet() {
+    locationsList = locationsListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.50,
+            child: Column(
+              children: [
+                Text(
+                  "Choose Location",
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 16.8,
+                      fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Divider(
+                  color: darkGrey.withOpacity(.5),
+                ),
+                Expanded(
+                  child: NotificationListener<ScrollEndNotification>(
+                    onNotification: (scrollEnd) {
+                      final metrics = scrollEnd.metrics;
+                      if (metrics.atEdge) {
+                        bool isTop = metrics.pixels == 0;
+                        if (!isTop) {
+                          changeState(() {});
+                        }
+                      }
+                      return true;
+                    },
+                    child: ListView.builder(
+                      controller: _locationScrollController,
+                      shrinkWrap: true,
+                      itemCount: locationsList.length,
+                      itemBuilder: (context, index) {
+                        LocationData location = locationsList[index]!;
+
+                        return ListTile(
+                          title: Text(
+                            "${location.name}",
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            locationSelected = location.slug;
+                            locationState = location.name!;
+                            Navigator.pop(context);
+                            setState(() {});
+                            
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
@@ -693,27 +776,22 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       child: StatefulBuilder(
         builder: (context, changeState) {
           return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.75,
+            height: MediaQuery.of(context).size.height * 0.50,
             child: Column(
               children: [
-                CustomizedTextFormField(
-                  hintText: 'Search category',
-                  onChanged: (value) {
-                    if (value.toString().isNotEmpty) {
-                      categoriesList = categoriesListCopy
-                          .where((element) => element!.name!
-                              .toLowerCase()
-                              .startsWith(value.toString().toLowerCase()))
-                          .toList();
-                      changeState(
-                          () {}); // To upgrade the product categories in the bottom sheet.
-                    } else {
-                      categoriesList = categoriesListCopy;
-                      changeState(() {});
-                    }
-                  },
+                Text(
+                  "Select Category",
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 16.8,
+                      fontWeight: FontWeight.w500),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(
+                  height: 10,
+                ),
+                Divider(
+                  color: darkGrey.withOpacity(.5),
+                ),
                 Expanded(
                   child: NotificationListener<ScrollEndNotification>(
                     onNotification: (scrollEnd) {
@@ -721,7 +799,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                       if (metrics.atEdge) {
                         bool isTop = metrics.pixels == 0;
                         if (!isTop) {
-                          print('At the bottom');
                           changeState(() {});
                         }
                       }
@@ -733,37 +810,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                       itemCount: categoriesList.length,
                       itemBuilder: (context, index) {
                         CategoryListData category = categoriesList[index]!;
-                        // if (selectedCategory == category.name) {
-                        //   return Container(
-                        //     color: selectedListItemBackgroundBlue,
-                        //     child: ListTile(
-                        //       dense: true,
-                        //       title: Text(
-                        //         "${category.name}",
-                        //         overflow: TextOverflow.fade,
-                        //         softWrap: false,
-                        //         style: TextStyle(
-                        //             color: navyBlue,
-                        //             fontSize: 16,
-                        //             fontWeight: FontWeight.w600),
-                        //       ),
-                        //       trailing: Icon(
-                        //         SlydoAppIcon.checked,
-                        //         color: navyBlue,
-                        //         size: 12,
-                        //       ),
-                        //       onTap: () {
-                        //         pressedCategory = category as CategoryListData?;
-                        //         Navigator.pop(context);
-                        //         if (pressedCategory != null) {
-                        //           selectedProductCategory = pressedCategory;
-                        //           productCategory = selectedProductCategory!.name!;
-                        //           setState(() {});
-                        //         }
-                        //       },
-                        //     ),
-                        //   );
-                        // }
                         return ListTile(
                           title: Text(
                             "${category.name}",
@@ -778,13 +824,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                           onTap: () {
                             selectedCategory = category.slug;
                             displayCategory = category.name;
-                            // pressedCategory = category;
                             Navigator.pop(context);
-                            // if (pressedCategory != null) {
-                            //   selectedProductCategory = pressedCategory;
-                            //   productCategory = selectedProductCategory!.name!;
                             setState(() {});
-                            // }
                           },
                         );
                       },
@@ -803,7 +844,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     final pressedCategory = await showDialog<ProductCategory>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -920,7 +962,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1022,6 +1065,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   Widget addWorkField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.wantToGetDone,
+      hintText: 'What\'s the description of the job',
+      labelColor: blackFont,
       maxLines: 3,
       validator: (val) {
         if (val.isNotEmpty) {
@@ -1038,8 +1083,9 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   Widget getAmountField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.yourBudget,
+      labelColor: blackFont,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       onChanged: (val) {
@@ -1090,6 +1136,57 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     return taskValue == 'Budget' ? false : true;
   }
 
+  void getLocationList() async {
+    if (!isLocationLoading) {
+      if (locationNext != null && !isLocationLoading) {
+        isLocationLoading = true;
+        if (mounted) setState(() {});
+
+        var result = await ServiceHubAuthService()
+            .getJobLocation(locationNext, locationPrevious);
+
+        if (result == null) {
+          noLocinList = true;
+
+          isLocationLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        locationCount = result.count;
+        locationNext = result.next;
+        locationPrevious = result.previous;
+        var tempList = result.results;
+        if (mounted) {
+          setState(() {
+            noLocinList = false;
+            isLocationLoading = false;
+            locationsList.addAll(tempList!);
+            locationsListCopy = locationsList;
+            tempList.forEach((element) {
+              categoriesNameList.add(element.name!);
+            });
+          });
+        }
+      }
+      if (locationsList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noLocinList = true;
+          });
+        }
+      } else if (locationNext == null && locationsList.length > 6) {
+        _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
   Future<void> addJob() async {
     if (_formKey.currentState!.validate()) {
       if (jobImages.length >= 1) {
@@ -1110,7 +1207,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               image: '');
           job.description = jobDescription;
           job.pay = moneyInputNormalizer(budget);
-          job.location = location;
+          job.location = locationSelected;
           job.tags = [selectedCategory!.toLowerCase()];
           // job.availableFrom = jobAvailableFrom;
           // job.enableInSuperStore = productEnableInSuperStore;
@@ -1118,7 +1215,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
           await ServiceHubAuthService().createJobRequest({
             'title': jobTitle,
-            'location': location,
+            'location': locationSelected,
             'pay': moneyInputNormalizer(budget),
             'description': jobDescription,
             'category': selectedCategory,
@@ -1265,6 +1362,127 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     _scrollController.dispose();
     super.dispose();
   }
+
+  getPickDateStart({
+    CrossAxisAlignment? crossAxisAlignment,
+    String? dateText,
+  }) =>
+      Column(
+        crossAxisAlignment: crossAxisAlignment!,
+        children: [
+          Text(
+            dateText!,
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          GestureDetector(
+            onTap: () {
+              showDatePicker(
+                builder: customThemeBuilder,
+                context: context,
+                initialDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                lastDate: DateTime(2101),
+              ).then((value) {
+                jobAvailableFrom =
+                    DateTime(value!.year, value.month, value.day);
+
+                setState(() {});
+              }).catchError((error) {});
+            },
+            child: Container(
+                width: 160,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: darkGrey.withOpacity(.5))),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: darkGrey.withOpacity(.3)),
+                      child: SvgPicture.asset(
+                        'assets/images/Calendar.svg',
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      formatDate(jobAvailableFrom),
+                    ),
+                  ],
+                )),
+          ),
+        ],
+      );
+
+  getPickDateEnd({
+    CrossAxisAlignment? crossAxisAlignment,
+    String? dateText,
+  }) =>
+      Column(
+        crossAxisAlignment: crossAxisAlignment!,
+        children: [
+          Text(
+            dateText!,
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          GestureDetector(
+            onTap: () {
+              showDatePicker(
+                builder: customThemeBuilder,
+                context: context,
+                initialDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                lastDate: DateTime(2101),
+              ).then((value) {
+                jobEndDate = DateTime(value!.year, value.month, value.day);
+
+                setState(() {});
+              }).catchError((error) {});
+            },
+            child: Container(
+                width: 160,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: darkGrey.withOpacity(.5))),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: darkGrey.withOpacity(.3)),
+                      child: SvgPicture.asset(
+                        'assets/images/Calendar.svg',
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      formatDate(jobEndDate),
+                    ),
+                  ],
+                )),
+          ),
+        ],
+      );
 }
 
 class CustomRadioTile extends StatelessWidget {
@@ -1290,7 +1508,7 @@ class CustomRadioTile extends StatelessWidget {
         ),
         title: Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 14,
           ),
@@ -1316,8 +1534,8 @@ class CustomizedRadioButtonRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Timing'),
-        SizedBox(
+        const Text('Timing'),
+        const SizedBox(
           height: 6,
         ),
         Row(
@@ -1341,7 +1559,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         // });
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     GestureDetector(
@@ -1350,7 +1568,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         //   groupValue = "Fixed";
                         // });
                       },
-                      child: Text(
+                      child: const Text(
                         "Fixes",
                         style: TextStyle(
                           color: Colors.black,
@@ -1381,7 +1599,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         // });
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     GestureDetector(
@@ -1390,7 +1608,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         //   groupValue = "Fixed";
                         // });
                       },
-                      child: Text(
+                      child: const Text(
                         "Fixes",
                         style: TextStyle(
                           color: Colors.black,

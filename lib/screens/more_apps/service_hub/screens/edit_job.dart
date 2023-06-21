@@ -18,11 +18,14 @@ import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../models/job_location_model.dart';
 
 // import '../shopping_auth.dart';
 
@@ -43,6 +46,7 @@ class _EditJobState extends State<EditJob> {
   CategoryListData? selectedProductCategory;
   CategoryListData? selectedProductCondition;
   String? selectedCategory;
+  String? selectedCategoryName;
   String? jobId;
   // JobModel? job;
   JobModel? currentJob;
@@ -107,13 +111,26 @@ class _EditJobState extends State<EditJob> {
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
       new GlobalKey<ScaffoldMessengerState>();
 
+  final ScrollController _locationScrollController = ScrollController();
+
   final List<String> items = [
     'Item1',
     'Item2',
     'Item3',
     'Item4',
   ];
+
   List<String> selectedItems = [];
+  String? locationState;
+  String? locationSelected;
+
+  bool isLocationLoading = false;
+  bool noLocinList = false;
+  int? locationCount = 0;
+  String? locationNext = "";
+  String? locationPrevious = "";
+  List<LocationData?> locationsList = [];
+  List<LocationData?> locationsListCopy = [];
 
   void getCategoriesList() async {
     if (!isCategoryLoading) {
@@ -160,7 +177,7 @@ class _EditJobState extends State<EditJob> {
         _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -176,56 +193,18 @@ class _EditJobState extends State<EditJob> {
         if (mounted) {
           setState(() {
             currentJob = value;
-            // assigning to our edit controllers
 
             titleController.text = currentJob!.title!;
             descriptionController.text = currentJob!.description!;
 
             priceController.text = moneyNormalizer(currentJob!.pay).toString();
-            locationController.text = currentJob!.location!;
-
-            // if (currentJob.manufacturer != null) {
-            //   productManufacturerController.text = currentJob.manufacturer!;
-            // }
-            // productShortDescriptionController.text =
-            //     currentJob.shortDescription!;
+            locationState = currentJob!.location!;
 
             jobImagesFromServer.addAll(currentJob!.pictures!);
-            // productName = currentJob.name;
-            selectedCategory = currentJob!.category!.name;
+            selectedCategory = currentJob!.category!.slug;
+            selectedCategoryName = currentJob!.category!.name;
             jobAvailableFrom = DateTime.parse(currentJob!.creationDate!);
             jobEndDate = DateTime.parse(currentJob!.dueDate!);
-            // productCondition = currentJob.condition;
-            // productPrice = moneyNormalizer(int.parse(currentJob.price!));
-            // productDescription = currentJob.description;
-            // productManufacturer = currentJob.manufacturer;
-            // productShortDescription = currentJob.shortDescription;
-            // productIsAvailable = currentJob.isAvailable;
-            // productAvailableFrom = currentJob.availableFrom;
-            // productEnableInSuperStore = currentJob.enableInSuperStore!;
-
-            // assigning the dropdown from currentJob
-            // print('CURRENT PRODUCT CATEGORIES :::: ${productCategories}');
-
-            // print(
-            //     'CURRENT CATEGORY :::: ${messageDecoderWithEmoji(currentJob!.category!.name)}');
-
-            // productCategories?.forEach((catagory) {
-            //   print('CURRENT CATEGORY :::: ${catagory}');
-
-            //   if (catagory.name ==
-            //       messageDecoderWithEmoji(currentJob!.category!.name)) {
-            //     selectedProductCategory = catagory;
-            //   }
-            // });
-            // print('CURRENT PRODUCT :::: ${selectedProductCategory}');
-            // print('CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
-
-            // conditions.forEach((condition) {
-            //   if (condition.name == currentJob.condition) {
-            //     selectedProductCondition = condition;
-            //   }
-            // });
           });
         }
       });
@@ -233,8 +212,6 @@ class _EditJobState extends State<EditJob> {
       setState(() {});
     }
   }
-
-  submitJobData() {}
 
   @override
   void deactivate() {
@@ -247,6 +224,7 @@ class _EditJobState extends State<EditJob> {
     jobId = widget.job!.id;
     getCategoriesList();
     getJobDetail();
+    getLocationList();
     _categoryScrollController.addListener(() {
       if (_categoryScrollController.position.pixels ==
               _categoryScrollController.position.maxScrollExtent &&
@@ -254,24 +232,15 @@ class _EditJobState extends State<EditJob> {
         getCategoriesList();
       }
     });
+    _locationScrollController.addListener(() {
+      if (_locationScrollController.position.pixels ==
+              _locationScrollController.position.maxScrollExtent &&
+          _locationScrollController.position.pixels != 0) {
+        getLocationList();
+      }
+    });
     super.initState();
   }
-
-  // void getCategories() async {
-  //   isLoading = true;
-  //   if (mounted) setState(() {});
-
-  //   try {
-  //     // productCategories = await ShoppingAuthService().getProductCategories();
-  // productCategoriesCopy = productCategories;
-  //   } catch (e) {
-  //     productCategories = [];
-  //     productCategoriesCopy = [];
-  //   }
-
-  //   isLoading = false;
-  //   if (mounted) setState(() {});
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -324,8 +293,8 @@ class _EditJobState extends State<EditJob> {
             highlightColor: greyBorderColor,
             child: GridView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 mainAxisSpacing: 14,
                 mainAxisExtent: 180,
                 crossAxisSpacing: 15,
@@ -348,58 +317,66 @@ class _EditJobState extends State<EditJob> {
   SingleChildScrollView getEditJobFields() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Center(
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
                 checkImageLimitForServerImage()
                     ? viewServerImages()
                     : Container(),
                 checkImageLimitForServerImage()
-                    ? SizedBox(
+                    ? const SizedBox(
                         height: 8,
                       )
                     : Container(),
                 checkImageLimitForLocalImage() ? addLocalImages() : Container(),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
                 addJobTitleField(),
-                SizedBox(
-                  height: 10,
+                const SizedBox(
+                  height: 20,
                 ),
                 addWorkField(),
-                SizedBox(
-                  height: 10,
-                ),
-                getTimingRadioBtn(),
-                SizedBox(
-                  height: 10,
+                const SizedBox(
+                  height: 20,
                 ),
                 getCategoryField(),
-                // SizedBox(height: 10),
-                // getProductConditionField(),
-                SizedBox(height: 16),
-                getStartDateField(),
-                SizedBox(height: 10),
-                getEndDateField(),
-                SizedBox(height: 15),
+                const SizedBox(
+                  height: 20,
+                ),
+                getTimingRadioBtn(),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    getPickDateStart(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      dateText: 'Start Date',
+                    ),
+                    getPickDateEnd(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      dateText: 'End Date',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 getTaskFeeRadioBtn(),
-                SizedBox(
-                  height: 15,
+                const SizedBox(
+                  height: 20,
+                ),
+                getTaskMethodRadioBtn(),
+                const SizedBox(
+                  height: 20,
                 ),
                 getAmountField(),
-                SizedBox(height: 10),
-                getTaskMethodRadioBtn(),
-                SizedBox(
-                  height: 15,
-                ),
+                const SizedBox(height: 20),
                 getLocationField(),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
                 getPreviewButton(),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -407,6 +384,127 @@ class _EditJobState extends State<EditJob> {
       ),
     );
   }
+
+  getPickDateStart({
+    CrossAxisAlignment? crossAxisAlignment,
+    String? dateText,
+  }) =>
+      Column(
+        crossAxisAlignment: crossAxisAlignment!,
+        children: [
+          Text(
+            dateText!,
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          GestureDetector(
+            onTap: () {
+              showDatePicker(
+                builder: customThemeBuilder,
+                context: context,
+                initialDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                lastDate: DateTime(2101),
+              ).then((value) {
+                jobAvailableFrom =
+                    DateTime(value!.year, value.month, value.day);
+
+                setState(() {});
+              }).catchError((error) {});
+            },
+            child: Container(
+                width: 160,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: darkGrey.withOpacity(.5))),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: darkGrey.withOpacity(.3)),
+                      child: SvgPicture.asset(
+                        'assets/images/Calendar.svg',
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      formatDate(jobAvailableFrom),
+                    ),
+                  ],
+                )),
+          ),
+        ],
+      );
+
+  getPickDateEnd({
+    CrossAxisAlignment? crossAxisAlignment,
+    String? dateText,
+  }) =>
+      Column(
+        crossAxisAlignment: crossAxisAlignment!,
+        children: [
+          Text(
+            dateText!,
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          GestureDetector(
+            onTap: () {
+              showDatePicker(
+                builder: customThemeBuilder,
+                context: context,
+                initialDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                    DateTime.now().day),
+                lastDate: DateTime(2101),
+              ).then((value) {
+                jobEndDate = DateTime(value!.year, value.month, value.day);
+
+                setState(() {});
+              }).catchError((error) {});
+            },
+            child: Container(
+                width: 160,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: darkGrey.withOpacity(.5))),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: darkGrey.withOpacity(.3)),
+                      child: SvgPicture.asset(
+                        'assets/images/Calendar.svg',
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      formatDate(jobEndDate),
+                    ),
+                  ],
+                )),
+          ),
+        ],
+      );
 
   // decide that serverImage List is need to be show or not
   bool checkImageLimitForServerImage() {
@@ -434,7 +532,7 @@ class _EditJobState extends State<EditJob> {
         scrollDirection: Axis.horizontal,
         itemCount: jobLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != jobLocalImages.length
               ? showLocalImage(index)
               : jobLocalImages.length + jobImagesFromServer.length != imageCount
@@ -454,7 +552,7 @@ class _EditJobState extends State<EditJob> {
             borderRadius: BorderRadius.circular(10),
           ),
           shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
           child: Container(
             width: 100,
             decoration: BoxDecoration(
@@ -471,10 +569,10 @@ class _EditJobState extends State<EditJob> {
           right: 0,
           top: 0,
           child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
+            padding: const EdgeInsets.only(right: 6, top: 6),
             alignment: Alignment.topRight,
             icon: Container(
-              padding: EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 color: iconBtnGrey,
                 borderRadius: BorderRadius.circular(5),
@@ -506,7 +604,7 @@ class _EditJobState extends State<EditJob> {
         scrollDirection: Axis.horizontal,
         itemCount: jobImagesFromServer.length,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: showServerImage(index),
         ),
       ),
@@ -525,7 +623,8 @@ class _EditJobState extends State<EditJob> {
                 borderRadius: BorderRadius.circular(10),
               ),
               shadowColor: boxShadowTwo,
-              margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               child: Container(
                 width: 100,
                 decoration: BoxDecoration(
@@ -543,10 +642,10 @@ class _EditJobState extends State<EditJob> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -595,7 +694,9 @@ class _EditJobState extends State<EditJob> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Timing'),
+        Text('Timing',
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold)),
         getTimingRadioRow(),
       ],
     );
@@ -605,7 +706,9 @@ class _EditJobState extends State<EditJob> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Task Fee'),
+        Text('Task Fee',
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold)),
         getTaskFeeRadionRow(),
       ],
     );
@@ -615,7 +718,9 @@ class _EditJobState extends State<EditJob> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('How can this task be done?'),
+        Text('How can this task be done?',
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold)),
         getTaskMethodRow(),
       ],
     );
@@ -714,47 +819,9 @@ class _EditJobState extends State<EditJob> {
     );
   }
 
-  // Row getRadioBtn(String value, String groupVal) {
-  //   return Row(
-  //     children: [
-  //       Radio(
-  //         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-  //         visualDensity: const VisualDensity(
-  //           horizontal: VisualDensity.minimumDensity,
-  //           vertical: VisualDensity.minimumDensity,
-  //         ),
-  //         value: value,
-  //         groupValue: groupVal,
-  //         onChanged: (String? value) {
-  //           setState(() {
-  //             groupVal = value!;
-  //           });
-  //         },
-  //       ),
-  //       SizedBox(
-  //         width: 5,
-  //       ),
-  //       GestureDetector(
-  //         onTap: () {
-  //           setState(() {
-  //             groupVal = value;
-  //           });
-  //         },
-  //         child: Text(
-  //           value,
-  //           style: TextStyle(
-  //             color: Colors.black,
-  //             fontSize: 14,
-  //           ),
-  //         ),
-  //       )
-  //     ],
-  //   );
-  // }
-
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -769,7 +836,7 @@ class _EditJobState extends State<EditJob> {
         scrollDirection: Axis.horizontal,
         itemCount: jobImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != jobImages.length
               ? showImage(index)
               : jobImages.length != imageCount
@@ -786,7 +853,7 @@ class _EditJobState extends State<EditJob> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -800,7 +867,7 @@ class _EditJobState extends State<EditJob> {
                   SlydoAppIcon.add_image,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -862,7 +929,7 @@ class _EditJobState extends State<EditJob> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
               decoration: BoxDecoration(
@@ -879,10 +946,10 @@ class _EditJobState extends State<EditJob> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -909,6 +976,7 @@ class _EditJobState extends State<EditJob> {
     return CustomizedTextFormField(
       controller: titleController,
       labelText: AppLocalization.of(context)!.jobTitle,
+      labelColor: blackFont,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -922,18 +990,27 @@ class _EditJobState extends State<EditJob> {
   }
 
   Widget getLocationField() {
-    return CustomizedTextFormField(
-      controller: locationController,
-      labelText: AppLocalization.of(context)!.location,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.location;
-      },
-      onChanged: (val) {
-        location = val;
-      },
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.location,
+      titleColor: blackFont,
+      fontWeight: FontWeight.bold,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          locationState!,
+          style: TextStyle(
+              color: darkGrey.withOpacity(0.9),
+              fontSize: 16,
+              fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          loccationAndroidSheet();
+        },
+      ),
     );
   }
 
@@ -966,10 +1043,12 @@ class _EditJobState extends State<EditJob> {
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.jobCategoryFit,
+      fontWeight: FontWeight.bold,
+      titleColor: blackFont,
       child: ListTile(
         dense: true,
         title: Text(
-          selectedCategory != null ? selectedCategory! : "",
+          selectedCategoryName != null ? selectedCategoryName! : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -979,7 +1058,6 @@ class _EditJobState extends State<EditJob> {
         ),
         onTap: () {
           categoryAndroidSheet();
-          // selectItemCategory();
         },
       ),
     );
@@ -1012,7 +1090,7 @@ class _EditJobState extends State<EditJob> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: NotificationListener<ScrollEndNotification>(
                     onNotification: (scrollEnd) {
@@ -1020,7 +1098,6 @@ class _EditJobState extends State<EditJob> {
                       if (metrics.atEdge) {
                         bool isTop = metrics.pixels == 0;
                         if (!isTop) {
-                          print('At the bottom');
                           changeState(() {});
                         }
                       }
@@ -1032,37 +1109,7 @@ class _EditJobState extends State<EditJob> {
                       itemCount: categoriesList.length,
                       itemBuilder: (context, index) {
                         CategoryListData category = categoriesList[index]!;
-                        // if (selectedCategory == category.name) {
-                        //   return Container(
-                        //     color: selectedListItemBackgroundBlue,
-                        //     child: ListTile(
-                        //       dense: true,
-                        //       title: Text(
-                        //         "${category.name}",
-                        //         overflow: TextOverflow.fade,
-                        //         softWrap: false,
-                        //         style: TextStyle(
-                        //             color: navyBlue,
-                        //             fontSize: 16,
-                        //             fontWeight: FontWeight.w600),
-                        //       ),
-                        //       trailing: Icon(
-                        //         SlydoAppIcon.checked,
-                        //         color: navyBlue,
-                        //         size: 12,
-                        //       ),
-                        //       onTap: () {
-                        //         pressedCategory = category as CategoryListData?;
-                        //         Navigator.pop(context);
-                        //         if (pressedCategory != null) {
-                        //           selectedProductCategory = pressedCategory;
-                        //           productCategory = selectedProductCategory!.name!;
-                        //           setState(() {});
-                        //         }
-                        //       },
-                        //     ),
-                        //   );
-                        // }
+
                         return ListTile(
                           title: Text(
                             "${category.name}",
@@ -1076,13 +1123,9 @@ class _EditJobState extends State<EditJob> {
                           dense: true,
                           onTap: () {
                             selectedCategory = category.slug;
-                            // pressedCategory = category;
+                            selectedCategoryName = category.name;
                             Navigator.pop(context);
-                            // if (pressedCategory != null) {
-                            //   selectedProductCategory = pressedCategory;
-                            //   productCategory = selectedProductCategory!.name!;
                             setState(() {});
-                            // }
                           },
                         );
                       },
@@ -1101,7 +1144,8 @@ class _EditJobState extends State<EditJob> {
     final pressedCategory = await showDialog<ProductCategory>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1118,7 +1162,7 @@ class _EditJobState extends State<EditJob> {
                     borderRadius: BorderRadius.circular(10),
                     child: SingleChildScrollView(
                       child: Column(
-                        children: productCategories?.map<Widget>((category) {
+                        children: productCategories.map<Widget>((category) {
                               if (selectedProductCategory == category) {
                                 return Container(
                                   color: selectedListItemBackgroundBlue,
@@ -1174,51 +1218,12 @@ class _EditJobState extends State<EditJob> {
     }
   }
 
-  // Widget getProductConditionField() {
-  //   return CustomizedDropDownField(
-  //     title: "Product condition",
-  //     child: ListTile(
-  //       dense: true,
-  //       title: Row(
-  //         children: [
-  //           Text(
-  //             selectedProductCondition != null
-  //                 ? selectedProductCondition!.name
-  //                 : "",
-  //             style: TextStyle(
-  //                 color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-  //           ),
-  //           Expanded(
-  //             child: Text(
-  //               selectedProductCondition != null
-  //                   ? " (" + selectedProductCondition!.description + ")"
-  //                   : "",
-  //               maxLines: 1,
-  //               style: TextStyle(
-  //                 fontSize: 16,
-  //               ),
-  //               softWrap: false,
-  //               overflow: TextOverflow.fade,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       trailing: Icon(
-  //         Icons.keyboard_arrow_down,
-  //         color: darkGrey,
-  //       ),
-  //       onTap: () {
-  //         selectItemCondition();
-  //       },
-  //     ),
-  //   );
-  // }
-
   void selectItemCondition() async {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1321,6 +1326,7 @@ class _EditJobState extends State<EditJob> {
     return CustomizedTextFormField(
       controller: descriptionController,
       labelText: AppLocalization.of(context)!.wantToGetDone,
+      labelColor: blackFont,
       maxLines: 3,
       validator: (val) {
         if (val.isNotEmpty) {
@@ -1338,8 +1344,9 @@ class _EditJobState extends State<EditJob> {
     return CustomizedTextFormField(
       controller: priceController,
       labelText: AppLocalization.of(context)!.yourBudget,
+      labelColor: blackFont,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       onChanged: (val) {
@@ -1392,33 +1399,11 @@ class _EditJobState extends State<EditJob> {
 
   Future<void> editJob() async {
     if (_formKey.currentState!.validate()) {
-      if (jobLocalImages.length >= 1) {
+      if (jobImagesFromServer.length >= 1 || jobLocalImages.length >= 1) {
         if (true) {
-          // CreateJobModel job = CreateJobModel();
-          // Pictures pictures = Pictures();
-          // Category category = Category();
-          // job.pictures = jobImages
-          //     .map((file) => Pictures(
-          //         image: File(file.path), caption: '$selectedCategory 1'))
-          //     .toList();
-          // job.title = jobTitle;
-          // // job.description = productDescription;
-          // job.dueDate = DateFormat('yyyy-MM-dd').format(jobEndDate);
-          // job.category = Category(
-          //     name: selectedCategory,
-          //     slug: selectedCategory!.toLowerCase(),
-          //     image: '');
-          // job.description = jobDescription;
-          // job.pay = moneyInputNormalizer(budget);
-          // job.location = location;
-          // job.tags = [selectedCategory!.toLowerCase()];
-          // job.availableFrom = jobAvailableFrom;
-          // job.enableInSuperStore = productEnableInSuperStore;
-          // print('active')
-
           await ServiceHubAuthService().editMyJob({
             'title': titleController.text,
-            'location': locationController.text,
+            'location': locationSelected ?? locationState,
             'pay': moneyInputNormalizer(priceController.text),
             'description': descriptionController.text,
             'category': selectedCategory,
@@ -1560,6 +1545,129 @@ class _EditJobState extends State<EditJob> {
     );
   }
 
+  void loccationAndroidSheet() {
+    locationsList = locationsListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.50,
+            child: Column(
+              children: [
+                Text(
+                  "Choose Location",
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 16.8,
+                      fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Divider(
+                  color: darkGrey.withOpacity(.5),
+                ),
+                Expanded(
+                  child: NotificationListener<ScrollEndNotification>(
+                    onNotification: (scrollEnd) {
+                      final metrics = scrollEnd.metrics;
+                      if (metrics.atEdge) {
+                        bool isTop = metrics.pixels == 0;
+                        if (!isTop) {
+                          changeState(() {});
+                        }
+                      }
+                      return true;
+                    },
+                    child: ListView.builder(
+                      controller: _locationScrollController,
+                      shrinkWrap: true,
+                      itemCount: locationsList.length,
+                      itemBuilder: (context, index) {
+                        LocationData location = locationsList[index]!;
+
+                        return ListTile(
+                          title: Text(
+                            "${location.name}",
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          dense: true,
+                          onTap: () {
+                            locationSelected = location.slug;
+                            locationState = location.name!;
+                            Navigator.pop(context);
+                            setState(() {});
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void getLocationList() async {
+    if (!isLocationLoading) {
+      if (locationNext != null && !isLocationLoading) {
+        isLocationLoading = true;
+        if (mounted) setState(() {});
+
+        var result = await ServiceHubAuthService()
+            .getJobLocation(locationNext, locationPrevious);
+
+        if (result == null) {
+          noLocinList = true;
+
+          isLocationLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        locationCount = result.count;
+        locationNext = result.next;
+        locationPrevious = result.previous;
+        var tempList = result.results;
+        if (mounted) {
+          setState(() {
+            noLocinList = false;
+            isLocationLoading = false;
+            locationsList.addAll(tempList!);
+            locationsListCopy = locationsList;
+            tempList.forEach((element) {
+              categoriesNameList.add(element.name!);
+            });
+          });
+        }
+      }
+      if (locationsList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noLocinList = true;
+          });
+        }
+      } else if (locationNext == null && locationsList.length > 6) {
+        _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -1590,7 +1698,7 @@ class CustomRadioTile extends StatelessWidget {
         ),
         title: Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 14,
           ),
@@ -1616,8 +1724,8 @@ class CustomizedRadioButtonRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Timing'),
-        SizedBox(
+        const Text('Timing'),
+        const SizedBox(
           height: 6,
         ),
         Row(
@@ -1641,7 +1749,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         // });
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     GestureDetector(
@@ -1650,7 +1758,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         //   groupValue = "Fixed";
                         // });
                       },
-                      child: Text(
+                      child: const Text(
                         "Fixes",
                         style: TextStyle(
                           color: Colors.black,
@@ -1681,7 +1789,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         // });
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     GestureDetector(
@@ -1690,7 +1798,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         //   groupValue = "Fixed";
                         // });
                       },
-                      child: Text(
+                      child: const Text(
                         "Fixes",
                         style: TextStyle(
                           color: Colors.black,

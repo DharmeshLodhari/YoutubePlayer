@@ -37,7 +37,8 @@ class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
           widget.title,
           style: TextStyle(
               color: widget.titleColor,
-              fontSize: 14,
+              fontSize: 16,
+              
               fontWeight: widget.fontWeight),
         ),
         SizedBox(
