@@ -3296,7 +3296,7 @@ class AppLocalization {
 
   String get wantToGetDone {
     return Intl.message(
-      "What do you want to get done",
+      "Job Description",
       name: "whatDoYouWantToGetDone",
     );
   }
@@ -3315,7 +3315,6 @@ class AppLocalization {
     );
   }
 
-
   String get tuskFee {
     return Intl.message(
       "Task Fee",
@@ -3330,14 +3329,12 @@ class AppLocalization {
     );
   }
 
-
   String get yourBudget {
     return Intl.message(
       "Your Budget",
       name: "yourBudget",
     );
   }
-
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {

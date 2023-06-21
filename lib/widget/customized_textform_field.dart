@@ -121,7 +121,8 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                               color: widget.labelColor != null
                                   ? widget.labelColor
                                   : darkGrey,
-                              fontSize: 14),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
                         )
                       : SizedBox.shrink(),
                   widget.hasLabel
@@ -175,7 +176,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             hintText: widget.hintText != null ? widget.hintText : null,
             hintStyle: TextStyle(
               color: darkGrey.withOpacity(0.5),
-              fontSize: 16,
+              fontSize: 12,
               fontWeight: FontWeight.w400,
             ),
             suffixIcon: _getSuffixIcon(),

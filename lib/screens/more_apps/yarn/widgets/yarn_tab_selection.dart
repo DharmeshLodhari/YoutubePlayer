@@ -55,8 +55,8 @@ class _YarnTabSelectionState extends State<YarnTabSelection> {
     return InkWell(
       onTap: () => onTap(tabIndex),
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        padding: EdgeInsets.symmetric(vertical: 12),
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(60),
           shape: BoxShape.rectangle,

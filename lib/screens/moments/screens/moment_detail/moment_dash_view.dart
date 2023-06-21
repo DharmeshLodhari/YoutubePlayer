@@ -2,8 +2,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
-import '../../../../utils/cached_video_player/cached_video_player.dart';
 import '../../../../utils/colors.dart';
 
 class MomentDashView extends StatefulWidget {
@@ -61,7 +59,7 @@ class _MomentDashViewState extends State<MomentDashView>
     if (widget.value == 1.0) {
       controller = widget.controller;
     }
-    return Container(
+    return SizedBox(
       height: 50,
       child: Row(
         children: dashes(widget.lengthOfMoment, widget.currentPageViewIndex),
@@ -98,8 +96,6 @@ class _MomentDashViewState extends State<MomentDashView>
         }
       }
     }
-    print(
-        'effectiveness...............$currentIndex and ${controller.value.toString()}');
 
     return widgets;
   }

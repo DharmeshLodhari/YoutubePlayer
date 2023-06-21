@@ -138,6 +138,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
           return;
         }
 
+        print('job activity.......${result.toJson()}');
         activeListingCount = result.count;
         activeListingNext = result.next;
         activeListingPrevious = result.previous;
@@ -168,7 +169,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
   @override
   initState() {
-    super.initState();
     print("initState Called");
     getActiveJobListing();
     getCategoriesList();
@@ -179,6 +179,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
         getActiveJobListing();
       }
     });
+
+    super.initState();
   }
 
   _refreshPage() {

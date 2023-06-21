@@ -7,7 +7,6 @@ import 'package:Slydo/screens/more_apps/service_hub/screens/jobs_dashboard.dart'
 import 'package:Slydo/screens/more_apps/service_hub/service_hub.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -55,13 +54,13 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
       actions: [
         _searchBtn(),
         SizedBox(
-          width: 10,
+          width: 20,
         ),
         if (currentIndex == 0) _cartBtn(),
         // if (currentIndex == 0) SizedBox(width: 10),
         _moreOptionsBtn(),
         SizedBox(
-          width: 12,
+          width: 4,
         ),
       ],
       bottom: tabBar() as PreferredSizeWidget,
@@ -83,12 +82,12 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         height: 34,
         width: 34,
         alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(10),
-          ),
-          color: blackFont.withOpacity(0.1),
-        ),
+        // decoration: BoxDecoration(
+        //   borderRadius: BorderRadius.all(
+        //     Radius.circular(10),
+        //   ),
+        //   color: blackFont.withOpacity(0.1),
+        // ),
         child: Icon(
           Icons.more_vert,
           color: blackFont,
@@ -144,59 +143,60 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
 
   Widget tabBar() {
     return PreferredSize(
-      child: TabBar(
-        labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
-        onTap: (int index) {
-          currentIndex = index;
-          setState(() {});
-        },
-        tabs: [
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 0
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                appLocalization.services,
-                style: TextStyle(
-                  color: currentIndex == 0 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+      preferredSize: Size.fromHeight(80),
+      child: Column(
+        children: [
+          Divider(
+            color: darkGrey.withOpacity(.5),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 15.6),
+            decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(52),
+                    topRight: Radius.circular(52),
+                    bottomRight: Radius.circular(52),
+                    bottomLeft: Radius.circular(52)),
+                color: darkGrey.withOpacity(.3)),
+            child: TabBar(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+              labelPadding: EdgeInsets.zero,
+              indicator: BoxDecoration(
+                  borderRadius: BorderRadius.circular(28), color: yarnBlack),
+              onTap: (int index) {
+                currentIndex = index;
+                setState(() {});
+              },
+              tabs: [
+                Tab(
+                  child: Text(
+                    appLocalization.services,
+                    style: TextStyle(
+                      color: currentIndex == 0 ? white : blackFont,
+                      fontSize: 14,
+                      fontWeight:
+                          currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
                 ),
-              ),
+                Tab(
+                    child: Text(
+                  appLocalization.findJobs,
+                  style: TextStyle(
+                    color: currentIndex == 1 ? white : blackFont,
+                    fontSize: 14,
+                    fontWeight:
+                        currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                )),
+              ],
             ),
           ),
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 1
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                appLocalization.findJobs,
-                style: TextStyle(
-                  color: currentIndex == 1 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
+          Divider(
+            color: darkGrey.withOpacity(.5),
           ),
         ],
       ),
-      preferredSize: Size.fromHeight(50),
     );
   }
 
@@ -220,20 +220,18 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   }
 
   Widget _cartBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: badges.Badge(
+    return GestureDetector(
+      child: badges.Badge(
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
           padding: basketBloc.items.length == 0
               ? const EdgeInsets.all(0)
               : EdgeInsets.only(
-              left: getBadgeCount().length == 1 ? 6 : 8,
-              right: 6,
-              top: 4,
-              bottom: 4),
+                  left: getBadgeCount().length == 1 ? 6 : 8,
+                  right: 6,
+                  top: 6,
+                  bottom: 4),
           elevation: 0,
         ),
         badgeAnimation: const badges.BadgeAnimation.rotation(
@@ -257,16 +255,14 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
       onTap: () {
         Navigator.pushNamed(context, Routes.SHOPPING_CART);
       },
-      backgroundColor: blackFont.withOpacity(0.1),
-      enableMargin: true,
+      // backgroundColor: blackFont.withOpacity(0.1),
+      // enableMargin: true,
     );
   }
 
   Widget _searchBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
+    return GestureDetector(
+      child: Icon(
         SlydoAppIcon.search,
         size: 16,
         color: blackFont,
@@ -276,8 +272,6 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
             ? Navigator.pushNamed(context, Routes.SEARCH_SERVICES)
             : Navigator.pushNamed(context, Routes.JOBS_SEARCH);
       },
-      backgroundColor: blackFont.withOpacity(0.1),
-      enableMargin: true,
     );
   }
 
