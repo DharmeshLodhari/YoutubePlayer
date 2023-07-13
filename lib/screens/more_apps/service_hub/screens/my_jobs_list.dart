@@ -470,7 +470,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
         },
       ),
       title: Text(
-        "My Job",
+        appLocalization.myJobs,
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
@@ -478,6 +478,9 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
         ),
       ),
       bottom: tabBar() as PreferredSizeWidget,
+      actions: [
+        _filterBtn()
+      ],
     );
   }
 
@@ -496,8 +499,8 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
               if (mounted) setState(() {});
             },
             currentIndex: currentIndex,
-            firstTab: appLocalization.services,
-            secondTab: appLocalization.findJobs,
+            firstTab: appLocalization.posted,
+            secondTab: appLocalization.applied,
           ),
           Divider(
             color: darkGrey.withOpacity(.5),
@@ -511,15 +514,18 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Icon(
-        SlydoAppIcon.filter,
-        size: 16,
-        color: blackFont,
+      icon: Padding(
+        padding: const EdgeInsets.only(right: 20.0),
+        child: Icon(
+          SlydoAppIcon.search,
+          size: 16,
+          color: blackFont,
+        ),
       ),
       onTap: () {
         // Navigator.pushNamed(context, Routes.SEARCH_SERVICES);
       },
-      backgroundColor: blackFont.withOpacity(0.1),
+      // backgroundColor: blackFont.withOpacity(0.1),
       enableMargin: true,
     );
   }

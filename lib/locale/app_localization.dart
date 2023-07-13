@@ -1544,6 +1544,12 @@ class AppLocalization {
       name: "applied",
     );
   }
+  String get myJobs {
+    return Intl.message(
+      "My Jobs",
+      name: "myJobs",
+    );
+  }
 
   String get find {
     return Intl.message(
