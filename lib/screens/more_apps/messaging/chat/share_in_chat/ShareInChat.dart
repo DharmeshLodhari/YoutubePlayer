@@ -4,7 +4,6 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'get_connection_list_for_sharing.dart';
 
 /// For sharing items in the chat

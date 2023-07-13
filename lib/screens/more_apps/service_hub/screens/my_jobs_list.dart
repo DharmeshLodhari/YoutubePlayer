@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -12,13 +14,12 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../yarn/widgets/yarn_tab_selection.dart';
 
 class JobsMyJobsList extends StatefulWidget {
   const JobsMyJobsList({Key? key}) : super(key: key);
@@ -50,6 +51,16 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
   ScrollController _appliedScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _myJobsScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
+
+  bool _tabsVisible = true;
+
+  void _showTabs(bool visible) {
+    if (_tabsVisible != visible) {
+      setState(() {
+        _tabsVisible = visible;
+      });
+    }
+  }
 
   void getPostedMyJobListing() async {
     if (!isLoading) {
@@ -93,7 +104,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
         _myJobsScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -119,6 +130,8 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
           return;
         }
 
+        log('APPLIED JOBS...... ${result.toJson()}');
+
         appliedListCount = result.count;
         appliedListNext = result.next;
         appliedListPrevious = result.previous;
@@ -141,7 +154,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
         _myJobsScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -221,15 +234,16 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
           backgroundColor: lightGrey,
           appBar: appBar(),
           body: SmartRefresher(
-            controller: _refreshController,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            onRefresh: _onRefresh,
-            child:
-                TabBarView(children: [getPostedMyJobs(), getAppliedMyJobs()]),
-          ),
+              controller: _refreshController,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              onRefresh: _onRefresh,
+              child: IndexedStack(
+                index: currentIndex,
+                children: [getPostedMyJobs(), getAppliedMyJobs()],
+              )),
         ),
       ),
     );
@@ -253,8 +267,9 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
                     highlightColor: greyBorderColor,
                     child: GridView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
                         mainAxisSpacing: 14,
                         mainAxisExtent: 180,
                         crossAxisSpacing: 15,
@@ -271,15 +286,15 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
                       },
                     ),
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
             Visibility(
               visible: !isLoading && postedMyJobListing.isEmpty,
               child: Center(
                 child: Column(
                   children: [
                     Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                    SizedBox(height: 20),
-                    Text('No items at the moment'),
+                    const SizedBox(height: 20),
+                    const Text('No items at the moment'),
                   ],
                 ),
               ),
@@ -292,35 +307,28 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
 
   Widget getPostedJobsList() {
     if (postedMyJobListing.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return listNext == "" && isLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Flexible(
             fit: FlexFit.loose,
             child: ListView.builder(
                 itemCount: postedMyJobListing.length,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  print('${postedMyJobListing.length} my job length');
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: GestureDetector(
                       onTap: () => Navigator.pushNamed(
-                          context, Routes.MY_JOB_DETAILS, arguments: {
-                        'jobId': postedMyJobListing[index].id,
-                        'listingId': ''
-                      }),
+                          context, Routes.MY_JOB_DETAILS,
+                          arguments: {
+                            'jobId': postedMyJobListing[index].id,
+                            'listingId': '',
+                            'job': postedMyJobListing[index]
+                          }),
                       child: JobDescriptionCard(
-                        // currency: postedMyJobListing[index].currency,
-                        // creationDate:
-                        //     postedMyJobListing[index].creationDate.toString(),
-                        // description: postedMyJobListing[index].description,
-                        // location: postedMyJobListing[index].location,
-                        // price: postedMyJobListing[index].pay.toString(),
-                        // status: postedMyJobListing[index].status,
-                        // title: postedMyJobListing[index].title,
                         job: postedMyJobListing[index],
                       ),
                     ),
@@ -344,8 +352,9 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
                     highlightColor: greyBorderColor,
                     child: GridView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
                         mainAxisSpacing: 14,
                         mainAxisExtent: 180,
                         crossAxisSpacing: 15,
@@ -362,15 +371,15 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
                       },
                     ),
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
             Visibility(
               visible: !isLoading && appliedMyJobListing.isEmpty,
               child: Center(
                 child: Column(
                   children: [
                     Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                    SizedBox(height: 20),
-                    Text('No items at the moment'),
+                    const SizedBox(height: 20),
+                    const Text('No items at the moment'),
                   ],
                 ),
               ),
@@ -413,25 +422,27 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
   Widget getAppliedJobList() {
     print('${appliedMyJobListing.length} my applied job length');
     if (appliedMyJobListing.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return appliedListNext == "" && isLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Flexible(
             fit: FlexFit.loose,
             child: ListView.builder(
                 itemCount: appliedMyJobListing.length,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: GestureDetector(
                       onTap: () => Navigator.pushNamed(
-                          context, Routes.MY_JOB_DETAILS, arguments: {
-                        'jobId': appliedMyJobListing[index].id,
-                        'listingId': ''
-                      }),
+                          context, Routes.MY_JOB_DETAILS,
+                          arguments: {
+                            'jobId': appliedMyJobListing[index].id,
+                            'listingId': '',
+                            'job': appliedMyJobListing[index]
+                          }),
                       child: JobDescriptionCard(
                         job: appliedMyJobListing[index],
                       ),
@@ -466,71 +477,33 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      // actions: [
-      //   _filterBtn(),
-      //   SizedBox(
-      //     width: 12,
-      //   )
-      // ],
       bottom: tabBar() as PreferredSizeWidget,
     );
   }
 
   Widget tabBar() {
     return PreferredSize(
-      child: TabBar(
-        labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
-        onTap: (int index) {
-          currentIndex = index;
-          setState(() {});
-        },
-        tabs: [
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 0
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                appLocalization.posted,
-                style: TextStyle(
-                  color: currentIndex == 0 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
+      preferredSize: const Size.fromHeight(80),
+      child: Column(
+        children: [
+          Divider(
+            color: darkGrey.withOpacity(.5),
           ),
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 1
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                appLocalization.applied,
-                style: TextStyle(
-                  color: currentIndex == 1 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
+          YarnTabSelection(
+            onTap: (index) {
+              currentIndex = index;
+              _showTabs(true);
+              if (mounted) setState(() {});
+            },
+            currentIndex: currentIndex,
+            firstTab: appLocalization.services,
+            secondTab: appLocalization.findJobs,
+          ),
+          Divider(
+            color: darkGrey.withOpacity(.5),
           ),
         ],
       ),
-      preferredSize: Size.fromHeight(50),
     );
   }
 

@@ -8,7 +8,10 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../../../data/state_notifier.dart';
 
 class JobsSearch extends StatefulWidget {
   const JobsSearch({Key? key}) : super(key: key);
@@ -40,6 +43,8 @@ class _JobsSearchState extends State<JobsSearch> {
     'Price High to Low': '-job__pay',
     'Price Low to High': 'job__pay',
   };
+
+  late UserBloc userBloc;
 
   void getJobListing() async {
     if (!isLoading) {
@@ -98,6 +103,7 @@ class _JobsSearchState extends State<JobsSearch> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
       // key: _scaffoldSearchKey,
       backgroundColor: Colors.white,
@@ -214,8 +220,27 @@ class _JobsSearchState extends State<JobsSearch> {
                                 (job) => Container(
                                   padding: EdgeInsets.symmetric(
                                       vertical: 8, horizontal: 16),
-                                  child: JobDescriptionCard(
-                                    job: job.job,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      userBloc.user.userName == job.job!.owner
+                                          ? Navigator.pushNamed(
+                                              context, Routes.MY_JOB_DETAILS,
+                                              arguments: {
+                                                  'jobId': job.job!.id,
+                                                  'listingId': job.id,
+                                                  'job': job.job
+                                                })
+                                          : Navigator.pushNamed(context,
+                                              Routes.JOBS_PREVIEW_DETAIL,
+                                              arguments: {
+                                                  'jobId': job.job!.id,
+                                                  'listingId': job.id,
+                                                  'job': job.job
+                                                });
+                                    },
+                                    child: JobDescriptionCard(
+                                      job: job.job,
+                                    ),
                                   ),
                                 ),
                               )

@@ -1,22 +1,23 @@
+import 'dart:developer';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/list_of_categories.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../widget/curved_btn.dart';
+import '../../../../widget/customized_dropdown_field.dart';
 import '../tiles/jos_description_card.dart';
 
 class JobsDashboard extends StatefulWidget {
@@ -33,9 +34,14 @@ class _JobsDashboardState extends State<JobsDashboard> {
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
   ScrollController _jobsScrollController = ScrollController();
+  ScrollController _categoryScrollController = ScrollController();
   late UserBloc userBloc;
 
+  List<String>? selectedCategory = [];
+  List<String>? displayCategory = [];
   List<CategoryListData> categoriesList = [];
+  List<CategoryListData> categoriesListCopy = [];
+
   List<ActiveListingData> activeListing = [];
 
   bool isCategoryLoading = false;
@@ -54,6 +60,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   List status = ['Active', 'Closed', 'Pending'];
+
+  Map<String, bool> categoryCheckMark = {};
   // late ListOfCategories categoriesList;
 
   void _onRefresh() async {
@@ -79,7 +87,10 @@ class _JobsDashboardState extends State<JobsDashboard> {
         if (mounted) setState(() {});
 
         var result = await ServiceHubAuthService()
-            .getListOfCategories(categoryNext, categoryPrevious);
+            .getListOfCategories(productNext, productPrevious);
+
+        isCategoryLoading = false;
+        setState(() {});
 
         if (result == null) {
           noJobsInList = true;
@@ -91,6 +102,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
           return;
         }
 
+        log('message result.........${result.toJson()}');
         productCount = result.count;
         productNext = result.next;
         productPrevious = result.previous;
@@ -100,8 +112,13 @@ class _JobsDashboardState extends State<JobsDashboard> {
             noJobsInList = false;
             isCategoryLoading = false;
             categoriesList.addAll(tempList!);
+            categoriesListCopy = categoriesList;
           });
         }
+
+        categoriesListCopy.forEach((element) {
+          categoryCheckMark[element.name!] = false;
+        });
       }
       if (categoriesList.isEmpty) {
         if (mounted) {
@@ -110,23 +127,24 @@ class _JobsDashboardState extends State<JobsDashboard> {
           });
         }
       } else if (productNext == null && categoriesList.length > 6) {
-        // _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-        //   content:
-        //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-        //   duration: Duration(milliseconds: 500),
-        // ));
+        _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
       }
     }
   }
 
-  void getActiveJobListing() async {
+  void getActiveJobListing({category}) async {
     if (!isActiveListLoading) {
       if (productNext != null && !isActiveListLoading) {
         isActiveListLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService()
-            .getActiveJobListing(activeListingNext, activeListingPrevious);
+        var result = await ServiceHubAuthService().getActiveJobListing(
+            activeListingNext, activeListingPrevious,
+            category: category);
 
         if (result == null) {
           noJobsInList = true;
@@ -138,7 +156,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
           return;
         }
 
-        print('job activity.......${result.toJson()}');
+        log('job activity.......${result.toJson()}');
         activeListingCount = result.count;
         activeListingNext = result.next;
         activeListingPrevious = result.previous;
@@ -161,7 +179,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -169,7 +187,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
   @override
   initState() {
-    print("initState Called");
     getActiveJobListing();
     getCategoriesList();
     _jobsScrollController.addListener(() {
@@ -177,6 +194,14 @@ class _JobsDashboardState extends State<JobsDashboard> {
               _jobsScrollController.position.maxScrollExtent &&
           _jobsScrollController.position.pixels != 0) {
         getActiveJobListing();
+      }
+    });
+
+    _categoryScrollController.addListener(() {
+      if (_categoryScrollController.position.pixels ==
+              _categoryScrollController.position.maxScrollExtent &&
+          _categoryScrollController.position.pixels != 0) {
+        getCategoriesList();
       }
     });
 
@@ -199,7 +224,11 @@ class _JobsDashboardState extends State<JobsDashboard> {
     activeListingCount = 0;
     activeListingNext = "";
     activeListingPrevious = "";
-    getActiveJobListing();
+    if (selectedCategory!.isEmpty) {
+      getActiveJobListing();
+    } else {
+      getActiveJobListing(category: selectedCategory!.join(','));
+    }
     getCategoriesList();
     //todaysDealList = [];
 
@@ -231,7 +260,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     getCategoryData(context),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     getJobsListData(),
@@ -241,9 +270,9 @@ class _JobsDashboardState extends State<JobsDashboard> {
                             highlightColor: greyBorderColor,
                             child: GridView.builder(
                               shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
+                              physics: const NeverScrollableScrollPhysics(),
                               gridDelegate:
-                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                  const SliverGridDelegateWithMaxCrossAxisExtent(
                                 mainAxisSpacing: 14,
                                 mainAxisExtent: 180,
                                 crossAxisSpacing: 15,
@@ -260,7 +289,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                               },
                             ),
                           )
-                        : SizedBox.shrink(),
+                        : const SizedBox.shrink(),
                     Visibility(
                       visible: !isCategoryLoading &&
                           !isActiveListLoading &&
@@ -270,8 +299,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
                         child: Column(
                           children: [
                             Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                            SizedBox(height: 20),
-                            Text('No items at the moment'),
+                            const SizedBox(height: 20),
+                            const Text('No items at the moment'),
                           ],
                         ),
                       ),
@@ -288,15 +317,15 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
   Widget getJobsListData() {
     if (activeListing.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return activeListingNext == "" && isActiveListLoading && isCategoryLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 "Jobs you might like",
                 style: TextStyle(
                   color: Color(0xff030e36),
@@ -305,78 +334,199 @@ class _JobsDashboardState extends State<JobsDashboard> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
-              Flexible(
-                fit: FlexFit.loose,
-                child: ListView.builder(
-                  // controller: _jobsScrollController,
-                  itemCount: activeListing.length,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          userBloc.user.userName ==
-                                  activeListing[index].job!.owner
-                              ? Navigator.pushNamed(
-                                  context, Routes.MY_JOB_DETAILS, arguments: {
-                                  'jobId': activeListing[index].job!.id,
-                                  'listingId': activeListing[index].id
-                                })
-                              : Navigator.pushNamed(
-                                  context, Routes.JOBS_PREVIEW_DETAIL,
-                                  arguments: {
-                                      'jobId': activeListing[index].job!.id,
-                                      'listingId': activeListing[index].id
-                                    });
-                        },
-                        child: JobDescriptionCard(
-                          job: activeListing[index].job,
-                        ),
+              ListView.builder(
+                // controller: _jobsScrollController,
+                itemCount: activeListing.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        userBloc.user.userName ==
+                                activeListing[index].job!.owner
+                            ? Navigator.pushNamed(
+                                context, Routes.MY_JOB_DETAILS, arguments: {
+                                'jobId': activeListing[index].job!.id,
+                                'listingId': activeListing[index].id,
+                                'job': activeListing[index].job
+                              })
+                            : Navigator.pushNamed(
+                                context, Routes.JOBS_PREVIEW_DETAIL,
+                                arguments: {
+                                    'jobId': activeListing[index].job!.id,
+                                    'listingId': activeListing[index].id,
+                                    'job': activeListing[index].job
+                                  });
+                      },
+                      child: JobDescriptionCard(
+                        job: activeListing[index].job,
                       ),
-                    );
-                  },
-                ),
-              )
+                    ),
+                  );
+                },
+              ),
             ],
           );
   }
 
+  Widget getCategoryField() {
+    return CustomizedDropDownField(
+      title: '',
+      titleColor: blackFont,
+      fontWeight: FontWeight.bold,
+      child: ListTile(
+        dense: true,
+        title: SizedBox(
+          width: 300,
+          child: Text(
+            displayCategory!.isNotEmpty
+                ? displayCategory!.join(',')
+                : "select category",
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: TextStyle(
+                color: darkGrey.withOpacity(0.9),
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
+          ),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          categoryAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void categoryAndroidSheet() {
+    categoriesList = categoriesListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.70,
+            child: Stack(children: [
+              ListView(
+                shrinkWrap: true,
+                children: [
+                  const SizedBox(
+                    height: 3.4,
+                  ),
+                  Text(
+                    "Select Category",
+                    style: TextStyle(
+                        color: black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  Divider(
+                    color: darkGrey.withOpacity(.5),
+                  ),
+                  SizedBox(
+                    height: 400,
+                    child: Expanded(
+                      child: NotificationListener<ScrollEndNotification>(
+                        onNotification: (scrollEnd) {
+                          final metrics = scrollEnd.metrics;
+                          if (metrics.atEdge) {
+                            bool isTop = metrics.pixels == 0;
+                            if (!isTop) {
+                              changeState(() {});
+                            }
+                          }
+                          return true;
+                        },
+                        child: ListView.builder(
+                          controller: _categoryScrollController,
+                          shrinkWrap: true,
+                          itemCount: categoriesList.length,
+                          itemBuilder: (context, index) {
+                            CategoryListData category = categoriesList[index];
+                            return CheckboxListTile(
+                              value: displayCategory!.contains(category.name)
+                                  ? true
+                                  : false,
+                              onChanged: (isChecked) {
+                                changeState(() {
+                                  categoryCheckMark[category.name!] =
+                                      isChecked!;
+                                });
+                                if (selectedCategory!.contains(category.slug)) {
+                                  selectedCategory!.remove(category.slug);
+                                  displayCategory!.remove(category.name);
+                                } else {
+                                  selectedCategory!.add(category.slug!);
+                                  displayCategory!.add(category.name!);
+                                }
+                              },
+                              title: Text(
+                                category.name!,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  isCategoryLoading
+                      ? SpinKitRing(
+                          size: 30,
+                          lineWidth: 3,
+                          color: darkGreyYarn,
+                        )
+                      : const SizedBox.shrink(),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                ],
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: CurvedButton(
+                  text: 'Pick',
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _onRefresh();
+                  },
+                ),
+              ),
+            ]),
+          );
+        },
+      ),
+    );
+  }
+
   Widget getCategoryData(BuildContext context) {
     if (categoriesList.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return categoryNext == "" && isCategoryLoading && isActiveListLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
             children: [
               browseCategoryRow(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
-              SizedBox(
-                height: 150,
-                width: MediaQuery.of(context).size.width,
-                child: ListView.builder(
-                    itemCount: categoriesList.length,
-                    scrollDirection: Axis.horizontal,
-                    // shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 15.0),
-                        child: GestureDetector(
-                          onTap: () => Navigator.pushNamed(
-                              context, Routes.CATEGORY_JOBS,
-                              arguments: categoriesList[index].slug),
-                          child: categoryCard(categoriesList[index].image,
-                              categoriesList[index].name),
-                        ),
-                      );
-                    }),
+              getCategoryField(),
+              const SizedBox(
+                height: 15,
               ),
             ],
           );
@@ -412,17 +562,18 @@ class _JobsDashboardState extends State<JobsDashboard> {
   Row browseCategoryRow() {
     return Row(
       children: [
-        Expanded(
-          child: Text(
-            "Browse Category",
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
+        Text(
+          "Browse Category",
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
           ),
         ),
-        getViewMoreBtn()
+        const SizedBox(
+          width: 8,
+        ),
+        SvgPicture.asset("assets/images/thunder.svg")
       ],
     );
   }

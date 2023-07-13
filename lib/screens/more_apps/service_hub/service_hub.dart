@@ -224,10 +224,7 @@ class _SuperHubState extends State<SuperHub> {
     todayDealNext = "";
     todayDealPrevious = "";
     isTodayDealLoading = false;
-    //todaysDealList = [];
-
     getProductList();
-    //getTodaysDealProducts();
   }
 
   @override

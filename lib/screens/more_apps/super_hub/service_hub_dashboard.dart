@@ -63,6 +63,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
 
   Widget tabBar() {
     return PreferredSize(
+      preferredSize: Size.fromHeight(50),
       child: TabBar(
         labelPadding: EdgeInsets.zero,
         indicator: BoxDecoration(),
@@ -115,7 +116,6 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           ),
         ],
       ),
-      preferredSize: Size.fromHeight(50),
     );
   }
 

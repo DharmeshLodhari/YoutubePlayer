@@ -209,17 +209,6 @@ class _HomeState extends State<Home> {
       centerTitle: false,
       leading: InkWell(
         onTap: () {
-          // String? image = '';
-          // if (userBloc.user.avatar! == "" ||
-          //     userBloc.user.avatar ==
-          //         "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-          //   image = getInitials(userBloc.user.fullName!).toUpperCase();
-          // } else {
-          //   image = userBloc.user.avatar!;
-          // }
-
-          // Navigator.of(context)
-          //     .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
           profileAndroidSheet();
         },
         child: userImageUserInitialsPic(

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
@@ -84,9 +85,11 @@ import '../../../../../data/database_helper.dart';
 import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../services/app_config_bloc.dart';
+import '../../../service_hub/tiles/jos_description_card.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../tiles/document_file_tile_for_chat.dart';
 import '../tiles/invoice_tile_for_chat.dart';
+import '../tiles/job_service_card_in_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
 import '../tiles/yarn_question_tile.dart';
@@ -540,7 +543,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     super.dispose();
 
     /// remove the observer
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
 
     _timerForUserTypingState?.cancel();
 
@@ -624,7 +627,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void initializeSocket() {
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       mainSocketProvider =
           Provider.of<MainSocketProvider>(context, listen: false);
       try {
@@ -760,7 +763,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             .catchError((error) {
           isLoading = false;
           if (mounted) setState(() {});
-          WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             if (mounted) {
               debugPrint("ERROR:- $error");
             }
@@ -791,7 +794,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
         checkMessageForRead();
 
-        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           if (isFirstTime &&
               MediaQuery.of(myGlobals.scaffoldKey.currentContext!).size.height >
                   704) {
@@ -3257,6 +3260,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             message: messageData, chatConversation: chatConversation);
         break;
 
+      case "job":
+        finalUI = renderJobServiceUI(message: messageData);
+        break;
+
       default:
         debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
         Widget getErrorRenderTypeUI = unKnownMessageType(messageType);
@@ -3271,9 +3278,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     bool isSend = userBloc!.user.userName == messageData["author"];
 
     return SwipeTo(
-      child: ui,
       animationDuration: Duration(milliseconds: 200),
-      offsetDx: 0.1,
+      offsetDx: 8.1,
       onLeftSwipe: isSend
           ? () {
               debugPrint("left Swipe");
@@ -3286,6 +3292,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               debugPrint("Right Swipe");
               replyChatMessage(message: message);
             },
+      child: ui,
     );
   }
 
@@ -3580,7 +3587,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget getReplyingMessageWidget() {
     Map<String, dynamic>? messageData = jsonDecode(replayingMessage!);
-
     return Container(
         width: MediaQuery.of(context).size.width,
         color: Colors.white,
@@ -3927,6 +3933,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     return DocumentFileTileForChat(
       message: message,
       chatConversation: chatConversation,
+    );
+  }
+
+  Widget renderJobServiceUI({required Map<String, dynamic> message}) {
+    return JobCardChatDescription(
+      jobMessage: message,
     );
   }
 

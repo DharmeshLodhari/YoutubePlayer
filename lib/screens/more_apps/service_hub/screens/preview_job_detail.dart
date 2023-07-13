@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
@@ -9,13 +10,10 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
-import 'package:Slydo/screens/more_apps/service_hub/models/retrieve_job_model.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -24,9 +22,16 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:uuid/uuid.dart';
-// import 'package:flutter/src/foundation/key.dart';
-// import 'package:flutter/src/widgets/container.dart';
-// import 'package:flutter/src/widgets/framework.dart';
+
+import '../../../../utils/navigation_util.dart';
+import '../../../../widget/dialog.dart';
+import '../../../../widget/rounded_background_icon.dart';
+import '../../messaging/chat/helpers/connection_list_manager.dart';
+import '../../yarn/models/share_as_yarn_model.dart';
+import '../../yarn/share_as_a_yarn_screen.dart';
+import '../../yarn/yarn_auth.dart';
+import '../../yarn/yarn_dashboard_bloc.dart';
+import '../../yarn/yarn_report_screen.dart';
 
 class JobsPreviewJobDetail extends StatefulWidget {
   const JobsPreviewJobDetail({
@@ -48,11 +53,13 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
   CarouselController carouselController = CarouselController();
   late final String jobId;
   late final String? listingId;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   bool isLoading = false;
   int currentIndex = 0;
   bool isAPILoading = false;
   String selected = "";
+
   List<CustomPopupMenuItem> popupMenuList = [
     CustomPopupMenuItem(
         title: "Edit Job", imageUrl: "assets/images/edit_job.svg"),
@@ -77,6 +84,15 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
   List<String> selectedItems = [];
   JobModel? job;
   late UserBloc userBloc;
+
+  List<ChatConversation> searchedChatConnection = [];
+
+  void getSearchedChatConnections() async {
+    searchedChatConnection =
+        await ConnectionListManager().getSearchedConnectionsFromDB();
+    if (mounted) setState(() {});
+    print('........${searchedChatConnection.length}');
+  }
 
   void getMyJob() async {
     if (!isLoading) {
@@ -106,21 +122,24 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           job = tempList.job;
         });
       }
+      getSearchedChatConnections();
+      log('job gt job ${job!.toJson()}');
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     jobId = widget.jobDetails['jobId'];
     listingId = widget.jobDetails['listingId'];
     getMyJob();
+    job = widget.jobDetails['job'];
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return Scaffold(
       appBar: appBar(),
       body: SingleChildScrollView(
@@ -128,27 +147,30 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           children: [
             getJobDetails(),
             isLoading
-                ? Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisSpacing: 14,
-                        mainAxisExtent: 180,
-                        crossAxisSpacing: 15,
-                        maxCrossAxisExtent: 200,
+                ? Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: 14,
+                          mainAxisExtent: 180,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          );
+                        },
                       ),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        );
-                      },
                     ),
                   )
                 : SizedBox.shrink(),
@@ -170,173 +192,271 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
+  Future<void> acceptApplicantAlert() async {
+    await showDialogBox(
+      context: context,
+      leftButtonOnPressed: () => Navigator.pop(context),
+      rightButtonOnPressed: () {
+        FocusScope.of(context).unfocus();
+        isAPILoading = true;
+        if (mounted) setState(() {});
+        applyForJob();
+
+        isAPILoading = false;
+        if (mounted) setState(() {});
+      },
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 43,
+        height: 43,
+        icon: Icon(
+          Icons.check_circle_sharp,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: black,
+      actionTwoBgColor: navyBlue,
+      actionTwoTextColor: white,
+      title: "Accept",
+      description: "Are you sure want to accept for this User?",
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.accept,
+    );
+  }
+
+  Future shareAsYarn() async {
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            jobModel: job,
+            callback: (params) async {
+              params
+                ..attachment = {
+                  "job": job?.toJson().cast<String, dynamic>() ?? {}
+                };
+              bool data = await YarnAuth().addYarnAndQuestion(params, '');
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+                Navigator.pop(context);
+              }
+            }));
+  }
+
   Widget getJobDetails() {
     return isLoading || job == null
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
             children: [
               if (job!.pictures!.length > 0) customImageSlider(),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    getTitleRow(),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Divider(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    CustomText(
-                      title: "Job Description",
-                      fontSize: 12,
-                      fontweight: FontWeight.w700,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      "${job!.description}",
-                      style: TextStyle(
-                        color: Color(0xff8d92a3),
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Divider(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getStartandEndDate(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    CustomText(
-                      title: "Location",
-                      fontSize: 12,
-                      fontweight: FontWeight.w700,
-                    ),
-                    SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      "${job!.location}",
-                      style: TextStyle(
-                        color: Color(0xff75818f),
-                        fontSize: 14,
-                        fontFamily: "Open Sans",
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    if (job!.isListed!) getJobActivityStatusRow(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    CustomText(
-                      title: "Posted By",
-                      fontSize: 12,
-                      fontweight: FontWeight.w700,
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: getTitleRow(),
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 12,
-                          child: CachedNetworkImage(
-                            imageUrl: "${job!.ownerAvatar}",
-                            fit: BoxFit.fitWidth,
-                            width: double.infinity,
-                            errorWidget: productAndServiceBigErrorWidget,
-                          ),
+                        const CustomText(
+                          title: "Description",
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
                         ),
-                        SizedBox(
-                          width: 5,
+                        const SizedBox(
+                          height: 8,
                         ),
                         Text(
-                          "${job!.ownerName}",
-                          style: TextStyle(
-                            color: Color(0xff75818f),
+                          "${job!.description}",
+                          style: const TextStyle(
+                            color: Color(0xff8d92a3),
                             fontSize: 14,
-                            fontFamily: "Open Sans",
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 55,
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: 'Date',
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: darkGrey.withOpacity(.3)),
+                              child: SvgPicture.asset(
+                                'assets/images/Calendar.svg',
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              DateFormat('dd-MM-yyyy')
+                                  .format(DateTime.parse(job!.creationDate!)),
+                              style: const TextStyle(
+                                color: Color(0xff030e36),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    getSubmitData(),
-                    // getMutliSelectDropdown()
-                  ],
-                ),
+                  ),
+
+                  const Divider(),
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: "Location",
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: darkGrey.withOpacity(.3)),
+                              child: SvgPicture.asset(
+                                'assets/images/job_location.svg',
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              "${job!.location}",
+                              style: TextStyle(
+                                color: blackFont.withOpacity(.6),
+                                fontSize: 14,
+                                fontFamily: "Open Sans",
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  if (job!.isListed!) getJobActivityStatusRow(),
+
+                  const Divider(),
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: "Posted By",
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        Row(
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: "${job!.ownerAvatar}",
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                width: 23.0,
+                                height: 23.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: imageProvider, fit: BoxFit.cover),
+                                ),
+                              ),
+                              errorWidget: productAndServiceBigErrorWidget,
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              "${job!.ownerName}",
+                              style: TextStyle(
+                                color: blackFont,
+                                fontSize: 14,
+                                fontFamily: "Open Sans",
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Divider(),
+                  const SizedBox(
+                    height: 55,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: getSubmitData(),
+                  ),
+                  // getMutliSelectDropdown()
+                ],
               )
             ],
           );
   }
 
-  Row getJobActivityStatusRow() {
-    return Row(
+  Column getJobActivityStatusRow() {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          flex: 5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomText(
-                title: 'Job Activity',
-                fontSize: 12,
-                fontweight: FontWeight.w700,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              CustomText(
-                  title: "Applied : ${job!.applicantsCount}",
-                  fontSize: 12,
-                  fontweight: FontWeight.w600),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomText(
+              const CustomText(
                 title: 'Job Status',
-                fontSize: 12,
+                fontSize: 14,
                 fontweight: FontWeight.w700,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Container(
                 width: 54,
-                height: 20,
+                // height: 20,
                 alignment: Alignment.center,
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(3.60),
-                  color: Color(0xff46ce7c).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xff3F61DB)),
+                  color: const Color(0xff3F61DB).withOpacity(0.1),
                 ),
-                child: Text(
+                child: const Text(
                   "Active",
                   style: TextStyle(
-                    color: Color(0xff46ce7c),
+                    color: Color(0xff3F61DB),
                     fontSize: 10.80,
                     fontFamily: "Open Sans",
                     fontWeight: FontWeight.w600,
@@ -346,58 +466,24 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
             ],
           ),
         ),
-      ],
-    );
-  }
-
-  Row getStartandEndDate() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 5,
-          child: getDateColumn("Start Date", job!.creationDate!),
-        ),
-        Expanded(
-          flex: 3,
-          child: getDateColumn("End Date", job!.dueDate!),
-        ),
-      ],
-    );
-  }
-
-  Column getDateColumn(String title, String date) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CustomText(
-          title: title,
-          fontSize: 12,
-          fontweight: FontWeight.w700,
-        ),
-        Container(
-          // width: 122,
-          height: 34,
-          padding: EdgeInsets.symmetric(horizontal: 5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Color(0xfffafbff),
-          ),
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                Icons.calendar_today,
-                size: 18,
+              const CustomText(
+                title: 'Job Activity',
+                fontSize: 14,
+                fontweight: FontWeight.w700,
               ),
-              SizedBox(
-                width: 5,
+              const SizedBox(
+                height: 10,
               ),
-              Text(
-                "${DateFormat('dd-MM-yyyy').format(DateTime.parse(date))}",
-                style: TextStyle(
-                  color: Color(0xff030e36),
-                  fontSize: 14,
-                ),
-              ),
+              CustomText(
+                  title: "Applied : ${job!.applicantsCount}",
+                  fontSize: 12,
+                  fontweight: FontWeight.w600),
             ],
           ),
         ),
@@ -453,11 +539,27 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
             ],
           ),
         ),
-        Image.asset(
-          'assets/images/qr_code.png',
-          height: 40,
-          width: 40,
-        ),
+        userBloc.user.userName == job!.ownerName!.toLowerCase()
+            ? const SizedBox.shrink()
+            : searchedChatConnection.contains(job!.ownerName)
+                ? InkWell(
+                    onTap: () {},
+                    child: SvgPicture.asset(
+                      'yarn/chaticon'.toSVG(),
+                      height: 34,
+                      width: 34,
+                    ),
+                  )
+                : InkWell(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+                    },
+                    child: SvgPicture.asset(
+                      'yarn/messageicon'.toSVG(),
+                      height: 34,
+                      width: 34,
+                    ),
+                  ),
       ],
     );
   }
@@ -476,36 +578,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     } else {
       return Container();
     }
-
-    // return CurvedButton(
-    //   onPressed: isAPILoading
-    //       ? () {}
-    //       : () async {
-    //           FocusScope.of(context).unfocus();
-    //           isAPILoading = true;
-    //           if (mounted) setState(() {});
-    //           createJobListing();
-    //           // await addProduct();
-    //           // Navigator.pushNamed(context, Routes.SUPER_HUB);
-
-    //           isAPILoading = false;
-    //           if (mounted) setState(() {});
-    //         },
-    //   backgroundColor: navyBlue,
-    //   textColor: Colors.white,
-    //   text: job!.isListed! ? 'Unlist Now' : "List Now",
-    //   isLoading: isAPILoading,
-    // );
   }
-
-  // {{baseUrl}}/api/v1/job-service/listing/<listingId>
-  // {{baseUrl}}/api/v1/job-service/listing/7991471c-3b7a-43e1-8d48-4d808f9abf89
-  // {
-  //   'job': '0515f72f-0eaf-4054-820d-7dced47fd486'
-  // }
-  // {
-  //   'job': <jobId>
-  // }
 
   getListNowBtn() {
     return CurvedButton(
@@ -552,13 +625,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       onPressed: isAPILoading
           ? () {}
           : () async {
-              FocusScope.of(context).unfocus();
-              isAPILoading = true;
-              if (mounted) setState(() {});
-              applyForJob();
-
-              isAPILoading = false;
-              if (mounted) setState(() {});
+              acceptApplicantAlert();
             },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -629,186 +696,153 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
         ),
       ),
       actions: [
-        // Image.asset(
-        //   'assets/images/qr_code.png',
-        //   height: 20,
-        //   width: 20,
-        // ),
-        // SizedBox(
-        //   width: 10,
-        // ),
         _moreOptionsBtn(),
         SizedBox(width: 12),
       ],
     );
   }
 
-  PopupMenuButton<String> _moreOptionsBtn() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // selected = v;
-        if (value == 'Share in Chat') {
-          sendItemToUsersInChat();
-        }
-
-        setState(() {});
-      },
-      icon: Container(
-        height: 34,
-        width: 34,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(10),
-          ),
-          color: Color(0xfffafbff),
-        ),
-        child: Icon(
-          Icons.more_vert,
-          color: blackFont,
-        ),
-      ),
-      itemBuilder: (BuildContext context) {
-        return [
-          getShareInChatBtn(),
-          getReportBtn(),
-        ];
-      },
-    );
-  }
-
-  PopupMenuItem<String> getEditBtn() {
-    return PopupMenuItem<String>(
-      // value: choice.title,
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
+  Widget _moreOptionsBtn() {
+    return Container(
+      height: 34,
+      width: 34,
+      alignment: Alignment.center,
+      child: IconButton(
+          onPressed: () {
+            androidBottomSheet(
+              context: context,
+              child: StatefulBuilder(
+                builder: (context, changeState) {
+                  return SizedBox(
+                    height: 160,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InkWell(
+                            onTap: () => sendItemToUsersInChat(),
+                            child: Row(
+                              children: [
+                                Container(
+                                    height: 34,
+                                    width: 34,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      color: Color(0xfffafbff),
+                                    ),
+                                    child: SvgPicture.asset(
+                                        "assets/images/share.svg")),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                  'Share in Chat',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: black,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 18,
+                          ),
+                          InkWell(
+                            onTap: () => shareAsYarn(),
+                            child: Row(
+                              children: [
+                                Container(
+                                    height: 34,
+                                    width: 34,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      color: Color(0xfffafbff),
+                                    ),
+                                    child: SvgPicture.asset(
+                                        "assets/images/share.svg")),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                  'Share in Yarn',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: black,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 18,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              NavigationUtil.push(context,
+                                  screen: AddReportScreen(
+                                    object: job!.toJson(),
+                                    type: "job",
+                                    isCommentMoment: false,
+                                  ));
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                    height: 34,
+                                    width: 34,
+                                    alignment: Alignment.center,
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      color: Color(0xfffafbff),
+                                    ),
+                                    child: Icon(
+                                      Icons.report,
+                                      color: blackFont,
+                                    )),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                  'Report',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: black,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/edit_job.svg")),
-        title: Text('Edit Job'),
-      ),
-      // onTap: () {},
-    );
-  }
+            );
 
-  PopupMenuItem<String> getCopyLink() {
-    return PopupMenuItem<String>(
-      // value: choice.title,
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/send.svg")),
-        title: Text('Send Via'),
-      ),
-      // onTap: () {},
-    );
-  }
-
-  PopupMenuItem<String> getDeleteBtn() {
-    return PopupMenuItem<String>(
-      // value: choice.title,
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/delete.svg")),
-        title: Text('Delete'),
-      ),
-      onTap: () {},
-    );
-  }
-
-  PopupMenuItem<String> getShareInChatBtn() {
-    return PopupMenuItem<String>(
-      value: 'Share in Chat',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/share.svg")),
-        title: Text('Share in Chat'),
-      ),
-      onTap: () {},
-    );
-  }
-
-  PopupMenuItem<String> getReviewApplicantBtn() {
-    return PopupMenuItem<String>(
-      value: 'Review Applicant',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: Icon(
-              Icons.visibility,
-              color: blackFont,
-            )),
-        title: Text('Review Applicant'),
-      ),
-      onTap: () {},
-    );
-  }
-
-  PopupMenuItem<String> getReportBtn() {
-    return PopupMenuItem<String>(
-      value: 'Report',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: Icon(
-              Icons.report,
-              color: blackFont,
-            )),
-        title: Text('Report'),
-      ),
-      // onTap: () {
-      //   print('applicant');
-      //   Navigator.pushNamed(context, Routes.JOBS_SEARCH);
-      // },
+            // selected = v;
+            // if (selected == 'Create Job') {
+            //   Navigator.pushNamed(context, Routes.JOBS_CREATE);
+            // } else if (selected == 'My Job') {
+            //   Navigator.pushNamed(context, Routes.MY_JOBS);
+            // }
+            // setState(() {});
+          },
+          icon: Icon(
+            Icons.more_vert,
+            color: blackFont,
+          )),
     );
   }
 
@@ -818,7 +852,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     String url = AppConfig.baseUrl +
-        "/api/v1/${job is JobModel ? "job" : "services"}/" +
+        "/api/v1/job-service/${job is JobModel ? "job" : "services"}/" +
         job!.id! +
         "/";
 
@@ -840,9 +874,9 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       "meta_data": jsonEncode(itemData),
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
-      "author": userBloc?.user.userName,
+      "author": userBloc.user.userName,
       "message": url,
-      "kind": item is JobModel ? "product" : "service",
+      "kind": item is JobModel ? "job" : "service",
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
     };

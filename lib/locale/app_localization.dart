@@ -1956,6 +1956,13 @@ class AppLocalization {
     );
   }
 
+  String get cancelledApplicactionForJobSuccessfully {
+    return Intl.message(
+      "Job Cancelled Successfully",
+      name: "jobCancelledSuccessfully",
+    );
+  }
+
   String get pleaseAddImage {
     return Intl.message(
       "Please Add Image",

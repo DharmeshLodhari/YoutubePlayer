@@ -152,8 +152,8 @@ class _ApplicantListState extends State<ApplicantList> {
                       highlightColor: greyBorderColor,
                       child: GridView.builder(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                           mainAxisSpacing: 14,
                           mainAxisExtent: 180,
                           crossAxisSpacing: 15,
@@ -170,15 +170,15 @@ class _ApplicantListState extends State<ApplicantList> {
                         },
                       ),
                     )
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink(),
               Visibility(
                 visible: !isLoading && applicantList.isEmpty,
                 child: Center(
                   child: Column(
                     children: [
                       Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                      SizedBox(height: 20),
-                      Text('No items at the moment'),
+                      const SizedBox(height: 20),
+                      const Text('No items at the moment'),
                     ],
                   ),
                 ),
@@ -195,7 +195,7 @@ class _ApplicantListState extends State<ApplicantList> {
       fit: FlexFit.loose,
       child: ListView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: applicantList.length,
         itemBuilder: (context, index) {
           return _getSlidableWithLists(context, index);
@@ -243,18 +243,18 @@ class _ApplicantListState extends State<ApplicantList> {
     bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
-        backgroundColor: Color(0xff46ce7c).withOpacity(0.08),
+        backgroundColor: const Color(0xff46ce7c).withOpacity(0.08),
         borderRadius: 20,
         width: 48,
         height: 48,
-        icon: Icon(
+        icon: const Icon(
           Icons.check,
           color: Color(0xff46ce7c),
           size: 16,
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: Color(0xff46ce7c),
+      actionOneBgColor: const Color(0xff46ce7c),
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
@@ -270,12 +270,12 @@ class _ApplicantListState extends State<ApplicantList> {
       });
       if (done) {
         showSnackbar(context,
-            message: "Applicant accepted for Job Successfully");
+            message: "Applicant accepted for Job Successfully",duration: 1000);
         applicantList.clear();
         getApplicantList();
       } else {
         showSnackbar(context,
-            message: "Applicant can not be Accepted. Try again later");
+            message: "Applicant can not be Accepted. Try again later",duration: 1000);
         applicantList.clear();
         getApplicantList();
       }
@@ -349,7 +349,7 @@ class _ApplicantListState extends State<ApplicantList> {
   List<Widget> listSecondaryActions(int index) {
     return [
       SlideActionButton(
-        backgroundColor: Color(0xff46ce7c),
+        backgroundColor: const Color(0xff46ce7c),
         icon: Icons.person_add,
         onTap: () {
           acceptApplicantAlert(index);
@@ -365,7 +365,7 @@ class _ApplicantListState extends State<ApplicantList> {
       // key: Key(user.userName!),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       enabled: widget.job!.assignee == null,
       child: VerticalListItem(
@@ -398,13 +398,13 @@ class VerticalListItem extends StatelessWidget {
       child: Container(
           height: 80,
           width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 2),
+          padding: const EdgeInsets.symmetric(vertical: 2),
           child: Card(
             child: ListTile(
               leading: CircleAvatar(
                 radius: 24,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.all(
+                  borderRadius: const BorderRadius.all(
                     Radius.circular(24),
                   ),
                   child: CachedNetworkImage(
@@ -417,7 +417,7 @@ class VerticalListItem extends StatelessWidget {
               ),
               title: Text(
                 "${applicant!.applicantName}",
-                style: TextStyle(
+                style: const TextStyle(
                   color: Color(0xff030e36),
                   fontSize: 14,
                   fontFamily: "Open Sans",
