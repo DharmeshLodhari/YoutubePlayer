@@ -62,7 +62,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   List status = ['Active', 'Closed', 'Pending'];
 
   Map<String, bool> categoryCheckMark = {};
-  // late ListOfCategories categoriesList;
+
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
@@ -84,6 +84,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
     if (!isCategoryLoading) {
       if (productNext != null && !isCategoryLoading) {
         isCategoryLoading = true;
+
         if (mounted) setState(() {});
 
         var result = await ServiceHubAuthService()
@@ -117,6 +118,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
           });
         }
 
+
         categoriesListCopy.forEach((element) {
           categoryCheckMark[element.name!] = false;
         });
@@ -125,6 +127,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         if (mounted) {
           setState(() {
             noJobsInList = true;
+            isCategoryLoading = false;
           });
         }
       } else if (productNext == null && categoriesList.length > 6) {
@@ -185,6 +188,13 @@ class _JobsDashboardState extends State<JobsDashboard> {
     }
   }
 
+  void callGetCategoriesListLoop() async {
+    while (productNext != null && productNext!.isNotEmpty) {
+        getCategoriesList();
+    }
+  }
+
+
   @override
   initState() {
     getActiveJobListing();
@@ -230,10 +240,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
       getActiveJobListing(category: selectedCategory!.join(','));
     }
     getCategoriesList();
-    //todaysDealList = [];
 
-    // getProductList();
-    //getTodaysDealProducts();
   }
 
   @override
@@ -412,6 +419,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
       context: context,
       child: StatefulBuilder(
         builder: (context, changeState) {
+
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.70,
             child: Stack(children: [
@@ -433,6 +441,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                   ),
                   SizedBox(
                     // height: 400,
+                    height: MediaQuery.of(context).size.height * 0.58,
                     child: Expanded(
                       child: NotificationListener<ScrollEndNotification>(
                         onNotification: (scrollEnd) {
@@ -483,13 +492,14 @@ class _JobsDashboardState extends State<JobsDashboard> {
                       ),
                     ),
                   ),
-                  isCategoryLoading
-                      ? SpinKitRing(
-                          size: 30,
-                          lineWidth: 3,
-                          color: darkGreyYarn,
-                        )
-                      : const SizedBox.shrink(),
+
+                  // isCategoryLoading || isLoading
+                  //     ? SpinKitRing(
+                  //         size: 30,
+                  //         lineWidth: 3,
+                  //         color: darkGreyYarn,
+                  //       )
+                  //     : const SizedBox.shrink(),
                   const SizedBox(
                     height: 30,
                   ),
