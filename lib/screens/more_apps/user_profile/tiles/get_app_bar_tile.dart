@@ -276,7 +276,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 ),
               ),
             );
-    } else if (searchedUser!.type!.toLowerCase() == "user") {
+    }
+    else if (searchedUser!.type!.toLowerCase() == "user") {
       return searchedUser!.wallpaper == "" || searchedUser!.wallpaper == null
           ? Image.asset(
               "assets/images/default_user_wallpaper.png",
@@ -304,7 +305,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 ),
               ),
             );
-    } else {
+    }
+    else {
       return searchedUser!.userAbout!.wallpaper == ""
           ? Image.asset(
               "assets/images/default_user_wallpaper.png",
