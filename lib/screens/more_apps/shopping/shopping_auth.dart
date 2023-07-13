@@ -287,7 +287,8 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List Products
-  Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous, String? category,
+  Future<Map<String, dynamic>?> listOfProduct(
+      String? next, String? previous, String? category,
       {String? userName, bool otherDeals = false}) async {
     debugPrint('CALLING PRODUCT');
     var url = "";
@@ -304,14 +305,13 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    if(category != ""){
+    if (category != "") {
       var cat = messageDecoderWithEmoji(category);
-      if(category == "All"){
+      if (category == "All") {
         url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
-      }else{
+      } else {
         url += AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
       }
-
     }
     debugPrint(url);
     var headers = await getAuthHeaders();
@@ -320,9 +320,7 @@ class ShoppingAuthService extends AuthService {
     debugPrint('CALLING OTHER DEALS ---> ${response.body}');
 
     if (response.statusCode == 200) {
-
       if (!response.body.contains('results')) {
-
         Map<String, dynamic> result = {
           "count": '',
           "next": '',
@@ -352,7 +350,6 @@ class ShoppingAuthService extends AuthService {
       debugPrint('CALLING OTHER check ---> ${result}');
 
       return result;
-
     } else if (response.statusCode == 500) {
       return null;
     } else {
@@ -1247,6 +1244,7 @@ class ShoppingAuthService extends AuthService {
   Future<Map<String, dynamic>?> searchServiceInServices(
       String? next, String? previous,
       {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
+    print('SEARCH FILTER BODY ........');
     var url = "";
     if (next == null) {
       return null;
@@ -1365,13 +1363,17 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+ 
   Future<List<ServiceCategory>> getServicesCategories() async {
     var url = AppConfig.baseUrl + "/api/v1/services/choices/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    
+
     debugPrint(
         "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
 
@@ -1387,12 +1389,14 @@ class ShoppingAuthService extends AuthService {
     } else {
       debugPrint(
           "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+          
       return Future.value(<ServiceCategory>[]);
     }
   }
 
   // merchant list
-  Future<Map<String, dynamic>?> listOfMerchant(String? next, String? previous, String category,
+  Future<Map<String, dynamic>?> listOfMerchant(
+      String? next, String? previous, String category,
       {String? userName, bool nearBy = false}) async {
     debugPrint('CALLING MERCHANT LIST');
 
@@ -1401,18 +1405,17 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-
       if (nearBy == true) {
         url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/?nearby=true";
       } else if (nearBy == false) {
-        url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/?suggestions=true";
+        url =
+            "${AppConfig.baseUrl}/api/v1/user/merchant-list/?suggestions=true";
       }
-      if(category == '' || category == 'All'){
+      if (category == '' || category == 'All') {
         // url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/";
-      }else{
+      } else {
         url += "?categories=$category/";
       }
-
     } else {
       url = getSecureUrl(url: next);
     }
@@ -1453,8 +1456,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   //search filter for merchant
-  Future<Map<String, dynamic>?> searchMerchant(
-      String? next, String? previous,
+  Future<Map<String, dynamic>?> searchMerchant(String? next, String? previous,
       {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
     var url = "";
     if (next == null) {
@@ -1467,7 +1469,7 @@ class ShoppingAuthService extends AuthService {
 
       if (filterOptions.searchedText!.isNotEmpty) {
         url += '?search=${filterOptions.searchedText}';
-      }else{
+      } else {
         url += '?search=${filterOptions.searchedText}';
       }
 

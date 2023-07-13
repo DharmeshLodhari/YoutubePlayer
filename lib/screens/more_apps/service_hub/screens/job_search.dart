@@ -313,7 +313,7 @@ class _JobsSearchState extends State<JobsSearch> {
             //         .then((value) => showFilterProductSheet());
             //   },
             // ),
-            hintText: "Search anything",
+            hintText: "t",
             fillColor: Colors.white,
             filled: true,
             contentPadding: EdgeInsets.symmetric(vertical: 10),
