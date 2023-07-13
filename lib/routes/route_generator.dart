@@ -169,8 +169,6 @@ import '../screens/more_apps/service_hub/screens/preview_job_detail.dart';
 import '../screens/more_apps/service_hub/screens/search_filter.dart';
 import '../screens/more_apps/service_hub/screens/search_services.dart';
 import '../screens/more_apps/service_hub/service_hub_dashboard.dart';
-import '../screens/more_apps/shopping/screens/checkout_screen.dart';
-import '../screens/more_apps/super_hub/super_hub.dart';
 import '../screens/super_store/near_by_list_screen.dart';
 import '../screens/super_store/search_nearby_business.dart';
 import '../screens/super_store/super_store.dart';
@@ -387,7 +385,7 @@ class RouteGenerator {
 
       case Routes.CHOOSE_SUBSCRIPTIONS:
         return PageTransition(
-          child: ChooseSubscription(),
+          child: const ChooseSubscription(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -609,7 +607,6 @@ class RouteGenerator {
         );
 
       /// Chat
-
       case Routes.CHAT_SCREEN:
         return PageTransition(
           child: ChatScreenGroupMessage(arguments: settings.arguments),
@@ -737,7 +734,7 @@ class RouteGenerator {
 
       case Routes.UPGRADE_ACCOUNT:
         return PageTransition(
-          child: UpgradeAccount(),
+          child: const UpgradeAccount(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -779,7 +776,7 @@ class RouteGenerator {
       /// Contracts & Invoice
       case Routes.CONTRACT_SCREEN:
         return PageTransition(
-          child: ContractScreen(),
+          child: const ContractScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -787,7 +784,7 @@ class RouteGenerator {
 
       case Routes.INVOICE_SCREEN:
         return PageTransition(
-          child: InvoiceScreen(),
+          child: const InvoiceScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -795,7 +792,7 @@ class RouteGenerator {
 
       case Routes.CONTRACT_SCREEN:
         return PageTransition(
-          child: ContractScreen(),
+          child: const ContractScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -938,14 +935,14 @@ class RouteGenerator {
 
       case Routes.SUPER_HUB:
         return PageTransition(
-            child: ServiceHubDashboard(),
+            child: const ServiceHubDashboard(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
 
       case Routes.SEARCH_SERVICES:
         return PageTransition(
-            child: SearchServices(),
+            child:  SearchServices(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1060,7 +1057,7 @@ class RouteGenerator {
 
       case Routes.CATEGORIES_LIST:
         return PageTransition(
-            child: CategoriesList(),
+            child: const CategoriesList(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1085,7 +1082,7 @@ class RouteGenerator {
 
       case Routes.JOB_SEARCH_FILTER:
         return PageTransition(
-            child: JobsSearchFilter(),
+            child: const JobsSearchFilter(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1108,14 +1105,14 @@ class RouteGenerator {
 
       case Routes.MY_JOBS:
         return PageTransition(
-            child: JobsMyJobsList(),
+            child: const JobsMyJobsList(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
 
       case Routes.JOBS_SEARCH:
         return PageTransition(
-            child: JobsSearch(),
+            child: const JobsSearch(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1443,7 +1440,7 @@ class RouteGenerator {
 
       case Routes.SUPER_STORE:
         return PageTransition(
-          child: SuperStore(),
+          child: const SuperStore(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1631,9 +1628,9 @@ class RouteGenerator {
     return MaterialPageRoute(builder: (_) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Error'),
+          title: const Text('Error'),
         ),
-        body: Center(
+        body: const Center(
           child: Text('ERROR'),
         ),
       );

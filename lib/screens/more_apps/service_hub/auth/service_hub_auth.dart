@@ -1,26 +1,16 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/applicant_list_model.dart';
-import 'package:Slydo/screens/more_apps/service_hub/models/create_job_model.dart';
-import 'package:Slydo/screens/more_apps/service_hub/models/create_listing_model.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/job_location_model.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/list_of_categories.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/my_job_list_model.dart';
-import 'package:Slydo/screens/more_apps/service_hub/models/retrieve_job_model.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
-import 'package:intl/intl.dart';
 
 // import '../models/store.dart';
 //
@@ -37,13 +27,7 @@ class ServiceHubAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-      // if (todaysDeal == true) {
-      //   url = AppConfig.baseUrl + "/api/v1/job-service/categories/?today_deals=true";
-      // } else if (otherDeals == true) {
-      //   url = AppConfig.baseUrl + "/api/v1/job-service/categories/?other_deals=true";
-      // } else {
       url = "${AppConfig.baseUrl}/api/v1/job-service/categories/";
-      // }
     } else {
       url = getSecureUrl(url: next);
     }
@@ -51,7 +35,7 @@ class ServiceHubAuthService extends AuthService {
     debugPrint('STORE URL ---> $url');
 
     var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    var response = await httpGet(url, headers: headers,);
     debugPrint('STORE URL BODY ---> ${response.body}');
 
     if (response.statusCode == 200) {
@@ -78,7 +62,7 @@ class ServiceHubAuthService extends AuthService {
         url += "category=$category&";
       }
       if (sortby != null && sortby != '') {
-        // print(object)
+        
         url = "${url}sort_by=$sortby&";
       }
       if (priceFrom != null && priceFrom != '') {
@@ -209,7 +193,8 @@ class ServiceHubAuthService extends AuthService {
   // accept applicant for the job
 
   Future<dynamic> acceptJobApplicant({String? jobId, Map? data}) async {
-    var url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/accept-job-applicant/";
+    var url =
+        "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/accept-job-applicant/";
     var _data = jsonEncode(data);
     debugPrint('ACCEPT JOB APPLICANT ::: $_data');
 
@@ -219,7 +204,7 @@ class ServiceHubAuthService extends AuthService {
 
     debugPrint(
         "ACCEPT JOB APPLICANT URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       return true;
     } else {
       debugPrint(
@@ -231,7 +216,8 @@ class ServiceHubAuthService extends AuthService {
   // reject applicant for the job
 
   Future<dynamic> rejectJobApplicant({String? jobId, Map? data}) async {
-    var url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/reject-job-applicant/";
+    var url =
+        "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/reject-job-applicant/";
     var _data = jsonEncode(data);
     debugPrint('ACCEPT JOB APPLICANT ::: $_data');
 
@@ -241,12 +227,12 @@ class ServiceHubAuthService extends AuthService {
 
     debugPrint(
         "ACCEPT JOB APPLICANT URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 201) {
-      return jsonData;
+    if (response.statusCode == 200) {
+      return true;
     } else {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-      return null;
+      return false;
     }
   }
 
@@ -499,6 +485,28 @@ class ServiceHubAuthService extends AuthService {
     }
   }
 
+  // cancel application
+  Future<dynamic> cancelApplicationForJob(Map data, {String? jobId}) async {
+    var url =
+        "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/cancel-application/";
+    var _data = jsonEncode(data);
+    debugPrint('CANCEL FOR JOB  ::: $_data and $jobId');
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _data);
+    var jsonData = jsonDecode(response.body);
+
+    debugPrint(
+        "APPLY FOR JOB URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      return jsonData;
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
+    }
+  }
+
   // delete My job
 
   Future<bool> deleteMyJob(String jobId) async {
@@ -518,10 +526,11 @@ class ServiceHubAuthService extends AuthService {
   // delete My job server images
 
   Future<bool> deleteJobServerImage({String? pictureId, String? jobId}) async {
-    var url = "${AppConfig.baseUrl}/api/v1/job-service/job/${jobId!}/delete-picture/${pictureId!}/";
+    var url =
+        "${AppConfig.baseUrl}/api/v1/job-service/job/${jobId!}/delete-picture/${pictureId!}/";
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    var response = await httpPost(url, headers: headers);
     debugPrint("response:- ${response.body}");
     if (response.statusCode == 204) {
       return true;

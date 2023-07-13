@@ -22,6 +22,7 @@ class JobModel {
   String? creationDate;
   String? location;
   bool? isNegotiable;
+  bool? isVerified;
   String? currency;
 
   JobModel(
@@ -45,6 +46,7 @@ class JobModel {
       this.dueDate,
       this.creationDate,
       this.location,
+      this.isVerified,
       this.isNegotiable,
       this.currency});
 
@@ -70,6 +72,7 @@ class JobModel {
     status = json['status'];
     owner = json['owner'];
     isListed = json['is_listed'];
+    isVerified = json['is_verified'];
     applicants = json['applicants'] == null ? [] : json['applicants'];
     assignee = json['assignee'];
     description = json['description'];
@@ -109,6 +112,7 @@ class JobModel {
     data['due_date'] = this.dueDate;
     data['creation_date'] = this.creationDate;
     data['location'] = this.location;
+    data['is_verified'] = this.isVerified;
     return data;
   }
 

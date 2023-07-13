@@ -20,6 +20,7 @@ import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../service_hub/models/jobs.dart';
 import '../../../yarn/widgets/url_reader_of_yarn.dart';
 
 // ignore: must_be_immutable
@@ -550,6 +551,13 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
 
       case "service":
         Widget getServiceUI = renderService(
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
+        return getServiceUI;
+
+      case "job":
+        Widget getServiceUI = renderJobService(
             message: messageData,
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
@@ -1219,6 +1227,93 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                     Text(
                       moneyDisplayNormalizer(
                           int.parse(service.price.toString())),
+                      style: TextStyle(
+                          color: getDescriptionColor(
+                              isSend: isSend, isRepliedSend: isRepliedSend),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderJobService(
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
+    late JobModel jobModel;
+    if (message["meta_data"] is String) {
+      jobModel = JobModel.fromJson(jsonDecode(message["meta_data"]));
+    } else if (message["meta_data"] is Map) {
+      jobModel = JobModel.fromJson(message["meta_data"]);
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(
+              width: 2.0,
+              color: getDividerColor(
+                  isSend: isSend, isRepliedSend: isRepliedSend)),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: CachedNetworkImage(
+              errorWidget: imageErrorWidget,
+              height: 48,
+              width: 48,
+              fit: BoxFit.cover,
+              imageUrl: jobModel.ownerAvatar!,
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  jobModel.owner!,
+                  style: TextStyle(
+                      color: getDividerColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "₦ ",
+                      style: TextStyle(
+                          fontFamily: "Roberto",
+                          color: getDescriptionColor(
+                              isSend: isSend, isRepliedSend: isRepliedSend),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          int.parse(jobModel.pay.toString())),
                       style: TextStyle(
                           color: getDescriptionColor(
                               isSend: isSend, isRepliedSend: isRepliedSend),

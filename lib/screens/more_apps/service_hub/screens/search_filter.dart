@@ -5,18 +5,19 @@ import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/job_location_model.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/list_of_categories.dart';
 // import 'package:Slydo/screens/more_apps/service_hub/screens/jobs_job_detail.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+// import 'package:location/location.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../routes/route_constants.dart';
+
+// ignore: list_remove_unrelated_type
 class JobsSearchFilter extends StatefulWidget {
   const JobsSearchFilter({Key? key}) : super(key: key);
 
@@ -56,6 +57,10 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
   List<CategoryListData?> categoriesListCopy = [];
   List<LocationData?> locationsList = [];
   List<LocationData?> locationsListCopy = [];
+  List<String> pickedStateList = [];
+  List<String> pickedStateListSlug = [];
+  Map<String, bool> stateCheckMark = {};
+
   List<String> categoriesNameList = [];
   final GlobalKey<ScaffoldMessengerState> _filterScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -68,7 +73,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
     'Item3',
     'Item4',
   ];
-  List<String> selectedItems = [];
+  List<LocationData> selectedItems = [];
   Map<String, dynamic> filterMap = {
     'category': "",
     'sortby': "",
@@ -76,6 +81,8 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
     'priceTo': '',
     'location': ''
   };
+
+  List<String?> listStates = [];
 
   void getCategoriesList() async {
     if (!isCategoryLoading) {
@@ -119,16 +126,17 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
           });
         }
       } else if (categoryNext == null && categoriesList.length > 6) {
-        _filterScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
+        // _filterScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        //   content:
+        //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        //   duration: const Duration(milliseconds: 500),
+        // ));
+        return null;
       }
     }
   }
 
-  void getLocationList() async {
+  Future<void> getLocationList() async {
     if (!isLocationLoading) {
       if (locationNext != null && !isLocationLoading) {
         isLocationLoading = true;
@@ -151,6 +159,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         locationNext = result.next;
         locationPrevious = result.previous;
         var tempList = result.results;
+
         if (mounted) {
           setState(() {
             noLocinList = false;
@@ -158,10 +167,13 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
             locationsList.addAll(tempList!);
             locationsListCopy = locationsList;
             tempList.forEach((element) {
-              categoriesNameList.add(element.name!);
+              listStates.add(element.name!);
             });
           });
         }
+        locationsListCopy.forEach((element) {
+          stateCheckMark[element!.name!] = false;
+        });
       }
       if (locationsList.isEmpty) {
         if (mounted) {
@@ -170,19 +182,17 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
           });
         }
       } else if (locationNext == null && locationsList.length > 6) {
-        _filterScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
+        // _filterScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        //   content:
+        //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        //   duration: const Duration(milliseconds: 500),
+        // ));
       }
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
     getCategoriesList();
     getLocationList();
     _categoriesScrollController.addListener(() {
@@ -199,6 +209,8 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         getLocationList();
       }
     });
+
+    super.initState();
   }
 
   @override
@@ -218,8 +230,9 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                       highlightColor: greyBorderColor,
                       child: GridView.builder(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
                           mainAxisSpacing: 14,
                           mainAxisExtent: 180,
                           crossAxisSpacing: 15,
@@ -236,15 +249,15 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                         },
                       ),
                     )
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink(),
               Visibility(
                 visible: !isCategoryLoading && categoriesList.isEmpty,
                 child: Center(
                   child: Column(
                     children: [
                       Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                      SizedBox(height: 20),
-                      Text('No items at the moment'),
+                      const SizedBox(height: 20),
+                      const Text('No items at the moment'),
                     ],
                   ),
                 ),
@@ -258,108 +271,69 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
 
   Widget getFilterField(BuildContext context) {
     if (categoriesList.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return categoryNext == "" && isCategoryLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              // width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Color(0xfffafbff),
-                  width: 1,
+            padding: const EdgeInsets.all(22.0),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                getCategoryField(),
+                const SizedBox(
+                  height: 18,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x0c31378c),
-                    blurRadius: 20,
-                    offset: Offset(0, 8),
+                FilterDropdown(
+                  selectedFilter: selectedSorting,
+                  hintText: "Sort by",
+                  list: sortByList,
+                  onChangedCallback: (value) {
+                    selectedSorting = value.toString();
+                    filterMap['sortby'] = selectedSorting!;
+                    setState(() {});
+                  },
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  AppLocalization.of(context)!.price,
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 20,
+                    fontFamily: "Open Sans",
+                    fontWeight: FontWeight.w600,
                   ),
-                ],
-                color: Colors.white,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Text(
-                  //   AppLocalization.of(context)!.categories,
-                  //   style: TextStyle(
-                  //     color: Color(0xff75818f),
-                  //     fontSize: 14,
-                  //   ),
-                  // ),
-                  // SizedBox(
-                  //   height: 6,
-                  // ),
-                  getCategoryField(),
-                  // FilterDropdown(
-                  //   selectedFilter: selectedCategory,
-                  //   hintText: "Choose category",
-                  //   list: categoriesNameList,
-                  //   onChangedCallback: (value) {
-                  //     selectedCategory = value!;
-                  //     filterMap['category'] = selectedCategory!;
-                  //     setState(() {});
-                  //   },
-                  // ),
-                  SizedBox(
-                    height: 18,
-                  ),
-                  FilterDropdown(
-                    selectedFilter: selectedSorting,
-                    hintText: "Sort by",
-                    list: sortByList,
-                    onChangedCallback: (value) {
-                      selectedSorting = value.toString();
-                      filterMap['sortby'] = selectedSorting!;
-                      setState(() {});
-                    },
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    AppLocalization.of(context)!.price,
-                    style: TextStyle(
-                      color: Color(0xff75818f),
-                      fontSize: 12,
-                      fontFamily: "Open Sans",
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  getPriceFieldRow(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  getLocationField(),
-                  Text(
-                    "State",
-                    style: TextStyle(
-                      color: Color(0xff75818f),
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 6,
-                  ),
-                  getMutliSelectDropdown(),
-                  SizedBox(
-                    height: 60,
-                  ),
-                  getBtnRow()
-                ],
-              ),
+                ),
+                getPriceFieldRow(),
+                const SizedBox(
+                  height: 22.0,
+                ),
+                getStateDropDownField(),
+                const SizedBox(height: 8),
+                getPickedStates(),
+                const SizedBox(
+                  height: 30,
+                ),
+                getBtnRow(),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
             ),
+            // ),
           );
   }
 
   Widget getCategoryField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.categories,
+      titleColor: blackFont,
+      fontSize: 20,
+      height: 20,
+      fontWeight: FontWeight.w600,
       child: ListTile(
         dense: true,
         title: Text(
@@ -406,7 +380,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: NotificationListener<ScrollEndNotification>(
                     onNotification: (scrollEnd) {
@@ -426,37 +400,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                       itemCount: categoriesList.length,
                       itemBuilder: (context, index) {
                         CategoryListData category = categoriesList[index]!;
-                        // if (selectedCategory == category.name) {
-                        //   return Container(
-                        //     color: selectedListItemBackgroundBlue,
-                        //     child: ListTile(
-                        //       dense: true,
-                        //       title: Text(
-                        //         "${category.name}",
-                        //         overflow: TextOverflow.fade,
-                        //         softWrap: false,
-                        //         style: TextStyle(
-                        //             color: navyBlue,
-                        //             fontSize: 16,
-                        //             fontWeight: FontWeight.w600),
-                        //       ),
-                        //       trailing: Icon(
-                        //         SlydoAppIcon.checked,
-                        //         color: navyBlue,
-                        //         size: 12,
-                        //       ),
-                        //       onTap: () {
-                        //         pressedCategory = category as CategoryListData?;
-                        //         Navigator.pop(context);
-                        //         if (pressedCategory != null) {
-                        //           selectedProductCategory = pressedCategory;
-                        //           productCategory = selectedProductCategory!.name!;
-                        //           setState(() {});
-                        //         }
-                        //       },
-                        //     ),
-                        //   );
-                        // }
+
                         return ListTile(
                           title: Text(
                             "${category.name}",
@@ -471,11 +415,8 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                           onTap: () {
                             selectedCategory = category.slug;
                             displayCategory = category.name;
-                            // pressedCategory = category;
+                            filterMap['category'] = category.slug;
                             Navigator.pop(context);
-                            // if (pressedCategory != null) {
-                            //   selectedProductCategory = pressedCategory;
-                            //   productCategory = selectedProductCategory!.name!;
                             setState(() {});
                             // }
                           },
@@ -484,140 +425,19 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                     ),
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget getLocationField() {
-    return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.state,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          displayCategory != null ? displayCategory! : "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          locationAndroidSheet();
-          // selectItemCategory();
-        },
-      ),
-    );
-  }
-
-  void locationAndroidSheet() {
-    locationsList = locationsListCopy;
-    androidBottomSheet(
-      context: context,
-      child: StatefulBuilder(
-        builder: (context, changeState) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.75,
-            child: Column(
-              children: [
-                CustomizedTextFormField(
-                  hintText: 'Choose State',
-                  onChanged: (value) {
-                    if (value.toString().isNotEmpty) {
-                      locationsList = locationsListCopy
-                          .where((element) => element!.name!
-                              .toLowerCase()
-                              .startsWith(value.toString().toLowerCase()))
-                          .toList();
-                      changeState(
-                          () {}); // To upgrade the product categories in the bottom sheet.
-                    } else {
-                      locationsList = locationsListCopy;
-                      changeState(() {});
-                    }
-                  },
+                const SizedBox(
+                  height: 10,
                 ),
-                SizedBox(height: 20),
-                Expanded(
-                  child: NotificationListener<ScrollEndNotification>(
-                    onNotification: (scrollEnd) {
-                      final metrics = scrollEnd.metrics;
-                      if (metrics.atEdge) {
-                        bool isTop = metrics.pixels == 0;
-                        if (!isTop) {
-                          print('At the bottom');
-                          changeState(() {});
-                        }
-                      }
-                      return true;
-                    },
-                    child: ListView.builder(
-                      controller: _locationScrollController,
-                      shrinkWrap: true,
-                      itemCount: locationsList.length,
-                      itemBuilder: (context, index) {
-                        LocationData location = locationsList[index]!;
-                        // if (selectedCategory == category.name) {
-                        //   return Container(
-                        //     color: selectedListItemBackgroundBlue,
-                        //     child: ListTile(
-                        //       dense: true,
-                        //       title: Text(
-                        //         "${category.name}",
-                        //         overflow: TextOverflow.fade,
-                        //         softWrap: false,
-                        //         style: TextStyle(
-                        //             color: navyBlue,
-                        //             fontSize: 16,
-                        //             fontWeight: FontWeight.w600),
-                        //       ),
-                        //       trailing: Icon(
-                        //         SlydoAppIcon.checked,
-                        //         color: navyBlue,
-                        //         size: 12,
-                        //       ),
-                        //       onTap: () {
-                        //         pressedCategory = category as CategoryListData?;
-                        //         Navigator.pop(context);
-                        //         if (pressedCategory != null) {
-                        //           selectedProductCategory = pressedCategory;
-                        //           productCategory = selectedProductCategory!.name!;
-                        //           setState(() {});
-                        //         }
-                        //       },
-                        //     ),
-                        //   );
-                        // }
-                        return ListTile(
-                          title: Text(
-                            "${location.name}",
-                            softWrap: false,
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(
-                                color: blackFont,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          dense: true,
-                          onTap: () {
-                            selectedState = location.slug;
-                            displayState = location.name;
-                            // pressedCategory = category;
-                            Navigator.pop(context);
-                            // if (pressedCategory != null) {
-                            //   selectedProductCategory = pressedCategory;
-                            //   productCategory = selectedProductCategory!.name!;
-                            setState(() {});
-                            // }
-                          },
-                        );
-                      },
-                    ),
-                  ),
+                isCategoryLoading
+                ==true
+                    ? SpinKitRing(
+                        size: 30,
+                        lineWidth: 3,
+                        color: darkGreyYarn,
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(
+                  height: 10,
                 ),
               ],
             ),
@@ -634,7 +454,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
           flex: 1,
           child: getAmountFromField(),
         ),
-        SizedBox(
+        const SizedBox(
           width: 15,
         ),
         Expanded(
@@ -645,118 +465,149 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
     );
   }
 
-  Container getMutliSelectDropdown() {
-    return Container(
-      height: 50,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(
-          Radius.circular(8),
+  Widget getStateDropDownField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.state,
+      titleColor: blackFont,
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        border: Border.all(color: Color(0xff3e61da)),
-        color: Colors.white,
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          popUpStateBottomSheet();
+        },
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton(
-          icon: Icon(Icons.keyboard_arrow_down),
-          items: items.map((item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              //disable default onTap to avoid closing menu when selecting an item
-              enabled: false,
-              child: StatefulBuilder(
-                builder: (context, menuSetState) {
-                  final _isSelected = selectedItems.contains(item);
-                  return InkWell(
-                    onTap: () {
-                      _isSelected
-                          ? selectedItems.remove(item)
-                          : selectedItems.add(item);
+    );
+  }
 
-                      print('stores $selectedItems');
-                      filterMap['location'] = selectedItems.toString();
-                      setState(() {});
-                      //This rebuilds the StatefulWidget to update the button's text
-                      setState(() {});
-                      //This rebuilds the dropdownMenu Widget to update the check mark
-                      menuSetState(() {});
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        children: [
-                          _isSelected
-                              ? Container(
-                                  width: 18,
-                                  height: 18,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: navyBlue),
-                                  child: Icon(
-                                    Icons.check,
-                                    color: white,
-                                    size: 10,
-                                  ),
-                                )
-                              : Container(
-                                  width: 18,
-                                  height: 18,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: greyBorderColor,
-                                      )
-                                      // color: navyBlue,
-                                      ),
-                                  // child: Icon(
-                                  //   Icons.check,
-                                  //   color: white,
-                                  //   size: 10,
-                                  // ),
-                                ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              item,
-                              style: TextStyle(
-                                color: Color(0xff54595e),
-                                fontSize: 16,
-                                fontFamily: "Inter",
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          }).toList(),
-          onChanged: (val) {},
-          value: selectedItems.isEmpty ? null : selectedItems.last,
-          selectedItemBuilder: (context) {
-            return items.map(
-              (item) {
-                return Container(
-                  alignment: AlignmentDirectional.center,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    selectedItems.join(', '),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    maxLines: 1,
+  Future<void> popUpStateBottomSheet() async {
+    await getLocationList();
+    stateBottomSheet();
+  }
+
+  void stateBottomSheet() {
+    locationsList = locationsListCopy;
+    androidBottomSheet(
+      context: context,
+      enableDrag: false,
+      isDismissible: false,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search state',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      locationsList = locationsListCopy
+                          .where((element) => element!.name!
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(() {});
+                    } else {
+                      locationsList = locationsListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                InkWell(
+                  onTap: () {},
+                  child: const Text(
+                    '',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: Colors.red),
                   ),
-                );
-              },
-            ).toList();
-          },
-        ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: locationsList.length,
+                    // controller: _locationScrollController,
+                    itemBuilder: (context, index) {
+                      return CheckboxListTile(
+                        value: stateCheckMark[locationsList[index]!.name],
+                        onChanged: (isChecked) {
+                          setState(() {
+                            changeState(() {
+                              stateCheckMark[locationsList[index]!.name!] =
+                                  isChecked!;
+                            });
+                            if (pickedStateList
+                                .contains(locationsList[index]!.name)) {
+                              pickedStateList
+                                  .remove(locationsList[index]!.name);
+                              pickedStateListSlug
+                                  .remove(locationsList[index]!.slug);
+                            } else {
+                              pickedStateList.add(locationsList[index]!.name!);
+                              pickedStateListSlug
+                                  .add(locationsList[index]!.slug!);
+                            }
+                          });
+                        },
+                        title: Text(
+                          locationsList[index]!.name!,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                CurvedButton(
+                  text: 'Pick',
+                  onPressed: () {
+                    filterMap['location'] = pickedStateListSlug;
+                    Navigator.pop(context);
+                    // bottomSheetSetState(() {});
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getPickedStates() {
+    return SizedBox(
+      height: pickedStateList.isEmpty ? 0 : 60,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: pickedStateList
+            .map(
+              (e) => Container(
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    color: greyBorderColor,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Text(
+                  e,
+                  style: TextStyle(color: blackFont),
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }
@@ -783,25 +634,27 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
               setState(() {});
             },
             text: "Clear All",
-            backgroundColor: Color(0xfff4f5f6),
+            backgroundColor: const Color(0xfff4f5f6),
             textColor: blackFont,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 25,
         ),
         Expanded(
           flex: 1,
           child: CurvedButton(
             onPressed: () {
-              print('stores $priceFrom $priceTo');
-              print('stores $filterMap');
-              Navigator.pop(context, filterMap);
+              print(filterMap);
+
+              Navigator.pushNamed(context, Routes.SEARCH_SERVICES,
+                  arguments: filterMap);
+              // Navigator.pop(context, filterMap);
             },
             text: "Apply",
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 70,
         ),
       ],
@@ -838,9 +691,10 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
 
   Widget getAmountFromField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.from,
+      // labelText: AppLocalization.of(context)!.from,
+      hintText: AppLocalization.of(context)!.from,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       onChanged: (val) {
@@ -870,9 +724,9 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
 
   Widget getAmountToField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.to,
+      hintText: AppLocalization.of(context)!.to,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       onChanged: (val) {
@@ -920,11 +774,11 @@ class FilterDropdown extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 44,
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Color(0xffdce0e7),
+          color: const Color(0xffdce0e7),
           width: 1,
         ),
         color: Colors.white,
@@ -932,10 +786,10 @@ class FilterDropdown extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton(
           value: selectedFilter,
-          icon: Icon(Icons.keyboard_arrow_down),
+          icon: const Icon(Icons.keyboard_arrow_down),
           hint: Text(
             hintText,
-            style: TextStyle(
+            style: const TextStyle(
               color: Color(0xff75818f),
               fontSize: 16,
               fontFamily: "Open Sans",

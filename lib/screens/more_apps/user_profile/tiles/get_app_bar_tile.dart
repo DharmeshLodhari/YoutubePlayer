@@ -1350,16 +1350,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 arguments: {"searchedUser": searchedUser});
 
             getSearchedUser();
-            // if (result != null) {
-            //   if (result is Map) {
-            //     searchedUser!.userAbout = result["userAbout"];
-            //     searchedUser!.avatar = result["user_avatar"];
-            //
-            //     debugPrint('SEARCHED USER -> ${result["userAbout"]} ');
-            //     debugPrint('SEARCHED USER -> ${searchedUser!.userAbout!.bio} ');
-            //   }
-            //
-            //   if (mounted) setState(() {});
             // }
           },
         ),
@@ -1399,7 +1389,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       bottomSheetItem(
         title: "Share in Chat",
         iconData: SlydoAppIcon.text_message,
-        // isLast: searchedUser!.userName == userBloc.user.userName,
         onTap: () async {
           Navigator.pop(context);
           sendProfileToUsersInChat();

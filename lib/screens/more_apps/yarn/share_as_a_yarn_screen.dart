@@ -19,10 +19,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
-import '../../../../utils/colors.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
@@ -35,6 +33,8 @@ import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/models/gif_model/GIFModel.dart';
 import '../messaging/chat/utils.dart';
 import '../messaging/message_auth.dart';
+import '../service_hub/models/jobs.dart';
+import '../service_hub/tiles/jos_description_card.dart';
 import '../shopping/models/store.dart';
 import '../user_post/models/user_post.dart';
 import '../user_profile/models/user.dart';
@@ -52,9 +52,9 @@ class ShareAsAyarnScreen extends StatefulWidget {
   bool isShare = true;
   Yarn? yarnTopic;
   CustomerProfile? userProfile;
-
   Service? serviceModel;
   Product? productModel;
+  JobModel? jobModel;
 
   UserPost? blogPost;
 
@@ -71,6 +71,7 @@ class ShareAsAyarnScreen extends StatefulWidget {
       this.yarnTopic,
       this.userProfile,
       this.serviceModel,
+      this.jobModel,
       this.blogPost,
       this.productModel});
 
@@ -474,6 +475,12 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         post: widget.blogPost,
         showAuthorDetails: true,
         onDeleteBlog: () {},
+      );
+    }
+    //display job service
+    else if (widget.jobModel != null) {
+      return JobDescriptionCard(
+        job: widget.jobModel,
       );
     } else {
       return Container();

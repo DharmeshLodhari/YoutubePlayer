@@ -328,11 +328,11 @@ class _EditJobState extends State<EditJob> {
                 checkImageLimitForServerImage()
                     ? viewServerImages()
                     : Container(),
-                checkImageLimitForServerImage()
-                    ? const SizedBox(
-                        height: 8,
-                      )
-                    : Container(),
+                // checkImageLimitForServerImage()
+                //     ? const SizedBox(
+                //         height: 8,
+                //       )
+                //     : Container(),
                 checkImageLimitForLocalImage() ? addLocalImages() : Container(),
                 const SizedBox(height: 20),
                 addJobTitleField(),
@@ -533,11 +533,14 @@ class _EditJobState extends State<EditJob> {
         itemCount: jobLocalImages.length + 1,
         itemBuilder: (context, index) => Container(
           padding: const EdgeInsets.only(right: 6),
-          child: index != jobLocalImages.length
-              ? showLocalImage(index)
-              : jobLocalImages.length + jobImagesFromServer.length != imageCount
-                  ? addImageButton()
-                  : null,
+          child: index == 0
+              ? addImageButton()
+              : index <= jobLocalImages.length
+                  ? showLocalImage(index - 1)
+                  : const SizedBox.shrink(),
+          // : jobLocalImages.length + jobImagesFromServer.length != imageCount
+          //     ?
+          //     : null,
         ),
       ),
     );
@@ -663,8 +666,8 @@ class _EditJobState extends State<EditJob> {
                 bool done = await ServiceHubAuthService()
                     .deleteJobServerImage(jobId: jobId, pictureId: imageId);
                 if (done) {
-                  showSnackbar(context, message: 'Image Deleted Successfully');
                   getJobDetail();
+                  showSnackbar(context, message: 'Image Deleted Successfully');
                 } else {
                   showSnackbar(context,
                       message:
@@ -1418,7 +1421,7 @@ class _EditJobState extends State<EditJob> {
             print(value.toString() + 'My job');
             // job = value
             Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
-                arguments: {'jobId': value!.id, 'listingId': ''});
+                arguments: {'jobId': value!.id, 'listingId': '','job':value});
             showToast(
                 message: AppLocalization.of(context)!.jobEditedSuccessfully);
           }).catchError((error) {

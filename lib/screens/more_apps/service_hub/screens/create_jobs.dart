@@ -1200,7 +1200,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                   image: File(file.path), caption: '$selectedCategory 1'))
               .toList();
           job.title = jobTitle;
-          // job.description = productDescription;
           job.dueDate = DateFormat('yyyy-MM-dd').format(jobEndDate);
           job.category = Category(
               name: selectedCategory,
@@ -1210,9 +1209,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           job.pay = moneyInputNormalizer(budget);
           job.location = locationSelected;
           job.tags = [selectedCategory!.toLowerCase()];
-          // job.availableFrom = jobAvailableFrom;
-          // job.enableInSuperStore = productEnableInSuperStore;
-          // print('active')
 
           await ServiceHubAuthService().createJobRequest({
             'title': jobTitle,
@@ -1228,10 +1224,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             'file': '',
             'localImages': jobImages.map((file) => File(file.path)).toList(),
           }).then((value) {
-            print(value.toString() + 'My job');
-            // job = value
             Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
-                arguments: {'jobId': value!.id, 'listingId': ''});
+                arguments: {'jobId': value!.id, 'listingId': '','job':value});
             showToast(
                 message: AppLocalization.of(context)!.jobAddedSuccessfully);
           }).catchError((error) {

@@ -16,7 +16,8 @@ import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_wit
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 
 class SearchServices extends StatefulWidget {
-  const SearchServices({Key? key}) : super(key: key);
+   SearchServices({Key? key, this.filterMap}) : super(key: key);
+  Map<String, dynamic>? filterMap = {};
 
   @override
   _SearchServicesState createState() => _SearchServicesState();
@@ -80,6 +81,11 @@ class _SearchServicesState extends State<SearchServices> {
     });
 
     searchController.addListener(() {
+      if (searchController.text.length <= 1) {
+        setState(() {
+          products.clear();
+        });
+      }
       if (searchController.text.length >= 3) {
         setState(() {
           _refreshList();
@@ -112,6 +118,7 @@ class _SearchServicesState extends State<SearchServices> {
   }
 
   void getList() async {
+    
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -123,7 +130,16 @@ class _SearchServicesState extends State<SearchServices> {
             await ShoppingAuthService().searchServiceInServices(
           next,
           previous,
-          filterOptions: SearchItemWithFilterModelForSuperStore(
+          filterOptions: widget.filterMap!=null? SearchItemWithFilterModelForSuperStore(
+            sortBy: widget.filterMap!['sortBy'],
+            searchedText:'',
+            minPrice: widget.filterMap!['priceFrom'],
+            maxPrice: widget.filterMap!['priceTo'],
+            rating: selectedRating != null
+                ? (int.parse(selectedRating!) + 1).toString()
+                : null,
+            categories: widget.filterMap!['category'],
+          ): SearchItemWithFilterModelForSuperStore(
             sortBy: sortBy,
             searchedText: searchController.text,
             minPrice: minAmount,
@@ -261,14 +277,17 @@ class _SearchServicesState extends State<SearchServices> {
                 enableMargin: true,
               )
             : SizedBox.shrink(),
-        GestureDetector(
-          onTap: () => Navigator.pushNamed(context, Routes.JOB_SEARCH_FILTER),
-          child: Icon(
-            SlydoAppIcon.filter,
-            size: 16,
-            color: blackFont,
-          ),
-        ),
+        products.isNotEmpty
+            ? const SizedBox.shrink()
+            : GestureDetector(
+                onTap: () =>
+                    Navigator.pushNamed(context, Routes.JOB_SEARCH_FILTER),
+                child: Icon(
+                  SlydoAppIcon.filter,
+                  size: 16,
+                  color: blackFont,
+                ),
+              ),
         SizedBox(width: 16),
       ],
     );

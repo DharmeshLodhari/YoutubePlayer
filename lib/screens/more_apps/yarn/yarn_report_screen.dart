@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../data/state_notifier.dart';
@@ -13,10 +15,12 @@ class AddReportScreen extends StatefulWidget {
   Map<String, dynamic>? object;
   String? type;
   bool? isCommentMoment;
+  bool? isJobService;
   AddReportScreen({
     this.object,
     this.type,
     this.isCommentMoment,
+    this.isJobService,
   });
 
   @override
@@ -40,6 +44,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
     textFieldTagFocusNode = FocusNode();
     violationTypes = violationType;
     violationTypeCopy = violationTypes;
+    log('object......${widget.object.toString()}');
     super.initState();
   }
 
@@ -201,9 +206,13 @@ class _AddReportScreenState extends State<AddReportScreen> {
               if (selectedViolationType == null) {
                 showToast(message: "Selected reason to proceed");
               } else {
-                if (widget.isCommentMoment == false) {
+               if(widget.isJobService == true){
+                reportJob();
+               }
+                else if (widget.isCommentMoment == false) {
                   addReport();
-                } else {
+                } 
+                else {
                   reportCommentInMoment();
                 }
               }
@@ -363,7 +372,37 @@ class _AddReportScreenState extends State<AddReportScreen> {
       showToast(message: error.toString());
     });
   }
+
+  Future<void> reportJob() async {
+    Map<String, dynamic> data = {
+      "object": widget.object,
+      "type": widget.type,
+      "violation_type": selectedViolationType!.id,
+      "reported_by": userBloc.user.userName,
+      "report": messageDecoderWithEmoji(textController.text)
+    };
+    await YarnAuth()
+        .reportJob(
+      data
+    )
+        .then((value) {
+      if (value != null) {
+        if (value == true) {
+          Navigator.pop(context);
+          showToast(message: "Reported Successfully");
+        }
+      } else {
+        showToast(message: 'Server error, report failed');
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+  }
+
+
 }
+
 
 class TopicTextField extends StatelessWidget {
   final TextEditingController controller;

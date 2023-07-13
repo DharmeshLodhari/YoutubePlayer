@@ -48,12 +48,12 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
 
   @override
   Widget build(BuildContext context) {
+    print('widget.message!["meta_data"].toString()${widget.message!.toString()}');
     if (widget.message!["meta_data"] is String) {
       product = Product.fromJson(jsonDecode(widget.message!["meta_data"]));
     } else if (widget.message!["meta_data"] is Map) {
       product = Product.fromJson(widget.message!["meta_data"]);
     }
-
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     bool isSend = widget.message!["author"] == userBloc.user.userName;

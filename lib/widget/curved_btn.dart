@@ -33,22 +33,22 @@ class CurvedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (backgroundColor == null) {
-      backgroundColor = navyBlue;
-    }
-    if (textColor == null) {
-      textColor = Colors.white;
-    }
-    if (text == null) {
-      text = "Button";
-    }
+    backgroundColor ??= navyBlue;
+    textColor ??= Colors.white;
+    text ??= "Button";
     return Container(
       width: width ?? 100.w,
       height: height,
       child: MaterialButton(
         elevation: 0,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
+          borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+        ),
+        color: backgroundColor,
+        onPressed: () {
+          onBtnPressed();
+        },
+        disabledColor: darkGrey.withOpacity(0.5),
         child: isLoading
             ? Center(
                 child: SizedBox(
@@ -66,11 +66,6 @@ class CurvedButton extends StatelessWidget {
                     fontSize: fontSize,
                     fontWeight: FontWeight.w600),
               ),
-        color: backgroundColor,
-        onPressed: () {
-          onBtnPressed();
-        },
-        disabledColor: darkGrey.withOpacity(0.5),
       ),
     );
   }
@@ -118,13 +113,13 @@ class OutlineCurvedButton extends StatelessWidget {
               Radius.circular(10),
             ),
             borderSide: BorderSide(color: textColor!)),
+        color: backgroundColor,
+        onPressed: onPressed as void Function()?,
         child: Text(
           text!,
           style: TextStyle(
               color: textColor, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        color: backgroundColor,
-        onPressed: onPressed as void Function()?,
       ),
     );
   }

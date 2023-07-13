@@ -155,10 +155,12 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           onFieldSubmitted: widget.onFieldSubmitted,
           textInputAction: widget.textInputAction,
           readOnly: widget.isReadOnly,
+          
           style: widget.textStyle ??
               TextStyle(
                   fontSize: widget.isPassword ? 20 : 16,
                   color: blackFont,
+                  
                   fontWeight: FontWeight.w600,
                   letterSpacing: widget.isPassword ? 2 : 0),
           // buildCounter: (BuildContext context,
@@ -176,7 +178,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             hintText: widget.hintText != null ? widget.hintText : null,
             hintStyle: TextStyle(
               color: darkGrey.withOpacity(0.5),
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
             suffixIcon: _getSuffixIcon(),
@@ -188,21 +190,22 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 12),
-                        child: Text(
-                          worldCurrencies[userBloc.user.currency!]!,
-                          style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            fontFamily: "Roboto",
+                        padding: const EdgeInsets.only(left: 10, right: 12),
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: darkGrey.withOpacity(.4)),
+                          child: Text(
+                            worldCurrencies[userBloc.user.currency!]!,
+                            style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              fontFamily: "Roboto",
+                            ),
                           ),
                         ),
-                      ),
-                      Container(
-                        height: 24,
-                        width: 1,
-                        color: dividerColor,
                       ),
                     ],
                   )
@@ -211,7 +214,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             contentPadding: widget.contentPadding,
             enabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(22),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -222,7 +225,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 : null,
             disabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(22),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -233,7 +236,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 : null,
             focusedBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(22),
                     borderSide: BorderSide(
                       color: navyBlue,
                       width: widget.borderWidth != null

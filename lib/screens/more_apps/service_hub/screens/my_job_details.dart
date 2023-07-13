@@ -1,4 +1,7 @@
+// ignore_for_file: unrelated_type_equality_checks
+
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
@@ -8,15 +11,11 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
-import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
-import 'package:Slydo/screens/more_apps/service_hub/models/retrieve_job_model.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -25,9 +24,16 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:uuid/uuid.dart';
-// import 'package:flutter/src/foundation/key.dart';
-// import 'package:flutter/src/widgets/container.dart';
-// import 'package:flutter/src/widgets/framework.dart';
+
+import '../../../../utils/navigation_util.dart';
+import '../../../../widget/dialog.dart';
+import '../../../../widget/rounded_background_icon.dart';
+import '../../messaging/chat/helpers/connection_list_manager.dart';
+import '../../yarn/models/share_as_yarn_model.dart';
+import '../../yarn/share_as_a_yarn_screen.dart';
+import '../../yarn/yarn_auth.dart';
+import '../../yarn/yarn_dashboard_bloc.dart';
+import '../../yarn/yarn_report_screen.dart';
 
 class MyJobsDetails extends StatefulWidget {
   const MyJobsDetails({
@@ -49,6 +55,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   CarouselController carouselController = CarouselController();
   late final String jobId;
   late final String? listingId;
+
+  late YarnDashboardBloc yarnDashboardBloc;
 
   bool isLoading = false;
   int currentIndex = 0;
@@ -78,6 +86,15 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   List<String> selectedItems = [];
   JobModel? job;
   late UserBloc userBloc;
+  List<ChatConversation> searchedChatConnection = [];
+
+  ScrollController? _scrollController;
+
+  void getSearchedChatConnections() async {
+    searchedChatConnection =
+        await ConnectionListManager().getSearchedConnectionsFromDB();
+    if (mounted) setState(() {});
+  }
 
   void getMyJob() async {
     if (!isLoading) {
@@ -86,6 +103,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       if (mounted) setState(() {});
 
       var result = await ServiceHubAuthService().retreiveJob(jobId: jobId);
+      log('result of hrere.....${result?.toJson()}');
 
       if (result == null) {
         // noJobsInList = true;
@@ -105,6 +123,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           isLoading = false;
           job = tempList;
         });
+        getSearchedChatConnections();
       }
     }
   }
@@ -123,16 +142,17 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     jobId = widget.jobDetails['jobId'];
     listingId = widget.jobDetails['listingId'];
+    _scrollController = ScrollController();
     getMyJob();
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return Scaffold(
       appBar: appBar(),
       body: SingleChildScrollView(
@@ -140,38 +160,42 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           children: [
             getJobDetails(),
             isLoading
-                ? Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisSpacing: 14,
-                        mainAxisExtent: 180,
-                        crossAxisSpacing: 15,
-                        maxCrossAxisExtent: 200,
+                ? Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: 14,
+                          mainAxisExtent: 180,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          );
+                        },
                       ),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        );
-                      },
                     ),
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
             Visibility(
               visible: !isLoading && job == null,
               child: Center(
                 child: Column(
                   children: [
                     Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                    SizedBox(height: 20),
-                    Text('No items at the moment'),
+                    const SizedBox(height: 20),
+                    const Text('No items at the moment'),
                   ],
                 ),
               ),
@@ -182,173 +206,304 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
+  Future<void> cancelApplicant() async {
+    await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 43,
+        height: 43,
+        icon: Icon(
+          Icons.check_circle_sharp,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: black,
+      actionTwoBgColor: navyBlue,
+      actionTwoTextColor: white,
+      title: "Cancel",
+      description: "Are you sure you want to cancel your application ?",
+      actionOneText: 'Keep',
+      actionTwoText: AppLocalization.of(context)!.cancel,
+      leftButtonOnPressed: () => Navigator.pop(context),
+      rightButtonOnPressed: () {
+        FocusScope.of(context).unfocus();
+        isAPILoading = true;
+        if (mounted) setState(() {});
+        cancelApplication();
+
+        isAPILoading = false;
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
   Widget getJobDetails() {
     return isLoading || job == null
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
             children: [
               if (job!.pictures!.length > 0) customImageSlider(),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    getTitleRow(),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Divider(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    CustomText(
-                      title: "Job Description",
-                      fontSize: 12,
-                      fontweight: FontWeight.w700,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      "${job!.description}",
-                      style: TextStyle(
-                        color: Color(0xff8d92a3),
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Divider(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    getStartandEndDate(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    CustomText(
-                      title: "Location",
-                      fontSize: 12,
-                      fontweight: FontWeight.w700,
-                    ),
-                    SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      "${job!.location}",
-                      style: TextStyle(
-                        color: Color(0xff75818f),
-                        fontSize: 14,
-                        fontFamily: "Open Sans",
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    if (job!.isListed!) getJobActivityStatusRow(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Divider(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    CustomText(
-                      title: "Posted By",
-                      fontSize: 12,
-                      fontweight: FontWeight.w700,
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: getTitleRow(),
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 12,
-                          child: CachedNetworkImage(
-                            imageUrl: "${job!.ownerAvatar}",
-                            fit: BoxFit.fitWidth,
-                            width: double.infinity,
-                            errorWidget: productAndServiceBigErrorWidget,
-                          ),
+                        const CustomText(
+                          title: "Description",
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
                         ),
-                        SizedBox(
-                          width: 5,
+                        const SizedBox(
+                          height: 8,
                         ),
                         Text(
-                          "${job!.ownerName}",
-                          style: TextStyle(
-                            color: Color(0xff75818f),
+                          "${job!.description}",
+                          style: const TextStyle(
+                            color: Color(0xff8d92a3),
                             fontSize: 14,
-                            fontFamily: "Open Sans",
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 55,
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: 'Date',
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: darkGrey.withOpacity(.3)),
+                              child: SvgPicture.asset(
+                                'assets/images/Calendar.svg',
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              DateFormat('dd-MM-yyyy')
+                                  .format(DateTime.parse(job!.creationDate!)),
+                              style: const TextStyle(
+                                color: Color(0xff030e36),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    getSubmitData(),
-                    // getMutliSelectDropdown()
-                  ],
-                ),
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: "Location",
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: darkGrey.withOpacity(.3)),
+                              child: SvgPicture.asset(
+                                'assets/images/job_location.svg',
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              "${job!.location}".toCapitalized(),
+                              style: TextStyle(
+                                color: blackFont.withOpacity(.6),
+                                fontSize: 14,
+                                fontFamily: "Open Sans",
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  getJobActivityStatusRow(),
+                  getJobActivity(job!.status!),
+                  job?.status?.toLowerCase() == 'in-progress' ||
+                          job?.status?.toLowerCase() == 'closed'
+                      ? getPaymentStatusRow()
+                      : const SizedBox.shrink(),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: "Posted By",
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        Row(
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: "${job!.ownerAvatar}",
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                width: 23.0,
+                                height: 23.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: imageProvider, fit: BoxFit.cover),
+                                ),
+                              ),
+                              errorWidget: productAndServiceBigErrorWidget,
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            userNameWithVerifiedIcon(
+                              name: job!.ownerName!,
+                              isVerified: userBloc.user.isVerified,
+                              verifiedIconColor: verifyGreen,
+                              textStyle: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: HexColor("#151515")),
+                            ),
+                            // Text(
+                            //   "${job!.ownerName}",
+                            //   style: TextStyle(
+                            //     color: blackFont,
+                            //     fontSize: 14,
+                            //     fontFamily: "Open Sans",
+                            //     fontWeight: FontWeight.w600,
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(),
+                  const SizedBox(
+                    height: 55,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: getSubmitData(),
+                  ),
+                ],
               )
             ],
           );
   }
 
-  Row getJobActivityStatusRow() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Color colorStatus(String status) {
+    if (status.toLowerCase() == 'open') {
+      return const Color(0xff3F61DB);
+    }
+    if (status.toLowerCase() == 'in-progress') {
+      return Colors.yellow.shade700;
+    }
+    if (status.toLowerCase() == 'closed') {
+      return Colors.green.shade400;
+    }
+    if (status.toLowerCase() == 'canceled') {
+      return Colors.red.shade400;
+    }
+    return const Color(0xff3F61DB);
+  }
+
+  String textStatus(String status) {
+    if (status.toLowerCase() == 'open') {
+      return 'Open';
+    }
+    if (status.toLowerCase() == 'in-progress') {
+      return 'In-Progress';
+    }
+    if (status.toLowerCase() == 'closed') {
+      return 'Completed';
+    }
+    if (status.toLowerCase() == 'canceled') {
+      return 'Canceled';
+    }
+    return 'Active';
+  }
+
+  Color colorPayStatus(String status) {
+    if (status.toLowerCase() == 'in-progress') {
+      return Colors.yellow.shade400;
+    }
+    return const Color(0xff3F61DB);
+  }
+
+  String textPayStatus(String status) {
+    if (status.toLowerCase() == 'in-progress') {
+      return 'Pending';
+    }
+    return 'Paid';
+  }
+
+  getPaymentStatusRow() {
+    return Column(
       children: [
-        Expanded(
-          flex: 5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomText(
-                title: 'Job Activity',
-                fontSize: 12,
+              const CustomText(
+                title: 'Payment',
+                fontSize: 14,
                 fontweight: FontWeight.w700,
               ),
-              SizedBox(
-                height: 10,
-              ),
-              CustomText(
-                  title: "Applied : ${job!.applicantsCount}",
-                  fontSize: 12,
-                  fontweight: FontWeight.w600),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomText(
-                title: 'Job Status',
-                fontSize: 12,
-                fontweight: FontWeight.w700,
-              ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Container(
-                width: 54,
-                height: 20,
+                // width: 54,
+                // height: 20,
                 alignment: Alignment.center,
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(3.60),
-                  color: Color(0xff46ce7c).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: colorPayStatus(job!.status!)),
+                  color: colorPayStatus(job!.status!).withOpacity(0.1),
                 ),
                 child: Text(
-                  "Active",
+                  textPayStatus(job!.status!),
                   style: TextStyle(
-                    color: Color(0xff46ce7c),
+                    color: colorStatus(job!.status!),
                     fontSize: 10.80,
                     fontFamily: "Open Sans",
                     fontWeight: FontWeight.w600,
@@ -362,17 +517,336 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  Row getStartandEndDate() {
-    return Row(
+  Column getJobActivityStatusRow() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          flex: 5,
-          child: getDateColumn("Start Date", job!.creationDate!),
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const CustomText(
+                title: 'Job Status',
+                fontSize: 14,
+                fontweight: FontWeight.w700,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                // width: 54,
+                // height: 20,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: colorStatus(job!.status!)),
+                  color: colorStatus(job!.status!).withOpacity(0.1),
+                ),
+                child: Text(
+                  textStatus(job!.status!),
+                  style: TextStyle(
+                    color: colorStatus(job!.status!),
+                    fontSize: 10.80,
+                    fontFamily: "Open Sans",
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        Expanded(
-          flex: 3,
-          child: getDateColumn("End Date", job!.dueDate!),
-        ),
+        const Divider(),
+      ],
+    );
+  }
+
+  Column getJobActivity(String status) {
+    return Column(
+      children: [
+        status.toLowerCase() == 'open'
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const CustomText(
+                      title: 'Job Activity',
+                      fontSize: 14,
+                      fontweight: FontWeight.w700,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: greyBorderColor),
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Text(
+                                  'Applicaton Submitted',
+                                  style: TextStyle(color: black, fontSize: 12),
+                                )),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                    color: navyBlue,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Icon(
+                                  Icons.check,
+                                  color: white,
+                                  size: 7,
+                                ))
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: greyBorderColor),
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Text(
+                                  'Applicaton viewed',
+                                  style: TextStyle(color: black, fontSize: 12),
+                                )),
+                            const SizedBox(
+                              width: 25,
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: darkGrey,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Container(),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: greyBorderColor),
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Text(
+                                  'Applicaton Accepted',
+                                  style: TextStyle(color: black, fontSize: 12),
+                                )),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: darkGrey,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Container(),
+                            )
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const CustomText(
+                      title: 'Job Activity',
+                      fontSize: 14,
+                      fontweight: FontWeight.w700,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: greyBorderColor),
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Text(
+                                  'Applicaton Submitted',
+                                  style: TextStyle(color: black, fontSize: 12),
+                                )),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                    color: navyBlue,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Icon(
+                                  Icons.check,
+                                  color: white,
+                                  size: 7,
+                                ))
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        status.toLowerCase() == 'canceled'
+                            ? Row(
+                                children: [
+                                  Container(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10, 4, 10, 4),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: greyBorderColor),
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      child: Text(
+                                        'Applicaton Canceled',
+                                        style: TextStyle(
+                                            color: black, fontSize: 12),
+                                      )),
+                                  const SizedBox(
+                                    width: 12,
+                                  ),
+                                  Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                          color: mateRed,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: Icon(
+                                        Icons.check,
+                                        color: white,
+                                        size: 7,
+                                      ))
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              10, 4, 10, 4),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: greyBorderColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          child: Text(
+                                            'Applicaton viewed',
+                                            style: TextStyle(
+                                                color: black, fontSize: 12),
+                                          )),
+                                      const SizedBox(
+                                        width: 25,
+                                      ),
+                                      Container(
+                                        padding: status.toLowerCase() ==
+                                                    'in-progress' ||
+                                                status.toLowerCase() == 'closed'
+                                            ? const EdgeInsets.all(2)
+                                            : const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                            color: status.toLowerCase() ==
+                                                        'in-progress' ||
+                                                    status.toLowerCase() ==
+                                                        'closed'
+                                                ? navyBlue
+                                                : darkGrey,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: status.toLowerCase() ==
+                                                    'in-progress' ||
+                                                status.toLowerCase() == 'closed'
+                                            ? Icon(
+                                                Icons.check,
+                                                color: white,
+                                                size: 7,
+                                              )
+                                            : Container(),
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              10, 4, 10, 4),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: greyBorderColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          child: Text(
+                                            'Applicaton Accepted',
+                                            style: TextStyle(
+                                                color: black, fontSize: 12),
+                                          )),
+                                      const SizedBox(
+                                        width: 12,
+                                      ),
+                                      Container(
+                                        padding: status.toLowerCase() ==
+                                                    'in-progress' ||
+                                                status.toLowerCase() == 'closed'
+                                            ? const EdgeInsets.all(2)
+                                            : const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                            color: status.toLowerCase() ==
+                                                        'in-progress' ||
+                                                    status.toLowerCase() ==
+                                                        'closed'
+                                                ? navyBlue
+                                                : darkGrey,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: status.toLowerCase() ==
+                                                    'in-progress' ||
+                                                status.toLowerCase() == 'closed'
+                                            ? Icon(
+                                                Icons.check,
+                                                color: white,
+                                                size: 7,
+                                              )
+                                            : Container(),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              )
+                      ],
+                    )
+                  ],
+                ),
+              )
       ],
     );
   }
@@ -387,25 +861,24 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           fontweight: FontWeight.w700,
         ),
         Container(
-          // width: 122,
           height: 34,
-          padding: EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Color(0xfffafbff),
+            color: const Color(0xfffafbff),
           ),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.calendar_today,
                 size: 18,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
               Text(
-                "${DateFormat('dd-MM-yyyy').format(DateTime.parse(date))}",
-                style: TextStyle(
+                DateFormat('dd-MM-yyyy').format(DateTime.parse(date)),
+                style: const TextStyle(
                   color: Color(0xff030e36),
                   fontSize: 14,
                 ),
@@ -429,7 +902,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 fontSize: 16,
                 fontweight: FontWeight.w700,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Row(
@@ -451,7 +924,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                         fontWeight: FontWeight.bold),
                   ),
                   if (job!.isNegotiable!)
-                    Text(
+                    const Text(
                       " Negotiable",
                       style: TextStyle(
                         color: Color(0xff030e36),
@@ -465,59 +938,52 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
             ],
           ),
         ),
-        Image.asset(
-          'assets/images/qr_code.png',
-          height: 40,
-          width: 40,
-        ),
+        userBloc.user.userName == job!.ownerName!.toLowerCase()
+            ? const SizedBox.shrink()
+            : searchedChatConnection.contains(job!.ownerName)
+                ? InkWell(
+                    onTap: () {},
+                    child: SvgPicture.asset(
+                      'yarn/chaticon'.toSVG(),
+                      height: 35,
+                      width: 35,
+                    ),
+                  )
+                : InkWell(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+                    },
+                    child: SvgPicture.asset(
+                      'yarn/messageicon'.toSVG(),
+                      height: 35,
+                      width: 35,
+                    ),
+                  ),
       ],
     );
   }
 
   Widget getSubmitData() {
-    if (job!.isListed == true && userBloc.user.userName == job!.owner) {
-      return getUnlistNowBtn();
-    } else if (job!.isListed == false && userBloc.user.userName == job!.owner) {
-      return getListNowBtn();
-    } else if (job!.isListed == true &&
-        userBloc.user.userName != job!.owner &&
-        job!.applicants!.contains(userBloc.user.userName)) {
-      return Container();
-    } else if (job!.isListed == true && userBloc.user.userName != job!.owner) {
-      return getApplyNowBtn();
+    if (userBloc.user.userName == job!.owner) {
+      if (job!.isListed == true) {
+        return getUnlistNowBtn();
+      } else {
+        return getListNowBtn();
+      }
     } else {
-      return Container();
+      if (job!.isListed == true) {
+        if (job!.applicants!.contains(userBloc.user.userName)) {
+          if (job!.assignee == userBloc.user.userName) {
+            return Container();
+          }
+          return cancelApplictionNowBtn();
+        }
+        return getApplyNowBtn();
+      } else {
+        return Container();
+      }
     }
-
-    // return CurvedButton(
-    //   onPressed: isAPILoading
-    //       ? () {}
-    //       : () async {
-    //           FocusScope.of(context).unfocus();
-    //           isAPILoading = true;
-    //           if (mounted) setState(() {});
-    //           createJobListing();
-    //           // await addProduct();
-    //           // Navigator.pushNamed(context, Routes.SUPER_HUB);
-
-    //           isAPILoading = false;
-    //           if (mounted) setState(() {});
-    //         },
-    //   backgroundColor: navyBlue,
-    //   textColor: Colors.white,
-    //   text: job!.isListed! ? 'Unlist Now' : "List Now",
-    //   isLoading: isAPILoading,
-    // );
   }
-
-  // {{baseUrl}}/api/v1/job-service/listing/<listingId>
-  // {{baseUrl}}/api/v1/job-service/listing/7991471c-3b7a-43e1-8d48-4d808f9abf89
-  // {
-  //   'job': '0515f72f-0eaf-4054-820d-7dced47fd486'
-  // }
-  // {
-  //   'job': <jobId>
-  // }
 
   getListNowBtn() {
     return CurvedButton(
@@ -572,10 +1038,26 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               isAPILoading = false;
               if (mounted) setState(() {});
             },
-      backgroundColor: navyBlue,
+      backgroundColor: Colors.black,
       textColor: Colors.white,
       text: 'Apply',
       isLoading: isAPILoading,
+      borderRadius: 20,
+    );
+  }
+
+  cancelApplictionNowBtn() {
+    return CurvedButton(
+      onPressed: isAPILoading
+          ? () {}
+          : () async {
+              cancelApplicant();
+            },
+      backgroundColor: Colors.black,
+      textColor: Colors.white,
+      text: 'Cancel Application',
+      isLoading: isAPILoading,
+      borderRadius: 20,
     );
   }
 
@@ -583,7 +1065,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     await ServiceHubAuthService().createListing({
       "job": job!.id,
     }).then((value) {
-      print(value.toString() + 'Create Listing');
+      print('${value}Create Listing');
       Navigator.pushNamed(context, Routes.SUPER_HUB);
       showToast(message: AppLocalization.of(context)!.jobAddedSuccessfully);
     }).catchError((error) {
@@ -605,11 +1087,26 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   }
 
   applyForJob() async {
-    await ServiceHubAuthService()
-        .applyForJob({"applicant": "japa"}, jobId: job!.id).then((value) {
+    await ServiceHubAuthService().applyForJob(
+        {"applicant": "${userBloc.user.userName}"},
+        jobId: job!.id).then((value) {
       Navigator.pushNamed(context, Routes.SUPER_HUB);
       showToast(
           message: AppLocalization.of(context)!.appliedForJobSuccessfully);
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+  }
+
+  cancelApplication() async {
+    await ServiceHubAuthService().cancelApplicationForJob(
+        {"applicant": "${userBloc.user.userName}"},
+        jobId: job!.id).then((value) {
+      Navigator.pushNamed(context, Routes.SUPER_HUB);
+      showToast(
+          message: AppLocalization.of(context)!
+              .cancelledApplicactionForJobSuccessfully);
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
@@ -642,239 +1139,307 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         ),
       ),
       actions: [
-        // Image.asset(
-        //   'assets/images/qr_code.png',
-        //   height: 20,
-        //   width: 20,
-        // ),
-        // SizedBox(
-        //   width: 10,
-        // ),
         _moreOptionsBtn(),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
       ],
     );
   }
 
-  List<PopupMenuEntry<String>> getDropdownMenu() {
-    var menu = [
-      getEditBtn(),
-      getShareInChatBtn(),
-      // getApplicantBtn(),
-      // getReviewApplicantBtn(),
-      // getDeleteBtn(),
-    ];
-
-    if (job!.owner != userBloc.user.userName) {
-      return [getShareInChatBtn(), getReportBtn()];
-    }
-
-    if (job!.isListed!) {
-      menu.add(getApplicantBtn());
-      menu.add(getDeleteBtn());
-    }
-
-    return menu;
-  }
-
-  PopupMenuButton<String> _moreOptionsBtn() {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        // selected = v;
-        if (value == 'Applicant') {
-          Navigator.pushNamed(context, Routes.JOBS_APPLICANT_LIST,
-              arguments: job);
-        } else if (value == 'Delete') {
-          deleteJob();
-        } else if (value == 'Edit Job') {
-          Navigator.pushNamed(context, Routes.EDIT_JOB, arguments: job);
-        } else if (value == 'Share in Chat') {
-          sendItemToUsersInChat();
-        }
-
-        setState(() {});
-      },
-      icon: Container(
-        height: 34,
+  Widget _moreOptionsBtn() {
+    return Container(
         width: 34,
         alignment: Alignment.center,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(
             Radius.circular(10),
           ),
           color: Color(0xfffafbff),
         ),
-        child: Icon(
-          Icons.more_vert,
-          color: blackFont,
+        child: IconButton(
+          onPressed: () {
+            androidBottomSheet(
+              context: context,
+              child: StatefulBuilder(
+                builder: (context, changeState) {
+                  return SizedBox(
+                    height: getDropDownWidget().length < 4 ? 100 : 200,
+                    child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          controller: _scrollController,
+                          child: ListView.builder(
+                              controller: _scrollController,
+                              itemCount: getDropDownWidget().length,
+                              itemBuilder: (context, index) {
+                                return getDropDownWidget()[index];
+                              }),
+                        )),
+                  );
+                },
+              ),
+            );
+          },
+          icon: Icon(
+            Icons.more_vert,
+            color: blackFont,
+          ),
+        ));
+  }
+
+  List<Widget> getDropDownWidget() {
+    var menu = [
+      InkWell(
+        onTap: () =>
+            Navigator.pushNamed(context, Routes.EDIT_JOB, arguments: job),
+        child: Row(
+          children: [
+            Container(
+                height: 34,
+                width: 34,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                  color: Color(0xfffafbff),
+                ),
+                child: SvgPicture.asset("assets/images/edit_job.svg")),
+            const SizedBox(
+              width: 20,
+            ),
+            Text(
+              'Edit Job',
+              style: TextStyle(
+                  fontSize: 16, color: black, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
-      itemBuilder: (BuildContext context) {
-        return getDropdownMenu();
-      },
-    );
+      const SizedBox(
+        height: 12,
+      ),
+      InkWell(
+        onTap: () => sendItemToUsersInChat(),
+        child: Row(
+          children: [
+            Container(
+                height: 34,
+                width: 34,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                  color: Color(0xfffafbff),
+                ),
+                child: SvgPicture.asset("assets/images/share.svg")),
+            const SizedBox(
+              width: 20,
+            ),
+            Text(
+              'Share in Chat',
+              style: TextStyle(
+                  fontSize: 16, color: black, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+      const SizedBox(
+        height: 12,
+      ),
+      InkWell(
+        onTap: () => shareAsYarn(),
+        child: Row(
+          children: [
+            Container(
+                height: 34,
+                width: 34,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                  color: Color(0xfffafbff),
+                ),
+                child: SvgPicture.asset("assets/images/share.svg")),
+            const SizedBox(
+              width: 20,
+            ),
+            Text(
+              'Share in Yarn',
+              style: TextStyle(
+                  fontSize: 16, color: black, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+      const SizedBox(
+        height: 12,
+      ),
+      InkWell(
+        onTap: () => deleteJob(),
+        child: Row(
+          children: [
+            Container(
+                height: 34,
+                width: 34,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                  color: Color(0xfffafbff),
+                ),
+                child: SvgPicture.asset("assets/images/delete.svg")),
+            const SizedBox(
+              width: 20,
+            ),
+            Text(
+              'Delete',
+              style: TextStyle(
+                  fontSize: 16, color: black, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    ];
+
+    if (job!.owner != userBloc.user.userName) {
+      return [
+        InkWell(
+          onTap: () => sendItemToUsersInChat(),
+          child: Row(
+            children: [
+              Container(
+                  height: 34,
+                  width: 34,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    color: Color(0xfffafbff),
+                  ),
+                  child: SvgPicture.asset("assets/images/share.svg")),
+              const SizedBox(
+                width: 20,
+              ),
+              Text(
+                'Share in Chat',
+                style: TextStyle(
+                    fontSize: 16, color: black, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        InkWell(
+          onTap: () {
+            Navigator.pop(context);
+            NavigationUtil.push(context,
+                screen: AddReportScreen(
+                  object: job!.toJson(),
+                  type: "job",
+                  isJobService: true,
+                  isCommentMoment: false,
+                ));
+          },
+          child: Row(
+            children: [
+              Container(
+                  height: 34,
+                  width: 34,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    color: Color(0xfffafbff),
+                  ),
+                  child: Icon(
+                    Icons.report,
+                    color: blackFont,
+                  )),
+              const SizedBox(
+                width: 20,
+              ),
+              Text(
+                'Report',
+                style: TextStyle(
+                    fontSize: 16, color: black, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      ];
+    }
+    if (job!.isListed!) {
+      menu.add(
+        Column(
+          children: [
+            const SizedBox(
+              height: 12,
+            ),
+            InkWell(
+              onTap: () => Navigator.pushNamed(
+                  context, Routes.JOBS_APPLICANT_LIST,
+                  arguments: job),
+              child: Row(
+                children: [
+                  Container(
+                      height: 34,
+                      width: 34,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                        color: Color(0xfffafbff),
+                      ),
+                      child: Icon(
+                        Icons.person,
+                        color: blackFont,
+                      )),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    'Applicant',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return menu;
   }
 
-  PopupMenuItem<String> getEditBtn() {
-    return PopupMenuItem<String>(
-      value: 'Edit Job',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/edit_job.svg")),
-        title: Text('Edit Job'),
-      ),
-      // onTap: () {},
-    );
-  }
-
-  PopupMenuItem<String> getCopyLink() {
-    return PopupMenuItem<String>(
-      // value: choice.title,
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/send.svg")),
-        title: Text('Send Via'),
-      ),
-      // onTap: () {},
-    );
-  }
-
-  PopupMenuItem<String> getDeleteBtn() {
-    return PopupMenuItem<String>(
-      value: 'Delete',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/delete.svg")),
-        title: Text('Delete'),
-      ),
-      onTap: () {},
-    );
-  }
-
-  PopupMenuItem<String> getShareInChatBtn() {
-    return PopupMenuItem<String>(
-      value: 'Share in Chat',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/share.svg")),
-        title: Text('Share in Chat'),
-      ),
-      onTap: () {},
-    );
-  }
-
-  PopupMenuItem<String> getReviewApplicantBtn() {
-    return PopupMenuItem<String>(
-      value: 'Review Applicant',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: Icon(
-              Icons.visibility,
-              color: blackFont,
-            )),
-        title: Text('Review Applicant'),
-      ),
-      onTap: () {},
-    );
-  }
-
-  PopupMenuItem<String> getApplicantBtn() {
-    return PopupMenuItem<String>(
-      value: 'Applicant',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: Icon(
-              Icons.person,
-              color: blackFont,
-            )),
-        title: Text('Applicant'),
-      ),
-      // onTap: () {
-      //   print('applicant');
-      //   Navigator.pushNamed(context, Routes.JOBS_SEARCH);
-      // },
-    );
-  }
-
-  PopupMenuItem<String> getReportBtn() {
-    return PopupMenuItem<String>(
-      value: 'Report',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: Icon(
-              Icons.report,
-              color: blackFont,
-            )),
-        title: Text('Report'),
-      ),
-      // onTap: () {
-      //   print('applicant');
-      //   Navigator.pushNamed(context, Routes.JOBS_SEARCH);
-      // },
-    );
+  Future shareAsYarn() async {
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            jobModel: job,
+            callback: (params) async {
+              params
+                ..attachment = {
+                  "job": job?.toJson().cast<String, dynamic>() ?? {}
+                };
+              bool data = await YarnAuth().addYarnAndQuestion(params, '');
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+                Navigator.pop(context);
+              }
+            }));
   }
 
   void sendItemToUsersInChat() async {
@@ -882,10 +1447,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    String url = AppConfig.baseUrl +
-        "/api/v1/job-service/${job is JobModel ? "job" : "services"}/" +
-        job!.id! +
-        "/";
+    String url =
+        "${AppConfig.baseUrl}/api/v1/job-service/${job is JobModel ? "job" : "services"}/${job!.id!}/";
 
     Map<String, dynamic>? itemData =
         await ServiceHubAuthService().getJobOrService(url);
@@ -903,9 +1466,9 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       dynamic item}) async {
     Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
-      "author": userBloc?.user.userName,
+      "author": userBloc.user.userName,
       "message": url,
       "kind": item is JobModel ? "job" : "service",
       "created_at": DateTime.now().toUtc().toString(),
@@ -941,13 +1504,13 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                     (index) => Container(
                           width: 8.0,
                           height: 8.0,
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 2.0),
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: currentIndex == index
                                   ? navyBlue
-                                  : Color(0xffBEC2F4)),
+                                  : const Color(0xffBEC2F4)),
                         )),
               ),
             )
@@ -961,9 +1524,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           initialPage: 0,
           enableInfiniteScroll: true,
           reverse: false,
-          // autoPlay: true,
-          autoPlayInterval: Duration(seconds: 3),
-          autoPlayAnimationDuration: Duration(milliseconds: 800),
+          autoPlayInterval: const Duration(seconds: 3),
+          autoPlayAnimationDuration: const Duration(milliseconds: 800),
           autoPlayCurve: Curves.fastOutSlowIn,
           enlargeCenterPage: true,
           scrollDirection: Axis.horizontal,
@@ -992,7 +1554,7 @@ class CustomText extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        color: Color(0xff030e36),
+        color: const Color(0xff030e36),
         fontSize: fontSize,
         fontFamily: "Open Sans",
         fontWeight: fontweight,

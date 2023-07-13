@@ -100,6 +100,9 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
       case "blog_post":
         Widget getPostUI = renderPostUI(message: messageData);
         return getPostUI;
+      case "job":
+        Widget getJobUI = renderJobService(message: messageData);
+        return getJobUI;
 
       default:
         debugPrint(
@@ -692,6 +695,85 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                     Text(
                       moneyDisplayNormalizer(
                           int.parse(service.price.toString())),
+                      style: TextStyle(
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderJobService({required Map<String, dynamic> message}) {
+    Map<String, dynamic>? data;
+
+    if (message["meta_data"] is String) {
+      data = jsonDecode(message["meta_data"]);
+    } else if (message["meta_data"] is Map) {
+      data = message["meta_data"];
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          left: BorderSide(width: 2.0, color: blackFont),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: CachedNetworkImage(
+              height: 48,
+              width: 48,
+              fit: BoxFit.cover,
+              imageUrl: data!['owner_avatar'],
+              errorWidget: imageErrorWidget,
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data['owner_name'],
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "₦ ",
+                      style: TextStyle(
+                          fontFamily: "Roberto",
+                          color: darkGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          int.parse(data['pay'].toString())),
                       style: TextStyle(
                           color: darkGrey,
                           fontSize: 12,

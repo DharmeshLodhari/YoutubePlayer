@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
@@ -19,6 +21,8 @@ import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../../service_hub/models/jobs.dart';
+import '../../service_hub/tiles/jos_description_card.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../user_profile/screens/user_profile_module_new/utils.dart';
@@ -205,8 +209,7 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget _buildUserInfoRow() {
-    var author = messageDecoderWithEmoji(
-        widget.yarn.authorName ?? "") ?? '';
+    var author = messageDecoderWithEmoji(widget.yarn.authorName ?? "") ?? '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -320,12 +323,11 @@ class _YarnTileState extends State<YarnTile> {
                         onUpdate: (Yarn yarn) {
                           widget.onUpdateYarn!(yarn);
                         },
-                        reloadView: (bool val){
-                          if(val == true){
+                        reloadView: (bool val) {
+                          if (val == true) {
                             widget.reloadView!(true);
                           }
                         },
-
                       ),
                     );
                   },
@@ -510,6 +512,10 @@ class _YarnTileState extends State<YarnTile> {
           onDeleteBlog: () {},
         );
 
+        break;
+      case 'job':
+        JobModel jobModel = JobModel.fromJson(widget.yarn.attachment ?? {});
+        childWidget = JobDescriptionCard(job: jobModel);
         break;
 
       default:

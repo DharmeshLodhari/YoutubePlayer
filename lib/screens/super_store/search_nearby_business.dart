@@ -461,7 +461,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                           const SizedBox(height: 8),
                           getPickedLga(),
                         ],
-                        // SizedBox(height: 20),
+                        
                         const SizedBox(height: 50),
                         Row(
                           children: [
@@ -592,60 +592,6 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                         ),
                       );
 
-                      if (selectedProductCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedCategory = category;
-                              Navigator.pop(context);
-                              if (pressedCategory != null) {
-                                selectedProductCategory = pressedCategory;
-                                productCategory = selectedProductCategory!.name;
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        );
-                      }
-
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        dense: true,
-                        onTap: () {
-                          pressedCategory = category;
-                          Navigator.pop(context);
-                          if (pressedCategory != null) {
-                            selectedProductCategory = pressedCategory;
-                            productCategory = selectedProductCategory!.name;
-                            // setState(() {});
-                            bottomSheetSetState(() {});
-                          }
-                        },
-                      );
                     },
                   ),
                 ),

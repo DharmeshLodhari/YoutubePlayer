@@ -1,12 +1,8 @@
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
@@ -27,6 +23,38 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
   String getFormatedDate(ActiveListingData args) {
     return DateFormat('dd-MM-yyyy')
         .format(DateTime.parse(args.job!.creationDate!));
+  }
+
+  Color colorStatus(String status) {
+    if (status.toLowerCase() == 'open') {
+      return const Color(0xff3F61DB);
+    }
+    if (status.toLowerCase() == 'in-progress') {
+      return Colors.yellow.shade700;
+    }
+    if (status.toLowerCase() == 'closed') {
+      return Colors.green.shade400;
+    }
+    if (status.toLowerCase() == 'canceled') {
+      return Colors.red.shade400;
+    }
+    return const Color(0xff3F61DB);
+  }
+
+  String textStatus(String status) {
+    if (status.toLowerCase() == 'open') {
+      return 'Open';
+    }
+    if (status.toLowerCase() == 'in-progress') {
+      return 'In-Progress';
+    }
+    if (status.toLowerCase() == 'closed') {
+      return 'Completed';
+    }
+    if (status.toLowerCase() == 'canceled') {
+      return 'Canceled';
+    }
+    return 'Active';
   }
 
   @override
@@ -214,12 +242,12 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(3.60),
-                          color: Color(0xff46ce7c).withOpacity(0.2),
+                          color: colorStatus(args.job!.status!),
                         ),
                         child: Text(
-                          "${args.job!.status}",
+                          textStatus(args.job!.status!),
                           style: TextStyle(
-                            color: Color(0xff46ce7c),
+                            color: colorStatus(args.job!.status!),
                             fontSize: 10.80,
                             fontFamily: "Open Sans",
                             fontWeight: FontWeight.w600,
