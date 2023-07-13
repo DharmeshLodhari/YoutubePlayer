@@ -99,8 +99,11 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           InkWell(
-                            onTap: () => Navigator.pushNamed(
-                                context, Routes.JOBS_CREATE),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(
+                                context, Routes.JOBS_CREATE);
+                            },
                             child: Row(
                               children: [
                                 Container(
@@ -132,8 +135,10 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
                             height: 18,
                           ),
                           InkWell(
-                            onTap: () =>
-                                Navigator.pushNamed(context, Routes.MY_JOBS),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, Routes.MY_JOBS);
+                            },
                             child: Row(
                               children: [
                                 Container(
