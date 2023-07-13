@@ -922,7 +922,6 @@ class RouteGenerator {
         );
 
       ///    More Apps Route     ///
-
       case Routes.MORE_APPS:
         return PageTransition(
           child: MoreApps(),
@@ -942,7 +941,7 @@ class RouteGenerator {
 
       case Routes.SEARCH_SERVICES:
         return PageTransition(
-            child:  SearchServices(),
+            child:  SearchServices(filterMap:settings.arguments as Map<String, dynamic>?),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);

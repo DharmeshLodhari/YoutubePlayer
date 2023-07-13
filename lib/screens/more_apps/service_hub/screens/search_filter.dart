@@ -429,7 +429,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                   height: 10,
                 ),
                 isCategoryLoading
-                ==true
+                
                     ? SpinKitRing(
                         size: 30,
                         lineWidth: 3,
@@ -648,7 +648,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
               print(filterMap);
 
               Navigator.pushNamed(context, Routes.SEARCH_SERVICES,
-                  arguments: filterMap);
+                  arguments: {'filterMap':filterMap});
               // Navigator.pop(context, filterMap);
             },
             text: "Apply",

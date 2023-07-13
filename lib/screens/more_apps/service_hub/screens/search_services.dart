@@ -105,6 +105,7 @@ class _SearchServicesState extends State<SearchServices> {
         }
       }
     });
+    getList();
     super.initState();
   }
 
@@ -130,25 +131,27 @@ class _SearchServicesState extends State<SearchServices> {
             await ShoppingAuthService().searchServiceInServices(
           next,
           previous,
-          filterOptions: widget.filterMap!=null? SearchItemWithFilterModelForSuperStore(
-            sortBy: widget.filterMap!['sortBy'],
-            searchedText:'',
-            minPrice: widget.filterMap!['priceFrom'],
-            maxPrice: widget.filterMap!['priceTo'],
-            rating: selectedRating != null
-                ? (int.parse(selectedRating!) + 1).toString()
-                : null,
-            categories: widget.filterMap!['category'],
-          ): SearchItemWithFilterModelForSuperStore(
-            sortBy: sortBy,
-            searchedText: searchController.text,
-            minPrice: minAmount,
-            maxPrice: maxAmount,
-            rating: selectedRating != null
-                ? (int.parse(selectedRating!) + 1).toString()
-                : null,
-            categories: pickedCategoryList,
-          ),
+          filterOptions: widget.filterMap != null
+              ? SearchItemWithFilterModelForSuperStore(
+                  sortBy: widget.filterMap!['sortBy'],
+                  searchedText: '',
+                  minPrice: widget.filterMap!['priceFrom'],
+                  maxPrice: widget.filterMap!['priceTo'],
+                  rating: selectedRating != null
+                      ? (int.parse(selectedRating!) + 1).toString()
+                      : null,
+                  categories: widget.filterMap!['category'],
+                )
+              : SearchItemWithFilterModelForSuperStore(
+                  sortBy: sortBy,
+                  searchedText: searchController.text,
+                  minPrice: minAmount,
+                  maxPrice: maxAmount,
+                  rating: selectedRating != null
+                      ? (int.parse(selectedRating!) + 1).toString()
+                      : null,
+                  categories: pickedCategoryList,
+                ),
         );
 
         // Map<String, dynamic>? result =
@@ -204,9 +207,10 @@ class _SearchServicesState extends State<SearchServices> {
   Map<String, bool> stateCheckMark = {"Lagos": false, "Ogun": false};
 
   void getCategories() async {
+   
     isLoading = true;
     if (mounted) setState(() {});
-
+     print('category in the house.....print $isLoading');
     try {
       servicesCategories = await ShoppingAuthService().getServicesCategories();
       servicesCategoriesCopy = servicesCategories;
