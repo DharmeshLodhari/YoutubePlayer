@@ -66,15 +66,27 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
       ),
       actions: [
         _searchBtn(),
-        const SizedBox(
-          width: 20,
-        ),
-        if (currentIndex == 0) _cartBtn(),
-        // if (currentIndex == 0) SizedBox(width: 10),
-        _moreOptionsBtn(),
-        const SizedBox(
-          width: 4,
-        ),
+
+        if (currentIndex == 0)...[
+          const SizedBox(
+            width: 20,
+          ),
+          _cartBtn(),
+          const SizedBox(
+            width: 20,
+          ),
+        ],
+
+        if (currentIndex == 1)...[
+          const SizedBox(
+            width: 10,
+          ),
+         _moreOptionsBtn(),
+          const SizedBox(
+            width: 6,
+          ),
+        ],
+
       ],
       bottom: tabBar() as PreferredSizeWidget,
     );
