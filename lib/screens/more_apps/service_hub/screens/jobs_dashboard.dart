@@ -103,6 +103,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         }
 
         log('message result.........${result.toJson()}');
+
         productCount = result.count;
         productNext = result.next;
         productPrevious = result.previous;
@@ -156,7 +157,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
           return;
         }
 
-        log('job activity.......${result.toJson()}');
         activeListingCount = result.count;
         activeListingNext = result.next;
         activeListingPrevious = result.previous;
@@ -432,7 +432,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                     color: darkGrey.withOpacity(.5),
                   ),
                   SizedBox(
-                    height: 400,
+                    // height: 400,
                     child: Expanded(
                       child: NotificationListener<ScrollEndNotification>(
                         onNotification: (scrollEnd) {

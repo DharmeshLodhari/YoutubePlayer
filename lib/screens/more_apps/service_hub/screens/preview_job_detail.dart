@@ -89,9 +89,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
 
   void getSearchedChatConnections() async {
     searchedChatConnection =
-        await ConnectionListManager().getSearchedConnectionsFromDB();
+        await ConnectionListManager().getSearchedConnectionsFromDB(searchedText: job!.ownerName);
     if (mounted) setState(() {});
-    print('........${searchedChatConnection.length}');
   }
 
   void getMyJob() async {
@@ -541,9 +540,12 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
         ),
         userBloc.user.userName == job!.ownerName!.toLowerCase()
             ? const SizedBox.shrink()
-            : searchedChatConnection.contains(job!.ownerName)
+            : searchedChatConnection.isNotEmpty && searchedChatConnection[0].userName!.toLowerCase() == job!.ownerName!.toLowerCase()
                 ? InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/chat-screen',
+                          arguments: {"recipientUserName": job!.ownerName!.toLowerCase()});
+                    },
                     child: SvgPicture.asset(
                       'yarn/chaticon'.toSVG(),
                       height: 34,
@@ -566,7 +568,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
 
   Widget getSubmitData() {
     if (job!.isListed == true && userBloc.user.userName == job!.owner) {
-      return getUnlistNowBtn();
+      return getUnListNowBtn();
     } else if (job!.isListed == false && userBloc.user.userName == job!.owner) {
       return getListNowBtn();
     } else if (job!.isListed == true &&
@@ -600,7 +602,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     );
   }
 
-  getUnlistNowBtn() {
+  getUnListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}

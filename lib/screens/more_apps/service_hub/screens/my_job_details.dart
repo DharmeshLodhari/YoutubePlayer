@@ -92,7 +92,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
 
   void getSearchedChatConnections() async {
     searchedChatConnection =
-        await ConnectionListManager().getSearchedConnectionsFromDB();
+        await ConnectionListManager().getSearchedConnectionsFromDB(searchedText: job!.ownerName);
     if (mounted) setState(() {});
   }
 
@@ -103,7 +103,6 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       if (mounted) setState(() {});
 
       var result = await ServiceHubAuthService().retreiveJob(jobId: jobId);
-      log('result of hrere.....${result?.toJson()}');
 
       if (result == null) {
         // noJobsInList = true;
@@ -940,9 +939,12 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         ),
         userBloc.user.userName == job!.ownerName!.toLowerCase()
             ? const SizedBox.shrink()
-            : searchedChatConnection.contains(job!.ownerName)
+            : searchedChatConnection.isNotEmpty && searchedChatConnection[0].userName!.toLowerCase() == job!.ownerName!.toLowerCase()
                 ? InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/chat-screen',
+                          arguments: {"recipientUserName": job!.ownerName!.toLowerCase()});
+                    },
                     child: SvgPicture.asset(
                       'yarn/chaticon'.toSVG(),
                       height: 35,
@@ -966,7 +968,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   Widget getSubmitData() {
     if (userBloc.user.userName == job!.owner) {
       if (job!.isListed == true) {
-        return getUnlistNowBtn();
+        return getUnListNowBtn();
       } else {
         return getListNowBtn();
       }
@@ -976,7 +978,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           if (job!.assignee == userBloc.user.userName) {
             return Container();
           }
-          return cancelApplictionNowBtn();
+          return cancelApplicationNowBtn();
         }
         return getApplyNowBtn();
       } else {
@@ -1005,7 +1007,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  getUnlistNowBtn() {
+  getUnListNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -1046,7 +1048,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  cancelApplictionNowBtn() {
+  cancelApplicationNowBtn() {
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}

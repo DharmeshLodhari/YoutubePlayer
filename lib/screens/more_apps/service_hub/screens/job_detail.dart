@@ -331,14 +331,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
         return Stack(
           children: [
             Container(
-              decoration: BoxDecoration(
-                  // image: DecorationImage(
-                  //   image: NetworkImage(
-                  //     "${args.job!.pictures![index].image}",
-                  //   ),
-                  //   fit: BoxFit.cover,
-                  //   //   width: MediaQuery.of(context).size.width,
-                  // ),
+              decoration: const BoxDecoration(
                   ),
               child: CachedNetworkImage(
                 imageUrl: "${args.job!.pictures![index].image}",
