@@ -524,7 +524,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 };
               bool data = await YarnAuth().addYarnAndQuestion(yarn, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
               }
             }));
   }

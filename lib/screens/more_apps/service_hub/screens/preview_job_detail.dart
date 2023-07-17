@@ -88,8 +88,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
   List<ChatConversation> searchedChatConnection = [];
 
   void getSearchedChatConnections() async {
-    searchedChatConnection =
-        await ConnectionListManager().getSearchedConnectionsFromDB(searchedText: job!.ownerName);
+    searchedChatConnection = await ConnectionListManager()
+        .getSearchedConnectionsFromDB(searchedText: job!.ownerName);
     if (mounted) setState(() {});
   }
 
@@ -240,7 +240,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
                 Navigator.pop(context);
               }
             }));
@@ -540,11 +540,14 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
         ),
         userBloc.user.userName == job!.ownerName!.toLowerCase()
             ? const SizedBox.shrink()
-            : searchedChatConnection.isNotEmpty && searchedChatConnection[0].userName!.toLowerCase() == job!.ownerName!.toLowerCase()
+            : searchedChatConnection.isNotEmpty &&
+                    searchedChatConnection[0].userName!.toLowerCase() ==
+                        job!.ownerName!.toLowerCase()
                 ? InkWell(
                     onTap: () {
-                      Navigator.pushNamed(context, '/chat-screen',
-                          arguments: {"recipientUserName": job!.ownerName!.toLowerCase()});
+                      Navigator.pushNamed(context, '/chat-screen', arguments: {
+                        "recipientUserName": job!.ownerName!.toLowerCase()
+                      });
                     },
                     child: SvgPicture.asset(
                       'yarn/chaticon'.toSVG(),
@@ -886,6 +889,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
   }
 
   CarouselSlider customImageSlider() {
+    print('...............length${job!.pictures!.length}');
     return CarouselSlider.builder(
       carouselController: carouselController,
       itemCount: job!.pictures!.length,
@@ -930,7 +934,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           aspectRatio: 2,
           viewportFraction: 1,
           initialPage: 0,
-          enableInfiniteScroll: true,
+          enableInfiniteScroll: false,
           reverse: false,
           // autoPlay: true,
           autoPlayInterval: Duration(seconds: 3),

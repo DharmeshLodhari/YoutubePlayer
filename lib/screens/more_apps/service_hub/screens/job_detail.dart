@@ -368,7 +368,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
           aspectRatio: 2,
           viewportFraction: 1,
           initialPage: 0,
-          enableInfiniteScroll: true,
+          enableInfiniteScroll: false,
           reverse: false,
           // autoPlay: true,
           autoPlayInterval: Duration(seconds: 3),

@@ -941,7 +941,7 @@ class RouteGenerator {
 
       case Routes.SEARCH_SERVICES:
         return PageTransition(
-            child:  SearchServices(filterMap:settings.arguments as Map<String, dynamic>?),
+            child:  SearchServices(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1111,7 +1111,7 @@ class RouteGenerator {
 
       case Routes.JOBS_SEARCH:
         return PageTransition(
-            child: const JobsSearch(),
+            child:  JobsSearch(filterMap:settings.arguments as Map<String, dynamic>?),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
