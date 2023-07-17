@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
@@ -16,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../data/environment.dart';
 import '../../../../widget/curved_btn.dart';
 import '../../../../widget/customized_dropdown_field.dart';
 import '../tiles/jos_description_card.dart';
@@ -35,6 +37,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
       GlobalKey<ScaffoldMessengerState>();
   ScrollController _jobsScrollController = ScrollController();
   ScrollController _categoryScrollController = ScrollController();
+
+  final TextEditingController searchController = TextEditingController();
   late UserBloc userBloc;
 
   List<String>? selectedCategory = [];
@@ -62,7 +66,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   List status = ['Active', 'Closed', 'Pending'];
 
   Map<String, bool> categoryCheckMark = {};
-
+  String? search;
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
@@ -78,6 +82,34 @@ class _JobsDashboardState extends State<JobsDashboard> {
         _refreshController.refreshCompleted();
       }
     });
+  }
+
+  seacrhCategory(value) async {
+    var result = await ServiceHubAuthService().getListOfCategories(
+        '${AppConfig.baseUrl}/api/v1/job-service/categories?search=$value',
+        productPrevious);
+    var tempList = result!.results;
+    setState(() {
+      categoriesList = tempList!;
+    });
+    logger.d(tempList!.map((e) => e.toJson()).toList());
+    if (mounted) {
+      setState(() {
+        noJobsInList = false;
+        isCategoryLoading = false;
+        categoriesList = tempList;
+      });
+    }
+
+    if (categoriesList.isEmpty) {
+      if (mounted) {
+        setState(() {
+          noJobsInList = true;
+          isCategoryLoading = false;
+          categoriesList = tempList;
+        });
+      }
+    }
   }
 
   void getCategoriesList() async {
@@ -117,7 +149,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
             categoriesListCopy = categoriesList;
           });
         }
-
 
         categoriesListCopy.forEach((element) {
           categoryCheckMark[element.name!] = false;
@@ -190,10 +221,9 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
   void callGetCategoriesListLoop() async {
     while (productNext != null && productNext!.isNotEmpty) {
-        getCategoriesList();
+      getCategoriesList();
     }
   }
-
 
   @override
   initState() {
@@ -240,7 +270,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
       getActiveJobListing(category: selectedCategory!.join(','));
     }
     getCategoriesList();
-
   }
 
   @override
@@ -419,11 +448,11 @@ class _JobsDashboardState extends State<JobsDashboard> {
       context: context,
       child: StatefulBuilder(
         builder: (context, changeState) {
-
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.70,
             child: Stack(children: [
               ListView(
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 children: [
                   const SizedBox(
@@ -439,56 +468,151 @@ class _JobsDashboardState extends State<JobsDashboard> {
                   Divider(
                     color: darkGrey.withOpacity(.5),
                   ),
-                  SizedBox(
-                    // height: 400,
-                    height: MediaQuery.of(context).size.height * 0.58,
-                    child: Expanded(
-                      child: NotificationListener<ScrollEndNotification>(
-                        onNotification: (scrollEnd) {
-                          final metrics = scrollEnd.metrics;
-                          if (metrics.atEdge) {
-                            bool isTop = metrics.pixels == 0;
-                            if (!isTop) {
-                              changeState(() {});
-                            }
-                          }
-                          return true;
-                        },
-                        child: ListView.builder(
-                          controller: _categoryScrollController,
-                          shrinkWrap: true,
-                          itemCount: categoriesList.length,
-                          itemBuilder: (context, index) {
-                            CategoryListData category = categoriesList[index];
-                            return CheckboxListTile(
-                              value: displayCategory!.contains(category.name)
-                                  ? true
-                                  : false,
-                              onChanged: (isChecked) {
-                                changeState(() {
-                                  categoryCheckMark[category.name!] =
-                                      isChecked!;
-                                });
-                                if (selectedCategory!.contains(category.slug)) {
-                                  selectedCategory!.remove(category.slug);
-                                  displayCategory!.remove(category.name);
-                                } else {
-                                  selectedCategory!.add(category.slug!);
-                                  displayCategory!.add(category.name!);
-                                }
-                              },
-                              title: Text(
-                                category.name!,
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            );
-                          },
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        textSelectionTheme: TextSelectionThemeData(
+                          selectionHandleColor: navyBlue,
                         ),
+                      ),
+                      child: TextFormField(
+                        key: const ValueKey('Search'),
+                        controller: searchController,
+                        onChanged: (value) {
+                          changeState(() {
+                            search = value;
+                            if (value.isNotEmpty) {
+                              seacrhCategory(value);
+                            } else {
+                              getCategoriesList();
+                            }
+                          });
+                          setState(() {});
+                        },
+                        onFieldSubmitted: (val) {},
+                        autofocus: true,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: blackFont,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        cursorWidth: 1.5,
+                        cursorColor: navyBlue,
+                        decoration: InputDecoration(
+                          hintStyle: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: darkGrey,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              Icons.filter_alt_rounded,
+                              color: navyBlue,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              changeState(() {
+                                if (search != null) {
+                                  seacrhCategory(search);
+                                } else {
+                                  getCategoriesList();
+                                }
+                              });
+                              setState(() {});
+                            },
+                          ),
+                          hintText: "",
+                          fillColor: Colors.white,
+                          filled: true,
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 10),
+                          prefix: const Padding(
+                            padding: EdgeInsets.only(left: 16),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: dividerColor,
+                              width: 1.0,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: navyBlue,
+                              width: 1.0,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: dividerColor,
+                              width: 1.0,
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: dividerColor,
+                              width: 1.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  Divider(
+                    color: darkGrey.withOpacity(.5),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.48,
+                    child: NotificationListener<ScrollEndNotification>(
+                      onNotification: (scrollEnd) {
+                        final metrics = scrollEnd.metrics;
+                        if (metrics.atEdge) {
+                          bool isTop = metrics.pixels == 0;
+                          if (!isTop) {
+                            changeState(() {});
+                          }
+                        }
+                        return true;
+                      },
+                      child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        controller: _categoryScrollController,
+                        shrinkWrap: true,
+                        itemCount: categoriesList.length,
+                        itemBuilder: (context, index) {
+                          CategoryListData category = categoriesList[index];
+                          return CheckboxListTile(
+                            value: displayCategory!.contains(category.name)
+                                ? true
+                                : false,
+                            onChanged: (isChecked) {
+                              changeState(() {
+                                categoryCheckMark[category.name!] = isChecked!;
+                              });
+                              if (selectedCategory!.contains(category.slug)) {
+                                selectedCategory!.remove(category.slug);
+                                displayCategory!.remove(category.name);
+                              } else {
+                                selectedCategory!.add(category.slug!);
+                                displayCategory!.add(category.name!);
+                              }
+                            },
+                            title: Text(
+                              category.name!,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),

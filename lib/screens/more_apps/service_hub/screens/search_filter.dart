@@ -647,7 +647,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
             onPressed: () {
               print(filterMap);
 
-              Navigator.pushNamed(context, Routes.SEARCH_SERVICES,
+              Navigator.pushNamed(context, Routes.JOBS_SEARCH,
                   arguments: {'filterMap':filterMap});
               // Navigator.pop(context, filterMap);
             },

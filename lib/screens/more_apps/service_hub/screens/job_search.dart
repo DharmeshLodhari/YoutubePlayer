@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
@@ -14,7 +17,8 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../data/state_notifier.dart';
 
 class JobsSearch extends StatefulWidget {
-  const JobsSearch({Key? key}) : super(key: key);
+  JobsSearch({Key? key, this.filterMap}) : super(key: key);
+  Map<String, dynamic>? filterMap;
 
   @override
   State<JobsSearch> createState() => _JobsSearchState();
@@ -56,11 +60,13 @@ class _JobsSearchState extends State<JobsSearch> {
         var result = await ServiceHubAuthService().getActiveJobListing(
             next, previous,
             search: searchController.text,
-            category: category,
-            sortby: sortby,
-            priceFrom: priceFrom,
-            priceTo: priceTo,
-            location: location);
+            category: widget.filterMap?['category'] ?? category,
+            sortby: widget.filterMap?['sortby'] ?? sortby,
+            priceFrom: widget.filterMap?['priceFrom'] ?? priceFrom,
+            priceTo: widget.filterMap?['priceTo'] ?? priceTo,
+            location: widget.filterMap?['location'] ?? location);
+
+        logger.d('active............ ${result!.toJson()}');
 
         if (result == null) {
           if (mounted) {
@@ -99,6 +105,15 @@ class _JobsSearchState extends State<JobsSearch> {
         // ));
       }
     }
+  }
+
+  @override
+  void initState() {
+    print(
+        'widget.filterMap.toString()..............${widget.filterMap.toString()}');
+
+    getJobListing();
+    super.initState();
   }
 
   @override
@@ -313,7 +328,7 @@ class _JobsSearchState extends State<JobsSearch> {
             //         .then((value) => showFilterProductSheet());
             //   },
             // ),
-            hintText: "t",
+            hintText: "",
             fillColor: Colors.white,
             filled: true,
             contentPadding: EdgeInsets.symmetric(vertical: 10),

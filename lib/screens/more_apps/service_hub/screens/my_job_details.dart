@@ -1438,7 +1438,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
                 Navigator.pop(context);
               }
             }));
@@ -1524,7 +1524,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           aspectRatio: 2,
           viewportFraction: 1,
           initialPage: 0,
-          enableInfiniteScroll: true,
+          enableInfiniteScroll: false,
           reverse: false,
           autoPlayInterval: const Duration(seconds: 3),
           autoPlayAnimationDuration: const Duration(milliseconds: 800),

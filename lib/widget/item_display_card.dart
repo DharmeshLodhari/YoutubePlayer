@@ -308,7 +308,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
               }
             }));
   }
@@ -924,7 +924,7 @@ class _DisplayServiceState extends State<DisplayService> {
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
               }
             }));
   }

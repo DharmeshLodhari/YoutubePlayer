@@ -288,6 +288,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             dateText: 'Start Date',
                           ),
+
+                      const SizedBox(width: 20),
                           getPickDateEnd(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             dateText: 'End Date',
@@ -1068,7 +1070,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       labelText: AppLocalization.of(context)!.wantToGetDone,
       hintText: 'What\'s the description of the job',
       labelColor: blackFont,
-      maxLines: 3,
+      maxLines: 1,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -1362,121 +1364,125 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
-      Column(
-        crossAxisAlignment: crossAxisAlignment!,
-        children: [
-          Text(
-            dateText!,
-            style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          GestureDetector(
-            onTap: () {
-              showDatePicker(
-                builder: customThemeBuilder,
-                context: context,
-                initialDate: DateTime(DateTime.now().year, DateTime.now().month,
-                    DateTime.now().day),
-                firstDate: DateTime(DateTime.now().year, DateTime.now().month,
-                    DateTime.now().day),
-                lastDate: DateTime(2101),
-              ).then((value) {
-                jobAvailableFrom =
-                    DateTime(value!.year, value.month, value.day);
-
-                setState(() {});
-              }).catchError((error) {});
-            },
-            child: Container(
-                width: 160,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: darkGrey.withOpacity(.5))),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: darkGrey.withOpacity(.3)),
-                      child: SvgPicture.asset(
-                        'assets/images/Calendar.svg',
+      Expanded(
+        child: Column(
+          crossAxisAlignment: crossAxisAlignment!,
+          children: [
+            Text(
+              dateText!,
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+              onTap: () {
+                showDatePicker(
+                  builder: customThemeBuilder,
+                  context: context,
+                  initialDate: DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day),
+                  firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day),
+                  lastDate: DateTime(2101),
+                ).then((value) {
+                  jobAvailableFrom =
+                      DateTime(value!.year, value.month, value.day);
+      
+                  setState(() {});
+                }).catchError((error) {});
+              },
+              child: Container(
+                  width: 160,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: darkGrey.withOpacity(.5))),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: darkGrey.withOpacity(.3)),
+                        child: SvgPicture.asset(
+                          'assets/images/Calendar.svg',
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      formatDate(jobAvailableFrom),
-                    ),
-                  ],
-                )),
-          ),
-        ],
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        formatDate(jobAvailableFrom),
+                      ),
+                    ],
+                  )),
+            ),
+          ],
+        ),
       );
 
   getPickDateEnd({
     CrossAxisAlignment? crossAxisAlignment,
     String? dateText,
   }) =>
-      Column(
-        crossAxisAlignment: crossAxisAlignment!,
-        children: [
-          Text(
-            dateText!,
-            style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          GestureDetector(
-            onTap: () {
-              showDatePicker(
-                builder: customThemeBuilder,
-                context: context,
-                initialDate: DateTime(DateTime.now().year, DateTime.now().month,
-                    DateTime.now().day),
-                firstDate: DateTime(DateTime.now().year, DateTime.now().month,
-                    DateTime.now().day),
-                lastDate: DateTime(2101),
-              ).then((value) {
-                jobEndDate = DateTime(value!.year, value.month, value.day);
-
-                setState(() {});
-              }).catchError((error) {});
-            },
-            child: Container(
-                width: 160,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: darkGrey.withOpacity(.5))),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: darkGrey.withOpacity(.3)),
-                      child: SvgPicture.asset(
-                        'assets/images/Calendar.svg',
+      Expanded(
+        child: Column(
+          crossAxisAlignment: crossAxisAlignment!,
+          children: [
+            Text(
+              dateText!,
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+              onTap: () {
+                showDatePicker(
+                  builder: customThemeBuilder,
+                  context: context,
+                  initialDate: DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day),
+                  firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day),
+                  lastDate: DateTime(2101),
+                ).then((value) {
+                  jobEndDate = DateTime(value!.year, value.month, value.day);
+      
+                  setState(() {});
+                }).catchError((error) {});
+              },
+              child: Container(
+                  width: 160,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: darkGrey.withOpacity(.5))),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: darkGrey.withOpacity(.3)),
+                        child: SvgPicture.asset(
+                          'assets/images/Calendar.svg',
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      formatDate(jobEndDate),
-                    ),
-                  ],
-                )),
-          ),
-        ],
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        formatDate(jobEndDate),
+                      ),
+                    ],
+                  )),
+            ),
+          ],
+        ),
       );
 }
 

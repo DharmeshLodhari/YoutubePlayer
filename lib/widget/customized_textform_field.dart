@@ -155,12 +155,11 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           onFieldSubmitted: widget.onFieldSubmitted,
           textInputAction: widget.textInputAction,
           readOnly: widget.isReadOnly,
-          
+
           style: widget.textStyle ??
               TextStyle(
                   fontSize: widget.isPassword ? 20 : 16,
                   color: blackFont,
-                  
                   fontWeight: FontWeight.w600,
                   letterSpacing: widget.isPassword ? 2 : 0),
           // buildCounter: (BuildContext context,
@@ -214,7 +213,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             contentPadding: widget.contentPadding,
             enabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -225,7 +224,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 : null,
             disabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                       color: greyBorderColor,
                       width: widget.borderWidth != null
@@ -236,7 +235,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                 : null,
             focusedBorder: widget.hasBorder
                 ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                       color: navyBlue,
                       width: widget.borderWidth != null

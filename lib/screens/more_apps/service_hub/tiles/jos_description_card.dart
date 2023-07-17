@@ -63,7 +63,6 @@ class JobDescriptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('print job status${job!.status}');
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(

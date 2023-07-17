@@ -415,7 +415,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
               }
             }));
   }

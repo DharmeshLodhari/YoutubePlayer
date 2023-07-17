@@ -1330,7 +1330,7 @@ class _EditJobState extends State<EditJob> {
       controller: descriptionController,
       labelText: AppLocalization.of(context)!.wantToGetDone,
       labelColor: blackFont,
-      maxLines: 3,
+      maxLines: 1,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
