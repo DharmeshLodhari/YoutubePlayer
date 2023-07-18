@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/product/product_variant_list.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -13,13 +14,20 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../data/currency.dart';
+import '../../../../routes/route_constants.dart';
+import '../../../../utils/navigation_util.dart';
+import '../../../../widget/rounded_background_icon.dart';
 import '../shopping_auth.dart';
 
 class AddProduct extends StatefulWidget {
+  const AddProduct({Key? key}) : super(key: key);
+
   @override
   _AddProductState createState() => _AddProductState();
 }
@@ -35,7 +43,7 @@ class _AddProductState extends State<AddProduct> {
   ProductCondition? selectedProductCondition;
 
   int imageCount = 5;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<PickedFile> productImages = [];
   String productName = "";
   String productDescription = "";
@@ -45,6 +53,7 @@ class _AddProductState extends State<AddProduct> {
   String productPrice = "";
   String productManufacturer = "";
   bool productIsAvailable = false;
+  bool inventoryIsAvailable = false;
   bool productEnableInSuperStore = false;
   DateTime productAvailableFrom = DateTime.now();
   List<ProductCategory>? productCategories;
@@ -52,6 +61,8 @@ class _AddProductState extends State<AddProduct> {
       productCategoriesCopy; //To hold the full product category at all times.
   bool isLoading = false;
   bool isAPILoading = false;
+  int inventoryCount = 0;
+  Variant? variantData;
 
   @override
   void deactivate() {
@@ -128,42 +139,52 @@ class _AddProductState extends State<AddProduct> {
           )
         : SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Center(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       addImages(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       addTitleField(),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       getManufacturerField(),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       getAmountField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getCategoryField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getProductConditionField(),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       getAvailableFromField(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getProductShortDescription(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       getProductDescription(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       getIsAvailableField(),
-                      SizedBox(height: 16),
-                      getEnableInSuperStoreField(),
-                      SizedBox(height: 16),
+
+                      const SizedBox(height: 16),
+                      getInventoryFormField(),
+                      const SizedBox(height: 16),
+                      getIsInventoryAvailableField(),
+                      const SizedBox(height: 16),
+                      if(variantData == null)...[
+                        getAddVariationFormField(),
+                      ]else...[
+                        displaySelectedVariant(),
+                      ],
+
+                      const SizedBox(height: 16),
                       getSubmitButton(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -174,7 +195,7 @@ class _AddProductState extends State<AddProduct> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -189,7 +210,7 @@ class _AddProductState extends State<AddProduct> {
         scrollDirection: Axis.horizontal,
         itemCount: productImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != productImages.length
               ? showImage(index)
               : productImages.length != imageCount
@@ -206,7 +227,7 @@ class _AddProductState extends State<AddProduct> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -220,7 +241,7 @@ class _AddProductState extends State<AddProduct> {
                   SlydoAppIcon.add_image,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -282,7 +303,7 @@ class _AddProductState extends State<AddProduct> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
               decoration: BoxDecoration(
@@ -299,10 +320,10 @@ class _AddProductState extends State<AddProduct> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -415,7 +436,7 @@ class _AddProductState extends State<AddProduct> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -489,7 +510,7 @@ class _AddProductState extends State<AddProduct> {
     final pressedCategory = await showDialog<ProductCategory>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -582,7 +603,7 @@ class _AddProductState extends State<AddProduct> {
                     ? " (" + selectedProductCondition!.description + ")"
                     : "",
                 maxLines: 1,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                 ),
                 softWrap: false,
@@ -606,7 +627,7 @@ class _AddProductState extends State<AddProduct> {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -724,7 +745,7 @@ class _AddProductState extends State<AddProduct> {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.price,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       onChanged: (val) {
@@ -789,7 +810,10 @@ class _AddProductState extends State<AddProduct> {
           product.availableFrom = productAvailableFrom;
           product.enableInSuperStore = productEnableInSuperStore;
 
-          await _auth.addProduct(product).then((value) {
+          //the api call will first create the product then use the id from the
+          //response to save the variant
+          await _auth.addProduct(product, variantData!).then((value) {
+
             Navigator.pop(context);
             showToast(
                 message: AppLocalization.of(context)!.productAddedSuccessfully);
@@ -877,9 +901,272 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
+  Widget getInventoryFormField() {
+    return CustomizedDropDownField(
+      title: "Inventory (Available Quantity)",
+      child: SizedBox(
+        height: 55,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: ListTile(
+            dense: true,
+            title: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      color: greyBorderColor,
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(10))
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
+                  child: Text(
+                    inventoryCount.toString(),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 30.0),
+              child: RoundedBackgroundIcon(
+                backgroundColor: greyBorderColor,
+                icon: Icon(
+                  SlydoAppIcon.plus,
+                  color: blackFont,
+                  size: 14,
+                ),
+                onTap: () => addInventory()
+              ),
+            ),
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 30.0),
+              child: RoundedBackgroundIcon(
+                backgroundColor: greyBorderColor,
+                icon: Icon(
+                  SlydoAppIcon.minus,
+                  color: blackFont,
+                  size: 2,
+                ),
+                onTap: () => subtractInventory()
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void addInventory() {
+    setState(() {
+      inventoryCount++;
+    });
+  }
+
+  void subtractInventory() {
+    if (inventoryCount > 0) {
+      setState(() {
+        inventoryCount--;
+      });
+    }
+  }
+
+  Widget getIsInventoryAvailableField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        inventoryIsAvailable = !inventoryIsAvailable;
+        setState(() {});
+      },
+      isChecked: inventoryIsAvailable,
+      title: "Checking this field will automatically update the quantity when the product is purchased.",
+      fontSize: 10.0,
+      maxLines: 2,
+    );
+  }
+
+  Widget getAddVariationFormField() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+          'option': 'new',
+          'productId': '',
+        });
+
+        // Handle the result (map) received from Product Add New Option
+        if (result != null && result is Variant) {
+          //save the variant details for later use
+          variantData = result;
+          if(mounted)setState(() {});
+        }
+      },
+      child: CustomizedDropDownField(
+        title: "Option",
+        child: ListTile(
+          dense: true,
+          title: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: Text(
+                'Add different variation like colour & size',
+                style: TextStyle(
+                  color: blackFont,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          subtitle: Container(
+            padding: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+            margin: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: navyBlue,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10))
+            ),
+            child: Center(
+              child: Text(
+                'Create Variant',
+                style: TextStyle(
+                  color: navyBlue,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget displaySelectedVariant(){
+    return CustomizedDropDownField(
+      title: "Variant",
+      borderWidth: 0.0,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+        child: Card(
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.zero,
+          shadowColor: boxShadowTwo,
+          elevation: 0,
+          child: Container(
+            decoration: decorateBox(),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    dense: true,
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          appendStringDot(variantData!.title!, 10),
+                          maxLines: 1,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18),
+                        ),
+                        Text(
+                          'Available . ${variantData!.quantity!}',
+                          maxLines: 1,
+                          style: TextStyle(
+                              color: blackFont.withOpacity(.5),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14),
+                        ),
+                      ],
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            worldCurrencies[variantData!.currency!]!,
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontSize: 18.0,
+                                color: blackFont,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            moneyDisplayNormalizer(
+                                int.parse(variantData!.price.toString())),
+                            style: TextStyle(
+                                fontSize: 18.0,
+                                color: blackFont,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    leading: getVariantLeading(),
+                    trailing: getVariantTrailing(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+  }
+
+  Widget getVariantLeading() {
+    return Container(
+      width: 100,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        image: DecorationImage(
+            image: FileImage(
+              File(variantData!.localImages![0].path),
+            ),
+            fit: BoxFit.cover),
+      ),
+    );
+  }
+
+  Widget getVariantTrailing() {
+
+    return IconButton(
+      padding: const EdgeInsets.only(right: 6),
+      alignment: Alignment.topRight,
+      icon: Container(
+        decoration: BoxDecoration(
+          color: iconBtnGrey,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Icon(
+          SlydoAppIcon.remove,
+          color: blackFont,
+          size: 15,
+        ),
+      ),
+      onPressed: () {
+        setState(() {
+          variantData = null;
+        });
+      },
+    );
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
+
 }

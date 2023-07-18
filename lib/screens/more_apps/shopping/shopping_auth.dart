@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
@@ -282,6 +283,7 @@ class ShoppingAuthService extends AuthService {
     product.rating = formatRating(item['rating'] ?? 0.0);
     product.canRate = item["can_rate"] ?? false;
     product.enableInSuperStore = item["enable_in_superstore"] ?? false;
+    product.variant = item["variants"] ?? null;
 
     return product;
   }
@@ -358,7 +360,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Add Product
-  Future<bool> addProduct(Product product) async {
+  Future<bool> addProduct(Product product, Variant item) async {
     var headers = await getAuthHeaders();
     var url = AppConfig.baseUrl + "/api/v1/products/";
 
@@ -398,7 +400,189 @@ class ShoppingAuthService extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     var responseBody = await response.stream.bytesToString();
+    bool backValue = false;
     if (response.statusCode == 201) {
+
+      debugPrint('DATA from add ---> ${responseBody}');
+
+      var jsonData = json.decode(responseBody);
+      String productId = "";
+      if(jsonData['id'] != null || jsonData['id'] != ""){
+        productId = jsonData['id'];
+      }else{
+         return backValue = true;
+      }
+
+      debugPrint('DATA from productId ---> ${productId}');
+
+      if(item == null){
+        return backValue = true;
+      }else{
+        //add variant to server first
+        await addVariant(item, productId).then((value) {
+          return backValue = true;
+
+        }).catchError((error) {
+          debugPrint(error.toString());
+          // showToast(message: error.toString());
+           backValue = false;
+        });
+      }
+
+      return backValue;
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
+      throw responseBody;
+    }
+  }
+
+  // Add Variant
+  Future<bool> addVariant(Variant item, String productId) async {
+    var headers = await getAuthHeaders();
+    var url = AppConfig.baseUrl + "/api/v1/products/$productId/variants/";
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    Map<dynamic, dynamic> _data = item.toMap();
+    debugPrint('DATA ---> $_data');
+    // _data["available_from"] = dateToString(variant.availableFrom!);
+    _data["image_count"] = item.localImages!.length;
+
+    _data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
+
+    List<MultipartFile> newList = [];
+
+    debugPrint('DATA from pictures ---> ${item.localImages!.length}');
+
+    for (int i = 0; i < item.localImages!.length; i++) {
+      // Add fields
+      request.fields["imagefile_$i"] = item.localImages![i].path;
+
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath(
+          "imagefile_$i", item.localImages![i].path);
+
+      // Add multipart to newList
+      newList.add(multipartFile);
+    }
+
+    debugPrint('DATA from pictures 2 ---> ${newList}');
+    // Add multipart to request
+    request.files.addAll(newList);
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
+      throw responseBody;
+    }
+  }
+
+  // List the  variant with pagination
+  Future<Map<String, dynamic>?> getVariantList(
+      String productId, String? next, String? previous) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/products/$productId/variants/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('SEARCH BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        // "count": jsonData["count"],
+        // "next": jsonData["next"],
+        // "previous": jsonData["previous"],
+        "results": jsonData,
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // delete single variant
+  Future<bool> deleteVariant(String variantId) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/variants/$variantId/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // Update Variant
+  Future<bool> updateVariant(Variant item, String variantId) async {
+    var headers = await getAuthHeaders();
+    var url = AppConfig.baseUrl + "/api/v1/products/variants/$variantId/";
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    Map<dynamic, dynamic> _data = item.toMap();
+    debugPrint('DATA from ---> $_data');
+    // _data["available_from"] = dateToString(variant.availableFrom!);
+    _data["image_count"] = item.localImages!.length;
+
+    _data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
+
+    List<MultipartFile> newList = [];
+
+    debugPrint('DATA from pictures ---> ${item.localImages!.length}');
+
+    for (int i = 0; i < item.localImages!.length; i++) {
+      // Add fields
+      request.fields["imagefile_$i"] = item.localImages![i].path;
+
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath(
+          "imagefile_$i", item.localImages![i].path);
+
+      // Add multipart to newList
+      newList.add(multipartFile);
+    }
+
+    debugPrint('DATA from pictures 2 ---> ${newList}');
+    // Add multipart to request
+    request.files.addAll(newList);
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 201|| response.statusCode == 200) {
       return true;
     } else {
       debugPrint(

@@ -169,6 +169,9 @@ import '../screens/more_apps/service_hub/screens/preview_job_detail.dart';
 import '../screens/more_apps/service_hub/screens/search_filter.dart';
 import '../screens/more_apps/service_hub/screens/search_services.dart';
 import '../screens/more_apps/service_hub/service_hub_dashboard.dart';
+import '../screens/more_apps/shopping/forms/product/product_add_new_option.dart';
+import '../screens/more_apps/shopping/forms/product/product_variant_list.dart';
+import '../screens/more_apps/shopping/forms/product/product_variant_update.dart';
 import '../screens/super_store/near_by_list_screen.dart';
 import '../screens/super_store/search_nearby_business.dart';
 import '../screens/super_store/super_store.dart';
@@ -1616,6 +1619,37 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
+      case Routes.PRODUCT_VARIANT_LIST:
+        return PageTransition(
+          child: ProductVariantList(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.PRODUCT_NEW_OPTION:
+        return PageTransition(
+          child: ProductAddNewOption(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.PRODUCT_VARIANT_UPDATE:
+        return PageTransition(
+          child: ProductVariantUpdate(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
 
       default:
         // If there is no such named route in the switch statement, e.g. /third
