@@ -11,7 +11,6 @@ import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
-import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -86,6 +85,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   String? productId;
   bool productIsLoading = false;
   late YarnDashboardBloc yarnDashboardBloc;
+  List<Variant> productVariantList = [];
+  List<String> sizes = [];
+  List<String> colors = [];
 
   @override
   void initState() {
@@ -126,6 +128,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       product = value;
       imgList = product!.serverImages;
       productIsLoading = false;
+      productVariantList = Variant.convertToVariantList(product!.variant!);
+
+      for (var variant in productVariantList) {
+        if (variant.type == 'Size' && variant.type != null) {
+          sizes.add(variant.value.toString());
+        }
+        if (variant.color == 'Color' && variant.color != null) {
+          colors.add(variant.color.toString());
+        }
+      }
+
+      debugPrint('fola pro:::: $sizes');
+
       if (mounted) setState(() {});
     }).catchError((e) {
       if (mounted)

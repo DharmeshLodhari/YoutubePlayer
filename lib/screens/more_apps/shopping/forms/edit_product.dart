@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -17,14 +16,20 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
+import '../../../../data/currency.dart';
+import '../../../../routes/route_constants.dart';
+import '../../../../utils/navigation_util.dart';
+import '../../../../widget/rounded_background_icon.dart';
+import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class EditProduct extends StatefulWidget {
   var arguments;
 
-  EditProduct({this.arguments});
+
+  EditProduct({Key? key, this.arguments}) : super(key: key);
+
 
   @override
   _EditProductState createState() => _EditProductState(arguments: arguments);
@@ -44,6 +49,7 @@ class _EditProductState extends State<EditProduct> {
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
+  ScrollController scrollControllerVariant = ScrollController();
   List<PickedFile> productLocalImages = [];
   List<String?> productImagesFromServer = [];
   String? productName = "";
@@ -69,6 +75,10 @@ class _EditProductState extends State<EditProduct> {
       TextEditingController();
   TextEditingController productManufacturerController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
+  int inventoryCount = 0;
+  // List<Variant>? variantData;
+  List<Variant> productVariantList = [];
+  bool inventoryIsAvailable = false;
 
   @override
   void deactivate() {
@@ -105,8 +115,8 @@ class _EditProductState extends State<EditProduct> {
       if (mounted) {
         setState(() {
           currentProduct = value;
-          // assigning to our edit controllers
 
+          // assigning to our edit controllers
           productTitleController.text = currentProduct.name!;
           productDescriptionController.text = currentProduct.description!;
 
@@ -131,11 +141,10 @@ class _EditProductState extends State<EditProduct> {
           productAvailableFrom = currentProduct.availableFrom;
           productEnableInSuperStore = currentProduct.enableInSuperStore!;
 
-          // assigning the dropdown from currentProduct
-          print('CURRENT PRODUCT CATEGORIES :::: ${productCategories}');
+          //convert list to variant
+          productVariantList = Variant.convertToVariantList(currentProduct.variant!);
 
-          print(
-              'CURRENT CATEGORY :::: ${messageDecoderWithEmoji(currentProduct.category)}');
+          // assigning the dropdown from currentProduct
 
           productCategories?.forEach((catagory) {
             print('CURRENT CATEGORY :::: ${catagory}');
@@ -145,7 +154,6 @@ class _EditProductState extends State<EditProduct> {
               selectedProductCategory = catagory;
             }
           });
-          print('CURRENT PRODUCT :::: ${selectedProductCategory}');
           print('CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
           conditions.forEach((condition) {
@@ -156,10 +164,9 @@ class _EditProductState extends State<EditProduct> {
         });
       }
     });
-    //     .catchError((error) {
-    //   showToast(message: error.toString());
-    // });
+
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -220,11 +227,11 @@ class _EditProductState extends State<EditProduct> {
                       checkImageLimitForServerImage()
                           ? viewServerImages()
                           : Container(),
-                      checkImageLimitForServerImage()
-                          ? SizedBox(
-                              height: 8,
-                            )
-                          : Container(),
+                      // checkImageLimitForServerImage()
+                      //     ? SizedBox(
+                      //         height: 8,
+                      //       )
+                      //     : Container(),
                       checkImageLimitForLocalImage()
                           ? addLocalImages()
                           : Container(),
@@ -252,8 +259,16 @@ class _EditProductState extends State<EditProduct> {
                       getProductDescription(),
                       SizedBox(height: 10),
                       getIsAvailableField(),
+                      const SizedBox(height: 16),
+                      getInventoryFormField(),
                       SizedBox(height: 16),
                       getEnableInSuperStoreField(),
+                      const SizedBox(height: 16),
+                      if(productVariantList == null || productVariantList.isEmpty)...[
+                        getAddVariationFormField(),
+                      ]else...[
+                        displaySelectedVariant(),
+                      ],
                       SizedBox(height: 16),
                       getSubmitButton(),
                       SizedBox(height: 20),
@@ -1019,6 +1034,334 @@ class _EditProductState extends State<EditProduct> {
     }
   }
 
+  Widget getInventoryFormField() {
+    return CustomizedDropDownField(
+      title: "Inventory (Available Quantity)",
+      child: SizedBox(
+        height: 55,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: ListTile(
+            dense: true,
+            title: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      color: greyBorderColor,
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(10))
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
+                  child: Text(
+                    inventoryCount.toString(),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 30.0),
+              child: RoundedBackgroundIcon(
+                  backgroundColor: greyBorderColor,
+                  icon: Icon(
+                    SlydoAppIcon.plus,
+                    color: blackFont,
+                    size: 14,
+                  ),
+                  onTap: () => addInventory()
+              ),
+            ),
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 30.0),
+              child: RoundedBackgroundIcon(
+                  backgroundColor: greyBorderColor,
+                  icon: Icon(
+                    SlydoAppIcon.minus,
+                    color: blackFont,
+                    size: 2,
+                  ),
+                  onTap: () => subtractInventory()
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void addInventory() {
+    setState(() {
+      inventoryCount++;
+    });
+  }
+
+  void subtractInventory() {
+    if (inventoryCount > 0) {
+      setState(() {
+        inventoryCount--;
+      });
+    }
+  }
+
+  Widget getIsInventoryAvailableField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        inventoryIsAvailable = !inventoryIsAvailable;
+        setState(() {});
+      },
+      isChecked: inventoryIsAvailable,
+      title: "Checking this field will automatically update the quantity when the product is purchased.",
+      fontSize: 10.0,
+      maxLines: 2,
+    );
+  }
+
+  Widget getAddVariationFormField() {
+    return GestureDetector(
+      onTap: () async {
+        NavigationUtil.pushNamed(context, routeName: Routes.PRODUCT_VARIANT_LIST);
+        // Navigate to PRODUCT NEW OPTION and wait for the result
+        // final result = await  NavigationUtil.pushNamed(context, routeName: Routes.PRODUCT_NEW_OPTION);
+        //
+        // // Handle the result (map) received from Product Add New Option
+        // if (result != null && result is Variant) {
+        //   //save the variant details for later use
+        //   variantData = result;
+        //   if(mounted)setState(() {});
+        // }
+      },
+      child: CustomizedDropDownField(
+        title: "Option",
+        child: ListTile(
+          dense: true,
+          title: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: Text(
+                'Add different variation like colour & size',
+                style: TextStyle(
+                  color: blackFont,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          subtitle: Container(
+            padding: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+            margin: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: navyBlue,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10))
+            ),
+            child: Center(
+              child: Text(
+                'Create Variant',
+                style: TextStyle(
+                  color: navyBlue,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget displaySelectedVariant(){
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Variant',
+              maxLines: 1,
+              style: TextStyle(
+                  color: blackFont.withOpacity(.5),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            GestureDetector(
+              onTap: (){
+                final data = Navigator.of(context).pushNamed(Routes.PRODUCT_VARIANT_LIST,
+                  arguments: {
+                  'productId': productId,
+                });
+
+                // Handle the result (map) received from PRODUCT_VARIANT_LIST
+                if (data != null && data is List<Variant>) {
+                  //clear previous list, update the list
+                  debugPrint('fola data::: ${data}');
+                  debugPrint('fola data 2::: ${data.runtimeType}');
+
+                  // productVariantList = [];
+                  // productVariantList = Variant.convertToVariantList(data);
+                  // productVariantList = data;
+
+                  // variantData = data;
+                  if(mounted)setState(() {});
+                }
+              },
+              child: Text(
+                'See all',
+                maxLines: 1,
+                style: TextStyle(
+                    color: navyBlue,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 5.0),
+        _buildProductVariantList(),
+      ],
+    );
+
+  }
+
+  Widget _buildProductVariantList() {
+    return Container(
+      height: 200,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        //+1 for progressbar
+        itemCount: productVariantList.length + 1,
+        controller: scrollControllerVariant,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == productVariantList.length) {
+            return buildLoadingIndicator(isLoading: isLoading);
+          } else {
+            return productVariantTile(
+                  variant: productVariantList[index],
+                );
+          }
+        },
+
+      ),
+    );
+  }
+
+  Widget productVariantTile({required Variant variant}) {
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          // dense: variant.isDefault! ? true : false,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                appendStringDot(variant.title!, 20),
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18),
+              ),
+              Text(
+                'Available . ${variant.quantity!}',
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    worldCurrencies[variant.currency!]!,
+                    style: TextStyle(
+                        fontFamily: "Roboto",
+                        fontSize: 18.0,
+                        color: blackFont,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(
+                        int.parse(variant.price.toString())),
+                    style: TextStyle(
+                        fontSize: 18.0,
+                        color: blackFont,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ],
+              )
+            ],
+          ),
+          leading: GestureDetector(
+            onTap: () {
+              String? url = variant.serverImages![0]!;
+              Navigator.of(context)
+                  .pushNamed("/photo-viewer", arguments: url);
+            },
+            child: checkProductImage(variant),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget checkProductImage(Variant variant) {
+    // Retrieve the first image from the 'pictures' list
+    String? url = variant.serverImages![0]!;
+
+    String imageUrl = url.replaceAll('https//', 'https://');
+    if (url == "") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(variant.title!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 100,
+        child: CustomBoxShadow(
+          child: Card(
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: boxShadowTwo,
+            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Container(
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: NetworkImage(
+                      imageUrl,
+                    ),
+                    fit: BoxFit.cover),
+              ),
+            ),
+          ),
+        ),
+      );
+
+    }
+  }
+
   @override
   void dispose() {
     productTitleController.dispose();
@@ -1027,6 +1370,7 @@ class _EditProductState extends State<EditProduct> {
     productManufacturerController.dispose();
     productPriceController.dispose();
     _scrollController.dispose();
+    scrollControllerVariant.dispose();
     super.dispose();
   }
 }

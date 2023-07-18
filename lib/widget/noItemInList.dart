@@ -5,9 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 // ignore: must_be_immutable
 class NoItemInList extends StatelessWidget {
   String msg = "";
+  String? title = "";
   bool isResult;
 
-  NoItemInList({required this.msg, this.isResult = true});
+  NoItemInList({required this.msg, this.isResult = true, this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class NoItemInList extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Expanded(
+            const Expanded(
               child: SizedBox(height: 1),
             ),
             Expanded(
@@ -28,7 +29,23 @@ class NoItemInList extends StatelessWidget {
                 width: 150,
               ),
             ),
-            SizedBox(height: 16),
+
+            if(title != null || title == '')...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  title!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
@@ -41,11 +58,11 @@ class NoItemInList extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(
+            const Expanded(
                 child: SizedBox(
               height: 2,
             )),
-            Expanded(
+            const Expanded(
                 child: SizedBox(
               height: 2,
             )),

@@ -813,6 +813,13 @@ class AppLocalization {
     );
   }
 
+  String get variant {
+    return Intl.message(
+      "Variant",
+      name: "variant",
+    );
+  }
+
   String get cards {
     return Intl.message(
       "Cards",
@@ -904,6 +911,41 @@ class AppLocalization {
     );
   }
 
+  String get noOptionYetDetail {
+    return Intl.message(
+      "No option yet, when you create an option you will see them on this page",
+      name: "noOptionYetDetail",
+    );
+  }
+
+  String get noVariantDetail {
+    return Intl.message(
+      "No variant yet, when you create an option you will see them on this page",
+      name: "noVariantDetail",
+    );
+  }
+
+  String get noOptionYet {
+    return Intl.message(
+      "No Option Yet",
+      name: "noOptionYet",
+    );
+  }
+
+  String get noVariantYet {
+    return Intl.message(
+      "No Variant Yet",
+      name: "noVariantYet",
+    );
+  }
+
+  String get newOption {
+    return Intl.message(
+      "New Option",
+      name: "newOption",
+    );
+  }
+
   String get youDontHaveAnyCreditCardPleaseAddOne {
     return Intl.message(
       "You don't have any credit card. Please Add one.",
@@ -960,6 +1002,13 @@ class AppLocalization {
     );
   }
 
+  String get variantDeletedSuccessfully {
+    return Intl.message(
+      "Variant Deleted Successfully",
+      name: "variantDeletedSuccessfully",
+    );
+  }
+
   String get cardDeletedSuccessfully {
     return Intl.message(
       "Credit Card Deleted Successfully",
@@ -971,6 +1020,13 @@ class AppLocalization {
     return Intl.message(
       "Account is not deleted !!",
       name: "accountIsNotDeleted",
+    );
+  }
+
+  String get variantIsNotDeleted {
+    return Intl.message(
+      "Variant is not deleted !!",
+      name: "variantIsNotDeleted",
     );
   }
 
@@ -1892,10 +1948,52 @@ class AppLocalization {
     );
   }
 
+  String get size {
+    return Intl.message(
+      "Size",
+      name: "size",
+    );
+  }
+
+  String get title {
+    return Intl.message(
+      "Title",
+      name: "title",
+    );
+  }
+
+  String get color {
+    return Intl.message(
+      "Color",
+      name: "color",
+    );
+  }
+
   String get pleaseEnterProductName {
     return Intl.message(
       "Please Enter Product Name",
       name: "pleaseEnterProductName",
+    );
+  }
+
+  String get pleaseEnterColor {
+    return Intl.message(
+      "Please Enter Color",
+      name: "pleaseEnterColor",
+    );
+  }
+
+  String get pleaseEnterSize {
+    return Intl.message(
+      "Please Enter Size",
+      name: "pleaseEnterSize",
+    );
+  }
+
+  String get pleaseEnterTitle {
+    return Intl.message(
+      "Please Enter Title",
+      name: "pleaseEnterTitle",
     );
   }
 
@@ -1917,6 +2015,13 @@ class AppLocalization {
     return Intl.message(
       "Price",
       name: "price",
+    );
+  }
+
+  String get comparePrice {
+    return Intl.message(
+      "Compare Price At",
+      name: "comparePrice",
     );
   }
 
@@ -1980,6 +2085,13 @@ class AppLocalization {
     return Intl.message(
       "Please Select Product Category and Condition",
       name: "pleaseSelectProductCategoryAndCondition",
+    );
+  }
+
+  String get pleaseSelectCategory {
+    return Intl.message(
+      "Please Select Category",
+      name: "pleaseSelectCategory",
     );
   }
 

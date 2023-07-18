@@ -177,5 +177,8 @@ class Routes {
   static const String ADD_SHIPPING_OPTIONS = "/add-shipping-Option";
   static const String EDIT_SHIPPING_OPTIONS = "/edit-shipping-Option";
   static const String NEAR_BY_LIST_SCREEN = "/near-by-list-screen";
+  static const String PRODUCT_VARIANT_LIST = "/product-variant-list";
+  static const String PRODUCT_NEW_OPTION = "/product-new-option";
+  static const String PRODUCT_VARIANT_UPDATE = "/product-variant-update";
 
 }
