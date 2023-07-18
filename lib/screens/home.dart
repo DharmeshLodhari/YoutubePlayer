@@ -591,14 +591,14 @@ class _HomeState extends State<Home> {
           ),
           onTap: () {
             hideBalance();
-            if (getIt<AppConfigurationBloc>()
-                    .appConfigurationModel
-                    ?.enablePayment ==
-                true) {
+            // if (getIt<AppConfigurationBloc>()
+            //         .appConfigurationModel
+            //         ?.enablePayment ==
+            //     true) {
               Navigator.pushNamed(context, Routes.ACCOUNTS);
-            } else {
-              showToast(message: 'Payment not available at the moment');
-            }
+            // } else {
+            //   showToast(message: 'Payment not available at the moment');
+            // }
           }),
     );
   }
@@ -630,15 +630,15 @@ class _HomeState extends State<Home> {
           ),
           onTap: () {
             hideBalance();
-            if (getIt<AppConfigurationBloc>()
-                    .appConfigurationModel
-                    ?.enablePayment ==
-                true) {
+            // if (getIt<AppConfigurationBloc>()
+            //         .appConfigurationModel
+            //         ?.enablePayment ==
+            //     true) {
               Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
                   arguments: <String, bool>{'isFromProfile': true});
-            } else {
-              showToast(message: 'Payment not available at the moment');
-            }
+            // } else {
+            //   showToast(message: 'Payment not available at the moment');
+            // }
           }),
     );
   }
