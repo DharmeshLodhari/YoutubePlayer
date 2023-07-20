@@ -568,7 +568,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
     );
   }
 
-
   Widget searchIcon() {
     return IconButton(
       icon: Icon(

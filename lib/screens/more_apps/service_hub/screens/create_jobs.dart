@@ -96,6 +96,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   int? categoryCount = 0;
 
   bool isLocationLoading = false;
+  bool checkedValue = false;
   bool noLocinList = false;
   int? locationCount = 0;
   String? locationNext = "";
@@ -195,8 +196,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
     super.initState();
   }
-  
-  
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -238,14 +238,14 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 12.0),
-          child: GestureDetector(
-            onTap: () => pickImage(),
-            child: SvgPicture.asset('assets/images/cam_pic.svg',
-                height: 20, width: 20),
-          ),
-        )
+        // Padding(
+        //   padding: const EdgeInsets.only(right: 12.0),
+        //   child: GestureDetector(
+        //     onTap: () => pickImage(),
+        //     child: SvgPicture.asset('assets/images/cam_pic.svg',
+        //         height: 20, width: 20),
+        //   ),
+        // )
       ],
     );
   }
@@ -265,7 +265,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       const SizedBox(height: 10),
-                      jobImages.isEmpty ? const SizedBox.shrink() : addImages(),
+                      addImages(),
                       const SizedBox(height: 14),
                       addJobTitleField(),
                       const SizedBox(
@@ -288,8 +288,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             dateText: 'Start Date',
                           ),
-
-                      const SizedBox(width: 20),
+                          const SizedBox(width: 20),
                           getPickDateEnd(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             dateText: 'End Date',
@@ -300,6 +299,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                       getTaskFeeRadioBtn(),
                       const SizedBox(height: 15),
                       getTaskMethodRadioBtn(),
+                      const SizedBox(height: 20),
+                      getListNowCheckButton(),
                       const SizedBox(height: 20),
                       getAmountField(),
                       const SizedBox(
@@ -355,6 +356,31 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
         ),
         getTaskMethodRow(),
+      ],
+    );
+  }
+
+  Column getListNowCheckButton() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'List Job Now',
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
+        ),
+        CheckboxListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text("List Job"),
+          value: checkedValue,
+          onChanged: (newValue) {
+            setState(() {
+              checkedValue = newValue!;
+            });
+          },
+          controlAffinity:
+              ListTileControlAffinity.leading, //  <-- leading Checkbox
+        )
       ],
     );
   }
@@ -462,7 +488,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget addImages() {
-
     return Container(
       height: 100,
       child: ListView.builder(
@@ -474,8 +499,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           child: index == 0
               ? addImageButton()
               : index <= jobImages.length
-              ? showImage(index - 1)
-              : SizedBox.shrink(),
+                  ? showImage(index - 1)
+                  : SizedBox.shrink(),
         ),
       ),
     );
@@ -757,7 +782,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                             locationState = location.name!;
                             Navigator.pop(context);
                             setState(() {});
-                            
                           },
                         );
                       },
@@ -1224,10 +1248,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             'caption': selectedCategory,
             'picture_count': jobImages.length,
             'file': '',
+            'list_now': checkedValue,
             'localImages': jobImages.map((file) => File(file.path)).toList(),
           }).then((value) {
             Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
-                arguments: {'jobId': value!.id, 'listingId': '','job':value});
+                arguments: {'jobId': value!.id, 'listingId': '', 'job': value});
             showToast(
                 message: AppLocalization.of(context)!.jobAddedSuccessfully);
           }).catchError((error) {
@@ -1381,15 +1406,15 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 showDatePicker(
                   builder: customThemeBuilder,
                   context: context,
-                  initialDate: DateTime(DateTime.now().year, DateTime.now().month,
-                      DateTime.now().day),
+                  initialDate: DateTime(DateTime.now().year,
+                      DateTime.now().month, DateTime.now().day),
                   firstDate: DateTime(DateTime.now().year, DateTime.now().month,
                       DateTime.now().day),
                   lastDate: DateTime(2101),
                 ).then((value) {
                   jobAvailableFrom =
                       DateTime(value!.year, value.month, value.day);
-      
+
                   setState(() {});
                 }).catchError((error) {});
               },
@@ -1444,14 +1469,14 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 showDatePicker(
                   builder: customThemeBuilder,
                   context: context,
-                  initialDate: DateTime(DateTime.now().year, DateTime.now().month,
-                      DateTime.now().day),
+                  initialDate: DateTime(DateTime.now().year,
+                      DateTime.now().month, DateTime.now().day),
                   firstDate: DateTime(DateTime.now().year, DateTime.now().month,
                       DateTime.now().day),
                   lastDate: DateTime(2101),
                 ).then((value) {
                   jobEndDate = DateTime(value!.year, value.month, value.day);
-      
+
                   setState(() {});
                 }).catchError((error) {});
               },
