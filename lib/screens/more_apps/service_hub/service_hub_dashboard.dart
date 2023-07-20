@@ -201,47 +201,47 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
     );
   }
 
-  PopupMenuItem<String> getCreateJobBtn() {
-    return PopupMenuItem<String>(
-      value: 'Create Job',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/Edit.svg")),
-        title: const Text('Create Job'),
-      ),
-      // onTap: () {},
-    );
-  }
+  // PopupMenuItem<String> getCreateJobBtn() {
+  //   return PopupMenuItem<String>(
+  //     value: 'Create Job',
+  //     child: ListTile(
+  //       leading: Container(
+  //           height: 34,
+  //           width: 34,
+  //           alignment: Alignment.center,
+  //           decoration: const BoxDecoration(
+  //             borderRadius: BorderRadius.all(
+  //               Radius.circular(10),
+  //             ),
+  //             color: Color(0xfffafbff),
+  //           ),
+  //           child: SvgPicture.asset("assets/images/Edit.svg")),
+  //       title: const Text('Create Job'),
+  //     ),
+  //     // onTap: () {},
+  //   );
+  // }
 
-  PopupMenuItem<String> getMyJobBtn() {
-    return PopupMenuItem<String>(
-      value: 'My Job',
-      child: ListTile(
-        leading: Container(
-            height: 34,
-            width: 34,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-              color: Color(0xfffafbff),
-            ),
-            child: SvgPicture.asset("assets/images/Document.svg")),
-        title: const Text('My Job'),
-      ),
-      // onTap: () {},
-    );
-  }
+  // PopupMenuItem<String> getMyJobBtn() {
+  //   return PopupMenuItem<String>(
+  //     value: 'My Job',
+  //     child: ListTile(
+  //       leading: Container(
+  //           height: 34,
+  //           width: 34,
+  //           alignment: Alignment.center,
+  //           decoration: const BoxDecoration(
+  //             borderRadius: BorderRadius.all(
+  //               Radius.circular(10),
+  //             ),
+  //             color: Color(0xfffafbff),
+  //           ),
+  //           child: SvgPicture.asset("assets/images/Document.svg")),
+  //       title: const Text('My Job'),
+  //     ),
+  //     // onTap: () {},
+  //   );
+  // }
 
   Widget tabBar() {
     return PreferredSize(
