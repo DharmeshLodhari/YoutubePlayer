@@ -55,7 +55,6 @@ class _JobsSearchState extends State<JobsSearch> {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
-        print('active ${counter++}');
 
         var result = await ServiceHubAuthService().getActiveJobListing(
             next, previous,
@@ -66,7 +65,6 @@ class _JobsSearchState extends State<JobsSearch> {
             priceTo: widget.filterMap?['priceTo'] ?? priceTo,
             location: widget.filterMap?['location'] ?? location);
 
-        logger.d('active............ ${result!.toJson()}');
 
         if (result == null) {
           if (mounted) {
@@ -168,7 +166,10 @@ class _JobsSearchState extends State<JobsSearch> {
             previous = "";
             jobsList.clear();
             noItemInList = false;
+            if(mounted) setState(() {});
+
             getJobListing();
+
           }),
           child: Icon(
             SlydoAppIcon.filter,
