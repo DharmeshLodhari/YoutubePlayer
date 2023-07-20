@@ -46,6 +46,37 @@ class ServiceHubAuthService extends AuthService {
     return Future.error("$jsonData");
   }
 
+  // List the search category item with pagination
+  Future<Map<String, dynamic>?> getSearchCategoryList(
+      String url, String? next, String? previous) async {
+    debugPrint("URl:- $url");
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = getSecureUrl(url: next);
+    }
+    var headers = await getAuthHeaders();
+
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
   // get active job listing
 
   Future<ActiveJobListing?> getActiveJobListing(String? next, String? previous,
