@@ -814,9 +814,14 @@ class _AddProductState extends State<AddProduct> {
           //response to save the variant
           await _auth.addProduct(product, variantData!).then((value) {
 
+            var productId = value[1];
             Navigator.pop(context);
             showToast(
                 message: AppLocalization.of(context)!.productAddedSuccessfully);
+
+            Navigator.pushNamed(context, Routes.PRODUCT,
+                arguments: {"productId": productId});
+
           }).catchError((error) {
             debugPrint(error.toString());
             showToast(message: error.toString());

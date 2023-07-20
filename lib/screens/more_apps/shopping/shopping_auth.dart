@@ -360,7 +360,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Add Product
-  Future<bool> addProduct(Product product, Variant item) async {
+  Future<List<dynamic>> addProduct(Product product, Variant item) async {
     var headers = await getAuthHeaders();
     var url = AppConfig.baseUrl + "/api/v1/products/";
 
@@ -403,24 +403,27 @@ class ShoppingAuthService extends AuthService {
     bool backValue = false;
     if (response.statusCode == 201) {
 
-      debugPrint('DATA from add ---> ${responseBody}');
+      // debugPrint('DATA from add ---> ${responseBody}');
 
       var jsonData = json.decode(responseBody);
       String productId = "";
       if(jsonData['id'] != null || jsonData['id'] != ""){
         productId = jsonData['id'];
       }else{
-         return backValue = true;
+          backValue = true;
+         return [true, productId];
       }
 
-      debugPrint('DATA from productId ---> ${productId}');
+      // debugPrint('DATA from productId ---> ${productId}');
 
       if(item == null){
-        return backValue = true;
+         backValue = true;
+        return [backValue, productId];
       }else{
         //add variant to server first
         await addVariant(item, productId).then((value) {
-          return backValue = true;
+           backValue = true;
+          return [backValue, productId];
 
         }).catchError((error) {
           debugPrint(error.toString());
@@ -429,7 +432,7 @@ class ShoppingAuthService extends AuthService {
         });
       }
 
-      return backValue;
+      return [backValue, productId];
     } else {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");

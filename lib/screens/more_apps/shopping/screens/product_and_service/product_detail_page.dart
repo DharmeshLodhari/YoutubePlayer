@@ -960,52 +960,101 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildProductTitleAndPriceWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                //name,
-                messageDecoderWithEmoji(product!.name)!,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    //name,
+                    messageDecoderWithEmoji(product!.name)!,
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: blackFont,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          worldCurrencies[product!.currency!]!,
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              fontSize: 18.0,
+                              color: navyBlue,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          moneyDisplayNormalizer(
+                              int.parse(product!.price.toString())),
+                          style: TextStyle(
+                              fontSize: 18.0,
+                              color: navyBlue,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  getRating(numberOfRating: product?.rating!.toInt())
+                ],
+              ),
+            ),
+            copyQrCode(),
+          ],
+        ),
+
+        if(colors.isNotEmpty)...[
+          SizedBox(height: 10.0,),
+          Row(
+            children: [
+              Text('Color : ',
                 style: TextStyle(
                     fontSize: 16,
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(width: 5.0,),
+              Text(
+                colors[0],
+                style: TextStyle(
+                    fontSize: 14,
                     color: blackFont,
                     fontWeight: FontWeight.bold),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      worldCurrencies[product!.currency!]!,
-                      style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontSize: 18.0,
-                          color: navyBlue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      moneyDisplayNormalizer(
-                          int.parse(product!.price.toString())),
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          color: navyBlue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 5),
-              getRating(numberOfRating: product?.rating!.toInt())
             ],
           ),
-        ),
-        copyQrCode(),
+        ],
+        if(sizes.isNotEmpty)...[
+          SizedBox(height: 10.0,),
+          Row(
+            children: [
+              Text('Size : ',
+                style: TextStyle(
+                    fontSize: 16,
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(width: 5.0,),
+              Text(
+                sizes[0],
+                style: TextStyle(
+                    fontSize: 14,
+                    color: blackFont,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ],
+
       ],
     );
   }
