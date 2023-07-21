@@ -15,6 +15,8 @@ import '../../../../../../widget/rounded_background_icon.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 
+import '../../../../widget/debouncer_widget.dart';
+
 class SearchServices extends StatefulWidget {
    SearchServices({Key? key, }) : super(key: key);
 
@@ -65,6 +67,7 @@ class _SearchServicesState extends State<SearchServices> {
   String? sortBy;
   String? sortByMenuItemValue = 'Best match';
   TextEditingController searchController = TextEditingController();
+  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   void initState() {
