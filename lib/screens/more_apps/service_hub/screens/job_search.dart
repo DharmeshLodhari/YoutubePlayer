@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../data/state_notifier.dart';
+import '../../../../widget/debouncer_widget.dart';
 
 class JobsSearch extends StatefulWidget {
   JobsSearch({Key? key, this.filterMap}) : super(key: key);
@@ -49,6 +50,7 @@ class _JobsSearchState extends State<JobsSearch> {
   };
 
   late UserBloc userBloc;
+  final _debouncer = Debouncer(milliseconds: 500);
 
   void getJobListing() async {
     if (!isLoading) {
@@ -64,7 +66,6 @@ class _JobsSearchState extends State<JobsSearch> {
             priceFrom: widget.filterMap?['priceFrom'] ?? priceFrom,
             priceTo: widget.filterMap?['priceTo'] ?? priceTo,
             location: widget.filterMap?['location'] ?? location);
-
 
         if (result == null) {
           if (mounted) {
@@ -166,10 +167,9 @@ class _JobsSearchState extends State<JobsSearch> {
             previous = "";
             jobsList.clear();
             noItemInList = false;
-            if(mounted) setState(() {});
+            if (mounted) setState(() {});
 
             getJobListing();
-
           }),
           child: Icon(
             SlydoAppIcon.filter,
@@ -280,28 +280,31 @@ class _JobsSearchState extends State<JobsSearch> {
           key: ValueKey('Search'),
           controller: searchController,
           onChanged: (value) {
-            print('active ' + value);
-            setState(() {
-              count = 0;
-              next = "";
-              previous = "";
-              jobsList.clear();
-              noItemInList = false;
-              getJobListing();
-            });
-          },
-          onFieldSubmitted: (val) {
-            if (mounted) {
-              setState(() {
-                count = 0;
-                next = "";
-                previous = "";
-                jobsList.clear();
-                noItemInList = false;
-                // getList();
-                getJobListing();
+            if (value.length >= 3) {
+              _debouncer.run(() {
+                setState(() {
+                  count = 0;
+                  next = "";
+                  previous = "";
+                  jobsList.clear();
+                  noItemInList = false;
+                  getJobListing();
+                });
               });
             }
+          },
+          onFieldSubmitted: (val) {
+            // if (mounted) {
+            //   setState(() {
+            //     count = 0;
+            //     next = "";
+            //     previous = "";
+            //     jobsList.clear();
+            //     noItemInList = false;
+            //     // getList();
+            //     getJobListing();
+            //   });
+            // }
           },
           autofocus: true,
           style: TextStyle(

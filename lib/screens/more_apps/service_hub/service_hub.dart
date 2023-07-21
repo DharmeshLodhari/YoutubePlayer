@@ -332,7 +332,6 @@ class _SuperHubState extends State<SuperHub> {
           );
   }
 
-
   Widget searchBox() {
     return Container(
       child: Theme(

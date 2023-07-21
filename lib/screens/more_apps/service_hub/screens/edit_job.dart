@@ -17,14 +17,19 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../data/environment.dart';
+import '../../../../widget/debouncer_widget.dart';
+import '../../../../widget/noItemInList.dart';
 import '../models/job_location_model.dart';
 
 // import '../shopping_auth.dart';
@@ -110,6 +115,8 @@ class _EditJobState extends State<EditJob> {
   ScrollController _categoryScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _jobScaffoldMessengerKey =
       new GlobalKey<ScaffoldMessengerState>();
+  RefreshController refreshController =
+      RefreshController(initialRefresh: false);
 
   final ScrollController _locationScrollController = ScrollController();
 
@@ -124,6 +131,7 @@ class _EditJobState extends State<EditJob> {
   String? locationState;
   String? locationSelected;
 
+  bool? checkedValue;
   bool isLocationLoading = false;
   bool noLocinList = false;
   int? locationCount = 0;
@@ -132,55 +140,398 @@ class _EditJobState extends State<EditJob> {
   List<LocationData?> locationsList = [];
   List<LocationData?> locationsListCopy = [];
 
-  void getCategoriesList() async {
-    if (!isCategoryLoading) {
-      if (categoryNext != null && !isCategoryLoading) {
-        isCategoryLoading = true;
+  TextEditingController? searchItemTextController;
+  GlobalKey searchItemTextFormField = GlobalKey();
+
+  List searchedCategoryList = [];
+
+  // void getCategoriesList() async {
+  //   if (!isCategoryLoading) {
+  //     if (categoryNext != null && !isCategoryLoading) {
+  //       isCategoryLoading = true;
+  //       if (mounted) setState(() {});
+
+  //       var result = await ServiceHubAuthService()
+  //           .getListOfCategories(categoryNext, categoryPrevious);
+
+  //       if (result == null) {
+  //         noCatinList = true;
+
+  //         isCategoryLoading = false;
+  //         if (mounted) {
+  //           setState(() {});
+  //         }
+  //         return;
+  //       }
+
+  //       categoryCount = result.count;
+  //       categoryNext = result.next;
+  //       categoryPrevious = result.previous;
+  //       var tempList = result.results;
+  //       if (mounted) {
+  //         setState(() {
+  //           noCatinList = false;
+  //           isCategoryLoading = false;
+  //           categoriesList.addAll(tempList!);
+  //           categoriesListCopy = categoriesList;
+  //           tempList.forEach((element) {
+  //             categoriesNameList.add(element.name!);
+  //           });
+  //         });
+  //       }
+  //     }
+  //     if (categoriesList.isEmpty) {
+  //       if (mounted) {
+  //         setState(() {
+  //           noCatinList = true;
+  //         });
+  //       }
+  //     } else if (categoryNext == null && categoriesList.length > 6) {
+  //       _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+  //         content:
+  //             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+  //         duration: const Duration(milliseconds: 500),
+  //       ));
+  //     }
+  //   }
+  // }
+
+  StateSetter? bottomSheetStateSetterGlobal;
+  bool bottomSheetMounted = false;
+
+  final _debouncer = Debouncer(milliseconds: 500);
+  bool noSearchedItem = false;
+  bool isItemLoading = false;
+
+  void getCategorySearchedList() async {
+    String url = getSearchUrl();
+
+    if (!isItemLoading) {
+      if (categoryNext != null && !isItemLoading) {
+        isItemLoading = true;
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService()
-            .getListOfCategories(categoryNext, categoryPrevious);
-
+        Map<String, dynamic>? result = await ServiceHubAuthService()
+            .getSearchCategoryList(url, categoryNext, categoryPrevious);
         if (result == null) {
-          noCatinList = true;
-
-          isCategoryLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
+          isItemLoading = false;
           return;
         }
+        categoryCount = result['count'];
+        categoryNext = result['next'];
+        categoryPrevious = result['previous'];
+        List tempList = result['results'];
 
-        categoryCount = result.count;
-        categoryNext = result.next;
-        categoryPrevious = result.previous;
-        var tempList = result.results;
-        if (mounted) {
-          setState(() {
-            noCatinList = false;
-            isCategoryLoading = false;
-            categoriesList.addAll(tempList!);
-            categoriesListCopy = categoriesList;
-            tempList.forEach((element) {
-              categoriesNameList.add(element.name!);
-            });
-          });
-        }
+        isItemLoading = false;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+
+        tempList.forEach((item) {
+          searchedCategoryList.add(CategoryListData.fromJson(item));
+        });
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
       }
-      if (categoriesList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noCatinList = true;
-          });
-        }
-      } else if (categoryNext == null && categoriesList.length > 6) {
-        _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
-        ));
+      if (searchedCategoryList.isEmpty) {
+        noSearchedItem = true;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
       }
     }
+  }
+
+  String getSearchUrl() {
+    return "${AppConfig.baseUrl}/api/v1/job-service/categories/?search=${searchItemTextController!.text}";
+  }
+
+  void clearSearchedListItems() {
+    searchedCategoryList.clear();
+    searchItemTextController!.clear();
+    categoryCount = 0;
+    categoryNext = "";
+    categoryPrevious = "";
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+      bottomSheetStateSetterGlobal!(() {});
+    }
+    if (mounted) setState(() {});
+  }
+
+  void showSearchProductAndServiceBottomSheet() async {
+    var result = await showModalBottomSheet<String>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        useRootNavigator: true,
+        barrierColor: Colors.black54,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (context, StateSetter bottomSheetStateSetter) {
+            bottomSheetStateSetterGlobal = bottomSheetStateSetter;
+            bottomSheetMounted = true;
+
+            searchItemTextController!.addListener(() {
+              if (searchItemTextController!.text.length >= 3) {
+                _debouncer.run(() {
+                  onRefresh();
+                });
+              }
+            });
+
+            return Card(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
+                ),
+                color: Colors.white,
+                margin: EdgeInsets.zero,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.88,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: searchBox()),
+                      SizedBox(height: 8),
+                      Expanded(child: bottomSheetTabBar())
+                    ],
+                  ),
+                ));
+          });
+        });
+    bottomSheetMounted = false;
+    if (result == null) {}
+  }
+
+  Widget bottomSheetTabBar() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 8,
+        ),
+        Expanded(child: bottomSheetTabViews())
+      ],
+    );
+  }
+
+  Widget bottomSheetTabViews() {
+    return pullToRefresh();
+  }
+
+  Widget pullToRefresh() {
+    return searchItemTextController!.text.isEmpty
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+            isResult: false,
+          )
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: refreshController,
+            onRefresh: onRefresh,
+            child: buildSearchCategoryList(),
+          );
+  }
+
+  Widget buildSearchCategoryList() {
+    return noSearchedItem
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.noResultFound,
+            isResult: true,
+          )
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            //+1 for progressbar
+            itemCount: searchedCategoryList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == searchedCategoryList.length) {
+                return _buildIndicatorForSearchCategory();
+              } else {
+                return GestureDetector(
+                    onTap: () {
+                      // get selected category
+                      CategoryListData picked = searchedCategoryList[index];
+                      selectedCategory = picked.slug!;
+                      selectedCategoryName = picked.name;
+
+                      //refresh the active job listing with selected category
+                      // _refreshPage();
+                      if (mounted) setState(() {});
+                      Navigator.pop(context);
+
+                      FocusScope.of(context).requestFocus();
+                    },
+                    child: getResultTile(searchedCategoryList[index]));
+              }
+            },
+            controller: _scrollController,
+          );
+  }
+
+  Widget _buildIndicatorForSearchCategory() {
+    return Center(
+      child: isItemLoading
+          ? CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(navyBlue),
+              backgroundColor: Colors.transparent,
+            )
+          : Container(),
+    );
+  }
+
+  void onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        categoryCount = 0;
+        categoryNext = "";
+        categoryPrevious = "";
+        searchedCategoryList = [];
+        isItemLoading = false;
+        getCategorySearchedList();
+        refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: () {
+        FocusScope.of(context).unfocus();
+        searchCategory();
+      },
+    );
+  }
+
+  void searchCategory() {
+    clearSearchedListItems();
+    getCategorySearchedList();
+  }
+
+  Widget searchBox() {
+    return Container(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionTheme:
+              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+        ),
+        child: TextFormField(
+          key: searchItemTextFormField,
+          controller: searchItemTextController,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+          cursorWidth: 1.5,
+          cursorColor: navyBlue,
+          decoration: InputDecoration(
+            hintText: 'Search Category',
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            prefix: Padding(
+              padding: EdgeInsets.only(left: 12),
+            ),
+            suffixIcon: searchIcon(),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+          onFieldSubmitted: (val) {
+            if (mounted) setState(() {});
+            FocusScope.of(context).unfocus();
+            onRefresh();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget getResultTile(var result) {
+    if (result is CategoryListData) {
+      return categoryViewCard(result);
+    }
+    return Container();
+  }
+
+  Widget categoryViewCard(CategoryListData category) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        shadowColor: boxShadowTwo,
+        elevation: 0,
+        child: Container(
+          decoration: decorateBox(),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    category.name!,
+                    maxLines: 1,
+                    style: TextStyle(color: blackFont, fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void getJobDetail() async {
@@ -196,7 +547,7 @@ class _EditJobState extends State<EditJob> {
 
             titleController.text = currentJob!.title!;
             descriptionController.text = currentJob!.description!;
-
+            checkedValue = currentJob!.isListed!;
             priceController.text = moneyNormalizer(currentJob!.pay).toString();
             locationState = currentJob!.location!;
 
@@ -222,16 +573,8 @@ class _EditJobState extends State<EditJob> {
   @override
   void initState() {
     jobId = widget.job!.id;
-    getCategoriesList();
     getJobDetail();
     getLocationList();
-    _categoryScrollController.addListener(() {
-      if (_categoryScrollController.position.pixels ==
-              _categoryScrollController.position.maxScrollExtent &&
-          _categoryScrollController.position.pixels != 0) {
-        getCategoriesList();
-      }
-    });
     _locationScrollController.addListener(() {
       if (_locationScrollController.position.pixels ==
               _locationScrollController.position.maxScrollExtent &&
@@ -239,6 +582,7 @@ class _EditJobState extends State<EditJob> {
         getLocationList();
       }
     });
+    searchItemTextController = TextEditingController();
     super.initState();
   }
 
@@ -368,6 +712,10 @@ class _EditJobState extends State<EditJob> {
                   height: 20,
                 ),
                 getTaskMethodRadioBtn(),
+                const SizedBox(
+                  height: 20,
+                ),
+                getListNowCheckButton(),
                 const SizedBox(
                   height: 20,
                 ),
@@ -690,6 +1038,32 @@ class _EditJobState extends State<EditJob> {
           )
         ],
       ),
+    );
+  }
+
+  Column getListNowCheckButton() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'List Job Now',
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
+        ),
+        CheckboxListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text("List Job"),
+          value: checkedValue,
+          activeColor: navyBlue,
+          onChanged: (newValue) {
+            setState(() {
+              checkedValue = newValue!;
+            });
+          },
+          controlAffinity:
+              ListTileControlAffinity.leading, //  <-- leading Checkbox
+        )
+      ],
     );
   }
 
@@ -1060,7 +1434,8 @@ class _EditJobState extends State<EditJob> {
           color: darkGrey,
         ),
         onTap: () {
-          categoryAndroidSheet();
+          clearSearchedListItems();
+          showSearchProductAndServiceBottomSheet();
         },
       ),
     );
@@ -1412,16 +1787,17 @@ class _EditJobState extends State<EditJob> {
             'category': selectedCategory,
             'tags': [selectedCategory!.toLowerCase()],
             'due_date': DateFormat('yyyy-MM-dd').format(jobEndDate),
-            'caption': selectedCategory,
+            'caption': selectedCategoryName,
             'picture_count': jobLocalImages.length,
             'file': '',
+            'list_now': checkedValue,
             'localImages':
                 jobLocalImages.map((file) => File(file.path)).toList(),
           }, jobId: currentJob!.id!).then((value) {
             print(value.toString() + 'My job');
-            // job = value
+            Navigator.pop(context);
             Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
-                arguments: {'jobId': value!.id, 'listingId': '','job':value});
+                arguments: {'jobId': value!.id, 'listingId': '', 'job': value});
             showToast(
                 message: AppLocalization.of(context)!.jobEditedSuccessfully);
           }).catchError((error) {
@@ -1706,6 +2082,7 @@ class CustomRadioTile extends StatelessWidget {
             fontSize: 14,
           ),
         ),
+        activeColor: navyBlue,
         value: value,
         groupValue: groupVal,
         onChanged: callbackFunction,

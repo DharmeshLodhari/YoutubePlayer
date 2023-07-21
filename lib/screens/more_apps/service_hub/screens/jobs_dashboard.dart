@@ -22,6 +22,7 @@ import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../widget/curved_btn.dart';
 import '../../../../widget/customized_dropdown_field.dart';
 import '../../../../widget/customized_popup_menu.dart';
+import '../../../../widget/debouncer_widget.dart';
 import '../../../../widget/noItemInList.dart';
 import '../../messaging/message_auth.dart';
 import '../../shopping/models/store.dart';
@@ -76,7 +77,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   final ScrollController _scrollController = new ScrollController();
 
   RefreshController refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
   TextEditingController? searchItemTextController;
   GlobalKey searchItemTextFormField = GlobalKey();
   int bottomSheetSearchIndex = 0;
@@ -86,6 +87,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
 
+  final _debouncer = Debouncer(milliseconds: 500);
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
@@ -151,7 +153,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
     }
   }
 
-
   @override
   initState() {
     getActiveJobListing();
@@ -189,7 +190,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
     } else {
       getActiveJobListing(category: selectedCategory);
     }
-
   }
 
   @override
@@ -340,13 +340,13 @@ class _JobsDashboardState extends State<JobsDashboard> {
         title: SizedBox(
           width: 300,
           child: Text(
-            selectedCategory.isNotEmpty
-                ? selectedCategory
-                : "select category",
+            selectedCategory.isNotEmpty ? selectedCategory : "select category",
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: TextStyle(
-                color: selectedCategory.isNotEmpty ? blackFont :darkGrey.withOpacity(0.9),
+                color: selectedCategory.isNotEmpty
+                    ? blackFont
+                    : darkGrey.withOpacity(0.9),
                 fontSize: 16,
                 fontWeight: FontWeight.w600),
           ),
@@ -462,45 +462,44 @@ class _JobsDashboardState extends State<JobsDashboard> {
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (context, StateSetter bottomSheetStateSetter) {
-                bottomSheetStateSetterGlobal = bottomSheetStateSetter;
-                bottomSheetMounted = true;
+            bottomSheetStateSetterGlobal = bottomSheetStateSetter;
+            bottomSheetMounted = true;
 
-                searchItemTextController!.addListener(() {
-                  if (searchItemTextController!.text.length >= 3) {
-                    onRefresh();
-                  }
-                  if (searchItemTextController!.text.length >= 0) {
-                    onRefresh();
-                  }
-                });
-
-                return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)),
-                    ),
-                    color: Colors.white,
-                    margin: EdgeInsets.zero,
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.88,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: searchBox()),
-                          SizedBox(height: 8),
-                          Expanded(child: bottomSheetTabBar())
-                        ],
-                      ),
-                    ));
+            searchItemTextController!.addListener(() {
+              if (searchItemTextController!.text.length >= 3) {
+                 _debouncer.run(() {
+                onRefresh();
               });
+              }
+             
+            });
+
+            return Card(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
+                ),
+                color: Colors.white,
+                margin: EdgeInsets.zero,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.88,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: searchBox()),
+                      SizedBox(height: 8),
+                      Expanded(child: bottomSheetTabBar())
+                    ],
+                  ),
+                ));
+          });
         });
     bottomSheetMounted = false;
-    if (result == null) {
-    }
+    if (result == null) {}
   }
 
   Widget searchBox() {
@@ -508,7 +507,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme:
-          TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -610,8 +609,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ServiceHubAuthService().getSearchCategoryList(
-            url, categoryNext, categoryPrevious);
+        Map<String, dynamic>? result = await ServiceHubAuthService()
+            .getSearchCategoryList(url, categoryNext, categoryPrevious);
         if (result == null) {
           isItemLoading = false;
           return;
@@ -644,7 +643,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   }
 
   String getSearchUrl() {
-      return "${AppConfig.baseUrl}/api/v1/job-service/categories/?search=${searchItemTextController!.text}";
+    return "${AppConfig.baseUrl}/api/v1/job-service/categories/?search=${searchItemTextController!.text}";
   }
 
   Widget bottomSheetTabBar() {
@@ -744,7 +743,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
 
         refreshController.refreshCompleted();
       }
@@ -754,72 +753,72 @@ class _JobsDashboardState extends State<JobsDashboard> {
   Widget pullToRefresh() {
     return searchItemTextController!.text.isEmpty
         ? NoItemInList(
-      msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-      isResult: false,
-    ) : SmartRefresher(
-      enablePullDown: true,
-      header: WaterDropHeader(
-        complete: Container(),
-        waterDropColor: navyBlue,
-      ),
-      controller: refreshController,
-      onRefresh: onRefresh,
-      child: buildSearchCategoryList(),
-    );
+            msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+            isResult: false,
+          )
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: refreshController,
+            onRefresh: onRefresh,
+            child: buildSearchCategoryList(),
+          );
   }
 
   Widget buildSearchCategoryList() {
     return noSearchedItem
         ? NoItemInList(
-      msg: AppLocalization.of(context)!.noResultFound,
-      isResult: true,
-    )
+            msg: AppLocalization.of(context)!.noResultFound,
+            isResult: true,
+          )
         : ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 4),
-      //+1 for progressbar
-      itemCount: searchedCategoryList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == searchedCategoryList.length) {
-          return _buildIndicatorForSearchCategory();
-        } else {
-          return GestureDetector(
-              onTap: () {
-                // get selected category
-                CategoryListData picked = searchedCategoryList[index];
-                selectedCategory = picked.name!;
+            padding: EdgeInsets.symmetric(vertical: 4),
+            //+1 for progressbar
+            itemCount: searchedCategoryList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == searchedCategoryList.length) {
+                return _buildIndicatorForSearchCategory();
+              } else {
+                return GestureDetector(
+                    onTap: () {
+                      // get selected category
+                      CategoryListData picked = searchedCategoryList[index];
+                      selectedCategory = picked.name!;
 
-                //refresh the active job listing with selected category
-                _refreshPage();
-                if (mounted) setState(() {});
-                Navigator.pop(context);
+                      //refresh the active job listing with selected category
+                      _refreshPage();
+                      if (mounted) setState(() {});
+                      Navigator.pop(context);
 
-                FocusScope.of(context).requestFocus();
-              },
-              child: getResultTile(searchedCategoryList[index]));
-        }
-      },
-      controller: _scrollController,
-    );
+                      FocusScope.of(context).requestFocus();
+                    },
+                    child: getResultTile(searchedCategoryList[index]));
+              }
+            },
+            controller: _scrollController,
+          );
   }
 
   Widget _buildIndicatorForSearchCategory() {
     return Center(
       child: isItemLoading
           ? CircularProgressIndicator(
-        strokeWidth: 2.5,
-        valueColor: AlwaysStoppedAnimation(navyBlue),
-        backgroundColor: Colors.transparent,
-      )
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(navyBlue),
+              backgroundColor: Colors.transparent,
+            )
           : Container(),
     );
   }
 
   Widget getResultTile(var result) {
-
-      if (result is CategoryListData) {
-        return categoryViewCard(result);
-      }
-      return Container();
+    if (result is CategoryListData) {
+      return categoryViewCard(result);
+    }
+    return Container();
   }
 
   Widget categoryViewCard(CategoryListData category) {
@@ -851,5 +850,4 @@ class _JobsDashboardState extends State<JobsDashboard> {
       ),
     );
   }
-
 }

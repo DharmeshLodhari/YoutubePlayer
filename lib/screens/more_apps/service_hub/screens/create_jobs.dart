@@ -17,13 +17,18 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../data/environment.dart';
+import '../../../../widget/debouncer_widget.dart';
+import '../../../../widget/noItemInList.dart';
 import '../models/job_location_model.dart';
 
 // import '../shopping_auth.dart';
@@ -103,13 +108,16 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   String? locationPrevious = "";
   List<LocationData?> locationsList = [];
   List<LocationData?> locationsListCopy = [];
-
-  List<CategoryListData?> categoriesList = [];
-
-  List<CategoryListData?> categoriesListCopy = [];
+  RefreshController refreshController =
+      RefreshController(initialRefresh: false);
   List<String> categoriesNameList = [];
   ScrollController _categoryScrollController = ScrollController();
   ScrollController _locationScrollController = ScrollController();
+
+  TextEditingController? searchItemTextController;
+  GlobalKey searchItemTextFormField = GlobalKey();
+
+  List searchedCategoryList = [];
 
   final List<String> items = [
     'Item1',
@@ -119,54 +127,59 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   ];
   List<String> selectedItems = [];
 
-  void getCategoriesList() async {
-    if (!isCategoryLoading) {
-      if (categoryNext != null && !isCategoryLoading) {
-        isCategoryLoading = true;
+  StateSetter? bottomSheetStateSetterGlobal;
+  bool bottomSheetMounted = false;
+
+  final _debouncer = Debouncer(milliseconds: 500);
+  bool noSearchedItem = false;
+  bool isItemLoading = false;
+
+  void getCategorySearchedList() async {
+    String url = getSearchUrl();
+
+    if (!isItemLoading) {
+      if (categoryNext != null && !isItemLoading) {
+        isItemLoading = true;
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService()
-            .getListOfCategories(categoryNext, categoryPrevious);
-
+        Map<String, dynamic>? result = await ServiceHubAuthService()
+            .getSearchCategoryList(url, categoryNext, categoryPrevious);
         if (result == null) {
-          noCatinList = true;
-
-          isCategoryLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
+          isItemLoading = false;
           return;
         }
-        categoryCount = result.count;
-        categoryNext = result.next;
-        categoryPrevious = result.previous;
-        var tempList = result.results;
-        if (mounted) {
-          setState(() {
-            noCatinList = false;
-            isCategoryLoading = false;
-            categoriesList.addAll(tempList!);
-            categoriesListCopy = categoriesList;
-            tempList.forEach((element) {
-              categoriesNameList.add(element.name!);
-            });
-          });
-        }
+        categoryCount = result['count'];
+        categoryNext = result['next'];
+        categoryPrevious = result['previous'];
+        List tempList = result['results'];
+
+        isItemLoading = false;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+
+        tempList.forEach((item) {
+          searchedCategoryList.add(CategoryListData.fromJson(item));
+        });
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
       }
-      if (categoriesList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noCatinList = true;
-          });
-        }
-      } else if (categoryNext == null && categoriesList.length > 6) {
-        _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
-        ));
+      if (searchedCategoryList.isEmpty) {
+        noSearchedItem = true;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
       }
     }
+  }
+
+  String getSearchUrl() {
+    return "${AppConfig.baseUrl}/api/v1/job-service/categories/?search=${searchItemTextController!.text}";
   }
 
   @override
@@ -177,15 +190,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
   @override
   void initState() {
-    getCategoriesList();
     getLocationList();
-    _categoryScrollController.addListener(() {
-      if (_categoryScrollController.position.pixels ==
-              _categoryScrollController.position.maxScrollExtent &&
-          _categoryScrollController.position.pixels != 0) {
-        getCategoriesList();
-      }
-    });
     _locationScrollController.addListener(() {
       if (_locationScrollController.position.pixels ==
               _locationScrollController.position.maxScrollExtent &&
@@ -193,6 +198,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         getLocationList();
       }
     });
+
+    searchItemTextController = TextEditingController();
 
     super.initState();
   }
@@ -237,16 +244,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
-      actions: [
-        // Padding(
-        //   padding: const EdgeInsets.only(right: 12.0),
-        //   child: GestureDetector(
-        //     onTap: () => pickImage(),
-        //     child: SvgPicture.asset('assets/images/cam_pic.svg',
-        //         height: 20, width: 20),
-        //   ),
-        // )
-      ],
     );
   }
 
@@ -372,6 +369,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         CheckboxListTile(
           contentPadding: EdgeInsets.zero,
           title: Text("List Job"),
+          activeColor: navyBlue,
           value: checkedValue,
           onChanged: (newValue) {
             setState(() {
@@ -718,7 +716,9 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           color: darkGrey,
         ),
         onTap: () {
-          categoryAndroidSheet();
+          // categoryAndroidSheet();
+          clearSearchedListItems();
+          showSearchProductAndServiceBottomSheet();
         },
       ),
     );
@@ -796,298 +796,258 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     );
   }
 
-  void categoryAndroidSheet() {
-    categoriesList = categoriesListCopy;
-    androidBottomSheet(
-      context: context,
-      child: StatefulBuilder(
-        builder: (context, changeState) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.50,
-            child: Column(
-              children: [
-                Text(
-                  "Select Category",
-                  style: TextStyle(
-                      color: blackFont,
-                      fontSize: 16.8,
-                      fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Divider(
-                  color: darkGrey.withOpacity(.5),
-                ),
-                Expanded(
-                  child: NotificationListener<ScrollEndNotification>(
-                    onNotification: (scrollEnd) {
-                      final metrics = scrollEnd.metrics;
-                      if (metrics.atEdge) {
-                        bool isTop = metrics.pixels == 0;
-                        if (!isTop) {
-                          changeState(() {});
-                        }
-                      }
-                      return true;
-                    },
-                    child: ListView.builder(
-                      controller: _categoryScrollController,
-                      shrinkWrap: true,
-                      itemCount: categoriesList.length,
-                      itemBuilder: (context, index) {
-                        CategoryListData category = categoriesList[index]!;
-                        return ListTile(
-                          title: Text(
-                            "${category.name}",
-                            softWrap: false,
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(
-                                color: blackFont,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          dense: true,
-                          onTap: () {
-                            selectedCategory = category.slug;
-                            displayCategory = category.name;
-                            Navigator.pop(context);
-                            setState(() {});
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void selectItemCategory() async {
-    final pressedCategory = await showDialog<ProductCategory>(
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: productCategories?.map<Widget>((category) {
-                              if (selectedProductCategory == category) {
-                                return Container(
-                                  color: selectedListItemBackgroundBlue,
-                                  child: ListTile(
-                                    dense: true,
-                                    title: Text(
-                                      category.name,
-                                      overflow: TextOverflow.fade,
-                                      softWrap: false,
-                                      style: TextStyle(
-                                          color: navyBlue,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    trailing: Icon(
-                                      SlydoAppIcon.checked,
-                                      color: navyBlue,
-                                      size: 12,
-                                    ),
-                                    onTap: () {
-                                      Navigator.pop(context, category);
-                                    },
-                                  ),
-                                );
-                              }
-                              return ListTile(
-                                title: Text(
-                                  category.name,
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                dense: true,
-                                onTap: () {
-                                  Navigator.pop(context, category);
-                                },
-                              );
-                            }).toList() ??
-                            [],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-    if (pressedCategory != null) {
-      selectedProductCategory = pressedCategory as CategoryListData?;
-      productCategory = selectedProductCategory!.name!;
-      setState(() {});
-    }
-  }
-
-  // Widget getProductConditionField() {
-  //   return CustomizedDropDownField(
-  //     title: "Product condition",
-  //     child: ListTile(
-  //       dense: true,
-  //       title: Row(
-  //         children: [
-  //           Text(
-  //             selectedProductCondition != null
-  //                 ? selectedProductCondition!.name
-  //                 : "",
-  //             style: TextStyle(
-  //                 color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-  //           ),
-  //           Expanded(
-  //             child: Text(
-  //               selectedProductCondition != null
-  //                   ? " (" + selectedProductCondition!.description + ")"
-  //                   : "",
-  //               maxLines: 1,
-  //               style: TextStyle(
-  //                 fontSize: 16,
+  // void categoryAndroidSheet() {
+  //   categoriesList = categoriesListCopy;
+  //   androidBottomSheet(
+  //     context: context,
+  //     child: StatefulBuilder(
+  //       builder: (context, changeState) {
+  //         return SizedBox(
+  //           height: MediaQuery.of(context).size.height * 0.50,
+  //           child: Column(
+  //             children: [
+  //               Text(
+  //                 "Select Category",
+  //                 style: TextStyle(
+  //                     color: blackFont,
+  //                     fontSize: 16.8,
+  //                     fontWeight: FontWeight.w500),
   //               ),
-  //               softWrap: false,
-  //               overflow: TextOverflow.fade,
-  //             ),
+  //               const SizedBox(
+  //                 height: 10,
+  //               ),
+  //               Divider(
+  //                 color: darkGrey.withOpacity(.5),
+  //               ),
+  //               Expanded(
+  //                 child: NotificationListener<ScrollEndNotification>(
+  //                   onNotification: (scrollEnd) {
+  //                     final metrics = scrollEnd.metrics;
+  //                     if (metrics.atEdge) {
+  //                       bool isTop = metrics.pixels == 0;
+  //                       if (!isTop) {
+  //                         changeState(() {});
+  //                       }
+  //                     }
+  //                     return true;
+  //                   },
+  //                   child: ListView.builder(
+  //                     controller: _categoryScrollController,
+  //                     shrinkWrap: true,
+  //                     itemCount: categoriesList.length,
+  //                     itemBuilder: (context, index) {
+  //                       CategoryListData category = categoriesList[index]!;
+  //                       return ListTile(
+  //                         title: Text(
+  //                           "${category.name}",
+  //                           softWrap: false,
+  //                           overflow: TextOverflow.fade,
+  //                           style: TextStyle(
+  //                               color: blackFont,
+  //                               fontSize: 16,
+  //                               fontWeight: FontWeight.w400),
+  //                         ),
+  //                         dense: true,
+  //                         onTap: () {
+  //                           selectedCategory = category.slug;
+  //                           displayCategory = category.name;
+  //                           Navigator.pop(context);
+  //                           setState(() {});
+  //                         },
+  //                       );
+  //                     },
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
   //           ),
-  //         ],
-  //       ),
-  //       trailing: Icon(
-  //         Icons.keyboard_arrow_down,
-  //         color: darkGrey,
-  //       ),
-  //       onTap: () {
-  //         selectItemCondition();
+  //         );
   //       },
   //     ),
   //   );
   // }
 
-  void selectItemCondition() async {
-    final pressedCondition = await showDialog<ProductCondition>(
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: conditions.map<Widget>((condition) {
-                          if (selectedProductCondition == condition) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
-                                title: Row(
-                                  children: [
-                                    Text(
-                                      condition.name,
-                                      style: TextStyle(
-                                          color: navyBlue,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        selectedProductCondition != null
-                                            ? " (" +
-                                                // selectedProductCondition!.
-                                                //  +
-                                                ")"
-                                            : "",
-                                        maxLines: 1,
-                                        style: TextStyle(
-                                            fontSize: 16, color: navyBlue),
-                                        softWrap: false,
-                                        overflow: TextOverflow.fade,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
-                                onTap: () {
-                                  Navigator.pop(context, condition);
-                                },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Row(
-                              children: [
-                                Text(
-                                  condition.name,
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    " (" + condition.description + ")",
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                        fontSize: 16, color: blackFont),
-                                    softWrap: false,
-                                    overflow: TextOverflow.fade,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, condition);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-    if (pressedCondition != null) {
-      selectedProductCondition = pressedCondition as CategoryListData?;
-      productCondition = selectedProductCondition!.name!;
-      setState(() {});
-    }
-  }
+  // void selectItemCategory() async {
+  //   final pressedCategory = await showDialog<ProductCategory>(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //             insetPadding:
+  //                 const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+  //             contentPadding: EdgeInsets.zero,
+  //             shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(10)),
+  //             content: Container(
+  //               width: MediaQuery.of(context).size.width - 40,
+  //               child: Card(
+  //                 elevation: 2,
+  //                 shadowColor: Colors.transparent,
+  //                 margin: EdgeInsets.zero,
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(10),
+  //                 ),
+  //                 child: ClipRRect(
+  //                   borderRadius: BorderRadius.circular(10),
+  //                   child: SingleChildScrollView(
+  //                     child: Column(
+  //                       children: productCategories?.map<Widget>((category) {
+  //                             if (selectedProductCategory == category) {
+  //                               return Container(
+  //                                 color: selectedListItemBackgroundBlue,
+  //                                 child: ListTile(
+  //                                   dense: true,
+  //                                   title: Text(
+  //                                     category.name,
+  //                                     overflow: TextOverflow.fade,
+  //                                     softWrap: false,
+  //                                     style: TextStyle(
+  //                                         color: navyBlue,
+  //                                         fontSize: 16,
+  //                                         fontWeight: FontWeight.w600),
+  //                                   ),
+  //                                   trailing: Icon(
+  //                                     SlydoAppIcon.checked,
+  //                                     color: navyBlue,
+  //                                     size: 12,
+  //                                   ),
+  //                                   onTap: () {
+  //                                     Navigator.pop(context, category);
+  //                                   },
+  //                                 ),
+  //                               );
+  //                             }
+  //                             return ListTile(
+  //                               title: Text(
+  //                                 category.name,
+  //                                 softWrap: false,
+  //                                 overflow: TextOverflow.fade,
+  //                                 style: TextStyle(
+  //                                     color: blackFont,
+  //                                     fontSize: 16,
+  //                                     fontWeight: FontWeight.w400),
+  //                               ),
+  //                               dense: true,
+  //                               onTap: () {
+  //                                 Navigator.pop(context, category);
+  //                               },
+  //                             );
+  //                           }).toList() ??
+  //                           [],
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ));
+  //   if (pressedCategory != null) {
+  //     selectedProductCategory = pressedCategory as CategoryListData?;
+  //     productCategory = selectedProductCategory!.name!;
+  //     setState(() {});
+  //   }
+  // }
+
+  // void selectItemCondition() async {
+  //   final pressedCondition = await showDialog<ProductCondition>(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //             insetPadding:
+  //                 const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+  //             contentPadding: EdgeInsets.zero,
+  //             shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(10)),
+  //             content: Container(
+  //               width: MediaQuery.of(context).size.width - 40,
+  //               child: Card(
+  //                 margin: EdgeInsets.zero,
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(10),
+  //                 ),
+  //                 child: ClipRRect(
+  //                   borderRadius: BorderRadius.circular(10),
+  //                   child: SingleChildScrollView(
+  //                     child: Column(
+  //                       children: conditions.map<Widget>((condition) {
+  //                         if (selectedProductCondition == condition) {
+  //                           return Container(
+  //                             color: selectedListItemBackgroundBlue,
+  //                             child: ListTile(
+  //                               dense: true,
+  //                               title: Row(
+  //                                 children: [
+  //                                   Text(
+  //                                     condition.name,
+  //                                     style: TextStyle(
+  //                                         color: navyBlue,
+  //                                         fontSize: 16,
+  //                                         fontWeight: FontWeight.w600),
+  //                                   ),
+  //                                   Expanded(
+  //                                     child: Text(
+  //                                       selectedProductCondition != null
+  //                                           ? " (" +
+  //                                               // selectedProductCondition!.
+  //                                               //  +
+  //                                               ")"
+  //                                           : "",
+  //                                       maxLines: 1,
+  //                                       style: TextStyle(
+  //                                           fontSize: 16, color: navyBlue),
+  //                                       softWrap: false,
+  //                                       overflow: TextOverflow.fade,
+  //                                     ),
+  //                                   ),
+  //                                 ],
+  //                               ),
+  //                               trailing: Icon(
+  //                                 SlydoAppIcon.checked,
+  //                                 color: navyBlue,
+  //                                 size: 12,
+  //                               ),
+  //                               onTap: () {
+  //                                 Navigator.pop(context, condition);
+  //                               },
+  //                             ),
+  //                           );
+  //                         }
+  //                         return ListTile(
+  //                           title: Row(
+  //                             children: [
+  //                               Text(
+  //                                 condition.name,
+  //                                 style: TextStyle(
+  //                                     color: blackFont,
+  //                                     fontSize: 16,
+  //                                     fontWeight: FontWeight.w400),
+  //                               ),
+  //                               Expanded(
+  //                                 child: Text(
+  //                                   " (" + condition.description + ")",
+  //                                   maxLines: 1,
+  //                                   style: TextStyle(
+  //                                       fontSize: 16, color: blackFont),
+  //                                   softWrap: false,
+  //                                   overflow: TextOverflow.fade,
+  //                                 ),
+  //                               ),
+  //                             ],
+  //                           ),
+  //                           dense: true,
+  //                           onTap: () {
+  //                             Navigator.pop(context, condition);
+  //                           },
+  //                         );
+  //                       }).toList(),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ));
+  //   if (pressedCondition != null) {
+  //     selectedProductCondition = pressedCondition as CategoryListData?;
+  //     productCondition = selectedProductCondition!.name!;
+  //     setState(() {});
+  //   }
+  // }
 
   Widget addWorkField() {
     return CustomizedTextFormField(
@@ -1251,6 +1211,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             'list_now': checkedValue,
             'localImages': jobImages.map((file) => File(file.path)).toList(),
           }).then((value) {
+            Navigator.pop(context);
             Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
                 arguments: {'jobId': value!.id, 'listingId': '', 'job': value});
             showToast(
@@ -1509,6 +1470,289 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           ],
         ),
       );
+
+  void clearSearchedListItems() {
+    searchedCategoryList.clear();
+    searchItemTextController!.clear();
+    categoryCount = 0;
+    categoryNext = "";
+    categoryPrevious = "";
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
+      bottomSheetStateSetterGlobal!(() {});
+    }
+    if (mounted) setState(() {});
+  }
+
+  void showSearchProductAndServiceBottomSheet() async {
+    var result = await showModalBottomSheet<String>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        useRootNavigator: true,
+        barrierColor: Colors.black54,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (context, StateSetter bottomSheetStateSetter) {
+            bottomSheetStateSetterGlobal = bottomSheetStateSetter;
+            bottomSheetMounted = true;
+
+            searchItemTextController!.addListener(() {
+              if (searchItemTextController!.text.length >= 3) {
+                _debouncer.run(() {
+                  onRefresh();
+                });
+              }
+            });
+
+            return Card(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
+                ),
+                color: Colors.white,
+                margin: EdgeInsets.zero,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.88,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: searchBox()),
+                      SizedBox(height: 8),
+                      Expanded(child: bottomSheetTabBar())
+                    ],
+                  ),
+                ));
+          });
+        });
+    bottomSheetMounted = false;
+    if (result == null) {}
+  }
+
+  Widget bottomSheetTabBar() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 8,
+        ),
+        Expanded(child: bottomSheetTabViews())
+      ],
+    );
+  }
+
+  Widget bottomSheetTabViews() {
+    return pullToRefresh();
+  }
+
+  Widget pullToRefresh() {
+    return searchItemTextController!.text.isEmpty
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+            isResult: false,
+          )
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: refreshController,
+            onRefresh: onRefresh,
+            child: buildSearchCategoryList(),
+          );
+  }
+
+  Widget buildSearchCategoryList() {
+    return noSearchedItem
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.noResultFound,
+            isResult: true,
+          )
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            //+1 for progressbar
+            itemCount: searchedCategoryList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == searchedCategoryList.length) {
+                return _buildIndicatorForSearchCategory();
+              } else {
+                return GestureDetector(
+                    onTap: () {
+                      // get selected category
+                      CategoryListData picked = searchedCategoryList[index];
+                      selectedCategory = picked.slug!;
+                      displayCategory = picked.name;
+
+                      //refresh the active job listing with selected category
+                      // _refreshPage();
+                      if (mounted) setState(() {});
+                      Navigator.pop(context);
+
+                      FocusScope.of(context).requestFocus();
+                    },
+                    child: getResultTile(searchedCategoryList[index]));
+              }
+            },
+            controller: _scrollController,
+          );
+  }
+
+  Widget _buildIndicatorForSearchCategory() {
+    return Center(
+      child: isItemLoading
+          ? CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(navyBlue),
+              backgroundColor: Colors.transparent,
+            )
+          : Container(),
+    );
+  }
+
+  void onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        categoryCount = 0;
+        categoryNext = "";
+        categoryPrevious = "";
+        searchedCategoryList = [];
+        isItemLoading = false;
+        getCategorySearchedList();
+        refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: () {
+        FocusScope.of(context).unfocus();
+        searchCategory();
+      },
+    );
+  }
+
+  void searchCategory() {
+    clearSearchedListItems();
+    getCategorySearchedList();
+  }
+
+  Widget searchBox() {
+    return Container(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionTheme:
+              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+        ),
+        child: TextFormField(
+          key: searchItemTextFormField,
+          controller: searchItemTextController,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+          cursorWidth: 1.5,
+          cursorColor: navyBlue,
+          decoration: InputDecoration(
+            hintText: 'Search Category',
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            prefix: Padding(
+              padding: EdgeInsets.only(left: 12),
+            ),
+            suffixIcon: searchIcon(),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+          onFieldSubmitted: (val) {
+            if (mounted) setState(() {});
+            FocusScope.of(context).unfocus();
+            onRefresh();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget getResultTile(var result) {
+    if (result is CategoryListData) {
+      return categoryViewCard(result);
+    }
+    return Container();
+  }
+
+  Widget categoryViewCard(CategoryListData category) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        shadowColor: boxShadowTwo,
+        elevation: 0,
+        child: Container(
+          decoration: decorateBox(),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    category.name!,
+                    maxLines: 1,
+                    style: TextStyle(color: blackFont, fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class CustomRadioTile extends StatelessWidget {
@@ -1539,6 +1783,7 @@ class CustomRadioTile extends StatelessWidget {
             fontSize: 14,
           ),
         ),
+        activeColor: navyBlue,
         value: value,
         groupValue: groupVal,
         onChanged: callbackFunction,
