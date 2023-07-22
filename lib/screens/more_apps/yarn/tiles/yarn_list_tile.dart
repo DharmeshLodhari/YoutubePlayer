@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
@@ -70,6 +71,7 @@ class _YarnTileState extends State<YarnTile> {
   String? linkToBePreview;
 
   late YarnDashboardBloc _yarnSettings;
+  late UserBloc userBloc;
 
   @override
   void initState() {
@@ -113,6 +115,7 @@ class _YarnTileState extends State<YarnTile> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
       child: _buildMain(),
@@ -515,7 +518,23 @@ class _YarnTileState extends State<YarnTile> {
         break;
       case 'job':
         JobModel jobModel = JobModel.fromJson(widget.yarn.attachment ?? {});
-        childWidget = JobDescriptionCard(job: jobModel);
+        childWidget = GestureDetector(
+            onTap: () {
+              userBloc.user.userName == jobModel.owner
+                  ? Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
+                      arguments: {
+                          'jobId': jobModel,
+                          'listingId': jobModel.id,
+                          'job': jobModel
+                        })
+                  : Navigator.pushNamed(context, Routes.JOBS_PREVIEW_DETAIL,
+                      arguments: {
+                          'jobId': jobModel.id,
+                          'listingId': jobModel.id,
+                          'job': jobModel
+                        });
+            },
+            child: JobDescriptionCard(job: jobModel));
         break;
 
       default:
