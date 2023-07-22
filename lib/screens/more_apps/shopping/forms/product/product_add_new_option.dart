@@ -724,8 +724,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
           variant.localImages =
               productImages.map((file) => File(file.path)).toList();
           variant.title = title;
-          // variant.size = size ?? "";
-          variant.color = color;
+          variant.colour = color;
           variant.value = value;
           variant.quantity = inventoryCount.toString();
           variant.type = selectedType;

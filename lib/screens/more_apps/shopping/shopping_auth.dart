@@ -360,7 +360,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Add Product
-  Future<List<dynamic>> addProduct(Product product, Variant item) async {
+  Future<List<dynamic>> addProduct(Product product) async {
     var headers = await getAuthHeaders();
     var url = AppConfig.baseUrl + "/api/v1/products/";
 
@@ -368,19 +368,38 @@ class ShoppingAuthService extends AuthService {
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
     Map<dynamic, dynamic> _data = product.toMap();
-    debugPrint('DATA ---> $_data');
     _data["available_from"] = dateToString(product.availableFrom!);
     _data["image_count"] = product.localImages!.length;
+    debugPrint('DATA from ---> $_data');
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
 
+    debugPrint('DATA from two ---> $_data');
+
     List<MultipartFile> newList = [];
 
     for (int i = 0; i < product.localImages!.length; i++) {
+      debugPrint('DATA from two ---> ${product.localImages![i].path}');
       // Add fields
       request.fields["imagefile_$i"] = product.localImages![i].path;
+
+      // File imageFile = File(product.localImages![i].path);
+      // if (imageFile.existsSync()) {
+      //   // Add fields
+      //   request.fields["imagefile_$i"] = product.localImages![i].path;
+      //
+      //   // Create multipart using filepath, string or bytes
+      //   var multipartFile = await http.MultipartFile.fromPath(
+      //       "imagefile_$i", product.localImages![i].path);
+      //
+      //   // Add multipart to newList
+      //   newList.add(multipartFile);
+      // } else {
+      //   print("Error: File not found at path: ${product.localImages![i].path}");
+      //   // Handle the error case accordingly, e.g., skip this image or abort the operation.
+      // }
 
       // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(
@@ -390,6 +409,7 @@ class ShoppingAuthService extends AuthService {
       newList.add(multipartFile);
     }
 
+    debugPrint('DATA from newList ---> $newList');
     // Add multipart to request
     request.files.addAll(newList);
 
@@ -403,36 +423,18 @@ class ShoppingAuthService extends AuthService {
     bool backValue = false;
     if (response.statusCode == 201) {
 
-      // debugPrint('DATA from add ---> ${responseBody}');
+      debugPrint('DATA from add product ---> ${responseBody}');
 
       var jsonData = json.decode(responseBody);
       String productId = "";
       if(jsonData['id'] != null || jsonData['id'] != ""){
         productId = jsonData['id'];
+        backValue = true;
       }else{
           backValue = true;
-         return [true, productId];
       }
-
-      // debugPrint('DATA from productId ---> ${productId}');
-
-      if(item == null){
-         backValue = true;
-        return [backValue, productId];
-      }else{
-        //add variant to server first
-        await addVariant(item, productId).then((value) {
-           backValue = true;
-          return [backValue, productId];
-
-        }).catchError((error) {
-          debugPrint(error.toString());
-          // showToast(message: error.toString());
-           backValue = false;
-        });
-      }
-
       return [backValue, productId];
+
     } else {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");

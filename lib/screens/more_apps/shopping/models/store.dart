@@ -334,7 +334,7 @@ class Variant {
   String? id;
   String? title;
   String? size;
-  String? color;
+  String? colour;
   String? type;
   String? price;
   String? value;
@@ -351,7 +351,7 @@ class Variant {
       {this.id,
         this.title,
         this.size,
-        this.color,
+        this.colour,
         this.trackInventory,
         this.type,
         this.price,
@@ -369,7 +369,7 @@ class Variant {
       "id": id,
       "title": title,
       "size": size,
-      "color": color,
+      "colour": colour,
       "price": price,
       "type": type,
       "value": value,
@@ -388,7 +388,7 @@ class Variant {
       "id": id,
       "title": title,
       "size": size,
-      "color": color,
+      "colour": colour,
       "price": price,
       "type": type,
       "value": value,
@@ -410,7 +410,7 @@ class Variant {
         id: data['id'].toString(),
         title: data['title'],
         quantity: data['quantity'].toString(),
-        color: data["color"] ?? "",
+        colour: data["colour"] ?? "",
         value: data["value"] ?? "",
         type: data["type"] ?? "",
         price: data["price"].toString(),
@@ -454,7 +454,7 @@ class Variant {
       id: object["id"].toString(),
       title: object["title"].toString(),
       size: object["size"] ?? "",
-      color: object["color"] ?? "",
+      colour: object["colour"] ?? "",
       quantity: object["quantity"] ?? "",
       value: object["value"] ?? "",
       price: object["price"].toString(),
