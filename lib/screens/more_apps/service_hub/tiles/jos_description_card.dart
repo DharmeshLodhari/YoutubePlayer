@@ -116,17 +116,19 @@ class JobDescriptionCard extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            SizedBox(
-              width: 200,
-              child: Text(
+            // SizedBox(
+            //   width: 200,
+              // child:
+               Text(
                 job!.description!,
-                maxLines: 3,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: blackFont,
                   fontSize: 12.6,
                 ),
               ),
-            ),
+            // ),
             const SizedBox(
               height: 10,
             ),
