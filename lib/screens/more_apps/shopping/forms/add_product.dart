@@ -62,7 +62,7 @@ class _AddProductState extends State<AddProduct> {
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 0;
-  Variant? variantData;
+  List<Variant> productVariantList = [];
 
   @override
   void deactivate() {
@@ -175,12 +175,14 @@ class _AddProductState extends State<AddProduct> {
                       getInventoryFormField(),
                       const SizedBox(height: 16),
                       getIsInventoryAvailableField(),
-                      const SizedBox(height: 16),
-                      if(variantData == null)...[
-                        getAddVariationFormField(),
-                      ]else...[
-                        displaySelectedVariant(),
-                      ],
+
+                      //TODO: hide this variant option
+                      // const SizedBox(height: 16),
+                      // if(productVariantList.isEmpty)...[
+                      //   getAddVariationFormField(),
+                      // ]else...[
+                      //   displaySelectedVariant(),
+                      // ],
 
                       const SizedBox(height: 16),
                       getSubmitButton(),
@@ -810,20 +812,37 @@ class _AddProductState extends State<AddProduct> {
           product.availableFrom = productAvailableFrom;
           product.enableInSuperStore = productEnableInSuperStore;
 
+
           //the api call will first create the product then use the id from the
           //response to save the variant
-          await _auth.addProduct(product, variantData!).then((value) {
+          await _auth.addProduct(product).then((value) async {
 
             var productId = value[1];
-            Navigator.pop(context);
-            showToast(
-                message: AppLocalization.of(context)!.productAddedSuccessfully);
 
-            Navigator.pushNamed(context, Routes.PRODUCT,
-                arguments: {"productId": productId});
+            if(productVariantList.isEmpty){
+              Navigator.pop(context);
+              showToast(
+                  message: AppLocalization.of(context)!.productAddedSuccessfully);
+
+              Navigator.pushNamed(context, Routes.PRODUCT,
+                  arguments: {"productId": productId});
+            }else{
+              //loop and add all variant
+              addVariants(productId);
+              // for(var variantItem in productVariantList){
+              //   await _auth.addVariant(variantItem, productId).then((value) {
+              //     // backValue = true;
+              //
+              //   }).catchError((error) {
+              //     debugPrint(error.toString());
+              //     debugPrint("Product check variant::: ${error.toString()}");
+              //     // showToast(message: error.toString());
+              //   });
+              // }
+            }
 
           }).catchError((error) {
-            debugPrint(error.toString());
+            debugPrint("Product check::: ${error.toString()}");
             showToast(message: error.toString());
           });
         }
@@ -831,6 +850,35 @@ class _AddProductState extends State<AddProduct> {
         showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
     }
+  }
+
+  Future<void> addVariants(String productId) async {
+    for (var variantItem in productVariantList) {
+      // Make the API call for the current product variant
+      await makeApiCallAddVariant(variantItem, productId);
+    }
+
+    // This will be executed after all API calls are completed
+    print("All API calls are done!");
+    Navigator.pop(context);
+    showToast(
+        message: AppLocalization.of(context)!.productAddedSuccessfully);
+
+    Navigator.pushNamed(context, Routes.PRODUCT,
+        arguments: {"productId": productId});
+  }
+
+  Future<void> makeApiCallAddVariant(Variant variantItem, String productId) async {
+
+      await _auth.addVariant(variantItem, productId).then((value) {
+        // backValue = true;
+
+      }).catchError((error) {
+        debugPrint(error.toString());
+        debugPrint("Product check variant::: ${error.toString()}");
+        // showToast(message: error.toString());
+      });
+
   }
 
   bool validateDropdown() {
@@ -1004,7 +1052,7 @@ class _AddProductState extends State<AddProduct> {
         // Handle the result (map) received from Product Add New Option
         if (result != null && result is Variant) {
           //save the variant details for later use
-          variantData = result;
+          productVariantList.add(result);
           if(mounted)setState(() {});
         }
       },
@@ -1050,101 +1098,151 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Widget displaySelectedVariant(){
-    return CustomizedDropDownField(
-      title: "Variant",
-      borderWidth: 0.0,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-        child: Card(
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.zero,
-          shadowColor: boxShadowTwo,
-          elevation: 0,
-          child: Container(
-            decoration: decorateBox(),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    dense: true,
-                    title: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          appendStringDot(variantData!.title!, 10),
-                          maxLines: 1,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18),
-                        ),
-                        Text(
-                          'Available . ${variantData!.quantity!}',
-                          maxLines: 1,
-                          style: TextStyle(
-                              color: blackFont.withOpacity(.5),
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14),
-                        ),
-                      ],
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text(
-                            worldCurrencies[variantData!.currency!]!,
-                            style: TextStyle(
-                                fontFamily: "Roboto",
-                                fontSize: 18.0,
-                                color: blackFont,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            moneyDisplayNormalizer(
-                                int.parse(variantData!.price.toString())),
-                            style: TextStyle(
-                                fontSize: 18.0,
-                                color: blackFont,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
+  Widget displaySelectedVariant() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Variant',
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+                    'option': 'new',
+                    'productId': '',
+                  });
 
-                    leading: getVariantLeading(),
-                    trailing: getVariantTrailing(),
-                  ),
+                  // Handle the result (map) received from Product Add New Option
+                  if (result != null && result is Variant) {
+                    //save the variant details for later use
+                    productVariantList.add(result);
+                    if(mounted)setState(() {});
+                  }
+                },
+                child: Text(
+                  'Add more',
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: navyBlue,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16),
                 ),
-              ],
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Container(
+            decoration: decorateBox(),
+            // Use `SingleChildScrollView` to provide a bounded height for the content
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListView.builder(
+                      // Use `physics` property to prevent nested scrolling
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: productVariantList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                          shadowColor: boxShadowTwo,
+                          elevation: 0,
+                          child: Container(
+                            decoration: decorateBox(),
+                            child: ListTile(
+                              dense: true,
+                              title: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    appendStringDot(productVariantList[index].title!, 10),
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18),
+                                  ),
+                                  Text(
+                                    'Available . ${productVariantList[index].quantity!}',
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        color: blackFont.withOpacity(.5),
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Text(
+                                      worldCurrencies[productVariantList[index].currency!]!,
+                                      style: TextStyle(
+                                          fontFamily: "Roboto",
+                                          fontSize: 18.0,
+                                          color: blackFont,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Text(
+                                      moneyDisplayNormalizer(
+                                          int.parse(productVariantList[index].price.toString())),
+                                      style: TextStyle(
+                                          fontSize: 18.0,
+                                          color: blackFont,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              leading: getVariantLeading(productVariantList[index]),
+                              trailing: getVariantTrailing(productVariantList[index]),
+                            ),
+                          ),
+                        );
+                      },
+
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
-
   }
 
-  Widget getVariantLeading() {
+  Widget getVariantLeading(Variant productVariant) {
     return Container(
       width: 100,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
             image: FileImage(
-              File(variantData!.localImages![0].path),
+              File(productVariant.localImages![0].path),
             ),
             fit: BoxFit.cover),
       ),
     );
   }
 
-  Widget getVariantTrailing() {
+  Widget getVariantTrailing(Variant productVariant) {
 
     return IconButton(
       padding: const EdgeInsets.only(right: 6),
@@ -1161,12 +1259,17 @@ class _AddProductState extends State<AddProduct> {
         ),
       ),
       onPressed: () {
-        setState(() {
-          variantData = null;
-        });
+        removeSelectedVariant(productVariant.title.toString());
+        if(mounted) setState(() {});
       },
     );
   }
+
+  void removeSelectedVariant(String selectedVariantTitle) {
+    // Use the removeWhere method to remove the variant with the specified title.
+    productVariantList.removeWhere((variant) => variant.title == selectedVariantTitle);
+  }
+
 
   @override
   void dispose() {

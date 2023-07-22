@@ -88,6 +88,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   List<Variant> productVariantList = [];
   List<String> sizes = [];
   List<String> colors = [];
+  String selectedColor = "";
+  String selectedSize = "";
 
   @override
   void initState() {
@@ -134,12 +136,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         if (variant.type == 'Size' && variant.type != null) {
           sizes.add(variant.value.toString());
         }
-        if (variant.color == 'Color' && variant.color != null) {
-          colors.add(variant.color.toString());
+        if (variant.type == 'Color' && variant.type != null) {
+          colors.add(variant.colour.toString());
         }
       }
 
-      debugPrint('fola pro:::: $sizes');
 
       if (mounted) setState(() {});
     }).catchError((e) {
@@ -1024,15 +1025,25 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ),
               SizedBox(width: 5.0,),
               Text(
-                colors[0],
+                selectedColor.isEmpty ? colors[0] : selectedColor,
                 style: TextStyle(
                     fontSize: 14,
                     color: blackFont,
                     fontWeight: FontWeight.bold),
               ),
+              if(colors.length > 1)...[
+                GestureDetector(
+                  onTap: (){
+                    variantActionsSheet("color");
+                  },
+                  child: Image.asset(
+                      'assets/images/drop_down.png'),
+                ),
+              ]
             ],
           ),
         ],
+
         if(sizes.isNotEmpty)...[
           SizedBox(height: 10.0,),
           Row(
@@ -1045,18 +1056,88 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ),
               SizedBox(width: 5.0,),
               Text(
-                sizes[0],
+                selectedSize.isEmpty ? sizes[0] : selectedSize,
                 style: TextStyle(
                     fontSize: 14,
                     color: blackFont,
                     fontWeight: FontWeight.bold),
               ),
+              if(sizes.length > 1)...[
+                GestureDetector(
+                  onTap: (){
+                    variantActionsSheet("size");
+                  },
+                  child: Image.asset(
+                      'assets/images/drop_down.png'),
+                ),
+              ],
             ],
           ),
         ],
 
       ],
     );
+  }
+
+  void variantActionsSheet(String type) {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: variantBottomSheetItem(type),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> variantBottomSheetItem(String type) {
+    List<Widget> list = [];
+
+    if(type == "size"){
+      for(var item in sizes){
+        list.add(
+          bottomSheetItem(
+            title: item,
+            // iconData: SlydoAppIcon.share,
+            onTap: () {
+              selectedSize = item;
+              if(mounted)setState(() {});
+              Navigator.pop(context);
+            },
+          ),
+        );
+      }
+    }else if(type == "color"){
+      for(var item in colors){
+        list.add(
+          bottomSheetItem(
+            title: item,
+            // iconData: SlydoAppIcon.share,
+            onTap: () {
+              selectedColor = item;
+              if(mounted)setState(() {});
+              Navigator.pop(context);
+            },
+          ),
+        );
+      }
+    }
+
+
+
+    return list;
   }
 
   Widget copyQrCode() {

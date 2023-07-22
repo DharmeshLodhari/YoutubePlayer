@@ -56,6 +56,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
   void initState() {
 
     productId = widget.arguments["productId"];
+
     getVariantList();
 
     super.initState();

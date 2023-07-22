@@ -1042,7 +1042,7 @@ class _FindBusinessState extends State<FindBusiness> {
                                 child: Text(
                                   appendStringDot(
                                       messageDecoderWithEmoji(
-                                              widget.customerProfile.userName ??
+                                              widget.customerProfile.fullName ??
                                                   "") ??
                                           "",
                                       widget.tileRenderPlace ==

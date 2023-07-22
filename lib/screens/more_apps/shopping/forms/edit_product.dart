@@ -76,7 +76,6 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController productManufacturerController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
   int inventoryCount = 0;
-  // List<Variant>? variantData;
   List<Variant> productVariantList = [];
   bool inventoryIsAvailable = false;
 
@@ -1124,16 +1123,19 @@ class _EditProductState extends State<EditProduct> {
   Widget getAddVariationFormField() {
     return GestureDetector(
       onTap: () async {
-        NavigationUtil.pushNamed(context, routeName: Routes.PRODUCT_VARIANT_LIST);
-        // Navigate to PRODUCT NEW OPTION and wait for the result
-        // final result = await  NavigationUtil.pushNamed(context, routeName: Routes.PRODUCT_NEW_OPTION);
-        //
+
+        // Navigate to PRODUCT VARIANT LIST and wait for the result
+        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_VARIANT_LIST,
+            arguments: {
+              'productId': productId,
+            });
+
         // // Handle the result (map) received from Product Add New Option
-        // if (result != null && result is Variant) {
-        //   //save the variant details for later use
-        //   variantData = result;
-        //   if(mounted)setState(() {});
-        // }
+        if (result != null && result is Variant) {
+          //save the variant details for later use
+          productVariantList.add(result);
+          if(mounted)setState(() {});
+        }
       },
       child: CustomizedDropDownField(
         title: "Option",
@@ -1202,8 +1204,8 @@ class _EditProductState extends State<EditProduct> {
                 // Handle the result (map) received from PRODUCT_VARIANT_LIST
                 if (data != null && data is List<Variant>) {
                   //clear previous list, update the list
-                  debugPrint('fola data::: ${data}');
-                  debugPrint('fola data 2::: ${data.runtimeType}');
+                  // debugPrint('fola data::: ${data}');
+                  // debugPrint('fola data 2::: ${data.runtimeType}');
 
                   // productVariantList = [];
                   // productVariantList = Variant.convertToVariantList(data);
@@ -1263,7 +1265,7 @@ class _EditProductState extends State<EditProduct> {
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          // dense: variant.isDefault! ? true : false,
+          dense:  true,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

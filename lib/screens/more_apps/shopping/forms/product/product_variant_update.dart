@@ -83,7 +83,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     selectedType = variant!.type.toString();
     titleController.text = variant!.title!.toString();
     sizeController.text = variant!.value!.toString();
-    colorController.text = variant!.color!.toString();
+    colorController.text = variant!.colour!.toString();
     priceController.text = moneyNormalizer(int.parse(variant!.price!)).toString();
     availableFromController.text = variant!.availableFrom!.toString();
     productIsAvailable = variant!.isAvailable!;
@@ -95,7 +95,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
 
     title = variant!.title!.toString();
     size = variant!.value!.toString();
-    color = variant!.color!.toString();
+    color = variant!.colour!.toString();
     variantPrice = moneyNormalizer(int.parse(variant!.price!)).toString();
     productIsAvailable = variant!.isAvailable!;
     trackInventory = variant!.trackInventory!;
@@ -948,7 +948,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           variant.localImages =
               productLocalImages.map((file) => File(file.path)).toList();
           variant.title = title;
-          variant.color = color;
+          variant.colour = color;
           variant.value = value;
           variant.quantity = inventoryCount.toString();
           variant.type = selectedType;
