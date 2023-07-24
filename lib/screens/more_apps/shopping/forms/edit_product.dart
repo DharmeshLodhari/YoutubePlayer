@@ -1323,9 +1323,13 @@ class _EditProductState extends State<EditProduct> {
 
   Widget checkProductImage(Variant variant) {
     // Retrieve the first image from the 'pictures' list
-    String? url = variant.serverImages![0]!;
+    String? url = "";
 
-    String imageUrl = url.replaceAll('https//', 'https://');
+    for(var item in variant.serverImages!){
+      url = item;
+    }
+
+    String imageUrl = url!.replaceAll('https//', 'https://');
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
