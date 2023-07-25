@@ -5,6 +5,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
@@ -83,6 +84,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
   ];
   List<String> selectedItems = [];
   JobModel? job;
+  String? activeListingId;
   late UserBloc userBloc;
 
   List<ChatConversation> searchedChatConnection = [];
@@ -119,6 +121,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           // noJobsInList = false;
           isLoading = false;
           job = tempList.job;
+          activeListingId = tempList.id;
+          job!.activeListing = activeListingId;
         });
       }
       getSearchedChatConnections();
@@ -128,11 +132,14 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
 
   @override
   void initState() {
-    super.initState();
+    logger.d('mmmmmmmmmm yarn${widget.jobDetails['job'].toJson()}');
+    print('mmmmmmmmmm yarn Listing ${widget.jobDetails['listingId']}');
     jobId = widget.jobDetails['jobId'];
     listingId = widget.jobDetails['listingId'];
     getMyJob();
     job = widget.jobDetails['job'];
+
+    super.initState();
   }
 
   @override
@@ -221,9 +228,39 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       actionTwoBgColor: navyBlue,
       actionTwoTextColor: white,
       title: "Accept",
-      description: "Are you sure want to accept for this User?",
+      description: "Are you sure you want to accept this User?",
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.accept,
+    );
+  }
+
+  Future<void> upgradeApplicantAlert() async {
+    await showDialogBox(
+      context: context,
+      leftButtonOnPressed: () => Navigator.pop(context),
+      rightButtonOnPressed: () {
+        Navigator.pushNamed(context, "/choose-subscriptions");
+      },
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 43,
+        height: 43,
+        icon: Icon(
+          Icons.check_circle_sharp,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: black,
+      actionTwoBgColor: navyBlue,
+      actionTwoTextColor: white,
+      title: "Upgrade",
+      description: "Are you sure you want to upgrade your account?",
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: "Upgrade",
     );
   }
 
@@ -236,7 +273,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
             callback: (params) async {
               params
                 ..attachment = {
-                  "job": job?.toJson().cast<String, dynamic>() ?? {}
+                  "job": job?.toJson().cast<String, dynamic>() ?? {},
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
@@ -630,7 +667,11 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       onPressed: isAPILoading
           ? () {}
           : () async {
-              acceptApplicantAlert();
+              if (userBloc.user.type == "User") {
+                upgradeApplicantAlert();
+              } else {
+                acceptApplicantAlert();
+              }
             },
       backgroundColor: navyBlue,
       textColor: Colors.white,
