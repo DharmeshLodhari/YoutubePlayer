@@ -593,8 +593,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ),
           SizedBox(height: 12),
           getUserBioStringWidget(),
-          // displayUserAddress(),
-          // getContact(),
+
           getJoinedDate(),
           SizedBox(height: 12),
           Row(
