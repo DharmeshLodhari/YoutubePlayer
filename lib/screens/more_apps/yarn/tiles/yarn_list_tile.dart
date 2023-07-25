@@ -22,6 +22,7 @@ import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../../service_hub/models/active_job_listing.dart';
 import '../../service_hub/models/jobs.dart';
 import '../../service_hub/tiles/jos_description_card.dart';
 import '../../user_post/models/user_post.dart';
@@ -518,19 +519,20 @@ class _YarnTileState extends State<YarnTile> {
         break;
       case 'job':
         JobModel jobModel = JobModel.fromJson(widget.yarn.attachment ?? {});
+        log('messagemmmmmmmmmmmmm${widget.yarn.toString()}');
         childWidget = GestureDetector(
             onTap: () {
               userBloc.user.userName == jobModel.owner
                   ? Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
                       arguments: {
-                          'jobId': jobModel,
-                          'listingId': jobModel.id,
+                          'jobId': jobModel.id,
+                          'listingId': jobModel.activeListing,
                           'job': jobModel
                         })
                   : Navigator.pushNamed(context, Routes.JOBS_PREVIEW_DETAIL,
                       arguments: {
                           'jobId': jobModel.id,
-                          'listingId': jobModel.id,
+                          'listingId': jobModel.activeListing,
                           'job': jobModel
                         });
             },

@@ -467,11 +467,10 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
             searchItemTextController!.addListener(() {
               if (searchItemTextController!.text.length >= 3) {
-                 _debouncer.run(() {
-                onRefresh();
-              });
+                _debouncer.run(() {
+                  onRefresh();
+                });
               }
-             
             });
 
             return Card(

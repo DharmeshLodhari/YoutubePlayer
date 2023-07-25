@@ -259,7 +259,7 @@ class _ApplicantListState extends State<ApplicantList> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: "Accept",
-      description: "Are you sure want to accept for this User?",
+      description: "Are you sure you want to accept for this User?",
       actionOneText: AppLocalization.of(context)!.accept,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );

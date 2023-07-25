@@ -54,7 +54,7 @@ class MyJobsDetails extends StatefulWidget {
 class _MyJobsDetailsState extends State<MyJobsDetails> {
   CarouselController carouselController = CarouselController();
   late final String jobId;
-  late final String? listingId;
+  // late final String? listingId;
 
   late YarnDashboardBloc yarnDashboardBloc;
 
@@ -143,7 +143,6 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   void initState() {
     super.initState();
     jobId = widget.jobDetails['jobId'];
-    listingId = widget.jobDetails['listingId'];
     _scrollController = ScrollController();
     getMyJob();
   }
@@ -590,7 +589,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                     border: Border.all(color: greyBorderColor),
                                     borderRadius: BorderRadius.circular(12)),
                                 child: Text(
-                                  'Applicaton Submitted',
+                                  'Application Submitted',
                                   style: TextStyle(color: black, fontSize: 12),
                                 )),
                             const SizedBox(
@@ -620,7 +619,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                     border: Border.all(color: greyBorderColor),
                                     borderRadius: BorderRadius.circular(12)),
                                 child: Text(
-                                  'Applicaton viewed',
+                                  'Application viewed',
                                   style: TextStyle(color: black, fontSize: 12),
                                 )),
                             const SizedBox(
@@ -647,7 +646,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                     border: Border.all(color: greyBorderColor),
                                     borderRadius: BorderRadius.circular(12)),
                                 child: Text(
-                                  'Applicaton Accepted',
+                                  'Application Accepted',
                                   style: TextStyle(color: black, fontSize: 12),
                                 )),
                             const SizedBox(
@@ -691,7 +690,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                     border: Border.all(color: greyBorderColor),
                                     borderRadius: BorderRadius.circular(12)),
                                 child: Text(
-                                  'Applicaton Submitted',
+                                  'Application Submitted',
                                   style: TextStyle(color: black, fontSize: 12),
                                 )),
                             const SizedBox(
@@ -724,7 +723,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                           borderRadius:
                                               BorderRadius.circular(12)),
                                       child: Text(
-                                        'Applicaton Canceled',
+                                        'Application Canceled',
                                         style: TextStyle(
                                             color: black, fontSize: 12),
                                       )),
@@ -757,7 +756,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                               borderRadius:
                                                   BorderRadius.circular(12)),
                                           child: Text(
-                                            'Applicaton viewed',
+                                            'Application viewed',
                                             style: TextStyle(
                                                 color: black, fontSize: 12),
                                           )),
@@ -805,7 +804,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                               borderRadius:
                                                   BorderRadius.circular(12)),
                                           child: Text(
-                                            'Applicaton Accepted',
+                                            'Application Accepted',
                                             style: TextStyle(
                                                 color: black, fontSize: 12),
                                           )),
