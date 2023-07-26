@@ -198,7 +198,7 @@ class PayoutTile extends StatelessWidget {
     if (payout!.status! == 'Paid' || payout!.status! == 'Settled') {
       status = 'done';
     } else if (payout!.status! == 'Pending') {
-      status = 'pend';
+      status = 'processing';
     } else if (payout!.status! == 'Cancelled') {
       status = 'cancel';
     }

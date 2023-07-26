@@ -297,7 +297,7 @@ class PaymentAndBankingAuth extends AuthService {
         BankAccount account = BankAccount(
           bankAvatar: item["bank"]['logo_url'],
           uuid: item['id'].toString(),
-          bankName: bank['short_name'],
+          bankName: bank['name'],
           accountName: item['account_name'],
           accountNumber: item['account_number'],
           isDefault: item['is_default'],
@@ -913,7 +913,7 @@ class PaymentAndBankingAuth extends AuthService {
           amount: item['amount'],
           currency: item['currency'],
           timeStamp: timeStamp,
-          bankName: item["customer_bank_account"]["bank"]["short_name"],
+          bankName: item["customer_bank_account"]["bank"]["name"],
           bankLogo: item["customer_bank_account"]["bank"]["logo_url"],
           accountName: item["customer_bank_account"]["account_name"],
           accountNumber: item["customer_bank_account"]["account_number"],
