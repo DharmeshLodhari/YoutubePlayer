@@ -451,7 +451,7 @@ Widget transactionOrPayoutTile(
   if (subtitle == 'Paid' || subtitle == 'Settled') {
     status = 'done';
   } else if (subtitle == 'Pending') {
-    status = 'pend';
+    status = 'processing';
   } else if (subtitle == 'Cancelled') {
     status = 'cancel';
   }
@@ -512,7 +512,7 @@ Widget transactionOrPayoutTile(
 checkStatusBgColor(String status) {
   if (status == 'done') {
     return naturalGreen.withOpacity(0.1);
-  } else if (status == 'pend') {
+  } else if (status == 'processing') {
     return starYellow.withOpacity(0.1);
   } else if (status == 'cancel') {
     return mateRed.withOpacity(0.1);
@@ -524,7 +524,7 @@ checkStatusBgColor(String status) {
 checkStatusForColor(String status) {
   if (status == 'done') {
     return naturalGreen;
-  } else if (status == 'pend') {
+  } else if (status == 'processing') {
     return starYellow;
   } else if (status == 'cancel') {
     return mateRed;
