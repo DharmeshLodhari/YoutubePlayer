@@ -397,6 +397,20 @@ class AppLocalization {
     );
   }
 
+  String get upgrade {
+    return Intl.message(
+      "Upgrade",
+      name: "upgrade",
+    );
+  }
+
+  String get upgradeMessage {
+    return Intl.message(
+      "To apply for this job, please upgrade to a business account",
+      name: "upgradeMessage",
+    );
+  }
+
   String get create {
     return Intl.message(
       "Create",
@@ -1303,6 +1317,13 @@ class AppLocalization {
     return Intl.message(
       "Request",
       name: "request",
+    );
+  }
+
+  String get paymentLink {
+    return Intl.message(
+      "Payment Links",
+      name: "payment",
     );
   }
 
