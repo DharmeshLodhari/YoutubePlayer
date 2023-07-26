@@ -129,8 +129,8 @@ class _HomeState extends State<Home> {
   Widget _foregroundScreen() {
     return Container(
       padding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
+        left: 12,
+        right: 12,
       ),
       child: Column(
         children: <Widget>[
@@ -150,37 +150,36 @@ class _HomeState extends State<Home> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        appLocalization.quickActions,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: HexColor("#151515")),
-                      ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          appLocalization.quickActions,
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: HexColor("#151515")),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        _displayPaymentButtons(),
+                      ],
                     ),
                   ),
                   const SizedBox(
-                    height: 10,
+                    height: 25,
                   ),
-                  _displayPaymentButtons(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        appLocalization.explore,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: HexColor("#151515")),
-                      ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      appLocalization.explore,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: HexColor("#151515")),
                     ),
                   ),
                   const SizedBox(
@@ -379,30 +378,121 @@ class _HomeState extends State<Home> {
         shadowColor: boxShadowTwo,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+        margin: const EdgeInsets.only(left: 5.0, right: 5.0),
         child: Container(
           width: double.infinity,
           decoration: decorateBox(color: navyBlue),
           child: Container(
             padding: EdgeInsets.only(
-                left: 24,
-                right: 24,
+                left: 18,
+                right: 18,
                 top: MediaQuery.of(context).size.height > 600 ? 18 : 12,
                 bottom: MediaQuery.of(context).size.height > 600 ? 24 : 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Account Balance",
-                  style: TextStyle(fontSize: 14, color: white),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Balance",
+                          style: TextStyle(fontSize: 14, color: white),
+                        ),
+                        getAccountBalanceBtn()
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          "Ampersand MFB ",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: white,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "4213456790",
+                              style: TextStyle(fontSize: 14, color: white),
+                            ),
+                            const SizedBox(
+                              width: 4,
+                            ),
+                            SvgPicture.asset(
+                              "ampersand".toSVG(),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 5,
                 ),
-                accountBalanceUI()
+                accountBalanceUI(),
+                const SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    contentContainer("transaction_icon", "Transaction History",
+                        ontap: () {
+                      hideBalance();
+                      BottomSheetPassCode(
+                          context: context,
+                          isValidCallback: () {
+                            Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
+                                arguments: {'page': 0});
+                          },
+                          cancelCallBack: () {
+                            Navigator.pop(context);
+                          });
+                    }),
+                    contentContainer("fund_icon", "Fund Wallet",
+                        ontap: () => Navigator.of(context)
+                            .pushNamed(Routes.WALLET_OPTIONS_SELECTION)),
+                  ],
+                )
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget contentContainer(String icon, String text, {Function()? ontap}) {
+    return GestureDetector(
+      onTap: ontap,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+        decoration:
+            BoxDecoration(color: white, borderRadius: BorderRadius.circular(4)),
+        child: Row(
+          children: [
+            SvgPicture.asset(
+              icon.toSVG(),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            Text(
+              text,
+              style: TextStyle(
+                  fontSize: 13.4, color: black, fontWeight: FontWeight.w500),
+            ),
+          ],
         ),
       ),
     );
@@ -419,44 +509,38 @@ class _HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      isBalanceHidden
-                          ? Container()
-                          : Padding(
-                              padding: const EdgeInsets.only(bottom: 2.0),
-                              child: Text(
-                                worldCurrencies[userBloc.user.currency!]!,
-                                style: TextStyle(
-                                  color: white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 24,
-                                  fontFamily: "Roboto",
-                                ),
-                              ),
+                  isBalanceHidden
+                      ? Container()
+                      : Padding(
+                          padding: const EdgeInsets.only(bottom: 2.0),
+                          child: Text(
+                            worldCurrencies[userBloc.user.currency!]!,
+                            style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              fontFamily: "Roboto",
                             ),
-                      Text(
-                        isBalanceHidden
-                            ? "*********"
-                            : moneyDisplayNormalizer(accountBalance),
-                        style: TextStyle(
-                          color: white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 26,
+                          ),
                         ),
-                      ),
-                    ],
+                  Text(
+                    isBalanceHidden
+                        ? "*********"
+                        : moneyDisplayNormalizer(accountBalance),
+                    style: TextStyle(
+                      color: white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 26,
+                    ),
                   ),
-                  getAccountBalanceBtn()
                 ],
               ),
               Text(
                 isBalanceHidden
                     ? ""
-                    : "Actual Balance: " +
+                    : "Book Balance: " +
                         worldCurrencies[userBloc.user.currency!]! +
                         moneyDisplayNormalizer(actualAccountBalance),
                 style: TextStyle(
@@ -472,10 +556,12 @@ class _HomeState extends State<Home> {
   Widget getAccountBalanceBtn() {
     return isBalanceHidden
         ? IconButton(
+            padding: EdgeInsets.all(4),
+            alignment: Alignment.topCenter,
             icon: Icon(
               SlydoAppIcon.eye,
               color: white,
-              size: 18,
+              size: 12,
             ),
             onPressed: () {
               BottomSheetPassCode(
@@ -493,10 +579,12 @@ class _HomeState extends State<Home> {
             },
           )
         : IconButton(
+            padding: EdgeInsets.all(4),
+            alignment: Alignment.topCenter,
             icon: Icon(
               SlydoAppIcon.eye_close,
               color: white,
-              size: 24,
+              size: 12,
             ),
             onPressed: () {
               isBalanceHidden = true;
@@ -528,185 +616,245 @@ class _HomeState extends State<Home> {
   }
 
   Widget _displayPaymentButtons() {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: MediaQuery.of(context).size.height > 600 ? 16 : 8,
-      ),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            key: tutorialSendPaymentKey,
-            child: Container(
-              child: _sendPaymentButton(),
+    return Column(
+      children: [
+        Row(
+          children: <Widget>[
+            Expanded(
+              key: tutorialSendPaymentKey,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                    border: Border.all(color: navyBlue),
+                    borderRadius: BorderRadius.circular(20),
+                    color: navyBlue.withOpacity(.2)),
+                child: _sendPaymentButton(),
+              ),
             ),
-          ),
-          Expanded(
-            key: tutorialRequestPaymentKey,
-            child: Container(
+            const SizedBox(
+              width: 10,
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              decoration: BoxDecoration(
+                  border: Border.all(color: navyBlue),
+                  borderRadius: BorderRadius.circular(20),
+                  color: navyBlue.withOpacity(.2)),
               child: _requestPaymentButton(),
             ),
-          ),
-          Expanded(
-            key: tutorialQrCodeKey,
-            child: Container(
-              child: _qrCodeButton(),
+            const SizedBox(
+              width: 10,
             ),
-          ),
-          Expanded(
-            key: tutorialScanQrCodeKey,
-            child: Container(
-              child: _scanButton(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                  border: Border.all(color: navyBlue),
+                  borderRadius: BorderRadius.circular(20),
+                  color: navyBlue.withOpacity(.2)),
+              child: _paymentLinkButton(),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            Expanded(
+              key: tutorialScanQrCodeKey,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                    border: Border.all(color: navyBlue),
+                    borderRadius: BorderRadius.circular(20),
+                    color: navyBlue.withOpacity(.2)),
+                child: _scanButton(),
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              key: tutorialQrCodeKey,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                    border: Border.all(color: navyBlue),
+                    borderRadius: BorderRadius.circular(20),
+                    color: navyBlue.withOpacity(.2)),
+                child: _qrCodeButton(),
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                  border: Border.all(color: navyBlue),
+                  borderRadius: BorderRadius.circular(20),
+                  color: navyBlue.withOpacity(.2)),
+              child: _creditCard(),
+            ),
+          ],
+        )
+      ],
     );
   }
 
   Widget _requestPaymentButton() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-      ),
-      child: InkWell(
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 50,
-                width: 50,
-                child: SvgPicture.asset(
-                  "request_payment".toSVG(),
-                ),
+    return InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            SizedBox(
+              height: 30,
+              width: 30,
+              child: SvgPicture.asset(
+                "request_pay".toSVG(),
               ),
-              const SizedBox(
-                width: 12,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              appLocalization.request,
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+            ),
+          ],
+        ),
+        onTap: () {
+          hideBalance();
+          Navigator.pushNamed(context, Routes.ACCOUNTS);
+        });
+  }
+
+  Widget _paymentLinkButton() {
+    return InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            SizedBox(
+              height: 28,
+              width: 28,
+              child: SvgPicture.asset(
+                "payment_link".toSVG(),
               ),
-              Text(
-                appLocalization.request,
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          onTap: () {
-            hideBalance();
-            // if (getIt<AppConfigurationBloc>()
-            //         .appConfigurationModel
-            //         ?.enablePayment ==
-            //     true) {
-              Navigator.pushNamed(context, Routes.ACCOUNTS);
-            // } else {
-            //   showToast(message: 'Payment not available at the moment');
-            // }
-          }),
-    );
+            ),
+            const SizedBox(width: 5),
+            Text(
+              appLocalization.paymentLink,
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+            ),
+          ],
+        ),
+        onTap: () {
+          showToast(message: 'Coming soon');
+        });
   }
 
   Widget _sendPaymentButton() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        splashColor: Colors.white,
-        highlightColor: Colors.white,
-      ),
-      child: InkWell(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: SvgPicture.asset(
-                    "send_payment".toSVG(),
-                  )),
-              const SizedBox(
-                width: 12,
-              ),
-              Text(
-                appLocalization.send,
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          onTap: () {
-            hideBalance();
-            // if (getIt<AppConfigurationBloc>()
-            //         .appConfigurationModel
-            //         ?.enablePayment ==
-            //     true) {
-              Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-                  arguments: <String, bool>{'isFromProfile': true});
-            // } else {
-            //   showToast(message: 'Payment not available at the moment');
-            // }
-          }),
-    );
+    return InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            SizedBox(
+                height: 29,
+                width: 28,
+                child: SvgPicture.asset(
+                  "home_naira".toSVG(),
+                )),
+            // const SizedBox(width: 5),
+            Text(
+              appLocalization.send,
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+            ),
+          ],
+        ),
+        onTap: () {
+          hideBalance();
+          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+              arguments: <String, bool>{'isFromProfile': true});
+        });
   }
 
   Widget _scanButton() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        splashColor: Colors.white,
-        highlightColor: Colors.white,
-      ),
-      child: InkWell(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                height: 50,
-                width: 50,
-                child: SvgPicture.asset(
-                  "scan_qr".toSVG(),
-                ),
+    return InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            SizedBox(
+              height: 28,
+              width: 28,
+              child: SvgPicture.asset(
+                "scanny".toSVG(),
               ),
-              const SizedBox(
-                width: 12,
-              ),
-              const Text(
-                "Scan",
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          onTap: () {
-            hideBalance();
-            NavigationUtil.push(context,
-                screen: QRCodeView(arguments: {'isRequest': false}));
-          }),
-    );
+            ),
+            const SizedBox(width: 5),
+            Text(
+              "Scan QR",
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+            ),
+          ],
+        ),
+        onTap: () {
+          hideBalance();
+          NavigationUtil.push(context,
+              screen: QRCodeView(arguments: {'isRequest': false}));
+        });
   }
 
   Widget _qrCodeButton() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        splashColor: Colors.white,
-        highlightColor: Colors.white,
-      ),
-      child: InkWell(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                height: 50,
-                width: 50,
-                child: SvgPicture.asset("qr_code".toSVG(),
-                    width: 20, height: 20, fit: BoxFit.scaleDown),
+    return InkWell(
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              height: 28,
+              width: 28,
+              child: SvgPicture.asset("qr_scan_me".toSVG()),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              "QR Code",
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+            ),
+          ],
+        ),
+        onTap: () {
+          hideBalance();
+          NavigationUtil.push(context, screen: QrCodePage());
+        });
+  }
+
+  Widget _creditCard() {
+    return InkWell(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            SizedBox(
+              height: 28,
+              width: 28,
+              child: SvgPicture.asset(
+                "home_credit_card".toSVG(),
               ),
-              const SizedBox(
-                width: 12,
-              ),
-              const Text(
-                "QR Code",
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          onTap: () {
-            hideBalance();
-            NavigationUtil.push(context, screen: QrCodePage());
-          }),
-    );
+            ),
+            const SizedBox(width: 5),
+            Text(
+              "Credit Card",
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+            ),
+          ],
+        ),
+        onTap: () {
+          showToast(message: 'Coming soon');
+        });
   }
 
   checkUser() {
@@ -718,41 +866,41 @@ class _HomeState extends State<Home> {
           ),
           Row(
             children: [
-              Expanded(
-                child: UserDashboardItemTile(
-                  icon: SlydoAppIcon.news_moreapps,
-                  title: AppLocalization.of(context)!.blogs,
-                  onTap: () {
-                    if (appConfigurationModel?.enableSuperBlog == true) {
-                      hideBalance();
-                      NavigationUtil.push(
-                        context,
-                        screen: const SuperBlog(),
-                      );
-                    } else {
-                      showToast(message: 'Feature not available at the moment');
-                    }
-                  },
-                  iconColor: HexColor("#F35B46"),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: UserDashboardItemTile(
-                  icon: SlydoAppIcon.utility,
-                  title: "Utility",
-                  onTap: () {
-                    if (appConfigurationModel?.enableUtility == true) {
-                      hideBalance();
-                      Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
-                    } else {
-                      showToast(message: 'Coming soon.');
-                    }
-                  },
-                  iconColor: HexColor("#FFAB00"),
-                ),
-              ),
-              const SizedBox(width: 12),
+              // Expanded(
+              //   child: UserDashboardItemTile(
+              //     icon: SlydoAppIcon.news_moreapps,
+              //     title: AppLocalization.of(context)!.blogs,
+              //     onTap: () {
+              //       if (appConfigurationModel?.enableSuperBlog == true) {
+              //         hideBalance();
+              //         NavigationUtil.push(
+              //           context,
+              //           screen: const SuperBlog(),
+              //         );
+              //       } else {
+              //         showToast(message: 'Feature not available at the moment');
+              //       }
+              //     },
+              //     iconColor: HexColor("#F35B46"),
+              //   ),
+              // ),
+              // const SizedBox(width: 12),
+              // Expanded(
+              //   child: UserDashboardItemTile(
+              //     icon: SlydoAppIcon.utility,
+              //     title: "Utility",
+              //     onTap: () {
+              //       if (appConfigurationModel?.enableUtility == true) {
+              //         hideBalance();
+              //         Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
+              //       } else {
+              //         showToast(message: 'Coming soon.');
+              //       }
+              //     },
+              //     iconColor: HexColor("#FFAB00"),
+              //   ),
+              // ),
+              // const SizedBox(width: 12),
               Expanded(
                 child: UserDashboardItemTile(
                   icon: SlydoAppIconNew.vector_1,
@@ -772,6 +920,9 @@ class _HomeState extends State<Home> {
               const SizedBox(width: 12),
               Expanded(child: Container()),
               const SizedBox(width: 12),
+              Expanded(child: Container()),
+              const SizedBox(width: 12),
+              Expanded(child: Container()),
             ],
           ),
         ],
@@ -795,53 +946,53 @@ class _HomeState extends State<Home> {
   Widget firstRowOfUserDashboardItem() {
     return Row(
       children: [
+        // Expanded(
+        //   key: tutorialTransactionKey,
+        //   child: UserDashboardItemTile(
+        //     icon: SlydoAppIcon.transactions,
+        //     title: AppLocalization.of(context)!.transaction,
+        //     onTap: () {
+        //   hideBalance();
+        //   BottomSheetPassCode(
+        //       context: context,
+        //       isValidCallback: () {
+        //         Navigator.of(context)
+        //             .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
+        //       },
+        //       cancelCallBack: () {
+        //         Navigator.pop(context);
+        //       });
+        // },
+        //     iconColor: HexColor("#3F61DB"),
+        //   ),
+        // ),
+        // const SizedBox(
+        //   width: 12,
+        // ),
+        // Expanded(
+        //   key: tutorialWalletKey,
+        //   child: UserDashboardItemTile(
+        //     icon: Icons.account_balance_wallet_rounded,
+        //     title: AppLocalization.of(context)!.wallet,
+        //     onTap: () {
+        //       Navigator.of(context).pushNamed(Routes.WALLET_OPTIONS_SELECTION);
+        //     },
+        //     iconColor: HexColor("#F35B46"),
+        //   ),
+        // ),
+        // const SizedBox(
+        //   width: 12,
+        // ),
         Expanded(
-          key: tutorialTransactionKey,
-          child: UserDashboardItemTile(
-            icon: SlydoAppIcon.transactions,
-            title: AppLocalization.of(context)!.transaction,
-            onTap: () {
-              hideBalance();
-              BottomSheetPassCode(
-                  context: context,
-                  isValidCallback: () {
-                    Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
-                        arguments: {'page': 0});
-                  },
-                  cancelCallBack: () {
-                    Navigator.pop(context);
-                  });
-            },
-            iconColor: HexColor("#3F61DB"),
-          ),
-        ),
-        const SizedBox(
-          width: 12,
-        ),
-        Expanded(
-          key: tutorialWalletKey,
-          child: UserDashboardItemTile(
-            icon: Icons.account_balance_wallet_rounded,
-            title: AppLocalization.of(context)!.wallet,
-            onTap: () {
-              Navigator.of(context).pushNamed(Routes.WALLET_OPTIONS_SELECTION);
-            },
-            iconColor: HexColor("#F35B46"),
-          ),
-        ),
-        const SizedBox(
-          width: 12,
-        ),
-        Expanded(
-          key: tutorialOrderKey,
+            key: tutorialOrderKey,
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.cart,
-          title: "Orders",
-          onTap: () {
-            Navigator.pushNamed(context, Routes.ORDERS_LIST);
-          },
-          iconColor: HexColor("#FFAB00"),
-        )),
+              icon: SlydoAppIcon.cart,
+              title: "Orders",
+              onTap: () {
+                Navigator.pushNamed(context, Routes.ORDERS_LIST);
+              },
+              iconColor: HexColor("#FFAB00"),
+            )),
         const SizedBox(
           width: 12,
         ),
@@ -854,49 +1005,6 @@ class _HomeState extends State<Home> {
               Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
             },
             iconColor: HexColor("#374677"),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget secondRowOfUserDashboardItem() {
-    return Row(
-      children: [
-        Expanded(
-
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.store,
-          title: "My Store",
-          isLocked: storeLocked,
-          onTap: () {
-            if (!storeLocked) {
-              storeItemAndroidSheet();
-            } else {
-              showToast(
-                  message:
-                      'You need to upgrade to a business account to use this feature.');
-            }
-          },
-          iconColor: HexColor("#46CE7C"),
-        )),
-        const SizedBox(width: 12),
-        Expanded(
-          child: UserDashboardItemTile(
-            icon: Icons.business_center_rounded,
-            title: AppLocalization.of(context)!.business,
-            isLocked: storeLocked,
-            onTap: () {
-              if (!storeLocked) {
-                // Navigator.of(context).pushNamed(Routes.CONTRACTS);
-                businessAndroidSheet();
-              } else {
-                showToast(
-                    message:
-                        'You need to upgrade to a business account to use this feature.');
-              }
-            },
-            iconColor: HexColor("#5218E9"),
           ),
         ),
         const SizedBox(width: 12),
@@ -939,6 +1047,55 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget secondRowOfUserDashboardItem() {
+    return Row(
+      children: [
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.store,
+          title: "My Store",
+          isLocked: storeLocked,
+          onTap: () {
+            if (!storeLocked) {
+              storeItemAndroidSheet();
+            } else {
+              showToast(
+                  message:
+                      'You need to upgrade to a business account to use this feature.');
+            }
+          },
+          iconColor: HexColor("#46CE7C"),
+        )),
+        const SizedBox(width: 12),
+        Expanded(
+          child: UserDashboardItemTile(
+            icon: Icons.business_center_rounded,
+            title: AppLocalization.of(context)!.business,
+            isLocked: storeLocked,
+            onTap: () {
+              if (!storeLocked) {
+                // Navigator.of(context).pushNamed(Routes.CONTRACTS);
+                businessAndroidSheet();
+              } else {
+                showToast(
+                    message:
+                        'You need to upgrade to a business account to use this feature.');
+              }
+            },
+            iconColor: HexColor("#5218E9"),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Container(),
+        ),
+        const SizedBox(width: 12),
+        Expanded(child: Container()),
+        const SizedBox(width: 12),
+      ],
+    );
+  }
+
   void storeItemAndroidSheet() {
     hideBalance();
     showModalBottomSheet<void>(
@@ -954,7 +1111,8 @@ class _HomeState extends State<Home> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
