@@ -160,17 +160,19 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                             controller: bankController,
                             enabled: false,
                             style: TextStyle(
-                                // fontSize: 20,
-                                color: blackFont),
+                                fontSize: 18,
+                                color: blackFont,
+                                fontWeight: FontWeight.w600),
                             decoration: InputDecoration(
                               filled: true,
-                              // fillColor: blackFont,
+                              fillColor: greyBorderColor,
                               contentPadding: const EdgeInsets.only(
                                   left: 8, bottom: 0, top: 0, right: 15),
                               hintText: 'Select Bank',
                               hintStyle: TextStyle(
-                                  // fontSize: 20,
-                                  color: blackFont),
+                                fontSize: 18,
+                                color: blackFont,
+                                fontWeight: FontWeight.w600),
                               suffixIcon: Icon(
                                 Icons.arrow_drop_down_outlined,
                                 color: blackFont,

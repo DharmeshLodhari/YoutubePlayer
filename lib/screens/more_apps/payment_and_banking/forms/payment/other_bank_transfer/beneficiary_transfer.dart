@@ -82,7 +82,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        getList();
+        getList("");
       }
     });
 
@@ -98,12 +98,14 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
         // Call your search function here
         searchBankList();
-      } else if (searchItemTextController.text.isEmpty) {
+      } else if (searchItemTextController.text.length == 0) {
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
         clearSearchAndAllBanks();
+        searchBankList();
+
       }
     });
 
@@ -119,7 +121,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     isLoading = true;
     setState(() {});
     await getAccountBalance();
-    getList();
+    getList("");
     virtualAccount = await DatabaseHelper().getVirtualAccount();
     if (virtualAccount == null) {
       virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
@@ -627,7 +629,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
                 bottomSheetStateSetterGlobal!(() {});
 
                 if (mounted) setState(() {});
-                getList();
+                getList("");
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
@@ -656,7 +658,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
                 // clearSearchedListItems();
                 bottomSheetStateSetterGlobal!(() {});
                 setState(() {});
-                getList();
+                getList("");
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
@@ -695,9 +697,9 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
         child: buildBankList(context));
   }
 
-  void getList() async {
+  void getList(String searchText) async {
     Map<String, dynamic>? result =
-        await _auth.getBankAccountsPagination(next, previous);
+        await _auth.getBankAccountsPagination(next, previous, searchText);
     if (result == null) {
       isLoading = false;
       return;
@@ -734,43 +736,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     }
   }
 
-  // Widget buildBankList() {
-  //   return noItemInList
-  //       ? NoItemInList(
-  //           msg: AppLocalization.of(context)!.noResultFound,
-  //           isResult: true,
-  //         )
-  //       : ListView.builder(
-  //           padding: EdgeInsets.symmetric(vertical: 4),
-  //           //+1 for progressbar
-  //           shrinkWrap: true,
-  //           itemCount: bankAccountList.length + 1,
-  //           itemBuilder: (BuildContext context, int index) {
-  //             if (index == bankAccountList.length) {
-  //               return _buildIndicatorForBankList();
-  //             } else {
-  //               return GestureDetector(
-  //                 onTap: () {
-  //                   selectedBank = bankAccountList[index];
-  //                   bankAccountBloc.bankAccount = bankAccountList[index];
-
-  //                   if (mounted) setState(() {});
-  //                   Navigator.pop(context);
-
-  //                   FocusScope.of(context).requestFocus();
-  //                 },
-  //                 child: _getSlidableWithLists(
-  //                     context,
-  //                     bankAccountTile(
-  //                       account: bankAccountList[index],
-  //                     ),
-  //                     bankAccountList[index]),
-  //               );
-  //             }
-  //           },
-  //           controller: _scrollController,
-  //         );
-  // }
 
   Widget buildBankList(BuildContext context) {
     return noItemInList
@@ -975,15 +940,13 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
   void searchBankList() {
     // Perform the search and update the bankAccountList
-    List filteredList = bankAccountList.where((account) {
-      // Customize the condition based on your search requirements
-      // return account.accountName.toString().toLowerCase().contains(searchText);
-      return account.bankName.toString().toLowerCase().contains(searchText);
-    }).toList();
+    count = 0;
+    next = "";
+    previous = "";
+    bankAccountList = [];
+    if(mounted) setState(() {});
+    getList(searchText);
 
-    setState(() {
-      bankAccountList = filteredList;
-    });
   }
 
   void clearSearchAndAllBanks() {
@@ -1003,7 +966,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
         next = "";
         previous = "";
         bankAccountList = [];
-        getList();
+        getList(searchText);
         _refreshController.refreshCompleted();
       } else {
         showToast(
