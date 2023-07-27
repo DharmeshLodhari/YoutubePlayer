@@ -4,6 +4,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/home_tab/qr_code_page.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -12,6 +13,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,6 +65,9 @@ class _HomeState extends State<Home> {
   final _auth = AuthService();
   bool storeLocked = true;
   late DashboardBloc dashboardBloc;
+  VirtualAccount? virtualAccount;
+  String accountNumber = "";
+  bool isAccountExist = false;
 
   @override
   void initState() {
@@ -89,8 +94,35 @@ class _HomeState extends State<Home> {
         });
       }
     });
+    getSlydoAccount();
 
     super.initState();
+  }
+
+  void getSlydoAccount() async {
+    isLoading = true;
+    setState(() {});
+    bool isFromServer = false;
+
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+
+    if (virtualAccount == null) {
+      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
+      isFromServer = true;
+    }
+
+    isLoading = false;
+
+    if (virtualAccount != null) {
+      isAccountExist = true;
+      if (isFromServer) {
+        await DatabaseHelper().saveVirtualAccount(virtualAccount!);
+      }
+    }
+
+    accountNumber = virtualAccount!.accountNumber!;
+
+    if (mounted) setState(() {});
   }
 
   @override
@@ -147,6 +179,7 @@ class _HomeState extends State<Home> {
           ),
 
           Container(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -185,7 +218,7 @@ class _HomeState extends State<Home> {
                   const SizedBox(
                     height: 10,
                   ),
-                  firstRowOfUserDashboardItem(),
+
                   checkUser(),
                 ],
               ),
@@ -418,17 +451,31 @@ class _HomeState extends State<Home> {
                         const SizedBox(
                           height: 5,
                         ),
+
+                        accountNumber == "" ?
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularLoadingIndicator(color: naturalGreen),
+                        ) :
                         Row(
                           children: [
                             Text(
-                              "4213456790",
+                              accountNumber,
                               style: TextStyle(fontSize: 14, color: white),
                             ),
                             const SizedBox(
                               width: 4,
                             ),
-                            SvgPicture.asset(
-                              "ampersand".toSVG(),
+                            GestureDetector(
+                              onTap: (){
+                                Clipboard.setData(
+                                    ClipboardData(text: "${accountNumber}"));
+                                showToast(message: "Account number copied !!");
+                              },
+                              child: SvgPicture.asset(
+                                "ampersand".toSVG(), width: 15,
+                              ),
                             ),
                           ],
                         ),
@@ -437,7 +484,7 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 const SizedBox(
-                  height: 5,
+                  height: 2,
                 ),
                 accountBalanceUI(),
                 const SizedBox(
@@ -460,8 +507,10 @@ class _HomeState extends State<Home> {
                           });
                     }),
                     contentContainer("fund_icon", "Fund Wallet",
-                        ontap: () => Navigator.of(context)
-                            .pushNamed(Routes.WALLET_OPTIONS_SELECTION)),
+                        ontap: () =>
+                        Navigator.of(context)
+                        .pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE)
+                    ),
                   ],
                 )
               ],
@@ -527,7 +576,7 @@ class _HomeState extends State<Home> {
                         ),
                   Text(
                     isBalanceHidden
-                        ? "*********"
+                        ? "****"
                         : moneyDisplayNormalizer(accountBalance),
                     style: TextStyle(
                       color: white,
@@ -539,7 +588,7 @@ class _HomeState extends State<Home> {
               ),
               Text(
                 isBalanceHidden
-                    ? ""
+                    ? "Book Balance: ****"
                     : "Book Balance: " +
                         worldCurrencies[userBloc.user.currency!]! +
                         moneyDisplayNormalizer(actualAccountBalance),
@@ -626,9 +675,9 @@ class _HomeState extends State<Home> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                    border: Border.all(color: navyBlue),
+                    border: Border.all(color: navyBlue.withOpacity(0.65)),
                     borderRadius: BorderRadius.circular(20),
-                    color: navyBlue.withOpacity(.2)),
+                    color: navyBlue.withOpacity(.1)),
                 child: _sendPaymentButton(),
               ),
             ),
@@ -638,9 +687,9 @@ class _HomeState extends State<Home> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               decoration: BoxDecoration(
-                  border: Border.all(color: navyBlue),
+                  border: Border.all(color: navyBlue.withOpacity(0.65)),
                   borderRadius: BorderRadius.circular(20),
-                  color: navyBlue.withOpacity(.2)),
+                  color: navyBlue.withOpacity(.1)),
               child: _requestPaymentButton(),
             ),
             const SizedBox(
@@ -649,9 +698,9 @@ class _HomeState extends State<Home> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                  border: Border.all(color: navyBlue),
+                  border: Border.all(color: navyBlue.withOpacity(0.65)),
                   borderRadius: BorderRadius.circular(20),
-                  color: navyBlue.withOpacity(.2)),
+                  color: navyBlue.withOpacity(.1)),
               child: _paymentLinkButton(),
             ),
           ],
@@ -667,9 +716,9 @@ class _HomeState extends State<Home> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                    border: Border.all(color: navyBlue),
+                    border: Border.all(color: navyBlue.withOpacity(0.65)),
                     borderRadius: BorderRadius.circular(20),
-                    color: navyBlue.withOpacity(.2)),
+                    color: navyBlue.withOpacity(.1)),
                 child: _scanButton(),
               ),
             ),
@@ -682,9 +731,9 @@ class _HomeState extends State<Home> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                    border: Border.all(color: navyBlue),
+                    border: Border.all(color: navyBlue.withOpacity(0.65)),
                     borderRadius: BorderRadius.circular(20),
-                    color: navyBlue.withOpacity(.2)),
+                    color: navyBlue.withOpacity(.1)),
                 child: _qrCodeButton(),
               ),
             ),
@@ -694,9 +743,9 @@ class _HomeState extends State<Home> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                  border: Border.all(color: navyBlue),
+                  border: Border.all(color: navyBlue.withOpacity(0.65)),
                   borderRadius: BorderRadius.circular(20),
-                  color: navyBlue.withOpacity(.2)),
+                  color: navyBlue.withOpacity(.1)),
               child: _creditCard(),
             ),
           ],
@@ -721,7 +770,7 @@ class _HomeState extends State<Home> {
             Text(
               appLocalization.request,
               style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
             ),
           ],
         ),
@@ -747,7 +796,7 @@ class _HomeState extends State<Home> {
             Text(
               appLocalization.paymentLink,
               style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
             ),
           ],
         ),
@@ -771,7 +820,7 @@ class _HomeState extends State<Home> {
             Text(
               appLocalization.send,
               style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
             ),
           ],
         ),
@@ -798,7 +847,7 @@ class _HomeState extends State<Home> {
             Text(
               "Scan QR",
               style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
             ),
           ],
         ),
@@ -822,7 +871,7 @@ class _HomeState extends State<Home> {
             Text(
               "QR Code",
               style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
             ),
           ],
         ),
@@ -848,12 +897,14 @@ class _HomeState extends State<Home> {
             Text(
               "Credit Card",
               style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w600, color: navyBlue),
+                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
             ),
           ],
         ),
         onTap: () {
-          showToast(message: 'Coming soon');
+          hideBalance();
+          Navigator.of(context)
+              .pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
         });
   }
 
@@ -864,43 +915,77 @@ class _HomeState extends State<Home> {
           const SizedBox(
             height: 20,
           ),
+          // first row
           Row(
             children: [
-              // Expanded(
-              //   child: UserDashboardItemTile(
-              //     icon: SlydoAppIcon.news_moreapps,
-              //     title: AppLocalization.of(context)!.blogs,
-              //     onTap: () {
-              //       if (appConfigurationModel?.enableSuperBlog == true) {
-              //         hideBalance();
-              //         NavigationUtil.push(
-              //           context,
-              //           screen: const SuperBlog(),
-              //         );
-              //       } else {
-              //         showToast(message: 'Feature not available at the moment');
-              //       }
-              //     },
-              //     iconColor: HexColor("#F35B46"),
-              //   ),
-              // ),
-              // const SizedBox(width: 12),
-              // Expanded(
-              //   child: UserDashboardItemTile(
-              //     icon: SlydoAppIcon.utility,
-              //     title: "Utility",
-              //     onTap: () {
-              //       if (appConfigurationModel?.enableUtility == true) {
-              //         hideBalance();
-              //         Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
-              //       } else {
-              //         showToast(message: 'Coming soon.');
-              //       }
-              //     },
-              //     iconColor: HexColor("#FFAB00"),
-              //   ),
-              // ),
-              // const SizedBox(width: 12),
+              Expanded(
+                  key: tutorialOrderKey,
+                  child: UserDashboardItemTile(
+                    icon: SlydoAppIcon.cart,
+                    title: "Orders",
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.ORDERS_LIST);
+                    },
+                    iconColor: HexColor("#FFAB00"),
+                  )),
+              const SizedBox(
+                width: 12,
+              ),
+              Expanded(
+                key: tutorialInboxKey,
+                child: UserDashboardItemTile(
+                  iconWidget: const MessageNavBtn(),
+                  title: "Inbox",
+                  onTap: () {
+                    Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+                  },
+                  iconColor: HexColor("#374677"),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                key: tutorialBlogsKey,
+                child: UserDashboardItemTile(
+                  icon: SlydoAppIcon.news_moreapps,
+                  title: AppLocalization.of(context)!.blogs,
+                  onTap: () {
+                    if (appConfigurationModel?.enableSuperBlog == true) {
+                      hideBalance();
+                      NavigationUtil.push(
+                        context,
+                        screen: const SuperBlog(),
+                      );
+                    } else {
+                      showToast(message: 'Feature not available at the moment');
+                    }
+                  },
+                  iconColor: HexColor("#F35B46"),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: UserDashboardItemTile(
+                  icon: SlydoAppIcon.utility,
+                  title: "Utility",
+                  onTap: () {
+                    if (appConfigurationModel?.enableUtility == true) {
+                      hideBalance();
+                      Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
+                    } else {
+                      showToast(message: 'Coming soon.');
+                    }
+                  },
+                  iconColor: HexColor("#FFAB00"),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          //second row
+          Row(
+            children: [
               Expanded(
                 child: UserDashboardItemTile(
                   icon: SlydoAppIconNew.vector_1,
@@ -933,167 +1018,136 @@ class _HomeState extends State<Home> {
           const SizedBox(
             height: 20,
           ),
-          secondRowOfUserDashboardItem(),
+          // first row
+          Row(
+            children: [
+              Expanded(
+                  child: UserDashboardItemTile(
+                    icon: SlydoAppIcon.store,
+                    title: "My Store",
+                    isLocked: storeLocked,
+                    onTap: () {
+                      if (!storeLocked) {
+                        storeItemAndroidSheet();
+                      } else {
+                        showToast(
+                            message:
+                            'You need to upgrade to a business account to use this feature.');
+                      }
+                    },
+                    iconColor: HexColor("#46CE7C"),
+                  )),
+              const SizedBox(width: 12),
+              Expanded(
+                  key: tutorialOrderKey,
+                  child: UserDashboardItemTile(
+                    icon: SlydoAppIcon.cart,
+                    title: "Orders",
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.ORDERS_LIST);
+                    },
+                    iconColor: HexColor("#FFAB00"),
+                  )),
+              const SizedBox(width: 12),
+              Expanded(
+                key: tutorialInboxKey,
+                child: UserDashboardItemTile(
+                  iconWidget: const MessageNavBtn(),
+                  title: "Inbox",
+                  onTap: () {
+                    Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+                  },
+                  iconColor: HexColor("#374677"),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                key: tutorialBlogsKey,
+                child: UserDashboardItemTile(
+                  icon: SlydoAppIcon.news_moreapps,
+                  title: AppLocalization.of(context)!.blogs,
+                  onTap: () {
+                    if (appConfigurationModel?.enableSuperBlog == true) {
+                      hideBalance();
+                      NavigationUtil.push(
+                        context,
+                        screen: const SuperBlog(),
+                      );
+                    } else {
+                      showToast(message: 'Feature not available at the moment');
+                    }
+                  },
+                  iconColor: HexColor("#F35B46"),
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+          ),
           const SizedBox(
             height: 20,
           ),
-          thirdRowOfUserDashboardItem(),
+          // second row
+          Row(
+            children: [
+              Expanded(
+                child: UserDashboardItemTile(
+                  icon: Icons.business_center_rounded,
+                  title: AppLocalization.of(context)!.business,
+                  isLocked: storeLocked,
+                  onTap: () {
+                    if (!storeLocked) {
+                      // Navigator.of(context).pushNamed(Routes.CONTRACTS);
+                      businessAndroidSheet();
+                    } else {
+                      showToast(
+                          message:
+                          'You need to upgrade to a business account to use this feature.');
+                    }
+                  },
+                  iconColor: HexColor("#5218E9"),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: UserDashboardItemTile(
+                  icon: SlydoAppIconNew.vector_1,
+                  title: AppLocalization.of(context)!.services,
+                  onTap: () {
+                    // if (appConfigurationModel?.enableUtility == true) {
+                    //   Navigator.pushNamed(context, Routes.SUPER_HUB);
+                    // } else {
+                    //   showToast(message: 'Coming soon.');
+                    // }
+                    hideBalance();
+                    Navigator.pushNamed(context, Routes.SUPER_HUB);
+                  },
+                  iconColor: HexColor("#9B51E0"),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: UserDashboardItemTile(
+                  icon: SlydoAppIcon.utility,
+                  title: "Utility",
+                  onTap: () {
+                    if (appConfigurationModel?.enableUtility == true) {
+                      hideBalance();
+                      Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
+                    } else {
+                      showToast(message: 'Coming soon.');
+                    }
+                  },
+                  iconColor: HexColor("#FFAB00"),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Container()),
+              const SizedBox(width: 12),
+            ],
+          ),
         ],
       );
     }
-  }
-
-  Widget firstRowOfUserDashboardItem() {
-    return Row(
-      children: [
-        // Expanded(
-        //   key: tutorialTransactionKey,
-        //   child: UserDashboardItemTile(
-        //     icon: SlydoAppIcon.transactions,
-        //     title: AppLocalization.of(context)!.transaction,
-        //     onTap: () {
-        //   hideBalance();
-        //   BottomSheetPassCode(
-        //       context: context,
-        //       isValidCallback: () {
-        //         Navigator.of(context)
-        //             .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
-        //       },
-        //       cancelCallBack: () {
-        //         Navigator.pop(context);
-        //       });
-        // },
-        //     iconColor: HexColor("#3F61DB"),
-        //   ),
-        // ),
-        // const SizedBox(
-        //   width: 12,
-        // ),
-        // Expanded(
-        //   key: tutorialWalletKey,
-        //   child: UserDashboardItemTile(
-        //     icon: Icons.account_balance_wallet_rounded,
-        //     title: AppLocalization.of(context)!.wallet,
-        //     onTap: () {
-        //       Navigator.of(context).pushNamed(Routes.WALLET_OPTIONS_SELECTION);
-        //     },
-        //     iconColor: HexColor("#F35B46"),
-        //   ),
-        // ),
-        // const SizedBox(
-        //   width: 12,
-        // ),
-        Expanded(
-            key: tutorialOrderKey,
-            child: UserDashboardItemTile(
-              icon: SlydoAppIcon.cart,
-              title: "Orders",
-              onTap: () {
-                Navigator.pushNamed(context, Routes.ORDERS_LIST);
-              },
-              iconColor: HexColor("#FFAB00"),
-            )),
-        const SizedBox(
-          width: 12,
-        ),
-        Expanded(
-          key: tutorialInboxKey,
-          child: UserDashboardItemTile(
-            iconWidget: const MessageNavBtn(),
-            title: "Inbox",
-            onTap: () {
-              Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
-            },
-            iconColor: HexColor("#374677"),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          key: tutorialBlogsKey,
-          child: UserDashboardItemTile(
-            icon: SlydoAppIcon.news_moreapps,
-            title: AppLocalization.of(context)!.blogs,
-            onTap: () {
-              if (appConfigurationModel?.enableSuperBlog == true) {
-                hideBalance();
-                NavigationUtil.push(
-                  context,
-                  screen: const SuperBlog(),
-                );
-              } else {
-                showToast(message: 'Feature not available at the moment');
-              }
-            },
-            iconColor: HexColor("#F35B46"),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: UserDashboardItemTile(
-            icon: SlydoAppIcon.utility,
-            title: "Utility",
-            onTap: () {
-              if (appConfigurationModel?.enableUtility == true) {
-                hideBalance();
-                Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
-              } else {
-                showToast(message: 'Coming soon.');
-              }
-            },
-            iconColor: HexColor("#FFAB00"),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget secondRowOfUserDashboardItem() {
-    return Row(
-      children: [
-        Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.store,
-          title: "My Store",
-          isLocked: storeLocked,
-          onTap: () {
-            if (!storeLocked) {
-              storeItemAndroidSheet();
-            } else {
-              showToast(
-                  message:
-                      'You need to upgrade to a business account to use this feature.');
-            }
-          },
-          iconColor: HexColor("#46CE7C"),
-        )),
-        const SizedBox(width: 12),
-        Expanded(
-          child: UserDashboardItemTile(
-            icon: Icons.business_center_rounded,
-            title: AppLocalization.of(context)!.business,
-            isLocked: storeLocked,
-            onTap: () {
-              if (!storeLocked) {
-                // Navigator.of(context).pushNamed(Routes.CONTRACTS);
-                businessAndroidSheet();
-              } else {
-                showToast(
-                    message:
-                        'You need to upgrade to a business account to use this feature.');
-              }
-            },
-            iconColor: HexColor("#5218E9"),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Container(),
-        ),
-        const SizedBox(width: 12),
-        Expanded(child: Container()),
-        const SizedBox(width: 12),
-      ],
-    );
   }
 
   void storeItemAndroidSheet() {
@@ -1170,41 +1224,6 @@ class _HomeState extends State<Home> {
                 }),
           ],
         ));
-  }
-
-  Widget thirdRowOfUserDashboardItem() {
-    return Row(
-      children: [
-        Expanded(
-          key: tutorialServicesKey,
-          child: UserDashboardItemTile(
-            icon: SlydoAppIconNew.vector_1,
-            title: AppLocalization.of(context)!.services,
-            onTap: () {
-              // if (appConfigurationModel?.enableUtility == true) {
-              //   Navigator.pushNamed(context, Routes.SUPER_HUB);
-              // } else {
-              //   showToast(message: 'Coming soon.');
-              // }
-              hideBalance();
-              Navigator.pushNamed(context, Routes.SUPER_HUB);
-            },
-            iconColor: HexColor("#9B51E0"),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Container(),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Container(),
-        ),
-        const SizedBox(width: 12),
-        Expanded(child: Container()),
-        const SizedBox(width: 12),
-      ],
-    );
   }
 
   @override

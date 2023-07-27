@@ -27,6 +27,7 @@ class UserDashboardItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      onTap: onTap as void Function()?,
       child: CustomBoxShadow(
         child: Card(
           margin: EdgeInsets.zero,
@@ -65,8 +66,8 @@ class UserDashboardItemTile extends StatelessWidget {
                         title,
                         style: TextStyle(
                             color: blackFont,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 10),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12),
                       ),
                       flexibleSpace(flex: 3),
                     ],
@@ -88,7 +89,6 @@ class UserDashboardItemTile extends StatelessWidget {
           ),
         ),
       ),
-      onTap: onTap as void Function()?,
     );
   }
 }
