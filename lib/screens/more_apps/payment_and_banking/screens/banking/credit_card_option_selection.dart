@@ -58,11 +58,12 @@ class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
                     onTap: () async {
                       if (appConfigurationModel?.enableAddUserCreditCard ==
                           true) {
-                        Navigator.of(context)
-                            .pushNamed(Routes.CREDIT_CARD_LIST);
+                        Navigator.pushNamed(context, Routes.GET_VIRTUAL_CARD);
+                        // Navigator.pushNamed(context, Routes.VIRTUAL_CARD_HOME);
                       } else {
                         showToast(message: 'Coming soon');
                       }
+
                     }),
                 getSettingTile(
                   title:

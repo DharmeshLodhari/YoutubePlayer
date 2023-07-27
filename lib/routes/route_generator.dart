@@ -67,7 +67,6 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/cred
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/upgrade_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/wallet_options_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';
@@ -143,7 +142,6 @@ import 'package:Slydo/screens/more_apps/utility/utility_history.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/startup_screen.dart';
-import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/photo_viewer.dart';
 import 'package:Slydo/widget/video_recorder.dart';
@@ -152,6 +150,8 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../screens/more_apps/business/screens/contract_screen.dart';
+import '../screens/more_apps/credit_card/get_virtual_card.dart';
+import '../screens/more_apps/credit_card/virtual_card_home.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/payout_transaction_detail.dart';
 import '../screens/more_apps/service_hub/models/active_job_listing.dart';
@@ -548,13 +548,6 @@ class RouteGenerator {
       case Routes.SHOPPING_CART:
         return PageTransition(
           child: ShoppingCart(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-      case Routes.USER_DASHBOARD:
-        return PageTransition(
-          child: UserDashboard(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1593,14 +1586,6 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case Routes.WALLET_OPTIONS_SELECTION:
-        return PageTransition(
-          child: WalletOptionsSelection(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-
       /// Custom Services
       case Routes.WEB_VIEW:
         return PageTransition(
@@ -1644,6 +1629,26 @@ class RouteGenerator {
         return PageTransition(
           child: ProductVariantUpdate(
             arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.GET_VIRTUAL_CARD:
+        return PageTransition(
+          child: GetVirtualCard(
+            // arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.VIRTUAL_CARD_HOME:
+        return PageTransition(
+          child: VirtualCardHome(
+            // arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,

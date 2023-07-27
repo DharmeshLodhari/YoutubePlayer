@@ -49,7 +49,6 @@ class Routes {
   static const String RESET_PASSWORD = "/reset-password";
   static const String CHANGE_PASSWORD = "/change-password";
   static const String SHOPPING_CART = "/shopping-cart";
-  static const String USER_DASHBOARD = "/user-dashboard";
   static const String ORDERS_LIST = "/orders-list";
   static const String ORDER_DETAIL_PAGE = "/order-detail-page";
   static const String CARD_PAYMENT_PAGE = "/card-payment-page";
@@ -156,7 +155,6 @@ class Routes {
   static const String REVIEW_LIST_SCREEN = "/review-list-screen";
   static const String ADD_REVIEW = "/add-review";
   static const String EDIT_REVIEW = "/edit-review";
-  static const String WALLET_OPTIONS_SELECTION = "/wallet-options-selection";
   static const String WEB_VIEW = "/web-view";
   static const String SUPER_BLOG = "/super-blog";
   static const String SUPER_HUB = "/super-hub";
@@ -180,5 +178,8 @@ class Routes {
   static const String PRODUCT_VARIANT_LIST = "/product-variant-list";
   static const String PRODUCT_NEW_OPTION = "/product-new-option";
   static const String PRODUCT_VARIANT_UPDATE = "/product-variant-update";
+
+  static const String GET_VIRTUAL_CARD = "/get-virtual-card";
+  static const String VIRTUAL_CARD_HOME = "/virtual-card-home";
 
 }
