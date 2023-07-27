@@ -32,6 +32,7 @@ import '../widget/CustomBoxShadow.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/bottom_sheet_item.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import '../widget/quick_action.dart';
 import '../widget/rounded_background_icon.dart';
 import '../widget/user_dashboard_item_tile.dart';
 import 'more_apps/messaging/button/message_nav_btn.dart';
@@ -165,10 +166,10 @@ class _HomeState extends State<Home> {
         right: 12,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(height: 10),
           _appBar(),
-          // flexibleSpace(flex: 1),
           const SizedBox(
             height: 15,
           ),
@@ -177,59 +178,68 @@ class _HomeState extends State<Home> {
           const SizedBox(
             height: 25,
           ),
+          Text(
+            appLocalization.quickActions,
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: HexColor("#151515")),
+            textAlign: TextAlign.left,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
 
-          Container(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          appLocalization.quickActions,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: HexColor("#151515")),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        _displayPaymentButtons(),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      appLocalization.explore,
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: HexColor("#151515")),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+          _displayPaymentButtons1(),
+          const SizedBox(
+            height: 25,
+          ),
 
-                  checkUser(),
-                ],
-              ),
-            ),
+          Text(
+            appLocalization.explore,
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: HexColor("#151515")),
           ),
 
           const SizedBox(
             height: 20,
           ),
+          checkUser(),
+          const SizedBox(
+            height: 20,
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _displayPaymentButtons1() {
+    return Wrap(
+      spacing: 5,
+      runSpacing: 10,
+      children: QuickAction.actions
+          .map((data) => ActionChip(
+                padding: const EdgeInsets.all(2.0),
+                avatar: SvgPicture.asset(data.image!.toSVG()),
+                label: Text(
+                  data.title ?? '',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: navyBlue),
+                ),
+                onPressed: () {
+                  _actions(data.action);
+                },
+                backgroundColor: navyBlue.withOpacity(.1),
+                shape: StadiumBorder(
+                    side: BorderSide(
+                  color: navyBlue.withOpacity(0.65),
+                )),
+              ))
+          .toList(),
     );
   }
 
@@ -451,34 +461,37 @@ class _HomeState extends State<Home> {
                         const SizedBox(
                           height: 5,
                         ),
-
-                        accountNumber == "" ?
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularLoadingIndicator(color: naturalGreen),
-                        ) :
-                        Row(
-                          children: [
-                            Text(
-                              accountNumber,
-                              style: TextStyle(fontSize: 14, color: white),
-                            ),
-                            const SizedBox(
-                              width: 4,
-                            ),
-                            GestureDetector(
-                              onTap: (){
-                                Clipboard.setData(
-                                    ClipboardData(text: "${accountNumber}"));
-                                showToast(message: "Account number copied !!");
-                              },
-                              child: SvgPicture.asset(
-                                "ampersand".toSVG(), width: 15,
+                        accountNumber == ""
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularLoadingIndicator(
+                                    color: naturalGreen),
+                              )
+                            : Row(
+                                children: [
+                                  Text(
+                                    accountNumber,
+                                    style:
+                                        TextStyle(fontSize: 14, color: white),
+                                  ),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Clipboard.setData(ClipboardData(
+                                          text: "${accountNumber}"));
+                                      showToast(
+                                          message: "Account number copied !!");
+                                    },
+                                    child: SvgPicture.asset(
+                                      "ampersand".toSVG(),
+                                      width: 15,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ],
                     )
                   ],
@@ -507,10 +520,8 @@ class _HomeState extends State<Home> {
                           });
                     }),
                     contentContainer("fund_icon", "Fund Wallet",
-                        ontap: () =>
-                        Navigator.of(context)
-                        .pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE)
-                    ),
+                        ontap: () => Navigator.of(context)
+                            .pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE)),
                   ],
                 )
               ],
@@ -605,7 +616,7 @@ class _HomeState extends State<Home> {
   Widget getAccountBalanceBtn() {
     return isBalanceHidden
         ? IconButton(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             alignment: Alignment.topCenter,
             icon: Icon(
               SlydoAppIcon.eye,
@@ -628,7 +639,7 @@ class _HomeState extends State<Home> {
             },
           )
         : IconButton(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             alignment: Alignment.topCenter,
             icon: Icon(
               SlydoAppIcon.eye_close,
@@ -662,250 +673,6 @@ class _HomeState extends State<Home> {
         setState(() {});
       }
     });
-  }
-
-  Widget _displayPaymentButtons() {
-    return Column(
-      children: [
-        Row(
-          children: <Widget>[
-            Expanded(
-              key: tutorialSendPaymentKey,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                    border: Border.all(color: navyBlue.withOpacity(0.65)),
-                    borderRadius: BorderRadius.circular(20),
-                    color: navyBlue.withOpacity(.1)),
-                child: _sendPaymentButton(),
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              decoration: BoxDecoration(
-                  border: Border.all(color: navyBlue.withOpacity(0.65)),
-                  borderRadius: BorderRadius.circular(20),
-                  color: navyBlue.withOpacity(.1)),
-              child: _requestPaymentButton(),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                  border: Border.all(color: navyBlue.withOpacity(0.65)),
-                  borderRadius: BorderRadius.circular(20),
-                  color: navyBlue.withOpacity(.1)),
-              child: _paymentLinkButton(),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Row(
-          children: [
-            Expanded(
-              key: tutorialScanQrCodeKey,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                    border: Border.all(color: navyBlue.withOpacity(0.65)),
-                    borderRadius: BorderRadius.circular(20),
-                    color: navyBlue.withOpacity(.1)),
-                child: _scanButton(),
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              key: tutorialQrCodeKey,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                    border: Border.all(color: navyBlue.withOpacity(0.65)),
-                    borderRadius: BorderRadius.circular(20),
-                    color: navyBlue.withOpacity(.1)),
-                child: _qrCodeButton(),
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                  border: Border.all(color: navyBlue.withOpacity(0.65)),
-                  borderRadius: BorderRadius.circular(20),
-                  color: navyBlue.withOpacity(.1)),
-              child: _creditCard(),
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget _requestPaymentButton() {
-    return InkWell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            SizedBox(
-              height: 30,
-              width: 30,
-              child: SvgPicture.asset(
-                "request_pay".toSVG(),
-              ),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              appLocalization.request,
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
-            ),
-          ],
-        ),
-        onTap: () {
-          hideBalance();
-          Navigator.pushNamed(context, Routes.ACCOUNTS);
-        });
-  }
-
-  Widget _paymentLinkButton() {
-    return InkWell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            SizedBox(
-              height: 28,
-              width: 28,
-              child: SvgPicture.asset(
-                "payment_link".toSVG(),
-              ),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              appLocalization.paymentLink,
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
-            ),
-          ],
-        ),
-        onTap: () {
-          showToast(message: 'Coming soon');
-        });
-  }
-
-  Widget _sendPaymentButton() {
-    return InkWell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            SizedBox(
-                height: 29,
-                width: 28,
-                child: SvgPicture.asset(
-                  "home_naira".toSVG(),
-                )),
-            // const SizedBox(width: 5),
-            Text(
-              appLocalization.send,
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
-            ),
-          ],
-        ),
-        onTap: () {
-          hideBalance();
-          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-              arguments: <String, bool>{'isFromProfile': true});
-        });
-  }
-
-  Widget _scanButton() {
-    return InkWell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            SizedBox(
-              height: 28,
-              width: 28,
-              child: SvgPicture.asset(
-                "scanny".toSVG(),
-              ),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              "Scan QR",
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
-            ),
-          ],
-        ),
-        onTap: () {
-          hideBalance();
-          NavigationUtil.push(context,
-              screen: QRCodeView(arguments: {'isRequest': false}));
-        });
-  }
-
-  Widget _qrCodeButton() {
-    return InkWell(
-        child: Row(
-          children: <Widget>[
-            SizedBox(
-              height: 28,
-              width: 28,
-              child: SvgPicture.asset("qr_scan_me".toSVG()),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              "QR Code",
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
-            ),
-          ],
-        ),
-        onTap: () {
-          hideBalance();
-          NavigationUtil.push(context, screen: QrCodePage());
-        });
-  }
-
-  Widget _creditCard() {
-    return InkWell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            SizedBox(
-              height: 28,
-              width: 28,
-              child: SvgPicture.asset(
-                "home_credit_card".toSVG(),
-              ),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              "Credit Card",
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700, color: navyBlue),
-            ),
-          ],
-        ),
-        onTap: () {
-          hideBalance();
-          Navigator.of(context)
-              .pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
-        });
   }
 
   checkUser() {
@@ -1023,20 +790,20 @@ class _HomeState extends State<Home> {
             children: [
               Expanded(
                   child: UserDashboardItemTile(
-                    icon: SlydoAppIcon.store,
-                    title: "My Store",
-                    isLocked: storeLocked,
-                    onTap: () {
-                      if (!storeLocked) {
-                        storeItemAndroidSheet();
-                      } else {
-                        showToast(
-                            message:
+                icon: SlydoAppIcon.store,
+                title: "My Store",
+                isLocked: storeLocked,
+                onTap: () {
+                  if (!storeLocked) {
+                    storeItemAndroidSheet();
+                  } else {
+                    showToast(
+                        message:
                             'You need to upgrade to a business account to use this feature.');
-                      }
-                    },
-                    iconColor: HexColor("#46CE7C"),
-                  )),
+                  }
+                },
+                iconColor: HexColor("#46CE7C"),
+              )),
               const SizedBox(width: 12),
               Expanded(
                   key: tutorialOrderKey,
@@ -1101,7 +868,7 @@ class _HomeState extends State<Home> {
                     } else {
                       showToast(
                           message:
-                          'You need to upgrade to a business account to use this feature.');
+                              'You need to upgrade to a business account to use this feature.');
                     }
                   },
                   iconColor: HexColor("#5218E9"),
@@ -1349,6 +1116,38 @@ class _HomeState extends State<Home> {
         // showToast(message: err.toString());
         debugPrint("Cannot Update Avatar : " + err.toString());
       }
+    }
+  }
+
+  void _actions(ActionValue? action) {
+    switch (action) {
+      case ActionValue.send:
+        hideBalance();
+        Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+            arguments: <String, bool>{'isFromProfile': true});
+        break;
+      case ActionValue.request:
+        hideBalance();
+        Navigator.pushNamed(context, Routes.ACCOUNTS);
+        break;
+      case ActionValue.paymentLink:
+        showToast(message: 'Coming soon');
+        break;
+      case ActionValue.scan:
+        hideBalance();
+        NavigationUtil.push(context,
+            screen: QRCodeView(arguments: const {'isRequest': false}));
+        break;
+      case ActionValue.qrcode:
+        hideBalance();
+        NavigationUtil.push(context, screen: QrCodePage());
+        break;
+      case ActionValue.creditcard:
+        hideBalance();
+        Navigator.of(context).pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
+        break;
+      default:
+        break;
     }
   }
 }

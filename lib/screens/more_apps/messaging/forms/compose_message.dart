@@ -18,8 +18,9 @@ import '../../../search_user.dart';
 // ignore: must_be_immutable
 class ComposeMessage extends StatefulWidget {
   var arguments;
+  String? username;
 
-  ComposeMessage({this.arguments});
+  ComposeMessage({this.arguments,this.username});
 
   @override
   _ComposeMessageState createState() =>

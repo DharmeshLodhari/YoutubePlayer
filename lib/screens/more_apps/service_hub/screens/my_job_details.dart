@@ -7,6 +7,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
@@ -91,8 +92,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   ScrollController? _scrollController;
 
   void getSearchedChatConnections() async {
-    searchedChatConnection =
-        await ConnectionListManager().getSearchedConnectionsFromDB(searchedText: job!.ownerName);
+    searchedChatConnection = await ConnectionListManager()
+        .getSearchedConnectionsFromDB(searchedText: job!.ownerName);
     if (mounted) setState(() {});
   }
 
@@ -103,6 +104,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       if (mounted) setState(() {});
 
       var result = await ServiceHubAuthService().retreiveJob(jobId: jobId);
+      logger.d('tor bad......${result?.toJson()}');
 
       if (result == null) {
         // noJobsInList = true;
@@ -369,44 +371,50 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                           fontSize: 14,
                           fontweight: FontWeight.w700,
                         ),
-                        Row(
-                          children: [
-                            CachedNetworkImage(
-                              imageUrl: "${job!.ownerAvatar}",
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
-                                width: 23.0,
-                                height: 23.0,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                      image: imageProvider, fit: BoxFit.cover),
+                        GestureDetector(
+                          onTap: () => Navigator.pushNamed(
+                              context, Routes.USER_PROFILE,
+                              arguments: {"searchedUserName": job!.owner}),
+                          child: Row(
+                            children: [
+                              CachedNetworkImage(
+                                imageUrl: "${job!.ownerAvatar}",
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  width: 23.0,
+                                  height: 23.0,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover),
+                                  ),
                                 ),
+                                errorWidget: productAndServiceBigErrorWidget,
                               ),
-                              errorWidget: productAndServiceBigErrorWidget,
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            userNameWithVerifiedIcon(
-                              name: job!.ownerName!,
-                              isVerified: userBloc.user.isVerified,
-                              verifiedIconColor: verifyGreen,
-                              textStyle: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: HexColor("#151515")),
-                            ),
-                            // Text(
-                            //   "${job!.ownerName}",
-                            //   style: TextStyle(
-                            //     color: blackFont,
-                            //     fontSize: 14,
-                            //     fontFamily: "Open Sans",
-                            //     fontWeight: FontWeight.w600,
-                            //   ),
-                            // ),
-                          ],
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              userNameWithVerifiedIcon(
+                                name: job!.ownerName!,
+                                isVerified: userBloc.user.isVerified,
+                                verifiedIconColor: verifyGreen,
+                                textStyle: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: HexColor("#151515")),
+                              ),
+                              // Text(
+                              //   "${job!.ownerName}",
+                              //   style: TextStyle(
+                              //     color: blackFont,
+                              //     fontSize: 14,
+                              //     fontFamily: "Open Sans",
+                              //     fontWeight: FontWeight.w600,
+                              //   ),
+                              // ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -938,11 +946,14 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         ),
         userBloc.user.userName == job!.ownerName!.toLowerCase()
             ? const SizedBox.shrink()
-            : searchedChatConnection.isNotEmpty && searchedChatConnection[0].userName!.toLowerCase() == job!.ownerName!.toLowerCase()
+            : searchedChatConnection.isNotEmpty &&
+                    searchedChatConnection[0].userName!.toLowerCase() ==
+                        job!.ownerName!.toLowerCase()
                 ? InkWell(
                     onTap: () {
-                      Navigator.pushNamed(context, '/chat-screen',
-                          arguments: {"recipientUserName": job!.ownerName!.toLowerCase()});
+                      Navigator.pushNamed(context, '/chat-screen', arguments: {
+                        "recipientUserName": job!.ownerName!.toLowerCase()
+                      });
                     },
                     child: SvgPicture.asset(
                       'yarn/chaticon'.toSVG(),

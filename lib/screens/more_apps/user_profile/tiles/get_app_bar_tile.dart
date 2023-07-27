@@ -276,8 +276,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 ),
               ),
             );
-    }
-    else if (searchedUser!.type!.toLowerCase() == "user") {
+    } else if (searchedUser!.type!.toLowerCase() == "user") {
       return searchedUser!.wallpaper == "" || searchedUser!.wallpaper == null
           ? Image.asset(
               "assets/images/default_user_wallpaper.png",
@@ -305,8 +304,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 ),
               ),
             );
-    }
-    else {
+    } else {
       return searchedUser!.userAbout!.wallpaper == ""
           ? Image.asset(
               "assets/images/default_user_wallpaper.png",
@@ -593,7 +591,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ),
           SizedBox(height: 12),
           getUserBioStringWidget(),
-
           getJoinedDate(),
           SizedBox(height: 12),
           Row(
@@ -655,9 +652,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ),
           child: ClipOval(
             child: CachedNetworkImage(
-              imageUrl: searchedUser!.avatar! == "" || searchedUser!.avatar! == null
-                  ? defaultImage
-                  : searchedUser!.avatar!,
+              imageUrl:
+                  searchedUser!.avatar! == "" || searchedUser!.avatar! == null
+                      ? defaultImage
+                      : searchedUser!.avatar!,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
@@ -1316,9 +1314,11 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               margin: EdgeInsets.zero,
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: generateBottomSheetItem(),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: generateBottomSheetItem(),
+                  ),
                 ),
               ));
         });
@@ -1491,11 +1491,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               onTap: () async {
                 Navigator.pop(context);
                 Future<bool?> check = blockUserAlert(context, searchedUser!);
-                if(check == true){
+                if (check == true) {
                   Navigator.pop(context);
                   Navigator.pop(context);
                 }
-
               },
             ),
           ],
@@ -1607,5 +1606,4 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               }
             }));
   }
-
 }
