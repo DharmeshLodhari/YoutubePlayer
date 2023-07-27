@@ -814,10 +814,8 @@ class _EditJobState extends State<EditJob> {
               showDatePicker(
                 builder: customThemeBuilder,
                 context: context,
-                initialDate: DateTime(DateTime.now().year, DateTime.now().month,
-                    DateTime.now().day),
-                firstDate: DateTime(DateTime.now().year, DateTime.now().month,
-                    DateTime.now().day),
+                initialDate: jobAvailableFrom,
+                firstDate: jobAvailableFrom,
                 lastDate: DateTime(2101),
               ).then((value) {
                 jobEndDate = DateTime(value!.year, value.month, value.day);
@@ -1787,6 +1785,7 @@ class _EditJobState extends State<EditJob> {
             'category': selectedCategory,
             'tags': [selectedCategory!.toLowerCase()],
             'due_date': DateFormat('yyyy-MM-dd').format(jobEndDate),
+            'creation_date': DateFormat('yyyy-MM-dd').format(jobAvailableFrom),
             'caption': selectedCategoryName,
             'picture_count': jobLocalImages.length,
             'file': '',

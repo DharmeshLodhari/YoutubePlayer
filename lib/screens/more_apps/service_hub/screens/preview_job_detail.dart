@@ -104,6 +104,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       var result =
           await ServiceHubAuthService().retreiveListedJob(listingId: listingId);
 
+      logger.d('tor bad......${result?.toJson()}');
       if (result == null) {
         // noJobsInList = true;
 
@@ -132,8 +133,6 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
 
   @override
   void initState() {
-    logger.d('mmmmmmmmmm yarn${widget.jobDetails['job'].toJson()}');
-    print('mmmmmmmmmm yarn Listing ${widget.jobDetails['listingId']}');
     jobId = widget.jobDetails['jobId'];
     listingId = widget.jobDetails['listingId'];
     getMyJob();
@@ -228,7 +227,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       actionTwoBgColor: navyBlue,
       actionTwoTextColor: white,
       title: "Accept",
-      description: "Are you sure you want to accept this User?",
+      description: "Are you sure you want to apply for this job?",
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.accept,
     );
@@ -412,35 +411,41 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                           fontSize: 14,
                           fontweight: FontWeight.w700,
                         ),
-                        Row(
-                          children: [
-                            CachedNetworkImage(
-                              imageUrl: "${job!.ownerAvatar}",
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
-                                width: 23.0,
-                                height: 23.0,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                      image: imageProvider, fit: BoxFit.cover),
+                        GestureDetector(
+                          onTap: () => Navigator.pushNamed(
+                              context, Routes.USER_PROFILE,
+                              arguments: {"searchedUserName": job!.owner}),
+                          child: Row(
+                            children: [
+                              CachedNetworkImage(
+                                imageUrl: "${job!.ownerAvatar}",
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  width: 23.0,
+                                  height: 23.0,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover),
+                                  ),
                                 ),
+                                errorWidget: productAndServiceBigErrorWidget,
                               ),
-                              errorWidget: productAndServiceBigErrorWidget,
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              "${job!.ownerName}",
-                              style: TextStyle(
-                                color: blackFont,
-                                fontSize: 14,
-                                fontFamily: "Open Sans",
-                                fontWeight: FontWeight.w600,
+                              const SizedBox(
+                                width: 10,
                               ),
-                            ),
-                          ],
+                              userNameWithVerifiedIcon(
+                                name: job!.ownerName!,
+                                isVerified: userBloc.user.isVerified,
+                                verifiedIconColor: verifyGreen,
+                                textStyle: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: HexColor("#151515")),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -594,7 +599,11 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                   )
                 : InkWell(
                     onTap: () {
-                      Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+                      Navigator.of(context)
+                          .pushNamed('/compose_message', arguments: {
+                        'recipient': job!.ownerName,
+                        'subject': "",
+                      });
                     },
                     child: SvgPicture.asset(
                       'yarn/messageicon'.toSVG(),
@@ -930,7 +939,6 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
   }
 
   CarouselSlider customImageSlider() {
-    print('...............length${job!.pictures!.length}');
     return CarouselSlider.builder(
       carouselController: carouselController,
       itemCount: job!.pictures!.length,

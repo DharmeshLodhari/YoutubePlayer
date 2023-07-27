@@ -19,7 +19,9 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../widget/debouncer_widget.dart';
 import '../../yarn/widgets/yarn_tab_selection.dart';
+import '../models/list_of_categories.dart';
 
 class JobsMyJobsList extends StatefulWidget {
   const JobsMyJobsList({Key? key}) : super(key: key);
@@ -51,6 +53,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
   ScrollController _appliedScrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> _myJobsScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
+
 
   bool _tabsVisible = true;
 
@@ -529,4 +532,6 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
       enableMargin: true,
     );
   }
+
+  
 }

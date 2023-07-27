@@ -71,7 +71,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   bool productIsAvailable = false;
   bool productEnableInSuperStore = false;
   DateTime jobAvailableFrom = DateTime.now();
-  DateTime jobEndDate = DateTime.now();
+  DateTime? jobEndDate;
   List productCategories = [
     'PhotoGraphy',
     'baby care',
@@ -1186,7 +1186,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                   image: File(file.path), caption: '$selectedCategory 1'))
               .toList();
           job.title = jobTitle;
-          job.dueDate = DateFormat('yyyy-MM-dd').format(jobEndDate);
+          job.creationDate = DateFormat('yyyy-MM-dd').format(jobAvailableFrom);
+          job.dueDate = DateFormat('yyyy-MM-dd').format(jobEndDate!);
           job.category = Category(
               name: selectedCategory,
               slug: selectedCategory!.toLowerCase(),
@@ -1204,7 +1205,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             'category': selectedCategory,
             'is_negotiable': getIsNegotiable(),
             'tags': [selectedCategory!.toLowerCase()],
-            'due_date': DateFormat('yyyy-MM-dd').format(jobEndDate),
+            'due_date': DateFormat('yyyy-MM-dd').format(jobEndDate!),
             'caption': selectedCategory,
             'picture_count': jobImages.length,
             'file': '',
@@ -1273,6 +1274,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           lastDate: DateTime(2101),
         ).then((value) {
           jobAvailableFrom = DateTime(value!.year, value.month, value.day);
+          jobEndDate = jobAvailableFrom;
           setState(() {});
         }).catchError((error) {});
       },
@@ -1430,10 +1432,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 showDatePicker(
                   builder: customThemeBuilder,
                   context: context,
-                  initialDate: DateTime(DateTime.now().year,
-                      DateTime.now().month, DateTime.now().day),
-                  firstDate: DateTime(DateTime.now().year, DateTime.now().month,
-                      DateTime.now().day),
+                  initialDate: jobAvailableFrom,
+                  firstDate: jobAvailableFrom,
                   lastDate: DateTime(2101),
                 ).then((value) {
                   jobEndDate = DateTime(value!.year, value.month, value.day);
