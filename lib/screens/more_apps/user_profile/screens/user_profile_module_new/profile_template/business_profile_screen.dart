@@ -214,7 +214,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     return TabBarView(
       controller: _tabController,
       children:
-          _currentUser!.tabs.where((tab) => tab.apiCall != null).map((tab) {
+          _currentUser.tabs.where((tab) => tab.apiCall != null).map((tab) {
         return PageStorage(
           key: PageStorageKey(tab.label),
           bucket: _bucket,

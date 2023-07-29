@@ -1,4 +1,3 @@
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -224,7 +223,8 @@ class _DisplayProductState extends State<DisplayProduct> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -308,7 +308,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
               }
             }));
   }
@@ -544,6 +544,7 @@ class _DisplayServiceState extends State<DisplayService> {
       },
       child: SizedBox(
         width: 180,
+        height: 500,
         child: Card(
           color: Colors.white,
           margin: EdgeInsets.only(
@@ -613,19 +614,25 @@ class _DisplayServiceState extends State<DisplayService> {
                       const SizedBox(
                         height: 4,
                       ),
-                      Text(
-                        widget.service.shortDescription!,
-                        overflow: widget.service.shortDescription!.length > 60
-                            ? TextOverflow.ellipsis
-                            : TextOverflow.visible,
-                        style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontWeight: FontWeight.w300,
-                          fontSize: 9,
-                          color: yarnBlack,
+                      SizedBox(
+                        width: 140,
+                        height: 14,
+                        child: Text(
+                          widget.service.shortDescription!,
+                          overflow: widget.service.shortDescription!.length > 21
+                              ? TextOverflow.ellipsis
+                              : TextOverflow.visible,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontFamily: "Roboto",
+                            fontWeight: FontWeight.w300,
+                            fontSize: 9,
+                            color: yarnBlack,
+                          ),
                         ),
                       ),
                       Row(
+                        
                         children: [
                           Text(
                             worldCurrencies[widget.service.currency!]!,
@@ -783,7 +790,8 @@ class _DisplayServiceState extends State<DisplayService> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -916,12 +924,11 @@ class _DisplayServiceState extends State<DisplayService> {
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
               }
             }));
   }
 }
-
 
 class FindBusiness extends StatefulWidget {
   CustomerProfile customerProfile;
@@ -931,10 +938,10 @@ class FindBusiness extends StatefulWidget {
 
   FindBusiness(
       {Key? key,
-        required this.customerProfile,
-        this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
-        this.onProductRefresh,
-        required this.callback})
+      required this.customerProfile,
+      this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
+      this.onProductRefresh,
+      required this.callback})
       : super(key: key);
 
   @override
@@ -942,14 +949,12 @@ class FindBusiness extends StatefulWidget {
 }
 
 class _FindBusinessState extends State<FindBusiness> {
-
   bool isLoadingFollowingAction = false;
   late UserBloc userBloc;
 
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
@@ -959,8 +964,7 @@ class _FindBusinessState extends State<FindBusiness> {
     return getNearByBusiness();
   }
 
-  Widget getNearByBusiness(){
-
+  Widget getNearByBusiness() {
     return Card(
       semanticContainer: true,
       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -976,39 +980,45 @@ class _FindBusinessState extends State<FindBusiness> {
             clipBehavior: Clip.none,
             alignment: Alignment.topCenter,
             children: [
-
               Container(
-                height: getContainerHeight(
-                    widget.tileRenderPlace, context),
+                  height: getContainerHeight(widget.tileRenderPlace, context),
                   child: getWallpaper()),
               Positioned(
                 left: 10,
-                top: getContainerHeight(
-                    widget.tileRenderPlace, context) - 20,
+                top: getContainerHeight(widget.tileRenderPlace, context) - 20,
                 child: InkWell(
                   onTap: () {
                     String? image = '';
                     if (widget.customerProfile.avatar! == "" ||
                         widget.customerProfile.avatar! ==
                             "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-                      image = getInitials(widget.customerProfile.fullName!).toUpperCase();
+                      image = getInitials(widget.customerProfile.fullName!)
+                          .toUpperCase();
                     } else {
                       image = widget.customerProfile.avatar!;
                     }
 
-                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                    Navigator.of(context)
+                        .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
                   },
                   child: SizedBox(
-                      width: widget.tileRenderPlace == TileRenderPlace.Thiny? 40 :50,
-                      height: widget.tileRenderPlace == TileRenderPlace.Thiny? 40 :50,
-                      child: CircularUserColorImage(imageUrl: widget.customerProfile.avatar!, name: widget.customerProfile.fullName!)),
+                      width: widget.tileRenderPlace == TileRenderPlace.Thiny
+                          ? 40
+                          : 50,
+                      height: widget.tileRenderPlace == TileRenderPlace.Thiny
+                          ? 40
+                          : 50,
+                      child: CircularUserColorImage(
+                          imageUrl: widget.customerProfile.avatar!,
+                          name: widget.customerProfile.fullName!)),
                 ),
               ),
             ],
           ),
           Container(
-            padding: widget.tileRenderPlace == TileRenderPlace.Thiny? EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
-                :  EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
+            padding: widget.tileRenderPlace == TileRenderPlace.Thiny
+                ? EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
+                : EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -1018,8 +1028,10 @@ class _FindBusinessState extends State<FindBusiness> {
                   children: [
                     InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context, Routes.USER_PROFILE,
-                            arguments: {"searchedUserName": widget.customerProfile.userName});
+                        Navigator.pushNamed(
+                            context, Routes.USER_PROFILE, arguments: {
+                          "searchedUserName": widget.customerProfile.userName
+                        });
                       },
                       child: Container(
                         child: Column(
@@ -1028,25 +1040,48 @@ class _FindBusinessState extends State<FindBusiness> {
                             Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  appendStringDot(messageDecoderWithEmoji(
-                                      widget.customerProfile.userName ?? "") ??
-                                      "", widget.tileRenderPlace == TileRenderPlace.Thiny ? 13 : 20),
-                                  style: TextStyle(fontSize: widget.tileRenderPlace == TileRenderPlace.Thiny? 12 : 16, fontWeight: FontWeight.w700, color: yarnBlack),
+                                  appendStringDot(
+                                      messageDecoderWithEmoji(
+                                              widget.customerProfile.fullName ??
+                                                  "") ??
+                                          "",
+                                      widget.tileRenderPlace ==
+                                              TileRenderPlace.Thiny
+                                          ? 13
+                                          : 20),
+                                  style: TextStyle(
+                                      fontSize: widget.tileRenderPlace ==
+                                              TileRenderPlace.Thiny
+                                          ? 12
+                                          : 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: yarnBlack),
                                 )),
                             Align(
                               alignment: Alignment.centerLeft,
                               child: userNameWithVerifiedIcon(
-                                  name: appendStringDot(messageDecoderWithEmoji(
-                                      '@${widget.customerProfile.userName}') ??
-                                      "", widget.tileRenderPlace == TileRenderPlace.Thiny ? 13 : 20),
+                                  name: appendStringDot(
+                                      messageDecoderWithEmoji(
+                                              '@${widget.customerProfile.userName}') ??
+                                          "",
+                                      widget.tileRenderPlace ==
+                                              TileRenderPlace.Thiny
+                                          ? 13
+                                          : 20),
                                   isVerified: widget.customerProfile.isVerified,
                                   textStyle: TextStyle(
-                                    fontSize: widget.tileRenderPlace == TileRenderPlace.Thiny? 11 : 14,
+                                    fontSize: widget.tileRenderPlace ==
+                                            TileRenderPlace.Thiny
+                                        ? 11
+                                        : 14,
                                     color: HexColor("#151515"),
                                     fontWeight: FontWeight.w500,
                                   ),
                                   verifiedIconColor: verifyGreen,
-                                  verifiedIconSize: widget.tileRenderPlace == TileRenderPlace.Thiny? 12 : 15),
+                                  verifiedIconSize: widget.tileRenderPlace ==
+                                          TileRenderPlace.Thiny
+                                      ? 12
+                                      : 15),
                             ),
                           ],
                         ),
@@ -1058,31 +1093,37 @@ class _FindBusinessState extends State<FindBusiness> {
                     ),
                   ],
                 ),
-                SizedBox(height: widget.tileRenderPlace == TileRenderPlace.Thiny? 2.0 :5.0,),
+                SizedBox(
+                  height: widget.tileRenderPlace == TileRenderPlace.Thiny
+                      ? 2.0
+                      : 5.0,
+                ),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(60),
                   ),
-                  padding: widget.tileRenderPlace == TileRenderPlace.Thiny ? EdgeInsets.symmetric(horizontal: 3, vertical: 1)
-                      :  EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding: widget.tileRenderPlace == TileRenderPlace.Thiny
+                      ? EdgeInsets.symmetric(horizontal: 3, vertical: 1)
+                      : EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   child: getRating(
-                      numberOfRating:
-                      widget.customerProfile.rating.toInt()),
+                      numberOfRating: widget.customerProfile.rating.toInt()),
                 ),
-
-                if(widget.customerProfile.bio!.isNotEmpty || widget.customerProfile.bio != null)...[
-                  const SizedBox(height: 10.0,),
+                if (widget.customerProfile.bio!.isNotEmpty ||
+                    widget.customerProfile.bio != null) ...[
+                  const SizedBox(
+                    height: 10.0,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Text(
-                          messageDecoderWithEmoji(widget.customerProfile.bio) ?? "",
-
+                          messageDecoderWithEmoji(widget.customerProfile.bio) ??
+                              "",
                           style: TextStyle(
-                            fontSize: getFontSize(
-                                widget.tileRenderPlace, context),
+                            fontSize:
+                                getFontSize(widget.tileRenderPlace, context),
                             fontWeight: FontWeight.w600,
                             color: blackFont,
                           ),
@@ -1094,18 +1135,19 @@ class _FindBusinessState extends State<FindBusiness> {
                     ],
                   ),
                 ],
-
               ],
             ),
           ),
-           SizedBox(height: widget.tileRenderPlace == TileRenderPlace.Thiny? 5.0 :10.0,),
+          SizedBox(
+            height:
+                widget.tileRenderPlace == TileRenderPlace.Thiny ? 5.0 : 10.0,
+          ),
         ],
       ),
     );
   }
 
   Widget getFollowUnFollowBtn() {
-
     if (isLoadingFollowingAction) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -1128,7 +1170,7 @@ class _FindBusinessState extends State<FindBusiness> {
           if (mounted) setState(() {});
           UserAuth()
               .followOrUnfollowUser(widget.customerProfile.userName!,
-              shouldFollow: false)
+                  shouldFollow: false)
               .then((value) async {
             if (value == true) {
               // await getSearchedUser(load: false);
@@ -1152,11 +1194,12 @@ class _FindBusinessState extends State<FindBusiness> {
               color: blackFont,
               borderRadius: BorderRadius.circular(50),
               border: Border.all(color: HexColor("#292929"), width: 1)),
-          child:  Center(
+          child: Center(
             child: Text(
               'Following',
               style: TextStyle(
-                fontSize: widget.tileRenderPlace == TileRenderPlace.Thiny ? 10 : 12,
+                fontSize:
+                    widget.tileRenderPlace == TileRenderPlace.Thiny ? 10 : 12,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),
@@ -1171,7 +1214,8 @@ class _FindBusinessState extends State<FindBusiness> {
         isLoadingFollowingAction = true;
         if (mounted) setState(() {});
         UserAuth()
-            .followOrUnfollowUser(widget.customerProfile.userName!, shouldFollow: true)
+            .followOrUnfollowUser(widget.customerProfile.userName!,
+                shouldFollow: true)
             .then((value) async {
           if (value == true) {
             // await getSearchedUser(load: false);
@@ -1194,11 +1238,12 @@ class _FindBusinessState extends State<FindBusiness> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
             border: Border.all(color: HexColor("#292929"), width: 1)),
-        child:  Center(
+        child: Center(
           child: Text(
             'Follow',
             style: TextStyle(
-              fontSize: widget.tileRenderPlace == TileRenderPlace.Thiny ? 11 : 13,
+              fontSize:
+                  widget.tileRenderPlace == TileRenderPlace.Thiny ? 11 : 13,
               color: Colors.black,
               fontWeight: FontWeight.w600,
             ),
@@ -1209,42 +1254,39 @@ class _FindBusinessState extends State<FindBusiness> {
   }
 
   Widget getWallpaper() {
-      return ClipRRect(
+    return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(10),
         topRight: Radius.circular(10),
       ),
       child: widget.customerProfile.wallpaper == "" ||
-          widget.customerProfile.wallpaper == null
+              widget.customerProfile.wallpaper == null
           ? Image.asset(
-        "assets/images/default_user_wallpaper.png",
-        width: double.infinity,
-        fit: BoxFit.cover,
-      )
-          :
-      GestureDetector(
-        onTap: () {
-          Navigator.of(context).pushNamed("/photo-viewer",
-              arguments: widget.customerProfile.wallpaper);
-        },
-        child:
-        Container(
-          color: navyBlue,
-          child: CachedNetworkImage(
-            width: double.infinity,
-            // height: double.infinity,
-            errorWidget: wallpaperErrorWidget,
-            imageUrl: widget.customerProfile.wallpaper!,
-            fit: BoxFit.cover,
-            placeholder: (context, url) =>
-                Center(child: CircularLoadingIndicator()),
-            color: blackFont.withOpacity(0.4),
-            colorBlendMode: BlendMode.darken,
-            filterQuality: FilterQuality.high,
-          ),
-        ),
-      ),
-
+              "assets/images/default_user_wallpaper.png",
+              width: double.infinity,
+              fit: BoxFit.cover,
+            )
+          : GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: widget.customerProfile.wallpaper);
+              },
+              child: Container(
+                color: navyBlue,
+                child: CachedNetworkImage(
+                  width: double.infinity,
+                  // height: double.infinity,
+                  errorWidget: wallpaperErrorWidget,
+                  imageUrl: widget.customerProfile.wallpaper!,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                  color: blackFont.withOpacity(0.4),
+                  colorBlendMode: BlendMode.darken,
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
+            ),
     );
   }
 
@@ -1257,8 +1299,8 @@ class _FindBusinessState extends State<FindBusiness> {
     }
 
     try {
-      user = await UserAuth()
-          .fetchCustomerProfileWithAuth(widget.customerProfile.userName!.toString());
+      user = await UserAuth().fetchCustomerProfileWithAuth(
+          widget.customerProfile.userName!.toString());
     } catch (e) {
       Navigator.pop(context);
       showToast(message: 'User not found');
@@ -1266,19 +1308,18 @@ class _FindBusinessState extends State<FindBusiness> {
 
     widget.customerProfile = user;
 
-
     isLoadingFollowingAction = false;
     if (mounted) setState(() {});
   }
-
 }
-
 
 class CircularUserColorImage extends StatelessWidget {
   final String imageUrl;
   final String name;
 
-  const CircularUserColorImage({Key? key, required this.imageUrl, required this.name}) : super(key: key);
+  const CircularUserColorImage(
+      {Key? key, required this.imageUrl, required this.name})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1292,7 +1333,6 @@ class CircularUserColorImage extends StatelessWidget {
           ),
         ),
         child: getUserProfilePic(imageUrl, name),
-
       ),
     );
   }

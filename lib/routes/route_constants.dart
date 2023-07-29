@@ -12,6 +12,8 @@ class Routes {
   static const String VERIFY_RESET_DEVICE_OTP = "/verify-reset-device-otp";
   static const String VERIFY_RESET_PASSWORD_OTP = "/verify-reset-password-otp";
   static const String ACCOUNT_TYPE = "/account-type";
+  static const String PAYOUT_TRANSACTION_DETAIL = "/payout-transaction-detail";
+  static const String SEARCH_NEAR_BY_BUSINESS = "/search-near-by-business";
   static const String SIGN_UP = "/register";
   static const String ADD_DOCUMENT = "/add-document";
   static const String HOME = "/home";
@@ -43,12 +45,10 @@ class Routes {
   static const String SCAN_QR = "/scan-qr";
   static const String PAYOUT = "/payout";
   static const String PAYOUT_LIST = "/payout-list";
-  static const String PAYOUT_TRANSACTION_DETAIL = "/payout-transaction-detail";
   static const String FORGOT_PASSWORD = "/forgot-password";
   static const String RESET_PASSWORD = "/reset-password";
   static const String CHANGE_PASSWORD = "/change-password";
   static const String SHOPPING_CART = "/shopping-cart";
-  static const String USER_DASHBOARD = "/user-dashboard";
   static const String ORDERS_LIST = "/orders-list";
   static const String ORDER_DETAIL_PAGE = "/order-detail-page";
   static const String CARD_PAYMENT_PAGE = "/card-payment-page";
@@ -146,7 +146,6 @@ class Routes {
   static const String SUPER_STORE = "/shopping";
   static const String SHOPPING_CATEGORY = "/shopping-category";
   static const String SEARCH_PRODUCT = "/search-product";
-  static const String SEARCH_NEAR_BY_BUSINESS = "/search-near-by-business";
   static const String REVIEWS = "/reviews";
   static const String MIX_CART_ITEM = "/mix-cart-item";
   static const String ADD_EDIT_USER_BIO = "/add-edit-user-bio";
@@ -156,14 +155,32 @@ class Routes {
   static const String REVIEW_LIST_SCREEN = "/review-list-screen";
   static const String ADD_REVIEW = "/add-review";
   static const String EDIT_REVIEW = "/edit-review";
-  static const String WALLET_OPTIONS_SELECTION = "/wallet-options-selection";
   static const String WEB_VIEW = "/web-view";
   static const String SUPER_BLOG = "/super-blog";
   static const String SUPER_HUB = "/super-hub";
   static const String SEARCH_SERVICES = "/search-services";
   static const String SEARCH_YARN = "/search-yarn";
+  static const String CATEGORY_JOBS = "/category-jobs";
+  static const String CATEGORIES_LIST = "/categories-list";
+  static const String JOB_DETAILS = "/job-details";
+  static const String MY_JOB_DETAILS = "/my-job-details";
+  static const String JOB_SEARCH_FILTER = "/job-search-filter";
+  static const String JOBS_CREATE = "/job-create";
+  static const String MY_JOBS = "/my-jobs";
+  static const String JOBS_SEARCH = "/jobs-search";
+  static const String JOBS_PREVIEW_DETAIL = "/job-preview-detail";
+  static const String JOBS_APPLICANT_LIST = "/job-applicant-list";
+  static const String EDIT_JOB = "/edit_job";
   static const String SHIPPING_OPTIONS = "/Shipping-Options";
   static const String ADD_SHIPPING_OPTIONS = "/add-shipping-Option";
   static const String EDIT_SHIPPING_OPTIONS = "/edit-shipping-Option";
   static const String NEAR_BY_LIST_SCREEN = "/near-by-list-screen";
+  static const String PRODUCT_VARIANT_LIST = "/product-variant-list";
+  static const String PRODUCT_NEW_OPTION = "/product-new-option";
+  static const String PRODUCT_VARIANT_UPDATE = "/product-variant-update";
+
+  static const String GET_VIRTUAL_CARD = "/get-virtual-card";
+  static const String VIRTUAL_CARD_HOME = "/virtual-card-home";
+  static const String SEARCH_MY_JOBS = "/search-my-jobs";
+
 }

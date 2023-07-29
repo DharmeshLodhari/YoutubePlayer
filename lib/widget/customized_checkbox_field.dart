@@ -6,9 +6,11 @@ class CustomizedCheckBoxField extends StatefulWidget {
   String title;
   Function onTap;
   bool? isChecked;
+  double? fontSize;
+  int? maxLines;
 
   CustomizedCheckBoxField(
-      {required this.title, required this.onTap, required this.isChecked});
+      {Key? key, required this.title, required this.onTap, required this.isChecked, this.fontSize, this.maxLines}) : super(key: key);
 
   @override
   _CustomizedCheckBoxFieldState createState() =>
@@ -19,22 +21,23 @@ class _CustomizedCheckBoxFieldState extends State<CustomizedCheckBoxField> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      onTap: widget.onTap as void Function()?,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ClipRRect(
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
             child: SizedBox(
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: new BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -53,20 +56,21 @@ class _CustomizedCheckBoxFieldState extends State<CustomizedCheckBoxField> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
-          Text(
-            widget.title,
-            style: TextStyle(
-                color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.fade,
+          Expanded(
+            child: Text(
+              widget.title,
+              style: TextStyle(
+                  color: blackFont, fontSize: widget.fontSize ?? 14.0, fontWeight: FontWeight.w600),
+              maxLines: widget.maxLines ?? 1,
+              softWrap: widget.maxLines == 2 ? true : false,
+              overflow: TextOverflow.fade,
+            ),
           ),
         ],
       ),
-      onTap: widget.onTap as void Function()?,
     );
   }
 }

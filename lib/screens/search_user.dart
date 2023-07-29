@@ -1,5 +1,4 @@
 import 'package:Slydo/services/auth.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../data/environment.dart';
@@ -267,7 +266,6 @@ class _SearchUserState extends State<SearchUser> {
                 child: ListView.builder(
                   //+1 for progressbar
                   itemCount: results.length + 1,
-                  // ignore: missing_return
                   itemBuilder: (BuildContext context, int index) {
                     if (index == results.length) {
                       return _buildIndicator();
@@ -286,10 +284,10 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
           opacity: isLoading ? 1.0 : 00,
           child: CircularLoadingIndicator(),
         ),

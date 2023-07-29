@@ -20,6 +20,7 @@ Color naturalGreenLight = HexColor("#E9FFF2");
 Color brownLight = HexColor("#FFEFE0");
 Color whiteBackground = HexColor("#F9F8F8");
 Color blackFont = HexColor("#030F36");
+Color black = HexColor("#000000");
 Color lightPink = HexColor("#FFE6E2");
 Color deepPink = HexColor("#FD7D75");
 Color darkGrey = HexColor("#75818F");
@@ -37,6 +38,7 @@ Color starYellow = HexColor("#FFAB00");
 Color graphWitheBackground = HexColor("#F3F3F3");
 Color selectedListItemBackgroundBlue = HexColor("#F8F9FF");
 Color yarnBlack = HexColor("#151515");
+Color transparent = Colors.transparent;
 
 Color greyBackground = HexColor("#F1F3F4");
 Color greySecondaryYarn = HexColor("#D9D9D9");

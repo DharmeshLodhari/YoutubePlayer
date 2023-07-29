@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
@@ -282,12 +283,14 @@ class ShoppingAuthService extends AuthService {
     product.rating = formatRating(item['rating'] ?? 0.0);
     product.canRate = item["can_rate"] ?? false;
     product.enableInSuperStore = item["enable_in_superstore"] ?? false;
+    product.variant = item["variants"] ?? null;
 
     return product;
   }
 
   // List Products
-  Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous, String? category,
+  Future<Map<String, dynamic>?> listOfProduct(
+      String? next, String? previous, String? category,
       {String? userName, bool otherDeals = false}) async {
     debugPrint('CALLING PRODUCT');
     var url = "";
@@ -304,14 +307,13 @@ class ShoppingAuthService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    if(category != ""){
+    if (category != "") {
       var cat = messageDecoderWithEmoji(category);
-      if(category == "All"){
+      if (category == "All") {
         url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
-      }else{
+      } else {
         url += AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
       }
-
     }
     debugPrint(url);
     var headers = await getAuthHeaders();
@@ -320,9 +322,7 @@ class ShoppingAuthService extends AuthService {
     debugPrint('CALLING OTHER DEALS ---> ${response.body}');
 
     if (response.statusCode == 200) {
-
       if (!response.body.contains('results')) {
-
         Map<String, dynamic> result = {
           "count": '',
           "next": '',
@@ -352,7 +352,6 @@ class ShoppingAuthService extends AuthService {
       debugPrint('CALLING OTHER check ---> ${result}');
 
       return result;
-
     } else if (response.statusCode == 500) {
       return null;
     } else {
@@ -361,7 +360,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Add Product
-  Future<bool> addProduct(Product product) async {
+  Future<List<dynamic>> addProduct(Product product) async {
     var headers = await getAuthHeaders();
     var url = AppConfig.baseUrl + "/api/v1/products/";
 
@@ -369,19 +368,38 @@ class ShoppingAuthService extends AuthService {
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
     Map<dynamic, dynamic> _data = product.toMap();
-    debugPrint('DATA ---> $_data');
     _data["available_from"] = dateToString(product.availableFrom!);
     _data["image_count"] = product.localImages!.length;
+    debugPrint('DATA from ---> $_data');
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
 
+    debugPrint('DATA from two ---> $_data');
+
     List<MultipartFile> newList = [];
 
     for (int i = 0; i < product.localImages!.length; i++) {
+      debugPrint('DATA from two ---> ${product.localImages![i].path}');
       // Add fields
       request.fields["imagefile_$i"] = product.localImages![i].path;
+
+      // File imageFile = File(product.localImages![i].path);
+      // if (imageFile.existsSync()) {
+      //   // Add fields
+      //   request.fields["imagefile_$i"] = product.localImages![i].path;
+      //
+      //   // Create multipart using filepath, string or bytes
+      //   var multipartFile = await http.MultipartFile.fromPath(
+      //       "imagefile_$i", product.localImages![i].path);
+      //
+      //   // Add multipart to newList
+      //   newList.add(multipartFile);
+      // } else {
+      //   print("Error: File not found at path: ${product.localImages![i].path}");
+      //   // Handle the error case accordingly, e.g., skip this image or abort the operation.
+      // }
 
       // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(
@@ -391,6 +409,7 @@ class ShoppingAuthService extends AuthService {
       newList.add(multipartFile);
     }
 
+    debugPrint('DATA from newList ---> $newList');
     // Add multipart to request
     request.files.addAll(newList);
 
@@ -401,7 +420,174 @@ class ShoppingAuthService extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     var responseBody = await response.stream.bytesToString();
+    bool backValue = false;
     if (response.statusCode == 201) {
+
+      debugPrint('DATA from add product ---> ${responseBody}');
+
+      var jsonData = json.decode(responseBody);
+      String productId = "";
+      if(jsonData['id'] != null || jsonData['id'] != ""){
+        productId = jsonData['id'];
+        backValue = true;
+      }else{
+          backValue = true;
+      }
+      return [backValue, productId];
+
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
+      throw responseBody;
+    }
+  }
+
+  // Add Variant
+  Future<bool> addVariant(Variant item, String productId) async {
+    var headers = await getAuthHeaders();
+    var url = AppConfig.baseUrl + "/api/v1/products/$productId/variants/";
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    Map<dynamic, dynamic> _data = item.toMap();
+    debugPrint('DATA ---> $_data');
+    // _data["available_from"] = dateToString(variant.availableFrom!);
+    _data["image_count"] = item.localImages!.length;
+
+    _data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
+
+    List<MultipartFile> newList = [];
+
+    debugPrint('DATA from pictures ---> ${item.localImages!.length}');
+
+    for (int i = 0; i < item.localImages!.length; i++) {
+      // Add fields
+      request.fields["imagefile_$i"] = item.localImages![i].path;
+
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath(
+          "imagefile_$i", item.localImages![i].path);
+
+      // Add multipart to newList
+      newList.add(multipartFile);
+    }
+
+    debugPrint('DATA from pictures 2 ---> ${newList}');
+    // Add multipart to request
+    request.files.addAll(newList);
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
+      throw responseBody;
+    }
+  }
+
+  // List the  variant with pagination
+  Future<Map<String, dynamic>?> getVariantList(
+      String productId, String? next, String? previous) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/products/$productId/variants/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('SEARCH BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        // "count": jsonData["count"],
+        // "next": jsonData["next"],
+        // "previous": jsonData["previous"],
+        "results": jsonData,
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // delete single variant
+  Future<bool> deleteVariant(String variantId) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/variants/$variantId/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // Update Variant
+  Future<bool> updateVariant(Variant item, String variantId) async {
+    var headers = await getAuthHeaders();
+    var url = AppConfig.baseUrl + "/api/v1/products/variants/$variantId/";
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    Map<dynamic, dynamic> _data = item.toMap();
+    debugPrint('DATA from ---> $_data');
+    // _data["available_from"] = dateToString(variant.availableFrom!);
+    _data["image_count"] = item.localImages!.length;
+
+    _data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
+
+    List<MultipartFile> newList = [];
+
+    debugPrint('DATA from pictures ---> ${item.localImages!.length}');
+
+    for (int i = 0; i < item.localImages!.length; i++) {
+      // Add fields
+      request.fields["imagefile_$i"] = item.localImages![i].path;
+
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath(
+          "imagefile_$i", item.localImages![i].path);
+
+      // Add multipart to newList
+      newList.add(multipartFile);
+    }
+
+    debugPrint('DATA from pictures 2 ---> ${newList}');
+    // Add multipart to request
+    request.files.addAll(newList);
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 201|| response.statusCode == 200) {
       return true;
     } else {
       debugPrint(
@@ -1247,6 +1433,7 @@ class ShoppingAuthService extends AuthService {
   Future<Map<String, dynamic>?> searchServiceInServices(
       String? next, String? previous,
       {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
+    print('SEARCH FILTER BODY ........');
     var url = "";
     if (next == null) {
       return null;
@@ -1365,13 +1552,17 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+ 
   Future<List<ServiceCategory>> getServicesCategories() async {
     var url = AppConfig.baseUrl + "/api/v1/services/choices/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    
+
     debugPrint(
         "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
 
@@ -1387,12 +1578,14 @@ class ShoppingAuthService extends AuthService {
     } else {
       debugPrint(
           "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+          
       return Future.value(<ServiceCategory>[]);
     }
   }
 
   // merchant list
-  Future<Map<String, dynamic>?> listOfMerchant(String? next, String? previous, String category,
+  Future<Map<String, dynamic>?> listOfMerchant(
+      String? next, String? previous, String category,
       {String? userName, bool nearBy = false}) async {
     debugPrint('CALLING MERCHANT LIST');
 
@@ -1401,18 +1594,17 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-
       if (nearBy == true) {
         url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/?nearby=true";
       } else if (nearBy == false) {
-        url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/?suggestions=true";
+        url =
+            "${AppConfig.baseUrl}/api/v1/user/merchant-list/?suggestions=true";
       }
-      if(category == '' || category == 'All'){
+      if (category == '' || category == 'All') {
         // url = "${AppConfig.baseUrl}/api/v1/user/merchant-list/";
-      }else{
+      } else {
         url += "?categories=$category/";
       }
-
     } else {
       url = getSecureUrl(url: next);
     }
@@ -1453,8 +1645,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   //search filter for merchant
-  Future<Map<String, dynamic>?> searchMerchant(
-      String? next, String? previous,
+  Future<Map<String, dynamic>?> searchMerchant(String? next, String? previous,
       {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
     var url = "";
     if (next == null) {
@@ -1467,7 +1658,7 @@ class ShoppingAuthService extends AuthService {
 
       if (filterOptions.searchedText!.isNotEmpty) {
         url += '?search=${filterOptions.searchedText}';
-      }else{
+      } else {
         url += '?search=${filterOptions.searchedText}';
       }
 

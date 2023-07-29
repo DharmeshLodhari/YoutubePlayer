@@ -591,8 +591,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ),
           SizedBox(height: 12),
           getUserBioStringWidget(),
-          // displayUserAddress(),
-          // getContact(),
           getJoinedDate(),
           SizedBox(height: 12),
           Row(
@@ -654,9 +652,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ),
           child: ClipOval(
             child: CachedNetworkImage(
-              imageUrl: searchedUser!.avatar! == "" || searchedUser!.avatar! == null
-                  ? defaultImage
-                  : searchedUser!.avatar!,
+              imageUrl:
+                  searchedUser!.avatar! == "" || searchedUser!.avatar! == null
+                      ? defaultImage
+                      : searchedUser!.avatar!,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
@@ -1315,9 +1314,11 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               margin: EdgeInsets.zero,
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: generateBottomSheetItem(),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: generateBottomSheetItem(),
+                  ),
                 ),
               ));
         });
@@ -1348,16 +1349,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 arguments: {"searchedUser": searchedUser});
 
             getSearchedUser();
-            // if (result != null) {
-            //   if (result is Map) {
-            //     searchedUser!.userAbout = result["userAbout"];
-            //     searchedUser!.avatar = result["user_avatar"];
-            //
-            //     debugPrint('SEARCHED USER -> ${result["userAbout"]} ');
-            //     debugPrint('SEARCHED USER -> ${searchedUser!.userAbout!.bio} ');
-            //   }
-            //
-            //   if (mounted) setState(() {});
             // }
           },
         ),
@@ -1397,7 +1388,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       bottomSheetItem(
         title: "Share in Chat",
         iconData: SlydoAppIcon.text_message,
-        // isLast: searchedUser!.userName == userBloc.user.userName,
         onTap: () async {
           Navigator.pop(context);
           sendProfileToUsersInChat();
@@ -1501,11 +1491,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               onTap: () async {
                 Navigator.pop(context);
                 Future<bool?> check = blockUserAlert(context, searchedUser!);
-                if(check == true){
+                if (check == true) {
                   Navigator.pop(context);
                   Navigator.pop(context);
                 }
-
               },
             ),
           ],
@@ -1613,9 +1602,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               params..attachment = {"profile": searchedUser?.toJson()};
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
               }
             }));
   }
-
 }

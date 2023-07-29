@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
@@ -14,11 +16,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../../service_hub/models/active_job_listing.dart';
+import '../../service_hub/models/jobs.dart';
+import '../../service_hub/tiles/jos_description_card.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../user_profile/screens/user_profile_module_new/utils.dart';
@@ -66,6 +72,7 @@ class _YarnTileState extends State<YarnTile> {
   String? linkToBePreview;
 
   late YarnDashboardBloc _yarnSettings;
+  late UserBloc userBloc;
 
   @override
   void initState() {
@@ -109,6 +116,7 @@ class _YarnTileState extends State<YarnTile> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
       child: _buildMain(),
@@ -205,8 +213,7 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget _buildUserInfoRow() {
-    var author = messageDecoderWithEmoji(
-        widget.yarn.authorName ?? "") ?? '';
+    var author = messageDecoderWithEmoji(widget.yarn.authorName ?? "") ?? '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -320,12 +327,11 @@ class _YarnTileState extends State<YarnTile> {
                         onUpdate: (Yarn yarn) {
                           widget.onUpdateYarn!(yarn);
                         },
-                        reloadView: (bool val){
-                          if(val == true){
+                        reloadView: (bool val) {
+                          if (val == true) {
                             widget.reloadView!(true);
                           }
                         },
-
                       ),
                     );
                   },
@@ -510,6 +516,27 @@ class _YarnTileState extends State<YarnTile> {
           onDeleteBlog: () {},
         );
 
+        break;
+      case 'job':
+        JobModel jobModel = JobModel.fromJson(widget.yarn.attachment ?? {});
+        log('messagemmmmmmmmmmmmm${widget.yarn.toString()}');
+        childWidget = GestureDetector(
+            onTap: () {
+              userBloc.user.userName == jobModel.owner
+                  ? Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
+                      arguments: {
+                          'jobId': jobModel.id,
+                          'listingId': jobModel.activeListing,
+                          'job': jobModel
+                        })
+                  : Navigator.pushNamed(context, Routes.JOBS_PREVIEW_DETAIL,
+                      arguments: {
+                          'jobId': jobModel.id,
+                          'listingId': jobModel.activeListing,
+                          'job': jobModel
+                        });
+            },
+            child: JobDescriptionCard(job: jobModel));
         break;
 
       default:

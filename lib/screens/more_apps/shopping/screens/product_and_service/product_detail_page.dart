@@ -11,7 +11,6 @@ import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
-import 'package:Slydo/screens/more_apps/shopping/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -64,8 +63,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc? userBloc;
   late BasketBloc basketBloc;
-  // late ProductServiceBloc productServiceBloc;
-  List<String?>? imgList = [];
+  List<String?>? displayProductImages = [];
 
   late bool isValidCustomer;
 
@@ -86,6 +84,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   String? productId;
   bool productIsLoading = false;
   late YarnDashboardBloc yarnDashboardBloc;
+  List<Variant> productVariantList = [];
+  List<String> sizes = [];
+  List<String> colors = [];
+  List<String> oneImageEach = [];
+  String selectedColor = "";
+  String selectedSize = "";
+  int selectedImageColorIndex = -1;
+  int selectedSizeIndex = -1;
+  String price = "";
+  String moreInformation = "";
 
   @override
   void initState() {
@@ -124,8 +132,30 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       });
     await _auth.getProduct(productId).then((value) {
       product = value;
-      imgList = product!.serverImages;
+      displayProductImages = product!.serverImages;
       productIsLoading = false;
+      productVariantList = Variant.convertToVariantList(product!.variant!);
+
+      //get the price and more information to string
+      price = product!.price.toString();
+      moreInformation = product!.description.toString();
+
+      for (var variant in productVariantList) {
+        //get all sizes in variant list
+        if (variant.type == 'Size' && variant.type != null) {
+          sizes.add(variant.value.toString());
+        }
+        if (variant.type == 'Color' && variant.type != null) {
+          colors.add(variant.colour.toString());
+        }
+        if(variant.serverImages!.isNotEmpty){
+          var serverImages = variant.serverImages![0];
+          oneImageEach.add(serverImages!);
+        }
+
+      }
+
+
       if (mounted) setState(() {});
     }).catchError((e) {
       if (mounted)
@@ -415,7 +445,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
-                showToast(message: "Share in Yarn successfully created");
+                showToast(message: "Shared in Yarn successfully");
               }
             }));
   }
@@ -825,14 +855,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         builder: (context, snapshot) {
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 4.0),
-            child: imgList!.length == 0
+            child: displayProductImages!.length == 0
                 ? AspectRatio(
                     aspectRatio: 1.7,
                     child: Center(
                       child: CircularLoadingIndicator(),
                     ),
                   )
-                : imgList?.length == 1
+                : displayProductImages?.length == 1
                     ? Stack(
                         children: [
                           AspectRatio(
@@ -845,7 +875,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                 child: CachedNetworkImage(
                                   placeholder: (context, url) =>
                                       Center(child: CircularLoadingIndicator()),
-                                  imageUrl: imgList?[0] ?? "",
+                                  imageUrl: displayProductImages?[0] ?? "",
                                   fit: BoxFit.fitHeight,
                                   height: double.infinity,
                                   width: double.infinity,
@@ -871,7 +901,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                     onPageChanged: (index, _) {
                                       sliderIndex.sink.add(index);
                                     }),
-                                items: imgList!
+                                items: displayProductImages!
                                     .map(
                                       (item) => Stack(
                                         children: [
@@ -903,12 +933,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               Positioned(
                                 bottom: 0,
                                 left: MediaQuery.of(context).size.width / 2 -
-                                    (5 * imgList!.length),
+                                    (5 * displayProductImages!.length),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: imgList!.map((url) {
-                                    int index = imgList!.indexOf(url);
+                                  children: displayProductImages!.map((url) {
+                                    int index = displayProductImages!.indexOf(url);
                                     return Container(
                                       width: 5.0,
                                       height: 5.0,
@@ -945,54 +975,291 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildProductTitleAndPriceWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                //name,
-                messageDecoderWithEmoji(product!.name)!,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    //name,
+                    messageDecoderWithEmoji(product!.name)!,
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: blackFont,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          worldCurrencies[product!.currency!]!,
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              fontSize: 18.0,
+                              color: navyBlue,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          moneyDisplayNormalizer(
+                              int.parse(price)),
+                          style: TextStyle(
+                              fontSize: 18.0,
+                              color: navyBlue,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  getRating(numberOfRating: product?.rating!.toInt())
+                ],
+              ),
+            ),
+            copyQrCode(),
+          ],
+        ),
+
+        if(colors.isNotEmpty)...[
+          SizedBox(height: 10.0,),
+          Row(
+            children: [
+              Text('Color : ',
                 style: TextStyle(
                     fontSize: 16,
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(width: 5.0,),
+              Text(
+                selectedColor,
+                style: TextStyle(
+                    fontSize: 14,
                     color: blackFont,
                     fontWeight: FontWeight.bold),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      worldCurrencies[product!.currency!]!,
-                      style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontSize: 18.0,
-                          color: navyBlue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      moneyDisplayNormalizer(
-                          int.parse(product!.price.toString())),
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          color: navyBlue,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 5),
-              getRating(numberOfRating: product?.rating!.toInt())
+
             ],
           ),
-        ),
-        copyQrCode(),
+          SizedBox(height: 5.0,),
+          showVariantFirstImages(),
+        ],
+
+        if(sizes.isNotEmpty)...[
+          SizedBox(height: 10.0,),
+          Row(
+            children: [
+              Text('Size : ',
+                style: TextStyle(
+                    fontSize: 16,
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(width: 5.0,),
+              Text(
+                selectedSize,
+                style: TextStyle(
+                    fontSize: 14,
+                    color: blackFont,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          SizedBox(height: 5.0,),
+          showVariantSizes(),
+        ],
+
       ],
     );
+  }
+
+  Widget showVariantFirstImages(){
+    return Container(
+      height: 80.0,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: oneImageEach.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: GestureDetector(
+              onTap: () {
+                //update the price, more information and list of images
+                // moreInformation = product!.description.toString();
+
+                displayProductImages = [];
+                for(var item in productVariantList){
+
+                  var pictures = item.serverImages as List<String>?;
+                  if(pictures != null){
+                    for(var image in pictures){
+                      if (image == oneImageEach[index]) {
+
+                        if (image != null) {
+                          displayProductImages = pictures;
+                        }
+
+                        price = item.price.toString();
+                        selectedColor = item.colour.toString();
+                      }
+
+                    }
+                  }
+                  
+                }
+                selectedImageColorIndex = index;
+
+                if(mounted) setState(() {});
+              },
+              child: Container(
+                height: 70.0,
+                width: 70.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(
+                    color: index == selectedImageColorIndex ? black : greyBorderColor,
+                    width: 1.0,
+                  ),
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: oneImageEach[index],
+                  placeholder: (context, url) => Container(
+                    height: 20.0,
+                      width: 20.0,
+                      child: Center(child: CircularProgressIndicator())),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+  }
+
+  Widget showVariantSizes(){
+    return Container(
+      height: 50.0,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: sizes.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: GestureDetector(
+              onTap: () {
+                selectedSize = sizes[index];
+                selectedSizeIndex = index;
+                for(var item in productVariantList){
+
+                  //update price for selected size
+                  if(item.value == sizes[index]){
+                    price = item.price.toString();
+                  }
+
+                }
+
+                if(mounted) setState(() {});
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: index == selectedSizeIndex ? black : white,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(
+                    color: black,
+                    width: 1.0,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0,right: 10.0),
+                  child: Center(
+                    child: Text(
+                       sizes[index] ,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: index == selectedSizeIndex ? white : blackFont,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+  }
+
+  void variantActionsSheet(String type) {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: variantBottomSheetItem(type),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> variantBottomSheetItem(String type) {
+    List<Widget> list = [];
+
+    if(type == "size"){
+      for(var item in sizes){
+        list.add(
+          bottomSheetItem(
+            title: item,
+            // iconData: SlydoAppIcon.share,
+            onTap: () {
+              selectedSize = item;
+              if(mounted)setState(() {});
+              Navigator.pop(context);
+            },
+          ),
+        );
+      }
+    }else if(type == "color"){
+      for(var item in colors){
+        list.add(
+          bottomSheetItem(
+            title: item,
+            // iconData: SlydoAppIcon.share,
+            onTap: () {
+              selectedColor = item;
+              if(mounted)setState(() {});
+              Navigator.pop(context);
+            },
+          ),
+        );
+      }
+    }
+
+
+
+    return list;
   }
 
   Widget copyQrCode() {
@@ -1295,7 +1562,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   void dispose() {
-    imgList!.clear();
+    displayProductImages!.clear();
     _scrollController.dispose();
     sliderIndex.close();
     super.dispose();

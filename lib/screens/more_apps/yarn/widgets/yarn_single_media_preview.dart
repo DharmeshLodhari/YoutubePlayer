@@ -41,19 +41,10 @@ class YarnSingleMediaPreview extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
-                memCacheWidth: 100,
+                // memCacheWidth: 300,
                 fadeInDuration: const Duration(milliseconds: 400),
                 imageUrl: mediaType == 'video' ? imagePoster ?? '' : imageUrl,
                 fit: BoxFit.cover,
-                width: double.infinity,
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
                 errorWidget: imageErrorWidget,
                 progressIndicatorBuilder: (context, url, progress) => Container(
                   child: Center(
@@ -110,20 +101,22 @@ class YarnSingleMediaPreview extends StatelessWidget {
                 width: .5)),
         child: Stack(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: CachedNetworkImage(
-                memCacheWidth: 100,
-                fadeInDuration: const Duration(milliseconds: 400),
-                imageUrl: mediaType == 'video' ? imagePoster ?? '' : imageUrl,
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: double.infinity,
-                errorWidget: imageErrorWidget,
-                progressIndicatorBuilder: (context, url, progress) => Container(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: yarnBlack,
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: CachedNetworkImage(
+                  // memCacheWidth: 300,
+                  fadeInDuration: const Duration(milliseconds: 400),
+                  imageUrl: mediaType == 'video' ? imagePoster ?? '' : imageUrl,
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
+                  errorWidget: imageErrorWidget,
+                  progressIndicatorBuilder: (context, url, progress) => Container(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: yarnBlack,
+                      ),
                     ),
                   ),
                 ),

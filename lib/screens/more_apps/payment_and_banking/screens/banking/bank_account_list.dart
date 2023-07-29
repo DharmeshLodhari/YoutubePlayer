@@ -203,7 +203,7 @@ class _BankAccountListState extends State<BankAccountList> {
           });
         }
         Map<String, dynamic>? result =
-            await _auth.getBankAccountsPagination(next, previous);
+            await _auth.getBankAccountsPagination(next, previous, "");
         if (result == null) {
           isLoading = false;
           return;

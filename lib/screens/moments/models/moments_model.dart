@@ -187,7 +187,7 @@ class MomentsModel {
       owner: json['owner'],
       createdAt: json['created_at'],
       expireAt: json['expire_at'],
-      duration: json['duration'],
+      duration: json['duration'] ?? 30,
       userSupported: json['user_supported'] ?? false,
       isPublic: json['is_public'] ?? false,
       isPermanent: json['is_permanent'],
@@ -220,7 +220,7 @@ class MomentsModel {
     map['expire_at'] = expireAt;
     map['is_public'] = isPublic;
     map['user_supported'] = userSupported;
-    map['duration'] = duration;
+    map['duration'] = duration ?? 30;
     map['is_permanent'] = isPermanent;
     return map;
   }

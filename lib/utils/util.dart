@@ -157,7 +157,7 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int? frame,
   return AnimatedOpacity(
     child: child,
     opacity: frame == null ? 0 : 1,
-    duration: Duration(milliseconds: 100),
+    duration: const Duration(milliseconds: 100),
     curve: Curves.easeOut,
   );
 }
@@ -221,7 +221,7 @@ Widget getCircularUserAvatar(
   return Container(
     width: width,
     height: height,
-    padding: EdgeInsets.all(6),
+    padding: const EdgeInsets.all(6),
     decoration: BoxDecoration(
       border: Border.all(color: borderColor, width: 2),
       shape: BoxShape.circle,
@@ -270,7 +270,7 @@ Future<String?> generateThumbNailFromVideo({required String videoPath}) async {
 
   if (videoInUnit8List != null) {
     final tempDir = await getTemporaryDirectory();
-    String uniqueId = Uuid().v4();
+    String uniqueId = const Uuid().v4();
     File file = await File('${tempDir.path}/$uniqueId.jpg').create();
     //Example of file => File: '/data/user/0/com.slydo.slydo/cache/954e542e-c217-46d8-867c-cfcb8d2636ba.png'
     file.writeAsBytesSync(videoInUnit8List);
@@ -288,7 +288,7 @@ Future<File?> generateThumbnailFromVideo({required String videoPath}) async {
 
   if (videoInUnit8List != null) {
     final tempDir = await getTemporaryDirectory();
-    String uniqueId = Uuid().v4();
+    String uniqueId = const Uuid().v4();
     File file = await File('${tempDir.path}/$uniqueId.jpg').create();
     //Example of file => File: '/data/user/0/com.slydo.slydo/cache/954e542e-c217-46d8-867c-cfcb8d2636ba.png'
     file.writeAsBytesSync(videoInUnit8List);
@@ -304,7 +304,7 @@ TagsStyler textFieldTagStyler = TagsStyler(
   ),
   tagTextStyle:
       TextStyle(color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
-  tagCancelIconPadding: EdgeInsets.only(left: 12),
+  tagCancelIconPadding: const EdgeInsets.only(left: 12),
   tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
 );
 TextFieldStyler textFieldStyler = TextFieldStyler(
@@ -345,7 +345,7 @@ Widget customThemeBuilder(BuildContext context, Widget? child) {
   return Theme(
     data: ThemeData.light().copyWith(
       primaryColor: navyBlue,
-      buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+      buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
       colorScheme:
           ColorScheme.light(primary: navyBlue).copyWith(secondary: navyBlue),
     ),
@@ -363,7 +363,7 @@ BoxDecoration decorateBox(
     boxShadow: <BoxShadow>[
       BoxShadow(
         color: shadowColor,
-        offset: Offset(0.0, 0.0),
+        offset: const Offset(0.0, 0.0),
         blurRadius: 20.0,
       ),
     ],
@@ -391,14 +391,14 @@ void androidBottomSheet(
     isDismissible: isDismissible,
     builder: (BuildContext context) {
       return Card(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20)),
         ),
         color: Colors.white,
         margin: EdgeInsets.zero,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
           child: child,
         ),
       );
@@ -451,7 +451,7 @@ Widget transactionOrPayoutTile(
   if (subtitle == 'Paid' || subtitle == 'Settled') {
     status = 'done';
   } else if (subtitle == 'Pending') {
-    status = 'pend';
+    status = 'processing';
   } else if (subtitle == 'Cancelled') {
     status = 'cancel';
   }
@@ -485,8 +485,8 @@ Widget transactionOrPayoutTile(
         children: [
           Container(
             padding: status != ""
-                ? EdgeInsets.only(left: 10.0, right: 10, top: 3.0, bottom: 3.0)
-                : EdgeInsets.all(0.0),
+                ? const EdgeInsets.only(left: 10.0, right: 10, top: 3.0, bottom: 3.0)
+                : const EdgeInsets.all(0.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5.0),
               color: checkStatusBgColor(status),
@@ -512,7 +512,7 @@ Widget transactionOrPayoutTile(
 checkStatusBgColor(String status) {
   if (status == 'done') {
     return naturalGreen.withOpacity(0.1);
-  } else if (status == 'pend') {
+  } else if (status == 'processing') {
     return starYellow.withOpacity(0.1);
   } else if (status == 'cancel') {
     return mateRed.withOpacity(0.1);
@@ -524,7 +524,7 @@ checkStatusBgColor(String status) {
 checkStatusForColor(String status) {
   if (status == 'done') {
     return naturalGreen;
-  } else if (status == 'pend') {
+  } else if (status == 'processing') {
     return starYellow;
   } else if (status == 'cancel') {
     return mateRed;
@@ -544,12 +544,12 @@ Widget getSettingTile(
   }
   return Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     shadowColor: boxShadowTwo,
     elevation: 6,
     child: Container(
       decoration: decorateBox(),
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: ListTile(
         leading: RoundedBackgroundIcon(
           height: 50,
@@ -575,7 +575,7 @@ Widget getSettingTile(
           overflow: TextOverflow.fade,
           softWrap: false,
         ),
-        trailing: Icon(
+        trailing: const Icon(
           Icons.keyboard_arrow_right_outlined,
           color: Color(0XFF1A399D),
         ),
@@ -591,7 +591,7 @@ Widget getSettingTile(
 
 Widget getChatSettingTitle() {
   return Container(
-    padding: EdgeInsets.symmetric(horizontal: 20),
+    padding: const EdgeInsets.symmetric(horizontal: 20),
     child: Text(
       "How would you like to pay?",
       style:
@@ -639,15 +639,15 @@ Widget customAppBar({required BuildContext context, required String title}) {
 
 Widget getColoredLabeledWidget({required String text, required Color color}) {
   return Container(
-    margin: EdgeInsets.only(left: 8.0),
-    padding: EdgeInsets.symmetric(horizontal: 6.0),
+    margin: const EdgeInsets.only(left: 8.0),
+    padding: const EdgeInsets.symmetric(horizontal: 6.0),
     decoration: BoxDecoration(
       color: color,
       borderRadius: BorderRadius.circular(6),
     ),
     child: Text(
       text,
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.white,
         fontSize: 14,
         fontWeight: FontWeight.w700,
@@ -660,7 +660,7 @@ Widget getColoredLabeledWidget({required String text, required Color color}) {
 Widget flexibleSpace({int flex = 1}) {
   return Expanded(
     flex: flex,
-    child: SizedBox(
+    child: const SizedBox(
       height: 10,
       width: 10,
     ),
@@ -715,8 +715,7 @@ String formatDate(DateTime? dateTime) {
   if (dateTime == null) {
     return '';
   }
-  String date =
-      "${dateTime.day} ${monthName[dateTime.month - 1]}, ${dateTime.year}";
+  String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
   return date;
 }
@@ -856,7 +855,7 @@ Future<String> saveImage(BuildContext context, Image image) {
   final completer = Completer<String>();
 
   image.image
-      .resolve(ImageConfiguration())
+      .resolve(const ImageConfiguration())
       .addListener(ImageStreamListener((imageInfo, _) async {
     ByteData? byteData =
         await imageInfo.image.toByteData(format: ImageByteFormat.png);
@@ -948,7 +947,7 @@ Widget userNameWithVerifiedIcon({
         lengthToTruncateAt: lengthToTruncateAt,
       ),
       children: [
-        TextSpan(text: ' '),
+        const TextSpan(text: ' '),
         WidgetSpan(
           child: isVerified != null && isVerified == true
               ? Icon(
@@ -956,7 +955,7 @@ Widget userNameWithVerifiedIcon({
                   color: verifiedIconColor ?? verifyGreen,
                   size: verifiedIconSize,
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
         ),
       ],
     ),
@@ -1044,10 +1043,10 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
     return Card(
       elevation: widget.addElevation ? 2 : 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: EdgeInsets.symmetric(vertical: 2),
+      margin: const EdgeInsets.symmetric(vertical: 2),
       child: ListTile(
         onTap: widget.onTap,
-        contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         leading: CircleAvatar(
           backgroundColor: lightGrey,
           child: widget.icon,
@@ -1083,7 +1082,7 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
                 activeTrackColor: navyBlueLight,
                 inactiveTrackColor: navyBlueLight,
               )
-            : widget.trailingWidget ?? SizedBox.shrink(),
+            : widget.trailingWidget ?? const SizedBox.shrink(),
       ),
     );
   }
@@ -1097,7 +1096,7 @@ Widget getClickableRatingBar(
     direction: Axis.horizontal,
     allowHalfRating: false,
     itemCount: 5,
-    itemPadding: EdgeInsets.symmetric(horizontal: 8),
+    itemPadding: const EdgeInsets.symmetric(horizontal: 8),
     itemBuilder: (context, _) => Icon(
       SlydoAppIcon.star,
       color: starYellow,
@@ -2386,7 +2385,6 @@ List<String> getLga({required List<String>? states}) {
   return lgs;
 }
 
-
 extension StringCasingExtension on String {
   String toCapitalized() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
@@ -2451,7 +2449,7 @@ Widget userImageUserInitialsPic(
     return Container(
       width: imageWidth,
       height: imageWidth,
-      padding: EdgeInsets.all(6),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         // border: Border.all(color: borderColor, width: 2),
         shape: BoxShape.circle,
@@ -2501,12 +2499,10 @@ Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
     bool done = await UserAuth().blockUser(user);
 
     if (done) {
-      showSnackbar(
-          context,  message:
-      "${user.displayName()} " +
+      showSnackbar(context,
+          message: "${user.displayName()} " +
               AppLocalization.of(context)!.isBlockedSuccessfully);
       return true;
-
     } else {
       showSnackbar(context, message: AppLocalization.of(context)!.error);
       return false;

@@ -67,7 +67,6 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/cred
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/upgrade_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/wallet_options_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';
@@ -143,7 +142,6 @@ import 'package:Slydo/screens/more_apps/utility/utility_history.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/startup_screen.dart';
-import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/photo_viewer.dart';
 import 'package:Slydo/widget/video_recorder.dart';
@@ -152,11 +150,29 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../screens/more_apps/business/screens/contract_screen.dart';
+import '../screens/more_apps/credit_card/get_virtual_card.dart';
+import '../screens/more_apps/credit_card/virtual_card_home.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/payout_transaction_detail.dart';
-import '../screens/more_apps/shopping/screens/checkout_screen.dart';
-import '../screens/more_apps/super_hub/search_services.dart';
-import '../screens/more_apps/super_hub/super_hub.dart';
+import '../screens/more_apps/service_hub/models/active_job_listing.dart';
+import '../screens/more_apps/service_hub/models/jobs.dart';
+import '../screens/more_apps/service_hub/screens/applicant_list.dart';
+import '../screens/more_apps/service_hub/screens/categories_list.dart';
+import '../screens/more_apps/service_hub/screens/category_jobs_list.dart';
+import '../screens/more_apps/service_hub/screens/create_jobs.dart';
+import '../screens/more_apps/service_hub/screens/edit_job.dart';
+import '../screens/more_apps/service_hub/screens/job_detail.dart';
+import '../screens/more_apps/service_hub/screens/job_search.dart';
+import '../screens/more_apps/service_hub/screens/my_job_details.dart';
+import '../screens/more_apps/service_hub/screens/my_jobs_list.dart';
+import '../screens/more_apps/service_hub/screens/preview_job_detail.dart';
+import '../screens/more_apps/service_hub/screens/search_filter.dart';
+import '../screens/more_apps/service_hub/screens/search_my_job.dart';
+import '../screens/more_apps/service_hub/screens/search_services.dart';
+import '../screens/more_apps/service_hub/service_hub_dashboard.dart';
+import '../screens/more_apps/shopping/forms/product/product_add_new_option.dart';
+import '../screens/more_apps/shopping/forms/product/product_variant_list.dart';
+import '../screens/more_apps/shopping/forms/product/product_variant_update.dart';
 import '../screens/super_store/near_by_list_screen.dart';
 import '../screens/super_store/search_nearby_business.dart';
 import '../screens/super_store/super_store.dart';
@@ -373,7 +389,7 @@ class RouteGenerator {
 
       case Routes.CHOOSE_SUBSCRIPTIONS:
         return PageTransition(
-          child: ChooseSubscription(),
+          child: const ChooseSubscription(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -537,13 +553,6 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.USER_DASHBOARD:
-        return PageTransition(
-          child: UserDashboard(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
       case Routes.ORDERS_LIST:
         return PageTransition(
           child: OrdersList(),
@@ -595,7 +604,6 @@ class RouteGenerator {
         );
 
       /// Chat
-
       case Routes.CHAT_SCREEN:
         return PageTransition(
           child: ChatScreenGroupMessage(arguments: settings.arguments),
@@ -723,7 +731,7 @@ class RouteGenerator {
 
       case Routes.UPGRADE_ACCOUNT:
         return PageTransition(
-          child: UpgradeAccount(),
+          child: const UpgradeAccount(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -765,7 +773,7 @@ class RouteGenerator {
       /// Contracts & Invoice
       case Routes.CONTRACT_SCREEN:
         return PageTransition(
-          child: ContractScreen(),
+          child: const ContractScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -773,7 +781,7 @@ class RouteGenerator {
 
       case Routes.INVOICE_SCREEN:
         return PageTransition(
-          child: InvoiceScreen(),
+          child: const InvoiceScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -781,7 +789,7 @@ class RouteGenerator {
 
       case Routes.CONTRACT_SCREEN:
         return PageTransition(
-          child: ContractScreen(),
+          child: const ContractScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -911,7 +919,6 @@ class RouteGenerator {
         );
 
       ///    More Apps Route     ///
-
       case Routes.MORE_APPS:
         return PageTransition(
           child: MoreApps(),
@@ -924,14 +931,21 @@ class RouteGenerator {
 
       case Routes.SUPER_HUB:
         return PageTransition(
-            child: SuperHub(),
+            child: const ServiceHubDashboard(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.SEARCH_MY_JOBS:
+        return PageTransition(
+            child:  SearchMyJobs(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
 
       case Routes.SEARCH_SERVICES:
         return PageTransition(
-            child: SearchServices(),
+            child:  SearchServices(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1034,7 +1048,97 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Movie Route
+    // Find jobs
+      case Routes.CATEGORY_JOBS:
+        return PageTransition(
+            child: JobsCategoryJobsList(
+              categoryId: settings.arguments as String,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.CATEGORIES_LIST:
+        return PageTransition(
+            child: const CategoriesList(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOB_DETAILS:
+        return PageTransition(
+            child: JobsJobDetail(
+              activeListingData: settings.arguments as ActiveListingData,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.MY_JOB_DETAILS:
+        return PageTransition(
+            child: MyJobsDetails(
+              jobDetails: settings.arguments as Map,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOB_SEARCH_FILTER:
+        return PageTransition(
+            child: const JobsSearchFilter(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOBS_CREATE:
+        return PageTransition(
+            child: JobsCreateJobs(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOBS_PREVIEW_DETAIL:
+        return PageTransition(
+            child: JobsPreviewJobDetail(
+              jobDetails: settings.arguments as Map,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.MY_JOBS:
+        return PageTransition(
+            child: const JobsMyJobsList(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOBS_SEARCH:
+        return PageTransition(
+            child:  JobsSearch(filterMap:settings.arguments as Map<String, dynamic>?),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.JOBS_APPLICANT_LIST:
+        return PageTransition(
+            child: ApplicantList(
+              job: settings.arguments as JobModel?,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.EDIT_JOB:
+        return PageTransition(
+            child: EditJob(
+              job: settings.arguments as JobModel?,
+            ),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+    /// Movie Route
 
       case Routes.MOVIES:
         return PageTransition(
@@ -1339,7 +1443,7 @@ class RouteGenerator {
 
       case Routes.SUPER_STORE:
         return PageTransition(
-          child: SuperStore(),
+          child: const SuperStore(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1490,14 +1594,6 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case Routes.WALLET_OPTIONS_SELECTION:
-        return PageTransition(
-          child: WalletOptionsSelection(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-
       /// Custom Services
       case Routes.WEB_VIEW:
         return PageTransition(
@@ -1517,6 +1613,57 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case Routes.PRODUCT_VARIANT_LIST:
+        return PageTransition(
+          child: ProductVariantList(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.PRODUCT_NEW_OPTION:
+        return PageTransition(
+          child: ProductAddNewOption(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.PRODUCT_VARIANT_UPDATE:
+        return PageTransition(
+          child: ProductVariantUpdate(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.GET_VIRTUAL_CARD:
+        return PageTransition(
+          child: GetVirtualCard(
+            // arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.VIRTUAL_CARD_HOME:
+        return PageTransition(
+          child: VirtualCardHome(
+            // arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();
@@ -1527,9 +1674,9 @@ class RouteGenerator {
     return MaterialPageRoute(builder: (_) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Error'),
+          title: const Text('Error'),
         ),
-        body: Center(
+        body: const Center(
           child: Text('ERROR'),
         ),
       );

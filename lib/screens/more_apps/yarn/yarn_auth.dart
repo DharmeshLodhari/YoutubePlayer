@@ -747,6 +747,7 @@ class YarnAuth extends AuthService {
 
   // Add Yarn and Question
   Future<dynamic> addYarnAndQuestion(Yarn addYarnAndQuestion, String s) async {
+    log('ppppppp${addYarnAndQuestion.toJson().toString()}');
     debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
     var headers = await getAuthHeaders();
     var url = "${AppConfig.baseUrl}/api/v1/social/ask/";
@@ -1387,7 +1388,8 @@ class YarnAuth extends AuthService {
   }
 
   // Add Report to Momnet coment
-  Future<bool?> reportCommentMoment(String postId, Map<String, dynamic> body) async {
+  Future<bool?> reportCommentMoment(
+      String postId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL REPORT");
     String url = "";
     // if (isMomentComment = false) {
@@ -1413,7 +1415,7 @@ class YarnAuth extends AuthService {
       return null;
     }
   }
-  
+
   // Add Report to YARN
   Future<bool?> addReport(String postId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL REPORT");
@@ -1432,6 +1434,33 @@ class YarnAuth extends AuthService {
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  Future<bool?> reportJob(Map<String, dynamic> body) async {
+    debugPrint("CALLING ALL REPORT");
+    String url = "";
+    // if (isMomentComment = false) {
+    url = "${AppConfig.baseUrl}/api/v1/job-service/report-job/";
+    // } else {
+    //   url = "${AppConfig.baseUrl}/api/v1/social/moments/report/$postId/";
+    // }
+    debugPrint('url$url');
+    debugPrint('report body::: ${body}');
+
+    var headers = await getAuthHeaders();
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    debugPrint(
+        "RESPONSE CODE,.,.,.,.,:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;

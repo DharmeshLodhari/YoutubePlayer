@@ -271,16 +271,25 @@ class PaymentAndBankingAuth extends AuthService {
 
   // List the users bank accounts with pagination
   Future<Map<String, dynamic>?> getBankAccountsPagination(
-      String? next, String? previous) async {
+      String? next, String? previous, String searchText) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/transactions/bank-accounts-list/";
+      if (searchText != "") {
+        url =
+        "${AppConfig.baseUrl}/api/v1/transactions/bank-accounts-list/?search=$searchText";
+      }else{
+        url = AppConfig.baseUrl + "/api/v1/transactions/bank-accounts-list/";
+      }
+
     } else {
       url = getSecureUrl(url: next);
     }
+
+    print('Bank List url :::: $url');
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -297,7 +306,7 @@ class PaymentAndBankingAuth extends AuthService {
         BankAccount account = BankAccount(
           bankAvatar: item["bank"]['logo_url'],
           uuid: item['id'].toString(),
-          bankName: bank['short_name'],
+          bankName: bank['name'],
           accountName: item['account_name'],
           accountNumber: item['account_number'],
           isDefault: item['is_default'],
@@ -913,7 +922,7 @@ class PaymentAndBankingAuth extends AuthService {
           amount: item['amount'],
           currency: item['currency'],
           timeStamp: timeStamp,
-          bankName: item["customer_bank_account"]["bank"]["short_name"],
+          bankName: item["customer_bank_account"]["bank"]["name"],
           bankLogo: item["customer_bank_account"]["bank"]["logo_url"],
           accountName: item["customer_bank_account"]["account_name"],
           accountNumber: item["customer_bank_account"]["account_number"],

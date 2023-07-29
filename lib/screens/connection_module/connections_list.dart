@@ -285,27 +285,28 @@ class _ConnectionListState extends State<ConnectionList> {
     try {
       return _connectionListBloc.connectionUsers.length == 0
           ? NoItemInList(msg: noContactMsg, isResult: true)
-          : ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.symmetric(vertical: 4),
-              //+1 for progressbar
-              itemCount: getConnectionListItemCount(),
-              physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
-              itemBuilder: (BuildContext context, int index) {
-                ChatConversation chatConversation =
-                    _connectionListBloc.connectionUsers[index];
+          
+      : ListView.builder(
+          shrinkWrap: true,
+          padding: EdgeInsets.symmetric(vertical: 4),
+          //+1 for progressbar
+          itemCount: getConnectionListItemCount(),
+          physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics()),
+          itemBuilder: (BuildContext context, int index) {
+            ChatConversation chatConversation =
+                _connectionListBloc.connectionUsers[index];
 
-                if (appConfigurationModel?.enableGroupChat == false) {
-                  if (chatConversation.isGroupConversation!) {
-                    return SizedBox.shrink();
-                  }
-                }
-                return _getSlidableWithLists(
-                    context, _connectionListBloc.connectionUsers[index], index);
-              },
-              controller: _scrollController,
-            );
+            if (appConfigurationModel?.enableGroupChat == false) {
+              if (chatConversation.isGroupConversation!) {
+                return SizedBox.shrink();
+              }
+            }
+            return _getSlidableWithLists(
+                context, _connectionListBloc.connectionUsers[index], index);
+          },
+          controller: _scrollController,
+        );
     } catch (error) {
       debugPrint("ERROR building list =>:- $error");
       return _connectionListBloc.connectionUsers.length == 0
