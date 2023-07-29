@@ -4,9 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
-import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
-import 'package:Slydo/screens/more_apps/service_hub/models/my_job_list_model.dart';
 import 'package:Slydo/screens/more_apps/service_hub/tiles/jos_description_card.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -18,10 +16,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../../../widget/debouncer_widget.dart';
 import '../../yarn/widgets/yarn_tab_selection.dart';
-import '../models/list_of_categories.dart';
 
 class JobsMyJobsList extends StatefulWidget {
   const JobsMyJobsList({Key? key}) : super(key: key);
@@ -482,7 +477,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
       ),
       bottom: tabBar() as PreferredSizeWidget,
       actions: [
-        _filterBtn()
+        // _searchBtn()
       ],
     );
   }
@@ -513,7 +508,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
     );
   }
 
-  Widget _filterBtn() {
+  Widget _searchBtn() {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
@@ -526,7 +521,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
         ),
       ),
       onTap: () {
-        // Navigator.pushNamed(context, Routes.SEARCH_SERVICES);
+        Navigator.pushNamed(context, Routes.SEARCH_MY_JOBS);
       },
       // backgroundColor: blackFont.withOpacity(0.1),
       enableMargin: true,
