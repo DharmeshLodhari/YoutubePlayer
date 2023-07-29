@@ -167,6 +167,7 @@ import '../screens/more_apps/service_hub/screens/my_job_details.dart';
 import '../screens/more_apps/service_hub/screens/my_jobs_list.dart';
 import '../screens/more_apps/service_hub/screens/preview_job_detail.dart';
 import '../screens/more_apps/service_hub/screens/search_filter.dart';
+import '../screens/more_apps/service_hub/screens/search_my_job.dart';
 import '../screens/more_apps/service_hub/screens/search_services.dart';
 import '../screens/more_apps/service_hub/service_hub_dashboard.dart';
 import '../screens/more_apps/shopping/forms/product/product_add_new_option.dart';
@@ -931,6 +932,13 @@ class RouteGenerator {
       case Routes.SUPER_HUB:
         return PageTransition(
             child: const ServiceHubDashboard(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.SEARCH_MY_JOBS:
+        return PageTransition(
+            child:  SearchMyJobs(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);

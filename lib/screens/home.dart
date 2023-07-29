@@ -49,7 +49,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldHomeKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   late UserBloc userBloc;
 
   late MainSocketProvider socketProvider;
@@ -169,7 +169,9 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(height: 10),
-          _appBar(),
+          Container(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: _appBar()),
           const SizedBox(
             height: 15,
           ),
@@ -178,35 +180,47 @@ class _HomeState extends State<Home> {
           const SizedBox(
             height: 25,
           ),
-          Text(
-            appLocalization.quickActions,
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: HexColor("#151515")),
-            textAlign: TextAlign.left,
+          Container(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: Text(
+              appLocalization.quickActions,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: HexColor("#151515")),
+              textAlign: TextAlign.left,
+            ),
           ),
           const SizedBox(
             height: 20,
           ),
 
-          _displayPaymentButtons1(),
+          Container(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              child: _displayPaymentButtons1()),
           const SizedBox(
             height: 25,
           ),
 
-          Text(
-            appLocalization.explore,
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: HexColor("#151515")),
+          Container(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: Text(
+              appLocalization.explore,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: HexColor("#151515")),
+            ),
           ),
 
           const SizedBox(
             height: 20,
           ),
-          checkUser(),
+          Container(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: checkUser(),
+          ),
+          // checkUser(),
           const SizedBox(
             height: 20,
           ),
@@ -481,9 +495,9 @@ class _HomeState extends State<Home> {
                                   GestureDetector(
                                     onTap: () {
                                       Clipboard.setData(ClipboardData(
-                                          text: "${accountNumber}"));
-                                      showToast(
-                                          message: "Account number copied !!");
+                                          text:
+                                          "Bank name: ${virtualAccount!.financialInstitution!.name}\nAccount name: ${virtualAccount!.accountName}\nAccount number: ${virtualAccount!.accountNumber}"));
+                                      showToast(message: "Account details copied !!");
                                     },
                                     child: SvgPicture.asset(
                                       "ampersand".toSVG(),
