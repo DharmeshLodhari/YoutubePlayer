@@ -146,13 +146,6 @@ class _SearchServicesState extends State<SearchServices> {
                 ),
         );
 
-        // Map<String, dynamic>? result =
-        //     await ShoppingAuthService().searchShoppingProductsInSuperStore(
-        //   searchController.text,
-        //   next,
-        //   previous,
-        // );
-
         if (result == null) {
           isLoading = false;
           return;

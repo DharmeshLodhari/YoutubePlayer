@@ -12,15 +12,9 @@ import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 
-import '../../shopping/models/store.dart';
-import '../../user_profile/models/search_user_item_with_filter.dart';
-
-// import '../models/store.dart';
-//
 
 class ServiceHubAuthService extends AuthService {
   // get list of categories
-
   Future<ListOfCategories?> getListOfCategories(
     String? next,
     String? previous,
@@ -81,7 +75,6 @@ class ServiceHubAuthService extends AuthService {
   }
 
   // get active job listing
-
   Future<ActiveJobListing?> getActiveJobListing(String? next, String? previous,
       {String? category, search, sortby, priceFrom, priceTo, location}) async {
     var url = "/api/v1/job-service/listing/?";
@@ -224,7 +217,6 @@ class ServiceHubAuthService extends AuthService {
   }
 
   // accept applicant for the job
-
   Future<dynamic> acceptJobApplicant({String? jobId, Map? data}) async {
     var url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/accept-job-applicant/";
@@ -247,7 +239,6 @@ class ServiceHubAuthService extends AuthService {
   }
 
   // reject applicant for the job
-
   Future<dynamic> rejectJobApplicant({String? jobId, Map? data}) async {
     var url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/reject-job-applicant/";
@@ -324,7 +315,6 @@ class ServiceHubAuthService extends AuthService {
   }
 
   // edit job
-
   Future<JobModel?> editMyJob(Map _data, {required String jobId}) async {
     // print('actived $_data');
     var headers = await getAuthHeaders();
@@ -385,8 +375,7 @@ class ServiceHubAuthService extends AuthService {
     return JobModel.fromJson(json.decode(responseBody));
   }
 
-  // retreive job
-
+  // retrieve job
   Future<JobModel?> retreiveJob({String? jobId}) async {
     try {
       var url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
@@ -423,8 +412,7 @@ class ServiceHubAuthService extends AuthService {
     return null;
   }
 
-  // retreive listed job job
-
+  // retrieve listed job job
   Future<ActiveListingData?> retreiveListedJob({String? listingId}) async {
     try {
       var url = "${AppConfig.baseUrl}/api/v1/job-service/listing/$listingId/";
@@ -462,7 +450,6 @@ class ServiceHubAuthService extends AuthService {
   }
 
   // create listing job
-
   Future<dynamic> createListing(Map data) async {
     var url = "${AppConfig.baseUrl}/api/v1/job-service/listing/";
     var _data = jsonEncode(data);
@@ -611,106 +598,6 @@ class ServiceHubAuthService extends AuthService {
     return Future.error("$jsonData");
   }
 
-  // Search Services
-  Future<Map<String, dynamic>?> searchServiceInServices(
-      String? next, String? previous,
-      {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
-    print('SEARCH FILTER BODY ........');
-    var url = "";
-    if (next == null) {
-      return null;
-    }
-    debugPrint('SORT BY Search -> ${filterOptions.sortBy}');
 
-    if (next == "") {
-      url = AppConfig.baseUrl +
-          "/api/v1/services/?search=${filterOptions.searchedText}";
-
-      if (filterOptions.minPrice != null) {
-        url = url + "&min_price=${filterOptions.minPrice}";
-      }
-      if (filterOptions.maxPrice != null) {
-        url = url + "&max_price=${filterOptions.maxPrice}";
-      }
-      if (filterOptions.rating != null) {
-        url = url + "&rating=${filterOptions.rating}";
-      }
-      if (filterOptions.categories.isNotEmpty) {
-        url = url + "&categories=${filterOptions.categories.join(',')}";
-      }
-      if (filterOptions.sortBy != null) {
-        url = url + "&sort_by=${filterOptions.sortBy}";
-      }
-
-      url = Uri.encodeFull(url);
-    } else {
-      url = getSecureUrl(url: next);
-    }
-
-    debugPrint('SEARCH FILTER URL ---> $url');
-
-    debugPrint(url);
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
-    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
-    debugPrint('SEARCH FILTER BODY ---> ${response.body}');
-
-    if (response.statusCode == 200) {
-      List<Service> serviceList = [];
-      var jsonData = json.decode(response.body);
-      for (var item in jsonData["results"]) {
-        Service service = createService(item);
-        serviceList.add(service);
-      }
-
-      Map<String, dynamic> result = {
-        "count": jsonData["count"],
-        "next": jsonData["next"],
-        "previous": jsonData["previous"],
-        "results": serviceList
-      };
-      debugPrint("result:- $result");
-      return result;
-    }
-    else if (response.statusCode == 500) {
-      throw "Server Error";
-    } else {
-      List<Product> productList = [];
-      Map<String, dynamic> result = {
-        "count": 0,
-        "next": "test",
-        "previous": "test",
-        "results": productList
-      };
-      return result;
-    }
-  }
-
-  //Service
-  Service createService(Map<String, dynamic> item) {
-    debugPrint("==> $item");
-    Service service = Service();
-    service.id = item['id'];
-    service.cover = item['cover'];
-    service.localImages = item['localImages'];
-    service.serverImages = service.imageDataToList(item['pictures']);
-    service.pictureMap = item['pictures'];
-    service.name = item['name'];
-    service.qrCode = item['qr_code'];
-    service.isAvailable = item["is_available"];
-    service.availableFrom = DateTime.parse(item['available_from']);
-    service.description = item['description'];
-    service.shortDescription = item["short_description"];
-    service.category = item['category'];
-    service.provider = item['provider'];
-    service.providerFullName = item['provider_fullname'] ?? "";
-    service.price = item['price'].toString();
-    service.currency = item["currency"];
-    service.providerAvatar = item["provider_avatar"];
-    service.rating = formatRating(item['rating'] ?? 0.0);
-    service.canRate = item["can_rate"] ?? false;
-
-    return service;
-  }
 }
 

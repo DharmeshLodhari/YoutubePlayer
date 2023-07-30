@@ -1,79 +1,44 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../../../../../../utils/util.dart';
-import '../../../../../../widget/customized_dropdown_field.dart';
-import '../../../../../../widget/rounded_background_icon.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-
-import '../../../../widget/debouncer_widget.dart';
+import '../../../../data/state_notifier.dart';
+import '../../../../routes/route_constants.dart';
 import '../auth/service_hub_auth.dart';
+import '../models/jobs.dart';
+import '../tiles/jos_description_card.dart';
 
 class SearchMyJobs extends StatefulWidget {
-  SearchMyJobs({Key? key, }) : super(key: key);
+   const SearchMyJobs({Key? key, }) : super(key: key);
 
   @override
   _SearchMyJobsState createState() => _SearchMyJobsState();
 }
 
 class _SearchMyJobsState extends State<SearchMyJobs> {
-  List<String> stateList = [
-    "Lagos",
-    "Ogun",
-  ];
-  List<String> stateListCopy = [
-    "Lagos",
-    "Ogun",
-  ];
 
-  String? selectedRating;
-
-  List<String> sortByMenuItems = [
-    'Best match',
-    'Highest price',
-    'Lowest price'
-  ];
-  List<Service> products = [];
-
-  GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+  final GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
   GlobalKey<ScaffoldMessengerState>();
 
   bool isLoading = false;
-
-  //pagination variables
   int? count = 0;
   String? next = "";
   String? previous = "";
-  ScrollController _scrollController = new ScrollController();
+  List<JobModel> searchMyJobListing = [];
+  final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
-  ServiceCategory? pressedCategory;
-  ServiceCategory? selectedServicesCategory;
-  List<ServiceCategory>? servicesCategories;
-  List<ServiceCategory>? servicesCategoriesCopy;
-  String productCategory = "";
-  int? minAmount;
-  int? maxAmount;
-  String? sortBy;
-  String? sortByMenuItemValue = 'Best match';
   String username = "";
+
   TextEditingController searchController = TextEditingController();
+  late UserBloc userBloc;
 
 
   @override
   void initState() {
-    getCategories();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent &&
@@ -83,11 +48,14 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
         }
       }
     });
+    userBloc = Provider.of<UserBloc>(context, listen: false);
+
+    username = userBloc.user.userName!;
 
     searchController.addListener(() {
       if (searchController.text.length <= 1) {
         setState(() {
-          products.clear();
+          searchMyJobListing.clear();
         });
       }
       if (searchController.text.length >= 3) {
@@ -95,7 +63,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
           _refreshList();
         });
       }
-      if (products.isNotEmpty || searchController.text.length != 0) {
+      if (searchMyJobListing.isNotEmpty || searchController.text.length != 0) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -109,7 +77,6 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
         }
       }
     });
-    getList();
     super.initState();
   }
 
@@ -117,7 +84,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
     count = 0;
     next = "";
     previous = "";
-    products.clear();
+    searchMyJobListing.clear();
     noItemInList = false;
     getList();
   }
@@ -131,94 +98,47 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
           setState(() {});
         }
 
-        Map<String, dynamic>? result =
-        await ServiceHubAuthService().searchServiceInServices(
+        var result =
+            await ServiceHubAuthService().searchMyJobListing(
           next,
-          previous,
-          filterOptions
-              : SearchItemWithFilterModelForSuperStore(
-            sortBy: sortBy,
-            searchedText: searchController.text,
-            minPrice: minAmount,
-            maxPrice: maxAmount,
-            rating: selectedRating != null
-                ? (int.parse(selectedRating!) + 1).toString()
-                : null,
-            categories: pickedCategoryList,
-          ),
+          previous, username, searchController.text,
         );
-
-        // Map<String, dynamic>? result =
-        //     await ServiceHubAuthService().searchMyJobListing(
-        //   next,
-        //   previous, username, searchController.text,
-        // );
 
         if (result == null) {
           isLoading = false;
           return;
         }
-        count = result['count'];
-        next = result['next'];
-        previous = result['previous'];
-        List? tempList = result['results'];
-        debugPrint('TEMP LIST --> $tempList');
+
+        count = result.count;
+        next = result.next;
+        previous = result.previous;
+        var tempList = result.results;
+
         if (mounted) {
           isLoading = false;
-          try {
-            tempList!.forEach((result) {
-              products.add(result);
-            });
-            print("PRODUCTS:- $products");
-          } catch (e) {
-            debugPrint("error adding products $e");
-          }
+
+          searchMyJobListing.addAll(tempList!);
           setState(() {});
-          debugPrint("ALL $products");
+
         }
       }
-      if (products.isEmpty) {
+      if (searchMyJobListing.isEmpty) {
         if (mounted) {
           noItemInList = true;
           setState(() {});
         }
-      } else if (next == null && products.length > 6) {
+      } else if (next == null && searchMyJobListing.length > 6) {
         _scaffoldMessengerSearchKey.currentState!.showSnackBar(
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
           ),
         );
       }
     }
   }
 
-  List<String> pickedStateList = [];
-  List<String> pickedCategoryList = [];
-  Map<String, bool> categoryCheckMark = {};
-  Map<String, bool> stateCheckMark = {"Lagos": false, "Ogun": false};
-
-  void getCategories() async {
-
-    isLoading = true;
-    if (mounted) setState(() {});
-    print('category in the house.....print $isLoading');
-    try {
-      servicesCategories = await ShoppingAuthService().getServicesCategories();
-      servicesCategoriesCopy = servicesCategories;
-
-      servicesCategoriesCopy!.forEach((element) {
-        categoryCheckMark[element.name] = false;
-      });
-    } catch (e) {
-      servicesCategories = [];
-      servicesCategoriesCopy = [];
-    }
-
-    isLoading = false;
-    if (mounted) setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +153,6 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
     );
   }
 
-  bool showSortByBox = false;
   Widget appBar() {
     return AppBar(
       elevation: 0,
@@ -260,98 +179,59 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
   }
 
   Widget scaffoldBody() {
-    return Container(
-      child: Column(
-        children: [
-          showSortByBox ? sortByDropDown() : SizedBox.shrink(),
-          SizedBox(height: 6),
-          searchBox(),
-          SizedBox(height: 12),
-          isLoading ? CircularProgressIndicator() : SizedBox.shrink(),
-          isSearchIsEmpty
-              ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!
-                  .pleaseTypeSomethingToGetResult,
-              isResult: false,
-            ),
-          )
-              : noItemInList
-              ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!.noResultFound,
-            ),
-          )
-              : Expanded(
-            child: ListView(
-                children: products
-                    .map(
-                      (product) => Container(
-                    padding: EdgeInsets.symmetric(
-                        vertical: 8, horizontal: 16),
-                    child: ShoppingTileWithHeartWithService(
-                      service: product,
+    return Column(
+      children: [
+        const SizedBox(height: 6),
+        searchBox(),
+        const SizedBox(height: 12),
+        isLoading ? const CircularProgressIndicator() : const SizedBox.shrink(),
+        isSearchIsEmpty
+            ? Expanded(
+          child: NoItemInList(
+            msg: AppLocalization.of(context)!
+                .pleaseTypeSomethingToGetResult,
+            isResult: false,
+          ),
+        )
+            : noItemInList
+            ? Expanded(
+          child: NoItemInList(
+            msg: AppLocalization.of(context)!.noResultFound,
+          ),
+        )
+            :
+        Flexible(
+          fit: FlexFit.loose,
+          child: ListView.builder(
+              itemCount: searchMyJobListing.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: GestureDetector(
+                    onTap: () => Navigator.pushNamed(
+                        context, Routes.MY_JOB_DETAILS,
+                        arguments: {
+                          'jobId': searchMyJobListing[index].id,
+                          'listingId': '',
+                          'job': searchMyJobListing[index]
+                        }),
+                    child: JobDescriptionCard(
+                      job: searchMyJobListing[index],
                     ),
                   ),
-                )
-                    .toList()),
-          ),
-        ],
-      ),
-    );
-  }
+                );
+              }),
+        )
 
-  Widget sortByDropDown() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-          decoration: BoxDecoration(
-            border: Border.all(color: dividerColor),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: DropdownButton2(
-            isExpanded: true,
-            underline: SizedBox.shrink(),
-            dropdownDecoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-            ),
-            value: sortByMenuItemValue,
-            items: sortByMenuItems.map((String item) {
-              return DropdownMenuItem(
-                value: item,
-                child: Text(item),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              if (newValue == 'Best match') {
-                sortBy = null;
-                setState(() {
-                  sortByMenuItemValue = newValue;
-                });
-                _refreshList();
-                return;
-              }
-              String firstWord = newValue!.split(' ')[0];
-              String secondWord = newValue.split(' ')[1];
-              sortBy = "$firstWord-$secondWord".toLowerCase();
-
-              setState(() {
-                sortByMenuItemValue = newValue;
-              });
-              _refreshList();
-            },
-          ),
-        ),
-      ),
+      ],
     );
   }
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -366,7 +246,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
                 count = 0;
                 next = "";
                 previous = "";
-                products.clear();
+                searchMyJobListing.clear();
                 noItemInList = false;
                 getList();
               });
@@ -386,23 +266,12 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
               fontWeight: FontWeight.w600,
               color: darkGrey,
             ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                Icons.filter_alt_rounded,
-                color: navyBlue,
-                size: 20,
-              ),
-              onPressed: () async {
-                FocusScope.of(context).unfocus();
-                await Future.delayed(Duration(milliseconds: 100))
-                    .then((value) => showFilterProductSheet());
-              },
-            ),
-            hintText: "Search anything",
+
+            hintText: "Search my jobs",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(
@@ -439,499 +308,4 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
     );
   }
 
-  void showFilterProductSheet() {
-    showModalBottomSheet<void>(
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        context: context,
-        enableDrag: true,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, StateSetter bottomSheetSetState) =>
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20)),
-                  ),
-                  color: Colors.white,
-                  margin: EdgeInsets.zero,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          "Filter",
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: blackFont),
-                        ),
-                        SizedBox(height: 40),
-                        getCategoryField(bottomSheetSetState),
-                        SizedBox(height: 8),
-                        getPikedCategoryNames(),
-                        SizedBox(height: 20),
-                        getProductRatingSelection(bottomSheetSetState),
-                        SizedBox(height: 24),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).viewInsets.bottom),
-                          child: getPriceRange(bottomSheetSetState),
-                        ),
-                        SizedBox(height: 20),
-                        SizedBox(height: 50),
-                        Row(
-                          children: [
-                            Expanded(child: getClearAllBtn()),
-                            SizedBox(width: 20),
-                            Expanded(child: getFilterSubmitBtn()),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                ),
-          );
-        });
-  }
-
-  Widget getCategoryField(StateSetter bottomSheetSetState) {
-    return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.category,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          selectedServicesCategory != null
-              ? selectedServicesCategory!.name
-              : "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          categoryAndroidSheet(bottomSheetSetState);
-        },
-      ),
-    );
-  }
-
-  Widget getPikedCategoryNames() {
-    return SizedBox(
-      height: pickedCategoryList.isEmpty ? 0 : 60,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: pickedCategoryList
-            .map(
-              (e) => Container(
-            margin: EdgeInsets.all(6),
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: greyBorderColor,
-                borderRadius: BorderRadius.circular(12)),
-            child: Text(
-              e,
-              style: TextStyle(color: blackFont),
-            ),
-          ),
-        )
-            .toList(),
-      ),
-    );
-  }
-
-  void categoryAndroidSheet(StateSetter bottomSheetSetState) {
-    servicesCategories = servicesCategoriesCopy;
-    androidBottomSheet(
-      context: context,
-      enableDrag: false,
-      isDismissible: false,
-      child: StatefulBuilder(
-        builder: (context, changeState) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.75,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CustomizedTextFormField(
-                  hintText: 'Search category',
-                  onChanged: (value) {
-                    if (value.toString().isNotEmpty) {
-                      servicesCategories = servicesCategoriesCopy!
-                          .where((element) => element.name
-                          .toLowerCase()
-                          .startsWith(value.toString().toLowerCase()))
-                          .toList();
-                      changeState(
-                              () {}); // To upgrade the product categories in the bottom sheet.
-                    } else {
-                      servicesCategories = servicesCategoriesCopy;
-                      changeState(() {});
-                    }
-                  },
-                ),
-                SizedBox(height: 20),
-                InkWell(
-                  onTap: () {},
-                  child: Text(
-                    '',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: servicesCategories!.length,
-                    itemBuilder: (context, index) {
-                      ServiceCategory category = servicesCategories![index];
-                      return CheckboxListTile(
-                        value: categoryCheckMark[category.name] ?? false,
-                        onChanged: (isChecked) {
-                          changeState(() {
-                            categoryCheckMark[category.name] = isChecked!;
-                          });
-                          if (pickedCategoryList.contains(category.name)) {
-                            pickedCategoryList.remove(category.name);
-                          } else {
-                            pickedCategoryList.add(category.name);
-                          }
-                        },
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      );
-
-                      // if (selectedServicesCategory == category) {
-                      //   return Container(
-                      //     color: selectedListItemBackgroundBlue,
-                      //     child: ListTile(
-                      //       dense: true,
-                      //       title: Text(
-                      //         category.name,
-                      //         overflow: TextOverflow.fade,
-                      //         softWrap: false,
-                      //         style: TextStyle(
-                      //             color: navyBlue,
-                      //             fontSize: 16,
-                      //             fontWeight: FontWeight.w600),
-                      //       ),
-                      //       trailing: Icon(
-                      //         SlydoAppIcon.checked,
-                      //         color: navyBlue,
-                      //         size: 12,
-                      //       ),
-                      //       onTap: () {
-                      //         pressedCategory = category;
-                      //         Navigator.pop(context);
-                      //         if (pressedCategory != null) {
-                      //           selectedServicesCategory = pressedCategory;
-                      //           productCategory = selectedServicesCategory!.name;
-                      //           setState(() {});
-                      //         }
-                      //       },
-                      //     ),
-                      //   );
-                      // }
-
-                      // return ListTile(
-                      //   title: Text(
-                      //     category.name,
-                      //     softWrap: false,
-                      //     overflow: TextOverflow.fade,
-                      //     style: TextStyle(
-                      //         color: blackFont,
-                      //         fontSize: 16,
-                      //         fontWeight: FontWeight.w400),
-                      //   ),
-                      //   dense: true,
-                      //   onTap: () {
-                      //     pressedCategory = category;
-                      //     Navigator.pop(context);
-                      //     if (pressedCategory != null) {
-                      //       selectedServicesCategory = pressedCategory;
-                      //       productCategory = selectedServicesCategory!.name;
-                      //       // setState(() {});
-                      //       bottomSheetSetState(() {});
-                      //     }
-                      //   },
-                      // );
-                    },
-                  ),
-                ),
-                CurvedButton(
-                  text: 'Pick',
-                  onPressed: () {
-                    Navigator.pop(context);
-                    bottomSheetSetState(() {});
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget getStateDropDownField(StateSetter bottomSheetSetState) {
-    return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.state,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          selectedServicesCategory != null
-              ? selectedServicesCategory!.name
-              : "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          stateBottomSheet(bottomSheetSetState);
-        },
-      ),
-    );
-  }
-
-  void stateBottomSheet(StateSetter bottomSheetSetState) {
-    stateList = stateListCopy;
-    androidBottomSheet(
-      context: context,
-      enableDrag: false,
-      isDismissible: false,
-      child: StatefulBuilder(
-        builder: (context, changeState) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.75,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CustomizedTextFormField(
-                  hintText: 'Search state',
-                  onChanged: (value) {
-                    if (value.toString().isNotEmpty) {
-                      stateList = ['Ogun'];
-                      changeState(() {});
-                    } else {
-                      stateList = stateListCopy;
-                      changeState(() {});
-                    }
-                  },
-                ),
-                SizedBox(height: 20),
-                InkWell(
-                  onTap: () {},
-                  child: Text(
-                    '',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: stateList.length,
-                    itemBuilder: (context, index) {
-                      return CheckboxListTile(
-                        value: stateCheckMark[stateList[index]],
-                        onChanged: (isChecked) {
-                          changeState(() {
-                            stateCheckMark[stateList[index]] = isChecked!;
-                          });
-                          if (pickedStateList.contains(stateList[index])) {
-                            pickedStateList.remove(stateList[index]);
-                          } else {
-                            pickedStateList.add(stateList[index]);
-                          }
-                        },
-                        title: Text(
-                          stateList[index],
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                CurvedButton(
-                  text: 'Pick',
-                  onPressed: () {
-                    debugPrint('PICKED CAT ---> $pickedStateList');
-                    Navigator.pop(context);
-                    bottomSheetSetState(() {});
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget getProductRatingSelection(StateSetter bottomSheetSetState) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Rating",
-          style: TextStyle(
-              color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 16),
-        Row(
-          children: List.generate(5, (index) {
-            if (selectedRating != null) {
-              return Expanded(
-                child: Row(
-                  children: [
-                    productRatingButton(
-                      bottomSheetSetState,
-                      index: index,
-                      isSelected: int.parse(selectedRating!) == index,
-                    ),
-                  ],
-                ),
-              );
-            }
-            return Expanded(
-              child: Row(
-                children: [
-                  productRatingButton(
-                    bottomSheetSetState,
-                    index: index,
-                  ),
-                ],
-              ),
-            );
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget productRatingButton(StateSetter bottomSheetSetState,
-      {bool isSelected = false, required int index}) {
-    return GestureDetector(
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color:
-          isSelected ? selectedListItemBackgroundBlue : HexColor("F8F9FA"),
-        ),
-        child: Row(
-          children: [
-            Text(
-              (index + 1).toString(),
-              style: TextStyle(
-                  color: isSelected ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600),
-            ),
-            SizedBox(width: 2),
-            Icon(
-              SlydoAppIcon.star,
-              size: 10,
-              color: isSelected ? navyBlue : blackFont,
-            )
-          ],
-        ),
-      ),
-      onTap: () {
-        selectedRating = index.toString();
-        bottomSheetSetState(() {});
-      },
-    );
-  }
-
-  Widget getPriceRange(bottomSheetSetState) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Price Range",
-          style: TextStyle(
-              color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: CustomizedTextFormField(
-                labelText: 'From',
-                initialValue:
-                minAmount == null ? '' : (minAmount! ~/ 100).toString(),
-                onChanged: (value) {
-                  minAmount = int.parse(value) * 100;
-                },
-                isNumberOnlyInput: true,
-              ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: CustomizedTextFormField(
-                labelText: 'To',
-                initialValue:
-                maxAmount == null ? '' : (maxAmount! ~/ 100).toString(),
-                onChanged: (value) {
-                  maxAmount = int.parse(value) * 100;
-                },
-                isNumberOnlyInput: true,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 12),
-      ],
-    );
-  }
-
-  Widget getClearAllBtn() {
-    return CurvedButton(
-      backgroundColor: Colors.grey,
-      onPressed: () {
-        Navigator.pop(context);
-        pickedCategoryList.clear();
-        categoryCheckMark.clear();
-        selectedRating = null;
-        minAmount = null;
-        maxAmount = null;
-        _refreshList();
-      },
-      text: "Clear All",
-      textColor: Colors.white,
-    );
-  }
-
-  Widget getFilterSubmitBtn() {
-    return CurvedButton(
-      backgroundColor: navyBlue,
-      onPressed: () {
-        Navigator.pop(context);
-        _refreshList();
-      },
-      text: "Apply",
-      textColor: Colors.white,
-    );
-  }
 }
