@@ -292,12 +292,14 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: getTitleRow(),
                   ),
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -321,12 +323,13 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                   ),
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const CustomText(
-                          title: 'Date',
+                          title: 'Due date',
                           fontSize: 14,
                           fontweight: FontWeight.w700,
                         ),
@@ -346,7 +349,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                             ),
                             Text(
                               DateFormat('dd-MM-yyyy')
-                                  .format(DateTime.parse(job!.creationDate!)),
+                                  .format(DateTime.parse(job!.dueDate!)),
                               style: const TextStyle(
                                 color: Color(0xff030e36),
                                 fontSize: 14,
@@ -361,7 +364,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                   const Divider(),
 
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -399,10 +403,12 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
 
                   if (job!.isListed!) getJobActivityStatusRow(),
 
+                  getJobOnlineRow(),
                   const Divider(),
 
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -466,13 +472,49 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           );
   }
 
+  Column getJobOnlineRow() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const CustomText(
+                title: 'Job Mode',
+                fontSize: 14,
+                fontweight: FontWeight.w700,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                job!.isOnline!.toString().toLowerCase() == 'true'
+                    ? 'Remote'
+                    : 'On site',
+                style: TextStyle(
+                  color: black,
+                  fontSize: 14,
+                  fontFamily: "Open Sans",
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Column getJobActivityStatusRow() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Divider(),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -494,8 +536,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                   border: Border.all(color: const Color(0xff3F61DB)),
                   color: const Color(0xff3F61DB).withOpacity(0.1),
                 ),
-                child: const Text(
-                  "Active",
+                child: Text(
+                  job?.status ?? '',
                   style: TextStyle(
                     color: Color(0xff3F61DB),
                     fontSize: 10.80,
@@ -508,26 +550,325 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           ),
         ),
         const Divider(),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const CustomText(
-                title: 'Job Activity',
-                fontSize: 14,
-                fontweight: FontWeight.w700,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              CustomText(
-                  title: "Applied : ${job!.applicantsCount}",
-                  fontSize: 12,
-                  fontweight: FontWeight.w600),
-            ],
-          ),
-        ),
+        Column(
+          children: [
+            job?.status?.toLowerCase() == 'open'
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: 'Job Activity',
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    decoration: BoxDecoration(
+                                        border:
+                                            Border.all(color: greyBorderColor),
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    child: Text(
+                                      'Application Submitted',
+                                      style:
+                                          TextStyle(color: black, fontSize: 12),
+                                    )),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                        color: navyBlue,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: white,
+                                      size: 7,
+                                    ))
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    decoration: BoxDecoration(
+                                        border:
+                                            Border.all(color: greyBorderColor),
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    child: Text(
+                                      'Application viewed',
+                                      style:
+                                          TextStyle(color: black, fontSize: 12),
+                                    )),
+                                const SizedBox(
+                                  width: 25,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                      color: darkGrey,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Container(),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    decoration: BoxDecoration(
+                                        border:
+                                            Border.all(color: greyBorderColor),
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    child: Text(
+                                      'Application Accepted',
+                                      style:
+                                          TextStyle(color: black, fontSize: 12),
+                                    )),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                      color: darkGrey,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Container(),
+                                )
+                              ],
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: 'Job Activity',
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                                    decoration: BoxDecoration(
+                                        border:
+                                            Border.all(color: greyBorderColor),
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    child: Text(
+                                      'Application Submitted',
+                                      style:
+                                          TextStyle(color: black, fontSize: 12),
+                                    )),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                        color: navyBlue,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: white,
+                                      size: 7,
+                                    ))
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            job?.status?.toLowerCase() == 'canceled'
+                                ? Row(
+                                    children: [
+                                      Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              10, 4, 10, 4),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: greyBorderColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          child: Text(
+                                            'Application Canceled',
+                                            style: TextStyle(
+                                                color: black, fontSize: 12),
+                                          )),
+                                      const SizedBox(
+                                        width: 12,
+                                      ),
+                                      Container(
+                                          padding: const EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                              color: mateRed,
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Icon(
+                                            Icons.check,
+                                            color: white,
+                                            size: 7,
+                                          ))
+                                    ],
+                                  )
+                                : Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      10, 4, 10, 4),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: greyBorderColor),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12)),
+                                              child: Text(
+                                                'Application viewed',
+                                                style: TextStyle(
+                                                    color: black, fontSize: 12),
+                                              )),
+                                          const SizedBox(
+                                            width: 25,
+                                          ),
+                                          Container(
+                                            padding: job?.status
+                                                            ?.toLowerCase() ==
+                                                        'in-progress' ||
+                                                    job?.status
+                                                            ?.toLowerCase() ==
+                                                        'closed'
+                                                ? const EdgeInsets.all(2)
+                                                : const EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                                color: job?.status
+                                                                ?.toLowerCase() ==
+                                                            'in-progress' ||
+                                                        job?.status
+                                                                ?.toLowerCase() ==
+                                                            'closed'
+                                                    ? navyBlue
+                                                    : darkGrey,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: job?.status?.toLowerCase() ==
+                                                        'in-progress' ||
+                                                    job?.status
+                                                            ?.toLowerCase() ==
+                                                        'closed'
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: white,
+                                                    size: 7,
+                                                  )
+                                                : Container(),
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Container(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      10, 4, 10, 4),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: greyBorderColor),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12)),
+                                              child: Text(
+                                                'Application Accepted',
+                                                style: TextStyle(
+                                                    color: black, fontSize: 12),
+                                              )),
+                                          const SizedBox(
+                                            width: 12,
+                                          ),
+                                          Container(
+                                            padding: job?.status
+                                                            ?.toLowerCase() ==
+                                                        'in-progress' ||
+                                                    job?.status
+                                                            ?.toLowerCase() ==
+                                                        'closed'
+                                                ? const EdgeInsets.all(2)
+                                                : const EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                                color: job?.status
+                                                                ?.toLowerCase() ==
+                                                            'in-progress' ||
+                                                        job?.status
+                                                                ?.toLowerCase() ==
+                                                            'closed'
+                                                    ? navyBlue
+                                                    : darkGrey,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: job?.status?.toLowerCase() ==
+                                                        'in-progress' ||
+                                                    job?.status
+                                                            ?.toLowerCase() ==
+                                                        'closed'
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: white,
+                                                    size: 7,
+                                                  )
+                                                : Container(),
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+          ],
+        )
       ],
     );
   }
@@ -602,7 +943,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                       Navigator.of(context)
                           .pushNamed('/compose_message', arguments: {
                         'recipient': job!.ownerName,
-                        'subject': "",
+                        "subject": job!.title,
                       });
                     },
                     child: SvgPicture.asset(
