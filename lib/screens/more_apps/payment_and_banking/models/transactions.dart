@@ -142,6 +142,7 @@ class Transaction {
         isAnonymous: json['is_anonymous'] ?? false,
         isCredit: isCredit);
   }
+
 }
 
 class PaymentRequest {

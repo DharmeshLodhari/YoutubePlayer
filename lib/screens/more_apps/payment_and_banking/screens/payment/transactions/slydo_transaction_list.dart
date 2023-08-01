@@ -19,9 +19,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../../../locator.dart';
 import '../../../../../../routes/route_constants.dart';
 import '../../../../../../services/app_config_bloc.dart';
-import '../../../../../../utils/navigation_util.dart';
-import '../../../../../search_user.dart';
-import '../../../../user_profile/models/user.dart';
 import '../../../payment_and_banking_auth.dart';
 
 class SlydoTransactionList extends StatefulWidget {

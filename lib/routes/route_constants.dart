@@ -182,5 +182,6 @@ class Routes {
   static const String GET_VIRTUAL_CARD = "/get-virtual-card";
   static const String VIRTUAL_CARD_HOME = "/virtual-card-home";
   static const String SEARCH_MY_JOBS = "/search-my-jobs";
+  static const String ADD_VIRTUAL_CARD = "/add-virtual-card";
 
 }

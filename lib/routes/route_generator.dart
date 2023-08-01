@@ -150,6 +150,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../screens/more_apps/business/screens/contract_screen.dart';
+import '../screens/more_apps/credit_card/add_virtual_card.dart';
 import '../screens/more_apps/credit_card/get_virtual_card.dart';
 import '../screens/more_apps/credit_card/virtual_card_home.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
@@ -1656,6 +1657,16 @@ class RouteGenerator {
       case Routes.VIRTUAL_CARD_HOME:
         return PageTransition(
           child: VirtualCardHome(
+            // arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.ADD_VIRTUAL_CARD:
+        return PageTransition(
+          child: AddVirtualCard(
             // arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
