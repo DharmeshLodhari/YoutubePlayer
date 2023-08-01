@@ -353,6 +353,16 @@ Widget customThemeBuilder(BuildContext context, Widget? child) {
   );
 }
 
+Color colorStats(String status) {
+    if (status.toLowerCase() == 'successful') {
+      return Colors.green.shade400;
+    }
+    if (status.toLowerCase() == 'cancelled') {
+      return Colors.red.shade400;
+    }
+    return Colors.yellow.shade700;
+  }
+
 BoxDecoration decorateBox(
     {Color? borderColor,
     double borderRadius = 10,

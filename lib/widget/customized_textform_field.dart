@@ -122,7 +122,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                                   ? widget.labelColor
                                   : darkGrey,
                               fontSize: 16,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.w500),
                         )
                       : SizedBox.shrink(),
                   widget.hasLabel
@@ -194,7 +194,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: darkGrey.withOpacity(.4)),
+                              color: darkGrey.withOpacity(.12)),
                           child: Text(
                             worldCurrencies[userBloc.user.currency!]!,
                             style: TextStyle(

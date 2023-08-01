@@ -47,8 +47,8 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   void initState() {
-
-    _pageViewController = PageController(initialPage: widget.arguments['page'] ?? 0);
+    _pageViewController =
+        PageController(initialPage: widget.arguments['page'] ?? 0);
 
     currentAskTapOnHome = widget.arguments['page'] ?? 0;
 

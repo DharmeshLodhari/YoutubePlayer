@@ -1175,7 +1175,7 @@ class _EditJobState extends State<EditJob> {
                 taskMethod = value.toString();
               });
             },
-            value: 'Physically',
+            value: 'On Site',
           ),
         ),
         Expanded(
@@ -1187,7 +1187,7 @@ class _EditJobState extends State<EditJob> {
                 taskMethod = value.toString();
               });
             },
-            value: 'Online',
+            value: 'Remote',
           ),
         ),
       ],
@@ -1790,6 +1790,7 @@ class _EditJobState extends State<EditJob> {
             'picture_count': jobLocalImages.length,
             'file': '',
             'list_now': checkedValue,
+            'is_online': taskMethod == 'Remote' ? true : false,
             'localImages':
                 jobLocalImages.map((file) => File(file.path)).toList(),
           }, jobId: currentJob!.id!).then((value) {

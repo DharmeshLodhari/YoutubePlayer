@@ -48,8 +48,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final GlobalKey<ScaffoldState> _scaffoldHomeKey =
-      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldHomeKey = GlobalKey<ScaffoldState>();
   late UserBloc userBloc;
 
   late MainSocketProvider socketProvider;
@@ -170,13 +169,11 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           Container(height: 10),
           Container(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: _appBar()),
+              padding: const EdgeInsets.only(left: 8.0), child: _appBar()),
           const SizedBox(
             height: 15,
           ),
           accountBalanceCard(),
-
           const SizedBox(
             height: 25,
           ),
@@ -212,7 +209,6 @@ class _HomeState extends State<Home> {
                   color: HexColor("#151515")),
             ),
           ),
-
           Container(
             padding: const EdgeInsets.only(left: 8.0, right: 8.0),
             child: checkUser(),

@@ -15,6 +15,7 @@ class JobModel {
   String? status;
   String? owner;
   bool? isListed;
+  bool? isOnline;
   List<dynamic>? applicants;
   String? assignee;
   String? description;
@@ -40,6 +41,7 @@ class JobModel {
       this.status,
       this.owner,
       this.isListed,
+      this.isOnline,
       this.applicants,
       this.assignee,
       this.description,
@@ -72,6 +74,7 @@ class JobModel {
     status = json['status'];
     owner = json['owner'];
     isListed = json['is_listed'];
+    isOnline = json['is_online'];
     isVerified = json['is_verified'];
     applicants = json['applicants'] == null ? [] : json['applicants'];
     assignee = json['assignee'];
@@ -106,6 +109,7 @@ class JobModel {
     data['status'] = this.status;
     data['owner'] = this.owner;
     data['is_listed'] = this.isListed;
+    data['is_online'] = this.isOnline;
     data['applicants'] = this.applicants;
     data['assignee'] = this.assignee;
     data['description'] = this.description;
