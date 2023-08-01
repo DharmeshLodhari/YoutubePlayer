@@ -56,13 +56,15 @@ class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
                     icon: Icons.credit_card,
                     iconColor: naturalGreen,
                     onTap: () async {
-                      if (appConfigurationModel?.enableAddUserCreditCard ==
-                          true) {
-                        Navigator.pushNamed(context, Routes.GET_VIRTUAL_CARD);
-                        // Navigator.pushNamed(context, Routes.VIRTUAL_CARD_HOME);
-                      } else {
-                        showToast(message: 'Coming soon');
-                      }
+                      // if (appConfigurationModel?.enableAddUserCreditCard ==
+                      //     true) {
+                      //   Navigator.pushNamed(context, Routes.GET_VIRTUAL_CARD);
+                      //   // Navigator.pushNamed(context, Routes.VIRTUAL_CARD_HOME);
+                      // } else {
+                      //   showToast(message: 'Coming soon');
+                      // }
+                      // Navigator.pushNamed(context, Routes.GET_VIRTUAL_CARD);
+                      Navigator.pushNamed(context, Routes.VIRTUAL_CARD_HOME);
 
                     }),
                 getSettingTile(

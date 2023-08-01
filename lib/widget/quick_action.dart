@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum ActionValue { send, request, paymentLink, scan, qrcode, creditcard }
+enum ActionValue { send, request, paymentLink, scan, qrcode, creditcard, fundCard, freezeCard }
 
 class QuickAction {
   String? image;
@@ -16,4 +16,9 @@ class QuickAction {
         QuickAction(title: 'QR Code', action: ActionValue.qrcode, image:  "qr_scan_me"),
         QuickAction(title: 'Credit Card', action: ActionValue.creditcard, image: "home_credit_card"),
       ];
+
+  static List<QuickAction> get actionsCard => [
+    QuickAction(title: 'Fund Card', action: ActionValue.request, image: "request_pay"),
+    QuickAction(title: 'Freeze Card', action: ActionValue.qrcode, image:  "qr_scan_me"),
+  ];
 }
