@@ -752,7 +752,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                     onTap: () {
                       Navigator.of(context)
                           .pushNamed('/compose_message', arguments: {
-                        'recipient': job!.ownerName,
+                        'recipient': job!.owner,
                         "subject": job!.title,
                       });
                     },

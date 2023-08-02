@@ -130,8 +130,8 @@ class _PaymentLinkState extends State<PaymentLink> {
                           color: colorStats(status!).withOpacity(0.1),
                         ),
                         child: Text(
-                          status.toString().toLowerCase() == 'pending'
-                              ? 'Processing'
+                          status.toString().toLowerCase() == 'processing'
+                              ? 'Pending'
                               : status,
                           style: TextStyle(
                             color: colorStats(status!),
