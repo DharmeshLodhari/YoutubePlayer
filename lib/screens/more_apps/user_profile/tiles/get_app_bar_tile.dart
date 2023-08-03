@@ -34,6 +34,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../messaging/message_auth.dart';
+import '../../yarn/utils/slydo_yarn_links.dart';
+import '../../yarn/yarn_search_screen.dart';
 import '../screens/user_profile_module_new/utils.dart';
 
 class GetAppbarTile extends StatefulWidget {
@@ -1000,14 +1002,24 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Linkify(
-              onOpen: _onOpen,
-              text: searchedUser?.bio == null
-                  ? ''
-                  : messageDecoderWithEmoji("${searchedUser?.bio}" "") ?? "",
-              textAlign: TextAlign.left,
-              style: TextStyle(fontSize: 14),
+            YarnSmartText(
+              text: messageDecoderWithEmoji(searchedUser?.bio)! ?? '',
+              style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
               maxLines: 6,
+              disableAt: false,
+              onTagClick: (tag) {
+                NavigationUtil.push(context,
+                    screen: SearchScreen(searchText: tag.trim()));
+              },
+              onUrlClicked: (open) {
+                // launch  url
+                launchUrl(Uri.parse(open.toString()));
+              },
+              onAtClick: (at) {
+                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                  "searchedUserName": at.replaceAll(RegExp('@'), '').trim()
+                });
+              },
             ),
             SizedBox(height: 8),
           ],
