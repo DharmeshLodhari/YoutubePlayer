@@ -25,6 +25,7 @@ import 'package:textfield_tags/textfield_tags.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
+import '../data/currency.dart';
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../screens/more_apps/messaging/chat/utils.dart';
@@ -357,10 +358,10 @@ Color colorStats(String status) {
     if (status.toLowerCase() == 'successful') {
       return Colors.green.shade400;
     }
-    if (status.toLowerCase() == 'cancelled') {
-      return Colors.red.shade400;
+    if (status.toLowerCase() == 'active') {
+      return Colors.yellow.shade700; 
     }
-    return Colors.yellow.shade700;
+    return Colors.red.shade400;
   }
 
 BoxDecoration decorateBox(
@@ -794,6 +795,39 @@ List<String> errorImageList = [
   "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me.jpeg"
 ];
 
+  Widget getAmount(amount, currency,{double fontSize=14}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[currency!]!,
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: blackFont,
+              fontWeight: FontWeight.bold,
+              fontSize: fontSize),
+        ),
+        Text(
+          moneyDisplayNormalizer(amount),
+          style: TextStyle(
+              color: blackFont, fontWeight: FontWeight.bold, fontSize: fontSize),
+        ),
+      ],
+    );
+  }
+
+ Widget getDateTime(BuildContext context, String dateTime,{double fontSize=10,color}) {
+    DateTime transactionTime = DateTime.parse(dateTime).toLocal();
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    String time = DateFormat("hh:mm a").format(transactionTime);
+    return Text(
+      "$date • $time",
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(color: darkGrey, fontSize: fontSize),
+    );
+  }
+
 void apiErrorHandler({String? error, BuildContext? context, int duration = 1}) {
   Fluttertoast.showToast(
     msg: "$error",
@@ -806,6 +840,12 @@ void apiErrorHandler({String? error, BuildContext? context, int duration = 1}) {
 
 int moneyInputNormalizer(String amount) {
   double value = double.parse(amount) * 100;
+  // Format the money into integer as server store money in integer
+  return value.toInt();
+}
+
+int moneyInputNormalizer2(String amount) {
+  double value = double.parse(amount) / 100;
   // Format the money into integer as server store money in integer
   return value.toInt();
 }

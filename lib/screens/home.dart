@@ -238,9 +238,6 @@ class _HomeState extends State<Home> {
                 child: _sendPaymentButton(),
               ),
             ),
-            // const SizedBox(
-            //   width: 6.8,
-            // ),
             SizedBox(
               width: 100,
               child: Container(
@@ -252,9 +249,6 @@ class _HomeState extends State<Home> {
                 child: _requestPaymentButton(),
               ),
             ),
-            // const SizedBox(
-            //   width: 6.8,
-            // ),
             SizedBox(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
@@ -365,8 +359,8 @@ class _HomeState extends State<Home> {
           ],
         ),
         onTap: () {
-          showToast(message: 'Coming soon');
-          // NavigationUtil.push(context, screen: PaymentLink());
+          // showToast(message: 'Coming soon');
+          NavigationUtil.push(context, screen: PaymentLink());
         });
   }
 

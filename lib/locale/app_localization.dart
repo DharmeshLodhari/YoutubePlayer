@@ -404,10 +404,24 @@ class AppLocalization {
     );
   }
 
+  String get process {
+    return Intl.message(
+      "Process",
+      name: "process",
+    );
+  }
+
   String get upgradeMessage {
     return Intl.message(
       "To apply for this job, please upgrade to a business account",
       name: "upgradeMessage",
+    );
+  }
+
+  String get paymentLinkConfirmationMsg {
+    return Intl.message(
+      "You are about to create a payment link, this service will cost you ",
+      name: "paymentLinkConfirmationMsg",
     );
   }
 
@@ -500,6 +514,12 @@ class AppLocalization {
     return Intl.message(
       "You are about to transfer money into a bank account, this service will cost ",
       name: "noteForUser2",
+    );
+  }
+  String get noteForUserPayLink {
+    return Intl.message(
+      "You are about to create a payment link, this service will cost ",
+      name: "noteForUserPayLink",
     );
   }
 
