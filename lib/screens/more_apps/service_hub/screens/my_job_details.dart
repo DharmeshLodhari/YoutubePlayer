@@ -1370,6 +1370,35 @@ class CustomText extends StatelessWidget {
   }
 }
 
+class CustomText1 extends StatelessWidget {
+  const CustomText1({
+    required this.title,
+    required this.fontSize,
+    required this.fontweight,
+  });
+  final String title;
+  final double fontSize;
+  final FontWeight fontweight;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 100,
+      child: Text(
+        title,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(
+          color: const Color(0xff030e36),
+          fontSize: fontSize,
+          fontFamily: "Open Sans",
+          fontWeight: fontweight,
+        ),
+      ),
+    );
+  }
+}
+
 class CustomPopupMenuItem {
   final String title;
   final String imageUrl;

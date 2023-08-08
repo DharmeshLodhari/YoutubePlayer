@@ -1,20 +1,31 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/payment_link/payment_link.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../data/currency.dart';
+import '../../../data/database_helper.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
-import '../../../utils/colors.dart';
+
+import 'package:http/http.dart' as http;
+import '../../../services/app_tutorial_controller.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
+import '../../../utils/util.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../../../widget/customized_textform_field.dart';
+import '../../../widget/dialog.dart';
+import '../../../widget/rounded_background_icon.dart';
+import '../payment_and_banking/models/VirtualAccount.dart';
+import '../payment_and_banking/payment_and_banking_auth.dart';
 import '../shopping/models/store.dart';
 import '../user_profile/models/user.dart';
 
@@ -30,21 +41,32 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
   TextEditingController _amountController = TextEditingController();
   late TextEditingController _referenceController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
+
+  final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
+  final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
+
   late UserBloc userBloc;
+  final _auth = PaymentAndBankingAuth();
+  late http.Response response;
 
   bool isBalanceHidden = true;
 
   bool? isFromProfile = false;
   CustomerProfile? _payee;
   String? recipient;
-  String? reference;
+
+  String reference = "";
   String? selectedCategory;
+  String errorMessage = "";
   List? addList = [];
+
+  // bool isValidPayee = false;
 
   final DateTime now = DateTime.now();
   final DateFormat formatter = DateFormat('yyyy/MM/dd');
   String tdata = DateFormat("hh:mm a").format(DateTime.now());
   String? formatted;
+  List<String?> paymentCategories = [];
 
   //for Product payment
   Product? product;
@@ -53,8 +75,26 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
   Service? service;
 
   double? amount = 0.0;
+  bool isLoading = true;
 
   final _formKey = GlobalKey<FormState>();
+
+  VirtualAccount? virtualAccount;
+  double? currentBalance = 0.0;
+
+  void fetchCategory() async {
+    _auth.getPaymentCategory().then((result) {
+      if (mounted) {
+        setState(() {
+          List categoriesList = result["results"]["data"];
+          categoriesList.forEach((data) {
+            paymentCategories.add(data["name"]);
+          });
+          isLoading = false;
+        });
+      }
+    });
+  }
 
   Widget getCategoryDropDown() {
     return Column(
@@ -132,7 +172,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                               child: ListTile(
                                 dense: true,
                                 title: Text(
-                                  category.name,
+                                  category!,
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                   style: TextStyle(
@@ -146,14 +186,14 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                                   size: 12,
                                 ),
                                 onTap: () {
-                                  Navigator.pop(context, category.name);
+                                  Navigator.pop(context, category);
                                 },
                               ),
                             );
                           }
                           return ListTile(
                             title: Text(
-                              category.name,
+                              category!,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -163,7 +203,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                             ),
                             dense: true,
                             onTap: () {
-                              Navigator.pop(context, category.name);
+                              Navigator.pop(context, category);
                             },
                           );
                         }).toList(),
@@ -180,7 +220,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     }
   }
 
-  showDataAlert() {
+  showDataAlert(link) {
     showDialog(
         context: context,
         builder: (context) {
@@ -196,7 +236,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
               top: 10.0,
             ),
             content: Container(
-              height: 400,
+              height: 540,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(22.0),
                 child: Column(
@@ -226,38 +266,38 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                     const SizedBox(
                       height: 30,
                     ),
-                    Image.asset(
-                      "assets/images/bar_code_large.png",
-                      width: 150,
-                      height: 150,
-                    ),
+                    _displayBarcodeInfo(link),
                     const SizedBox(
                       height: 30,
                     ),
-                    Container(
-                      width: 160,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      decoration: BoxDecoration(
-                          color: navyBlue,
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Center(
-                        child: Row(
-                          children: [
-                            Text(
-                              'Copy Link',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: white),
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            SvgPicture.asset(
-                              'copy_icon_link'.toSVG(),
-                            ),
-                          ],
+                    GestureDetector(
+                      onTap: () =>
+                          NavigationUtil.push(context, screen: PaymentLink()),
+                      child: Container(
+                        width: 160,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        decoration: BoxDecoration(
+                            color: navyBlue,
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Center(
+                          child: Row(
+                            children: [
+                              Text(
+                                'Copy Link',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: white),
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              SvgPicture.asset(
+                                'copy_icon_link'.toSVG(),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     )
@@ -296,71 +336,290 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
   @override
   void initState() {
     formatted = formatter.format(now);
+    getBankAccountDetail();
+    fetchCategory();
     super.initState();
+  }
+
+  Widget noteForUser() {
+    return Center(
+      child: Text.rich(TextSpan(
+          text: AppLocalization.of(context)!.noteForUserPayLink,
+          style: TextStyle(
+              fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
+          children: <InlineSpan>[
+            TextSpan(
+              text: worldCurrencies[userBloc.user.currency!]! +
+                  moneyDisplayNormalizer(3500),
+              style: TextStyle(
+                  fontSize: 12,
+                  color: blackFont,
+                  fontFamily: "Roboto",
+                  fontWeight: FontWeight.w600),
+            )
+          ])),
+    );
+  }
+
+  Future<void> makePaymentLinkDialog() async {
+    String vString = amount!.toInt().toString();
+    int amt = int.parse(vString) + 35;
+    await showDialogBox(
+      context: context,
+      leftButtonOnPressed: () => Navigator.pop(context),
+      rightButtonOnPressed: () {
+        BottomSheetPassCode(
+            context: context,
+            isValidCallback: () async {
+              showDialog(
+                  context: context,
+                  builder: (context) => const Center(child: SizedBox()));
+
+              await Future.delayed(const Duration(seconds: 3));
+
+              String description = 'General Payment';
+              var data = {
+                "currency": userBloc.user.currency,
+                "amount": moneyInputNormalizer(amount.toString()),
+                "category": selectedCategory!.trim(),
+                "reference": reference.trim(),
+                "payable_from": "",
+              };
+              await _auth.makePaymentLink(data).then((value) async {
+                debugPrint(
+                    "status code:- ${value.statusCode}  body:- ${value.body}");
+                dynamic res = jsonDecode(value.body);
+                
+                response = value;
+                if (response.statusCode == 201) {
+                  // NavigationUtil.push(context, screen: PaymentLink());
+                  showDataAlert(res['link']);
+                  Navigator.pop(context);
+                } else if (response.statusCode == 400) {
+                  showDataAlert(res['link']);
+                  Navigator.pop(context);
+                  setState(() {
+                    errorMessage = "${jsonDecode(value.body)["errors"]}";
+
+                    showToast(message: errorMessage);
+                  });
+                } else if (response.statusCode == 500) {
+                  Navigator.pop(context);
+                  setState(() {
+                    errorMessage = AppLocalization.of(context)!.serverError;
+                    showToast(message: errorMessage);
+                  });
+                } else {
+                  Navigator.pop(context);
+                  if (response.statusCode == 406) {
+                    errorMessage = jsonDecode(value.body)[0];
+                    showToast(message: "$errorMessage");
+                    setState(() {});
+                  } else {
+                    debugPrint("ERROR:- ${response.body}");
+                    setState(() {
+                      errorMessage =
+                          AppLocalization.of(context)!.somethingWentWrong;
+                      showToast(message: "$errorMessage");
+                    });
+                  }
+                }
+              });
+            },
+            cancelCallBack: () {
+              Navigator.pop(context);
+              _sendPaymentScaffoldMessenger.currentState!.showSnackBar(SnackBar(
+                content: Text(AppLocalization.of(context)!.invalidPassword),
+              ));
+            });
+      },
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 43,
+        height: 43,
+        icon: Icon(
+          Icons.check_circle_sharp,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: black,
+      actionTwoBgColor: navyBlue,
+      actionTwoTextColor: white,
+      title: "Create Payment Link",
+      description: AppLocalization.of(context)!.paymentLinkConfirmationMsg +
+          moneyDisplayNormalizer(amt * 100),
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.process,
+    );
+  }
+
+  Widget _displayBarcodeInfo(link) {
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFFF3F3F3), width: 2)),
+      margin: EdgeInsets.zero,
+      elevation: 0.0,
+      child: Container(
+        decoration:
+            decorateBox(borderRadius: 20, borderColor: HexColor("#F3F3F3")),
+        child: Container(
+          margin: const EdgeInsets.all(13),
+          key: tutorialQrCodeKey,
+          child: CustomPaint(
+            painter: QrPainter(
+                data: link,
+                options: const QrOptions(
+                    shapes: QrShapes(
+                        darkPixel: QrPixelShapeCircle(radiusFraction: .8),
+                        frame: QrFrameShapeRoundCorners(cornerFraction: .25),
+                        ball: QrBallShapeRoundCorners(cornerFraction: .25)),
+                    colors: QrColors(
+                        light: QrColorSolid(Color.fromARGB(0, 0, 0, 0))))),
+            size: Size(MediaQuery.of(context).size.width / 1.7,
+                MediaQuery.of(context).size.width / 1.7),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 40),
-          child: Column(
-            children: [
-              Card(
-                elevation: 0.4,
-                margin: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                shadowColor: iconBtnGrey,
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: iconBtnGrey, width: 1)),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              displayAmountField(),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              getCategoryDropDown(),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              getReferenceField(),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                            ],
+    return ScaffoldMessenger(
+      key: _sendPaymentScaffoldMessenger,
+      child: Scaffold(
+        key: _sendPaymentScaffold,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 40),
+            child: Column(
+              children: [
+                Card(
+                  elevation: 0.4,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  shadowColor: iconBtnGrey,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: iconBtnGrey, width: 1)),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                displayAmountField(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                getCategoryDropDown(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                getReferenceField(),
+                                const SizedBox(
+                                  height: 20.0,
+                                ),
+                                noteForUser(),
+                                const SizedBox(
+                                  height: 40,
+                                ),
+                                errorMessage == ""
+                                    ? Container()
+                                    : Text(
+                                        errorMessage,
+                                        style: TextStyle(
+                                            color: mateRed,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                errorMessage == ""
+                                    ? Container()
+                                    : const SizedBox(
+                                        height: 20,
+                                      ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 180,
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: getSubmitButton(),
-              )
-            ],
-          )),
+                const SizedBox(
+                  height: 180,
+                ),
+                // if (amount == 0.0) ...[
+                getSubmitButton()
+                // ] else ...[
+                // canDoSlydoTransfer(amount!, currentBalance!)
+                //       ? getSubmitButton()
+                //       : Container(
+                //           child: Center(
+                //               child: Padding(
+                //                   padding: const EdgeInsets.symmetric(
+                //                       vertical: 16.0),
+                //                   child: Text.rich(TextSpan(
+                //                       text: AppLocalization.of(context)!
+                //                           .minimumTransfer,
+                //                       style: TextStyle(
+                //                           fontSize: 12,
+                //                           color: blackFont,
+                //                           fontWeight: FontWeight.w600),
+                //                       children: <InlineSpan>[
+                //                         TextSpan(
+                //                           text: worldCurrencies[
+                //                                   userBloc.user.currency!]! +
+                //                               moneyDisplayNormalizer(
+                //                                   availableTransfer()),
+                //                           style: TextStyle(
+                //                               fontSize: 12,
+                //                               color: blackFont,
+                //                               fontFamily: "Roboto",
+                //                               fontWeight: FontWeight.w600),
+                //                         )
+                //                       ])))),
+                //         ),
+                // ],
+              ],
+            )),
+      ),
     );
+  }
+
+  bool canDoSlydoTransfer(double amount, double balance) {
+    if (balance > amount + 10.0) {
+      return true;
+    }
+    return false;
+  }
+
+  int availableTransfer() {
+    int value = 0;
+    value = currentBalance!.toInt() * 100 - 1000;
+
+    if (value < 0) {
+      // print("The number is negative.");
+      return 0;
+    } else {
+      // print("The number is non-negative.");
+      return value;
+    }
   }
 
   void hideBalance() {
@@ -370,42 +629,46 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
     }
   }
 
+  void getBankAccountDetail() async {
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+    // await getAccountBalance();
+    currentBalance = await getAccountBalance();
+  }
+
+  bool validateDropdown() {
+    if (selectedCategory != null) {
+      return true;
+    } else {
+      selectedCategory = "General";
+      return true;
+    }
+  }
+
+  void onSubmit() async {
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+    }
+
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (_formKey.currentState!.validate() && validateDropdown()) {
+      try {
+        makePaymentLinkDialog();
+      } catch (e) {
+        debugPrint(e.toString());
+        showToast(message: e.toString());
+      }
+    }
+  }
+
   Widget getSubmitButton() {
     return CurvedButton(
-      onPressed: () {
-        hideBalance();
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () {
-              showDataAlert();
-              addList?.add({
-                'name': _referenceController.text.isNotEmpty
-                    ? _referenceController.text
-                    : '${userBloc.user.nickName}',
-                'amount': _amountController.text,
-                'status': 'Pending',
-                'date': '$formatted • $tdata',
-                'category': selectedCategory,
-              });
-              Navigator.pop(context);
-              NavigationUtil.push(
-                context,
-                screen: PaymentLink(
-                  listMap: addList,
-                ),
-              );
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-            });
-        // }
-      },
+      onPressed: () => onSubmit(),
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "General Link",
     );
   }
-
 
   Widget getReferenceField() {
     return CustomizedTextFormField(
@@ -454,9 +717,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
         }
         return AppLocalization.of(context)!.invalidAmount;
       },
-      onTap: () async {
-        
-      },
+      onTap: () async {},
     );
   }
 }
