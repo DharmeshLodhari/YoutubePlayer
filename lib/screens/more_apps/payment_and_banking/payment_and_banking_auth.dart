@@ -157,8 +157,8 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
 
-    debugPrint(
-        "status code :- ${response.statusCode} response ${response.body}");
+    debugPrint("status delete BankAccount ");
+    debugPrint("status code :- ${response.statusCode} response ${response.body}");
     if (response.statusCode == 204) {
       return true;
     } else {

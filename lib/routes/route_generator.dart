@@ -151,8 +151,10 @@ import 'package:page_transition/page_transition.dart';
 
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/credit_card/add_virtual_card.dart';
-import '../screens/more_apps/credit_card/get_virtual_card.dart';
+import '../screens/more_apps/credit_card/generate_debit_card.dart';
+import '../screens/more_apps/credit_card/fund_virtual_card.dart';
 import '../screens/more_apps/credit_card/virtual_card_home.dart';
+import '../screens/more_apps/credit_card/withdraw_virtual_card.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/payout_transaction_detail.dart';
 import '../screens/more_apps/service_hub/models/active_job_listing.dart';
@@ -1644,20 +1646,9 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case Routes.GET_VIRTUAL_CARD:
-        return PageTransition(
-          child: GetVirtualCard(
-            // arguments: settings.arguments,
-          ),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-
       case Routes.VIRTUAL_CARD_HOME:
         return PageTransition(
           child: VirtualCardHome(
-            // arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
@@ -1666,8 +1657,36 @@ class RouteGenerator {
 
       case Routes.ADD_VIRTUAL_CARD:
         return PageTransition(
-          child: AddVirtualCard(
-            // arguments: settings.arguments,
+          child: const AddVirtualCard(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.GENERATE_VIRTUAL_CARD:
+        return PageTransition(
+          child: GenerateDebitCard(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.FUND_VIRTUAL_CARD:
+        return PageTransition(
+          child: FundVirtualCard(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.WITHDRAW_VIRTUAL_CARD:
+        return PageTransition(
+          child: WithdrawVirtualCard(
+            arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,

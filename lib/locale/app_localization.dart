@@ -1347,6 +1347,20 @@ class AppLocalization {
     );
   }
 
+  String get freezeCard {
+    return Intl.message(
+      "Freeze Card",
+      name: "freezeCard",
+    );
+  }
+
+  String get fundCard {
+    return Intl.message(
+      "Fund Card",
+      name: "fundCard",
+    );
+  }
+
   String get send {
     return Intl.message(
       "Send",
@@ -1853,6 +1867,20 @@ class AppLocalization {
     );
   }
 
+  String get cardBrand {
+    return Intl.message(
+      "Card Brand",
+      name: "cardBrand",
+    );
+  }
+
+  String get cardType {
+    return Intl.message(
+      "Card Type",
+      name: "cardType",
+    );
+  }
+
   String get state {
     return Intl.message(
       "State",
@@ -1988,6 +2016,32 @@ class AppLocalization {
       name: "productName",
     );
   }
+  String get cardLabel {
+    return Intl.message(
+      "Card Label",
+      name: "cardLabel",
+    );
+  }
+
+  String get reason {
+    return Intl.message(
+      "Reason",
+      name: "reason",
+    );
+  }
+
+  String get firstName {
+    return Intl.message(
+      "First Name",
+      name: "firstName",
+    );
+  }
+  String get lastName {
+    return Intl.message(
+      "Last Name",
+      name: "lastName",
+    );
+  }
 
   String get size {
     return Intl.message(
@@ -2014,6 +2068,69 @@ class AppLocalization {
     return Intl.message(
       "Please Enter Product Name",
       name: "pleaseEnterProductName",
+    );
+  }
+
+  String get pleaseEnterLabel {
+    return Intl.message(
+      "Please Enter Label",
+      name: "pleaseEnterLabel",
+    );
+  }
+
+  String get pleaseEnterReason {
+    return Intl.message(
+      "Please Enter Reason",
+      name: "pleaseEnterReason",
+    );
+  }
+
+  String get pleaseEnterFirstName {
+    return Intl.message(
+      "Please Enter First Name",
+      name: "pleaseEnterFirstName",
+    );
+  }
+
+  String get pleaseEnterLastName {
+    return Intl.message(
+      "Please Enter Last Name",
+      name: "pleaseEnterLastName",
+    );
+  }
+
+  String get pleaseEnterAddress {
+    return Intl.message(
+      "Please Enter Address",
+      name: "pleaseEnterAddress",
+    );
+  }
+
+  String get pleaseEnterCity {
+    return Intl.message(
+      "Please Enter City",
+      name: "pleaseEnterCity",
+    );
+  }
+
+  String get pleaseEnterZipCode {
+    return Intl.message(
+      "Please Enter Zip Code",
+      name: "pleaseEnterZipCode",
+    );
+  }
+
+  String get pleaseEnterBvn {
+    return Intl.message(
+      "Please Enter BVN",
+      name: "pleaseEnterBvn",
+    );
+  }
+
+  String get pleaseEnterIdNumber {
+    return Intl.message(
+      "Please Enter ID Number",
+      name: "pleaseEnterIdNumber",
     );
   }
 
@@ -2126,6 +2243,20 @@ class AppLocalization {
     return Intl.message(
       "Please Select Product Category and Condition",
       name: "pleaseSelectProductCategoryAndCondition",
+    );
+  }
+
+  String get pleaseSelectStateOrIdTYpe {
+    return Intl.message(
+      "Please Select State and ID Type",
+      name: "pleaseSelectStateOrIdTYpe",
+    );
+  }
+
+  String get pleaseSelectCardBrand {
+    return Intl.message(
+      "Please Select Card Brand And Card Type",
+      name: "pleaseSelectCardBrand",
     );
   }
 
@@ -2483,6 +2614,13 @@ class AppLocalization {
     return Intl.message(
       "No Transactions done this week",
       name: "noTransactionDoneThisWeek",
+    );
+  }
+
+  String get noTransaction {
+    return Intl.message(
+      "No Transactions",
+      name: "noTransaction",
     );
   }
 
@@ -2906,6 +3044,13 @@ class AppLocalization {
     return Intl.message(
       "Share",
       name: "share",
+    );
+  }
+
+  String get download {
+    return Intl.message(
+      "download",
+      name: "download",
     );
   }
 

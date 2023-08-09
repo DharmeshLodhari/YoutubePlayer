@@ -14,6 +14,7 @@ import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../../data/currency.dart';
@@ -38,27 +39,26 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
   ProductCategory? selectedProductCategory;
   ProductCondition? selectedProductCondition;
 
-  int imageCount = 5;
   final ScrollController _scrollController = ScrollController();
-  List<PickedFile> productImages = [];
-  String productName = "";
-  String productDescription = "";
-  String productShortDescription = "";
-  String productCategory = "";
-  String productCondition = "";
-  String productPrice = "";
-  String productManufacturer = "";
-  bool productIsAvailable = false;
-  bool inventoryIsAvailable = false;
-  bool productEnableInSuperStore = false;
-  DateTime productAvailableFrom = DateTime.now();
+  String firstName = "";
+  String lastName = "";
+  String address = "";
+  String city = "";
+  String state = "";
+  String zipCode = "";
+  String bvn = "";
+  String idType = "";
+  String idNumber = "";
   List<ProductCategory>? productCategories;
-  List<ProductCategory>?
-  productCategoriesCopy; //To hold the full product category at all times.
+  List<ProductCategory>? productCategoriesCopy;
   bool isLoading = false;
   bool isAPILoading = false;
-  int inventoryCount = 0;
-  List<Variant> productVariantList = [];
+  List<String> stateList = [];
+  List<String> idTypeList = ['NATIONAL ID','PASSPORT', 'VOTERS CARD', 'DRIVERS LICENSE'];
+  List<String> stateListCopy = [];
+  Map<String, bool> stateCheckMark = {};
+  String selectedIdType = "";
+
 
   @override
   void deactivate() {
@@ -68,20 +68,24 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
 
   @override
   void initState() {
-    getCategories();
+    getStatesList();
     super.initState();
   }
 
-  void getCategories() async {
+  void getStatesList() async {
     isLoading = true;
     if (mounted) setState(() {});
 
     try {
-      productCategories = await ShoppingAuthService().getProductCategories();
-      productCategoriesCopy = productCategories;
+      stateList = getAllStates();
+      stateListCopy = stateList;
+
+      stateListCopy.forEach((element) {
+        stateCheckMark[element] = false;
+      });
     } catch (e) {
-      productCategories = [];
-      productCategoriesCopy = [];
+      stateList = [];
+      stateListCopy = [];
     }
 
     isLoading = false;
@@ -109,6 +113,7 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
+      centerTitle: false,
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(
@@ -121,7 +126,7 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
         },
       ),
       title: Text(
-        "Add product",
+        "Debit Card",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -129,269 +134,235 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
   }
 
   Widget scaffoldBody() {
+    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+
     return isLoading
         ? Center(
       child: CircularLoadingIndicator(),
     )
-        : SingleChildScrollView(
+    : SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 10),
-                addImages(),
-                const SizedBox(height: 10),
-                addTitleField(),
-                const SizedBox(
-                  height: 10,
-                ),
-                getManufacturerField(),
-                const SizedBox(
-                  height: 10,
-                ),
-                getAmountField(),
-                const SizedBox(height: 10),
-                getCategoryField(),
-                const SizedBox(height: 10),
-                getProductConditionField(),
-                const SizedBox(height: 16),
-                getAvailableFromField(),
-                const SizedBox(height: 10),
-                getProductShortDescription(),
-                const SizedBox(height: 10),
-                getProductDescription(),
-                const SizedBox(height: 40),
-                getIsAvailableField(),
-
-                const SizedBox(height: 16),
-                getInventoryFormField(),
-                const SizedBox(height: 16),
-                getIsInventoryAvailableField(),
-
-                //TODO: hide this variant option
-                // const SizedBox(height: 16),
-                // if(productVariantList.isEmpty)...[
-                //   getAddVariationFormField(),
-                // ]else...[
-                //   displaySelectedVariant(),
-                // ],
-
-                const SizedBox(height: 16),
-                getSubmitButton(),
-                const SizedBox(height: 40),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget showBackArrow() {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back_ios),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-  }
-
-  Widget addImages() {
-    return Container(
-      height: 100,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: productImages.length + 1,
-        itemBuilder: (context, index) => Container(
-          padding: const EdgeInsets.only(right: 6),
-          child: index != productImages.length
-              ? showImage(index)
-              : productImages.length != imageCount
-              ? addImageButton()
-              : null,
-        ),
-      ),
-    );
-  }
-
-  Widget addImageButton() {
-    return CustomBoxShadow(
-      child: Card(
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        shadowColor: boxShadowTwo,
-        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-        child: Container(
-          width: 100,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: InkWell(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  SlydoAppIcon.add_image,
-                  color: darkGrey,
-                ),
-                const SizedBox(
-                  height: 4,
+        padding: EdgeInsets.symmetric(
+            horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+        child: Column(
+          children: [
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Fill out your personal information",
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
                 ),
                 Text(
-                  AppLocalization.of(context)!.addImage,
-                  style: TextStyle(color: darkGrey, fontSize: 14),
+                  "1/2",
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
                 ),
               ],
             ),
-            onTap: () {
-              pickImage();
-            },
-          ),
+            const SizedBox(height: 15),
+
+            Card(
+              elevation: 2,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              shadowColor: iconBtnGrey,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: iconBtnGrey, width: 1)),
+                child: Form(
+                  key: _formKey,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+                    child: Column(
+                      children: <Widget>[
+                        const SizedBox(height: 20),
+                        addFirstNameField(),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        addLastNameField(),
+
+                        const SizedBox(height: 10),
+                        addAddressField(),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        addCityField(),
+                        const SizedBox(height: 10),
+                        getStateField(),
+                        const SizedBox(height: 10),
+                        getZipCodeField(),
+                        const SizedBox(height: 10),
+                        getBvnField(),
+                        const SizedBox(height: 10),
+                        getIdTypeField(),
+                        const SizedBox(height: 10),
+                        getIdNumberField(),
+
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+
+                  getSubmitButton(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
+
   }
 
-  void pickImage() async {
-    final imageSource = await showDialog<ImageSource>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(AppLocalization.of(context)!.selectTheImageSource),
-          actions: <Widget>[
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.camera),
-              onPressed: () => Navigator.pop(context, ImageSource.camera),
-            ),
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.gallery),
-              onPressed: () => Navigator.pop(context, ImageSource.gallery),
-            )
-          ],
-        ));
 
-    if (imageSource != null) {
-      ImagePicker().pickImage(source: imageSource).then((value) async {
-        if (value != null) {
-          /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
-          if (croppedImage == null) {
-            return;
-          }
-
-          productImages.add(PickedFile(croppedImage));
-          if (mounted) setState(() {});
+  Widget addFirstNameField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.firstName,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
         }
-      });
-    }
+        return AppLocalization.of(context)!.pleaseEnterFirstName;
+      },
+      onChanged: (val) {
+        firstName = val;
+      },
+    );
   }
 
-  Widget showImage(int index) {
-    return Container(
-      height: 100,
-      child: Stack(
-        children: <Widget>[
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: dividerColor,
-            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: FileImage(
-                      File(productImages[index].path),
-                    ),
-                    fit: BoxFit.fill),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            child: IconButton(
-              padding: const EdgeInsets.only(right: 6, top: 6),
-              alignment: Alignment.topRight,
-              icon: Container(
-                padding: const EdgeInsets.all(2.0),
-                decoration: BoxDecoration(
-                  color: iconBtnGrey,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Icon(
-                  SlydoAppIcon.remove,
-                  color: blackFont,
-                  size: 15,
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  productImages.removeAt(index);
-                });
-              },
-            ),
-          )
+  Widget addLastNameField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.lastName,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterLastName;
+      },
+      onChanged: (val) {
+        lastName = val;
+      },
+    );
+  }
+
+  Widget addAddressField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.address,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterAddress;
+      },
+      onChanged: (val) {
+        address = val;
+      },
+    );
+  }
+
+  Widget addCityField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.city,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterCity;
+      },
+      onChanged: (val) {
+        city = val;
+      },
+    );
+  }
+
+  Widget getZipCodeField() {
+    return CustomizedTextFormField(
+      labelText: "Zip Code",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.pleaseEnterZipCode;
+      },
+      onChanged: (val) {
+        zipCode = val;
+      },
+    );
+  }
+
+  Widget getBvnField() {
+    return CustomizedTextFormField(
+      labelText: "BVN",
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(11),
         ],
-      ),
-    );
-  }
-
-  Widget addTitleField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.productName,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context)!.pleaseEnterProductName;
+        return AppLocalization.of(context)!.pleaseEnterBvn;
       },
       onChanged: (val) {
-        productName = val;
+        bvn = val;
       },
     );
   }
 
-  Widget getProductShortDescription() {
+  Widget getIdNumberField() {
     return CustomizedTextFormField(
-      labelText: "Short description",
+      labelText: "ID Number",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context)!.shortDescription;
+        return AppLocalization.of(context)!.pleaseEnterIdNumber;
       },
       onChanged: (val) {
-        productShortDescription = val;
+        idNumber = val;
       },
     );
   }
 
-  Widget getProductDescription() {
-    return CustomizedTextFormField(
-      maxLines: 5,
-      textCapitalization: TextCapitalization.sentences,
-      labelText: AppLocalization.of(context)!.description,
-      onChanged: (val) {
-        productDescription = val;
-      },
-    );
-  }
 
-  Widget getCategoryField() {
+  Widget getStateField() {
     return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.category,
+      title: AppLocalization.of(context)!.state,
       child: ListTile(
         dense: true,
         title: Text(
-          selectedProductCategory != null ? selectedProductCategory!.name : "",
+          state.isNotEmpty ? state : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -400,15 +371,35 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
           color: darkGrey,
         ),
         onTap: () {
-          categoryAndroidSheet();
-          // selectItemCategory();
+          stateAndroidSheet();
         },
       ),
     );
   }
 
-  void categoryAndroidSheet() {
-    productCategories = productCategoriesCopy;
+  Widget getIdTypeField() {
+    return CustomizedDropDownField(
+      title: "ID Type",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          idType.isNotEmpty ? idType : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          idTypeAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void stateAndroidSheet() {
+    stateList = stateListCopy;
     androidBottomSheet(
       context: context,
       child: StatefulBuilder(
@@ -418,18 +409,16 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
             child: Column(
               children: [
                 CustomizedTextFormField(
-                  hintText: 'Search category',
+                  hintText: 'Search State',
                   onChanged: (value) {
                     if (value.toString().isNotEmpty) {
-                      productCategories = productCategoriesCopy!
-                          .where((element) => element.name
+                      stateList = stateListCopy.where((element) => element
                           .toLowerCase()
                           .startsWith(value.toString().toLowerCase()))
                           .toList();
-                      changeState(
-                              () {}); // To upgrade the product categories in the bottom sheet.
+                      changeState(() {});
                     } else {
-                      productCategories = productCategoriesCopy;
+                      stateList = stateListCopy;
                       changeState(() {});
                     }
                   },
@@ -438,43 +427,13 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: productCategories!.length,
+                    itemCount: stateList.length,
                     itemBuilder: (context, index) {
-                      ProductCategory category = productCategories![index];
-                      if (selectedProductCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedCategory = category;
-                              Navigator.pop(context);
-                              if (pressedCategory != null) {
-                                selectedProductCategory = pressedCategory;
-                                productCategory = selectedProductCategory!.name;
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        );
-                      }
+                      String category = stateList[index];
+
                       return ListTile(
                         title: Text(
-                          category.name,
+                          category,
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
@@ -484,11 +443,9 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
                         ),
                         dense: true,
                         onTap: () {
-                          pressedCategory = category;
+                          state = category;
                           Navigator.pop(context);
-                          if (pressedCategory != null) {
-                            selectedProductCategory = pressedCategory;
-                            productCategory = selectedProductCategory!.name;
+                          if (mounted) {
                             setState(() {});
                           }
                         },
@@ -504,56 +461,26 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
     );
   }
 
-  void selectItemCategory() async {
-    final pressedCategory = await showDialog<ProductCategory>(
-        context: context,
-        builder: (context) => AlertDialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          contentPadding: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)),
-          content: Container(
-            width: MediaQuery.of(context).size.width - 40,
-            child: Card(
-              elevation: 2,
-              shadowColor: Colors.transparent,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: productCategories?.map<Widget>((category) {
-                      if (selectedProductCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          ),
-                        );
-                      }
+  void idTypeAndroidSheet() {
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.25,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: idTypeList.length,
+                    itemBuilder: (context, index) {
+                      String category = idTypeList[index];
+
                       return ListTile(
                         title: Text(
-                          category.name,
+                          category,
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
@@ -563,707 +490,93 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
                         ),
                         dense: true,
                         onTap: () {
-                          Navigator.pop(context, category);
+                          idType = category;
+                          ['NATIONAL ID','PASSPORT', 'VOTERS CARD', 'DRIVERS LICENSE'];
+                          if(category == 'NATIONAL ID'){
+                            selectedIdType = "NATIONAL_ID";
+                          }else if(category == 'PASSPORT'){
+                            selectedIdType = "PASSPORT";
+                          }else if(category == 'VOTERS CARD'){
+                            selectedIdType = "VOTERSCARD";
+                          }else if(category == 'DRIVERS LICENSE'){
+                            selectedIdType = "DRIVERS_LICENSE";
+                          }
+
+                          Navigator.pop(context);
+                          if (mounted) {
+                            setState(() {});
+                          }
                         },
                       );
-                    }).toList() ??
-                        [],
+                    },
                   ),
                 ),
-              ),
+              ],
             ),
-          ),
-        ));
-    if (pressedCategory != null) {
-      selectedProductCategory = pressedCategory;
-      productCategory = selectedProductCategory!.name;
-      setState(() {});
-    }
-  }
-
-  Widget getProductConditionField() {
-    return CustomizedDropDownField(
-      title: "Product condition",
-      child: ListTile(
-        dense: true,
-        title: Row(
-          children: [
-            Text(
-              selectedProductCondition != null
-                  ? selectedProductCondition!.name
-                  : "",
-              style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            Expanded(
-              child: Text(
-                selectedProductCondition != null
-                    ? " (" + selectedProductCondition!.description + ")"
-                    : "",
-                maxLines: 1,
-                style: const TextStyle(
-                  fontSize: 16,
-                ),
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-            ),
-          ],
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          selectItemCondition();
+          );
         },
       ),
     );
   }
 
-  void selectItemCondition() async {
-    final pressedCondition = await showDialog<ProductCondition>(
-        context: context,
-        builder: (context) => AlertDialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          contentPadding: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)),
-          content: Container(
-            width: MediaQuery.of(context).size.width - 40,
-            child: Card(
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: conditions.map<Widget>((condition) {
-                      if (selectedProductCondition == condition) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Row(
-                              children: [
-                                Text(
-                                  condition.name,
-                                  style: TextStyle(
-                                      color: navyBlue,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    selectedProductCondition != null
-                                        ? " (" +
-                                        selectedProductCondition!
-                                            .description +
-                                        ")"
-                                        : "",
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                        fontSize: 16, color: navyBlue),
-                                    softWrap: false,
-                                    overflow: TextOverflow.fade,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              Navigator.pop(context, condition);
-                            },
-                          ),
-                        );
-                      }
-                      return ListTile(
-                        title: Row(
-                          children: [
-                            Text(
-                              condition.name,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            Expanded(
-                              child: Text(
-                                " (" + condition.description + ")",
-                                maxLines: 1,
-                                style: TextStyle(
-                                    fontSize: 16, color: blackFont),
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                              ),
-                            ),
-                          ],
-                        ),
-                        dense: true,
-                        onTap: () {
-                          Navigator.pop(context, condition);
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ));
-    if (pressedCondition != null) {
-      selectedProductCondition = pressedCondition;
-      productCondition = selectedProductCondition!.name;
-      setState(() {});
-    }
-  }
-
-  Widget getManufacturerField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.manufacturer,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.pleaseEnterManufacturerName;
-      },
-      onChanged: (val) {
-        productManufacturer = val;
-      },
-    );
-  }
-
-  Widget getAmountField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.price,
-      keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      isAmountField: true,
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            productPrice = double.parse(val.replaceAll(',', '')).toString();
-          } catch (e) {
-            showToast(message: e.toString());
-          }
-        }
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            double.parse(val.replaceAll(',', ''));
-            return null;
-          } catch (e) {
-            return AppLocalization.of(context)!.invalidAmount;
-          }
-        }
-        return AppLocalization.of(context)!.pleaseEnterValidAmout;
-      },
-    );
-  }
 
   Widget getSubmitButton() {
     return CurvedButton(
-      onPressed: isAPILoading
-          ? () {}
-          : () async {
+      onPressed: () async {
         FocusScope.of(context).unfocus();
-        isAPILoading = true;
-        if (mounted) setState(() {});
+        gotoGenerateVirtualCard();
 
-        await addProduct();
-
-        isAPILoading = false;
-        if (mounted) setState(() {});
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Add product",
+      text: "Proceed",
       isLoading: isAPILoading,
     );
   }
 
-  Future<void> addProduct() async {
+  Future<void> gotoGenerateVirtualCard() async {
     if (_formKey.currentState!.validate()) {
-      if (productImages.length >= 1) {
+
         if (validateDropdown()) {
-          Product product = Product();
-          product.localImages =
-              productImages.map((file) => File(file.path)).toList();
-          product.name = productName;
-          product.description = productDescription;
-          product.shortDescription = productShortDescription;
-          product.category = productCategory;
-          product.condition = productCondition;
-          product.price = moneyInputNormalizer(productPrice).toString();
-          product.isAvailable = productIsAvailable;
-          product.manufacturer = productManufacturer;
-          product.availableFrom = productAvailableFrom;
-          product.enableInSuperStore = productEnableInSuperStore;
+
+          Map<String, dynamic> result = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "address1": address,
+            "address2": address,
+            "city": city,
+            "state": state,
+            "zipcode": zipCode,
+            "id_number": idNumber,
+            "id_type": selectedIdType,
+            "customer_bvn": bvn,
+          };
 
 
-          //the api call will first create the product then use the id from the
-          //response to save the variant
-          await _auth.addProduct(product).then((value) async {
-
-            var productId = value[1];
-
-            if(productVariantList.isEmpty){
-              Navigator.pop(context);
-              showToast(
-                  message: AppLocalization.of(context)!.productAddedSuccessfully);
-
-              Navigator.pushNamed(context, Routes.PRODUCT,
-                  arguments: {"productId": productId});
-            }else{
-              //loop and add all variant
-              addVariants(productId);
-              // for(var variantItem in productVariantList){
-              //   await _auth.addVariant(variantItem, productId).then((value) {
-              //     // backValue = true;
-              //
-              //   }).catchError((error) {
-              //     debugPrint(error.toString());
-              //     debugPrint("Product check variant::: ${error.toString()}");
-              //     // showToast(message: error.toString());
-              //   });
-              // }
-            }
-
-          }).catchError((error) {
-            debugPrint("Product check::: ${error.toString()}");
-            showToast(message: error.toString());
+          final data = await Navigator.of(context).pushNamed(Routes.GENERATE_VIRTUAL_CARD, arguments: {
+            'data': result,
           });
+
+          // Handle the result (map) received from GENERATE_VIRTUAL_CARD
+          if (data != null && data == true) {
+            //send callback
+            Navigator.pop(context, data);
+            if(mounted)setState(() {});
+          }
         }
-      } else {
-        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
-      }
+
     }
-  }
-
-  Future<void> addVariants(String productId) async {
-    for (var variantItem in productVariantList) {
-      // Make the API call for the current product variant
-      await makeApiCallAddVariant(variantItem, productId);
-    }
-
-    // This will be executed after all API calls are completed
-    print("All API calls are done!");
-    Navigator.pop(context);
-    showToast(
-        message: AppLocalization.of(context)!.productAddedSuccessfully);
-
-    Navigator.pushNamed(context, Routes.PRODUCT,
-        arguments: {"productId": productId});
-  }
-
-  Future<void> makeApiCallAddVariant(Variant variantItem, String productId) async {
-
-    await _auth.addVariant(variantItem, productId).then((value) {
-      // backValue = true;
-
-    }).catchError((error) {
-      debugPrint(error.toString());
-      debugPrint("Product check variant::: ${error.toString()}");
-      // showToast(message: error.toString());
-    });
-
   }
 
   bool validateDropdown() {
-    if (selectedProductCategory != null && selectedProductCondition != null) {
+    if (state.isNotEmpty && idType.isNotEmpty) {
       return true;
     } else {
       showToast(
           message: AppLocalization.of(context)!
-              .pleaseSelectProductCategoryAndCondition);
+              .pleaseSelectStateOrIdTYpe);
       return false;
     }
-  }
-
-  Widget getIsAvailableField() {
-    return CustomizedCheckBoxField(
-      onTap: () {
-        productIsAvailable = !productIsAvailable;
-        setState(() {});
-      },
-      isChecked: productIsAvailable,
-      title: "Is product available now?",
-    );
-  }
-
-  Widget getEnableInSuperStoreField() {
-    return CustomizedCheckBoxField(
-      onTap: () {
-        productEnableInSuperStore = !productEnableInSuperStore;
-        setState(() {});
-      },
-      isChecked: productEnableInSuperStore,
-      title: AppLocalization.of(context)!.enableInSuperStore,
-    );
-  }
-
-  Widget getAvailableFromField() {
-    return GestureDetector(
-      onTap: () {
-        showDatePicker(
-          builder: customThemeBuilder,
-          context: context,
-          initialDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          firstDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          lastDate: DateTime(2101),
-        ).then((value) {
-          productAvailableFrom = DateTime(value!.year, value.month, value.day);
-          setState(() {});
-        }).catchError((error) {});
-      },
-      child: CustomizedDropDownField(
-        title: "Available from",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(productAvailableFrom),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget getInventoryFormField() {
-    return CustomizedDropDownField(
-      title: "Inventory (Available Quantity)",
-      child: SizedBox(
-        height: 55,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: ListTile(
-            dense: true,
-            title: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: greyBorderColor,
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
-                  child: Text(
-                    inventoryCount.toString(),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            trailing: Padding(
-              padding: const EdgeInsets.only(right: 30.0),
-              child: RoundedBackgroundIcon(
-                  backgroundColor: greyBorderColor,
-                  icon: Icon(
-                    SlydoAppIcon.plus,
-                    color: blackFont,
-                    size: 14,
-                  ),
-                  onTap: () => addInventory()
-              ),
-            ),
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: RoundedBackgroundIcon(
-                  backgroundColor: greyBorderColor,
-                  icon: Icon(
-                    SlydoAppIcon.minus,
-                    color: blackFont,
-                    size: 2,
-                  ),
-                  onTap: () => subtractInventory()
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void addInventory() {
-    setState(() {
-      inventoryCount++;
-    });
-  }
-
-  void subtractInventory() {
-    if (inventoryCount > 0) {
-      setState(() {
-        inventoryCount--;
-      });
-    }
-  }
-
-  Widget getIsInventoryAvailableField() {
-    return CustomizedCheckBoxField(
-      onTap: () {
-        inventoryIsAvailable = !inventoryIsAvailable;
-        setState(() {});
-      },
-      isChecked: inventoryIsAvailable,
-      title: "Checking this field will automatically update the quantity when the product is purchased.",
-      fontSize: 10.0,
-      maxLines: 2,
-    );
-  }
-
-  Widget getAddVariationFormField() {
-    return GestureDetector(
-      onTap: () async {
-        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
-          'option': 'new',
-          'productId': '',
-        });
-
-        // Handle the result (map) received from Product Add New Option
-        if (result != null && result is Variant) {
-          //save the variant details for later use
-          productVariantList.add(result);
-          if(mounted)setState(() {});
-        }
-      },
-      child: CustomizedDropDownField(
-        title: "Option",
-        child: ListTile(
-          dense: true,
-          title: Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: Text(
-                'Add different variation like colour & size',
-                style: TextStyle(
-                  color: blackFont,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-          subtitle: Container(
-            padding: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
-            margin: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
-            decoration: BoxDecoration(
-                border: Border.all(
-                  color: navyBlue,
-                ),
-                borderRadius: const BorderRadius.all(Radius.circular(10))
-            ),
-            child: Center(
-              child: Text(
-                'Create Variant',
-                style: TextStyle(
-                  color: navyBlue,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget displaySelectedVariant() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Variant',
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14),
-              ),
-              GestureDetector(
-                onTap: () async {
-                  final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
-                    'option': 'new',
-                    'productId': '',
-                  });
-
-                  // Handle the result (map) received from Product Add New Option
-                  if (result != null && result is Variant) {
-                    //save the variant details for later use
-                    productVariantList.add(result);
-                    if(mounted)setState(() {});
-                  }
-                },
-                child: Text(
-                  'Add more',
-                  maxLines: 1,
-                  style: TextStyle(
-                      color: navyBlue,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-          Container(
-            decoration: decorateBox(),
-            // Use `SingleChildScrollView` to provide a bounded height for the content
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListView.builder(
-                      // Use `physics` property to prevent nested scrolling
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: productVariantList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                          shadowColor: boxShadowTwo,
-                          elevation: 0,
-                          child: Container(
-                            decoration: decorateBox(),
-                            child: ListTile(
-                              dense: true,
-                              title: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    appendStringDot(productVariantList[index].title!, 10),
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                        color: blackFont,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 18),
-                                  ),
-                                  Text(
-                                    'Available . ${productVariantList[index].quantity!}',
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                        color: blackFont.withOpacity(.5),
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                              subtitle: Padding(
-                                padding: const EdgeInsets.only(top: 4.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Text(
-                                      worldCurrencies[productVariantList[index].currency!]!,
-                                      style: TextStyle(
-                                          fontFamily: "Roboto",
-                                          fontSize: 18.0,
-                                          color: blackFont,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    Text(
-                                      moneyDisplayNormalizer(
-                                          int.parse(productVariantList[index].price.toString())),
-                                      style: TextStyle(
-                                          fontSize: 18.0,
-                                          color: blackFont,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              leading: getVariantLeading(productVariantList[index]),
-                              trailing: getVariantTrailing(productVariantList[index]),
-                            ),
-                          ),
-                        );
-                      },
-
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget getVariantLeading(Variant productVariant) {
-    return Container(
-      width: 100,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        image: DecorationImage(
-            image: FileImage(
-              File(productVariant.localImages![0].path),
-            ),
-            fit: BoxFit.cover),
-      ),
-    );
-  }
-
-  Widget getVariantTrailing(Variant productVariant) {
-
-    return IconButton(
-      padding: const EdgeInsets.only(right: 6),
-      alignment: Alignment.topRight,
-      icon: Container(
-        decoration: BoxDecoration(
-          color: iconBtnGrey,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Icon(
-          SlydoAppIcon.remove,
-          color: blackFont,
-          size: 15,
-        ),
-      ),
-      onPressed: () {
-        removeSelectedVariant(productVariant.title.toString());
-        if(mounted) setState(() {});
-      },
-    );
-  }
-
-  void removeSelectedVariant(String selectedVariantTitle) {
-    // Use the removeWhere method to remove the variant with the specified title.
-    productVariantList.removeWhere((variant) => variant.title == selectedVariantTitle);
   }
 
 
