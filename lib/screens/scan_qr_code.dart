@@ -31,7 +31,7 @@ class QRCodeView extends StatefulWidget {
   State<StatefulWidget> createState() => _QRCodeViewState(arguments: arguments);
 }
 
-class _QRCodeViewState extends State<QRCodeView> {
+class _QRCodeViewState extends State<QRCodeView>{
   var arguments;
   late bool
       canShowDialogBox; // We need this variable to show the dialogbox just once cause qrscanner controller uses a stream(using a stream will make the dialogbox show up multiple times).
@@ -59,6 +59,18 @@ class _QRCodeViewState extends State<QRCodeView> {
         : false;
     super.initState();
   }
+
+
+
+  // @override
+  // void reassemble() {
+  //   super.reassemble();
+  //   if (Platform.isAndroid) {
+  //     controller!.pauseCamera();
+  //   } else if (Platform.isIOS) {
+  //     controller!.resumeCamera();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -135,6 +147,8 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   // Scan qr code here and check on server then navigate to payment screen.
   void _onQRViewCreated(QRViewController controller) {
+    // this.controller = controller;
+
     customerProfileBloc =
         Provider.of<CustomerProfileBloc>(context, listen: false);
     userBloc = Provider.of<UserBloc>(context, listen: false);
@@ -142,6 +156,8 @@ class _QRCodeViewState extends State<QRCodeView> {
       this.controller = controller;
       resumeCamara();
     });
+
+    debugPrint('FOLA DATA ::: ');
 
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
@@ -163,9 +179,13 @@ class _QRCodeViewState extends State<QRCodeView> {
   }
 
   void resumeCamara() {
+
     if (Platform.isAndroid) {
       controller!.pauseCamera();
     }
+    // else if (Platform.isIOS) {
+    //   controller!.resumeCamera();
+    // }
     controller!.resumeCamera();
   }
 
@@ -185,14 +205,16 @@ class _QRCodeViewState extends State<QRCodeView> {
 
       Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
-    } else if (scanDataList[qrCodeIndex] == "services") {
+    }
+    else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
       _dashboardBloc.index = 0;
 
       Navigator.of(context)
           .pushNamed(Routes.SERVICE_DETAIL, arguments: {"service": service});
-    } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
+    }
+    else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         ShoppingCartModelFromQrCode? shoppingCartModel =
             await ShoppingAuthService()

@@ -6,6 +6,9 @@ import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../routes/route_constants.dart';
+import '../../utils/slydo_app_icon_icons.dart';
+import '../../widget/bottom_sheet_item.dart';
+import '../../widget/rounded_background_icon.dart';
 
 class QrCodePage extends StatefulWidget {
   @override
@@ -63,8 +66,8 @@ class _QrCodePageState extends State<QrCodePage> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        // widget.postType == PostType.blog ? menuIcon() : shareBtn(),
-        SizedBox(
+        menuIcon(),
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -78,7 +81,7 @@ class _QrCodePageState extends State<QrCodePage> {
         flexibleSpace(flex: 1),
         Container(height: 5),
         _displayUserInfo(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         _displayUserName(),
@@ -91,20 +94,20 @@ class _QrCodePageState extends State<QrCodePage> {
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: Color(0xFFF3F3F3), width: 2)),
+          side: const BorderSide(color: Color(0xFFF3F3F3), width: 2)),
       margin: EdgeInsets.zero,
       elevation: 0.0,
       child: Container(
         decoration:
             decorateBox(borderRadius: 20, borderColor: HexColor("#F3F3F3")),
         child: Container(
-          margin: EdgeInsets.all(13),
+          margin: const EdgeInsets.all(13),
           key: tutorialQrCodeKey,
           child: CustomPaint(
             painter: QrPainter(
                 data:
                     "https://api.slydo.co/api/v1/user/customer/${userBloc.user.userName!}",
-                options: QrOptions(
+                options: const QrOptions(
                     shapes: QrShapes(
                         darkPixel: QrPixelShapeCircle(radiusFraction: .8),
                         frame: QrFrameShapeRoundCorners(cornerFraction: .25),
@@ -145,6 +148,81 @@ class _QrCodePageState extends State<QrCodePage> {
       ),
     );
   }
+
+  Widget menuIcon() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.menu,
+        size: 16,
+        color: blackFont,
+      ),
+      backgroundColor: iconBtnGrey,
+      onTap: () {
+        userProfileActionsSheet();
+      },
+      enableMargin: true,
+    );
+  }
+
+  void userProfileActionsSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> generateBottomSheetItem() {
+    List<Widget> list = [];
+
+
+      list.add(
+        bottomSheetItem(
+          title: AppLocalization.of(context)!.share,
+          iconData: SlydoAppIcon.share,
+          onTap: () {
+            Navigator.pop(context);
+            // var shareBody =
+            //     "https://slydo.co/${userPost!.authorUsername}/blog/${userPost!.id}";
+            // Share.share(shareBody, subject: "${userPost!.authorName}");
+          },
+        ),
+      );
+
+
+    list.add(
+      bottomSheetItem(
+        isLast: true,
+        title: AppLocalization.of(context)!.download,
+        iconData: Icons.download_rounded,
+        onTap: () async {
+          Navigator.pop(context);
+          // shareAsYarn();
+        },
+      ),
+    );
+
+    return list;
+  }
+
+
 
   @override
   void didChangeDependencies() {

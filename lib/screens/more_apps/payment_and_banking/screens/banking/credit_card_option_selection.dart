@@ -63,7 +63,6 @@ class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
                       // } else {
                       //   showToast(message: 'Coming soon');
                       // }
-                      // Navigator.pushNamed(context, Routes.GET_VIRTUAL_CARD);
                       Navigator.pushNamed(context, Routes.VIRTUAL_CARD_HOME);
 
                     }),

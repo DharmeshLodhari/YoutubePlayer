@@ -103,7 +103,6 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     inventoryCount = int.parse(variant!.quantity!);
 
 
-
     super.initState();
   }
 

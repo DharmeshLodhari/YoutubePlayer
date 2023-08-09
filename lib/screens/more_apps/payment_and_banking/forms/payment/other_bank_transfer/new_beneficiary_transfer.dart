@@ -1146,4 +1146,5 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       }
     });
   }
+
 }

@@ -179,9 +179,11 @@ class Routes {
   static const String PRODUCT_NEW_OPTION = "/product-new-option";
   static const String PRODUCT_VARIANT_UPDATE = "/product-variant-update";
 
-  static const String GET_VIRTUAL_CARD = "/get-virtual-card";
   static const String VIRTUAL_CARD_HOME = "/virtual-card-home";
   static const String SEARCH_MY_JOBS = "/search-my-jobs";
   static const String ADD_VIRTUAL_CARD = "/add-virtual-card";
+  static const String GENERATE_VIRTUAL_CARD = "/generate-virtual-card";
+  static const String FUND_VIRTUAL_CARD = "/fund-virtual-card";
+  static const String WITHDRAW_VIRTUAL_CARD = "/withdraw-virtual-card";
 
 }
