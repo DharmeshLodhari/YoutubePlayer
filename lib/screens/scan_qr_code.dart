@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_link/payment_link_cashout.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -192,10 +194,22 @@ class _QRCodeViewState extends State<QRCodeView>{
   // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
   void getNavigationRoot(List<String> scanDataList,
       {String? scanDataCode}) async {
+    List<String> cleanScanDataLink = scanDataList;
     int qrCodeIndex = scanDataList.length - 2;
 
     debugPrint('SCANNED DATA ::: $scanDataList');
     debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
+
+    cleanScanDataLink.removeWhere((item) => [""].contains(item));
+
+    if (cleanScanDataLink[2] == 'payment-link') {
+      String paymentLinkId = cleanScanDataLink[3];
+
+      NavigationUtil.push(context,
+          screen: PaymentLinkCashout(
+            id: paymentLinkId,
+          ));
+    }
 
     if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;

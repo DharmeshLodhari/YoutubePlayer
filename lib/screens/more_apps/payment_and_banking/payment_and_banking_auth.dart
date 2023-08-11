@@ -157,8 +157,8 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
 
-    debugPrint("status delete BankAccount ");
-    debugPrint("status code :- ${response.statusCode} response ${response.body}");
+    debugPrint(
+        "status code :- ${response.statusCode} response ${response.body}");
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -862,7 +862,7 @@ class PaymentAndBankingAuth extends AuthService {
     return response;
   }
 
-  //Send payment_link to backend
+  //Create payment_link to backend
   Future<http.Response> makePaymentLink(Map data) async {
     var url = "${AppConfig.baseUrl}/api/v1/transactions/payment-link/";
     var headers = await getAuthHeaders();
@@ -872,7 +872,17 @@ class PaymentAndBankingAuth extends AuthService {
     return response;
   }
 
-  //Send payment_link to backend
+  //Cash out payment_link to backend
+  Future<http.Response> cashoutPaymentLink(Map data) async {
+    var url = "${AppConfig.baseUrl}/api/v1/transactions/payment-link/payout/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
+
+    return response;
+  }
+
+  //GEt all payment link and search
   Future<Map<String, dynamic>> getPaymentLinks({String? searchLink}) async {
     var url;
     dynamic result;
@@ -896,6 +906,51 @@ class PaymentAndBankingAuth extends AuthService {
     return result;
   }
 
+  //Cancel payment link
+  Future<bool> cancelPaymentLinks(String? paymentLinkId) async {
+    var url;
+    dynamic result;
+    url =
+        "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$paymentLinkId/cancel";
+
+    var headers = await getAuthHeaders();
+    // var _data = jsonEncode(data);
+    var response = await httpGet(
+      url,
+      headers: headers,
+    );
+    log("message${response.statusCode} and ${response.body}");
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      result = jsonDecode(response.body);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //get single payment link
+  Future<Map<String, dynamic>> getSinglePaymentLinkDetails(
+      String? paymentLinkId) async {
+    var url;
+    dynamic result;
+    url =
+        "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$paymentLinkId/";
+
+    var headers = await getAuthHeaders();
+    // var _data = jsonEncode(data);
+    var response = await httpGet(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      result = jsonDecode(response.body);
+    } else {
+      throw "Server Error";
+    }
+    return result;
+  }
+
+  // activate and deactivate payment links
   Future<http.Response> paymentLinksAction(Map data) async {
     var url;
     dynamic result;

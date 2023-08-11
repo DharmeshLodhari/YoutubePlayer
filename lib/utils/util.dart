@@ -355,21 +355,24 @@ Widget customThemeBuilder(BuildContext context, Widget? child) {
 }
 
 Color colorStats(String status) {
-    if (status.toLowerCase() == 'successful') {
-      return Colors.green.shade400;
-    }
-    if (status.toLowerCase() == 'active') {
-      return Colors.yellow.shade700; 
-    }
-    return Colors.red.shade400;
+  if (status.toLowerCase() == 'paid') {
+    return Colors.green.shade400;
   }
+  if (status.toLowerCase() == 'active') {
+    return navyBlue;
+  }
+  if (status.toLowerCase() == 'suspended') {
+    return Colors.yellow.shade700;
+  }
+  return Colors.red.shade400;
+}
 
 BoxDecoration decorateBox(
     {Color? borderColor,
     double borderRadius = 10,
     Color? shadowColor,
     Color? color}) {
-  if (shadowColor == null) shadowColor = boxShadowTwo;
+  shadowColor ??= boxShadowTwo;
   return BoxDecoration(
     boxShadow: <BoxShadow>[
       BoxShadow(
@@ -496,7 +499,8 @@ Widget transactionOrPayoutTile(
         children: [
           Container(
             padding: status != ""
-                ? const EdgeInsets.only(left: 10.0, right: 10, top: 3.0, bottom: 3.0)
+                ? const EdgeInsets.only(
+                    left: 10.0, right: 10, top: 3.0, bottom: 3.0)
                 : const EdgeInsets.all(0.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5.0),
@@ -550,9 +554,7 @@ Widget getSettingTile(
     Function()? onTap,
     IconData? icon,
     Color? iconColor}) {
-  if (iconColor == null) {
-    iconColor = navyBlue;
-  }
+  iconColor ??= navyBlue;
   return Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -795,38 +797,39 @@ List<String> errorImageList = [
   "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me.jpeg"
 ];
 
-  Widget getAmount(amount, currency,{double fontSize=14}) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Text(
-          worldCurrencies[currency!]!,
-          style: TextStyle(
-              fontFamily: "Roboto",
-              color: blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: fontSize),
-        ),
-        Text(
-          moneyDisplayNormalizer(amount),
-          style: TextStyle(
-              color: blackFont, fontWeight: FontWeight.bold, fontSize: fontSize),
-        ),
-      ],
-    );
-  }
+Widget getAmount(amount, currency, {double fontSize = 14}) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: <Widget>[
+      Text(
+        worldCurrencies[currency!]!,
+        style: TextStyle(
+            fontFamily: "Roboto",
+            color: blackFont,
+            fontWeight: FontWeight.bold,
+            fontSize: fontSize),
+      ),
+      Text(
+        moneyDisplayNormalizer(amount),
+        style: TextStyle(
+            color: blackFont, fontWeight: FontWeight.bold, fontSize: fontSize),
+      ),
+    ],
+  );
+}
 
- Widget getDateTime(BuildContext context, String dateTime,{double fontSize=10,color}) {
-    DateTime transactionTime = DateTime.parse(dateTime).toLocal();
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
-    return Text(
-      "$date • $time",
-      softWrap: false,
-      overflow: TextOverflow.visible,
-      style: TextStyle(color: darkGrey, fontSize: fontSize),
-    );
-  }
+Widget getDateTime(BuildContext context, String dateTime,
+    {double fontSize = 10, color}) {
+  DateTime transactionTime = DateTime.parse(dateTime).toLocal();
+  String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+  String time = DateFormat("hh:mm a").format(transactionTime);
+  return Text(
+    "$date • $time",
+    softWrap: false,
+    overflow: TextOverflow.visible,
+    style: TextStyle(color: darkGrey, fontSize: fontSize),
+  );
+}
 
 void apiErrorHandler({String? error, BuildContext? context, int duration = 1}) {
   Fluttertoast.showToast(

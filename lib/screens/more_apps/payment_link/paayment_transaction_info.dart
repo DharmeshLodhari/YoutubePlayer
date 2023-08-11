@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:Slydo/screens/more_apps/payment_link/payment_link_cashout.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../../locale/app_localization.dart';
 import '../../../services/app_tutorial_controller.dart';
+import '../../../utils/slydo_app_icon_icons.dart';
+import '../../../services/app_tutorial_controller.dart';
+import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../../widget/curved_btn.dart';
@@ -85,7 +89,6 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
         setState(() {
           if (value.statusCode == 200) {
             response = jsonDecode(value.body);
-            log("res.....${response['status']}");
             isLoading = false;
           }
         });
@@ -126,42 +129,42 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                   child: Container(
                     decoration: decorateBox(),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
+                        Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 18.0, vertical: 20),
+                              horizontal: 12, vertical: 15),
                           child: Row(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  getAmount(int.parse(widget.amount!),
-                                      widget.currency,
-                                      fontSize: 20),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  getDateTime(context, widget.date!,
-                                      fontSize: 14),
-                                ],
-                              ),
-                              const Spacer(),
-                              GestureDetector(
-                                onTap: () => showDataAlert(widget.link),
-                                child: Card(
-                                  elevation: 0.3,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: Image.asset(
-                                    "assets/images/tran_bar_code.png",
-                                    width: 60,
-                                    height: 60,
-                                  ),
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const CustomText(
+                                      title: 'Slydo',
+                                      fontSize: 16,
+                                      fontweight: FontWeight.w700,
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      widget.date ?? '',
+                                      style: const TextStyle(
+                                        color: Color(0xff8d92a3),
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              )
-                            ],
-                          ),
+                                CustomText(
+                                  title: '₦${widget.amount ?? ''}',
+                                  fontSize: 16,
+                                  fontweight: FontWeight.w700,
+                                ),
+                              ]),
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                         Divider(
                           color: darkGrey,
@@ -276,6 +279,12 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
         ));
   }
 
+    String getPaymentId(String link) {
+    List<String> _linkSplit = link.split('/');
+    _linkSplit.removeWhere((item) => [""].contains(item));
+    return _linkSplit[3];
+  }
+
   showDataAlert(link) {
     showDialog(
         context: context,
@@ -322,7 +331,14 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                     const SizedBox(
                       height: 30,
                     ),
-                    _displayBarcodeInfo(link),
+                    GestureDetector(
+                      onTap: () {
+                          NavigationUtil.push(context,
+                              screen: PaymentLinkCashout(
+                                id: getPaymentId(link),
+                              ));
+                      },
+                      child: _displayBarcodeInfo(link)),
                     const SizedBox(
                       height: 30,
                     ),
@@ -370,17 +386,11 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
   }
 
   Widget returnButton() {
-    if (widget.status?.toLowerCase() == 'successful') {
+    if (widget.status?.toLowerCase() == 'paid') {
       return const SizedBox.shrink();
     }
     if (widget.status?.toLowerCase() == 'cancelled') {
-      if (datetime > const Duration(hours: 24)) {
-        return isLoading == true
-            ? const CircularProgressIndicator()
-            : getSubmitButton();
-      } else {
         return const SizedBox.shrink();
-      }
     }
     return isLoading == true
         ? const CircularProgressIndicator()
@@ -575,7 +585,6 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                       },
                     )
                   : IconButton(
-                      // padding: const EdgeInsets.only(top: 4, right: 22),
                       alignment: Alignment.center,
                       icon: Icon(
                         SlydoAppIcon.eye_close,

@@ -1,13 +1,19 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../data/currency.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
+import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../../widget/debouncer_widget.dart';
+import '../../../widget/dialog.dart';
 import '../../../widget/noItemInList.dart';
+import '../../../widget/rounded_background_icon.dart';
+import '../../../widget/slide_action_button.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 import '../service_hub/screens/my_job_details.dart';
 import 'paayment_transaction_info.dart';
@@ -33,6 +39,14 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
   bool isSearchIsEmpty = true;
 
   final _auth = PaymentAndBankingAuth();
+
+  ScrollController _scrollController = new ScrollController();
+
+  SlidableController? _slideController;
+
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
+
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   getPaymenttLinks({searchLink}) async {
     if (!isLoading) {
@@ -77,6 +91,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
       currency,
       status,
       passcode,
+      link,
       category}) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
@@ -92,6 +107,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
             passcode: passcode.toString(),
             category: category,
             id: id,
+            link: link,
           ),
         ),
         child: Card(
@@ -180,9 +196,18 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     getPaymenttLinks();
-
+    _slideController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
     super.initState();
   }
 
@@ -194,6 +219,99 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
       body: scaffoldBody(),
     );
   }
+
+  void rejectRequestAlert(data, index) async {
+    bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.false_icon,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRed,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: AppLocalization.of(context)!.cancel,
+      description:
+          "Are you sure want to cancel the payment link, your payment link fee of ${worldCurrencies[data['currency']]}35 will not be refunded?",
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: "Ignore",
+    );
+    if (result != null && result) {
+      bool done = true;
+      if (done) {
+        setState(() {
+          // paymentLinkList.removeAt(index);
+          // getPaymenttLinks();
+        });
+      }
+    }
+  }
+
+  List<Widget> listActionSlideActions(Map data, int index) {
+    return data['status'].toString().toLowerCase() != 'active'
+        ? []
+        : [
+            SlideActionButton(
+              backgroundColor: mateRed,
+              icon: SlydoAppIcon.cancel_connection_request,
+              onTap: () {
+                rejectRequestAlert(data, index);
+              },
+              title: AppLocalization.of(context)!.cancel,
+              slideController: _slideController,
+            ),
+          ];
+  }
+
+  Widget _getSlidableWithLists(BuildContext context, Map e, int index) {
+    return Slidable(
+      key: Key(e["id"].toString()),
+      controller: _slideController,
+      direction: Axis.horizontal,
+      actionPane: const SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      actions: listActionSlideActions(e, index),
+      secondaryActions: listActionSlideActions(e, index),
+      child: paymentLinkCard(
+          name: e['reference'],
+          amount: e['amount'],
+          date: e['created_at'],
+          currency: e['currency'],
+          passcode: e['pin'],
+          status: e['status'],
+          id: e['id'],
+          category: e['category'],
+          link: e['link'] ?? ''),
+    );
+  }
+
+  Widget _buildFriendsList() {
+    return isLoading
+        ? const Padding(
+            padding: EdgeInsets.only(top: 48.0),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        : ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 18),
+            itemCount: paymentLinkList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _getSlidableWithLists(
+                  context, paymentLinkList[index], index);
+            },
+            controller: _scrollController,
+          );
+  }
+
+  
 
   Widget scaffoldBody() {
     return Container(
@@ -207,6 +325,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
                   baseColor: Colors.white,
                   highlightColor: greyBorderColor,
                   child: GridView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -242,22 +361,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
                       ),
                     )
                   : Expanded(
-                      child: ListView(
-                          padding: const EdgeInsets.all(22),
-                          children: [
-                            if (paymentLinkList.isNotEmpty)
-                              ...paymentLinkList
-                                  .map((e) => paymentLinkCard(
-                                      name: e['reference'],
-                                      amount: e['amount'],
-                                      date: e['created_at'],
-                                      currency: e['currency'],
-                                      category: e['category'],
-                                      passcode: e['pin'],
-                                      id: e['id'],
-                                      status: e['status']))
-                                  .toList(),
-                          ]),
+                      child: _buildFriendsList(),
                     ),
         ],
       ),
@@ -266,7 +370,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(

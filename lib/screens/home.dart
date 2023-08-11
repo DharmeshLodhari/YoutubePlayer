@@ -393,7 +393,6 @@ class _HomeState extends State<Home> {
   Widget _scanButton() {
     return InkWell(
         child: Row(
-          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             SizedBox(
               height: 25,
