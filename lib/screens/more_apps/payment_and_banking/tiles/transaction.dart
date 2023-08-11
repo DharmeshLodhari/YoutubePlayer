@@ -239,7 +239,7 @@ class CardTransactionTile extends StatelessWidget {
       //     )
       //   :
       userImageUserInitialsPic(
-            "", transaction!.merchantName!, 20, 40);
+            transaction!.merchantLogoUrl!, transaction!.merchantName!, 20, 40);
   }
 
   Widget getAmount() {

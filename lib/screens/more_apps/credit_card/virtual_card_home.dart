@@ -4,6 +4,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/credit_card/models/all_cards.dart';
 import 'package:Slydo/screens/more_apps/credit_card/models/card_transactions.dart';
 import 'package:Slydo/screens/more_apps/credit_card/tiles/card_action_button.dart';
+import 'package:Slydo/screens/more_apps/credit_card/tiles/virtual_card_shimmer.dart';
 import 'package:Slydo/screens/more_apps/credit_card/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -22,14 +23,18 @@ import '../../../../../routes/route_constants.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_textform_field.dart';
 import '../../../widget/dialog.dart';
+import '../yarn/widgets/yarn_shimmer.dart';
 import 'auth/debit_card_auth.dart';
 
 class VirtualCardHome extends StatefulWidget {
+
+  const VirtualCardHome({Key? key}) : super(key: key);
+
   @override
-  _VirtualCardHomeState createState() => _VirtualCardHomeState();
+  VirtualCardHomeState createState() => VirtualCardHomeState();
 }
 
-class _VirtualCardHomeState extends State<VirtualCardHome> {
+class VirtualCardHomeState extends State<VirtualCardHome> {
   final GlobalKey<ScaffoldState> _scaffoldPaymentListKey =
       GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerPaymentListKey =
@@ -262,7 +267,13 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
         color: blackFont,
       ),
       onTap: () async {
-        Navigator.pushNamed(context, Routes.ADD_VIRTUAL_CARD);
+
+        if(cardList.length >= 3){
+          showToast(message: 'Maximum debit card limit reached');
+        }else{
+          Navigator.pushNamed(context, Routes.ADD_VIRTUAL_CARD);
+        }
+
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -719,7 +730,9 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
         ),
       ),
       onTap: () {
-        // Navigator.pushNamed(context, Routes.SEARCH_MY_JOBS);
+        Navigator.of(context).pushNamed(Routes.SEARCH_TRANSACTION_CARD, arguments: {
+          'data': cardList[_currentIndex].cardId,
+        });
       },
       // backgroundColor: blackFont.withOpacity(0.1),
       enableMargin: true,
@@ -728,7 +741,7 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
 
   Widget _buildTransactionList() {
     if (isLoadingTransaction) {
-      return _buildIndicator(isLoading: isLoadingTransaction);
+      return _buildLoadingIndicator();
     }
 
     return noItemInTransactionList
@@ -742,7 +755,7 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
             itemCount: transactionList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == transactionList.length) {
-                return _buildIndicator(isLoading: isLoadingTransaction);
+                return _buildLoadingIndicator();
               } else {
                 return showCardTransaction(transactionList[index]);
               }
@@ -992,6 +1005,7 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
     isFirstTimeTransaction = true;
     noItemInList = false;
     noItemInTransactionList = false;
+    _currentIndex = 0;
     if(mounted)setState(() {});
     getList();
   }
@@ -1033,6 +1047,13 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
     );
   }
 
+  Widget _buildLoadingIndicator() {
+    return Opacity(
+      opacity: isLoadingTransaction ? 1.0 : 00,
+      child: isLoadingTransaction ? const VirtualCardShimmer() : Container(),
+    );
+  }
+
   @override
   void dispose() {
     _refreshController.dispose();
@@ -1067,6 +1088,7 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
       CardAction(
         iconAsset: "freeze_card".toSVG(),
         label: "Freeze Card",
+        // label: cardList[_currentIndex].activated! ? "Freeze Card" : "Unfreeze Card",
         onPressed: () {
           freezeCardDialog(cardList[_currentIndex]);
         },
@@ -1089,7 +1111,7 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
       ),
       CardAction(
         iconAsset: "terminate_card".toSVG(),
-        label: "Terminate",
+        label: "Cancel",
         onPressed: () {
           terminateCardDialog(cardList[_currentIndex]);
         },
@@ -1105,11 +1127,11 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
       actionOneBgColor: navyBlue,
       actionTwoTextColor: blackFont,
       actionTwoBgColor: greyBorderColor,
-      title: "Freeze",
+      title: allCards.activated! ? "Freeze" : "Unfreeze",
       actionTwoText: AppLocalization.of(context)!.cancel,
       actionOneText: AppLocalization.of(context)!.continueMsg,
       description:
-      "Are you sure you want to freeze \nthis card?",
+      allCards.activated! ? "Are you sure you want to freeze \nthis card?" : "Are you sure you want to unfreeze \nthis card?",
       roundedBackgroundIcon: RoundedBackgroundIcon(
         width: 90,
         height: 90,
@@ -1117,7 +1139,8 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
         image: Image.asset('assets/images/dialog_freeze.png'),
       ),
       leftButtonOnPressed: () {
-
+        isLoading = true;
+        if(mounted)setState(() {});
         freezeCard(allCards);
 
       },
@@ -1131,11 +1154,11 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
       actionOneBgColor: navyBlue,
       actionTwoTextColor: blackFont,
       actionTwoBgColor: greyBorderColor,
-      title: "Terminate",
+      title: "Cancel Card",
       actionTwoText: AppLocalization.of(context)!.cancel,
       actionOneText: AppLocalization.of(context)!.continueMsg,
       description:
-      "Are you sure you want to terminate \nthis card, you will not be able to use this \ncard for any transaction again?",
+      "Are you sure you want to cancel \nthis card, you will not be able to use this \ncard for any transaction again?",
       roundedBackgroundIcon: RoundedBackgroundIcon(
         width: 90,
         height: 90,
@@ -1143,6 +1166,8 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
         image: Image.asset('assets/images/dialog_freeze.png'),
       ),
       leftButtonOnPressed: () {
+        isLoading = true;
+        if(mounted)setState(() {});
         terminateCard(allCards);
       },
     );
@@ -1150,14 +1175,22 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
 
   Future<void> freezeCard(AllCards allCards) async {
     bool? cardStatus = allCards.activated;
+    if(cardStatus == true){
+      cardStatus = false;
+    }else{
+      cardStatus = true;
+    }
     Map<String, dynamic> result = {
       "activated": cardStatus,
     };
 
     await _auth.freezeCard(result, allCards.cardId.toString()).then((value) {
+      isLoading = false;
+      if(mounted)setState(() {});
+
       if(value == true){
         // refresh layout
-
+        _onRefresh();
         if(cardStatus == true){
           showToast(message: "Debit Card Activated Successfully");
         }else{
@@ -1166,13 +1199,16 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
 
         return true;
       }else{
-        showToast(message: "Debit Card Creation Failed");
+
+        showToast(message: "Error occurred");
         return true;
       }
 
 
     }).catchError((error) {
       debugPrint(error.toString());
+      isLoading = false;
+      if(mounted)setState(() {});
       showToast(message: error.toString());
     });
   }
@@ -1180,20 +1216,25 @@ class _VirtualCardHomeState extends State<VirtualCardHome> {
   Future<void> terminateCard(AllCards allCards) async {
 
     await _auth.terminateCard(allCards.cardId.toString()).then((value) {
+      isLoading = false;
+      if(mounted)setState(() {});
+
       if(value == true){
         // refresh layout
-
+        _onRefresh();
           showToast(message: "Debit Card Terminated");
 
         return true;
       }else{
+
         showToast(message: "Debit Card Termination Failed");
         return true;
       }
 
-
     }).catchError((error) {
       debugPrint(error.toString());
+      isLoading = false;
+      if(mounted)setState(() {});
       showToast(message: error.toString());
     });
   }

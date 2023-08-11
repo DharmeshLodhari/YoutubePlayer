@@ -185,5 +185,6 @@ class Routes {
   static const String GENERATE_VIRTUAL_CARD = "/generate-virtual-card";
   static const String FUND_VIRTUAL_CARD = "/fund-virtual-card";
   static const String WITHDRAW_VIRTUAL_CARD = "/withdraw-virtual-card";
+  static const String SEARCH_TRANSACTION_CARD = "/search-transaction-card";
 
 }

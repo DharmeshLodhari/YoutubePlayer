@@ -113,7 +113,7 @@ class DebitCardAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = "${AppConfig.baseUrl}/api/v1/virtual-cards/transactions/?card_id=$currentCardId&$searchText";
+      url = "${AppConfig.baseUrl}/api/v1/virtual-cards/transactions?card_id=$currentCardId&search=$searchText";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -279,6 +279,29 @@ class DebitCardAuth extends AuthService {
 
     String url =
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/withdraw/";
+
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPatch(url, headers: headers, body: _data);
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // edit card label
+  Future<bool?> updateCardLabel(Map<String, dynamic> data, String cardId) async {
+    debugPrint("Update Card Label");
+
+    String url =
+        "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId";
 
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);

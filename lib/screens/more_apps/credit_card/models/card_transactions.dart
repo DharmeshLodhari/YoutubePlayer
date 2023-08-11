@@ -11,6 +11,7 @@ class CardTransactions {
   String? merchantCountry;
   String? transactionType;
   String? transactionStatus;
+  String? merchantLogoUrl;
   double? transactionAmount;
   String? currencyCode;
   String? transactionTime;
@@ -37,6 +38,7 @@ class CardTransactions {
         this.transactionStatus,
         this.transactionAmount,
         this.currencyCode,
+        this.merchantLogoUrl,
         this.transactionTime,
         this.description,
         this.network,
@@ -57,6 +59,7 @@ class CardTransactions {
     merchantMcc = json['merchant_mcc'];
     merchantMid = json['merchant_mid'];
     merchantCountry = json['merchant_country'];
+    merchantLogoUrl = json['merchant_logo_url'] ?? "";
     transactionType = json['transaction_type'];
     transactionStatus = json['transaction_status'];
     transactionAmount = double.parse(json['transaction_amount'].toString());
@@ -82,6 +85,7 @@ class CardTransactions {
     data['merchant_state'] = merchantState;
     data['merchant_mcc'] = merchantMcc;
     data['merchant_mid'] = merchantMid;
+    data['merchant_logo_url'] = merchantLogoUrl;
     data['merchant_country'] = merchantCountry;
     data['transaction_type'] = transactionType;
     data['transaction_status'] = transactionStatus;

@@ -25,6 +25,7 @@ class CustomizedTextFormField extends StatefulWidget {
   bool hasBorder;
   TextStyle? textStyle;
   // BuildCounterWidget? buildCounterWidget;
+  final String? currencySymbol;
   bool isNumberOnlyInput;
   Function? validator;
   Function? onChanged;
@@ -74,6 +75,7 @@ class CustomizedTextFormField extends StatefulWidget {
     this.onFieldSubmitted,
     this.controller,
     // this.buildCounterWidget,
+    this.currencySymbol,
     this.showLabelOrPassword = true,
     this.isNumberOnlyInput = false,
     this.keyboardType = TextInputType.text,
@@ -196,7 +198,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                               shape: BoxShape.circle,
                               color: darkGrey.withOpacity(.12)),
                           child: Text(
-                            worldCurrencies[userBloc.user.currency!]!,
+                            widget.currencySymbol ?? worldCurrencies[userBloc.user.currency!]!,
                             style: TextStyle(
                               color: blackFont,
                               fontWeight: FontWeight.bold,
