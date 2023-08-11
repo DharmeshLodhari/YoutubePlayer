@@ -235,6 +235,7 @@ class FundVirtualCardState extends State<FundVirtualCard> {
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
+      currencySymbol: '\$',
       controller: dollarController,
       onChanged: (val) {
         if (val.isNotEmpty) {

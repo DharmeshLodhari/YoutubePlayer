@@ -1,16 +1,27 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share/share.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/slydo_app_icon_icons.dart';
 import '../../widget/bottom_sheet_item.dart';
 import '../../widget/rounded_background_icon.dart';
+import '../more_apps/user_profile/models/user.dart';
 
 class QrCodePage extends StatefulWidget {
+  var arguments;
+
+  QrCodePage({this.arguments, Key? key}) : super(key: key);
+
   @override
   _QrCodePageState createState() => _QrCodePageState();
 }
@@ -21,9 +32,16 @@ class _QrCodePageState extends State<QrCodePage> {
   late UserBloc userBloc;
 
   late AppLocalization appLocalization;
+  ScreenshotController screenshotController = ScreenshotController();
+  String user = "";
+  CustomerProfile? searchedUser;
 
   @override
   void initState() {
+
+    if(widget.arguments['isProfile'] != "false"){
+      searchedUser = widget.arguments['isProfile'];
+    }
     super.initState();
   }
 
@@ -39,7 +57,10 @@ class _QrCodePageState extends State<QrCodePage> {
       appBar: appBar(),
       body: Container(
         color: Colors.white,
-        child: _foregroundScreen(),
+        child: Screenshot(
+          controller: screenshotController,
+          child: _foregroundScreen(),
+        ),
       ),
     );
   }
@@ -106,7 +127,8 @@ class _QrCodePageState extends State<QrCodePage> {
           child: CustomPaint(
             painter: QrPainter(
                 data:
-                    "https://api.slydo.co/api/v1/user/customer/${userBloc.user.userName!}",
+                searchedUser == null ? "https://api.slydo.co/api/v1/user/customer/${userBloc.user.userName!}"
+                    : "https://api.slydo.co/api/v1/user/customer/${searchedUser!.userName}",
                 options: const QrOptions(
                     shapes: QrShapes(
                         darkPixel: QrPixelShapeCircle(radiusFraction: .8),
@@ -131,8 +153,8 @@ class _QrCodePageState extends State<QrCodePage> {
       child: Column(
         children: [
           userNameWithVerifiedIcon(
-            name: userBloc.user.displayName()!,
-            isVerified: userBloc.user.isVerified,
+            name: searchedUser == null ? userBloc.user.displayName()! : searchedUser!.displayName(),
+            isVerified: searchedUser == null ? userBloc.user.isVerified : searchedUser!.isVerified,
             verifiedIconColor: verifyGreen,
             textStyle: TextStyle(
                 fontSize: 16,
@@ -140,7 +162,7 @@ class _QrCodePageState extends State<QrCodePage> {
                 fontWeight: FontWeight.bold),
           ),
           Text(
-            "Scan to pay @${userBloc.user.userName!}",
+            searchedUser == null ? "Scan to pay @${userBloc.user.userName!}" : "Scan to pay @${searchedUser!.userName!}",
             maxLines: 1,
             style: TextStyle(fontSize: 12, color: HexColor("#B8B6B6")),
           ),
@@ -192,16 +214,13 @@ class _QrCodePageState extends State<QrCodePage> {
   List<Widget> generateBottomSheetItem() {
     List<Widget> list = [];
 
-
       list.add(
         bottomSheetItem(
           title: AppLocalization.of(context)!.share,
           iconData: SlydoAppIcon.share,
           onTap: () {
             Navigator.pop(context);
-            // var shareBody =
-            //     "https://slydo.co/${userPost!.authorUsername}/blog/${userPost!.id}";
-            // Share.share(shareBody, subject: "${userPost!.authorName}");
+            shareQrCode();
           },
         ),
       );
@@ -214,7 +233,7 @@ class _QrCodePageState extends State<QrCodePage> {
         iconData: Icons.download_rounded,
         onTap: () async {
           Navigator.pop(context);
-          // shareAsYarn();
+          downloadQrCode();
         },
       ),
     );
@@ -222,7 +241,37 @@ class _QrCodePageState extends State<QrCodePage> {
     return list;
   }
 
+   void shareQrCode()  async {
+     await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+       if (image != null) {
+         final directory = await getApplicationDocumentsDirectory();
+         final imagePath = await File('${directory.path}/${userBloc.user.displayName()!}.png').create();
+         await imagePath.writeAsBytes(image);
 
+         /// Share Plugin
+         await Share.shareFiles([imagePath.path]);
+       }
+     });
+
+  }
+
+   void downloadQrCode()  async {
+     await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+       if (image != null) {
+         final directory = await getApplicationDocumentsDirectory();
+         final imagePath = await File('${directory.path}/${userBloc.user.displayName()!}.png').create();
+         await imagePath.writeAsBytes(image);
+
+         /// Share Plugin
+         // await Share.shareFiles([imagePath.path]);
+       }
+     });
+
+  }
+
+  getCurrentDate() {
+    return DateFormat('_yyyyMMdd_kkmmss').format(DateTime.now());
+  }
 
   @override
   void didChangeDependencies() {

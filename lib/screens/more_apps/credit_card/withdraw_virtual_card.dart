@@ -210,7 +210,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
   Widget getAmountField() {
     return CustomizedTextFormField(
-      labelText: "Amount to fund wallet",
+      labelText: "You receive",
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
@@ -244,11 +244,12 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
   Widget getDollarAmountField() {
     return CustomizedTextFormField(
-      labelText: "In dollars (rate: ${userBloc!.user.currency!}${exchangeRate.slydoRateToNgn})",
+      labelText: "You send",
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
+      currencySymbol: '\$',
       controller: dollarController,
       onChanged: (val) {
         if (val.isNotEmpty) {

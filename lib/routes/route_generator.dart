@@ -153,6 +153,7 @@ import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/credit_card/add_virtual_card.dart';
 import '../screens/more_apps/credit_card/generate_debit_card.dart';
 import '../screens/more_apps/credit_card/fund_virtual_card.dart';
+import '../screens/more_apps/credit_card/search_transaction_card.dart';
 import '../screens/more_apps/credit_card/virtual_card_home.dart';
 import '../screens/more_apps/credit_card/withdraw_virtual_card.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
@@ -1686,6 +1687,16 @@ class RouteGenerator {
       case Routes.WITHDRAW_VIRTUAL_CARD:
         return PageTransition(
           child: WithdrawVirtualCard(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.SEARCH_TRANSACTION_CARD:
+        return PageTransition(
+          child: SearchTransactionCard(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

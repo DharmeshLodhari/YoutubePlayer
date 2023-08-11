@@ -33,6 +33,7 @@ import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../home_tab/qr_code_page.dart';
 import '../../messaging/message_auth.dart';
 import '../../yarn/utils/slydo_yarn_links.dart';
 import '../../yarn/yarn_search_screen.dart';
@@ -1138,8 +1139,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         color: Colors.white,
       ),
       onTap: () {
-        Navigator.of(context)
-            .pushNamed(Routes.PHOTO_VIEWER, arguments: searchedUser!.qrCode);
+        // Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: searchedUser!.qrCode);
+        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': searchedUser}));
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,

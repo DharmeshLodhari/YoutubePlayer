@@ -435,7 +435,7 @@ class _HomeState extends State<Home> {
         ),
         onTap: () {
           hideBalance();
-          NavigationUtil.push(context, screen: QrCodePage());
+          NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false'}));
         });
   }
 
