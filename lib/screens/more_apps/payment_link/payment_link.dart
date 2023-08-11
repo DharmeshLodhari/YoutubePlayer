@@ -4,11 +4,16 @@ import 'package:Slydo/screens/more_apps/payment_link/payment_screen.dart';
 import 'package:Slydo/screens/more_apps/payment_link/search_payment_link.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../data/currency.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
+import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
-import '../../../widget/noItemInList.dart';
+import '../../../widget/dialog.dart';
+import '../../../widget/rounded_background_icon.dart';
+import '../../../widget/slide_action_button.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 import '../service_hub/screens/my_job_details.dart';
 import 'paayment_transaction_info.dart';
@@ -32,6 +37,10 @@ class _PaymentLinkState extends State<PaymentLink> {
   List paymentLinkList = [];
   bool isLoading = false;
   bool noItemInList = false;
+
+  ScrollController _scrollController = new ScrollController();
+
+  SlidableController? _slideController;
 
   getPaymenttLinks() async {
     if (!isLoading) {
@@ -64,6 +73,25 @@ class _PaymentLinkState extends State<PaymentLink> {
 
       if (mounted) setState(() {});
     }
+  }
+
+  cancelPaymenttLinks(String cancelPaymentLink) async {
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+    dynamic result = await _auth.cancelPaymentLinks(cancelPaymentLink);
+    log('cancel ....payment link results::::: ${result.toString()}');
+
+    if (result == true) {
+      getPaymenttLinks();
+    } else {
+      isLoading = false;
+      showToast(
+          context: context, message: 'Payment link cancellation failed.!');
+    }
+    setState(() {});
   }
 
   filterPaymenttLinks(String filter) async {
@@ -199,7 +227,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                   return SizedBox(
                     height: 370,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -213,7 +241,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                               style: TextStyle(
                                   fontSize: 18,
                                   color: black,
-                                  fontWeight: FontWeight.w500),
+                                  fontWeight: FontWeight.w600),
                             ),
                           ),
                           const SizedBox(
@@ -229,7 +257,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     color: black,
-                                    fontWeight: FontWeight.w500),
+                                    fontWeight: FontWeight.w600),
                               )),
                           const SizedBox(
                             height: 18,
@@ -244,7 +272,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     color: black,
-                                    fontWeight: FontWeight.w500),
+                                    fontWeight: FontWeight.w600),
                               )),
                           const SizedBox(
                             height: 18,
@@ -258,7 +286,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     color: black,
-                                    fontWeight: FontWeight.w500)),
+                                    fontWeight: FontWeight.w600)),
                           ),
                           const SizedBox(
                             height: 18,
@@ -272,7 +300,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     color: black,
-                                    fontWeight: FontWeight.w500)),
+                                    fontWeight: FontWeight.w600)),
                           ),
                           const SizedBox(
                             height: 18,
@@ -286,7 +314,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     color: black,
-                                    fontWeight: FontWeight.w500)),
+                                    fontWeight: FontWeight.w600)),
                           ),
                           const SizedBox(
                             height: 18,
@@ -300,7 +328,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     color: black,
-                                    fontWeight: FontWeight.w500)),
+                                    fontWeight: FontWeight.w600)),
                           ),
                           const SizedBox(
                             height: 18,
@@ -314,10 +342,10 @@ class _PaymentLinkState extends State<PaymentLink> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     color: black,
-                                    fontWeight: FontWeight.w500)),
+                                    fontWeight: FontWeight.w600)),
                           ),
                           const SizedBox(
-                            height: 10,
+                            height: 4,
                           ),
                         ],
                       ),
@@ -517,52 +545,123 @@ class _PaymentLinkState extends State<PaymentLink> {
     );
   }
 
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
+
+  void handleSlideIsOpenChanged(bool? isOpen) {}
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     getPaymenttLinks();
+    _slideController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
     super.initState();
+  }
+
+  void rejectRequestAlert(data, index) async {
+    bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.false_icon,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRed,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      leftButtonOnPressed: () => cancelPaymenttLinks(data['id']),
+      title: AppLocalization.of(context)!.cancel,
+      description:
+          "Are you sure want to cancel the payment link, your payment link fee of ${worldCurrencies[data['currency']]}35 will not be refunded.!",
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: "Ignore",
+    );
+    if (result != null && result) {
+      bool done = true;
+      if (done) {
+        setState(() {
+          // paymentLinkList.removeAt(index);
+          // getPaymenttLinks();
+        });
+      }
+    }
+  }
+
+  List<Widget> listActionSlideActions(Map data, int index) {
+    return data['status'].toString().toLowerCase() != 'active'
+        ? []
+        : [
+            SlideActionButton(
+              backgroundColor: mateRed,
+              icon: SlydoAppIcon.cancel_connection_request,
+              onTap: () {
+                rejectRequestAlert(data, index);
+              },
+              title: AppLocalization.of(context)!.cancel,
+              slideController: _slideController,
+            ),
+          ];
+  }
+
+  Widget _getSlidableWithLists(BuildContext context, Map e, int index) {
+    return Slidable(
+      key: Key(e["id"].toString()),
+      controller: _slideController,
+      direction: Axis.horizontal,
+      actionPane: const SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      actions: listActionSlideActions(e, index),
+      secondaryActions: listActionSlideActions(e, index),
+      child: paymentLinkCard(
+          name: e['reference'],
+          amount: e['amount'],
+          date: e['created_at'],
+          currency: e['currency'],
+          passcode: e['pin'],
+          status: e['status'],
+          id: e['id'],
+          category: e['category'],
+          link: e['link'] ?? ''),
+    );
+  }
+
+  Widget _buildFriendsList() {
+    return isLoading
+        ? const Padding(
+            padding: EdgeInsets.only(top: 48.0),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        : ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 18),
+            itemCount: paymentLinkList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _getSlidableWithLists(
+                  context, paymentLinkList[index], index);
+            },
+            controller: _scrollController,
+          );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 18),
-        child: Column(
-          children: [
-            if (isLoading)
-              const Padding(
-                padding: EdgeInsets.only(top: 48.0),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            if (paymentLinkList.isEmpty)
-              Center(
-                child: SizedBox(
-                  height: 500,
-                  width: 500,
-                  child: NoItemInList(
-                    msg: AppLocalization.of(context)!.noResultFound,
-                  ),
-                ),
-              ),
-            if (paymentLinkList.isNotEmpty)
-              ...paymentLinkList
-                  .map((e) => paymentLinkCard(
-                      name: e['reference'],
-                      amount: e['amount'],
-                      date: e['created_at'],
-                      currency: e['currency'],
-                      passcode: e['pin'],
-                      status: e['status'],
-                      id: e['id'],
-                      category: e['category'],
-                      link: e['link'] ?? ''))
-                  .toList(),
-          ],
-        ),
-      ),
-    );
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: _buildFriendsList());
   }
 }

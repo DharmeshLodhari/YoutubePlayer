@@ -1789,6 +1789,13 @@ class AppLocalization {
     );
   }
 
+  String get pincode {
+    return Intl.message(
+      "Passcode",
+      name: "passcode",
+    );
+  }
+
   String get account {
     return Intl.message(
       "Account",

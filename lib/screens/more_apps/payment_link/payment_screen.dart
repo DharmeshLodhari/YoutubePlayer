@@ -389,7 +389,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                 debugPrint(
                     "status code:- ${value.statusCode}  body:- ${value.body}");
                 dynamic res = jsonDecode(value.body);
-                
+
                 response = value;
                 if (response.statusCode == 201) {
                   // NavigationUtil.push(context, screen: PaymentLink());
@@ -453,7 +453,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
       description: AppLocalization.of(context)!.paymentLinkConfirmationMsg +
           moneyDisplayNormalizer(amt * 100),
       actionOneText: AppLocalization.of(context)!.cancel,
-      actionTwoText: AppLocalization.of(context)!.process,
+      actionTwoText: AppLocalization.of(context)!.continueMsg,
     );
   }
 
@@ -564,38 +564,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
                 const SizedBox(
                   height: 180,
                 ),
-                // if (amount == 0.0) ...[
                 getSubmitButton()
-                // ] else ...[
-                // canDoSlydoTransfer(amount!, currentBalance!)
-                //       ? getSubmitButton()
-                //       : Container(
-                //           child: Center(
-                //               child: Padding(
-                //                   padding: const EdgeInsets.symmetric(
-                //                       vertical: 16.0),
-                //                   child: Text.rich(TextSpan(
-                //                       text: AppLocalization.of(context)!
-                //                           .minimumTransfer,
-                //                       style: TextStyle(
-                //                           fontSize: 12,
-                //                           color: blackFont,
-                //                           fontWeight: FontWeight.w600),
-                //                       children: <InlineSpan>[
-                //                         TextSpan(
-                //                           text: worldCurrencies[
-                //                                   userBloc.user.currency!]! +
-                //                               moneyDisplayNormalizer(
-                //                                   availableTransfer()),
-                //                           style: TextStyle(
-                //                               fontSize: 12,
-                //                               color: blackFont,
-                //                               fontFamily: "Roboto",
-                //                               fontWeight: FontWeight.w600),
-                //                         )
-                //                       ])))),
-                //         ),
-                // ],
               ],
             )),
       ),
@@ -666,12 +635,13 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
       onPressed: () => onSubmit(),
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "General Link",
+      text: "Generate Link",
     );
   }
 
   Widget getReferenceField() {
     return CustomizedTextFormField(
+      maxLength: 80,
       labelText: AppLocalization.of(context)!.reference,
       textCapitalization: TextCapitalization.sentences,
       controller: _referenceController,
