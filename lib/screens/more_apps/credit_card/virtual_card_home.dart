@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -23,7 +24,6 @@ import '../../../../../routes/route_constants.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_textform_field.dart';
 import '../../../widget/dialog.dart';
-import '../yarn/widgets/yarn_shimmer.dart';
 import 'auth/debit_card_auth.dart';
 
 class VirtualCardHome extends StatefulWidget {
@@ -72,6 +72,8 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   int _currentIndex = 0;
   List<CardAction> cardActions = [];
   final TextEditingController labelController = TextEditingController();
+  Map<int, FocusNode> _focusNodes = {};
+  Timer? _debounce;
 
 
   @protected
@@ -201,24 +203,33 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-
-            if(cardList.isEmpty)...[
-              Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: noCreditCard()),
-              Expanded(child: _buildNoCreditCardView()),
-            ]
-            else...[
-              Container(
-              // margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-                child: creditCardCarousel(cardList)),
-              Expanded(child: _buildOtherView()),],
-
-          ],
+        body: SafeArea(
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if(cardList.isEmpty)...[
+                  Container(
+                      margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+                      child: noCreditCard()),
+                  Expanded(child: _buildNoCreditCardView()),
+                ]
+                else...[
+                  Container(
+                      child: creditCardCarousel(cardList)),
+                  Expanded(child: _buildOtherView()),],
+              ],
+            ),
+          ),
         ),
+
       ),
     );
   }
@@ -351,8 +362,35 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
   Widget creditCard(AllCards cardData, int index) {
 
-    final cardColors = [navyBlue, darkGreyYarn, Colors.green]; // Example colors
-    final cardColor = cardColors[index % cardColors.length];
+    var cardColors = [];
+    var cardColor;
+
+    if(cardList[_currentIndex].color == null){
+      cardColors = [navyBlue, richPink, black, orange];
+      cardColor = cardColors[index % cardColors.length];
+    }else{
+      String? color = cardList[_currentIndex].color;
+      switch (color) {
+        case 'Slydo Blue':
+          cardColor = navyBlue;
+          break;
+        case 'Pink':
+          cardColor = richPink;
+          break;
+        case 'Black':
+          cardColor = black;
+          break;
+        case 'Orange':
+          cardColor = orange;
+          break;
+        default:
+        // Handle default case (when color doesn't match any specific case)
+          cardColor = navyBlue;
+          break;
+      }
+
+    }
+    _focusNodes.putIfAbsent(index, () => FocusNode());
 
     bool? card = cardList[_currentIndex].activated;
 
@@ -370,16 +408,16 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
           ),
         ),
         child: card!
-            ? mainCreditCardContent(cardData) :
+            ? mainCreditCardContent(cardData, index) :
         Opacity(
           opacity: 0.2,
-          child: mainCreditCardContent(cardData),
+          child: mainCreditCardContent(cardData, index),
         ),
       ),
     );
   }
 
-  Widget mainCreditCardContent(AllCards cardData){
+  Widget mainCreditCardContent(AllCards cardData, int index){
 
     return Row(
       children: [
@@ -393,39 +431,38 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20.0),
-                    // SizedBox(
-                    //   width: 100,
-                    //   child: TextFormField(
-                    //     initialValue: cardData.label.toString(),
-                    //     style: TextStyle(
-                    //       color: Colors.white,
-                    //       fontWeight: FontWeight.bold,
-                    //       fontSize: 14,
-                    //     ),
-                    //     decoration: InputDecoration(
-                    //       hintText: 'Enter Label', // Provide a hint text
-                    //       hintStyle: TextStyle(color: Colors.grey),
-                    //       // enabledBorder: UnderlineInputBorder(
-                    //       //   borderSide: BorderSide(color: Colors.white),
-                    //       // ),
-                    //       // focusedBorder: UnderlineInputBorder(
-                    //       //   borderSide: BorderSide(color: Colors.white),
-                    //       // ),
-                    //     ),
-                    //     // onChanged: (newValue) {
-                    //     //   // Handle onChanged if needed
-                    //     // },
-                    //   ),
-                    // ),
-                    Text(
-                      cardData.label.toString(),
-                      style: TextStyle(
-                        color: white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                    const SizedBox(height: 0.0),
+                    SizedBox(
+                      width: 200,
+                      child: TextFormField(
+                        initialValue: cardData.label.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Label', // Provide a hint text
+                          hintStyle: TextStyle(color: Colors.grey),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                        ),
+                        focusNode: _focusNodes[index],
+                        onChanged: (newText) => onTextChanged(newText, index, cardData),
                       ),
                     ),
+                    // Text(
+                    //   cardData.label.toString(),
+                    //   style: TextStyle(
+                    //     color: white,
+                    //     fontWeight: FontWeight.bold,
+                    //     fontSize: 14,
+                    //   ),
+                    // ),
 
                     const SizedBox(height: 10.0),
                     Row(
@@ -445,7 +482,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                     ),
                     const SizedBox(height: 20.0),
                     Text(
-                      cardData.isBalanceHidden! ? '' : insertSpacesInCardNumber(cardData.cardNumber!),
+                      cardData.isBalanceHidden! ? '****************' : insertSpacesInCardNumber(cardData.cardNumber!),
                       style: TextStyle(
                         color: white,
                         fontWeight: FontWeight.bold,
@@ -456,7 +493,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                     Row(
                       children: [
                         Text(
-                          cardData.isBalanceHidden! ? '' : '${cardData.nameLine1} ${cardData.nameLine2}',
+                          cardData.isBalanceHidden! ? '**********' : '${cardData.nameLine1} ${cardData.nameLine2}',
                           style: TextStyle(
                             color: white,
                             fontWeight: FontWeight.bold,
@@ -465,7 +502,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                         ),
                         const SizedBox(width: 10.0),
                         Text(
-                          cardData.isBalanceHidden! ? '' :
+                          cardData.isBalanceHidden! ? '****' :
                           "${cardData.expiration!.substring(0, 2)}/${cardData.expiration!.substring(2)}",
                           style: TextStyle(
                             color: white,
@@ -474,32 +511,20 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                           ),
                         ),
                         const SizedBox(width: 10.0),
-                        // Text(
-                        //   cardData.isBalanceHidden! ? '' : cardData.securityCode!,
-                        //   style: TextStyle(
-                        //     color: white,
-                        //     fontWeight: FontWeight.bold,
-                        //     fontSize: 12,
-                        //   ),
-                        // ),
+                        Text(
+                          cardData.isBalanceHidden! ? '***' : cardData.securityCode!,
+                          style: TextStyle(
+                            color: white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
 
-              Positioned(
-                  top: 70,
-                  left: 10,
-                  child: Opacity(
-                    opacity: 0.3,
-                    child: SvgPicture.asset(
-                      "slydo".toSVG(),
-                      height: 30,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-              ),
             ],
           ),
         ),
@@ -511,6 +536,28 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
               children: [
                 Positioned(
                   top: 20,
+                  right: 20,
+                  child: Row(
+                    children: [
+                      Text(
+                        'Slydo',
+                        style: TextStyle(
+                          color: white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 5.0),
+                      SvgPicture.asset(
+                        "slydo".toSVG(),
+                        fit: BoxFit.cover,
+                      ),
+
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 20,
                   right: 20,
                   child: Column(
                     children: [
@@ -542,23 +589,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                     ],
                   ),
                 ),
-                Positioned(
-                    bottom: 20,
-                    right: 20,
-                    child: Column(
-                      children: [
-                        Text(
-                          cardData.isBalanceHidden! ? '' : cardData.securityCode!,
-                          style: TextStyle(
-                            color: white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    )
-                ),
-
               ],
             ),
           ),
@@ -566,6 +596,18 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       ],
     );
   }
+
+  void onTextChanged(String newText, int index, AllCards cardData) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(seconds: 2), () {
+      _focusNodes[index]!.unfocus(); // Disable focus for the specific card
+      // print('Performing API call for card $index with text: $newText');
+      editCard(cardData, newText);
+
+    });
+  }
+
+
 
   Widget addCardLabelField() {
     return CustomizedTextFormField(
@@ -628,13 +670,13 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   Widget _buildOtherView() {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        // margin: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10.0),
             Container(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              padding: const EdgeInsets.only(left: 20.0, right: 8.0),
               child: Text(
                 appLocalization.quickActions,
                 style: TextStyle(
@@ -661,7 +703,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  padding: const EdgeInsets.only(left: 20.0),
                   child: Text(
                     appLocalization.transaction,
                     style: TextStyle(
@@ -672,7 +714,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                   ),
                 ),
                 Container(
-                    padding: const EdgeInsets.only(left: 0.0, right: 0.0),
+                    padding: const EdgeInsets.only(right: 20.0),
                     child: _searchBtn()),
               ],
             ),
@@ -696,9 +738,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         children: <Widget>[
           for (int i = 0; i < cardActions.length; i++)
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: i > 0 ? 10 : 0),
+              padding: const EdgeInsets.only(left: 12.0),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
                   border: Border.all(color: navyBlue.withOpacity(0.65)),
                   borderRadius: BorderRadius.circular(20),
@@ -766,7 +808,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
   Widget showCardTransaction(CardTransactions? transaction) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 1),
+      padding: const EdgeInsets.only(left: 18.0, right: 20.0),
       child: CardTransactionTile(
         transaction: transaction!,
         expandedWidget: expandedWidget(),
@@ -774,86 +816,111 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     );
   }
 
-  Widget noCreditCard() {
-    return Card(
-      elevation: 0,
-      color: navyBlue,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          // Left side with text
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
+  Widget noCreditCard(){
+
+    return SizedBox(
+      height: 200,
+      child: Card(
+        elevation: 0,
+        color: navyBlue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/arrow_card.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Row(
             children: [
+              // Left side with text
               Container(
-                padding: const EdgeInsets.only(left: 16, bottom: 20),
-                child: Opacity(
-                  opacity: 0.5,
-                  child: SvgPicture.asset(
-                    "slydo".toSVG(),
-                    height: 30,
-                    fit: BoxFit.cover,
-                  ),
+                padding: const EdgeInsets.only(left: 16),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 30.0),
+
+                          Text(
+                            '',
+                            style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+
+
+                          const SizedBox(height: 25.0),
+                          Text(
+                            'Debit Card',
+                            style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                          const SizedBox(height: 10.0),
+                          Text(
+                            '',
+                            style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+
+                  ],
                 ),
               ),
-              const SizedBox(width: 20.0),
-              Container(
-                padding: const EdgeInsets.only(left: 16, bottom: 30),
-                child: Text(
-                  "Debit Card",
-                  style: TextStyle(
-                    color: white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
+
+              // Right side with background image and text
+              Expanded(
+                child: Container(
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 20,
+                        right: 20,
+                        child: Row(
+                          children: [
+                            Text(
+                              'Slydo',
+                              style: TextStyle(
+                                color: white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 5.0),
+                            SvgPicture.asset(
+                              "slydo".toSVG(),
+                              fit: BoxFit.cover,
+                            ),
+
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
           ),
-
-          //Right side with text
-          Expanded(
-            child: Container(
-              child: Stack(
-                children: [
-                  SvgPicture.asset(
-                    "arrow_card".toSVG(),
-                    fit: BoxFit.cover,
-                  ),
-                  Positioned(
-                    top: 20,
-                    right: 20,
-                    child: Row(
-                      children: [
-                        const Text(
-                          '',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 5.0),
-                        SvgPicture.asset(
-                          "visa".toSVG(),
-                          fit: BoxFit.cover,
-                        ),
-                        const SizedBox(width: 5.0),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
-
 
   Widget _buildNoCreditCardView() {
     return SingleChildScrollView(
@@ -1036,17 +1103,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     }
   }
 
-  Widget _buildIndicator({required bool isLoading}) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Opacity(
-            opacity: isLoading ? 1.0 : 00,
-            child: isLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
-  }
-
   Widget _buildLoadingIndicator() {
     return Opacity(
       opacity: isLoadingTransaction ? 1.0 : 00,
@@ -1058,6 +1114,8 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   void dispose() {
     _refreshController.dispose();
     _scrollController.dispose();
+    _debounce?.cancel();
+    // _focusNodes.dispose();
 
     super.dispose();
   }
@@ -1086,14 +1144,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         },
       ),
       CardAction(
-        iconAsset: "freeze_card".toSVG(),
-        label: "Freeze Card",
-        // label: cardList[_currentIndex].activated! ? "Freeze Card" : "Unfreeze Card",
-        onPressed: () {
-          freezeCardDialog(cardList[_currentIndex]);
-        },
-      ),
-      CardAction(
         iconAsset: "withdraw_card".toSVG(),
         label: "Withdraw",
         onPressed: () async {
@@ -1110,10 +1160,18 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         },
       ),
       CardAction(
+        iconAsset: "freeze_card".toSVG(),
+        label: "Freeze Card",
+        // label: cardList[_currentIndex].activated! ? "Freeze Card" : "Unfreeze Card",
+        onPressed: () {
+          freezeCardDialog(cardList[_currentIndex]);
+        },
+      ),
+      CardAction(
         iconAsset: "terminate_card".toSVG(),
         label: "Cancel",
         onPressed: () {
-          terminateCardDialog(cardList[_currentIndex]);
+          cancelCardDialog(cardList[_currentIndex]);
         },
       ),
 
@@ -1127,9 +1185,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       actionOneBgColor: navyBlue,
       actionTwoTextColor: blackFont,
       actionTwoBgColor: greyBorderColor,
-      title: allCards.activated! ? "Freeze" : "Unfreeze",
+      title: allCards.activated! ? AppLocalization.of(context)!.freeze: AppLocalization.of(context)!.unFreeze,
       actionTwoText: AppLocalization.of(context)!.cancel,
-      actionOneText: AppLocalization.of(context)!.continueMsg,
+      actionOneText: allCards.activated! ? AppLocalization.of(context)!.freeze: AppLocalization.of(context)!.unFreeze,
       description:
       allCards.activated! ? "Are you sure you want to freeze \nthis card?" : "Are you sure you want to unfreeze \nthis card?",
       roundedBackgroundIcon: RoundedBackgroundIcon(
@@ -1147,28 +1205,28 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     );
   }
 
-   void terminateCardDialog(AllCards allCards) {
+   void cancelCardDialog(AllCards allCards) {
     showDialogBox(
       context: context,
       actionOneTextColor: white,
-      actionOneBgColor: navyBlue,
+      actionOneBgColor: mateRed,
       actionTwoTextColor: blackFont,
       actionTwoBgColor: greyBorderColor,
       title: "Cancel Card",
-      actionTwoText: AppLocalization.of(context)!.cancel,
-      actionOneText: AppLocalization.of(context)!.continueMsg,
+      actionTwoText: AppLocalization.of(context)!.ignore,
+      actionOneText: AppLocalization.of(context)!.cancel,
       description:
       "Are you sure you want to cancel \nthis card, you will not be able to use this \ncard for any transaction again?",
       roundedBackgroundIcon: RoundedBackgroundIcon(
         width: 90,
         height: 90,
         enableMargin: false,
-        image: Image.asset('assets/images/dialog_freeze.png'),
+        image: Image.asset('assets/images/cancel_card.png'),
       ),
       leftButtonOnPressed: () {
         isLoading = true;
         if(mounted)setState(() {});
-        terminateCard(allCards);
+        cancelCard(allCards);
       },
     );
   }
@@ -1213,7 +1271,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     });
   }
 
-  Future<void> terminateCard(AllCards allCards) async {
+  Future<void> cancelCard(AllCards allCards) async {
 
     await _auth.terminateCard(allCards.cardId.toString()).then((value) {
       isLoading = false;
@@ -1237,6 +1295,29 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       if(mounted)setState(() {});
       showToast(message: error.toString());
     });
+  }
+
+  Future<void> editCard(AllCards allCards, String label) async {
+
+    Map<String, dynamic> result = {
+      "label": label,
+    };
+
+    await _auth.updateCardLabel(result, allCards.cardId!).then((value) {
+      if(value == true){
+        Navigator.pop(context, value);
+        showToast(message: "Card Label Updated");
+        return true;
+      }else{
+        showToast(message: "Card Label Failed To Update");
+        return true;
+      }
+
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+
   }
 
 }

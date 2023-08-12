@@ -1,25 +1,17 @@
-import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../../../../data/currency.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../widget/rounded_background_icon.dart';
 import '../shopping/shopping_auth.dart';
 
 class AddVirtualCard extends StatefulWidget {
@@ -162,7 +154,7 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
                   softWrap: false,
                 ),
                 Text(
-                  "1/2",
+                  "1/3",
                   maxLines: 1,
                   style: TextStyle(
                     color: blackFont,
@@ -553,7 +545,7 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
           };
 
 
-          final data = await Navigator.of(context).pushNamed(Routes.GENERATE_VIRTUAL_CARD, arguments: {
+          final data = await Navigator.of(context).pushNamed(Routes.DESIGN_VIRTUAL_CARD, arguments: {
             'data': result,
           });
 

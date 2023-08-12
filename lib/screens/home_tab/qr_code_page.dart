@@ -5,9 +5,12 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
+import 'package:disk_space/disk_space.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
@@ -59,7 +62,9 @@ class _QrCodePageState extends State<QrCodePage> {
         color: Colors.white,
         child: Screenshot(
           controller: screenshotController,
-          child: _foregroundScreen(),
+          child: Container(
+            color: white,
+              child: _foregroundScreen()),
         ),
       ),
     );
@@ -245,7 +250,8 @@ class _QrCodePageState extends State<QrCodePage> {
      await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
        if (image != null) {
          final directory = await getApplicationDocumentsDirectory();
-         final imagePath = await File('${directory.path}/${userBloc.user.displayName()!}.png').create();
+         final imagePath = searchedUser == null ? await File('${directory.path}/${userBloc.user.displayName()!}.png').create()
+         : await File('${directory.path}/${searchedUser!.displayName()!}.png').create();
          await imagePath.writeAsBytes(image);
 
          /// Share Plugin
@@ -256,16 +262,42 @@ class _QrCodePageState extends State<QrCodePage> {
   }
 
    void downloadQrCode()  async {
-     await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
-       if (image != null) {
-         final directory = await getApplicationDocumentsDirectory();
-         final imagePath = await File('${directory.path}/${userBloc.user.displayName()!}.png').create();
-         await imagePath.writeAsBytes(image);
 
-         /// Share Plugin
-         // await Share.shareFiles([imagePath.path]);
+     // Request external storage permission
+     var status = await Permission.storage.request();
+
+     if (status.isGranted) {
+       showToast(message: 'Downloading QR Code');
+
+       var freeSpace = await DiskSpace.getFreeDiskSpace;
+
+       if (freeSpace != null && freeSpace > 10.00) {
+         await screenshotController
+             .capture(delay: const Duration(milliseconds: 10))
+             .then((Uint8List? image) async {
+           if (image != null) {
+             //download image
+             var path = await ExternalPath.getExternalStoragePublicDirectory(
+                 ExternalPath.DIRECTORY_DOWNLOADS);
+
+             final imagePath =
+             searchedUser == null ? await File('$path/${userBloc.user.displayName()!} + ${getCurrentDate()}.png').create()
+             : await File('$path/${searchedUser!.displayName()!} + ${getCurrentDate()}.png').create();
+
+             await imagePath.writeAsBytes(image);
+
+             await Future.delayed(Duration.zero);
+
+             showToast(message: 'Image downloaded to Download Folder on device storage');
+           }
+         });
+       } else {
+         showToast(message: 'The device\'s internal memory is full or the available space is unknown.');
        }
-     });
+     } else if (status.isPermanentlyDenied) {
+       showToast(message: 'Please grant permission from device settings to access storage.');
+     }
+
 
   }
 

@@ -48,6 +48,7 @@ class _QRCodeViewState extends State<QRCodeView>{
   QRViewController? controller;
   late DashboardBloc _dashboardBloc;
 
+
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
@@ -58,20 +59,10 @@ class _QRCodeViewState extends State<QRCodeView>{
             ? arguments['isRequest']
             : false
         : false;
+
     super.initState();
   }
 
-
-
-  // @override
-  // void reassemble() {
-  //   super.reassemble();
-  //   if (Platform.isAndroid) {
-  //     controller!.pauseCamera();
-  //   } else if (Platform.isIOS) {
-  //     controller!.resumeCamera();
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +139,6 @@ class _QRCodeViewState extends State<QRCodeView>{
 
   // Scan qr code here and check on server then navigate to payment screen.
   void _onQRViewCreated(QRViewController controller) {
-    // this.controller = controller;
 
     customerProfileBloc =
         Provider.of<CustomerProfileBloc>(context, listen: false);
@@ -157,8 +147,6 @@ class _QRCodeViewState extends State<QRCodeView>{
       this.controller = controller;
       resumeCamara();
     });
-
-    debugPrint('FOLA DATA ::: ');
 
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
@@ -171,7 +159,9 @@ class _QRCodeViewState extends State<QRCodeView>{
 
           scanDataList.removeWhere((value) => value == "");
           if (canShowDialogBox) {
+            controller.pauseCamera();
             getNavigationRoot(scanDataList, scanDataCode: scanData.code);
+            controller.resumeCamera();
           }
           canShowDialogBox = false;
         }
@@ -204,10 +194,19 @@ class _QRCodeViewState extends State<QRCodeView>{
     if (cleanScanDataLink[2] == 'payment-link') {
       String paymentLinkId = cleanScanDataLink[3];
 
-      NavigationUtil.push(context,
+      final result = await NavigationUtil.push(context,
           screen: PaymentLinkCashout(
             id: paymentLinkId,
           ));
+      // Handle the result here
+      if (result != null) {
+
+        if(result == 'back pressed'){
+
+          canShowDialogBox = true;
+          if(mounted)setState(() {});
+        }
+      }
     }
 
     if (scanDataList[qrCodeIndex] == "products") {
@@ -216,16 +215,34 @@ class _QRCodeViewState extends State<QRCodeView>{
 
       _dashboardBloc.index = 0;
 
-      Navigator.of(context)
+      final result = await Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
+      // Handle the result here
+      if (result != null) {
+
+        if(result == 'back pressed'){
+
+          canShowDialogBox = true;
+          if(mounted)setState(() {});
+        }
+      }
     }
     else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
       _dashboardBloc.index = 0;
 
-      Navigator.of(context)
+      final result = await Navigator.of(context)
           .pushNamed(Routes.SERVICE_DETAIL, arguments: {"service": service});
+      // Handle the result here
+      if (result != null) {
+
+        if(result == 'back pressed'){
+
+          canShowDialogBox = true;
+          if(mounted)setState(() {});
+        }
+      }
     }
     else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
@@ -458,6 +475,8 @@ class _QRCodeViewState extends State<QRCodeView>{
       } catch (e) {
         print('ERROR :: ${e.toString()}');
         showToast(message: 'Something went wrong, please try again.');
+        canShowDialogBox = true;
+        if(mounted)setState(() {});
       }
     } else {
       var recipient = scanDataList.last;
@@ -469,22 +488,41 @@ class _QRCodeViewState extends State<QRCodeView>{
 
       if (appConfigurationModel?.enablePayment == true) {
         if (isRequest!) {
-          Navigator.of(context).pushNamed(
+          final result = await Navigator.of(context).pushNamed(
             Routes.REQUEST_PAYMENT,
             arguments: {
               'isRequest': true,
             },
           );
+          // Handle the result here
+          if (result != null) {
+            if(result == 'back pressed'){
+              canShowDialogBox = true;
+              if(mounted)setState(() {});
+            }
+          }
+
         } else {
-          Navigator.of(context).pushNamed(
+          final result = await Navigator.of(context).pushNamed(
             Routes.SEND_PAYMENT,
             arguments: {
               'isFromProfile': false,
             },
           );
+
+          // Handle the result here
+          if (result != null) {
+            if(result == 'back pressed'){
+              //make scanning of qr active
+              canShowDialogBox = true;
+              if(mounted)setState(() {});
+            }
+          }
         }
       } else {
         showToast(message: 'Payment not available at the moment');
+        canShowDialogBox = true;
+        if(mounted)setState(() {});
       }
     }
   }

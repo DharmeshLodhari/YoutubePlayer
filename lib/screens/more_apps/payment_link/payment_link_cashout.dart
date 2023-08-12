@@ -39,91 +39,97 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: white,
-        title: Text(
-          'Payment Link Cashout',
-          style: TextStyle(color: black),
-        ),
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(
-            Icons.arrow_back_ios,
-            size: 20,
-            color: black,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, "back pressed");
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: white,
+          title: Text(
+            'Payment Link Cashout',
+            style: TextStyle(color: black),
+          ),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context, "back pressed"),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              size: 20,
+              color: black,
+            ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 30),
-          child: Column(
-            children: [
-              loading
-                  ? Center(child: CircularProgressIndicator())
-                  : Card(
-                      elevation: 2,
-                      margin: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      shadowColor: iconBtnGrey,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: iconBtnGrey, width: 1)),
-                        child: Form(
-                          key: _formKey,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                Row(
-                                  children: [
-                                    Text('This card contains '),
-                                    getAmount(_paymentLinkModel?.amount,
-                                        _paymentLinkModel?.currency)
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                getBank(),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                getAccountNumber(),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                getAccountName(),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                inputPinCode(),
-                                SizedBox(
-                                  height: 60,
-                                ),
-                                CurvedButton(
-                                  onPressed: () => cashOut(),
-                                  backgroundColor: navyBlue,
-                                  textColor: Colors.white,
-                                  text: "Cash Out",
-                                ),
-                                SizedBox(
-                                  height: 60,
-                                ),
-                              ],
+        body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 30),
+            child: Column(
+              children: [
+                loading
+                    ? Center(child: CircularProgressIndicator())
+                    : Card(
+                        elevation: 2,
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        shadowColor: iconBtnGrey,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: iconBtnGrey, width: 1)),
+                          child: Form(
+                            key: _formKey,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text('This card contains '),
+                                      getAmount(_paymentLinkModel?.amount,
+                                          _paymentLinkModel?.currency)
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  getBank(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getAccountNumber(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getAccountName(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  inputPinCode(),
+                                  SizedBox(
+                                    height: 60,
+                                  ),
+                                  CurvedButton(
+                                    onPressed: () => cashOut(),
+                                    backgroundColor: navyBlue,
+                                    textColor: Colors.white,
+                                    text: "Cash Out",
+                                  ),
+                                  SizedBox(
+                                    height: 60,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-            ],
-          )),
+              ],
+            )),
+      ),
     );
   }
 

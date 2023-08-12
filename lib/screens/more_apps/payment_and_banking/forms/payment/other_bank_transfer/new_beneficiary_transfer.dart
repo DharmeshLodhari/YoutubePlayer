@@ -240,11 +240,15 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                                           fontWeight: FontWeight.w600),
                                       children: <InlineSpan>[
                                         TextSpan(
-                                          text: worldCurrencies[
+                                          text: double.parse(moneyDisplayNormalizer(
+                                      displayPossibleCashOutAmount(
+                                      accountBalance!))) >= 35.00 ? worldCurrencies[
                                                   userBloc.user.currency!]! +
                                               moneyDisplayNormalizer(
                                                   displayPossibleCashOutAmount(
-                                                      accountBalance!)),
+                                                      accountBalance!)) :
+                                          '${worldCurrencies[
+                                          userBloc.user.currency!]!}0.00',
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: blackFont,

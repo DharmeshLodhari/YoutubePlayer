@@ -8,13 +8,9 @@ import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../../../data/currency.dart';
 import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 
@@ -26,22 +22,17 @@ class GenerateDebitCard extends StatefulWidget {
 
 
   @override
-  _GenerateDebitCardState createState() => _GenerateDebitCardState();
+  GenerateDebitCardState createState() => GenerateDebitCardState();
 }
 
-class _GenerateDebitCardState extends State<GenerateDebitCard> {
+class GenerateDebitCardState extends State<GenerateDebitCard> {
 
   final _formKey = GlobalKey<FormState>();
   UserBloc? userBloc;
 
   final ScrollController _scrollController = ScrollController();
-  String cardLabel = "";
   String nairaAmount = "";
   String usdAmount = "";
-  String cardBrand = "";
-  String cardType = "";
-  List<String> cardList = ['MasterCard', 'Visa'];
-  List<String> cardTypeList = ['Dollar', 'Naira'];
   bool isLoading = false;
   bool isAPILoading = false;
   final _auth = DebitCardAuth();
@@ -59,11 +50,8 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
 
   @override
   void initState() {
-    // debugPrint('Fola payload :::: ${widget.arguments["data"]}');
-
     isLoading = true;
     getExchangeRate();
-
     super.initState();
   }
 
@@ -128,7 +116,7 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Customise & fund your card",
+                  "Fund your card",
                   maxLines: 1,
                   style: TextStyle(
                     color: blackFont,
@@ -139,7 +127,7 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
                   softWrap: false,
                 ),
                 Text(
-                  "2/2",
+                  "3/3",
                   maxLines: 1,
                   style: TextStyle(
                     color: blackFont,
@@ -171,12 +159,7 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
                         horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
                     child: Column(
                       children: <Widget>[
-                        const SizedBox(height: 20),
-                        getCardBrandField(),
-                        const SizedBox(height: 20),
-                        getCardTypeField(),
-                        const SizedBox(height: 10),
-                        addCardLabelField(),
+
                         const SizedBox(
                           height: 10,
                         ),
@@ -188,28 +171,29 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
                         getDollarAmountField(),
 
                         const SizedBox(height: 20),
-                        SizedBox(
-                          width: 300,
-                          child: Center(
-                            child: Text(
-                              "A card creation fee of \$1 will be deducted \n upon creation.",
-                              style: TextStyle(
-                                color: blackFont,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                              ),
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: 300,
+              child: Center(
+                child: Text(
+                  "A card creation fee of \$1 will be deducted \n upon creation.",
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Container(
               child: Column(
                 children: [
@@ -231,156 +215,6 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
 
   }
 
-
-  Widget addCardLabelField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.cardLabel,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.pleaseEnterProductName;
-      },
-      onChanged: (val) {
-        cardLabel = val;
-      },
-    );
-  }
-
-
-  Widget getCardBrandField() {
-    return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.cardBrand,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          cardBrand.isNotEmpty? cardBrand : "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          cardBrandAndroidSheet();
-        },
-      ),
-    );
-  }
-
-  Widget getCardTypeField() {
-    return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.cardType,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          cardType.isNotEmpty? cardType : "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          cardTypeAndroidSheet();
-        },
-      ),
-    );
-  }
-
-  void cardTypeAndroidSheet() {
-    androidBottomSheet(
-      context: context,
-      child: StatefulBuilder(
-        builder: (context, changeState) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.15,
-            child: Column(
-              children: [
-                const SizedBox(height: 10),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: cardTypeList.length,
-                    itemBuilder: (context, index) {
-                      String category = cardTypeList[index];
-                      return ListTile(
-                        title: Text(
-                          category,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        dense: true,
-                        onTap: () {
-                          cardType = category;
-                          Navigator.pop(context);
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void cardBrandAndroidSheet() {
-    androidBottomSheet(
-      context: context,
-      child: StatefulBuilder(
-        builder: (context, changeState) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.15,
-            child: Column(
-              children: [
-                const SizedBox(height: 10),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: cardList.length,
-                    itemBuilder: (context, index) {
-                      String category = cardList[index];
-                      return ListTile(
-                        title: Text(
-                          category,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        dense: true,
-                        onTap: () {
-                          cardBrand = category;
-                          Navigator.pop(context);
-                          if (mounted) {
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
 
   Widget getAmountField() {
     return CustomizedTextFormField(
@@ -424,6 +258,7 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
           : TextInputType.number,
       isAmountField: true,
       controller: dollarController,
+      currencySymbol: '\$',
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -470,8 +305,6 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
   createCard() async {
     if (_formKey.currentState!.validate()) {
 
-      if (validateDropdown()) {
-
         BottomSheetPassCode(
             context: context,
             isValidCallback: () async {
@@ -489,12 +322,13 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
                 "id_number": widget.arguments["data"]['id_number'],
                 "id_type": widget.arguments["data"]['id_type'],
                 "customer_bvn": widget.arguments["data"]['customer_bvn'],
-                "card_brand": cardBrand,
-                "label": cardLabel,
+                "card_brand": widget.arguments["data"]['card_brand'],
+                "label": widget.arguments["data"]['label'],
                 "country": 'NG',
                 "phone": userBloc!.user.phoneNumber,
-                "initial_balance": usdAmount,
+                "initial_balance": dollarController.text,
                 "exchange_rate_id": exchangeRate.id,
+                "color": widget.arguments["data"]['color'],
               };
 
               await _auth.createDebitCard(result).then((value) {
@@ -506,7 +340,6 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
                   showToast(message: "Debit Card Creation Failed");
                   return true;
                 }
-
 
               }).catchError((error) {
                 debugPrint(error.toString());
@@ -520,22 +353,9 @@ class _GenerateDebitCardState extends State<GenerateDebitCard> {
               Navigator.pop(context);
             });
 
-
-      }
-
     }
   }
 
-  bool validateDropdown() {
-    if (cardBrand.isNotEmpty || cardType.isNotEmpty) {
-      return true;
-    } else {
-      showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectCardBrand);
-      return false;
-    }
-  }
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
