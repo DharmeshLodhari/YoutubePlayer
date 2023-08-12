@@ -151,6 +151,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/credit_card/add_virtual_card.dart';
+import '../screens/more_apps/credit_card/design_virtual_card.dart';
 import '../screens/more_apps/credit_card/generate_debit_card.dart';
 import '../screens/more_apps/credit_card/fund_virtual_card.dart';
 import '../screens/more_apps/credit_card/search_transaction_card.dart';
@@ -1659,6 +1660,16 @@ class RouteGenerator {
       case Routes.ADD_VIRTUAL_CARD:
         return PageTransition(
           child: const AddVirtualCard(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.DESIGN_VIRTUAL_CARD:
+        return PageTransition(
+          child: DesignVirtualCard(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

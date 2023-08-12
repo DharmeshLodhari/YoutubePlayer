@@ -48,6 +48,7 @@ Color verifyBlue = HexColor("#4aadf4");
 Color verifyGreen = HexColor("#46CE7C");
 Color red = HexColor("#FF3F3F");
 Color deepBlue = HexColor("#4060DB");
+Color orange = HexColor("#F08770");
 
 Color boxShadow = Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);

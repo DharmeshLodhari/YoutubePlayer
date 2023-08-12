@@ -175,6 +175,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         }
         _payee = null;
         customerProfileBloc.customer = null;
+        Navigator.pop(context, "back pressed");
         return true;
       },
       child: ScaffoldMessenger(
@@ -204,7 +205,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         ),
         onPressed: () {
           _payee = null;
-          Navigator.pop(context);
+          Navigator.pop(context, "back pressed");
         },
       ),
       title: Text(

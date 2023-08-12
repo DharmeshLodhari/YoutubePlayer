@@ -14,6 +14,7 @@ class AllCards {
   String? currencyCode;
   String? status;
   String? gatewayMerchantGuid;
+  String? color;
   double? availableBalance;
   bool? activated;
   // New property to track the visibility of balance
@@ -38,6 +39,7 @@ class AllCards {
         this.availableBalance,
         this.isBalanceHidden = false,
         this.label,
+        this.color,
         this.activated});
 
   AllCards.fromJson(Map<String, dynamic> json) {
@@ -58,6 +60,7 @@ class AllCards {
     availableBalance = double.parse(json['available_balance'].toString());
     activated = json['activated'];
     label = json['label'];
+    color = json['color'];
     isBalanceHidden = false;
   }
 
@@ -80,6 +83,7 @@ class AllCards {
     data['available_balance'] = availableBalance;
     data['activated'] = activated;
     data['label'] = this.label;
+    data['color'] = this.color;
     return data;
   }
 }

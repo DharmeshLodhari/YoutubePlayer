@@ -256,6 +256,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
+        Navigator.pop(context, "back pressed");
         return true;
       },
       child: Scaffold(
@@ -281,7 +282,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.pop(context, "back pressed");
         },
       ),
       title: Text(

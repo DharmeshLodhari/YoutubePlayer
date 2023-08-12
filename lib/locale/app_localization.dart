@@ -326,6 +326,20 @@ class AppLocalization {
     );
   }
 
+  String get freeze {
+    return Intl.message(
+      "Freeze",
+      name: "freeze",
+    );
+  }
+
+  String get unFreeze {
+    return Intl.message(
+      "UnFreeze",
+      name: "unFreeze",
+    );
+  }
+
   //login
   String get login {
     return Intl.message(
@@ -394,6 +408,13 @@ class AppLocalization {
     return Intl.message(
       "CANCEL",
       name: "cancel",
+    );
+  }
+
+  String get ignore {
+    return Intl.message(
+      "Ignore",
+      name: "ignore",
     );
   }
 
@@ -527,6 +548,13 @@ class AppLocalization {
     return Intl.message(
       "Minimum Transferable Fund: ",
       name: "minimumTransfer",
+    );
+  }
+
+  String get availableFund {
+    return Intl.message(
+      "Available Fund: ",
+      name: "availableFund",
     );
   }
 
