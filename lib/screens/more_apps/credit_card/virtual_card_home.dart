@@ -980,7 +980,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
             const SizedBox(height: 10.0),
             ListTile(
               leading: SvgPicture.asset(
-                "travel".toSVG(),
+                "shield".toSVG(),
                 fit: BoxFit.cover,
               ),
               title: const Text(
@@ -997,7 +997,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
             const SizedBox(height: 10.0),
             ListTile(
               leading: SvgPicture.asset(
-                "shield".toSVG(),
+                "travel".toSVG(),
                 fit: BoxFit.cover,
               ),
               title: const Text(
