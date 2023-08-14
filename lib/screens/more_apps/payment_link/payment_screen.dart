@@ -392,9 +392,9 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
 
                 response = value;
                 if (response.statusCode == 201) {
-                  // NavigationUtil.push(context, screen: PaymentLink());
                   showDataAlert(res['link']);
                   Navigator.pop(context);
+                  NavigationUtil.push(context, screen: PaymentLink());
                 } else if (response.statusCode == 400) {
                   showDataAlert(res['link']);
                   Navigator.pop(context);

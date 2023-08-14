@@ -24,6 +24,7 @@ import '../../../widget/noItemInList.dart';
 import '../../../widget/rounded_background_icon.dart';
 import '../payment_and_banking/models/bank_list.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
+import '../payment_loading_screen.dart';
 import '../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class PaymentLinkCashout extends StatefulWidget {
@@ -46,6 +47,7 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
   bool loading = false;
   late http.Response response;
   String bankId = "";
+  String bankPaymentLinkSlug = "";
   List<BankModel> bankList = [];
   String? next = "", previous = "";
   int count = 0;
@@ -137,8 +139,8 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
               const SizedBox(
                 height: 10,
               ),
-              loading
-                  ? const Center(child: CircularProgressIndicator())
+              loading && _paymentLinkModel == null
+                  ? const SizedBox.shrink()
                   : RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
@@ -168,109 +170,119 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
               const SizedBox(
                 height: 24,
               ),
-              Card(
-                elevation: 2,
-                margin: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                shadowColor: iconBtnGrey,
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: iconBtnGrey, width: 1)),
-                  child: Form(
-                    key: _formKey,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 30,
-                          ),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          // getBank(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Account Bank',
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(height: 5),
-                              InkWell(
-                                onTap: () {
-                                  FocusScope.of(context).unfocus();
-
-                                  clearSearchedListItems();
-                                  showSearchBankBottomSheet();
-                                },
-                                child: TextFormField(
-                                  controller: bankController,
-                                  enabled: false,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: blackFont,
-                                      fontWeight: FontWeight.w600),
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: transparent,
-                                    contentPadding: const EdgeInsets.only(
-                                        left: 8, bottom: 0, top: 0, right: 15),
-                                    suffixIcon: Icon(
-                                      Icons.arrow_drop_down_outlined,
-                                      color: blackFont,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        width: 0.7,
-                                        color: greyBorderColor,
-                                        style: BorderStyle.none,
-                                      ),
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(8.0),
-                                      ),
-                                    ),
-                                  ),
+              loading
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Center(
+                          child: CircularProgressIndicator(
+                        color: navyBlue,
+                      )),
+                    )
+                  : Card(
+                      elevation: 2,
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      shadowColor: iconBtnGrey,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: iconBtnGrey, width: 1)),
+                        child: Form(
+                          key: _formKey,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              children: <Widget>[
+                                const SizedBox(
+                                  height: 30,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Account Bank',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: blackFont,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    InkWell(
+                                      onTap: () {
+                                        FocusScope.of(context).unfocus();
+                                        clearSearchedListItems();
+                                        showSearchBankBottomSheet();
+                                      },
+                                      child: TextFormField(
+                                        controller: bankController,
+                                        enabled: false,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: transparent,
+                                          contentPadding: const EdgeInsets.only(
+                                              left: 8,
+                                              bottom: 0,
+                                              top: 0,
+                                              right: 15),
+                                          suffixIcon: Icon(
+                                            Icons.arrow_drop_down_outlined,
+                                            color: blackFont,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              width: 0.7,
+                                              color: greyBorderColor,
+                                              style: BorderStyle.none,
+                                            ),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(8.0),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                getAccountNumber(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                getAccountName(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                passwordPinFiled(),
+                                const SizedBox(
+                                  height: 60,
+                                ),
+                                CurvedButton(
+                                  onPressed: () => cashOut(),
+                                  backgroundColor: navyBlue,
+                                  textColor: Colors.white,
+                                  text: "Cash Out",
+                                ),
+                                const SizedBox(
+                                  height: 60,
+                                ),
+                              ],
+                            ),
                           ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          getAccountNumber(),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          getAccountName(),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          passwordPinFiled(),
-                          SizedBox(
-                            height: 60,
-                          ),
-                          CurvedButton(
-                            onPressed: () => cashOut(),
-                            backgroundColor: navyBlue,
-                            textColor: Colors.white,
-                            text: "Cash Out",
-                          ),
-                          SizedBox(
-                            height: 60,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
             ],
           )),
     );
@@ -471,7 +483,7 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
             });
 
             return Card(
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
@@ -480,14 +492,14 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -652,6 +664,7 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
                       selectedBank = bankList[index];
 
                       bankController.text = selectedBank!.name!;
+                      bankPaymentLinkSlug = selectedBank!.slug!;
 
                       if (mounted) setState(() {});
                       Navigator.pop(context);
@@ -806,7 +819,7 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
             style: TextStyle(
                 fontSize: 16, color: blackFont, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 6.0,
           ),
           PinPut(
@@ -837,7 +850,6 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
       loading = true;
       var res = await _auth.getSinglePaymentLinkDetails(widget.id);
       _paymentLinkModel = PaymentLinkModel.fromJson(res);
-      pinController.text = _paymentLinkModel!.pin.toString();
       loading = false;
       setState(() {});
       log('$res');
@@ -847,41 +859,61 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
   }
 
   cashOut() {
-    dynamic data = {
-      "bank": bankController.text,
-      "pin": pinController.text,
-      "recipient_account_name": accountNameController.text,
-      "recipient_account_number": accountNumberController.text,
-    };
-    cashoutPaymentLink(data);
+    if (_formKey.currentState!.validate()) {
+      dynamic data = {
+        "bank": bankPaymentLinkSlug,
+        "pin": pinController.text,
+        "recipient_account_name": accountNameController.text,
+        "recipient_account_number": accountNumberController.text,
+      };
+      cashoutPaymentLink(data);
+      if (loading != false) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => PaymentLoadingScreen(
+                    text: 'Cashout Payment link Processing...',
+                    imagePath: 'assets/images/app_logo.png',
+                  )),
+        );
+      } else {
+        Navigator.pop(context);
+      }
+    }
     setState(() {});
   }
 
   Future<void> cashoutPaymentLink(Map map) async {
     try {
       loading = true;
-      print(map.toString());
-      log(map.toString());
+
       await _auth
           .cashoutPaymentLink(map, _paymentLinkModel!.id!)
           .then((value) async {
         debugPrint("status code:- ${value.statusCode}  body:- ${value.body}");
-        dynamic res = jsonDecode(value.body);
-        log("res.toString()${res.toString()}");
+        loading = false;
 
         response = value;
-        if (response.statusCode == 200) {
+        if (response.statusCode == 201) {
           log(response.body.toString());
-          showSnackbar(context, message: 'message');
+          showSnackbar(context,
+              message: 'Payment link successfully cashed out..');
           loading = false;
+          Navigator.pop(context);
         } else if (response.statusCode == 400 || response.statusCode == 404) {
           loading = false;
+
+          Navigator.pop(context);
           showSnackbar(context, message: 'Failed..!');
         } else if (response.statusCode == 500) {
           loading = false;
+
+          Navigator.pop(context);
           showSnackbar(context, message: 'Failed..!');
         } else {
           loading = false;
+
+          Navigator.pop(context);
           showSnackbar(context, message: 'Failed..!');
           loading = false;
         }
