@@ -279,7 +279,6 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      actions: listActionSlideActions(e, index),
       secondaryActions: listActionSlideActions(e, index),
       child: paymentLinkCard(
           name: e['reference'],
@@ -310,8 +309,6 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
             controller: _scrollController,
           );
   }
-
-  
 
   Widget scaffoldBody() {
     return Container(

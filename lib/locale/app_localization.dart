@@ -1711,6 +1711,13 @@ class AppLocalization {
     );
   }
 
+  String get noPaymentLink {
+    return Intl.message(
+      "No payment Link",
+      name: "noPaymentLink",
+    );
+  }
+
   //setting
   String get appVersion {
     return Intl.message(

@@ -12,6 +12,7 @@ import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../../widget/dialog.dart';
+import '../../../widget/noItemInList.dart';
 import '../../../widget/rounded_background_icon.dart';
 import '../../../widget/slide_action_button.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
@@ -51,7 +52,6 @@ class _PaymentLinkState extends State<PaymentLink> {
           });
         }
         dynamic result = await _auth.getPaymentLinks();
-        log('payment link results::::: ${result.toString()}');
 
         if (result == null) {
           isLoading = false;
@@ -82,15 +82,16 @@ class _PaymentLinkState extends State<PaymentLink> {
       });
     }
     dynamic result = await _auth.cancelPaymentLinks(cancelPaymentLink);
-    log('cancel ....payment link results::::: ${result.toString()}');
 
     if (result == true) {
       getPaymenttLinks();
+      isLoading = false;
     } else {
       isLoading = false;
       showToast(
           context: context, message: 'Payment link cancellation failed.!');
     }
+
     setState(() {});
   }
 
@@ -625,7 +626,6 @@ class _PaymentLinkState extends State<PaymentLink> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      actions: listActionSlideActions(e, index),
       secondaryActions: listActionSlideActions(e, index),
       child: paymentLinkCard(
           name: e['reference'],
@@ -662,6 +662,10 @@ class _PaymentLinkState extends State<PaymentLink> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: _buildFriendsList());
+        body: noItemInList
+            ? NoItemInList(
+                msg: AppLocalization.of(context)!.noPaymentLink,
+              )
+            : _buildFriendsList());
   }
 }

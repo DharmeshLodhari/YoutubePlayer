@@ -194,19 +194,10 @@ class _QRCodeViewState extends State<QRCodeView>{
     if (cleanScanDataLink[2] == 'payment-link') {
       String paymentLinkId = cleanScanDataLink[3];
 
-      final result = await NavigationUtil.push(context,
+      NavigationUtil.push(context,
           screen: PaymentLinkCashout(
             id: paymentLinkId,
           ));
-      // Handle the result here
-      if (result != null) {
-
-        if(result == 'back pressed'){
-
-          canShowDialogBox = true;
-          if(mounted)setState(() {});
-        }
-      }
     }
 
     if (scanDataList[qrCodeIndex] == "products") {

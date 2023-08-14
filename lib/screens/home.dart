@@ -773,9 +773,7 @@ class _HomeState extends State<Home> {
                     : Text(
                         isBalanceHidden
                             ? "Book Balance: ****"
-                            : "Book Balance: " +
-                                worldCurrencies[userBloc.user.currency!]! +
-                                moneyDisplayNormalizer(actualAccountBalance),
+                            : "Book Balance: ${worldCurrencies[userBloc.user.currency!]!}${moneyDisplayNormalizer(actualAccountBalance)}",
                         style: TextStyle(
                             color: white,
                             fontWeight: FontWeight.w600,

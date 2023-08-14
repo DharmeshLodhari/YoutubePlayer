@@ -873,12 +873,13 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   //Cash out payment_link to backend
-  Future<http.Response> cashoutPaymentLink(Map data) async {
-    var url = "${AppConfig.baseUrl}/api/v1/transactions/payment-link/payout/";
+  Future<http.Response> cashoutPaymentLink(Map data, String id) async {
+    var url =
+        "${AppConfig.baseUrl}/api/v1/transactions/payment-link/$id/payout/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
-
+    log(response.toString());
     return response;
   }
 
