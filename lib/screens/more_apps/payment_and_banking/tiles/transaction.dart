@@ -276,7 +276,7 @@ class CardTransactionTile extends StatelessWidget {
 
   Widget getDateTime(BuildContext context) {
     DateTime transactionTime =
-        DateTime.parse(transaction!.createdAt!).toLocal();
+        DateTime.parse(transaction!.providerCreatedAt!).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(

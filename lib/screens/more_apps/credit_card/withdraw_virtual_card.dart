@@ -303,7 +303,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                           Row(
                             children: [
                               Text(
-                                cardData.isBalanceHidden! ? '**********' : '${cardData.nameLine1} ${cardData.nameLine2}',
+                                cardData.isBalanceHidden! ? '**********' : appendStringDot('${cardData.nameLine1} ${cardData.nameLine2}', 15),
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -487,11 +487,11 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
             nairaAmount = double.parse(val.replaceAll(',', '')).toString();
 
             dollarController.text = convertCurrency(exchangeRate.slydoNgnToRate!, double.parse(nairaAmount)).toString();
-
+            usdAmount = dollarController.text;
             usdCheck = double.parse(dollarController.text.split(".")[0]);
             if(mounted)setState(() {});
           } catch (e) {
-            showToast(message: e.toString());
+            // showToast(message: e.toString());
           }
         }
       },
@@ -528,7 +528,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
             usdCheck = double.parse(val.replaceAll(",", "").split(".")[0]);
             if(mounted)setState(() {});
           } catch (e) {
-            showToast(message: e.toString());
+            // showToast(message: e.toString());
           }
         }
       },
