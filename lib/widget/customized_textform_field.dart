@@ -43,6 +43,7 @@ class CustomizedTextFormField extends StatefulWidget {
   Color? labelColor;
   int? maxLength;
   int? maxLines;
+  FontWeight? fontWeight;
   FocusNode? focusNode;
   EdgeInsets contentPadding;
   bool showLabelOrPassword;
@@ -74,6 +75,7 @@ class CustomizedTextFormField extends StatefulWidget {
     this.onTap,
     this.onFieldSubmitted,
     this.controller,
+    this.fontWeight=FontWeight.w500,
     // this.buildCounterWidget,
     this.currencySymbol,
     this.showLabelOrPassword = true,
@@ -124,7 +126,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                                   ? widget.labelColor
                                   : darkGrey,
                               fontSize: 16,
-                              fontWeight: FontWeight.w500),
+                              fontWeight: widget.fontWeight),
                         )
                       : SizedBox.shrink(),
                   widget.hasLabel
