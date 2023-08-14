@@ -29,7 +29,7 @@ class ColorSelector extends StatelessWidget {
               shape: BoxShape.circle,
               color: color,
               border: Border.all(
-                color: currentIndex == index ? Colors.white : Colors.transparent,
+                color: currentIndex == index ? Colors.transparent : Colors.white,
                 width: 3,
               ),
             ),
