@@ -32,7 +32,7 @@ class QRCodeView extends StatefulWidget {
   State<StatefulWidget> createState() => _QRCodeViewState(arguments: arguments);
 }
 
-class _QRCodeViewState extends State<QRCodeView>{
+class _QRCodeViewState extends State<QRCodeView> {
   var arguments;
   late bool
       canShowDialogBox; // We need this variable to show the dialogbox just once cause qrscanner controller uses a stream(using a stream will make the dialogbox show up multiple times).
@@ -48,7 +48,6 @@ class _QRCodeViewState extends State<QRCodeView>{
   QRViewController? controller;
   late DashboardBloc _dashboardBloc;
 
-
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
@@ -62,7 +61,6 @@ class _QRCodeViewState extends State<QRCodeView>{
 
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +137,6 @@ class _QRCodeViewState extends State<QRCodeView>{
 
   // Scan qr code here and check on server then navigate to payment screen.
   void _onQRViewCreated(QRViewController controller) {
-
     customerProfileBloc =
         Provider.of<CustomerProfileBloc>(context, listen: false);
     userBloc = Provider.of<UserBloc>(context, listen: false);
@@ -170,7 +167,6 @@ class _QRCodeViewState extends State<QRCodeView>{
   }
 
   void resumeCamara() {
-
     if (Platform.isAndroid) {
       controller!.pauseCamera();
     }
@@ -190,6 +186,7 @@ class _QRCodeViewState extends State<QRCodeView>{
     debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
 
     cleanScanDataLink.removeWhere((item) => [""].contains(item));
+    print('cleean...$cleanScanDataLink');
 
     if (cleanScanDataLink[2] == 'payment-link') {
       String paymentLinkId = cleanScanDataLink[3];
@@ -210,15 +207,12 @@ class _QRCodeViewState extends State<QRCodeView>{
           .pushNamed("/product", arguments: {"product": product});
       // Handle the result here
       if (result != null) {
-
-        if(result == 'back pressed'){
-
+        if (result == 'back pressed') {
           canShowDialogBox = true;
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         }
       }
-    }
-    else if (scanDataList[qrCodeIndex] == "services") {
+    } else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
       _dashboardBloc.index = 0;
@@ -227,15 +221,12 @@ class _QRCodeViewState extends State<QRCodeView>{
           .pushNamed(Routes.SERVICE_DETAIL, arguments: {"service": service});
       // Handle the result here
       if (result != null) {
-
-        if(result == 'back pressed'){
-
+        if (result == 'back pressed') {
           canShowDialogBox = true;
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         }
       }
-    }
-    else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
+    } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         ShoppingCartModelFromQrCode? shoppingCartModel =
             await ShoppingAuthService()
@@ -467,7 +458,7 @@ class _QRCodeViewState extends State<QRCodeView>{
         print('ERROR :: ${e.toString()}');
         showToast(message: 'Something went wrong, please try again.');
         canShowDialogBox = true;
-        if(mounted)setState(() {});
+        if (mounted) setState(() {});
       }
     } else {
       var recipient = scanDataList.last;
@@ -487,12 +478,11 @@ class _QRCodeViewState extends State<QRCodeView>{
           );
           // Handle the result here
           if (result != null) {
-            if(result == 'back pressed'){
+            if (result == 'back pressed') {
               canShowDialogBox = true;
-              if(mounted)setState(() {});
+              if (mounted) setState(() {});
             }
           }
-
         } else {
           final result = await Navigator.of(context).pushNamed(
             Routes.SEND_PAYMENT,
@@ -503,17 +493,17 @@ class _QRCodeViewState extends State<QRCodeView>{
 
           // Handle the result here
           if (result != null) {
-            if(result == 'back pressed'){
+            if (result == 'back pressed') {
               //make scanning of qr active
               canShowDialogBox = true;
-              if(mounted)setState(() {});
+              if (mounted) setState(() {});
             }
           }
         }
       } else {
         showToast(message: 'Payment not available at the moment');
         canShowDialogBox = true;
-        if(mounted)setState(() {});
+        if (mounted) setState(() {});
       }
     }
   }
