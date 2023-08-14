@@ -112,179 +112,185 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: white,
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, "back pressed");
+        return true;
+      },
+      child: Scaffold(
         backgroundColor: white,
-        centerTitle: false,
-        elevation: 0,
-        title: Text(
-          'Cashout',
-          style: TextStyle(
-              color: black, fontSize: 20, fontWeight: FontWeight.w700),
-        ),
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(
-            Icons.arrow_back_ios,
-            size: 20,
-            color: navyBlue,
+        appBar: AppBar(
+          backgroundColor: white,
+          centerTitle: false,
+          elevation: 0,
+          title: Text(
+            'Cashout',
+            style: TextStyle(
+                color: black, fontSize: 20, fontWeight: FontWeight.w700),
+          ),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context, "back pressed"),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              size: 20,
+              color: navyBlue,
+            ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 30),
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              loading && _paymentLinkModel == null
-                  ? const SizedBox.shrink()
-                  : RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: 'A sum of ',
-                        style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text:
-                                  '${worldCurrencies[_paymentLinkModel?.currency]}${moneyDisplayNormalizer(_paymentLinkModel?.amount)}',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: navyBlue,
-                                  fontSize: 18)),
-                          TextSpan(
-                              text:
-                                  ' was sent to you, enter details to cashout.',
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 18)),
-                        ],
+        body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 30),
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                loading && _paymentLinkModel == null
+                    ? const SizedBox.shrink()
+                    : RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          text: 'A sum of ',
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18),
+                          children: <TextSpan>[
+                            TextSpan(
+                                text:
+                                    '${worldCurrencies[_paymentLinkModel?.currency]}${moneyDisplayNormalizer(_paymentLinkModel?.amount)}',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: navyBlue,
+                                    fontSize: 18)),
+                            TextSpan(
+                                text:
+                                    ' was sent to you, enter details to cashout.',
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18)),
+                          ],
+                        ),
                       ),
-                    ),
-              const SizedBox(
-                height: 24,
-              ),
-              loading
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Center(
-                          child: CircularProgressIndicator(
-                        color: navyBlue,
-                      )),
-                    )
-                  : Card(
-                      elevation: 2,
-                      margin: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      shadowColor: iconBtnGrey,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: iconBtnGrey, width: 1)),
-                        child: Form(
-                          key: _formKey,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(
-                              children: <Widget>[
-                                const SizedBox(
-                                  height: 30,
-                                ),
-                                const SizedBox(
-                                  height: 30,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Account Bank',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: blackFont,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    InkWell(
-                                      onTap: () {
-                                        FocusScope.of(context).unfocus();
-                                        clearSearchedListItems();
-                                        showSearchBankBottomSheet();
-                                      },
-                                      child: TextFormField(
-                                        controller: bankController,
-                                        enabled: false,
+                const SizedBox(
+                  height: 24,
+                ),
+                loading
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Center(
+                            child: CircularProgressIndicator(
+                          color: navyBlue,
+                        )),
+                      )
+                    : Card(
+                        elevation: 2,
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        shadowColor: iconBtnGrey,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: iconBtnGrey, width: 1)),
+                          child: Form(
+                            key: _formKey,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(
+                                children: <Widget>[
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Account Bank',
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 16,
                                             color: blackFont,
                                             fontWeight: FontWeight.w600),
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: transparent,
-                                          contentPadding: const EdgeInsets.only(
-                                              left: 8,
-                                              bottom: 0,
-                                              top: 0,
-                                              right: 15),
-                                          suffixIcon: Icon(
-                                            Icons.arrow_drop_down_outlined,
-                                            color: blackFont,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              width: 0.7,
-                                              color: greyBorderColor,
-                                              style: BorderStyle.none,
+                                      ),
+                                      const SizedBox(height: 5),
+                                      InkWell(
+                                        onTap: () {
+                                          FocusScope.of(context).unfocus();
+                                          clearSearchedListItems();
+                                          showSearchBankBottomSheet();
+                                        },
+                                        child: TextFormField(
+                                          controller: bankController,
+                                          enabled: false,
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: blackFont,
+                                              fontWeight: FontWeight.w600),
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: transparent,
+                                            contentPadding: const EdgeInsets.only(
+                                                left: 8,
+                                                bottom: 0,
+                                                top: 0,
+                                                right: 15),
+                                            suffixIcon: Icon(
+                                              Icons.arrow_drop_down_outlined,
+                                              color: blackFont,
                                             ),
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                              Radius.circular(8.0),
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                width: 0.7,
+                                                color: greyBorderColor,
+                                                style: BorderStyle.none,
+                                              ),
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                Radius.circular(8.0),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                getAccountNumber(),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                getAccountName(),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                passwordPinFiled(),
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                                CurvedButton(
-                                  onPressed: () => cashOut(),
-                                  backgroundColor: navyBlue,
-                                  textColor: Colors.white,
-                                  text: "Cash Out",
-                                ),
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  getAccountNumber(),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  getAccountName(),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  passwordPinFiled(),
+                                  const SizedBox(
+                                    height: 60,
+                                  ),
+                                  CurvedButton(
+                                    onPressed: () => cashOut(),
+                                    backgroundColor: navyBlue,
+                                    textColor: Colors.white,
+                                    text: "Cash Out",
+                                  ),
+                                  const SizedBox(
+                                    height: 60,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-            ],
-          )),
+              ],
+            )),
+      ),
     );
   }
 
@@ -866,7 +872,7 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
         "recipient_account_name": accountNameController.text,
         "recipient_account_number": accountNumberController.text,
       };
-      cashoutPaymentLink(data);
+      cashOutPaymentLink(data);
       if (loading != false) {
         Navigator.push(
           context,
@@ -883,7 +889,7 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
     setState(() {});
   }
 
-  Future<void> cashoutPaymentLink(Map map) async {
+  Future<void> cashOutPaymentLink(Map map) async {
     try {
       loading = true;
 

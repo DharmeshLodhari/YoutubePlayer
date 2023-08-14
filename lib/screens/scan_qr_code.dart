@@ -148,9 +148,11 @@ class _QRCodeViewState extends State<QRCodeView> {
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
       if (scanData != null) {
+
         if (scanData.code!.startsWith(AppConfig.baseUrl) ||
             scanData.code!.startsWith(AppConfig.baseUrl) ||
             scanData.code!.startsWith(AppConfig.merchantUrl) ||
+            scanData.code!.startsWith("https://slydo.co") ||
             scanData.code!.startsWith(AppConfig.localHost)) {
           var scanDataList = scanData.code!.split('/');
 
@@ -186,18 +188,24 @@ class _QRCodeViewState extends State<QRCodeView> {
     debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
 
     cleanScanDataLink.removeWhere((item) => [""].contains(item));
-    print('cleean...$cleanScanDataLink');
 
     if (cleanScanDataLink[2] == 'payment-link') {
       String paymentLinkId = cleanScanDataLink[3];
 
-      NavigationUtil.push(context,
+      final result = await NavigationUtil.push(context,
           screen: PaymentLinkCashout(
             id: paymentLinkId,
           ));
+      // Handle the result here
+      if (result != null) {
+        if (result == 'back pressed') {
+          canShowDialogBox = true;
+          if (mounted) setState(() {});
+        }
+      }
     }
 
-    if (scanDataList[qrCodeIndex] == "products") {
+      else if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
 
@@ -212,7 +220,8 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    } else if (scanDataList[qrCodeIndex] == "services") {
+    }
+    else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
       _dashboardBloc.index = 0;
@@ -226,7 +235,8 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
+    }
+    else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         ShoppingCartModelFromQrCode? shoppingCartModel =
             await ShoppingAuthService()
@@ -460,7 +470,8 @@ class _QRCodeViewState extends State<QRCodeView> {
         canShowDialogBox = true;
         if (mounted) setState(() {});
       }
-    } else {
+    }
+    else {
       var recipient = scanDataList.last;
       getRecipient(recipient);
 

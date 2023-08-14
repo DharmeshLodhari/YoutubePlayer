@@ -43,7 +43,7 @@ class _PaymentLinkState extends State<PaymentLink> {
 
   SlidableController? _slideController;
 
-  getPaymenttLinks() async {
+  getPaymentLinks() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -75,7 +75,7 @@ class _PaymentLinkState extends State<PaymentLink> {
     }
   }
 
-  cancelPaymenttLinks(String cancelPaymentLink) async {
+  cancelPaymentLinks(String cancelPaymentLink) async {
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -84,7 +84,7 @@ class _PaymentLinkState extends State<PaymentLink> {
     dynamic result = await _auth.cancelPaymentLinks(cancelPaymentLink);
 
     if (result == true) {
-      getPaymenttLinks();
+      getPaymentLinks();
       isLoading = false;
     } else {
       isLoading = false;
@@ -95,7 +95,7 @@ class _PaymentLinkState extends State<PaymentLink> {
     setState(() {});
   }
 
-  filterPaymenttLinks(String filter) async {
+  filterPaymentLinks(String filter) async {
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -235,7 +235,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              filterPaymenttLinks('');
+                              filterPaymentLinks('');
                             },
                             child: Text(
                               'All',
@@ -251,7 +251,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                           InkWell(
                               onTap: () {
                                 Navigator.pop(context);
-                                filterPaymenttLinks('Active');
+                                filterPaymentLinks('Active');
                               },
                               child: Text(
                                 'Active',
@@ -266,7 +266,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                           InkWell(
                               onTap: () {
                                 Navigator.pop(context);
-                                filterPaymenttLinks('Inactive');
+                                filterPaymentLinks('Inactive');
                               },
                               child: Text(
                                 'Inactive',
@@ -281,7 +281,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              filterPaymenttLinks('Paid');
+                              filterPaymentLinks('Paid');
                             },
                             child: Text('Paid',
                                 style: TextStyle(
@@ -295,7 +295,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              filterPaymenttLinks('Cancelled');
+                              filterPaymentLinks('Cancelled');
                             },
                             child: Text('Cancelled',
                                 style: TextStyle(
@@ -309,7 +309,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              filterPaymenttLinks('Suspended');
+                              filterPaymentLinks('Suspended');
                             },
                             child: Text('Suspended',
                                 style: TextStyle(
@@ -323,7 +323,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              filterPaymenttLinks('Reserved');
+                              filterPaymentLinks('Reserved');
                             },
                             child: Text('Reserved',
                                 style: TextStyle(
@@ -337,7 +337,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              filterPaymenttLinks('Failed');
+                              filterPaymentLinks('Failed');
                             },
                             child: Text('Failed',
                                 style: TextStyle(
@@ -465,43 +465,43 @@ class _PaymentLinkState extends State<PaymentLink> {
               switch (value) {
                 case 'all':
                   {
-                    filterPaymenttLinks('');
+                    filterPaymentLinks('');
                   }
                   break;
                 case 'active':
                   {
-                    filterPaymenttLinks('Active');
+                    filterPaymentLinks('Active');
                   }
                   break;
                 case 'inactive':
                   {
-                    filterPaymenttLinks('Inactive');
+                    filterPaymentLinks('Inactive');
                   }
                   break;
                 case 'paid':
                   {
-                    filterPaymenttLinks('Paid');
+                    filterPaymentLinks('Paid');
                   }
                   break;
                 case 'cancelled':
                   {
-                    filterPaymenttLinks('Cancelled');
+                    filterPaymentLinks('Cancelled');
                   }
                   break;
                 case 'suspended':
                   {
-                    filterPaymenttLinks('Suspended');
+                    filterPaymentLinks('Suspended');
                   }
                   break;
 
                 case 'reversed':
                   {
-                    filterPaymenttLinks('Reserved');
+                    filterPaymentLinks('Reserved');
                   }
                   break;
                 case 'failed':
                   {
-                    filterPaymenttLinks('Failed');
+                    filterPaymentLinks('Failed');
                   }
                   break;
               }
@@ -558,7 +558,7 @@ class _PaymentLinkState extends State<PaymentLink> {
 
   @override
   void initState() {
-    getPaymenttLinks();
+    getPaymentLinks();
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
@@ -585,7 +585,7 @@ class _PaymentLinkState extends State<PaymentLink> {
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
-      leftButtonOnPressed: () => cancelPaymenttLinks(data['id']),
+      leftButtonOnPressed: () => cancelPaymentLinks(data['id']),
       title: AppLocalization.of(context)!.cancel,
       description:
           "Are you sure want to cancel the payment link, your payment link fee of ${worldCurrencies[data['currency']]}35 will not be refunded.!",
