@@ -253,6 +253,7 @@ class DebitCardAuth extends AuthService {
   // fund card
   Future<bool?> fundCard(Map<String, dynamic> data, String cardId) async {
     debugPrint("FUND CARD");
+    debugPrint("FUND CARD :::: ${data}");
 
     String url =
         "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/top-up/";
@@ -301,7 +302,7 @@ class DebitCardAuth extends AuthService {
     debugPrint("Update Card Label");
 
     String url =
-        "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId";
+        "${AppConfig.baseUrl}/api/v1/virtual-cards/cards/$cardId/";
 
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);

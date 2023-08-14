@@ -493,7 +493,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                     Row(
                       children: [
                         Text(
-                          cardData.isBalanceHidden! ? '**********' : '${cardData.nameLine1} ${cardData.nameLine2}',
+                          cardData.isBalanceHidden! ? '**********' : appendStringDot('${cardData.nameLine1} ${cardData.nameLine2}', 15),
                           style: TextStyle(
                             color: white,
                             fontWeight: FontWeight.bold,
@@ -606,7 +606,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
     });
   }
-
 
 
   Widget addCardLabelField() {
@@ -1305,7 +1304,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
     await _auth.updateCardLabel(result, allCards.cardId!).then((value) {
       if(value == true){
-        Navigator.pop(context, value);
+        // Navigator.pop(context, value);
         showToast(message: "Card Label Updated");
         return true;
       }else{

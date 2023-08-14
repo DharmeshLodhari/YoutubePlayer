@@ -174,7 +174,8 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                     height: 20,
                   ),
                   canCashOut(nairaCheck, balance)
-                  ? getSubmitButton()
+                  ?
+                  getSubmitButton()
                   : Container(
                     child: Center(
                         child: Padding(
@@ -316,7 +317,7 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                           Row(
                             children: [
                               Text(
-                                cardData.isBalanceHidden! ? '**********' : '${cardData.nameLine1} ${cardData.nameLine2}',
+                                cardData.isBalanceHidden! ? '**********' : appendStringDot('${cardData.nameLine1} ${cardData.nameLine2}', 15),
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -485,11 +486,12 @@ class FundVirtualCardState extends State<FundVirtualCard> {
             nairaAmount = double.parse(val.replaceAll(',', '')).toString();
 
             dollarController.text = convertCurrency(exchangeRate.slydoNgnToRate!, double.parse(nairaAmount)).toString();
+            usdAmount = dollarController.text;
 
             nairaCheck = int.parse(val.replaceAll(",", "").split(".")[0]);
             if(mounted)setState(() {});
           } catch (e) {
-            showToast(message: e.toString());
+            // showToast(message: e.toString());
           }
         }
       },
@@ -526,7 +528,7 @@ class FundVirtualCardState extends State<FundVirtualCard> {
             nairaCheck = int.parse(nairaController.text.split(".")[0]);
             if(mounted)setState(() {});
           } catch (e) {
-            showToast(message: e.toString());
+            // showToast(message: e.toString());
           }
         }
       },
