@@ -16,7 +16,7 @@ import '../../../widget/rounded_background_icon.dart';
 import '../../../widget/slide_action_button.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 import '../service_hub/screens/my_job_details.dart';
-import 'paayment_transaction_info.dart';
+import 'payment_transaction_info.dart';
 
 class PaymentLinkSearch extends StatefulWidget {
   const PaymentLinkSearch({Key? key}) : super(key: key);

@@ -27,15 +27,15 @@ import '../payment_and_banking/payment_and_banking_auth.dart';
 import '../payment_loading_screen.dart';
 import '../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
-class PaymentLinkCashout extends StatefulWidget {
-  PaymentLinkCashout({Key? key, this.id}) : super(key: key);
+class PaymentLinkCashOut extends StatefulWidget {
+  PaymentLinkCashOut({Key? key, this.id}) : super(key: key);
   String? id;
 
   @override
-  State<PaymentLinkCashout> createState() => _PaymentLinkCashoutState();
+  State<PaymentLinkCashOut> createState() => _PaymentLinkCashOutState();
 }
 
-class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
+class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
   final _auth = PaymentAndBankingAuth();
   final _formKey = GlobalKey<FormState>();
   final accountNumberController = TextEditingController();

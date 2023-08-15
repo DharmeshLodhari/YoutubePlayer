@@ -286,7 +286,7 @@ class DebitCardAuth extends AuthService {
     var response = await httpPatch(url, headers: headers, body: _data);
 
     debugPrint(
-        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+        "RESPONSE WITHDRAW CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
       return true;
