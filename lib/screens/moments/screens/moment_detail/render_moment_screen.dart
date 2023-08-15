@@ -106,17 +106,14 @@ class RenderMomentState extends State<RenderMoment>
               },
             ),
           ),
-          Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: MomentDashView(
-                currentPageViewIndex: widget.index,
-                lengthOfMoment: widget.momentsModelList.length,
-                controller: widget.controller,
-                pageController: widget.pageCtrl,
-                value: value ?? 0,
-              ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: MomentDashView(
+              currentPageViewIndex: widget.index,
+              lengthOfMoment: widget.momentsModelList.length,
+              controller: widget.controller,
+              pageController: widget.pageCtrl,
+              value: value ?? 0,
             ),
           )
         ],
@@ -135,12 +132,15 @@ class RenderMomentState extends State<RenderMoment>
       }
       return Stack(
         children: [
-          MomentVideoPlayer(
-            key: _momentVideoPlayerKey,
-            momentsModel: widget.momentsModel,
-            videoPlayerControllers: widget.videoPlayerControllers,
-            controller: widget.controller,
-            value:value,
+          Align(
+            alignment: Alignment.center,
+            child: MomentVideoPlayer(
+              key: _momentVideoPlayerKey,
+              momentsModel: widget.momentsModel,
+              videoPlayerControllers: widget.videoPlayerControllers,
+              controller: widget.controller,
+              value: value,
+            ),
           ),
           Align(
             alignment: Alignment.topCenter,

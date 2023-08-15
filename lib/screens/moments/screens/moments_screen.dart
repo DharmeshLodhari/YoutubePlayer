@@ -209,8 +209,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
           }
         }
 
-        // exploreMomentsList = [];
-
         debugPrint('EXPLORE MOM :: $exploreMomentsList');
 
         if (mounted) setState(() {});
@@ -336,25 +334,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
         child: ListView(
           controller: _exploreScrollController,
           children: [
-            // InkWell(
-            //   onTap: () {
-            //     NavigationUtil.push(context, screen: MomentSearchScreen());
-            //   },
-            //   child: IgnorePointer(
-            //     child: CustomizedTextFormField(
-            //       hintText: 'Search moment',
-            //       suffixIcon: IconButton(
-            //         icon: Icon(
-            //           SlydoAppIcon.search,
-            //           color: darkGrey,
-            //           size: 14,
-            //         ),
-            //         onPressed: () {},
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // SizedBox(height: 16),
             contactMomentsListWidget(),
             SizedBox(height: 16),
             adverts(),
@@ -471,15 +450,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
       children: [
         Row(
           children: [
-            // CircleAvatar(
-            //   radius: 15,
-            //   backgroundColor: navyBlue,
-            //   child: Image.asset(
-            //     'assets/images/my_moment_connections_icons.png',
-            //     color: Colors.white,
-            //     width: 40,
-            //   ),
-            // ),
             CircleAvatar(
               radius: 10,
               backgroundColor: navyBlue,
@@ -555,15 +525,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
           ],
         ),
         SizedBox(height: 12),
-        // isExploreMomentsLoading
-        //     ? SizedBox.shrink()
-        //     : exploreMomentsList.isEmpty
-        //         ? Text(
-        //             'There are no moments to explore right now.',
-        //             style: TextStyle(
-        //                 color: blackFont, fontWeight: FontWeight.w700),
-        //           )
-        //         : SizedBox.shrink(),
         nextExploreMoments == "" && isExploreMomentsLoading
             ? SizedBox.shrink()
             : GridView.builder(
