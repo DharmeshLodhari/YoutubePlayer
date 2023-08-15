@@ -175,16 +175,19 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     return Stack(
       fit: StackFit.expand,
       children: [
-        RenderMoment(
-          key: _renderMomentStateKey,
-          onRightSwipe: widget.onRightSwipe,
-          momentsModel: widget.currentMoment,
-          videoPlayerControllers: widget.videoPlayerControllers,
-          photoViewController: widget.photoViewController,
-          index: widget.index,
-          pageCtrl: widget.pageCtrl,
-          controller: controller,
-          momentsModelList: widget.momentsModelList,
+        Align(
+          alignment: Alignment.center,
+          child: RenderMoment(
+            key: _renderMomentStateKey,
+            onRightSwipe: widget.onRightSwipe,
+            momentsModel: widget.currentMoment,
+            videoPlayerControllers: widget.videoPlayerControllers,
+            photoViewController: widget.photoViewController,
+            index: widget.index,
+            pageCtrl: widget.pageCtrl,
+            controller: controller,
+            momentsModelList: widget.momentsModelList,
+          ),
         ),
         // Align(
         //   alignment: Alignment.topCenter,

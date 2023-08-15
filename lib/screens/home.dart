@@ -278,9 +278,6 @@ class _HomeState extends State<Home> {
                 child: _scanButton(),
               ),
             ),
-            // const SizedBox(
-            //   width: 6.8,
-            // ),
             SizedBox(
               width: 103,
               child: Container(
@@ -292,11 +289,7 @@ class _HomeState extends State<Home> {
                 child: _qrCodeButton(),
               ),
             ),
-            // const SizedBox(
-            //   width: 6.8,
-            // ),
             SizedBox(
-              // width: 103,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                 decoration: BoxDecoration(
