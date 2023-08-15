@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable, curly_braces_in_flow_control_structures
 
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:Slydo/screens/more_apps/payment_link/payment_link_model.dart';
@@ -16,6 +15,7 @@ import '../../../data/currency.dart';
 import '../../../data/environment.dart';
 import '../../../locale/app_localization.dart';
 import '../../../routes/route_constants.dart';
+import '../../../utils/global_key.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_textform_field.dart';
@@ -80,7 +80,7 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
             'A sum of ',
             style: TextStyle(
                 color: blackFont,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
                 fontSize: fontSize),
           ),
           Text(
@@ -102,7 +102,7 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
             ' was sent to you, enter details to cashout.',
             style: TextStyle(
                 color: blackFont,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
                 fontSize: fontSize),
           ),
         ],
@@ -118,180 +118,260 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: white,
-        appBar: AppBar(
           backgroundColor: white,
-          centerTitle: false,
-          elevation: 0,
-          title: Text(
-            'Cashout',
-            style: TextStyle(
-                color: black, fontSize: 20, fontWeight: FontWeight.w700),
-          ),
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context, "back pressed"),
-            icon: Icon(
-              Icons.arrow_back_ios,
-              size: 20,
-              color: navyBlue,
+          appBar: AppBar(
+            backgroundColor: white,
+            centerTitle: false,
+            elevation: 0,
+            title: Text(
+              'Cashout',
+              style: TextStyle(
+                  color: black, fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context, "back pressed"),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                size: 20,
+                color: navyBlue,
+              ),
             ),
           ),
-        ),
-        body: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 30),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                loading && _paymentLinkModel == null
-                    ? const SizedBox.shrink()
-                    : RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          text: 'A sum of ',
-                          style: TextStyle(
-                              color: blackFont,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 18),
-                          children: <TextSpan>[
-                            TextSpan(
-                                text:
-                                    '${worldCurrencies[_paymentLinkModel?.currency]}${moneyDisplayNormalizer(_paymentLinkModel?.amount)}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: navyBlue,
-                                    fontSize: 18)),
-                            TextSpan(
-                                text:
-                                    ' was sent to you, enter details to cashout.',
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 18)),
-                          ],
-                        ),
+          body: _paymentLinkModel == null
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Center(
+                      child: CircularProgressIndicator(
+                    color: navyBlue,
+                  )),
+                )
+              : body(_paymentLinkModel!.status!)),
+    );
+  }
+
+  body(String isStatusState) {
+    if (isStatusState.toLowerCase() == 'active') {
+      return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 30),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              loading && _paymentLinkModel == null
+                  ? const SizedBox.shrink()
+                  : RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: 'A sum of ',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text:
+                                  '${worldCurrencies[_paymentLinkModel?.currency]}${moneyDisplayNormalizer(_paymentLinkModel?.amount)}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: navyBlue,
+                                  fontSize: 18)),
+                          TextSpan(
+                              text:
+                                  ' was sent to you, enter details to cashout.',
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18)),
+                        ],
                       ),
-                const SizedBox(
-                  height: 24,
-                ),
-                loading
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Center(
-                            child: CircularProgressIndicator(
-                          color: navyBlue,
-                        )),
-                      )
-                    : Card(
-                        elevation: 2,
-                        margin: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        shadowColor: iconBtnGrey,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: iconBtnGrey, width: 1)),
-                          child: Form(
-                            key: _formKey,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: Column(
-                                children: <Widget>[
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Account Bank',
+                    ),
+              const SizedBox(
+                height: 24,
+              ),
+              loading
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Center(
+                          child: CircularProgressIndicator(
+                        color: navyBlue,
+                      )),
+                    )
+                  : Card(
+                      elevation: 2,
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      shadowColor: iconBtnGrey,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: iconBtnGrey, width: 1)),
+                        child: Form(
+                          key: _formKey,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              children: <Widget>[
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Account Bank',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: blackFont,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    InkWell(
+                                      onTap: () {
+                                        FocusScope.of(context).unfocus();
+                                        clearSearchedListItems();
+                                        showSearchBankBottomSheet();
+                                      },
+                                      child: TextFormField(
+                                        controller: bankController,
+                                        enabled: false,
                                         style: TextStyle(
-                                            fontSize: 16,
+                                            fontSize: 18,
                                             color: blackFont,
                                             fontWeight: FontWeight.w600),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      InkWell(
-                                        onTap: () {
-                                          FocusScope.of(context).unfocus();
-                                          clearSearchedListItems();
-                                          showSearchBankBottomSheet();
-                                        },
-                                        child: TextFormField(
-                                          controller: bankController,
-                                          enabled: false,
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: blackFont,
-                                              fontWeight: FontWeight.w600),
-                                          decoration: InputDecoration(
-                                            filled: true,
-                                            fillColor: transparent,
-                                            contentPadding: const EdgeInsets.only(
-                                                left: 8,
-                                                bottom: 0,
-                                                top: 0,
-                                                right: 15),
-                                            suffixIcon: Icon(
-                                              Icons.arrow_drop_down_outlined,
-                                              color: blackFont,
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: transparent,
+                                          contentPadding: const EdgeInsets.only(
+                                              left: 8,
+                                              bottom: 0,
+                                              top: 0,
+                                              right: 15),
+                                          suffixIcon: Icon(
+                                            Icons.arrow_drop_down_outlined,
+                                            color: blackFont,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              width: 0.7,
+                                              color: greyBorderColor,
+                                              style: BorderStyle.none,
                                             ),
-                                            border: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                width: 0.7,
-                                                color: greyBorderColor,
-                                                style: BorderStyle.none,
-                                              ),
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                Radius.circular(8.0),
-                                              ),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(8.0),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  getAccountNumber(),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  getAccountName(),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  passwordPinFiled(),
-                                  const SizedBox(
-                                    height: 60,
-                                  ),
-                                  CurvedButton(
-                                    onPressed: () => cashOut(),
-                                    backgroundColor: navyBlue,
-                                    textColor: Colors.white,
-                                    text: "Cash Out",
-                                  ),
-                                  const SizedBox(
-                                    height: 60,
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                getAccountNumber(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                getAccountName(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                passwordPinFiled(),
+                                const SizedBox(
+                                  height: 60,
+                                ),
+                                CurvedButton(
+                                  onPressed: () => cashOut(),
+                                  backgroundColor: navyBlue,
+                                  textColor: Colors.white,
+                                  text: "Cash Out",
+                                ),
+                                const SizedBox(
+                                  height: 60,
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-              ],
-            )),
-      ),
-    );
+                    ),
+            ],
+          ));
+    } else if (isStatusState.toLowerCase() == 'paid') {
+      return successfulPopUp();
+    }
+    return WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    20.0,
+                  ),
+                ),
+              ),
+              contentPadding: const EdgeInsets.only(
+                top: 10.0,
+              ),
+              content: Container(
+                height: 250,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(22.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          "Link ${_paymentLinkModel!.status.toString()}",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: red,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Text(
+                        "We recommend checking the link that was shared with you or contacting the person who sent you this link.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      CurvedButton(
+                        onPressed: () => Navigator.of(
+                                MyGlobals().navigationKey.currentContext!)
+                            .pushNamedAndRemoveUntil(
+                          "/dashboard",
+                          (Route<dynamic> route) => false,
+                        ),
+                        backgroundColor: navyBlue,
+                        textColor: Colors.white,
+                        text: "Go back",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+    });
   }
 
   void verifyAccount() async {
@@ -889,10 +969,88 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
     setState(() {});
   }
 
+  successfulPopUp() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(
+                    20.0,
+                  ),
+                ),
+              ),
+              contentPadding: const EdgeInsets.only(
+                top: 10.0,
+              ),
+              content: Container(
+                height: 250,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(22.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      RoundedBackgroundIcon(
+                        backgroundColor: navyBlue.withOpacity(.2),
+                        enableMargin: false,
+                        image: Icon(
+                          Icons.check,
+                          size: 18.0,
+                          color: navyBlue,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          "Payment Link",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Text(
+                        "Payment has been received successfully.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      CurvedButton(
+                        onPressed: () => Navigator.of(
+                                MyGlobals().navigationKey.currentContext!)
+                            .pushNamedAndRemoveUntil(
+                          "/dashboard",
+                          (Route<dynamic> route) => false,
+                        ),
+                        backgroundColor: navyBlue,
+                        textColor: Colors.white,
+                        text: "Go back",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+    });
+  }
+
   Future<void> cashOutPaymentLink(Map map) async {
     try {
       loading = true;
-
       await _auth
           .cashoutPaymentLink(map, _paymentLinkModel!.id!)
           .then((value) async {
@@ -901,11 +1059,11 @@ class _PaymentLinkCashoutState extends State<PaymentLinkCashout> {
 
         response = value;
         if (response.statusCode == 201) {
-          log(response.body.toString());
           showSnackbar(context,
-              message: 'Payment link successfully cashed out..');
+              message: 'Payment link successfully cashed out..',
+              duration: 2000);
           loading = false;
-          Navigator.pop(context);
+          successfulPopUp();
         } else if (response.statusCode == 400 || response.statusCode == 404) {
           loading = false;
 

@@ -188,6 +188,7 @@ class _QRCodeViewState extends State<QRCodeView> {
     debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
 
     cleanScanDataLink.removeWhere((item) => [""].contains(item));
+    print('cleean...$cleanScanDataLink');
 
     if (cleanScanDataLink[2] == 'payment-link') {
       String paymentLinkId = cleanScanDataLink[3];
@@ -220,8 +221,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    }
-    else if (scanDataList[qrCodeIndex] == "services") {
+    } else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
       _dashboardBloc.index = 0;
@@ -235,8 +235,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    }
-    else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
+    } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         ShoppingCartModelFromQrCode? shoppingCartModel =
             await ShoppingAuthService()
