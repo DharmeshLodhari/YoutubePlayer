@@ -277,12 +277,6 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
         ));
   }
 
-  String getPaymentId(String link) {
-    List<String> _linkSplit = link.split('/');
-    _linkSplit.removeWhere((item) => [""].contains(item));
-    return _linkSplit[3];
-  }
-
   showDataAlert(link) {
     showDialog(
         context: context,
@@ -329,16 +323,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                     const SizedBox(
                       height: 30,
                     ),
-                    GestureDetector(
-                        onTap: () {
-                          String id = getPaymentId(link);
-                          print(id);
-                          NavigationUtil.push(context,
-                              screen: PaymentLinkCashout(
-                                id: id,
-                              ));
-                        },
-                        child: _displayBarcodeInfo(link)),
+                    _displayBarcodeInfo(link),
                     const SizedBox(
                       height: 30,
                     ),
