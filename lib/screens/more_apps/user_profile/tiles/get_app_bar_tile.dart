@@ -35,6 +35,8 @@ import 'package:uuid/uuid.dart';
 
 import '../../../home_tab/qr_code_page.dart';
 import '../../messaging/message_auth.dart';
+import '../../payment_and_banking/models/FinancialInstitution.dart';
+import '../../payment_and_banking/models/VirtualAccount.dart';
 import '../../yarn/utils/slydo_yarn_links.dart';
 import '../../yarn/yarn_search_screen.dart';
 import '../screens/user_profile_module_new/utils.dart';
@@ -1140,7 +1142,20 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       ),
       onTap: () {
         // Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: searchedUser!.qrCode);
-        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': searchedUser}));
+        FinancialInstitution financialInstitution = FinancialInstitution(
+          country: "",
+          logo: "",
+          name: "",
+        );
+        VirtualAccount virtualAccount = VirtualAccount(
+          accountName: "",
+          accountNumber: "",
+          financialInstitution: financialInstitution,
+          customerUsername: "",
+          note: "",
+            );
+
+        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': searchedUser, 'virtualAccount': virtualAccount}));
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,

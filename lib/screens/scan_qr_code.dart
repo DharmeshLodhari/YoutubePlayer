@@ -194,7 +194,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       String paymentLinkId = cleanScanDataLink[3];
 
       final result = await NavigationUtil.push(context,
-          screen: PaymentLinkCashout(
+          screen: PaymentLinkCashOut(
             id: paymentLinkId,
           ));
       // Handle the result here

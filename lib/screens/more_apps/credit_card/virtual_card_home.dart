@@ -329,6 +329,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
             onPageChanged: (index, reason) {
               setState(() {
                 _currentIndex = index;
+                loadCardActions();
                 _refreshTransactionList();
               });
             },
@@ -1160,8 +1161,8 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       ),
       CardAction(
         iconAsset: "freeze_card".toSVG(),
-        label: "Freeze Card",
-        // label: cardList[_currentIndex].activated! ? "Freeze Card" : "Unfreeze Card",
+        // label: "Freeze Card",
+        label: cardList[_currentIndex].activated! ? "Freeze Card" : "Unfreeze Card",
         onPressed: () {
           freezeCardDialog(cardList[_currentIndex]);
         },

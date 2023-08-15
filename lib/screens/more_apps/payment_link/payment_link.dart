@@ -17,7 +17,7 @@ import '../../../widget/rounded_background_icon.dart';
 import '../../../widget/slide_action_button.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 import '../service_hub/screens/my_job_details.dart';
-import 'paayment_transaction_info.dart';
+import 'payment_transaction_info.dart';
 
 class PaymentLink extends StatefulWidget {
   PaymentLink({Key? key, this.listMap}) : super(key: key);
