@@ -86,7 +86,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         getTransactionList();
       }
     });
-    loadCardActions();
+    // loadCardActions();
 
     super.initState();
   }
@@ -114,6 +114,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
         isLoading = false;
         cardList.addAll(tempList);
+        loadCardActions();
 
         if (mounted) setState(() {});
 
@@ -176,7 +177,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
         if (mounted) setState(() {});
       } else if (nextTransaction == null && transactionList.length > 6) {
-        showReachedToBottomSnackBar();
+        // showReachedToBottomSnackBar();
       }
     }
   }
