@@ -119,6 +119,7 @@ class _QrCodePageState extends State<QrCodePage> {
     return Center(
       child: Column(
         children: [
+          const SizedBox(height: 40),
           Screenshot(
             controller: screenshotController,
             child: SizedBox(
@@ -128,7 +129,7 @@ class _QrCodePageState extends State<QrCodePage> {
                   height: 550,
                   autoPlay: false,
                   enableInfiniteScroll: false,
-                  viewportFraction: 0.9,
+                  viewportFraction: 1.0,
                   onPageChanged: (index, reason) {
                     setState(() {
                       _currentIndex = index;
