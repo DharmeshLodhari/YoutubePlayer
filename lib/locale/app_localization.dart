@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../data/currency.dart';
 import '../l10n/messages_all.dart';
+import '../utils/util.dart';
 
 class AppLocalization {
   static Future<AppLocalization> load(Locale locale) {
@@ -489,6 +491,13 @@ class AppLocalization {
     );
   }
 
+  String get dailyPaymentLinkLimit {
+    return Intl.message(
+      "You can only send ${worldCurrencies['NGN']}${moneyDisplayNormalizer(200000*100)} at once.",
+      name: "dailyPaymentLinkLimit",
+    );
+  }
+
   String get invalidFormat {
     return Intl.message(
       "Invalid Format",
@@ -537,6 +546,7 @@ class AppLocalization {
       name: "noteForUser2",
     );
   }
+
   String get noteForUserPayLink {
     return Intl.message(
       "You are about to create a payment link, this service will cost ",
@@ -1683,6 +1693,7 @@ class AppLocalization {
       name: "applied",
     );
   }
+
   String get myJobs {
     return Intl.message(
       "My Jobs",
@@ -2058,6 +2069,7 @@ class AppLocalization {
       name: "productName",
     );
   }
+
   String get cardLabel {
     return Intl.message(
       "Card Label",
@@ -2078,6 +2090,7 @@ class AppLocalization {
       name: "firstName",
     );
   }
+
   String get lastName {
     return Intl.message(
       "Last Name",

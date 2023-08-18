@@ -667,6 +667,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
+          print(val);
           setState(() {
             amount = double.parse(val.replaceAll(',', ''));
           });
@@ -676,13 +677,14 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
         if (val.isNotEmpty) {
           try {
             double amount = double.parse(val.replaceAll(',', ''));
-            if (amount > 0.0) {
+            if (amount > 0.0 && amount <= 200000.0) {
               return null;
-            } else {
+            }
+            else {
               throw Exception("Invalid amount");
             }
           } catch (e) {
-            return AppLocalization.of(context)!.invalidAmount;
+            return AppLocalization.of(context)!.dailyPaymentLinkLimit;
           }
         }
         return AppLocalization.of(context)!.invalidAmount;
