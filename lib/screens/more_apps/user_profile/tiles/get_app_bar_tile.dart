@@ -33,10 +33,12 @@ import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../data/database_helper.dart';
 import '../../../home_tab/qr_code_page.dart';
 import '../../messaging/message_auth.dart';
 import '../../payment_and_banking/models/FinancialInstitution.dart';
 import '../../payment_and_banking/models/VirtualAccount.dart';
+import '../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../yarn/utils/slydo_yarn_links.dart';
 import '../../yarn/yarn_search_screen.dart';
 import '../screens/user_profile_module_new/utils.dart';
@@ -48,6 +50,7 @@ class GetAppbarTile extends StatefulWidget {
   ScrollController? scrollController;
   String? userType;
   Map<String, dynamic>? channelDetail;
+  final Function(Map<String, bool>)? callback;
 
   GetAppbarTile(
       {Key? key,
@@ -56,6 +59,7 @@ class GetAppbarTile extends StatefulWidget {
       required this.isShrink,
       required this.scrollController,
       this.userType,
+        this.callback,
       this.channelDetail})
       : super(key: key);
 
@@ -79,6 +83,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   bool isLoading = false;
   bool hasAddress = false;
   bool hasContact = false;
+  VirtualAccount? virtualAccount;
+  bool isAccountExist = false;
+
 
   @override
   void initState() {
@@ -1140,14 +1147,13 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         size: 16,
         color: Colors.white,
       ),
-      onTap: () {
-        // Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER, arguments: searchedUser!.qrCode);
+      onTap: () async {
         FinancialInstitution financialInstitution = FinancialInstitution(
           country: "",
           logo: "",
           name: "",
         );
-        VirtualAccount virtualAccount = VirtualAccount(
+        VirtualAccount virtualAccountNone = VirtualAccount(
           accountName: "",
           accountNumber: "",
           financialInstitution: financialInstitution,
@@ -1155,7 +1161,14 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           note: "",
             );
 
-        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': searchedUser, 'virtualAccount': virtualAccount}));
+        if(searchedUser!.userName == userBloc.user.userName){
+          await getSlydoAccount();
+        }
+
+        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile':
+        searchedUser!.userName == userBloc.user.userName ?
+        'false': searchedUser,
+          'virtualAccount': searchedUser!.userName == userBloc.user.userName ? virtualAccount : virtualAccountNone}));
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
@@ -1377,7 +1390,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 arguments: {"searchedUser": searchedUser});
 
             getSearchedUser();
-            // }
           },
         ),
       );
@@ -1397,7 +1409,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               business = 'yes';
             }
             Navigator.pop(context);
-            Navigator.of(context).pushNamed(Routes.CUSTOMIZE_PROFILE, arguments: {"business": business});
+            final data = await Navigator.of(context).pushNamed(Routes.CUSTOMIZE_PROFILE, arguments: {"business": business});
+
+            if (data != null && data is Map<String, bool>) {
+                widget.callback!(data);
+              if(mounted)setState(() {});
+            }
 
           },
         ),
@@ -1654,5 +1671,29 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 showToast(message: "Shared in Yarn successfully");
               }
             }));
+  }
+
+  getSlydoAccount() async {
+    isLoading = true;
+    setState(() {});
+    bool isFromServer = false;
+
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+
+    if (virtualAccount == null) {
+      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
+      isFromServer = true;
+    }
+
+    isLoading = false;
+
+    if (virtualAccount != null) {
+      isAccountExist = true;
+      if (isFromServer) {
+        await DatabaseHelper().saveVirtualAccount(virtualAccount!);
+      }
+    }
+
+    if (mounted) setState(() {});
   }
 }

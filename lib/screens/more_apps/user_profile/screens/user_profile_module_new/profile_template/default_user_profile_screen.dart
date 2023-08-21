@@ -31,7 +31,7 @@ class DefaultUserProfileScreen extends StatefulWidget {
 }
 
 class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   UserTabView? _currentUser;
   String? searchedUserName;
   CustomerProfile? searchedUser;
@@ -45,6 +45,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
   final PageStorageBucket _bucket = new PageStorageBucket();
   // Define a list to store the UserTab objects
   List<UserTab> userTabs = [];
+  Map<String, bool> reorderedBoolMap = {};
 
   @override
   void initState() {
@@ -83,7 +84,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     orderedKeys.addAll(remainingKeys);
 
     // Create a new map with the ordered keys
-    var reorderedBoolMap = Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key])));
+    reorderedBoolMap = Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
 
     // Iterate through the JSON object and add tabs for boolean values that are true
     reorderedBoolMap.forEach((key, value) {
@@ -178,7 +179,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
           apiCall: () async => await fetchMomentData(searchedUserName),
         ));
         break;
-      case "post":
+      case "blog":
         userTabs.add(UserTab(
           label: label,
           child: postTab(widget.searchedUser),
@@ -247,6 +248,9 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
             isLoading: widget.isLoading,
             isShrink: isShrink,
             scrollController: scrollController,
+            callback: (val){
+                refreshTabs(val);
+            },
           ),
           SliverPersistentHeader(
             key: UniqueKey(),
@@ -350,5 +354,53 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     scrollController!.removeListener(_scrollListener);
     _tabController!.removeListener(_scrollListener);
     _pageController!.removeListener(_scrollListener);
+  }
+
+  refreshTabs(Map<String, bool> val) {
+    debugPrint('Fola back user::: ${val}');
+
+    if (compareMaps(reorderedBoolMap, val)) {
+      print('The maps are equal.');
+    } else {
+      print('The maps are not equal.');
+
+      // Step 1: Clear the existing tabs
+      userTabs.clear();
+      // Iterate through the JSON object and add tabs for boolean values that are true
+      val.forEach((key, value) {
+        if (value is bool && value) {
+          // Add the tab
+          addTab(key, capitalizeAndRemoveUnderscores(key));
+        }
+      });
+
+      // Define the UserTabView using the created userTabs list
+      UserTabView userView = UserTabView(
+        name: "user",
+        tabs: userTabs,
+      );
+
+      _currentUser = userView;
+
+      _tabController = TabController(
+        length: _currentUser!.tabs.where((tab) => tab.apiCall != null).length,
+        vsync: this,
+      );
+
+      scrollController = ScrollController();
+      scrollController?.addListener(_scrollListener);
+
+      // Add a listener to the tab controller that updates the current index
+      _tabController!.addListener(tabController);
+
+      //clear map and reassign
+      reorderedBoolMap = {};
+      reorderedBoolMap = val;
+
+      if (mounted) setState(() {});
+      _tabController!.animateTo(0);
+
+    }
+
   }
 }
