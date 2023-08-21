@@ -5,8 +5,6 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/get_app_bar_tile.dart
 import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-
-import '../../../models/custom_profile_model.dart';
 import '../utils.dart';
 
 class BusinessProfileScreen extends StatefulWidget {

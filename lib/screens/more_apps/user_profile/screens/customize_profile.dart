@@ -92,6 +92,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
                     onTapCallback: (newValue) {
                       setState(() {
                         reorderedBoolMap[key] = newValue;
+                        saveRequired = true;
                       });
                     },
                   ),
@@ -105,6 +106,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
                   final entry = entries.removeAt(oldIndex);
                   entries.insert(newIndex, entry);
                   reorderedBoolMap = Map.fromEntries(entries);
+                  saveRequired = true;
                 });
               },
             ),
