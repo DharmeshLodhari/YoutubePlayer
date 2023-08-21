@@ -55,7 +55,7 @@ class _MomentDashViewState extends State<MomentDashView>
   @override
   Widget build(BuildContext context) {
     v = widget.value;
-    
+
     if (widget.value == 1.0) {
       controller = widget.controller;
     }
@@ -67,6 +67,7 @@ class _MomentDashViewState extends State<MomentDashView>
     );
   }
 
+  ///Colors.blue[900]
 
   List<Widget> dashes(int lengthOfMoment, int currentIndex) {
     // debugPrint('DASHES ---> ');
@@ -76,11 +77,9 @@ class _MomentDashViewState extends State<MomentDashView>
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 4),
           child: LinearProgressIndicator(
-            value: currentIndex >= i
-                ? controller.value
-                : controller.lowerBound,
+            value: currentIndex >= i ? controller.value : controller.lowerBound,
             semanticsLabel: 'Linear progress indicator',
-            backgroundColor: currentIndex > i ? Colors.blue[900] : white,
+            backgroundColor: currentIndex > i ? navyBlue : white,
             valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[900]!),
           ),
         ),

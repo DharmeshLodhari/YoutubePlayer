@@ -677,6 +677,12 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
         if (val.isNotEmpty) {
           try {
             double amount = double.parse(val.replaceAll(',', ''));
+            if ( amount <= 200000.0) {
+              return null;
+            }
+            if ( amount > 200000.0) {
+              return AppLocalization.of(context)!.dailyPaymentLinkLimit;
+            }
             if (amount > 0.0 && amount <= 200000.0) {
               return null;
             }
@@ -684,7 +690,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
               throw Exception("Invalid amount");
             }
           } catch (e) {
-            return AppLocalization.of(context)!.dailyPaymentLinkLimit;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         }
         return AppLocalization.of(context)!.invalidAmount;

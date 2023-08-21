@@ -493,7 +493,7 @@ class AppLocalization {
 
   String get dailyPaymentLinkLimit {
     return Intl.message(
-      "You can only send ${worldCurrencies['NGN']}${moneyDisplayNormalizer(200000*100)} at once.",
+      "You can only send NGN${moneyDisplayNormalizer(200000*100)} at once.",
       name: "dailyPaymentLinkLimit",
     );
   }
