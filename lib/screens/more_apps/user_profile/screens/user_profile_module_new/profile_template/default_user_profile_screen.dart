@@ -94,37 +94,37 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     });
 
     // Define the UserTabView using the created userTabs list
-    // UserTabView userView = UserTabView(
-    //   name: "user",
-    //   tabs: userTabs,
-    // );
-
-    //Define the tabs and their corresponding data for each user
     UserTabView userView = UserTabView(
       name: "user",
-      tabs: [
-        UserTab(
-          label: "Yarn",
-          child: yarnTab(searchedUserName),
-          apiCall: () async => await fetchYarnData(searchedUserName),
-        ),
-        UserTab(
-          label: "Moment",
-          child: momentTab(searchedUser!),
-          apiCall: () async => await fetchMomentData(searchedUserName),
-        ),
-        UserTab(
-          label: "Post",
-          child: postTab(searchedUser!),
-          apiCall: () async => await fetchPostData(searchedUserName),
-        ),
-        UserTab(
-          label: "Channels",
-          child: channelTab(searchedUserName),
-          apiCall: () async => await fetchChannelData(searchedUserName),
-        ),
-      ],
+      tabs: userTabs,
     );
+
+    //Define the tabs and their corresponding data for each user
+    // UserTabView userView = UserTabView(
+    //   name: "user",
+    //   tabs: [
+    //     UserTab(
+    //       label: "Yarn",
+    //       child: yarnTab(searchedUserName),
+    //       apiCall: () async => await fetchYarnData(searchedUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Moment",
+    //       child: momentTab(searchedUser!),
+    //       apiCall: () async => await fetchMomentData(searchedUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Post",
+    //       child: postTab(searchedUser!),
+    //       apiCall: () async => await fetchPostData(searchedUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Channels",
+    //       child: channelTab(searchedUserName),
+    //       apiCall: () async => await fetchChannelData(searchedUserName),
+    //     ),
+    //   ],
+    // );
 
     //Set the current user here
     _currentUser = userView;

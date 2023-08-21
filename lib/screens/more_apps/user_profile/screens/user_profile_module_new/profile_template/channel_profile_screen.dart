@@ -96,47 +96,47 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     reorderedBoolMap.forEach((key, value) {
       if (value is bool && value) {
         // Add the tab
-        // addTab(key, capitalizeAndRemoveUnderscores(key));
+        addTab(key, capitalizeAndRemoveUnderscores(key));
       }
     });
 
     // Define the UserTabView using the created userTabs list
-    // UserTabView channelView = UserTabView(
-    //   name: "channel",
-    //   tabs: userTabs,
-    // );
-
-    // Define the tabs and their corresponding data for each user
     UserTabView channelView = UserTabView(
       name: "channel",
-      tabs: [
-        UserTab(
-          label: "Yarn",
-          child: yarnTab(channelUserName),
-          apiCall: () async => await fetchYarnData(channelUserName),
-        ),
-        UserTab(
-          label: "Moment",
-          child: momentTab(channelOwner),
-          apiCall: () async => await fetchMomentData(channelUserName),
-        ),
-        UserTab(
-          label: "Post",
-          child: postTab(channelOwner),
-          apiCall: () async => await fetchPostData(channelUserName),
-        ),
-        UserTab(
-          label: "Event",
-          child: productTab(channelOwner, isOwner!),
-          apiCall: () async => await fetchProductData(channelUserName),
-        ),
-        UserTab(
-          label: "Merchandise",
-          child: productTab(channelOwner, isOwner!),
-          apiCall: () async => await fetchProductData(channelUserName),
-        ),
-      ],
+      tabs: userTabs,
     );
+
+    // Define the tabs and their corresponding data for each user
+    // UserTabView channelView = UserTabView(
+    //   name: "channel",
+    //   tabs: [
+    //     UserTab(
+    //       label: "Yarn",
+    //       child: yarnTab(channelUserName),
+    //       apiCall: () async => await fetchYarnData(channelUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Moment",
+    //       child: momentTab(channelOwner),
+    //       apiCall: () async => await fetchMomentData(channelUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Post",
+    //       child: postTab(channelOwner),
+    //       apiCall: () async => await fetchPostData(channelUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Event",
+    //       child: productTab(channelOwner, isOwner!),
+    //       apiCall: () async => await fetchProductData(channelUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Merchandise",
+    //       child: productTab(channelOwner, isOwner!),
+    //       apiCall: () async => await fetchProductData(channelUserName),
+    //     ),
+    //   ],
+    // );
 
     // Set the current user here
     _currentUser = channelView;
@@ -160,6 +160,43 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     super.initState();
   }
 
+  void addTab(String key, String label) {
+    switch (key) {
+      case "product":
+        userTabs.add(UserTab(
+          label: 'Merchandise',
+          child: productTab(channelOwner, isOwner!),
+          apiCall: () async => await fetchProductData(channelUserName),
+        ));
+        break;
+
+      case "yarn":
+        userTabs.add(UserTab(
+          label: label,
+          child: yarnTab(channelUserName),
+          apiCall: () async => await fetchYarnData(channelUserName),
+        ));
+        break;
+
+      case "moment":
+        userTabs.add(UserTab(
+          label: label,
+          child: momentTab(channelOwner),
+          apiCall: () async => await fetchMomentData(channelUserName),
+        ));
+        break;
+      case "post":
+        userTabs.add(UserTab(
+          label: label,
+          child: postTab(channelOwner),
+          apiCall: () async => await fetchPostData(channelUserName),
+        ));
+        break;
+
+      default:
+        break;
+    }
+  }
 
   void _scrollListener() {
     if (isShrink != appBarStatus) {
