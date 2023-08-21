@@ -68,6 +68,7 @@ class _HomeState extends State<Home> {
   late DashboardBloc dashboardBloc;
   VirtualAccount? virtualAccount;
   String accountNumber = "";
+  String bankName = "";
   bool isAccountExist = false;
 
   @override
@@ -122,6 +123,7 @@ class _HomeState extends State<Home> {
     }
 
     accountNumber = virtualAccount!.accountNumber!;
+    bankName = virtualAccount!.financialInstitution!.name!;
 
     if (mounted) setState(() {});
   }
@@ -678,7 +680,7 @@ class _HomeState extends State<Home> {
                             height: 15.0,
                           ),
                           Text(
-                            "Ampersand MFB ",
+                            bankName,
                             style: TextStyle(
                                 fontSize: 14,
                                 color: white,

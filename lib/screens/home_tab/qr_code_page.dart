@@ -388,7 +388,7 @@ class _QrCodePageState extends State<QrCodePage> {
         children: [
           const SizedBox(height: 10.0,),
           userNameWithVerifiedIcon(
-            name: searchedUser == null ? userBloc.user.displayName() : searchedUser!.userName!,
+            name: searchedUser == null ? '@${userBloc.user.userName}' : '@${searchedUser!.userName!}',
             isVerified: searchedUser == null ? userBloc.user.isVerified : searchedUser!.isVerified,
             verifiedIconColor: verifyGreen,
             textStyle: TextStyle(

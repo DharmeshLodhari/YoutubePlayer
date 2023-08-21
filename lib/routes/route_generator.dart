@@ -1718,7 +1718,8 @@ class RouteGenerator {
 
       case Routes.CUSTOMIZE_PROFILE:
         return PageTransition(
-          child: const CustomizeProfileScreen(
+          child: CustomizeProfileScreen(
+            arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,

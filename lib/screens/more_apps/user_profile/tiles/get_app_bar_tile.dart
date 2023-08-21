@@ -1387,8 +1387,17 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           title: "Customize Profile",
           iconData: Icons.dashboard_customize_sharp,
           onTap: () async {
+
+            var business = '';
+            if(searchedUser!.type!.toLowerCase() == "user"){
+              business = 'no';
+            }else if(widget.userType == 'channel'){
+              business = 'no';
+            }else{
+              business = 'yes';
+            }
             Navigator.pop(context);
-            Navigator.of(context).pushNamed(Routes.CUSTOMIZE_PROFILE);
+            Navigator.of(context).pushNamed(Routes.CUSTOMIZE_PROFILE, arguments: {"business": business});
 
           },
         ),

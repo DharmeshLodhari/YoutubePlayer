@@ -9,8 +9,9 @@ import '../models/custom_profile_model.dart';
 import '../user_auth.dart';
 
 class CustomizeProfileScreen extends StatefulWidget {
+  final arguments;
 
-  const CustomizeProfileScreen({Key? key}) : super(key: key);
+  CustomizeProfileScreen({required this.arguments, Key? key}) : super(key: key);
 
   @override
   CustomizeProfileScreenState createState() => CustomizeProfileScreenState();
@@ -111,24 +112,26 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
               },
             ),
 
-            Form(
-              key: _formKey,
-              child: Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-                  child: Column(
-                    children: [
-                      addProductLabelField(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      addServiceLabelField(),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                    ],
-                  )),
-            ),
+            if(widget.arguments['business'] == 'yes')...[
+              Form(
+                key: _formKey,
+                child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+                    child: Column(
+                      children: [
+                        addProductLabelField(),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        addServiceLabelField(),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                      ],
+                    )),
+              ),
+            ],
 
           ],
         ),
@@ -219,37 +222,41 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   }
 
 
-
-
   Widget addProductLabelField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.productLabel,
-      controller: productLabelController,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.pleaseEnterProductLabel;
-      },
-      onChanged: (val) {
-        handleProductLabelChange(val);
-      },
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      child: CustomizedTextFormField(
+        labelText: AppLocalization.of(context)!.productLabel,
+        controller: productLabelController,
+        validator: (val) {
+          if (val.isNotEmpty) {
+            return null;
+          }
+          return AppLocalization.of(context)!.pleaseEnterProductLabel;
+        },
+        onChanged: (val) {
+          handleProductLabelChange(val);
+        },
+      ),
     );
   }
 
   Widget addServiceLabelField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.serviceLabel,
-      controller: serviceLabelController,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.pleaseEnterServiceLabel;
-      },
-      onChanged: (val) {
-        handleServiceLabelChange(val);
-      },
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      child: CustomizedTextFormField(
+        labelText: AppLocalization.of(context)!.serviceLabel,
+        controller: serviceLabelController,
+        validator: (val) {
+          if (val.isNotEmpty) {
+            return null;
+          }
+          return AppLocalization.of(context)!.pleaseEnterServiceLabel;
+        },
+        onChanged: (val) {
+          handleServiceLabelChange(val);
+        },
+      ),
     );
   }
 
@@ -293,6 +300,16 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
     // Create a new map with the ordered keys
     reorderedBoolMap = Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
+
+
+    if(widget.arguments['business'] == 'no'){
+      List<String> keysToRemove = ['product', 'service', 'reviews', 'opening_hours'];
+
+      for (var key in keysToRemove) {
+        reorderedBoolMap.remove(key);
+      }
+
+    }
 
     isLoading = false;
     if (mounted) {
@@ -383,7 +400,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
         child: Text(
           "Save",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+              color: navyBlue, fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
     );
