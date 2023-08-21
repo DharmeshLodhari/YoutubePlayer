@@ -2084,6 +2084,20 @@ class AppLocalization {
     );
   }
 
+  String get productLabel {
+    return Intl.message(
+      "Product Label",
+      name: "productLabel",
+    );
+  }
+
+  String get serviceLabel {
+    return Intl.message(
+      "Service Label",
+      name: "serviceLabel",
+    );
+  }
+
   String get firstName {
     return Intl.message(
       "First Name",
@@ -2137,6 +2151,19 @@ class AppLocalization {
     return Intl.message(
       "Please Enter Reason",
       name: "pleaseEnterReason",
+    );
+  }
+
+  String get pleaseEnterProductLabel {
+    return Intl.message(
+      "Please Enter Product Label",
+      name: "pleaseEnterProductLabel",
+    );
+  }
+  String get pleaseEnterServiceLabel {
+    return Intl.message(
+      "Please Enter Service Label",
+      name: "pleaseEnterServiceLabel",
     );
   }
 

@@ -188,4 +188,6 @@ class Routes {
   static const String WITHDRAW_VIRTUAL_CARD = "/withdraw-virtual-card";
   static const String SEARCH_TRANSACTION_CARD = "/search-transaction-card";
 
+  static const String CUSTOMIZE_PROFILE = "/customize-profile";
+
 }

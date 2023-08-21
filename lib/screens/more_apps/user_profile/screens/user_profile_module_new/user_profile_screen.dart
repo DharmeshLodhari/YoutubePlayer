@@ -9,6 +9,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+import '../../models/custom_profile_model.dart';
 import 'profile_template/business_profile_screen.dart';
 
 // ignore: must_be_immutable
@@ -28,6 +29,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   late UserBloc userBloc;
 
   bool isLoading = true;
+  final _auth = UserAuth();
 
   _UserProfileScreenState({this.arguments});
 
@@ -42,6 +44,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   double? top;
 
   late CustomerProfileBloc customerProfileBloc;
+  CustomProfileModel customProfileModel = CustomProfileModel();
+  Map<String, dynamic>? result = {};
 
   bool appBarStatus = true;
 
@@ -92,6 +96,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         Navigator.pop(context);
         showToast(message: 'Channel not found');
       }
+      getCustomizeProfile();
 
       isLoading = false;
       if (mounted) setState(() {});
@@ -109,9 +114,29 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     searchedUser = user;
 
     checkCurrentUserIsInRequestList();
+    await getCustomizeProfile();
 
     isLoading = false;
     if (mounted) setState(() {});
+  }
+
+  Future<void> getCustomizeProfile() async {
+     result = await _auth.customizeProfile();
+
+    if (result == null || result!.isEmpty) {
+      isLoading = false;
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+
+    // customProfileModel = CustomProfileModel.fromJson(result['results']);
+
+    isLoading = false;
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void checkCurrentUserIsInRequestList() async {
@@ -216,6 +241,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         // searchedUserName: channelDetail['owner']['username'],
         isOwner: isOwner,
         isLoading: isLoading,
+        result: result,
       );
     } else if (searchedUser != null &&
         searchedUser!.type!.toLowerCase() == 'user') {
@@ -224,13 +250,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         searchedUserName: searchedUserName,
         isOwner: isOwner,
         isLoading: isLoading,
+        result: result,
       );
-    } else if (searchedUser != null) {
+    }
+    else if (searchedUser != null) {
       return BusinessProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
         isOwner: isOwner,
         isLoading: isLoading,
+        result: result,
       );
     } else {
       return Container();
