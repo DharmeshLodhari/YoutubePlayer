@@ -118,3 +118,26 @@ Widget buildMultipleFollowersWidget(
     ),
   );
 }
+
+String capitalizeAndRemoveUnderscores(String input) {
+  if (input == null || input.isEmpty) {
+    return input;
+  }
+
+  // Split the input string by underscores
+  List<String> parts = input.split('_');
+
+  // Capitalize the first letter of each part
+  parts = parts.map((part) {
+    if (part.isNotEmpty) {
+      return part[0].toUpperCase() + part.substring(1);
+    }
+    return part;
+  }).toList();
+
+  // Join the parts back together with spaces
+  String result = parts.join(' ');
+
+  return result;
+}
+

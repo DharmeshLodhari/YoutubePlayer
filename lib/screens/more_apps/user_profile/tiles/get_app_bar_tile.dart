@@ -1135,7 +1135,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Icon(
+      icon: const Icon(
         SlydoAppIcon.qr_code,
         size: 16,
         color: Colors.white,
@@ -1378,6 +1378,18 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
             getSearchedUser();
             // }
+          },
+        ),
+      );
+
+      list.add(
+        bottomSheetItem(
+          title: "Customize Profile",
+          iconData: Icons.dashboard_customize_sharp,
+          onTap: () async {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed(Routes.CUSTOMIZE_PROFILE);
+
           },
         ),
       );

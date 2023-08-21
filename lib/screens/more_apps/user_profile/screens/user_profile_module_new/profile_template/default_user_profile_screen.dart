@@ -7,11 +7,14 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
+import '../utils.dart';
+
 class DefaultUserProfileScreen extends StatefulWidget {
   CustomerProfile? searchedUser;
   String? searchedUserName;
   bool isOwner;
   bool isLoading;
+  Map<String, dynamic>? result = {};
 
   DefaultUserProfileScreen({
     Key? key,
@@ -19,6 +22,7 @@ class DefaultUserProfileScreen extends StatefulWidget {
     required this.searchedUserName,
     required this.isOwner,
     required this.isLoading,
+    required this.result,
   }) : super(key: key);
 
   @override
@@ -39,6 +43,8 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
   PageController? _pageController;
   int _currentIndex = 0;
   final PageStorageBucket _bucket = new PageStorageBucket();
+  // Define a list to store the UserTab objects
+  List<UserTab> userTabs = [];
 
   @override
   void initState() {
@@ -46,7 +52,54 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     searchedUser = widget.searchedUser!;
     isOwner = widget.isOwner;
 
-    // Define the tabs and their corresponding data for each user
+    // Initialize a map to store boolean values
+    var boolMap = <String, bool>{};
+
+    // Initialize a list to store the keys in the desired order
+    var orderedKeys = <String>[];
+
+    // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
+    if (widget.result!['results'] != null && widget.result!['results'] is Map<String, dynamic>) {
+      // Iterate through the JSON object and filter boolean values
+      widget.result!['results'].forEach((key, value) {
+        if (value is bool) {
+          boolMap[key] = value;
+        }
+      });
+
+      // Iterate through the JSON object and add tabs for boolean values that are true
+      widget.result!['results']['ordering'].forEach((key) {
+        if (boolMap.containsKey(key)) {
+          orderedKeys.add(key);
+        }
+      });
+    }
+
+
+    // Create a list of keys not in 'ordering'
+    var remainingKeys = boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
+
+    // Add the remaining keys to orderedKeys to ensure they are at the end
+    orderedKeys.addAll(remainingKeys);
+
+    // Create a new map with the ordered keys
+    var reorderedBoolMap = Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key])));
+
+    // Iterate through the JSON object and add tabs for boolean values that are true
+    reorderedBoolMap.forEach((key, value) {
+      if (value is bool && value) {
+        // Add the tab
+        addTab(key, capitalizeAndRemoveUnderscores(key));
+      }
+    });
+
+    // Define the UserTabView using the created userTabs list
+    // UserTabView userView = UserTabView(
+    //   name: "user",
+    //   tabs: userTabs,
+    // );
+
+    //Define the tabs and their corresponding data for each user
     UserTabView userView = UserTabView(
       name: "user",
       tabs: [
@@ -73,7 +126,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
       ],
     );
 
-    // Set the current user here
+    //Set the current user here
     _currentUser = userView;
 
     _tabController = TabController(
@@ -92,6 +145,71 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     if (mounted) setState(() {});
 
     super.initState();
+  }
+
+  void addTab(String key, String label) {
+    switch (key) {
+      // case "product":
+      //   userTabs.add(UserTab(
+      //     label: label,
+      //     child: productTab(widget.searchedUser, isOwner!),
+      //     apiCall: () async => await fetchProductData(searchedUserName),
+      //   ));
+      //   break;
+      // case "service":
+      //   userTabs.add(UserTab(
+      //     label: label,
+      //     child: serviceTab(widget.searchedUser, isOwner!),
+      //     apiCall: () async => await fetchServiceData(searchedUserName),
+      //   ));
+      //   break;
+      case "yarn":
+        userTabs.add(UserTab(
+          label: label,
+          child: yarnTab(searchedUserName),
+          apiCall: () async => await fetchYarnData(searchedUserName),
+        ));
+        break;
+
+      case "moment":
+        userTabs.add(UserTab(
+          label: label,
+          child: momentTab(widget.searchedUser),
+          apiCall: () async => await fetchMomentData(searchedUserName),
+        ));
+        break;
+      case "post":
+        userTabs.add(UserTab(
+          label: label,
+          child: postTab(widget.searchedUser),
+          apiCall: () async => await fetchPostData(searchedUserName),
+        ));
+        break;
+      case "channels":
+        userTabs.add(UserTab(
+          label: label,
+          child: channelTab(searchedUserName),
+          apiCall: () async => await fetchChannelData(searchedUserName),
+        ));
+        break;
+
+      // case "reviews":
+      //   userTabs.add(UserTab(
+      //     label: label,
+      //     child: reviewTab(widget.searchedUser),
+      //     apiCall: () async => ['1'],
+      //   ));
+      //   break;
+      // case "opening_hours":
+      //   userTabs.add(UserTab(
+      //     label: label,
+      //     child: hoursTab(widget.searchedUser),
+      //     apiCall: () async => ['1'],
+      //   ));
+      //   break;
+      default:
+        break;
+    }
   }
 
   void _scrollListener() {
