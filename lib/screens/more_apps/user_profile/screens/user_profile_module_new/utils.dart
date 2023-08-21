@@ -141,3 +141,25 @@ String capitalizeAndRemoveUnderscores(String input) {
   return result;
 }
 
+bool compareMaps(Map<String, bool> map1, Map<String, bool> map2) {
+  // Check if both maps have the same length.
+  if (map1.length != map2.length) {
+    return false;
+  }
+
+  // Iterate through the keys in map1.
+  for (var key in map1.keys) {
+    // Check if the key exists in map2.
+    if (!map2.containsKey(key)) {
+      return false;
+    }
+
+    // Check if the values for the same key are different.
+    if (map1[key] != map2[key]) {
+      return false;
+    }
+  }
+
+  // If all keys and values match, the maps are equal.
+  return true;
+}

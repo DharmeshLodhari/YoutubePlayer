@@ -27,6 +27,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   bool isLoading = false;
   bool isAPILoading = false;
   bool saveRequired = false;
+  bool reloadPreviousPage = false;
   CustomProfileModel customProfileModel = CustomProfileModel();
   // Create a new map to store boolean values
   Map<String, bool> boolMap = {};
@@ -51,12 +52,18 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return Scaffold(
-      key: _scaffoldGeneralSettingKey,
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: scaffoldBody(),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, reorderedBoolMap);
+        return true;
+      },
+      child: Scaffold(
+        key: _scaffoldGeneralSettingKey,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: scaffoldBody(),
+      ),
     );
   }
 
@@ -152,7 +159,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.pop(context, reorderedBoolMap);
         },
       ),
       centerTitle: false,
@@ -345,6 +352,46 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
   Future<void> updateCustomizeProfile() async {
 
+    if(widget.arguments['business'] == 'no'){
+      isLoading = true;
+      if (mounted) setState(() {});
+
+      Map<String, bool> currentArrangement = getCurrentBoolArrangement();
+      List<String> orderingList = currentArrangement.keys.where((key) => key != 'reviews' && key != 'opening_hours').toList();
+
+      Map<String, dynamic> result = {
+        "ordering": orderingList,
+        "product_label": productLabel,
+        "service_label": serviceLabel,
+      };
+
+      // Iterate through the existing map and add each entry to the result map
+      currentArrangement.forEach((key, value) {
+        result[key] = value;
+      });
+
+      await _auth.updateCustomizeProfile(result).then((value) {
+        if(value == true){
+
+          reloadPreviousPage = true;
+          saveRequired = false;
+          showToast(message: "Profile Customization Updated");
+          return true;
+        }else{
+          showToast(message: "Profile Customization Failed");
+          return true;
+        }
+
+      }).catchError((error) {
+        debugPrint(error.toString());
+        showToast(message: error.toString());
+      });
+
+      isLoading = false;
+      if (mounted) setState(() {});
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
 
       isLoading = true;
@@ -369,6 +416,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
       await _auth.updateCustomizeProfile(result).then((value) {
         if(value == true){
 
+          reloadPreviousPage = true;
           saveRequired = false;
           showToast(message: "Profile Customization Updated");
           return true;

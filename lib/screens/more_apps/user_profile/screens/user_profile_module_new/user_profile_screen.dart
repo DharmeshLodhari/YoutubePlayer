@@ -96,7 +96,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         Navigator.pop(context);
         showToast(message: 'Channel not found');
       }
-      getCustomizeProfile();
+      await getCustomizeProfile();
 
       isLoading = false;
       if (mounted) setState(() {});
@@ -130,8 +130,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       }
       return;
     }
-
-    // customProfileModel = CustomProfileModel.fromJson(result['results']);
 
     isLoading = false;
     if (mounted) {
