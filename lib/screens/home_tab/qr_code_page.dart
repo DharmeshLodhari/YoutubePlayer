@@ -21,6 +21,7 @@ import '../../widget/bottom_sheet_item.dart';
 import '../../widget/rounded_background_icon.dart';
 import '../more_apps/payment_and_banking/models/VirtualAccount.dart';
 import '../more_apps/user_profile/models/user.dart';
+import '../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class QrCodePage extends StatefulWidget {
   var arguments;
@@ -262,7 +263,7 @@ class _QrCodePageState extends State<QrCodePage> {
         children: [
           const SizedBox(height: 10.0,),
           Text(
-            virtualAccount!.financialInstitution!.name!,
+            appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
             maxLines: 1,
             style: TextStyle(fontSize: 16, color: HexColor("#151515"), fontWeight: FontWeight.w600),
           ),
@@ -272,7 +273,7 @@ class _QrCodePageState extends State<QrCodePage> {
             style: TextStyle(fontSize: 30, color: HexColor("#151515"), fontWeight: FontWeight.w700),
           ),
           Text(
-            virtualAccount!.accountName!,
+            appendStringDot(virtualAccount!.accountName!, 25),
             maxLines: 1,
             style: TextStyle(fontSize: 16, color: HexColor("#151515"), fontWeight: FontWeight.w600),
           ),
@@ -325,7 +326,7 @@ class _QrCodePageState extends State<QrCodePage> {
         children: [
           const SizedBox(height: 10.0,),
           Text(
-            virtualAccount!.financialInstitution!.name!,
+            appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
             maxLines: 1,
             style: TextStyle(fontSize: 16, color: white, fontWeight: FontWeight.w600),
           ),
@@ -335,7 +336,7 @@ class _QrCodePageState extends State<QrCodePage> {
             style: TextStyle(fontSize: 30, color: white, fontWeight: FontWeight.w700),
           ),
           Text(
-            virtualAccount!.accountName!,
+            appendStringDot(virtualAccount!.accountName!, 25),
             maxLines: 1,
             style: TextStyle(fontSize: 16, color: white, fontWeight: FontWeight.w600),
           ),
@@ -356,15 +357,21 @@ class _QrCodePageState extends State<QrCodePage> {
       child: Column(
         children: [
           const SizedBox(height: 10.0,),
-          userNameWithVerifiedIcon(
-            name: searchedUser == null ? '@${userBloc.user.userName}' : '@${searchedUser!.userName!}',
-            isVerified: searchedUser == null ? userBloc.user.isVerified : searchedUser!.isVerified,
-            verifiedIconColor: verifyGreen,
-            textStyle: TextStyle(
-                fontSize: 14,
-                color: white,
-                fontWeight: FontWeight.w600),
+          Text(
+            appendStringDot(searchedUser == null ? '@${userBloc.user.userName}' :
+            getGroupUsername('@${searchedUser!.userName!}'), 25),
+            maxLines: 1,
+            style: TextStyle(fontSize: 14, color: white, fontWeight: FontWeight.w600),
           ),
+          // userNameWithVerifiedIcon(
+          //   name: searchedUser == null ? '@${userBloc.user.userName}' : '@${searchedUser!.userName!}',
+          //   isVerified: searchedUser == null ? userBloc.user.isVerified : searchedUser!.isVerified,
+          //   verifiedIconColor: verifyGreen,
+          //   textStyle: TextStyle(
+          //       fontSize: 14,
+          //       color: white,
+          //       fontWeight: FontWeight.w600),
+          // ),
           const SizedBox(height: 10.0,),
           Text(
             "SCAN TO PAY",
@@ -386,15 +393,23 @@ class _QrCodePageState extends State<QrCodePage> {
       child: Column(
         children: [
           const SizedBox(height: 10.0,),
-          userNameWithVerifiedIcon(
-            name: searchedUser == null ? '@${userBloc.user.userName}' : '@${searchedUser!.userName!}',
-            isVerified: searchedUser == null ? userBloc.user.isVerified : searchedUser!.isVerified,
-            verifiedIconColor: verifyGreen,
-            textStyle: TextStyle(
-                fontSize: 14,
-                color: HexColor("#151515"),
-                fontWeight: FontWeight.w600),
+
+          Text(
+            appendStringDot(searchedUser == null ? '@${userBloc.user.userName}' :
+            getGroupUsername('@${searchedUser!.userName!}'), 25),
+            maxLines: 1,
+            style: TextStyle(fontSize: 14, color: HexColor("#151515"), fontWeight: FontWeight.w600),
           ),
+
+          // userNameWithVerifiedIcon(
+          //   name: searchedUser == null ? '@${userBloc.user.userName}' : getGroupUsername('@${searchedUser!.userName!}'),
+          //   isVerified: searchedUser == null ? userBloc.user.isVerified : searchedUser!.isVerified,
+          //   verifiedIconColor: verifyGreen,
+          //   textStyle: TextStyle(
+          //       fontSize: 14,
+          //       color: HexColor("#151515"),
+          //       fontWeight: FontWeight.w600),
+          // ),
           const SizedBox(height: 10.0,),
           Text(
             "SCAN TO PAY",

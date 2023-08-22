@@ -362,9 +362,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     });
 
     String channelUsername = getGroupUsername(
-        channelDetail!['group_username'] != null
-            ? channelDetail!['group_username']
-            : channelDetail!['group_name']);
+        channelDetail!['group_username'] ?? channelDetail!['group_name']);
 
     return Positioned(
       top: searchedUser?.bio == null || searchedUser!.bio!.isEmpty ? 180 : 150,
@@ -1138,19 +1136,37 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         color: Colors.white,
       ),
       onTap: () async {
+        if(channelDetail != null){
+          //get the account detail of clicked channel
 
-        //get the account detail of clicked user
-        VirtualAccount virtualAccount = VirtualAccount(
-          accountName: searchedUser!.wallet!.accountName,
-          accountNumber: searchedUser!.wallet!.accountNumber,
-          financialInstitution: searchedUser!.wallet!.financialInstitution!,
-          customerUsername: searchedUser!.wallet!.customerUsername,
-          note: "",
-            );
+          Map<String, dynamic> financial = channelDetail!['owner']['wallet']['financial_institution'];
 
-        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile':
-        searchedUser,
-          'virtualAccount': virtualAccount}));
+              VirtualAccount virtualAccount = VirtualAccount(
+            accountName: channelDetail!['owner']['wallet']['account_name'],
+            accountNumber: channelDetail!['owner']['wallet']['account_number'],
+            financialInstitution: FinancialInstitution.fromJson(financial),
+            customerUsername: channelDetail!['owner']['wallet']['customer_username'],
+            note: "",
+          );
+
+          NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile':
+          searchedUser,
+            'virtualAccount': virtualAccount}));
+        }else{
+          //get the account detail of clicked user
+          VirtualAccount virtualAccount = VirtualAccount(
+            accountName: searchedUser!.wallet!.accountName,
+            accountNumber: searchedUser!.wallet!.accountNumber,
+            financialInstitution: searchedUser!.wallet!.financialInstitution!,
+            customerUsername: searchedUser!.wallet!.customerUsername,
+            note: "",
+          );
+
+          NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile':
+          searchedUser,
+            'virtualAccount': virtualAccount}));
+        }
+
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
