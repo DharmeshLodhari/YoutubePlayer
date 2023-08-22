@@ -4,6 +4,8 @@ import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../payment_and_banking/models/FinancialInstitution.dart';
+
 class ShippingAddress {
   String? addressLineOne;
   String? addressLineTwo;
@@ -27,14 +29,14 @@ class ShippingAddress {
       this.countryIsoCode});
 
   ShippingAddress.fromJson(var object) {
-    this.addressLineOne = object['address_line_1'] ?? "";
-    this.addressLineTwo = object['address_line_2'] ?? "";
-    this.city = object['city'] ?? "";
-    this.userState =
+    addressLineOne = object['address_line_1'] ?? "";
+    addressLineTwo = object['address_line_2'] ?? "";
+    city = object['city'] ?? "";
+    userState =
         object['state'] != null ? UserState.fromJson(object['state']) : null;
-    this.country = object['country'] ?? "";
-    this.countryIsoCode = object['country_iso_code'] ?? "NG";
-    this.postCode = object['post_code'];
+    country = object['country'] ?? "";
+    countryIsoCode = object['country_iso_code'] ?? "NG";
+    postCode = object['post_code'];
   }
 
   Map<String, dynamic> toJson() {
@@ -126,25 +128,25 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['account_type'] = this.type;
-    data['avatar'] = this.avatar;
-    data['default_currency'] = this.currency;
-    data['full_name'] = this.fullName;
-    data['nickname'] = this.nickName;
-    data['is_verified'] = this.isVerified;
-    data['password'] = this.password;
-    data['phone_number'] = this.phoneNumber;
-    data['qr_code'] = this.qrCode;
-    data['url'] = this.url;
-    data['rating'] = this.rating;
-    data['username'] = this.userName;
-    data['uuid'] = this.uuid;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['account_type'] = type;
+    data['avatar'] = avatar;
+    data['default_currency'] = currency;
+    data['full_name'] = fullName;
+    data['nickname'] = nickName;
+    data['is_verified'] = isVerified;
+    data['password'] = password;
+    data['phone_number'] = phoneNumber;
+    data['qr_code'] = qrCode;
+    data['url'] = url;
+    data['rating'] = rating;
+    data['username'] = userName;
+    data['uuid'] = uuid;
     return data;
   }
 
   Map<String, dynamic> toMap() {
-    var map = new Map<String, dynamic>();
+    var map = <String, dynamic>{};
     map["uuid"] = uuid;
     map["fullName"] = fullName;
     map["nickname"] = nickName;
@@ -159,19 +161,19 @@ class User {
   }
 
   String? displayName() {
-    if (this.nickName != "" && this.nickName != null) {
-      if (this.type != null &&
-          this.type != "" &&
-          this.type != "Business" &&
-          this.type != "Developer") {
-        return this.nickName;
+    if (nickName != "" && nickName != null) {
+      if (type != null &&
+          type != "" &&
+          type != "Business" &&
+          type != "Developer") {
+        return nickName;
       }
     }
 
-    if (this.fullName != null && this.fullName != "") {
-      return this.fullName;
+    if (fullName != null && fullName != "") {
+      return fullName;
     }
-    return this.userName;
+    return userName;
   }
 }
 
@@ -196,6 +198,8 @@ class CustomerProfile {
   double rating;
   bool? isFollowing;
   String? dateJoined;
+  ProfileMenu? profileMenu;
+  Wallet? wallet;
 
   // Pass in as named parameter in constructor
   CustomerProfile(
@@ -256,6 +260,13 @@ class CustomerProfile {
       profile.uuid = json['uuid'] ?? "";
     }
 
+    if (json['profile_menu'] != null) {
+      profile.profileMenu = ProfileMenu.fromJson(json['profile_menu']);
+    }
+    if (json['wallet'] != null) {
+      profile.wallet = Wallet.fromJson(json['wallet']);
+    }
+
     return profile;
   }
 
@@ -296,73 +307,223 @@ class CustomerProfile {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
 
     // print('User type::: ${data['type']}');
 
-    data['full_name'] = this.fullName;
-    data['username'] = this.userName;
-    data['nickname'] = this.nickName;
-    data['avatar'] = this.avatar;
-    data['qr_code'] = this.qrCode;
-    data['type'] = this.type;
-    data['bio'] = this.bio;
+    data['full_name'] = fullName;
+    data['username'] = userName;
+    data['nickname'] = nickName;
+    data['avatar'] = avatar;
+    data['qr_code'] = qrCode;
+    data['type'] = type;
+    data['bio'] = bio;
     if (data['type'] == "User") {
-      data['wallpaper'] = this.wallpaper;
+      data['wallpaper'] = wallpaper;
     } else if (data['type'] != null) {
-      data['wallpaper'] = this.userAbout?.wallpaper;
+      data['wallpaper'] = userAbout?.wallpaper;
     }
-    data['conversation_id'] = this.conversationId;
-    data['status'] = this.status.name;
-    data['uuid'] = this.uuid;
-    data['default_currency'] = this.defaultCurrency;
-    data['is_verified'] = this.isVerified;
+    data['conversation_id'] = conversationId;
+    data['status'] = status.name;
+    data['uuid'] = uuid;
+    data['default_currency'] = defaultCurrency;
+    data['is_verified'] = isVerified;
     // if (data['profile'] != null) {
     //   data['profile'] = this.userAbout!.toJson();
     // }
     // data['profile'] = this.userAbout!.toJson();
+    if (profileMenu != null) {
+      data['profile_menu'] = profileMenu!.toJson();
+    }
+    if (wallet != null) {
+      data['wallet'] = wallet!.toJson();
+    }
     return data;
   }
 
   Map<String, dynamic> toJsonForDB() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['full_name'] = this.fullName;
-    data['username'] = this.userName;
-    data['avatar'] = this.avatar;
-    data['nickname'] = this.nickName;
-    data['qr_code'] = this.qrCode;
-    data['type'] = this.type;
-    data['conversation_id'] = this.conversationId;
-    data['rating'] = this.rating;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['full_name'] = fullName;
+    data['username'] = userName;
+    data['avatar'] = avatar;
+    data['nickname'] = nickName;
+    data['qr_code'] = qrCode;
+    data['type'] = type;
+    data['conversation_id'] = conversationId;
+    data['rating'] = rating;
 
     return data;
   }
 
   Map<String, dynamic> toJsonToSendInToChat() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['full_name'] = this.fullName;
-    data['username'] = this.userName;
-    data['avatar'] = this.avatar;
-    data['qr_code'] = this.qrCode;
-    data['type'] = this.type;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['full_name'] = fullName;
+    data['username'] = userName;
+    data['avatar'] = avatar;
+    data['qr_code'] = qrCode;
+    data['type'] = type;
     return data;
   }
 
   String? displayName() {
-    if (this.nickName != "" && this.nickName != null) {
-      if (this.type != null &&
-          this.type != "" &&
-          this.type != "Business" &&
-          this.type != "Developer") {
-        return messageDecoderWithEmoji(this.nickName);
+    if (nickName != "" && nickName != null) {
+      if (type != null &&
+          type != "" &&
+          type != "Business" &&
+          type != "Developer") {
+        return messageDecoderWithEmoji(nickName);
       }
     }
 
-    if (this.fullName != null && this.fullName != "") {
-      return messageDecoderWithEmoji(this.fullName);
+    if (fullName != null && fullName != "") {
+      return messageDecoderWithEmoji(fullName);
     }
-    return messageDecoderWithEmoji(this.userName);
+    return messageDecoderWithEmoji(userName);
   }
+}
+
+
+class ProfileMenu {
+String? id;
+bool? product;
+bool? service;
+bool? blog;
+bool? yarn;
+bool? moment;
+bool? channels;
+bool? reviews;
+bool? openingHours;
+List<String>? ordering;
+String? productLabel;
+String? serviceLabel;
+String? createdAt;
+String? updatedAt;
+
+ProfileMenu({this.id, this.product, this.service, this.blog, this.yarn, this.moment, this.channels, this.reviews, this.openingHours, this.ordering, this.productLabel, this.serviceLabel, this.createdAt, this.updatedAt});
+
+ProfileMenu.fromJson(Map<String, dynamic> json) {
+id = json['id'];
+product = json['product'];
+service = json['service'];
+blog = json['blog'];
+yarn = json['yarn'];
+moment = json['moment'];
+channels = json['channels'];
+reviews = json['reviews'];
+openingHours = json['opening_hours'];
+ordering = json['ordering'].cast<String>();
+productLabel = json['product_label'];
+serviceLabel = json['service_label'];
+createdAt = json['created_at'];
+updatedAt = json['updated_at'];
+}
+
+Map<String, dynamic> toJson() {
+final Map<String, dynamic> data = <String, dynamic>{};
+data['id'] = id;
+data['product'] = product;
+data['service'] = service;
+data['blog'] = blog;
+data['yarn'] = yarn;
+data['moment'] = moment;
+data['channels'] = channels;
+data['reviews'] = reviews;
+data['opening_hours'] = openingHours;
+data['ordering'] = ordering;
+data['product_label'] = productLabel;
+data['service_label'] = serviceLabel;
+data['created_at'] = createdAt;
+data['updated_at'] = updatedAt;
+return data;
+}
+}
+
+class Wallet {
+String? accountNumber;
+FinancialInstitution? financialInstitution;
+AccountTier? accountTier;
+String? accountName;
+String? customerUsername;
+bool? isActive;
+String? createdAt;
+String? updatedAt;
+String? note;
+
+Wallet({this.accountNumber, this.financialInstitution, this.accountTier, this.accountName, this.customerUsername, this.isActive, this.createdAt, this.updatedAt, this.note});
+
+Wallet.fromJson(Map<String, dynamic> json) {
+accountNumber = json['account_number'];
+financialInstitution = json['financial_institution'] != null ? FinancialInstitution.fromJson(json['financial_institution']) : null;
+accountTier = json['account_tier'] != null ? AccountTier.fromJson(json['account_tier']) : null;
+accountName = json['account_name'];
+customerUsername = json['customer_username'];
+isActive = json['is_active'];
+createdAt = json['created_at'];
+updatedAt = json['updated_at'];
+note = json['note'];
+}
+
+Map<String, dynamic> toJson() {
+final Map<String, dynamic> data = <String, dynamic>{};
+data['account_number'] = accountNumber;
+if (financialInstitution != null) {
+data['financial_institution'] = financialInstitution!.toJson();
+}
+if (accountTier != null) {
+data['account_tier'] = accountTier!.toJson();
+}
+data['account_name'] = accountName;
+data['customer_username'] = customerUsername;
+data['is_active'] = isActive;
+data['created_at'] = createdAt;
+data['updated_at'] = updatedAt;
+data['note'] = note;
+return data;
+}
+}
+
+// class FinancialInstitution {
+// String? name;
+// String? country;
+// String? logo;
+//
+// FinancialInstitution({this.name, this.country, this.logo});
+//
+// FinancialInstitution.fromJson(Map<String, dynamic> json) {
+// name = json['name'];
+// country = json['country'];
+// logo = json['logo'];
+// }
+//
+// Map<String, dynamic> toJson() {
+// final Map<String, dynamic> data = <String, dynamic>{};
+// data['name'] = name;
+// data['country'] = country;
+// data['logo'] = logo;
+// return data;
+// }
+// }
+
+class AccountTier {
+String? tierType;
+String? dailyCumulativeTransactionLimit;
+String? cumulativeBalance;
+
+AccountTier({this.tierType, this.dailyCumulativeTransactionLimit, this.cumulativeBalance});
+
+AccountTier.fromJson(Map<String, dynamic> json) {
+tierType = json['tier_type'];
+dailyCumulativeTransactionLimit = json['daily_cumulative_transaction_limit'];
+cumulativeBalance = json['cumulative_balance'];
+}
+
+Map<String, dynamic> toJson() {
+final Map<String, dynamic> data = <String, dynamic>{};
+data['tier_type'] = tierType;
+data['daily_cumulative_transaction_limit'] = dailyCumulativeTransactionLimit;
+data['cumulative_balance'] = cumulativeBalance;
+return data;
+}
 }
 
 class UserLocation {

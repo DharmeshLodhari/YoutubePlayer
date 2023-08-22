@@ -647,14 +647,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget getUserTile(var object) {
-    CustomerProfile user = CustomerProfile(
-      avatar: object["avatar"],
-      fullName: object["full_name"],
-      qrCode: object["qr_code"],
-      userName: object["username"],
-      type: object['type'] ?? 'user',
-      isVerified: object['is_verified'] ?? false,
-    );
+    CustomerProfile user = CustomerProfile.fromJson(object);
 
     // if (user.userName.toString().toLowerCase() == "slydo" ||
     //     user.userName.toString().toLowerCase() == "slydo_envelope") {
