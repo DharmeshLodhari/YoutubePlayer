@@ -88,6 +88,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           return;
         } else if (data != null && data.isNotEmpty) {
           channelDetail.addAll(data['results']);
+
         } else {
           showToast(message: 'Something went wrong');
         }
@@ -199,9 +200,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
       CustomerProfile profile = CustomerProfile(
         fullName: name,
-        userName: channelDetail['group_username'] != null
-            ? channelDetail['group_username']
-            : '',
+        userName: channelDetail['group_name'] ?? '',
         avatar: channelDetail['owner']['avatar'],
         bio: channelDetail['description'],
         dateJoined: channelDetail['created_at'],

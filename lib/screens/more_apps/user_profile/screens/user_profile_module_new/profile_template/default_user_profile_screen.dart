@@ -359,12 +359,11 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
   }
 
   refreshTabs(Map<String, bool> val) {
-    debugPrint('Fola back user::: ${val}');
 
     if (compareMaps(reorderedBoolMap, val)) {
-      print('The maps are equal.');
+      debugPrint('The maps are equal.');
     } else {
-      print('The maps are not equal.');
+      debugPrint('The maps are not equal.');
 
       // Step 1: Clear the existing tabs
       userTabs.clear();

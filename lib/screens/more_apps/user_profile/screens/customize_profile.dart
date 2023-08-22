@@ -4,6 +4,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../locale/app_localization.dart';
+import '../../../../widget/curved_btn.dart';
 import '../../../../widget/customized_textform_field.dart';
 import '../models/custom_profile_model.dart';
 import '../user_auth.dart';
@@ -442,14 +443,29 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   }
 
   Widget saveBtn() {
-    return GestureDetector(
-      onTap: updateCustomizeProfile,
-      child: Center(
-        child: Text(
-          "Save",
-          style: TextStyle(
-              color: navyBlue, fontSize: 16, fontWeight: FontWeight.bold),
-        ),
+    return Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.symmetric(horizontal: 24),
+      constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width - 240),
+      child: CurvedButton(
+        height: 32,
+        textColor: Colors.white,
+        backgroundColor: navyBlue,
+        text: "Save",
+        fontSize: 10,
+        borderRadius: 20,
+        isLoading: isAPILoading,
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+          isAPILoading = true;
+          if (mounted) setState(() {});
+          updateCustomizeProfile();
+
+          isAPILoading = false;
+          if (mounted) setState(() {});
+        },
       ),
     );
   }
