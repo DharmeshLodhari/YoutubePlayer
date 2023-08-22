@@ -91,12 +91,8 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget getUserTile(var object) {
-    CustomerProfile user = CustomerProfile(
-        avatar: object["avatar"],
-        fullName: object["full_name"],
-        qrCode: object["qr_code"],
-        userName: object["username"],
-        type: object['type'] ?? 'user');
+
+    CustomerProfile user = CustomerProfile.fromJson(object);
 
     if (user.userName.toString().toLowerCase() == "slydo" ||
         user.userName.toString().toLowerCase() == "slydo_envelope") {

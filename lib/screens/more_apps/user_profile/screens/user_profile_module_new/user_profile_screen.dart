@@ -29,7 +29,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   late UserBloc userBloc;
 
   bool isLoading = true;
-  final _auth = UserAuth();
 
   _UserProfileScreenState({this.arguments});
 
@@ -96,7 +95,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         Navigator.pop(context);
         showToast(message: 'Channel not found');
       }
-      await getCustomizeProfile();
 
       isLoading = false;
       if (mounted) setState(() {});
@@ -114,27 +112,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     searchedUser = user;
 
     checkCurrentUserIsInRequestList();
-    await getCustomizeProfile();
 
     isLoading = false;
     if (mounted) setState(() {});
-  }
-
-  Future<void> getCustomizeProfile() async {
-     result = await _auth.customizeProfile();
-
-    if (result == null || result!.isEmpty) {
-      isLoading = false;
-      if (mounted) {
-        setState(() {});
-      }
-      return;
-    }
-
-    isLoading = false;
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   void checkCurrentUserIsInRequestList() async {
@@ -206,7 +186,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         },
       ),
       title: isLoading
-          ? SizedBox.shrink()
+          ? const SizedBox.shrink()
           : userNameWithVerifiedIcon(
               name: searchedUser!.displayName()!,
               isVerified: searchedUser!.isVerified),
@@ -233,13 +213,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       return ChannelProfileScreen(
         searchedUser: profile,
         channelDetail: channelDetail,
-        searchedUserName: channelDetail['group_username'] != null
-            ? channelDetail['group_username']
-            : '',
-        // searchedUserName: channelDetail['owner']['username'],
+        searchedUserName: channelDetail['group_username'] ?? '',
         isOwner: isOwner,
         isLoading: isLoading,
-        result: result,
       );
     } else if (searchedUser != null &&
         searchedUser!.type!.toLowerCase() == 'user') {
@@ -248,7 +224,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         searchedUserName: searchedUserName,
         isOwner: isOwner,
         isLoading: isLoading,
-        result: result,
       );
     }
     else if (searchedUser != null) {
@@ -257,7 +232,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         searchedUserName: searchedUserName,
         isOwner: isOwner,
         isLoading: isLoading,
-        result: result,
       );
     } else {
       return Container();

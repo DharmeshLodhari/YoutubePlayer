@@ -14,7 +14,6 @@ class DefaultUserProfileScreen extends StatefulWidget {
   String? searchedUserName;
   bool isOwner;
   bool isLoading;
-  Map<String, dynamic>? result = {};
 
   DefaultUserProfileScreen({
     Key? key,
@@ -22,7 +21,6 @@ class DefaultUserProfileScreen extends StatefulWidget {
     required this.searchedUserName,
     required this.isOwner,
     required this.isLoading,
-    required this.result,
   }) : super(key: key);
 
   @override
@@ -46,12 +44,15 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
   // Define a list to store the UserTab objects
   List<UserTab> userTabs = [];
   Map<String, bool> reorderedBoolMap = {};
+  List<String> orderingList = [];
 
   @override
   void initState() {
     searchedUserName = widget.searchedUserName!;
     searchedUser = widget.searchedUser!;
     isOwner = widget.isOwner;
+
+    Map<String, dynamic>? result = searchedUser!.profileMenu!.toJson();
 
     // Initialize a map to store boolean values
     var boolMap = <String, bool>{};
@@ -60,20 +61,21 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     var orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
-    if (widget.result!['results'] != null && widget.result!['results'] is Map<String, dynamic>) {
+    if (result != null && result is Map<String, dynamic>) {
+      orderingList = searchedUser!.profileMenu!.ordering!;
       // Iterate through the JSON object and filter boolean values
-      widget.result!['results'].forEach((key, value) {
+      result.forEach((key, value) {
         if (value is bool) {
           boolMap[key] = value;
         }
       });
 
       // Iterate through the JSON object and add tabs for boolean values that are true
-      widget.result!['results']['ordering'].forEach((key) {
+      for (var key in orderingList) {
         if (boolMap.containsKey(key)) {
           orderedKeys.add(key);
         }
-      });
+      }
     }
 
 

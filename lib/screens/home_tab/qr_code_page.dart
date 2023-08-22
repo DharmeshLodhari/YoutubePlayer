@@ -2,10 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/services/app_tutorial_controller.dart';
-import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:disk_space/disk_space.dart';
@@ -353,13 +350,14 @@ class _QrCodePageState extends State<QrCodePage> {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName": userBloc.user.userName});
+            arguments: {"searchedUserName": searchedUser == null ?
+            userBloc.user.userName : searchedUser!.userName});
       },
       child: Column(
         children: [
           const SizedBox(height: 10.0,),
           userNameWithVerifiedIcon(
-            name: searchedUser == null ? userBloc.user.displayName() : searchedUser!.userName!,
+            name: searchedUser == null ? '@${userBloc.user.userName}' : '@${searchedUser!.userName!}',
             isVerified: searchedUser == null ? userBloc.user.isVerified : searchedUser!.isVerified,
             verifiedIconColor: verifyGreen,
             textStyle: TextStyle(
@@ -382,7 +380,8 @@ class _QrCodePageState extends State<QrCodePage> {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName": userBloc.user.userName});
+            arguments: {"searchedUserName": searchedUser == null ?
+            userBloc.user.userName : searchedUser!.userName});
       },
       child: Column(
         children: [

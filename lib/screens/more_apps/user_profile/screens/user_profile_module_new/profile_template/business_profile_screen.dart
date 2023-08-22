@@ -12,7 +12,6 @@ class BusinessProfileScreen extends StatefulWidget {
   String? searchedUserName;
   bool isOwner;
   bool isLoading;
-  Map<String, dynamic>? result = {};
 
   BusinessProfileScreen({
     Key? key,
@@ -20,7 +19,6 @@ class BusinessProfileScreen extends StatefulWidget {
     required this.searchedUserName,
     required this.isOwner,
     required this.isLoading,
-    required this.result,
   }) : super(key: key);
 
   @override
@@ -43,13 +41,18 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   // Define a list to store the UserTab objects
   List<UserTab> userTabs = [];
   Map<String, bool> reorderedBoolMap = {};
+  Map<String, dynamic> result = {};
+  List<String> orderingList = [];
 
 
   @override
   void initState() {
     searchedUserName = widget.searchedUserName!;
-    if (searchedUser != null) {
+
+    if (widget.searchedUser != null) {
       searchedUser = widget.searchedUser!;
+      result = searchedUser!.profileMenu!.toJson();
+      orderingList = searchedUser!.profileMenu!.ordering!;
     }
 
     isOwner = widget.isOwner;
@@ -61,20 +64,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     var orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
-    if (widget.result!['results'] != null && widget.result!['results'] is Map<String, dynamic>) {
+    if (result != null && result is Map<String, dynamic>) {
       // Iterate through the JSON object and filter boolean values
-      widget.result!['results'].forEach((key, value) {
+      result.forEach((key, value) {
         if (value is bool) {
           boolMap[key] = value;
         }
       });
 
       // Iterate through the JSON object and add tabs for boolean values that are true
-      widget.result!['results']['ordering'].forEach((key) {
+      for (var key in orderingList) {
         if (boolMap.containsKey(key)) {
           orderedKeys.add(key);
         }
-      });
+      }
     }
 
 
