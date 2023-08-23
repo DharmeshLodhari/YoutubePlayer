@@ -64,8 +64,12 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
     bool isSend = widget.jobMessage['author'] == userBloc.user.userName;
 
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
-          arguments: {'jobId': jobServiceToChatModel!.id, 'listingId': '','job':jobServiceToChatModel}),
+      onTap: () =>
+          Navigator.pushNamed(context, Routes.MY_JOB_DETAILS, arguments: {
+        'jobId': jobServiceToChatModel!.id,
+        'listingId': '',
+        'job': jobServiceToChatModel
+      }),
       child: Column(
         children: [
           Row(
@@ -215,7 +219,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                           ),
                           const Spacer(),
                           Text(
-                            "${getTimeDifference(jobServiceToChatModel!.creationDate!)} ago | Accepted By : ${jobServiceToChatModel!.applicantsCount}",
+                            "${getTimeDifference(jobServiceToChatModel!.creationDate!)} ago | Applied by : ${jobServiceToChatModel!.applicantsCount}",
                             style: TextStyle(
                               color: darkGrey,
                               fontSize: 10,

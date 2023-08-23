@@ -128,7 +128,8 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                       const SizedBox(
                         height: 10,
                       ),
-                      const Expanded(flex: 2, child: CustomText(title: 'Location')),
+                      const Expanded(
+                          flex: 2, child: CustomText(title: 'Location')),
                     ],
                   ),
                   const SizedBox(
@@ -172,11 +173,13 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                 children: [
                   Row(
                     children: [
-                      const Expanded(flex: 3, child: CustomText(title: 'posted by')),
+                      const Expanded(
+                          flex: 3, child: CustomText(title: 'posted by')),
                       const SizedBox(
                         height: 10,
                       ),
-                      const Expanded(flex: 2, child: CustomText(title: 'Status')),
+                      const Expanded(
+                          flex: 2, child: CustomText(title: 'Status')),
                     ],
                   ),
                   const SizedBox(
@@ -226,7 +229,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomText(title: 'Accepted By'),
+                  const CustomText(title: 'Applied by'),
                   const SizedBox(
                     height: 6,
                   ),

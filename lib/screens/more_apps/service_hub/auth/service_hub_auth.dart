@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 
-
 class ServiceHubAuthService extends AuthService {
   // get list of categories
   Future<ListOfCategories?> getListOfCategories(
@@ -32,7 +31,10 @@ class ServiceHubAuthService extends AuthService {
     debugPrint('STORE URL ---> $url');
 
     var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers,);
+    var response = await httpGet(
+      url,
+      headers: headers,
+    );
     debugPrint('STORE URL BODY ---> ${response.body}');
 
     if (response.statusCode == 200) {
@@ -89,7 +91,6 @@ class ServiceHubAuthService extends AuthService {
         url += "category=$category&";
       }
       if (sortby != null && sortby != '') {
-        
         url = "${url}sort_by=$sortby&";
       }
       if (priceFrom != null && priceFrom != '') {
@@ -534,11 +535,12 @@ class ServiceHubAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
     debugPrint("response:- ${response.body}");
+    debugPrint("response:- ${response.statusCode}");
     if (response.statusCode == 204) {
       return true;
     } else {
       var jsonData = json.decode(response.body);
-      throw jsonData;
+      return false;
     }
   }
 
@@ -578,8 +580,8 @@ class ServiceHubAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-        url = "${AppConfig.baseUrl}/api/v1/job-service/job/?related=$username&search=$searchText";
-
+      url =
+          "${AppConfig.baseUrl}/api/v1/job-service/job/?related=$username&search=$searchText";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -597,7 +599,4 @@ class ServiceHubAuthService extends AuthService {
     var jsonData = json.decode(response.body);
     return Future.error("$jsonData");
   }
-
-
 }
-

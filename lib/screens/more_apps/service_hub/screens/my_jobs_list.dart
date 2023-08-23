@@ -49,7 +49,6 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
   final GlobalKey<ScaffoldMessengerState> _myJobsScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
-
   bool _tabsVisible = true;
 
   void _showTabs(bool visible) {
@@ -79,6 +78,8 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
           }
           return;
         }
+
+        log('message......${result.toJson()}');
 
         listCount = result.count;
         listNext = result.next;
@@ -389,7 +390,6 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
   }
 
   Widget getAppliedJobList() {
-
     if (appliedMyJobListing.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -447,9 +447,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
         ),
       ),
       bottom: tabBar() as PreferredSizeWidget,
-      actions: [
-        _searchBtn()
-      ],
+      actions: [_searchBtn()],
     );
   }
 
@@ -498,6 +496,4 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
       enableMargin: true,
     );
   }
-
-  
 }

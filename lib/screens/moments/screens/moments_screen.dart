@@ -793,9 +793,11 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
       if (e.mediaType == 'video') {
         storyItems.add(Shiddo.pageVideo(e.media!,
             controller: storyController,
-            duration: Duration(seconds: 30),
+            duration: Duration(seconds: e.duration!),
             momentsModel: e));
       }
+      log('message...first${widget.exploreMomentsModelList[widget.index].moments!.length}');
+      log('message...second${e}');
     }).toList();
     super.initState();
   }
@@ -819,9 +821,9 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
           // NavigationUtil.push(
           //   context,
           //   screen: MomentsDetailsScreen(
-          //     indexOfMoment: index,
+          //     indexOfMoment: widget.index,
           //     momentsModelList:
-          //         exploreMomentsModelList.map((e) => e.moments!).toList(),
+          //         widget.exploreMomentsModelList.map((e) => e.moments!).toList(),
           //   ),
           // );
         }

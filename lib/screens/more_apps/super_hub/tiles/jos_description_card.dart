@@ -85,7 +85,7 @@ class JobDescriptionCard extends StatelessWidget {
         Row(
           children: [
             Text(
-              "2 mins ago | Accepted By : 40+",
+              "2 mins ago | Applied by : 40+",
               style: TextStyle(
                 color: blackFont,
                 fontSize: 8,

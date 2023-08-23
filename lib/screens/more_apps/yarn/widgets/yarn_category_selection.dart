@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_by_category_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/category_chip.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_list_screen.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:flutter/material.dart';

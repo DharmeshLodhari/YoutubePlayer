@@ -147,53 +147,69 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return Scaffold(
       appBar: appBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            getJobDetails(),
-            isLoading
-                ? Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisSpacing: 14,
-                          mainAxisExtent: 180,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
+      body: Stack(children: [
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              getJobDetails(),
+              isLoading
+                  ? Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisSpacing: 14,
+                            mainAxisExtent: 180,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
+                          ),
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
                         ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          );
-                        },
                       ),
-                    ),
-                  )
-                : SizedBox.shrink(),
-            Visibility(
-              visible: !isLoading && job == null,
-              child: Center(
-                child: Column(
-                  children: [
-                    Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                    SizedBox(height: 20),
-                    Text('No items at the moment'),
-                  ],
+                    )
+                  : SizedBox.shrink(),
+              Visibility(
+                visible: !isLoading && job == null,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Lottie.asset('assets/lottie/no_moment_lottie.json'),
+                      SizedBox(height: 20),
+                      Text('No items at the moment'),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+        Visibility(
+          visible: !isLoading,
+          child: Positioned(
+            bottom: 1,
+            right: 1,
+            left: 1,
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+              child: getSubmitData(),
+            ),
+          ),
+        )
+      ]),
     );
   }
 
@@ -226,8 +242,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       actionOneTextColor: black,
       actionTwoBgColor: navyBlue,
       actionTwoTextColor: white,
-      title: "Accept",
-      description: "Are you sure you want to apply for this job?",
+      title: "Apply",
+      description: "Are you sure you want to apply this job?",
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.accept,
     );
@@ -400,6 +416,31 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                       ],
                     ),
                   ),
+                  const Divider(),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: "Category",
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        Text(
+                          "${job!.category?.name}",
+                          style: TextStyle(
+                            color: blackFont.withOpacity(.8),
+                            fontSize: 14,
+                            fontFamily: "Open Sans",
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
                   if (job!.isListed!) getJobActivityStatusRow(),
 
@@ -461,10 +502,10 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                   const SizedBox(
                     height: 55,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: getSubmitData(),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(10.0),
+                  //   child: getSubmitData(),
+                  // ),
                   // getMutliSelectDropdown()
                 ],
               )
@@ -1036,7 +1077,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     }).then((value) {
       print(value.toString() + 'Create Listing');
       Navigator.pushNamed(context, Routes.SUPER_HUB);
-      showToast(message: AppLocalization.of(context)!.jobAddedSuccessfully);
+      showToast(message: AppLocalization.of(context)!.jobListSuccessfully);
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
