@@ -11,8 +11,11 @@ import '../user_auth.dart';
 
 class CustomizeProfileScreen extends StatefulWidget {
   final arguments;
+  // final Function(Map<String, dynamic>)? callbackProductService;
 
-  CustomizeProfileScreen({required this.arguments, Key? key}) : super(key: key);
+  CustomizeProfileScreen({required this.arguments,
+    // this.callbackProductService,
+    Key? key}) : super(key: key);
 
   @override
   CustomizeProfileScreenState createState() => CustomizeProfileScreenState();
@@ -38,6 +41,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   final TextEditingController productLabelController = TextEditingController();
   final TextEditingController serviceLabelController = TextEditingController();
   Map<String, bool> reorderedBoolMap = {};
+  Function(Map<String, dynamic>)? callbackProductService;
 
 
   @protected
@@ -45,6 +49,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
     isLoading = true;
     getCustomizeProfile();
+    callbackProductService = widget.arguments['callbackProductService'];
 
     super.initState();
   }
@@ -52,6 +57,8 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
+    // final Function(Map<String, dynamic>) callbackProductService = widget.arguments['callbackProductService'];
 
     return WillPopScope(
       onWillPop: () async {
@@ -171,13 +178,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
       ),
       actions: <Widget>[
         if(saveRequired)...[
-          Row(
-            children: [
-              saveBtn(),
-              const SizedBox(width: 20.0),
-            ],
-          ),
-
+          saveBtn(),
         ],
 
       ],
@@ -419,6 +420,10 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
           reloadPreviousPage = true;
           saveRequired = false;
+          if (callbackProductService != null) {
+            callbackProductService!(result);
+          }
+
           showToast(message: "Profile Customization Updated");
           return true;
         }else{
@@ -445,7 +450,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   Widget saveBtn() {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: 34),
       constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width - 240),
       child: CurvedButton(

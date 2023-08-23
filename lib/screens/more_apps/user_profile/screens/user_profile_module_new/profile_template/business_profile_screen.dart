@@ -42,7 +42,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   List<UserTab> userTabs = [];
   Map<String, bool> reorderedBoolMap = {};
   Map<String, dynamic> result = {};
+  Map<String, dynamic> productServiceLabel = {};
   List<String> orderingList = [];
+  String productLabel = "";
+  String serviceLabel = "";
 
 
   @override
@@ -53,6 +56,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       searchedUser = widget.searchedUser!;
       result = searchedUser!.profileMenu!.toJson();
       orderingList = searchedUser!.profileMenu!.ordering!;
+      productLabel = searchedUser!.profileMenu!.productLabel!;
+      serviceLabel = searchedUser!.profileMenu!.serviceLabel!;
     }
 
     isOwner = widget.isOwner;
@@ -128,14 +133,14 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     switch (key) {
       case "product":
         userTabs.add(UserTab(
-          label: label,
+          label: productLabel,
           child: productTab(widget.searchedUser, isOwner!),
           apiCall: () async => await fetchProductData(searchedUserName),
         ));
         break;
       case "service":
         userTabs.add(UserTab(
-          label: label,
+          label: serviceLabel,
           child: serviceTab(widget.searchedUser, isOwner!),
           apiCall: () async => await fetchServiceData(searchedUserName),
         ));
@@ -226,6 +231,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
             scrollController: scrollController,
             callback: (val){
               refreshTabs(val);
+            },
+            callbackProductService: (val){
+              productServiceTabReload(val);
+
             },
           ),
           SliverPersistentHeader(
@@ -402,6 +411,46 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
 
     }
 
+  }
+
+  productServiceTabReload(Map<String, dynamic> val){
+
+    productLabel = val['product_label'].toString();
+    serviceLabel = val['service_label'].toString();
+    if(mounted)setState(() {});
+
+    //reload tab view
+    // Step 1: Clear the existing tabs
+    userTabs.clear();
+    // Iterate through the JSON object and add tabs for boolean values that are true
+    val.forEach((key, value) {
+      if (value is bool && value) {
+        // Add the tab
+        addTab(key, capitalizeAndRemoveUnderscores(key));
+      }
+    });
+
+    // Define the UserTabView using the created userTabs list
+    UserTabView businessView = UserTabView(
+      name: "business",
+      tabs: userTabs,
+    );
+
+    _currentUser = businessView;
+
+    _tabController = TabController(
+      length: _currentUser.tabs.where((tab) => tab.apiCall != null).length,
+      vsync: this,
+    );
+
+    scrollController = ScrollController();
+    scrollController?.addListener(_scrollListener);
+
+    // Add a listener to the tab controller that updates the current index
+    _tabController!.addListener(tabController);
+
+    if (mounted) setState(() {});
+    _tabController!.animateTo(0);
   }
 
 }
