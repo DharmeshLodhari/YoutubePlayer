@@ -206,13 +206,11 @@ class _AddReportScreenState extends State<AddReportScreen> {
               if (selectedViolationType == null) {
                 showToast(message: "Selected reason to proceed");
               } else {
-               if(widget.isJobService == true){
-                reportJob();
-               }
-                else if (widget.isCommentMoment == false) {
+                if (widget.isJobService == true) {
+                  reportJob();
+                } else if (widget.isCommentMoment == false) {
                   addReport();
-                } 
-                else {
+                } else {
                   reportCommentInMoment();
                 }
               }
@@ -381,11 +379,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
       "reported_by": userBloc.user.userName,
       "report": messageDecoderWithEmoji(textController.text)
     };
-    await YarnAuth()
-        .reportJob(
-      data
-    )
-        .then((value) {
+    await YarnAuth().reportJob(data).then((value) {
+      log('message::::::$value');
       if (value != null) {
         if (value == true) {
           Navigator.pop(context);
@@ -399,10 +394,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
       showToast(message: error.toString());
     });
   }
-
-
 }
-
 
 class TopicTextField extends StatelessWidget {
   final TextEditingController controller;

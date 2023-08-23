@@ -45,13 +45,11 @@ class StoryMomentScreen extends StatefulWidget {
   final StoryController? controller;
   final List<custom.Shiddo>? storyItems;
   final MomentsModel? currentMoment;
-  // final List<MomentsModel>? listOfCurrentMoment;
 
   StoryMomentScreen(
       {Key? key,
       required this.controller,
       required this.storyItems,
-      // required this.listOfCurrentMoment,
       required this.currentMoment})
       : super(key: key);
 
@@ -134,12 +132,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (value.shown == false) {
                 currentMoment = value.momentsModel;
-
-                index += 1;
-
-                print('crazzzzz......${currentMoment!.toJson()}');
               }
-              print('crazzzzz...index...$index');
               setState(() {});
             });
           },

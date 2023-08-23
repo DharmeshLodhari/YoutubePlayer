@@ -4,6 +4,8 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../../routes/route_constants.dart';
+
 class JobDescriptionCard extends StatelessWidget {
   const JobDescriptionCard({Key? key, required this.job}) : super(key: key);
   final JobModel? job;
@@ -118,16 +120,16 @@ class JobDescriptionCard extends StatelessWidget {
             ),
             // SizedBox(
             //   width: 200,
-              // child:
-               Text(
-                job!.description!,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: blackFont,
-                  fontSize: 12.6,
-                ),
+            // child:
+            Text(
+              job!.description!,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 12.6,
               ),
+            ),
             // ),
             const SizedBox(
               height: 10,
@@ -182,13 +184,21 @@ class JobDescriptionCard extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            Text(
-              "${getTimeDifference()} ago | Accepted By : ${job!.applicantsCount}",
-              style: TextStyle(
-                color: darkGrey,
-                fontSize: 10,
-                fontFamily: "Open Sans",
-                fontWeight: FontWeight.w600,
+            GestureDetector(
+              onTap: () {
+                if (job!.applicantsCount! > 0) {
+                  Navigator.pushNamed(context, Routes.JOBS_APPLICANT_LIST,
+                      arguments: job);
+                } else {}
+              },
+              child: Text(
+                "${getTimeDifference()} ago | Applied by : ${job!.applicantsCount}",
+                style: TextStyle(
+                  color: darkGrey,
+                  fontSize: 10,
+                  fontFamily: "Open Sans",
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],

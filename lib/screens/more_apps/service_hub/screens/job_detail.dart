@@ -1,4 +1,3 @@
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -268,7 +267,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomText(title: 'Accepted By'),
+                  CustomText(title: 'Applied by'),
                   SizedBox(
                     height: 6,
                   ),
@@ -331,8 +330,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
         return Stack(
           children: [
             Container(
-              decoration: const BoxDecoration(
-                  ),
+              decoration: const BoxDecoration(),
               child: CachedNetworkImage(
                 imageUrl: "${args.job!.pictures![index].image}",
                 placeholder: (context, url) =>

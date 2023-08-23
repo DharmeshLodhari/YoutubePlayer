@@ -493,7 +493,7 @@ class AppLocalization {
 
   String get dailyPaymentLinkLimit {
     return Intl.message(
-      "You can only send NGN${moneyDisplayNormalizer(200000*100)} at once.",
+      "You can only send NGN${moneyDisplayNormalizer(200000 * 100)} at once.",
       name: "dailyPaymentLinkLimit",
     );
   }
@@ -2160,6 +2160,7 @@ class AppLocalization {
       name: "pleaseEnterProductLabel",
     );
   }
+
   String get pleaseEnterServiceLabel {
     return Intl.message(
       "Please Enter Service Label",
@@ -2286,23 +2287,16 @@ class AppLocalization {
     );
   }
 
-  String get jobListedSuccessfully {
-    return Intl.message(
-      "Job Listed Successfully",
-      name: "jobListtedSuccessfully",
-    );
-  }
-
   String get jobRemovedFromListing {
     return Intl.message(
-      "Job Removed From Listing Successfully",
+      "Unlist Successfully",
       name: "jobRemovedFromListingSuccessfully",
     );
   }
 
   String get appliedForJobSuccessfully {
     return Intl.message(
-      "Job Applied Successfully",
+      "Application successful",
       name: "jobAppliedSuccessfully",
     );
   }
@@ -3677,6 +3671,13 @@ class AppLocalization {
     return Intl.message(
       "Job Added Successfully",
       name: "jobAddedSuccessfully",
+    );
+  }
+
+  String get jobListSuccessfully {
+    return Intl.message(
+      "Job Listed Successfully",
+      name: "jobListedSuccessfully",
     );
   }
 

@@ -10,16 +10,12 @@ import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../../utils/colors.dart';
+import '../../../../routes/route_constants.dart';
 
 class ApplicantList extends StatefulWidget {
   const ApplicantList({Key? key, this.job}) : super(key: key);
@@ -153,7 +149,8 @@ class _ApplicantListState extends State<ApplicantList> {
                       child: GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
                           mainAxisSpacing: 14,
                           mainAxisExtent: 180,
                           crossAxisSpacing: 15,
@@ -259,7 +256,7 @@ class _ApplicantListState extends State<ApplicantList> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: "Accept",
-      description: "Are you sure you want to accept for this User?",
+      description: "Are you sure you want to accept this user?",
       actionOneText: AppLocalization.of(context)!.accept,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
@@ -270,12 +267,13 @@ class _ApplicantListState extends State<ApplicantList> {
       });
       if (done) {
         showSnackbar(context,
-            message: "Applicant accepted for Job Successfully",duration: 1000);
+            message: "Applicant accepted for Job Successfully", duration: 1000);
         applicantList.clear();
         getApplicantList();
       } else {
         showSnackbar(context,
-            message: "Applicant can not be Accepted. Try again later",duration: 1000);
+            message: "Applicant can not be Accepted. Try again later",
+            duration: 1000);
         applicantList.clear();
         getApplicantList();
       }
@@ -306,7 +304,7 @@ class _ApplicantListState extends State<ApplicantList> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: "Reject",
-      description: "Are you sure want to Reject for this User?",
+      description: "Are you sure want to reject this user?",
       actionOneText: AppLocalization.of(context)!.reject,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
@@ -386,14 +384,11 @@ class VerticalListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('object....${applicant?.toJson()}');
     return GestureDetector(
       onTap: () async {
-        // ChatUserManager().clearChatUserMessageCount(
-        //     conversationId: widget.user.conversationId);
-
-        // await Navigator.pushNamed(context, Routes.CHAT_SCREEN,
-        //     arguments: {"searchedUser": widget.user});
-        // if (mounted) setState(() {});
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
+            arguments: {"searchedUserName": applicant?.applicantUsername});
       },
       child: Container(
           height: 80,

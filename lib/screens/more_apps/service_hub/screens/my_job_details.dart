@@ -7,7 +7,6 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
@@ -131,12 +130,12 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   void deleteJob() async {
     bool done = await ServiceHubAuthService().deleteMyJob(jobId);
     if (done) {
-      showSnackbar(context, message: 'Job Deleted Successfully');
       Navigator.pushReplacementNamed(context, Routes.MY_JOBS);
+      showSnackbar(context, message: 'Job Deleted Successfully');
     } else {
-      showSnackbar(context,
-          message: 'Job Cannot be deleted this time. Try again later');
       Navigator.pop(context);
+      showSnackbar(context,
+          message: 'Job listed can\'t be deleted. Try again later');
     }
   }
 
@@ -236,7 +235,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       actionTwoBgColor: navyBlue,
       actionTwoTextColor: white,
       title: "Cancel",
-      description: "Are you sure you want to cancel your application ?",
+      description: "Are you sure you want to cancel your application?",
       actionOneText: 'Keep',
       actionTwoText: AppLocalization.of(context)!.cancel,
       leftButtonOnPressed: () => Navigator.pop(context),
@@ -364,6 +363,30 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                               ),
                             ),
                           ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: "Category",
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        Text(
+                          "${job!.category?.name}",
+                          style: TextStyle(
+                            color: blackFont.withOpacity(.8),
+                            fontSize: 14,
+                            fontFamily: "Open Sans",
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -558,8 +581,6 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 height: 10,
               ),
               Container(
-                // width: 54,
-                // height: 20,
                 alignment: Alignment.center,
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -635,10 +656,18 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           const SizedBox(
             height: 10,
           ),
-          CustomText(
-              title: "Applied : ${job!.applicantsCount}",
-              fontSize: 12,
-              fontweight: FontWeight.w600),
+          GestureDetector(
+            onTap: () {
+              if (job!.applicantsCount! > 0) {
+                Navigator.pushNamed(context, Routes.JOBS_APPLICANT_LIST,
+                    arguments: job);
+              } else {}
+            },
+            child: CustomText(
+                title: "Applied by: ${job!.applicantsCount}",
+                fontSize: 12,
+                fontweight: FontWeight.w600),
+          ),
         ],
       ),
     );
@@ -874,7 +903,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     }).then((value) {
       print('${value}Create Listing');
       Navigator.pushNamed(context, Routes.SUPER_HUB);
-      showToast(message: AppLocalization.of(context)!.jobAddedSuccessfully);
+      showToast(message: AppLocalization.of(context)!.jobListSuccessfully);
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
@@ -946,7 +975,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         ),
       ),
       actions: [
-        _moreOptionsBtn(),
+        !isLoading ? _moreOptionsBtn() : const SizedBox.shrink(),
         const SizedBox(width: 12),
       ],
     );
