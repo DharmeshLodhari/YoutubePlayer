@@ -823,7 +823,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
           //   screen: MomentsDetailsScreen(
           //     indexOfMoment: widget.index,
           //     momentsModelList:
-          //         widget.exploreMomentsModelList.map((e) => e.moments!).toList(),
+          //     widget.exploreMomentsModelList.map((e) => e.moments!).toList(),
           //   ),
           // );
         }

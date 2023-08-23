@@ -51,6 +51,7 @@ class GetAppbarTile extends StatefulWidget {
   String? userType;
   Map<String, dynamic>? channelDetail;
   final Function(Map<String, bool>)? callback;
+  final Function(Map<String, dynamic>)? callbackProductService;
 
   GetAppbarTile(
       {Key? key,
@@ -60,6 +61,7 @@ class GetAppbarTile extends StatefulWidget {
       required this.scrollController,
       this.userType,
         this.callback,
+        this.callbackProductService,
       this.channelDetail})
       : super(key: key);
 
@@ -1407,7 +1409,16 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               business = 'yes';
             }
             Navigator.pop(context);
-            final data = await Navigator.of(context).pushNamed(Routes.CUSTOMIZE_PROFILE, arguments: {"business": business});
+            final data = await Navigator.of(context).pushNamed(Routes.CUSTOMIZE_PROFILE,
+                arguments: {"business": business,
+                  "callbackProductService": (Map<String, dynamic> updatedData) {
+                    // This callback will be invoked when the profile menu for product/service label is saved in CustomizeProfileScreen
+                    if (widget.callbackProductService != null) {
+                      widget.callbackProductService!(updatedData);
+                      if(mounted)setState(() {});
+                    }
+                  },
+                  });
 
             if (data != null && data is Map<String, bool>) {
                 widget.callback!(data);
@@ -1608,6 +1619,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
     return list;
   }
+
 
   void upgradeAccount() async {
     Navigator.pushNamed(context, "/choose-subscriptions");

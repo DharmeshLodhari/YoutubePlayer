@@ -41,8 +41,8 @@ class AppConfig {
       socketUrl = "wss://devchat.slydo.co/ws/main";
       chatUrl = "https://devchat.slydo.co";
       googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
-      termsAndCondition = "https://slydo.co/terms/";
-      privacyPolicy = "https://slydo.co/privacy/";
+      termsAndCondition = "https://slydo.co/terms";
+      privacyPolicy = "https://slydo.co/privacy-policy";
     } else if (appType == AppType.PRODUCTION) {
       baseUrl = "https://api.slydo.co";
       localHost = "https://127.0.0.1:8080";
@@ -51,8 +51,8 @@ class AppConfig {
       socketUrl = "wss://chat.slydo.co/ws/main";
       chatUrl = "https://chat.slydo.co";
       googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
-      termsAndCondition = "https://slydo.co/terms/";
-      privacyPolicy = "https://slydo.co/privacy/";
+      termsAndCondition = "https://slydo.co/terms";
+      privacyPolicy = "https://slydo.co/privacy-policy";
     }
   }
 
