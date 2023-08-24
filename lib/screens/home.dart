@@ -87,6 +87,7 @@ class _HomeState extends State<Home> {
         isAppTutorialDone = false;
       }
 
+
       if (!isAppTutorialDone) {
         bool result =
             await _sharedPreferences.setBool("isAppTutorialDone", true);
