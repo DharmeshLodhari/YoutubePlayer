@@ -1522,7 +1522,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               title: "Send",
               iconData: SlydoAppIcon.send,
               onTap: () {
-                if (appConfigurationModel?.enablePayment == true) {
+                // if (appConfigurationModel?.enablePayment == true) {
                   UserAuth()
                       .fetchCustomerProfile(searchedUserName)
                       .then((fetchedUser) {
@@ -1534,16 +1534,16 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                           'recipient': searchedUser!.userName
                         });
                   });
-                } else {
-                  showToast(message: 'Payment not available at the moment');
-                }
+                // } else {
+                //   showToast(message: 'Payment not available at the moment');
+                // }
               },
             ),
             bottomSheetItem(
                 title: "Request",
                 iconData: SlydoAppIcon.receive,
                 onTap: () {
-                  if (appConfigurationModel?.enablePayment == true) {
+                  // if (appConfigurationModel?.enablePayment == true) {
                     UserAuth()
                         .fetchCustomerProfile(searchedUserName)
                         .then((fetchedUser) {
@@ -1556,9 +1556,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                             'isRequest': true
                           });
                     });
-                  } else {
-                    showToast(message: 'Payment not available at the moment');
-                  }
+                  // } else {
+                  //   showToast(message: 'Payment not available at the moment');
+                  // }
                 }),
             bottomSheetItem(
               title: "Block Account",

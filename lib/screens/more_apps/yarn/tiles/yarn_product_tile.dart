@@ -229,9 +229,9 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                                 text: "BUY NOW",
                                                 borderRadius: 10,
                                                 onPressed: () async {
-                                                  if (appConfigurationModel
-                                                          ?.enablePayment ==
-                                                      true) {
+                                                  // if (appConfigurationModel
+                                                  //         ?.enablePayment ==
+                                                  //     true) {
                                                     bool result =
                                                         await showDisclaimerDialogueForGoods(
                                                             context);
@@ -255,7 +255,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                                         },
                                                       );
                                                     }
-                                                  }
+                                                  // }
                                                 },
                                               ),
                                             ),

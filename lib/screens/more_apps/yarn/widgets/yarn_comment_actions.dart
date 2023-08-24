@@ -249,10 +249,10 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
           getLoggedInUserName(context) != widget.comment.authorUsername
               ? () {
                   if (!isPayMeEnable) return;
-                  if (getIt<AppConfigurationBloc>()
-                          .appConfigurationModel
-                          ?.enablePayment ==
-                      true) {
+                  // if (getIt<AppConfigurationBloc>()
+                  //         .appConfigurationModel
+                  //         ?.enablePayment ==
+                  //     true) {
                     Navigator.of(context).pushNamed(
                       Routes.SEND_PAYMENT,
                       arguments: <String, dynamic>{
@@ -266,9 +266,9 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
                         )}\" comment'
                       },
                     );
-                  } else {
-                    showToast(message: 'Payment not available at the moment');
-                  }
+                  // } else {
+                  //   showToast(message: 'Payment not available at the moment');
+                  // }
                 }
               : () {
                   if (!isPayMeEnable) return;

@@ -455,8 +455,12 @@ class _HomeState extends State<Home> {
           ],
         ),
         onTap: () {
-          hideBalance();
-          Navigator.of(context).pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
+          if (appConfigurationModel?.enableAddUserCreditCard == true) {
+            hideBalance();
+            Navigator.of(context).pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
+          } else {
+            showToast(message: 'Coming soon.');
+          }
         });
   }
 
