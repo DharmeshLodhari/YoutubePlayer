@@ -6,12 +6,16 @@ import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_dele
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
+import '../utils.dart';
+
+
 class ChannelProfileScreen extends StatefulWidget {
   CustomerProfile? searchedUser;
   String? searchedUserName;
   Map<String, dynamic>? channelDetail;
   bool isOwner;
   bool isLoading;
+  // Map<String, dynamic>? result = {};
 
   ChannelProfileScreen({
     Key? key,
@@ -20,6 +24,7 @@ class ChannelProfileScreen extends StatefulWidget {
     required this.searchedUserName,
     required this.isOwner,
     required this.isLoading,
+    // required this.result,
   }) : super(key: key);
 
   @override
@@ -27,7 +32,7 @@ class ChannelProfileScreen extends StatefulWidget {
 }
 
 class _ChannelProfileScreenState extends State<ChannelProfileScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late UserTabView _currentUser;
   String? channelUserName;
   late CustomerProfile channelOwner;
@@ -40,6 +45,13 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
   int _currentIndex = 0;
   final PageStorageBucket _bucket = new PageStorageBucket();
   Map<String, dynamic>? channelDetail;
+  // Define a list to store the UserTab objects
+  List<UserTab> userTabs = [];
+  Map<String, bool> reorderedBoolMap = {};
+  Map<String, dynamic> result = {};
+  List<dynamic> orderingList = [];
+
+
 
   @override
   void initState() {
@@ -47,43 +59,91 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
 
     channelOwner = widget.searchedUser!;
 
-    channelUserName = getGroupUsername(channelDetail!['group_username'] != null
-        ? channelDetail!['group_username']
-        : channelDetail!['group_name']);
+    channelUserName = getGroupUsername(channelDetail!['group_username'] ?? channelDetail!['group_name']);
 
     isOwner = widget.isOwner;
 
-    // Define the tabs and their corresponding data for each user
+    result = channelDetail!['owner']['profile_menu'];
+
+    // Initialize a map to store boolean values
+    var boolMap = <String, bool>{};
+
+    // Initialize a list to store the keys in the desired order
+    var orderedKeys = <String>[];
+
+    // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
+    if (result != null && result is Map<String, dynamic>) {
+      orderingList = channelDetail!['owner']['profile_menu']['ordering'];
+      // Iterate through the JSON object and filter boolean values
+      result.forEach((key, value) {
+        if (value is bool) {
+          boolMap[key] = value;
+        }
+      });
+
+      // Iterate through the JSON object and add tabs for boolean values that are true
+      for (var key in orderingList) {
+        if (boolMap.containsKey(key)) {
+          orderedKeys.add(key);
+        }
+      }
+    }
+
+    // Create a list of keys not in 'ordering'
+    var remainingKeys = boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
+
+    // Add the remaining keys to orderedKeys to ensure they are at the end
+    orderedKeys.addAll(remainingKeys);
+
+    // Create a new map with the ordered keys
+    reorderedBoolMap = Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
+
+    // Iterate through the JSON object and add tabs for boolean values that are true
+    reorderedBoolMap.forEach((key, value) {
+      if (value is bool && value) {
+        // Add the tab
+        addTab(key, capitalizeAndRemoveUnderscores(key));
+      }
+    });
+
+    // Define the UserTabView using the created userTabs list
     UserTabView channelView = UserTabView(
       name: "channel",
-      tabs: [
-        UserTab(
-          label: "Yarn",
-          child: yarnTab(channelUserName),
-          apiCall: () async => await fetchYarnData(channelUserName),
-        ),
-        UserTab(
-          label: "Moment",
-          child: momentTab(channelOwner),
-          apiCall: () async => await fetchMomentData(channelUserName),
-        ),
-        UserTab(
-          label: "Post",
-          child: postTab(channelOwner),
-          apiCall: () async => await fetchPostData(channelUserName),
-        ),
-        UserTab(
-          label: "Event",
-          child: productTab(channelOwner, isOwner!),
-          apiCall: () async => await fetchProductData(channelUserName),
-        ),
-        UserTab(
-          label: "Merchandise",
-          child: productTab(channelOwner, isOwner!),
-          apiCall: () async => await fetchProductData(channelUserName),
-        ),
-      ],
+      tabs: userTabs,
     );
+
+
+    // Define the tabs and their corresponding data for each user
+    // UserTabView channelView = UserTabView(
+    //   name: "channel",
+    //   tabs: [
+    //     UserTab(
+    //       label: "Yarn",
+    //       child: yarnTab(channelUserName),
+    //       apiCall: () async => await fetchYarnData(channelUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Moment",
+    //       child: momentTab(channelOwner),
+    //       apiCall: () async => await fetchMomentData(channelUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Post",
+    //       child: postTab(channelOwner),
+    //       apiCall: () async => await fetchPostData(channelUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Event",
+    //       child: productTab(channelOwner, isOwner!),
+    //       apiCall: () async => await fetchProductData(channelUserName),
+    //     ),
+    //     UserTab(
+    //       label: "Merchandise",
+    //       child: productTab(channelOwner, isOwner!),
+    //       apiCall: () async => await fetchProductData(channelUserName),
+    //     ),
+    //   ],
+    // );
 
     // Set the current user here
     _currentUser = channelView;
@@ -105,6 +165,44 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     if (mounted) setState(() {});
 
     super.initState();
+  }
+
+  void addTab(String key, String label) {
+    switch (key) {
+      case "product":
+        userTabs.add(UserTab(
+          label: 'Merchandise',
+          child: productTab(channelOwner, isOwner!),
+          apiCall: () async => await fetchProductData(channelUserName),
+        ));
+        break;
+
+      case "yarn":
+        userTabs.add(UserTab(
+          label: label,
+          child: yarnTab(channelUserName),
+          apiCall: () async => await fetchYarnData(channelUserName),
+        ));
+        break;
+
+      case "moment":
+        userTabs.add(UserTab(
+          label: label,
+          child: momentTab(channelOwner),
+          apiCall: () async => await fetchMomentData(channelUserName),
+        ));
+        break;
+      case "blog":
+        userTabs.add(UserTab(
+          label: label,
+          child: postTab(channelOwner),
+          apiCall: () async => await fetchPostData(channelUserName),
+        ));
+        break;
+
+      default:
+        break;
+    }
   }
 
   void _scrollListener() {
@@ -273,4 +371,52 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     _tabController!.removeListener(_scrollListener);
     _pageController!.removeListener(_scrollListener);
   }
+
+  refreshTabs(Map<String, bool> val) {
+
+    if (compareMaps(reorderedBoolMap, val)) {
+      debugPrint('The maps are equal.');
+    } else {
+      debugPrint('The maps are not equal.');
+
+      // Step 1: Clear the existing tabs
+      userTabs.clear();
+      // Iterate through the JSON object and add tabs for boolean values that are true
+      val.forEach((key, value) {
+        if (value is bool && value) {
+          // Add the tab
+          addTab(key, capitalizeAndRemoveUnderscores(key));
+        }
+      });
+
+      // Define the UserTabView using the created userTabs list
+      UserTabView channelView = UserTabView(
+        name: "channel",
+        tabs: userTabs,
+      );
+
+      _currentUser = channelView;
+
+      _tabController = TabController(
+        length: _currentUser.tabs.where((tab) => tab.apiCall != null).length,
+        vsync: this,
+      );
+
+      scrollController = ScrollController();
+      scrollController?.addListener(_scrollListener);
+
+      // Add a listener to the tab controller that updates the current index
+      _tabController!.addListener(tabController);
+
+      //clear map and reassign
+      reorderedBoolMap = {};
+      reorderedBoolMap = val;
+
+      if (mounted) setState(() {});
+      _tabController!.animateTo(0);
+
+    }
+
+  }
+
 }

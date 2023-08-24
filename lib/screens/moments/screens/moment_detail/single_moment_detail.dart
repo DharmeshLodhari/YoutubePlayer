@@ -48,7 +48,6 @@ class SingleMomentDetailScreen extends StatefulWidget {
   final void Function() onRightSwipe;
   final void Function() onMomentPop;
 
-
   MomentsModel currentMoment;
 
   final PageController pageCtrl;
@@ -134,8 +133,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         widget.videoPlayerControllers.isEmpty) {
       controller = AnimationController(
         vsync: this,
-        duration:
-            Duration(seconds: widget.currentMoment.duration ?? 30),
+        duration: Duration(seconds: widget.currentMoment.duration ?? 30),
       )..addListener(() {
           setState(() {});
         });
@@ -143,8 +141,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         widget.videoPlayerControllers.isNotEmpty) {
       controller = AnimationController(
         vsync: this,
-        duration:
-            Duration(seconds: widget.currentMoment.duration ?? 30),
+        duration: Duration(seconds: widget.currentMoment.duration ?? 30),
       )..addListener(() {
           setState(() {});
         });
@@ -170,21 +167,25 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    
     momentsBloc = Provider.of<MomentsBloc>(context, listen: false);
 
     return Stack(
       fit: StackFit.expand,
       children: [
-        RenderMoment(
-          key: _renderMomentStateKey,
-          onRightSwipe: widget.onRightSwipe,
-          momentsModel: widget.currentMoment,
-          videoPlayerControllers: widget.videoPlayerControllers,
-          photoViewController: widget.photoViewController,
-          index: widget.index,
-          pageCtrl: widget.pageCtrl,
-          controller: controller,
-          momentsModelList: widget.momentsModelList,
+        Align(
+          alignment: Alignment.center,
+          child: RenderMoment(
+            key: _renderMomentStateKey,
+            onRightSwipe: widget.onRightSwipe,
+            momentsModel: widget.currentMoment,
+            videoPlayerControllers: widget.videoPlayerControllers,
+            photoViewController: widget.photoViewController,
+            index: widget.index,
+            pageCtrl: widget.pageCtrl,
+            controller: controller,
+            momentsModelList: widget.momentsModelList,
+          ),
         ),
         // Align(
         //   alignment: Alignment.topCenter,
@@ -1039,7 +1040,6 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     String commentCount = '';
 
     try {
-
       if (momentsBloc.numberOfComments[index] >= 1) {
         commentCount = getFormattedViewCount(
           noOfViews: momentsBloc.numberOfComments[index],
@@ -1277,7 +1277,6 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
           )
         : const SizedBox.shrink();
   }
-
   // callback function with a bool parameter for success moment payment
   void onCallback(bool value) {
     // Handle the callback value
@@ -1302,19 +1301,17 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
           index: index,
           username: currentMoment!.ownerName!,
           moment: widget.currentMoment,
-          callbackUpdateCommentCount: (value, num){
-            if(value == true){
-
-              momentsBloc.numberOfComments[index] = momentsBloc.numberOfComments[index] + 1;
-              if(mounted)setState(() {});
-
-            }else{
-
-              momentsBloc.numberOfComments[index] = num == 1 ? momentsBloc.numberOfComments[index] - 1:
-              momentsBloc.numberOfComments[index] - num;
-              if(mounted)setState(() {});
+          callbackUpdateCommentCount: (value, num) {
+            if (value == true) {
+              momentsBloc.numberOfComments[index] =
+                  momentsBloc.numberOfComments[index] + 1;
+              if (mounted) setState(() {});
+            } else {
+              momentsBloc.numberOfComments[index] = num == 1
+                  ? momentsBloc.numberOfComments[index] - 1
+                  : momentsBloc.numberOfComments[index] - num;
+              if (mounted) setState(() {});
             }
-
           },
         ),
       ),

@@ -315,10 +315,10 @@ class _YarnActionsState extends State<YarnActions> {
                 return;
               }
 
-              if (getIt<AppConfigurationBloc>()
-                      .appConfigurationModel
-                      ?.enablePayment ==
-                  true) {
+              // if (getIt<AppConfigurationBloc>()
+              //         .appConfigurationModel
+              //         ?.enablePayment ==
+              //     true) {
                 Navigator.of(context).pushNamed(
                   Routes.SEND_PAYMENT,
                   arguments: <String, dynamic>{
@@ -333,9 +333,9 @@ class _YarnActionsState extends State<YarnActions> {
                         'Payment from Yarn, Yard ID : ${widget.yarn.id != null ? widget.yarn.id! : ''} '
                   },
                 );
-              } else {
-                showToast(message: 'Payment not available at the moment');
-              }
+              // } else {
+              //   showToast(message: 'Payment not available at the moment');
+              // }
             }
           : () {
               if (!isPayMeEnable) return;

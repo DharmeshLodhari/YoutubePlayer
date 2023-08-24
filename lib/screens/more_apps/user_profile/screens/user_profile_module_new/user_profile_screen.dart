@@ -1,6 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/channel_profile_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/default_user_profile_screen.dart';
@@ -10,6 +9,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+import '../../models/custom_profile_model.dart';
 import 'profile_template/business_profile_screen.dart';
 
 // ignore: must_be_immutable
@@ -43,6 +43,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   double? top;
 
   late CustomerProfileBloc customerProfileBloc;
+  CustomProfileModel customProfileModel = CustomProfileModel();
+  Map<String, dynamic>? result = {};
 
   bool appBarStatus = true;
 
@@ -86,6 +88,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           return;
         } else if (data != null && data.isNotEmpty) {
           channelDetail.addAll(data['results']);
+
         } else {
           showToast(message: 'Something went wrong');
         }
@@ -184,7 +187,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         },
       ),
       title: isLoading
-          ? SizedBox.shrink()
+          ? const SizedBox.shrink()
           : userNameWithVerifiedIcon(
               name: searchedUser!.displayName()!,
               isVerified: searchedUser!.isVerified),
@@ -197,9 +200,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
       CustomerProfile profile = CustomerProfile(
         fullName: name,
-        userName: channelDetail['group_username'] != null
-            ? channelDetail['group_username']
-            : '',
+        userName: channelDetail['group_name'] ?? '',
         avatar: channelDetail['owner']['avatar'],
         bio: channelDetail['description'],
         dateJoined: channelDetail['created_at'],
@@ -211,10 +212,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       return ChannelProfileScreen(
         searchedUser: profile,
         channelDetail: channelDetail,
-        searchedUserName: channelDetail['group_username'] != null
-            ? channelDetail['group_username']
-            : '',
-        // searchedUserName: channelDetail['owner']['username'],
+        searchedUserName: channelDetail['group_username'] ?? '',
         isOwner: isOwner,
         isLoading: isLoading,
       );
@@ -226,7 +224,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         isOwner: isOwner,
         isLoading: isLoading,
       );
-    } else if (searchedUser != null) {
+    }
+    else if (searchedUser != null) {
       return BusinessProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,

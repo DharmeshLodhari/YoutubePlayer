@@ -814,7 +814,7 @@ class _EditJobState extends State<EditJob> {
               showDatePicker(
                 builder: customThemeBuilder,
                 context: context,
-                initialDate: jobAvailableFrom,
+                initialDate: jobEndDate,
                 firstDate: jobAvailableFrom,
                 lastDate: DateTime(2101),
               ).then((value) {
@@ -1020,17 +1020,6 @@ class _EditJobState extends State<EditJob> {
                           'Image Cannot be deleted this time. Try again later');
                   Navigator.pop(context);
                 }
-                // _auth.deleteProductOrServiceImage(imageId).then((value) {
-                //   if (value) {
-                //     if (mounted) {
-                //       setState(() {
-                //         productImagesFromServer.removeAt(index);
-                //       });
-                //     }
-                //   }
-                // }).catchError((error) {
-                //   debugPrint("ERROR " + error.toString());
-                // });
               },
             ),
           )
@@ -1175,7 +1164,7 @@ class _EditJobState extends State<EditJob> {
                 taskMethod = value.toString();
               });
             },
-            value: 'Physically',
+            value: 'On Site',
           ),
         ),
         Expanded(
@@ -1187,7 +1176,7 @@ class _EditJobState extends State<EditJob> {
                 taskMethod = value.toString();
               });
             },
-            value: 'Online',
+            value: 'Remote',
           ),
         ),
       ],
@@ -1777,6 +1766,9 @@ class _EditJobState extends State<EditJob> {
     if (_formKey.currentState!.validate()) {
       if (jobImagesFromServer.length >= 1 || jobLocalImages.length >= 1) {
         if (true) {
+          showDialog(
+              context: context,
+              builder: (context) => const Center(child: SizedBox()));
           await ServiceHubAuthService().editMyJob({
             'title': titleController.text,
             'location': locationSelected ?? locationState,
@@ -1790,6 +1782,7 @@ class _EditJobState extends State<EditJob> {
             'picture_count': jobLocalImages.length,
             'file': '',
             'list_now': checkedValue,
+            'is_online': taskMethod == 'Remote' ? true : false,
             'localImages':
                 jobLocalImages.map((file) => File(file.path)).toList(),
           }, jobId: currentJob!.id!).then((value) {
@@ -1843,85 +1836,85 @@ class _EditJobState extends State<EditJob> {
     );
   }
 
-  Widget getStartDateField() {
-    return GestureDetector(
-      onTap: () {
-        showDatePicker(
-          builder: customThemeBuilder,
-          context: context,
-          initialDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          firstDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          lastDate: DateTime(2101),
-        ).then((value) {
-          jobAvailableFrom = DateTime(value!.year, value.month, value.day);
-          setState(() {});
-        }).catchError((error) {});
-      },
-      child: CustomizedDropDownField(
-        title: "Start Date",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(jobAvailableFrom),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget getStartDateField() {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       showDatePicker(
+  //         builder: customThemeBuilder,
+  //         context: context,
+  //         initialDate: DateTime(
+  //             DateTime.now().year, DateTime.now().month, DateTime.now().day),
+  //         firstDate: DateTime(
+  //             DateTime.now().year, DateTime.now().month, DateTime.now().day),
+  //         lastDate: DateTime(2101),
+  //       ).then((value) {
+  //         jobAvailableFrom = DateTime(value!.year, value.month, value.day);
+  //         setState(() {});
+  //       }).catchError((error) {});
+  //     },
+  //     child: CustomizedDropDownField(
+  //       title: "Start Date",
+  //       child: Container(
+  //         child: ListTile(
+  //           dense: true,
+  //           title: Text(
+  //             formatDate(jobAvailableFrom),
+  //             style: TextStyle(
+  //               color: blackFont,
+  //               fontWeight: FontWeight.w600,
+  //               fontSize: 16,
+  //             ),
+  //           ),
+  //           trailing: Icon(
+  //             SlydoAppIcon.date,
+  //             size: 16,
+  //             color: darkGrey,
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget getEndDateField() {
-    return GestureDetector(
-      onTap: () {
-        showDatePicker(
-          builder: customThemeBuilder,
-          context: context,
-          initialDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          firstDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          lastDate: DateTime(2101),
-        ).then((value) {
-          jobEndDate = DateTime(value!.year, value.month, value.day);
-          setState(() {});
-        }).catchError((error) {});
-      },
-      child: CustomizedDropDownField(
-        title: "End Date",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(jobEndDate),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget getEndDateField() {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       showDatePicker(
+  //         builder: customThemeBuilder,
+  //         context: context,
+  //         initialDate: DateTime(
+  //             DateTime.now().year, DateTime.now().month, DateTime.now().day),
+  //         firstDate: DateTime(
+  //             DateTime.now().year, DateTime.now().month, DateTime.now().day),
+  //         lastDate: DateTime(2101),
+  //       ).then((value) {
+  //         jobEndDate = DateTime(value!.year, value.month, value.day);
+  //         setState(() {});
+  //       }).catchError((error) {});
+  //     },
+  //     child: CustomizedDropDownField(
+  //       title: "End Date",
+  //       child: Container(
+  //         child: ListTile(
+  //           dense: true,
+  //           title: Text(
+  //             formatDate(jobEndDate),
+  //             style: TextStyle(
+  //               color: blackFont,
+  //               fontWeight: FontWeight.w600,
+  //               fontSize: 16,
+  //             ),
+  //           ),
+  //           trailing: Icon(
+  //             SlydoAppIcon.date,
+  //             size: 16,
+  //             color: darkGrey,
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void loccationAndroidSheet() {
     locationsList = locationsListCopy;

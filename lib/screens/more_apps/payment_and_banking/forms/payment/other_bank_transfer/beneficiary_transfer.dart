@@ -11,7 +11,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 import '../../../../../../data/currency.dart';
 import '../../../../../../data/database_helper.dart';
 import '../../../../../../routes/route_constants.dart';
@@ -231,12 +230,15 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
                                                         FontWeight.w600),
                                                 children: <InlineSpan>[
                                                   TextSpan(
-                                                    text: worldCurrencies[
-                                                            userBloc.user
-                                                                .currency!]! +
+                                                    text: double.parse(moneyDisplayNormalizer(
+                                                        displayPossibleCashOutAmount(
+                                                            accountBalance!))) >= 35.00 ? worldCurrencies[
+                                                    userBloc.user.currency!]! +
                                                         moneyDisplayNormalizer(
                                                             displayPossibleCashOutAmount(
-                                                                accountBalance!)),
+                                                                accountBalance!)) :
+                                                    '${worldCurrencies[
+                                                    userBloc.user.currency!]!}0.00',
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         color: blackFont,

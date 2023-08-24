@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../routes/route_constants.dart';
+import '../../credit_card/models/card_transactions.dart';
+import '../../credit_card/utils/utils.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 // ignore: must_be_immutable
@@ -164,6 +166,128 @@ class PaymentRequestTile extends StatelessWidget {
 }
 
 // ignore: must_be_immutable
+class CardTransactionTile extends StatelessWidget {
+  UserBloc? userBloc;
+
+  final CardTransactions? transaction;
+  Widget? expandedWidget = Container();
+
+  CardTransactionTile({this.transaction, this.expandedWidget, this.key})
+      : super(key: key);
+
+  Key? key;
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: ListTile(
+                dense: true,
+                title: getTitle(),
+                subtitle: getSubTitle(context),
+                leading: getLeading(),
+                trailing: transaction!.transactionAmount.toString().length >= amountLimit
+                    ? null
+                    : getAmount(),
+                onTap: () {
+                  // Navigator.of(context).pushNamed(Routes.TRANSACTION_DETAIL,
+                  //     arguments: {'transaction': transaction});
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getTitle() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 2),
+      child: Text(
+        "${transaction!.merchantName}",
+        maxLines: 1,
+        style: TextStyle(
+            color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+      ),
+    );
+  }
+
+  Widget getLeading() {
+    return
+      // transaction!.isAnonymous!
+      //   ? Container(
+      //       padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+      //       child: Image.asset(
+      //         "assets/images/anonymous.png",
+      //         height: 48,
+      //         width: 48,
+      //         colorBlendMode: BlendMode.darken,
+      //         fit: BoxFit.fitHeight,
+      //       ),
+      //     )
+      //   :
+      userImageUserInitialsPic(
+            transaction!.merchantLogoUrl!, transaction!.merchantName!, 20, 40);
+  }
+
+  Widget getAmount() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          transaction!.currencyCode == 'USD' ? formatAsDollar(double.parse(transaction!.transactionAmount.toString())) :
+          formatAsNaira(double.parse(transaction!.transactionAmount.toString())),
+          style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
+      ],
+    );
+  }
+
+  Widget getSubTitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        transaction!.description != "" && transaction!.description != null
+            ? Text(
+                "${transaction!.description}",
+                style: TextStyle(color: darkGrey, fontSize: 12),
+                maxLines: 1,
+              )
+            : Container(),
+        getDateTime(context),
+      ],
+    );
+  }
+
+  Widget getDateTime(BuildContext context) {
+    DateTime transactionTime =
+        DateTime.parse(transaction!.providerCreatedAt!).toLocal();
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    String time = DateFormat("hh:mm a").format(transactionTime);
+    return Text(
+      "$date • $time",
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(color: darkGrey, fontSize: 10),
+    );
+  }
+}
+
 class TransactionTile extends StatelessWidget {
   UserBloc? userBloc;
 

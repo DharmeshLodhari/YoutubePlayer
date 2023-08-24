@@ -80,7 +80,7 @@ class MomentsModel {
   String? id;
   int? likes;
   bool? enableLikes;
-  bool? enableCommenting;
+  bool enableCommenting;
   int? dislikes;
   String? mediaType;
   String? avatar;
@@ -94,7 +94,7 @@ class MomentsModel {
   String? expireAt;
   bool? isPublic;
   List<dynamic>? tags;
-  int? numberOfComments;
+  int numberOfComments;
   Map<String, dynamic>? attachment;
   String? payMeLabel;
   String? payMeButtonColor;
@@ -115,7 +115,7 @@ class MomentsModel {
       this.likes,
       this.dislikes,
       this.attachment,
-      this.numberOfComments,
+      this.numberOfComments = 0,
       this.mediaType,
       this.avatar,
       this.ownerName,
@@ -163,6 +163,10 @@ class MomentsModel {
   //   );
   // }
 
+  String get displayComment => (enableCommenting && numberOfComments > 0)
+      ? numberOfComments.toString()
+      : '';
+
   factory MomentsModel.fromJson(Map<String, dynamic> json) {
     return MomentsModel(
       id: json['id'],
@@ -172,7 +176,7 @@ class MomentsModel {
       payMe: json['enable_payme'],
       tags: json['tags'],
       enableLikes: json['enable_like'],
-      enableCommenting: json['enable_commenting'],
+      enableCommenting: json['enable_commenting'] ?? false,
       likes: json['likes'] ?? 0,
       dislikes: json['dislikes'] ?? 0,
       mediaType: json['media_type'],

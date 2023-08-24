@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
+import 'package:Slydo/screens/moments/screens/moment_detail/custom_story_view.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
+import 'package:Slydo/screens/moments/screens/moment_detail/story_moment.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -15,6 +19,8 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:story_view/controller/story_controller.dart';
+import 'package:story_view/widgets/story_view.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../locator.dart';
@@ -209,10 +215,16 @@ class _MomentsScreenState extends State<MomentsScreen> {
           }
         }
 
-        // exploreMomentsList = [];
-
         debugPrint('EXPLORE MOM :: $exploreMomentsList');
-
+        // for (int i = 0; i < exploreMomentsList.length; i++) {
+        //   for (int j = 0; j <= exploreMomentsList[i].moments!.length; j++) {
+        //     setState(() {
+        //       listOfMoments?.add(exploreMomentsList[i].moments![j]);
+        //     });
+        //   }
+        //   print('beeetttttt....${exploreMomentsList[i].moments!.length}');
+        //   print('list of momentssss....${listOfMoments!.length}');
+        // }
         if (mounted) setState(() {});
 
         debugPrint(
@@ -336,25 +348,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
         child: ListView(
           controller: _exploreScrollController,
           children: [
-            // InkWell(
-            //   onTap: () {
-            //     NavigationUtil.push(context, screen: MomentSearchScreen());
-            //   },
-            //   child: IgnorePointer(
-            //     child: CustomizedTextFormField(
-            //       hintText: 'Search moment',
-            //       suffixIcon: IconButton(
-            //         icon: Icon(
-            //           SlydoAppIcon.search,
-            //           color: darkGrey,
-            //           size: 14,
-            //         ),
-            //         onPressed: () {},
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // SizedBox(height: 16),
             contactMomentsListWidget(),
             SizedBox(height: 16),
             adverts(),
@@ -471,15 +464,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
       children: [
         Row(
           children: [
-            // CircleAvatar(
-            //   radius: 15,
-            //   backgroundColor: navyBlue,
-            //   child: Image.asset(
-            //     'assets/images/my_moment_connections_icons.png',
-            //     color: Colors.white,
-            //     width: 40,
-            //   ),
-            // ),
             CircleAvatar(
               radius: 10,
               backgroundColor: navyBlue,
@@ -495,7 +479,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: blackFont,
-                fontSize: 16,
+                // fontSize: 16,P
               ),
             ),
             SizedBox(width: 10),
@@ -555,15 +539,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
           ],
         ),
         SizedBox(height: 12),
-        // isExploreMomentsLoading
-        //     ? SizedBox.shrink()
-        //     : exploreMomentsList.isEmpty
-        //         ? Text(
-        //             'There are no moments to explore right now.',
-        //             style: TextStyle(
-        //                 color: blackFont, fontWeight: FontWeight.w700),
-        //           )
-        //         : SizedBox.shrink(),
         nextExploreMoments == "" && isExploreMomentsLoading
             ? SizedBox.shrink()
             : GridView.builder(
@@ -776,13 +751,14 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
   }
 }
 
-class ExploreMomentsCard extends StatelessWidget {
+class ExploreMomentsCard extends StatefulWidget {
   // This index is the position of the 'ExploreMomentsCard' in the list 0f explore moments.
   final int index;
   final Function()? onTap;
   final bool showProfileAvatar;
   final List<ExploreMomentsModel> exploreMomentsModelList;
-  const ExploreMomentsCard(
+
+  ExploreMomentsCard(
       {Key? key,
       this.onTap,
       this.showProfileAvatar =
@@ -792,20 +768,64 @@ class ExploreMomentsCard extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<ExploreMomentsCard> createState() => _ExploreMomentsCardState();
+}
+
+class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
+  final storyController = StoryController();
+
+  List<Shiddo> storyItems = [];
+
+  ExploreMomentsModel? exploreMoment;
+  MomentsModel? sigleMoment;
+
+  @override
+  void initState() {
+    widget.exploreMomentsModelList[widget.index].moments!.map((e) {
+      sigleMoment = e;
+      if (e.mediaType == 'image') {
+        storyItems.add(Shiddo.pageImage(
+            url: e.media!,
+            controller: storyController,
+            duration: Duration(seconds: 10),
+            momentsModel: e));
+      }
+      if (e.mediaType == 'video') {
+        storyItems.add(Shiddo.pageVideo(e.media!,
+            controller: storyController,
+            duration: Duration(seconds: e.duration!),
+            momentsModel: e));
+      }
+      log('message...first${widget.exploreMomentsModelList[widget.index].moments!.length}');
+      log('message...second${e}');
+    }).toList();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (onTap != null) {
-          onTap!();
+        if (widget.onTap != null) {
+          widget.onTap!();
         } else {
           NavigationUtil.push(
             context,
-            screen: MomentsDetailsScreen(
-              indexOfMoment: index,
-              momentsModelList:
-                  exploreMomentsModelList.map((e) => e.moments!).toList(),
+            screen: StoryMomentScreen(
+              controller: storyController,
+              storyItems: storyItems,
+              currentMoment: sigleMoment,
             ),
           );
+          ////
+          // NavigationUtil.push(
+          //   context,
+          //   screen: MomentsDetailsScreen(
+          //     indexOfMoment: widget.index,
+          //     momentsModelList:
+          //     widget.exploreMomentsModelList.map((e) => e.moments!).toList(),
+          //   ),
+          // );
         }
       },
       child: Card(
@@ -817,17 +837,19 @@ class ExploreMomentsCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             _getMediaRenderer(
-              momentModel: exploreMomentsModelList[index].moments!.first,
+              momentModel:
+                  widget.exploreMomentsModelList[widget.index].moments!.first,
               context: context,
             ),
-            showProfileAvatar
+            widget.showProfileAvatar
                 ? Align(
                     alignment: Alignment.topLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8.0, top: 10),
                       child: MomentsUtils().getUserProfilePic(
-                          exploreMomentsModelList[index].avatar!,
-                          exploreMomentsModelList[index].ownerName!),
+                          widget.exploreMomentsModelList[widget.index].avatar!,
+                          widget.exploreMomentsModelList[widget.index]
+                              .ownerName!),
                     ),
                   )
                 : SizedBox.shrink(),
@@ -840,7 +862,9 @@ class ExploreMomentsCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     userNameWithVerifiedIcon(
-                      name: exploreMomentsModelList[index].ownerName ?? '',
+                      name: widget.exploreMomentsModelList[widget.index]
+                              .ownerName ??
+                          '',
                       isVerified: false,
                       textStyle: TextStyle(
                         fontSize: 12,
@@ -857,8 +881,10 @@ class ExploreMomentsCard extends StatelessWidget {
                     ),
                     Text(
                       getFormattedViewCount(
-                          noOfViews:
-                              exploreMomentsModelList[index].moments![0].views),
+                          noOfViews: widget
+                              .exploreMomentsModelList[widget.index]
+                              .moments![0]
+                              .views),
                       style: TextStyle(
                         fontSize: 12,
                         shadows: [
@@ -877,7 +903,9 @@ class ExploreMomentsCard extends StatelessWidget {
                 ),
               ),
             ),
-            exploreMomentsModelList[index].moments!.first.mediaType == 'video'
+            widget.exploreMomentsModelList[widget.index].moments!.first
+                        .mediaType ==
+                    'video'
                 ? Align(
                     alignment: Alignment.topRight,
                     child: Padding(

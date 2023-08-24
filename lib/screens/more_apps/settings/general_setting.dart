@@ -120,26 +120,6 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                       );
                     }),
                 getSettingsTile(
-                    title: "Terms & Conditions",
-                    onTap: () async {
-                      try {
-                        if (!await launch(AppConfig.termsAndCondition!))
-                          throw 'Could not launch ${AppConfig.termsAndCondition!}';
-                      } catch (error) {
-                        debugPrint("Error:- $error");
-                      }
-                    }),
-                getSettingsTile(
-                    title: "Privacy Policy",
-                    onTap: () async {
-                      try {
-                        if (!await launch(AppConfig.privacyPolicy!))
-                          throw 'Could not launch ${AppConfig.privacyPolicy!}';
-                      } catch (error) {
-                        debugPrint("Error:- $error");
-                      }
-                    }),
-                getSettingsTile(
                   title: "Upgrade Account Tier/KYC",
                   onTap: () async {
                     showDialog(
@@ -180,6 +160,26 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     title: "Deactivate Account",
                     onTap: () async {
                       deactivateAccountDialogue();
+                    }),
+                getSettingsTile(
+                    title: "Terms of Service",
+                    onTap: () async {
+                      try {
+                        if (!await launch(AppConfig.termsAndCondition!))
+                          throw 'Could not launch ${AppConfig.termsAndCondition!}';
+                      } catch (error) {
+                        debugPrint("Error:- $error");
+                      }
+                    }),
+                getSettingsTile(
+                    title: "Privacy Policy",
+                    onTap: () async {
+                      try {
+                        if (!await launch(AppConfig.privacyPolicy!))
+                          throw 'Could not launch ${AppConfig.privacyPolicy!}';
+                      } catch (error) {
+                        debugPrint("Error:- $error");
+                      }
                     }),
                 getLogoutTile(),
               ],

@@ -108,9 +108,6 @@ class _JobsSearchState extends State<JobsSearch> {
 
   @override
   void initState() {
-    print(
-        'widget.filterMap.toString()..............${widget.filterMap.toString()}');
-
     getJobListing();
     super.initState();
   }
@@ -119,7 +116,6 @@ class _JobsSearchState extends State<JobsSearch> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
-      // key: _scaffoldSearchKey,
       backgroundColor: Colors.white,
       appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -293,19 +289,7 @@ class _JobsSearchState extends State<JobsSearch> {
               });
             }
           },
-          onFieldSubmitted: (val) {
-            // if (mounted) {
-            //   setState(() {
-            //     count = 0;
-            //     next = "";
-            //     previous = "";
-            //     jobsList.clear();
-            //     noItemInList = false;
-            //     // getList();
-            //     getJobListing();
-            //   });
-            // }
-          },
+          onFieldSubmitted: (val) {},
           autofocus: true,
           style: TextStyle(
             fontSize: 16,
@@ -320,18 +304,7 @@ class _JobsSearchState extends State<JobsSearch> {
               fontWeight: FontWeight.w600,
               color: darkGrey,
             ),
-            // suffixIcon: IconButton(
-            //   icon: Icon(
-            //     Icons.filter_alt_rounded,
-            //     color: navyBlue,
-            //     size: 20,
-            //   ),
-            //   onPressed: () async {
-            //     FocusScope.of(context).unfocus();
-            //     await Future.delayed(Duration(milliseconds: 100))
-            //         .then((value) => showFilterProductSheet());
-            //   },
-            // ),
+          
             hintText: "",
             fillColor: Colors.white,
             filled: true,

@@ -85,7 +85,6 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   @override
   void initState() {
     getBankAccountDetail();
-
     super.initState();
   }
 
@@ -107,7 +106,6 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
@@ -143,10 +141,10 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                 child: Form(
                   key: _formKey,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: <Widget>[
-                        SizedBox(
+                        const SizedBox(
                           height: 30,
                         ),
                         InkWell(
@@ -189,27 +187,27 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getAccountNumber(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getAccountName(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         displayAmountField(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getDescription(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         noteForUser(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                       ],
@@ -221,7 +219,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
             Container(
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 40,
                   ),
                   canCashOut(amount!, accountBalance!)
@@ -240,11 +238,15 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                                           fontWeight: FontWeight.w600),
                                       children: <InlineSpan>[
                                         TextSpan(
-                                          text: worldCurrencies[
+                                          text: double.parse(moneyDisplayNormalizer(
+                                      displayPossibleCashOutAmount(
+                                      accountBalance!))) >= 35.00 ? worldCurrencies[
                                                   userBloc.user.currency!]! +
                                               moneyDisplayNormalizer(
                                                   displayPossibleCashOutAmount(
-                                                      accountBalance!)),
+                                                      accountBalance!)) :
+                                          '${worldCurrencies[
+                                          userBloc.user.currency!]!}0.00',
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: blackFont,
@@ -253,7 +255,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                                         )
                                       ])))),
                         ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                 ],
@@ -273,7 +275,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
           AppLocalization.of(context)!.bank,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -282,20 +284,20 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: DropdownButton<String>(
             isExpanded: true,
             value: bankName,
             icon: Padding(
-              padding: EdgeInsets.only(right: 8.0),
+              padding: const EdgeInsets.only(right: 8.0),
               child: Icon(
                 Icons.keyboard_arrow_down,
                 color: darkGrey,
                 size: 20,
               ),
             ),
-            underline: Divider(
+            underline: const Divider(
               color: Colors.transparent,
             ),
             hint: Padding(
@@ -304,7 +306,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
             ),
             iconSize: 24,
             elevation: 16,
-            style: TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.black),
             onChanged: (String? val) {
               if (mounted) {
                 setState(() {
@@ -387,7 +389,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       isAmountField: true,
       enabled: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: amountTextController,
@@ -438,7 +440,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       return;
     }
 
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     isLoading = true;
     if (mounted) setState(() {});
@@ -459,7 +461,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                   context: context,
                   builder: (context) =>
                       // Center(child: CircularLoadingIndicator()));
-                      Center(child: SizedBox()));
+                      const Center(child: SizedBox()));
               //show loading screen
               Navigator.pop(context);
               Navigator.push(
@@ -651,7 +653,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
             });
 
             return Card(
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
@@ -660,14 +662,14 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -676,9 +678,6 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         });
     bottomSheetMounted = false;
     if (result == null) {
-      // if (itemSearchTypeSelectionMenu!.isMenuOpen) {
-      //   itemSearchTypeSelectionMenu!.closeMenu();
-      // }
     }
   }
 
@@ -687,7 +686,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme:
-              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+              const TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -703,9 +702,9 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
             hintText: 'Search Bank Name',
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
             // prefixIcon: searchTypeSelection(),
-            prefix: Padding(
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 12),
             ),
             suffixIcon: searchIcon(),
@@ -751,7 +750,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   Widget bottomSheetTabBar() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Expanded(child: bottomSheetTabViews())
@@ -761,7 +760,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
   Widget bottomSheetTabBars() {
     return PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
+        preferredSize: const Size.fromHeight(50.0),
         child: Row(
           children: [
             GestureDetector(
@@ -774,7 +773,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                 searchBankList();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -803,7 +802,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                 searchBankList();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -874,13 +873,13 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   Widget searchTypeSelection() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
         color: navyBlue,
       ),
       child: IconButton(
         // key: _key,
-        icon: Icon(
+        icon: const Icon(
           SlydoAppIcon.payout_list,
           color: Colors.white,
           size: 16,
@@ -925,7 +924,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
             isResult: true,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             shrinkWrap: true,
             itemCount: bankList.length + 1,
@@ -972,9 +971,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void getBankListSearched() async {
-    String url = AppConfig.baseUrl +
-        "/api/v1/transactions/get-bank-info/?search=" +
-        searchItemTextController.text;
+    String url = "${AppConfig.baseUrl}/api/v1/transactions/get-bank-info/?search=${searchItemTextController.text}";
 
     if (!isItemLoading) {
       if (next != null && !isItemLoading) {
@@ -1009,7 +1006,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
       }
-      if (bankList!.isEmpty) {
+      if (bankList.isEmpty) {
         noSearchedItem = true;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
@@ -1027,7 +1024,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
   Widget bankCardDisplay(BankModel bankModel) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -1038,7 +1035,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   title: Text(
@@ -1146,4 +1143,5 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       }
     });
   }
+
 }

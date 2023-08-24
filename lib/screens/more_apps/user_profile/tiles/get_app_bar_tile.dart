@@ -33,7 +33,14 @@ import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../data/database_helper.dart';
+import '../../../home_tab/qr_code_page.dart';
 import '../../messaging/message_auth.dart';
+import '../../payment_and_banking/models/FinancialInstitution.dart';
+import '../../payment_and_banking/models/VirtualAccount.dart';
+import '../../payment_and_banking/payment_and_banking_auth.dart';
+import '../../yarn/utils/slydo_yarn_links.dart';
+import '../../yarn/yarn_search_screen.dart';
 import '../screens/user_profile_module_new/utils.dart';
 
 class GetAppbarTile extends StatefulWidget {
@@ -43,6 +50,8 @@ class GetAppbarTile extends StatefulWidget {
   ScrollController? scrollController;
   String? userType;
   Map<String, dynamic>? channelDetail;
+  final Function(Map<String, bool>)? callback;
+  final Function(Map<String, dynamic>)? callbackProductService;
 
   GetAppbarTile(
       {Key? key,
@@ -51,6 +60,8 @@ class GetAppbarTile extends StatefulWidget {
       required this.isShrink,
       required this.scrollController,
       this.userType,
+        this.callback,
+        this.callbackProductService,
       this.channelDetail})
       : super(key: key);
 
@@ -74,6 +85,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   bool isLoading = false;
   bool hasAddress = false;
   bool hasContact = false;
+
 
   @override
   void initState() {
@@ -135,7 +147,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           pinned: true,
           floating: true,
           leading: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.keyboard_arrow_left,
               color: Colors.white,
               size: 26,
@@ -150,14 +162,14 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ? userNameWithVerifiedIcon(
                   name: searchedUser!.displayName()!,
                   isVerified: searchedUser!.isVerified,
-                  textStyle: TextStyle(
+                  textStyle: const TextStyle(
                     fontSize: 18,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
                   verifiedIconColor: verifyGreen,
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           titleSpacing: 0,
           backgroundColor: navyBlue,
           flexibleSpace: FlexibleSpaceBar(
@@ -166,7 +178,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               StretchMode.blurBackground,
             ],
             background: widget.isLoading
-                ? SizedBox.shrink()
+                ? const SizedBox.shrink()
                 : getBgWidgetForAppBar(context),
           ),
         ),
@@ -204,7 +216,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return Container(
       height: 200,
       child: widget.isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
                 valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -212,7 +224,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             )
           : widget.channelDetail == null
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
                     valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -227,7 +239,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return Container(
       height: 200,
       child: widget.isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
                 valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -235,7 +247,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             )
           : searchedUser!.userAbout == null
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
                     valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -352,9 +364,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     });
 
     String channelUsername = getGroupUsername(
-        channelDetail!['group_username'] != null
-            ? channelDetail!['group_username']
-            : channelDetail!['group_name']);
+        channelDetail!['group_username'] ?? channelDetail!['group_name']);
 
     return Positioned(
       top: searchedUser?.bio == null || searchedUser!.bio!.isEmpty ? 180 : 150,
@@ -367,7 +377,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             children: [
               AnimatedContainer(
                 width: 48,
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 decoration: BoxDecoration(
                     border: Border.all(color: white, width: 3),
                     shape: BoxShape.circle),
@@ -387,7 +397,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             ],
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -421,16 +431,16 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             ],
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           getUserBioStringWidget(),
           Row(
             children: [
               getJoinedDate(),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               //get subscriber
               Column(
                 children: [
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   InkWell(
                     onTap: () {
                       // if (searchedUser?.userName != null) {
@@ -453,7 +463,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                               fontWeight: FontWeight.bold,
                               fontSize: 10),
                         ),
-                        SizedBox(width: 2),
+                        const SizedBox(width: 2),
                         Text(
                           searchedUser!.followers! > 1
                               ? 'Subscribers'
@@ -467,7 +477,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             ],
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -494,8 +504,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             children: [
               AnimatedContainer(
                 width: 48,
-                duration: Duration(milliseconds: 500),
-                decoration: BoxDecoration(
+                duration: const Duration(milliseconds: 500),
+                decoration: const BoxDecoration(
                     // border: Border.all(color: borderColor, width: 3),
                     shape: BoxShape.circle),
                 child: GestureDetector(
@@ -532,7 +542,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                                       color: dividerColor,
                                     ),
                                   ),
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       horizontal: 5, vertical: 2),
                                   child: getRating(
                                       numberOfRating:
@@ -547,7 +557,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             ],
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -589,10 +599,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             ],
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           getUserBioStringWidget(),
           getJoinedDate(),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -713,8 +723,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           : Container(
               height: 30,
               width: 80,
-              margin: EdgeInsets.symmetric(vertical: 8),
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                   color:
                       channelDetail!['is_member'] == true ? blackFont : white,
@@ -738,7 +748,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   Widget getFollowUnFollowBtn() {
     if (isLoadingFollowingAction) {
       return Padding(
-        padding: EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 14),
         child: SizedBox(
           width: 20,
           height: 20,
@@ -748,7 +758,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     }
 
     if (searchedUser!.userName == userBloc.user.userName) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     if (searchedUser!.isFollowing != null &&
         searchedUser!.isFollowing == true) {
@@ -774,13 +784,13 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         child: Container(
           height: 30,
           width: 80,
-          margin: EdgeInsets.symmetric(vertical: 8),
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
               color: blackFont,
               borderRadius: BorderRadius.circular(50),
               border: Border.all(color: HexColor("#292929"), width: 1)),
-          child: Center(
+          child: const Center(
             child: Text(
               'Following',
               style: TextStyle(
@@ -815,12 +825,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       child: Container(
         height: 30,
         width: 80,
-        margin: EdgeInsets.symmetric(vertical: 8),
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
             border: Border.all(color: HexColor("#292929"), width: 1)),
-        child: Center(
+        child: const Center(
           child: Text(
             'Follow',
             style: TextStyle(
@@ -837,7 +847,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   Widget usernameNamePhoto() {
     return Column(
       children: [
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Row(
           children: [
             GestureDetector(
@@ -852,7 +862,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 ),
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -893,12 +903,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Row(
           children: [
             //Icon(Icons.calendar_month_rounded, size: 16),
             SvgPicture.asset("yarn/calendar".toSVG()),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Text(
               '${getDate(searchedUser!.dateJoined!)}',
               style: TextStyle(
@@ -950,12 +960,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   style:
                       TextStyle(color: blackFont, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: 2),
-                Text('Following'),
+                const SizedBox(width: 2),
+                const Text('Following'),
               ],
             ),
           ),
-          SizedBox(width: 30),
+          const SizedBox(width: 30),
           InkWell(
             onTap: () {
               if (searchedUser?.userName != null) {
@@ -976,7 +986,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   style:
                       TextStyle(color: blackFont, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: 2),
+                const SizedBox(width: 2),
                 Text(
                   searchedUser!.followers! > 1 ? 'Followers' : 'Follower',
                 ),
@@ -986,41 +996,43 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         ],
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget getUserBioStringWidget() {
     if (searchedUser?.bio == null || searchedUser!.bio!.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     } else {
       return Container(
-        margin: EdgeInsets.only(right: 6),
+        margin: const EdgeInsets.only(right: 6),
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Linkify(
-              onOpen: _onOpen,
-              text: searchedUser?.bio == null
-                  ? ''
-                  : messageDecoderWithEmoji("${searchedUser?.bio}" "") ?? "",
-              textAlign: TextAlign.left,
-              style: TextStyle(fontSize: 14),
+            YarnSmartText(
+              text: messageDecoderWithEmoji(searchedUser?.bio)! ?? '',
+              style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
               maxLines: 6,
+              disableAt: false,
+              onTagClick: (tag) {
+                NavigationUtil.push(context,
+                    screen: SearchScreen(searchText: tag.trim()));
+              },
+              onUrlClicked: (open) {
+                // launch  url
+                launchUrl(Uri.parse(open.toString()));
+              },
+              onAtClick: (at) {
+                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                  "searchedUserName": at.replaceAll(RegExp('@'), '').trim()
+                });
+              },
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
           ],
         ),
       );
-    }
-  }
-
-  _onOpen(LinkableElement link) async {
-    if (await canLaunchUrl(Uri.parse(link.url))) {
-      await launchUrl(Uri.parse(link.url));
-    } else {
-      throw 'Could not launch $link';
     }
   }
 
@@ -1073,9 +1085,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   List<Widget> actionButtons() {
     return [
       getQRCodeIcon(),
-      widget.userType == 'channel' ? SizedBox() : getSearchIcon(),
+      widget.userType == 'channel' ? const SizedBox() : getSearchIcon(),
       menuIcon(),
-      SizedBox(width: 16),
+      const SizedBox(width: 16),
     ];
   }
 
@@ -1084,7 +1096,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         ? Row(
             children: [
               chatIcon(),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
             ],
@@ -1096,7 +1108,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return Row(
       children: [
         qrCodeIcon(),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
       ],
@@ -1108,7 +1120,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         ? Row(
             children: [
               searchIcon(),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
             ],
@@ -1120,14 +1132,43 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Icon(
+      icon: const Icon(
         SlydoAppIcon.qr_code,
         size: 16,
         color: Colors.white,
       ),
-      onTap: () {
-        Navigator.of(context)
-            .pushNamed(Routes.PHOTO_VIEWER, arguments: searchedUser!.qrCode);
+      onTap: () async {
+        if(channelDetail != null){
+          //get the account detail of clicked channel
+
+          Map<String, dynamic> financial = channelDetail!['owner']['wallet']['financial_institution'];
+
+              VirtualAccount virtualAccount = VirtualAccount(
+            accountName: channelDetail!['owner']['wallet']['account_name'],
+            accountNumber: channelDetail!['owner']['wallet']['account_number'],
+            financialInstitution: FinancialInstitution.fromJson(financial),
+            customerUsername: channelDetail!['owner']['wallet']['customer_username'],
+            note: "",
+          );
+
+          NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile':
+          searchedUser,
+            'virtualAccount': virtualAccount}));
+        }else{
+          //get the account detail of clicked user
+          VirtualAccount virtualAccount = VirtualAccount(
+            accountName: searchedUser!.wallet!.accountName,
+            accountNumber: searchedUser!.wallet!.accountNumber,
+            financialInstitution: searchedUser!.wallet!.financialInstitution!,
+            customerUsername: searchedUser!.wallet!.customerUsername,
+            note: "",
+          );
+
+          NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile':
+          searchedUser,
+            'virtualAccount': virtualAccount}));
+        }
+
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
@@ -1165,7 +1206,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Icon(
+      icon: const Icon(
         SlydoAppIcon.search,
         size: 16,
         color: Colors.white,
@@ -1183,7 +1224,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Icon(
+      icon: const Icon(
         SlydoAppIcon.menu,
         size: 16,
         color: Colors.white,
@@ -1200,7 +1241,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return Row(
       children: [
         getAddConnectionIcon(),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
       ],
     );
   }
@@ -1273,7 +1314,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             height: 20,
             child: CircularLoadingIndicator(),
           ),
-          SizedBox(width: 24),
+          const SizedBox(width: 24),
         ],
       );
     }
@@ -1283,20 +1324,20 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         return Row(
           children: [
             chatIcon(),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
           ],
         );
       } else {
         return Row(
           children: [
             getAddConnectionBtn(),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
           ],
         );
       }
     }
 
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   void userProfileActionsSheet(BuildContext context) {
@@ -1305,7 +1346,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -1313,7 +1354,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -1349,7 +1390,41 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 arguments: {"searchedUser": searchedUser});
 
             getSearchedUser();
-            // }
+          },
+        ),
+      );
+
+      list.add(
+        bottomSheetItem(
+          title: "Customize Profile",
+          iconData: Icons.dashboard_customize_sharp,
+          onTap: () async {
+
+            var business = '';
+            if(searchedUser!.type!.toLowerCase() == "user"){
+              business = 'no';
+            }else if(widget.userType == 'channel'){
+              business = 'no';
+            }else{
+              business = 'yes';
+            }
+            Navigator.pop(context);
+            final data = await Navigator.of(context).pushNamed(Routes.CUSTOMIZE_PROFILE,
+                arguments: {"business": business,
+                  "callbackProductService": (Map<String, dynamic> updatedData) {
+                    // This callback will be invoked when the profile menu for product/service label is saved in CustomizeProfileScreen
+                    if (widget.callbackProductService != null) {
+                      widget.callbackProductService!(updatedData);
+                      if(mounted)setState(() {});
+                    }
+                  },
+                  });
+
+            if (data != null && data is Map<String, bool>) {
+                widget.callback!(data);
+              if(mounted)setState(() {});
+            }
+
           },
         ),
       );
@@ -1447,7 +1522,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               title: "Send",
               iconData: SlydoAppIcon.send,
               onTap: () {
-                if (appConfigurationModel?.enablePayment == true) {
+                // if (appConfigurationModel?.enablePayment == true) {
                   UserAuth()
                       .fetchCustomerProfile(searchedUserName)
                       .then((fetchedUser) {
@@ -1459,16 +1534,16 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                           'recipient': searchedUser!.userName
                         });
                   });
-                } else {
-                  showToast(message: 'Payment not available at the moment');
-                }
+                // } else {
+                //   showToast(message: 'Payment not available at the moment');
+                // }
               },
             ),
             bottomSheetItem(
                 title: "Request",
                 iconData: SlydoAppIcon.receive,
                 onTap: () {
-                  if (appConfigurationModel?.enablePayment == true) {
+                  // if (appConfigurationModel?.enablePayment == true) {
                     UserAuth()
                         .fetchCustomerProfile(searchedUserName)
                         .then((fetchedUser) {
@@ -1481,9 +1556,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                             'isRequest': true
                           });
                     });
-                  } else {
-                    showToast(message: 'Payment not available at the moment');
-                  }
+                  // } else {
+                  //   showToast(message: 'Payment not available at the moment');
+                  // }
                 }),
             bottomSheetItem(
               title: "Block Account",
@@ -1526,7 +1601,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: bottomSheetItem(
               title: "Upgrade",
-              icon: Icon(Icons.upgrade_rounded),
+              icon: const Icon(Icons.upgrade_rounded),
               isLast: userBloc.user.userName == searchedUser!.userName,
               onTap: () async {
                 Navigator.pop(context);
@@ -1544,6 +1619,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
     return list;
   }
+
 
   void upgradeAccount() async {
     Navigator.pushNamed(context, "/choose-subscriptions");
@@ -1578,7 +1654,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       String? url}) async {
     Map<String, dynamic> data = {
       "meta_data": messageDecoderWithEmoji(jsonEncode(itemData)),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
       "message": "user-profile",
@@ -1606,4 +1682,5 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               }
             }));
   }
+
 }

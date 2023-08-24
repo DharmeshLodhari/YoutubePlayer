@@ -18,6 +18,7 @@ import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 
 import 'models/UserAbout.dart';
+import 'models/custom_profile_model.dart';
 import 'models/states_model.dart';
 
 class UserAuth extends AuthService {
@@ -1196,4 +1197,42 @@ class UserAuth extends AuthService {
       return false;
     }
   }
+
+  Future<Map<String, dynamic>?> customizeProfile() async {
+    var url = "${AppConfig.baseUrl}/api/v1/user/customer-profile-menu/";
+
+    var headers = await getAuthHeaders();
+
+    var response = await httpGet(url, headers: headers);
+    debugPrint(
+        "RESPONSE STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "results": jsonData
+      };
+
+      return result;
+    }
+    return null;
+  }
+
+  Future<bool> updateCustomizeProfile(Map<String, dynamic> data) async {
+    var url = "${AppConfig.baseUrl}/api/v1/user/customer-profile-menu/";
+    // var data = {"user": ''};
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPatch(url, headers: headers, body: _data);
+    debugPrint(
+        "RESPONSE STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
+
 }

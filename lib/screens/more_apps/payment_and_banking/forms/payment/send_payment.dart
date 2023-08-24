@@ -30,10 +30,16 @@ class _SendPaymentState extends State<SendPayment> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar() as PreferredSizeWidget,
-      body: _buildBody(),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, "back pressed");
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar() as PreferredSizeWidget,
+        body: _buildBody(),
+      ),
     );
   }
 
@@ -54,7 +60,7 @@ class _SendPaymentState extends State<SendPayment> {
             FocusScope.of(context).unfocus();
             await Future.delayed(Duration(milliseconds: 300));
           }
-          Navigator.pop(context);
+          Navigator.pop(context, "back pressed");
         },
       ),
       title: Text(

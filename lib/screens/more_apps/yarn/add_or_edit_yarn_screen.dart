@@ -1453,7 +1453,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       }
       //set product/service to null after comment is successful
       yarnDashboardBloc!.productService = null;
-      showToast(message: "Yarn add successfully");
+      showToast(message: "Yarn added successfully");
 
       if (mounted) setState(() {});
     } else {

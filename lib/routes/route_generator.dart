@@ -150,8 +150,13 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../screens/more_apps/business/screens/contract_screen.dart';
-import '../screens/more_apps/credit_card/get_virtual_card.dart';
+import '../screens/more_apps/credit_card/add_virtual_card.dart';
+import '../screens/more_apps/credit_card/design_virtual_card.dart';
+import '../screens/more_apps/credit_card/generate_debit_card.dart';
+import '../screens/more_apps/credit_card/fund_virtual_card.dart';
+import '../screens/more_apps/credit_card/search_transaction_card.dart';
 import '../screens/more_apps/credit_card/virtual_card_home.dart';
+import '../screens/more_apps/credit_card/withdraw_virtual_card.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/payout_transaction_detail.dart';
 import '../screens/more_apps/service_hub/models/active_job_listing.dart';
@@ -173,6 +178,7 @@ import '../screens/more_apps/service_hub/service_hub_dashboard.dart';
 import '../screens/more_apps/shopping/forms/product/product_add_new_option.dart';
 import '../screens/more_apps/shopping/forms/product/product_variant_list.dart';
 import '../screens/more_apps/shopping/forms/product/product_variant_update.dart';
+import '../screens/more_apps/user_profile/screens/customize_profile.dart';
 import '../screens/super_store/near_by_list_screen.dart';
 import '../screens/super_store/search_nearby_business.dart';
 import '../screens/super_store/super_store.dart';
@@ -1643,20 +1649,77 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case Routes.GET_VIRTUAL_CARD:
+      case Routes.VIRTUAL_CARD_HOME:
         return PageTransition(
-          child: GetVirtualCard(
-            // arguments: settings.arguments,
+          child: VirtualCardHome(
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
 
-      case Routes.VIRTUAL_CARD_HOME:
+      case Routes.ADD_VIRTUAL_CARD:
         return PageTransition(
-          child: VirtualCardHome(
-            // arguments: settings.arguments,
+          child: const AddVirtualCard(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.DESIGN_VIRTUAL_CARD:
+        return PageTransition(
+          child: DesignVirtualCard(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.GENERATE_VIRTUAL_CARD:
+        return PageTransition(
+          child: GenerateDebitCard(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.FUND_VIRTUAL_CARD:
+        return PageTransition(
+          child: FundVirtualCard(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.WITHDRAW_VIRTUAL_CARD:
+        return PageTransition(
+          child: WithdrawVirtualCard(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.SEARCH_TRANSACTION_CARD:
+        return PageTransition(
+          child: SearchTransactionCard(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.CUSTOMIZE_PROFILE:
+        return PageTransition(
+          child: CustomizeProfileScreen(
+            arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,

@@ -575,6 +575,7 @@ class AuthService {
   Future<Response> httpGet(
     String url, {
     Map<String, dynamic>? headers,
+        Duration? newTimeOutDuration,
     int count = API_CALL_RETRY_COUNT,
   }) async {
     Uri uri = Uri.parse(url);
@@ -582,7 +583,7 @@ class AuthService {
 
     var response = await http
         .get(uri, headers: headers as Map<String, String>?)
-        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+        .timeout(newTimeOutDuration ?? timeOutDuration, onTimeout: () => timeOutFunction());
 
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
     bool result = await isTokenExpire(response);
@@ -603,12 +604,13 @@ class AuthService {
     String url, {
     Map<String, dynamic>? headers,
     String? body,
+        Duration? newTimeOutDuration,
     int count = API_CALL_RETRY_COUNT,
   }) async {
     Uri uri = Uri.parse(url);
     var response = await http
         .post(uri, headers: headers as Map<String, String>?, body: body)
-        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+        .timeout(newTimeOutDuration ?? timeOutDuration, onTimeout: () => timeOutFunction());
 
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
     bool result = await isTokenExpire(response);
@@ -630,12 +632,13 @@ class AuthService {
     String url, {
     Map<String, dynamic>? headers,
     String? body,
+        Duration? newTimeOutDuration,
     int count = API_CALL_RETRY_COUNT,
   }) async {
     Uri uri = Uri.parse(url);
     var response = await http
         .patch(uri, headers: headers as Map<String, String>?, body: body)
-        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+        .timeout(newTimeOutDuration ?? timeOutDuration, onTimeout: () => timeOutFunction());
 
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
     bool result = await isTokenExpire(response);
@@ -661,7 +664,7 @@ class AuthService {
   // }
 
   Future<Response> httpDelete(String url,
-      {Map<String, dynamic>? headers, int count = API_CALL_RETRY_COUNT}) async {
+      {Map<String, dynamic>? headers, Duration? newTimeOutDuration, int count = API_CALL_RETRY_COUNT}) async {
     Uri uri = Uri.parse(url);
     var response =
         await http.delete(uri, headers: headers as Map<String, String>?);
@@ -678,7 +681,7 @@ class AuthService {
     }
 
     await wasTokenBlackListed(response)
-        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+        .timeout(newTimeOutDuration ?? timeOutDuration, onTimeout: () => timeOutFunction());
 
     return response;
   }

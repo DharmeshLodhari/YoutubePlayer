@@ -118,3 +118,48 @@ Widget buildMultipleFollowersWidget(
     ),
   );
 }
+
+String capitalizeAndRemoveUnderscores(String input) {
+  if (input == null || input.isEmpty) {
+    return input;
+  }
+
+  // Split the input string by underscores
+  List<String> parts = input.split('_');
+
+  // Capitalize the first letter of each part
+  parts = parts.map((part) {
+    if (part.isNotEmpty) {
+      return part[0].toUpperCase() + part.substring(1);
+    }
+    return part;
+  }).toList();
+
+  // Join the parts back together with spaces
+  String result = parts.join(' ');
+
+  return result;
+}
+
+bool compareMaps(Map<String, bool> map1, Map<String, bool> map2) {
+  // Check if both maps have the same length.
+  if (map1.length != map2.length) {
+    return false;
+  }
+
+  // Iterate through the keys in map1.
+  for (var key in map1.keys) {
+    // Check if the key exists in map2.
+    if (!map2.containsKey(key)) {
+      return false;
+    }
+
+    // Check if the values for the same key are different.
+    if (map1[key] != map2[key]) {
+      return false;
+    }
+  }
+
+  // If all keys and values match, the maps are equal.
+  return true;
+}

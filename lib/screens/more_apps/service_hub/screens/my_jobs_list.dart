@@ -49,7 +49,6 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
   final GlobalKey<ScaffoldMessengerState> _myJobsScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
-
   bool _tabsVisible = true;
 
   void _showTabs(bool visible) {
@@ -79,6 +78,8 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
           }
           return;
         }
+
+        log('message......${result.toJson()}');
 
         listCount = result.count;
         listNext = result.next;
@@ -382,35 +383,6 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
                 ),
               ),
             ),
-            // !isLoading && postedMyJobListing.isNotEmpty
-            //     ? Flexible(
-            //         fit: FlexFit.loose,
-            //         child: ListView.builder(
-            //             itemCount: postedMyJobListing.length,
-            //             shrinkWrap: true,
-            //             physics: NeverScrollableScrollPhysics(),
-            //             itemBuilder: (context, index) {
-            //               return Padding(
-            //                 padding: const EdgeInsets.only(bottom: 10.0),
-            //                 child: GestureDetector(
-            //                   onTap: () => Navigator.pushNamed(
-            //                       context, Routes.JOB_DETAILS),
-            //                   child: JobDescriptionCard(
-            //                     creationDate: postedMyJobListing[index]
-            //                         .creationDate
-            //                         .toString(),
-            //                     description:
-            //                         postedMyJobListing[index].description,
-            //                     location: postedMyJobListing[index].location,
-            //                     price: postedMyJobListing[index].pay.toString(),
-            //                     status: postedMyJobListing[index].status,
-            //                     title: postedMyJobListing[index].title,
-            //                   ),
-            //                 ),
-            //               );
-            //             }),
-            //       )
-            //     : SizedBox.shrink(),
           ],
         ),
       ),
@@ -418,7 +390,6 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
   }
 
   Widget getAppliedJobList() {
-    print('${appliedMyJobListing.length} my applied job length');
     if (appliedMyJobListing.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -476,9 +447,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
         ),
       ),
       bottom: tabBar() as PreferredSizeWidget,
-      actions: [
-        // _searchBtn()
-      ],
+      actions: [_searchBtn()],
     );
   }
 
@@ -527,6 +496,4 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
       enableMargin: true,
     );
   }
-
-  
 }

@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../data/currency.dart';
 import '../l10n/messages_all.dart';
+import '../utils/util.dart';
 
 class AppLocalization {
   static Future<AppLocalization> load(Locale locale) {
@@ -326,6 +328,20 @@ class AppLocalization {
     );
   }
 
+  String get freeze {
+    return Intl.message(
+      "Freeze",
+      name: "freeze",
+    );
+  }
+
+  String get unFreeze {
+    return Intl.message(
+      "UnFreeze",
+      name: "unFreeze",
+    );
+  }
+
   //login
   String get login {
     return Intl.message(
@@ -397,6 +413,13 @@ class AppLocalization {
     );
   }
 
+  String get ignore {
+    return Intl.message(
+      "Ignore",
+      name: "ignore",
+    );
+  }
+
   String get upgrade {
     return Intl.message(
       "Upgrade",
@@ -404,10 +427,24 @@ class AppLocalization {
     );
   }
 
+  String get process {
+    return Intl.message(
+      "Process",
+      name: "process",
+    );
+  }
+
   String get upgradeMessage {
     return Intl.message(
       "To apply for this job, please upgrade to a business account",
       name: "upgradeMessage",
+    );
+  }
+
+  String get paymentLinkConfirmationMsg {
+    return Intl.message(
+      "You are about to create a payment link, this service will cost you ",
+      name: "paymentLinkConfirmationMsg",
     );
   }
 
@@ -451,6 +488,13 @@ class AppLocalization {
     return Intl.message(
       "Invalid Amount",
       name: "invalidAmount",
+    );
+  }
+
+  String get dailyPaymentLinkLimit {
+    return Intl.message(
+      "You can only send NGN${moneyDisplayNormalizer(200000 * 100)} at once.",
+      name: "dailyPaymentLinkLimit",
     );
   }
 
@@ -503,10 +547,24 @@ class AppLocalization {
     );
   }
 
+  String get noteForUserPayLink {
+    return Intl.message(
+      "You are about to create a payment link, this service will cost ",
+      name: "noteForUserPayLink",
+    );
+  }
+
   String get minimumTransfer {
     return Intl.message(
       "Minimum Transferable Fund: ",
       name: "minimumTransfer",
+    );
+  }
+
+  String get availableFund {
+    return Intl.message(
+      "Available Fund: ",
+      name: "availableFund",
     );
   }
 
@@ -1327,6 +1385,20 @@ class AppLocalization {
     );
   }
 
+  String get freezeCard {
+    return Intl.message(
+      "Freeze Card",
+      name: "freezeCard",
+    );
+  }
+
+  String get fundCard {
+    return Intl.message(
+      "Fund Card",
+      name: "fundCard",
+    );
+  }
+
   String get send {
     return Intl.message(
       "Send",
@@ -1621,6 +1693,7 @@ class AppLocalization {
       name: "applied",
     );
   }
+
   String get myJobs {
     return Intl.message(
       "My Jobs",
@@ -1646,6 +1719,13 @@ class AppLocalization {
     return Intl.message(
       "No Result Found!",
       name: "noResultFound",
+    );
+  }
+
+  String get noPaymentLink {
+    return Intl.message(
+      "No payment Link",
+      name: "noPaymentLink",
     );
   }
 
@@ -1755,6 +1835,13 @@ class AppLocalization {
     );
   }
 
+  String get pincode {
+    return Intl.message(
+      "Passcode",
+      name: "passcode",
+    );
+  }
+
   String get account {
     return Intl.message(
       "Account",
@@ -1830,6 +1917,20 @@ class AppLocalization {
     return Intl.message(
       "Category",
       name: "category",
+    );
+  }
+
+  String get cardBrand {
+    return Intl.message(
+      "Card Brand",
+      name: "cardBrand",
+    );
+  }
+
+  String get cardType {
+    return Intl.message(
+      "Card Type",
+      name: "cardType",
     );
   }
 
@@ -1969,6 +2070,48 @@ class AppLocalization {
     );
   }
 
+  String get cardLabel {
+    return Intl.message(
+      "Card Label",
+      name: "cardLabel",
+    );
+  }
+
+  String get reason {
+    return Intl.message(
+      "Reason",
+      name: "reason",
+    );
+  }
+
+  String get productLabel {
+    return Intl.message(
+      "Product Label",
+      name: "productLabel",
+    );
+  }
+
+  String get serviceLabel {
+    return Intl.message(
+      "Service Label",
+      name: "serviceLabel",
+    );
+  }
+
+  String get firstName {
+    return Intl.message(
+      "First Name",
+      name: "firstName",
+    );
+  }
+
+  String get lastName {
+    return Intl.message(
+      "Last Name",
+      name: "lastName",
+    );
+  }
+
   String get size {
     return Intl.message(
       "Size",
@@ -1994,6 +2137,83 @@ class AppLocalization {
     return Intl.message(
       "Please Enter Product Name",
       name: "pleaseEnterProductName",
+    );
+  }
+
+  String get pleaseEnterLabel {
+    return Intl.message(
+      "Please Enter Label",
+      name: "pleaseEnterLabel",
+    );
+  }
+
+  String get pleaseEnterReason {
+    return Intl.message(
+      "Please Enter Reason",
+      name: "pleaseEnterReason",
+    );
+  }
+
+  String get pleaseEnterProductLabel {
+    return Intl.message(
+      "Please Enter Product Label",
+      name: "pleaseEnterProductLabel",
+    );
+  }
+
+  String get pleaseEnterServiceLabel {
+    return Intl.message(
+      "Please Enter Service Label",
+      name: "pleaseEnterServiceLabel",
+    );
+  }
+
+  String get pleaseEnterFirstName {
+    return Intl.message(
+      "Please Enter First Name",
+      name: "pleaseEnterFirstName",
+    );
+  }
+
+  String get pleaseEnterLastName {
+    return Intl.message(
+      "Please Enter Last Name",
+      name: "pleaseEnterLastName",
+    );
+  }
+
+  String get pleaseEnterAddress {
+    return Intl.message(
+      "Please Enter Address",
+      name: "pleaseEnterAddress",
+    );
+  }
+
+  String get pleaseEnterCity {
+    return Intl.message(
+      "Please Enter City",
+      name: "pleaseEnterCity",
+    );
+  }
+
+  String get pleaseEnterZipCode {
+    return Intl.message(
+      "Please Enter Zip Code",
+      name: "pleaseEnterZipCode",
+    );
+  }
+
+  String get pleaseEnterBvn {
+    return Intl.message(
+      "Please Enter BVN",
+      name: "pleaseEnterBvn",
+    );
+  }
+
+  String get pleaseEnterIdNumber {
+    return Intl.message(
+      "Please Enter ID Number",
+      name: "pleaseEnterIdNumber",
     );
   }
 
@@ -2067,23 +2287,16 @@ class AppLocalization {
     );
   }
 
-  String get jobListedSuccessfully {
-    return Intl.message(
-      "Job Listed Successfully",
-      name: "jobListtedSuccessfully",
-    );
-  }
-
   String get jobRemovedFromListing {
     return Intl.message(
-      "Job Removed From Listing Successfully",
+      "Unlist Successfully",
       name: "jobRemovedFromListingSuccessfully",
     );
   }
 
   String get appliedForJobSuccessfully {
     return Intl.message(
-      "Job Applied Successfully",
+      "Application successful",
       name: "jobAppliedSuccessfully",
     );
   }
@@ -2106,6 +2319,20 @@ class AppLocalization {
     return Intl.message(
       "Please Select Product Category and Condition",
       name: "pleaseSelectProductCategoryAndCondition",
+    );
+  }
+
+  String get pleaseSelectStateOrIdTYpe {
+    return Intl.message(
+      "Please Select State and ID Type",
+      name: "pleaseSelectStateOrIdTYpe",
+    );
+  }
+
+  String get pleaseSelectCardBrand {
+    return Intl.message(
+      "Please Select Card Brand And Card Type",
+      name: "pleaseSelectCardBrand",
     );
   }
 
@@ -2463,6 +2690,13 @@ class AppLocalization {
     return Intl.message(
       "No Transactions done this week",
       name: "noTransactionDoneThisWeek",
+    );
+  }
+
+  String get noTransaction {
+    return Intl.message(
+      "No Transactions",
+      name: "noTransaction",
     );
   }
 
@@ -2886,6 +3120,13 @@ class AppLocalization {
     return Intl.message(
       "Share",
       name: "share",
+    );
+  }
+
+  String get download {
+    return Intl.message(
+      "download",
+      name: "download",
     );
   }
 
@@ -3430,6 +3671,13 @@ class AppLocalization {
     return Intl.message(
       "Job Added Successfully",
       name: "jobAddedSuccessfully",
+    );
+  }
+
+  String get jobListSuccessfully {
+    return Intl.message(
+      "Job Listed Successfully",
+      name: "jobListedSuccessfully",
     );
   }
 

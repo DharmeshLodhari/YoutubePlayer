@@ -457,7 +457,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 taskMethod = value.toString();
               });
             },
-            value: 'Physically',
+            value: 'On Site',
           ),
         ),
         Expanded(
@@ -469,7 +469,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 taskMethod = value.toString();
               });
             },
-            value: 'Online',
+            value: 'Remote',
           ),
         ),
       ],
@@ -1210,6 +1210,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             'picture_count': jobImages.length,
             'file': '',
             'list_now': checkedValue,
+            'is_online': taskMethod=='Remote'?true:false,
             'localImages': jobImages.map((file) => File(file.path)).toList(),
           }).then((value) {
             Navigator.pop(context);

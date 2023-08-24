@@ -2,14 +2,15 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_link/payment_link_cashout.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-
 import '../data/currency.dart';
 import '../locator.dart';
 import '../routes/route_constants.dart';
@@ -57,6 +58,7 @@ class _QRCodeViewState extends State<QRCodeView> {
             ? arguments['isRequest']
             : false
         : false;
+
     super.initState();
   }
 
@@ -146,15 +148,19 @@ class _QRCodeViewState extends State<QRCodeView> {
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
       if (scanData != null) {
+
         if (scanData.code!.startsWith(AppConfig.baseUrl) ||
             scanData.code!.startsWith(AppConfig.baseUrl) ||
             scanData.code!.startsWith(AppConfig.merchantUrl) ||
+            scanData.code!.startsWith("https://slydo.co") ||
             scanData.code!.startsWith(AppConfig.localHost)) {
           var scanDataList = scanData.code!.split('/');
 
           scanDataList.removeWhere((value) => value == "");
           if (canShowDialogBox) {
+            controller.pauseCamera();
             getNavigationRoot(scanDataList, scanDataCode: scanData.code);
+            controller.resumeCamera();
           }
           canShowDialogBox = false;
         }
@@ -166,32 +172,69 @@ class _QRCodeViewState extends State<QRCodeView> {
     if (Platform.isAndroid) {
       controller!.pauseCamera();
     }
+    // else if (Platform.isIOS) {
+    //   controller!.resumeCamera();
+    // }
     controller!.resumeCamera();
   }
 
   // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
   void getNavigationRoot(List<String> scanDataList,
       {String? scanDataCode}) async {
+    List<String> cleanScanDataLink = scanDataList;
     int qrCodeIndex = scanDataList.length - 2;
 
     debugPrint('SCANNED DATA ::: $scanDataList');
     debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
 
-    if (scanDataList[qrCodeIndex] == "products") {
+    cleanScanDataLink.removeWhere((item) => [""].contains(item));
+    print('cleean...$cleanScanDataLink');
+
+    if (cleanScanDataLink[2] == 'payment-link') {
+      String paymentLinkId = cleanScanDataLink[3];
+
+      final result = await NavigationUtil.push(context,
+          screen: PaymentLinkCashOut(
+            id: paymentLinkId,
+          ));
+      // Handle the result here
+      if (result != null) {
+        if (result == 'back pressed') {
+          canShowDialogBox = true;
+          if (mounted) setState(() {});
+        }
+      }
+    }
+
+      else if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
 
       _dashboardBloc.index = 0;
 
-      Navigator.of(context)
+      final result = await Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
+      // Handle the result here
+      if (result != null) {
+        if (result == 'back pressed') {
+          canShowDialogBox = true;
+          if (mounted) setState(() {});
+        }
+      }
     } else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
       _dashboardBloc.index = 0;
 
-      Navigator.of(context)
+      final result = await Navigator.of(context)
           .pushNamed(Routes.SERVICE_DETAIL, arguments: {"service": service});
+      // Handle the result here
+      if (result != null) {
+        if (result == 'back pressed') {
+          canShowDialogBox = true;
+          if (mounted) setState(() {});
+        }
+      }
     } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         ShoppingCartModelFromQrCode? shoppingCartModel =
@@ -423,8 +466,11 @@ class _QRCodeViewState extends State<QRCodeView> {
       } catch (e) {
         print('ERROR :: ${e.toString()}');
         showToast(message: 'Something went wrong, please try again.');
+        canShowDialogBox = true;
+        if (mounted) setState(() {});
       }
-    } else {
+    }
+    else {
       var recipient = scanDataList.last;
       getRecipient(recipient);
 
@@ -434,22 +480,40 @@ class _QRCodeViewState extends State<QRCodeView> {
 
       if (appConfigurationModel?.enablePayment == true) {
         if (isRequest!) {
-          Navigator.of(context).pushNamed(
+          final result = await Navigator.of(context).pushNamed(
             Routes.REQUEST_PAYMENT,
             arguments: {
               'isRequest': true,
             },
           );
+          // Handle the result here
+          if (result != null) {
+            if (result == 'back pressed') {
+              canShowDialogBox = true;
+              if (mounted) setState(() {});
+            }
+          }
         } else {
-          Navigator.of(context).pushNamed(
+          final result = await Navigator.of(context).pushNamed(
             Routes.SEND_PAYMENT,
             arguments: {
               'isFromProfile': false,
             },
           );
+
+          // Handle the result here
+          if (result != null) {
+            if (result == 'back pressed') {
+              //make scanning of qr active
+              canShowDialogBox = true;
+              if (mounted) setState(() {});
+            }
+          }
         }
       } else {
         showToast(message: 'Payment not available at the moment');
+        canShowDialogBox = true;
+        if (mounted) setState(() {});
       }
     }
   }

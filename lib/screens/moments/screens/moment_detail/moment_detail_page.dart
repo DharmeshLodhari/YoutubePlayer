@@ -256,7 +256,6 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
         backgroundColor: Colors.black,
         body: Align(
           alignment: Alignment.topLeft,
-          // This allows us to scroll vertically to move to the next or previous user's moments.
           child: Column(
             children: [
               Expanded(

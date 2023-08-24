@@ -793,7 +793,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
 
   Widget checkImage() {
     Color borderColor = getUserTypeColor(user: _payee!);
-    String? url = _payee!.avatar;
+    String? url = "";
+    url = _payee!.avatar;
 
     String imageUrl = url!.replaceAll('https//', 'https://');
     if (_payee!.avatar == "" ||

@@ -7,7 +7,6 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
@@ -25,7 +24,6 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../../../utils/navigation_util.dart';
 import '../../../../widget/dialog.dart';
 import '../../../../widget/rounded_background_icon.dart';
@@ -104,7 +102,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       if (mounted) setState(() {});
 
       var result = await ServiceHubAuthService().retreiveJob(jobId: jobId);
-      logger.d('tor bad......${result?.toJson()}');
+      log('tor bad......${result?.toJson()}');
 
       if (result == null) {
         // noJobsInList = true;
@@ -132,12 +130,12 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   void deleteJob() async {
     bool done = await ServiceHubAuthService().deleteMyJob(jobId);
     if (done) {
-      showSnackbar(context, message: 'Job Deleted Successfully');
       Navigator.pushReplacementNamed(context, Routes.MY_JOBS);
+      showSnackbar(context, message: 'Job Deleted Successfully');
     } else {
-      showSnackbar(context,
-          message: 'Job Cannot be deleted this time. Try again later');
       Navigator.pop(context);
+      showSnackbar(context,
+          message: 'Job listed can\'t be deleted. Try again later');
     }
   }
 
@@ -155,54 +153,65 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return Scaffold(
       appBar: appBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            getJobDetails(),
-            isLoading
-                ? Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisSpacing: 14,
-                          mainAxisExtent: 180,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
+      body: Stack(children: [
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              getJobDetails(),
+              isLoading
+                  ? Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisSpacing: 14,
+                            mainAxisExtent: 180,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
+                          ),
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
                         ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          );
-                        },
                       ),
-                    ),
-                  )
-                : const SizedBox.shrink(),
-            Visibility(
-              visible: !isLoading && job == null,
-              child: Center(
-                child: Column(
-                  children: [
-                    Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                    const SizedBox(height: 20),
-                    const Text('No items at the moment'),
-                  ],
+                    )
+                  : const SizedBox.shrink(),
+              Visibility(
+                visible: !isLoading && job == null,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Lottie.asset('assets/lottie/no_moment_lottie.json'),
+                      const SizedBox(height: 20),
+                      const Text('No items at the moment'),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+        Positioned(
+          bottom: 1,
+          right: 1,
+          left: 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+            child: getSubmitData(),
+          ),
+        )
+      ]),
     );
   }
 
@@ -226,7 +235,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       actionTwoBgColor: navyBlue,
       actionTwoTextColor: white,
       title: "Cancel",
-      description: "Are you sure you want to cancel your application ?",
+      description: "Are you sure you want to cancel your application?",
       actionOneText: 'Keep',
       actionTwoText: AppLocalization.of(context)!.cancel,
       leftButtonOnPressed: () => Navigator.pop(context),
@@ -252,12 +261,14 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: getTitleRow(),
                   ),
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -281,12 +292,13 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                   ),
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const CustomText(
-                          title: 'Date',
+                          title: 'Due date',
                           fontSize: 14,
                           fontweight: FontWeight.w700,
                         ),
@@ -306,7 +318,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                             ),
                             Text(
                               DateFormat('dd-MM-yyyy')
-                                  .format(DateTime.parse(job!.creationDate!)),
+                                  .format(DateTime.parse(job!.dueDate!)),
                               style: const TextStyle(
                                 color: Color(0xff030e36),
                                 fontSize: 14,
@@ -319,7 +331,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                   ),
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -354,15 +367,41 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                       ],
                     ),
                   ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomText(
+                          title: "Category",
+                          fontSize: 14,
+                          fontweight: FontWeight.w700,
+                        ),
+                        Text(
+                          "${job!.category?.name}",
+                          style: TextStyle(
+                            color: blackFont.withOpacity(.8),
+                            fontSize: 14,
+                            fontFamily: "Open Sans",
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   getJobActivityStatusRow(),
                   getJobActivity(job!.status!),
+                  getJobOnlineRow(),
                   job?.status?.toLowerCase() == 'in-progress' ||
                           job?.status?.toLowerCase() == 'closed'
                       ? getPaymentStatusRow()
                       : const SizedBox.shrink(),
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -423,10 +462,6 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                   const SizedBox(
                     height: 55,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: getSubmitData(),
-                  ),
                 ],
               )
             ],
@@ -446,6 +481,9 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     if (status.toLowerCase() == 'canceled') {
       return Colors.red.shade400;
     }
+    if (status.toLowerCase() == 'draft') {
+      return Colors.blueGrey;
+    }
     return const Color(0xff3F61DB);
   }
 
@@ -461,6 +499,9 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     }
     if (status.toLowerCase() == 'canceled') {
       return 'Canceled';
+    }
+    if (status.toLowerCase() == 'draft') {
+      return 'Draft';
     }
     return 'Active';
   }
@@ -484,7 +525,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       children: [
         const Divider(),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -497,8 +538,6 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 height: 10,
               ),
               Container(
-                // width: 54,
-                // height: 20,
                 alignment: Alignment.center,
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -529,7 +568,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       children: [
         const Divider(),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -542,8 +581,6 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 height: 10,
               ),
               Container(
-                // width: 54,
-                // height: 20,
                 alignment: Alignment.center,
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -569,291 +606,70 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
-  Column getJobActivity(String status) {
+  Column getJobOnlineRow() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        status.toLowerCase() == 'open'
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const CustomText(
-                      title: 'Job Activity',
-                      fontSize: 14,
-                      fontweight: FontWeight.w700,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 4, 10, 4),
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: greyBorderColor),
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Text(
-                                  'Application Submitted',
-                                  style: TextStyle(color: black, fontSize: 12),
-                                )),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                    color: navyBlue,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Icon(
-                                  Icons.check,
-                                  color: white,
-                                  size: 7,
-                                ))
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 4, 10, 4),
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: greyBorderColor),
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Text(
-                                  'Application viewed',
-                                  style: TextStyle(color: black, fontSize: 12),
-                                )),
-                            const SizedBox(
-                              width: 25,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                  color: darkGrey,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Container(),
-                            )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 4, 10, 4),
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: greyBorderColor),
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Text(
-                                  'Application Accepted',
-                                  style: TextStyle(color: black, fontSize: 12),
-                                )),
-                            const SizedBox(
-                              width: 12,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                  color: darkGrey,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Container(),
-                            )
-                          ],
-                        ),
-                      ],
-                    )
-                  ],
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const CustomText(
+                title: 'Job Mode',
+                fontSize: 14,
+                fontweight: FontWeight.w700,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                job!.isOnline!.toString().toLowerCase() == 'true'
+                    ? 'Remote'
+                    : 'On site',
+                style: TextStyle(
+                  color: black,
+                  fontSize: 14,
+                  fontFamily: "Open Sans",
+                  fontWeight: FontWeight.w600,
                 ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const CustomText(
-                      title: 'Job Activity',
-                      fontSize: 14,
-                      fontweight: FontWeight.w700,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 4, 10, 4),
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: greyBorderColor),
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Text(
-                                  'Application Submitted',
-                                  style: TextStyle(color: black, fontSize: 12),
-                                )),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                    color: navyBlue,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Icon(
-                                  Icons.check,
-                                  color: white,
-                                  size: 7,
-                                ))
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        status.toLowerCase() == 'canceled'
-                            ? Row(
-                                children: [
-                                  Container(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          10, 4, 10, 4),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: greyBorderColor),
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      child: Text(
-                                        'Application Canceled',
-                                        style: TextStyle(
-                                            color: black, fontSize: 12),
-                                      )),
-                                  const SizedBox(
-                                    width: 12,
-                                  ),
-                                  Container(
-                                      padding: const EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                          color: mateRed,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: Icon(
-                                        Icons.check,
-                                        color: white,
-                                        size: 7,
-                                      ))
-                                ],
-                              )
-                            : Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              10, 4, 10, 4),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: greyBorderColor),
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          child: Text(
-                                            'Application viewed',
-                                            style: TextStyle(
-                                                color: black, fontSize: 12),
-                                          )),
-                                      const SizedBox(
-                                        width: 25,
-                                      ),
-                                      Container(
-                                        padding: status.toLowerCase() ==
-                                                    'in-progress' ||
-                                                status.toLowerCase() == 'closed'
-                                            ? const EdgeInsets.all(2)
-                                            : const EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                            color: status.toLowerCase() ==
-                                                        'in-progress' ||
-                                                    status.toLowerCase() ==
-                                                        'closed'
-                                                ? navyBlue
-                                                : darkGrey,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: status.toLowerCase() ==
-                                                    'in-progress' ||
-                                                status.toLowerCase() == 'closed'
-                                            ? Icon(
-                                                Icons.check,
-                                                color: white,
-                                                size: 7,
-                                              )
-                                            : Container(),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              10, 4, 10, 4),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: greyBorderColor),
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          child: Text(
-                                            'Application Accepted',
-                                            style: TextStyle(
-                                                color: black, fontSize: 12),
-                                          )),
-                                      const SizedBox(
-                                        width: 12,
-                                      ),
-                                      Container(
-                                        padding: status.toLowerCase() ==
-                                                    'in-progress' ||
-                                                status.toLowerCase() == 'closed'
-                                            ? const EdgeInsets.all(2)
-                                            : const EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                            color: status.toLowerCase() ==
-                                                        'in-progress' ||
-                                                    status.toLowerCase() ==
-                                                        'closed'
-                                                ? navyBlue
-                                                : darkGrey,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: status.toLowerCase() ==
-                                                    'in-progress' ||
-                                                status.toLowerCase() == 'closed'
-                                            ? Icon(
-                                                Icons.check,
-                                                color: white,
-                                                size: 7,
-                                              )
-                                            : Container(),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              )
-                      ],
-                    )
-                  ],
-                ),
-              )
+              ),
+            ],
+          ),
+        ),
       ],
+    );
+  }
+
+  Widget getJobActivity(String status) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const CustomText(
+            title: 'Job Activity',
+            fontSize: 14,
+            fontweight: FontWeight.w700,
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          GestureDetector(
+            onTap: () {
+              if (job!.applicantsCount! > 0) {
+                Navigator.pushNamed(context, Routes.JOBS_APPLICANT_LIST,
+                    arguments: job);
+              } else {}
+            },
+            child: CustomText(
+                title: "Applied by: ${job!.applicantsCount}",
+                fontSize: 12,
+                fontweight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
 
@@ -952,7 +768,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 ? InkWell(
                     onTap: () {
                       Navigator.pushNamed(context, '/chat-screen', arguments: {
-                        "recipientUserName": job!.ownerName!.toLowerCase()
+                        "recipientUserName": job!.ownerName!.toLowerCase(),
                       });
                     },
                     child: SvgPicture.asset(
@@ -963,7 +779,11 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                   )
                 : InkWell(
                     onTap: () {
-                      Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+                      Navigator.of(context)
+                          .pushNamed('/compose_message', arguments: {
+                        'recipient': job!.owner,
+                        "subject": job!.title,
+                      });
                     },
                     child: SvgPicture.asset(
                       'yarn/messageicon'.toSVG(),
@@ -976,24 +796,28 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   }
 
   Widget getSubmitData() {
-    if (userBloc.user.userName == job!.owner) {
-      if (job!.isListed == true) {
-        return getUnListNowBtn();
+    if (job != null) {
+      if (userBloc.user.userName == job!.owner) {
+        if (job!.isListed == true) {
+          return getUnListNowBtn();
+        } else {
+          return getListNowBtn();
+        }
       } else {
-        return getListNowBtn();
+        if (job!.isListed == true) {
+          if (job!.applicants!.contains(userBloc.user.userName)) {
+            if (job!.assignee == userBloc.user.userName) {
+              return Container();
+            }
+            return cancelApplicationNowBtn();
+          }
+          return getApplyNowBtn();
+        } else {
+          return Container();
+        }
       }
     } else {
-      if (job!.isListed == true) {
-        if (job!.applicants!.contains(userBloc.user.userName)) {
-          if (job!.assignee == userBloc.user.userName) {
-            return Container();
-          }
-          return cancelApplicationNowBtn();
-        }
-        return getApplyNowBtn();
-      } else {
-        return Container();
-      }
+      return Container();
     }
   }
 
@@ -1079,7 +903,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     }).then((value) {
       print('${value}Create Listing');
       Navigator.pushNamed(context, Routes.SUPER_HUB);
-      showToast(message: AppLocalization.of(context)!.jobAddedSuccessfully);
+      showToast(message: AppLocalization.of(context)!.jobListSuccessfully);
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
@@ -1151,7 +975,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         ),
       ),
       actions: [
-        _moreOptionsBtn(),
+        !isLoading ? _moreOptionsBtn() : const SizedBox.shrink(),
         const SizedBox(width: 12),
       ],
     );
@@ -1174,7 +998,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               child: StatefulBuilder(
                 builder: (context, changeState) {
                   return SizedBox(
-                    height: getDropDownWidget().length < 4 ? 100 : 200,
+                    height: getDropDownWidget().length < 4 ? 100 : 240,
                     child: Padding(
                         padding: const EdgeInsets.only(top: 10.0),
                         child: Scrollbar(
@@ -1570,6 +1394,35 @@ class CustomText extends StatelessWidget {
         fontSize: fontSize,
         fontFamily: "Open Sans",
         fontWeight: fontweight,
+      ),
+    );
+  }
+}
+
+class CustomText1 extends StatelessWidget {
+  const CustomText1({
+    required this.title,
+    required this.fontSize,
+    required this.fontweight,
+  });
+  final String title;
+  final double fontSize;
+  final FontWeight fontweight;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 100,
+      child: Text(
+        title,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(
+          color: const Color(0xff030e36),
+          fontSize: fontSize,
+          fontFamily: "Open Sans",
+          fontWeight: fontweight,
+        ),
       ),
     );
   }
