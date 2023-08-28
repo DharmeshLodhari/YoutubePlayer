@@ -299,8 +299,7 @@ class _QrCodePageState extends State<QrCodePage> {
           child: CustomPaint(
             painter: QrPainter(
                 data:
-                searchedUser == null ? "https://api.slydo.co/api/v1/user/customer/${userBloc.user.userName!}"
-                    : "https://api.slydo.co/api/v1/user/customer/${searchedUser!.userName}",
+                getUserProfileLink(userBloc.user, searchedUser),
                 options: const QrOptions(
                     shapes: QrShapes(
                         darkPixel: QrPixelShapeCircle(radiusFraction: .8),
@@ -314,6 +313,19 @@ class _QrCodePageState extends State<QrCodePage> {
         ),
       ),
     );
+  }
+
+  String getUserProfileLink(User user, CustomerProfile? searchUser){
+    var userObject;
+    userObject = searchUser ?? user;
+    var path = userObject.type!;
+    if(path == 'User' || path == null){
+      path = 'user';
+    }else{
+      path = 'store';
+    }
+    String url = "https://slydo.co/$path/${userObject.userName}";
+    return url;
   }
 
   Widget _financialInfo() {
