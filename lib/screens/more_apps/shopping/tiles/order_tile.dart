@@ -4,8 +4,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -151,7 +149,8 @@ class OrderTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime orderTime = DateTime.parse(order!.createdAt!).toLocal();
+    print(order?.createdAt);
+    DateTime orderTime = DateTime.parse(order?.createdAt ?? '').toLocal();
     String date = DateFormat("hh:mm a").format(orderTime);
     String time = DateFormat("dd/MM/yyyy").format(orderTime);
     return Text(
