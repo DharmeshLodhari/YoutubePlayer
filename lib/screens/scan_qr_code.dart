@@ -148,7 +148,6 @@ class _QRCodeViewState extends State<QRCodeView> {
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
       if (scanData != null) {
-
         if (scanData.code!.startsWith(AppConfig.baseUrl) ||
             scanData.code!.startsWith(AppConfig.baseUrl) ||
             scanData.code!.startsWith(AppConfig.merchantUrl) ||
@@ -183,6 +182,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       {String? scanDataCode}) async {
     List<String> cleanScanDataLink = scanDataList;
     int qrCodeIndex = scanDataList.length - 2;
+    String recipient = "";
 
     debugPrint('SCANNED DATA ::: $scanDataList');
     debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
@@ -205,8 +205,7 @@ class _QRCodeViewState extends State<QRCodeView> {
         }
       }
     }
-
-      else if (scanDataList[qrCodeIndex] == "products") {
+    else if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
 
@@ -221,7 +220,8 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    } else if (scanDataList[qrCodeIndex] == "services") {
+    }
+    else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
       _dashboardBloc.index = 0;
@@ -235,7 +235,8 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
+    }
+    else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         ShoppingCartModelFromQrCode? shoppingCartModel =
             await ShoppingAuthService()
@@ -471,7 +472,13 @@ class _QRCodeViewState extends State<QRCodeView> {
       }
     }
     else {
-      var recipient = scanDataList.last;
+      if (cleanScanDataLink[2] == 'store' || cleanScanDataLink[2] == 'user') {
+        recipient = cleanScanDataLink[3];
+      }
+      else{
+        recipient = scanDataList.last;
+      }
+
       getRecipient(recipient);
 
       print('RECIPIENT ::: $recipient');
