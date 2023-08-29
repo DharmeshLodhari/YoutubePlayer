@@ -2973,6 +2973,27 @@ class AppLocalization {
     );
   }
 
+  String get subTotal {
+    return Intl.message(
+      "Subtotal",
+      name: "subTotal",
+    );
+  }
+
+  String get shipping {
+    return Intl.message(
+      "Shipping",
+      name: "shipping",
+    );
+  }
+
+  String get tax {
+    return Intl.message(
+      "Tax",
+      name: "tax",
+    );
+  }
+
   String get buy {
     return Intl.message(
       "Buy",
@@ -3069,6 +3090,24 @@ class AppLocalization {
     return Intl.message(
       "On Hold",
       name: "onHold",
+    );
+  }
+  String get paymentReceived {
+    return Intl.message(
+      "Payment Received",
+      name: "paymentReceived",
+    );
+  }
+  String get orderPickedUp {
+    return Intl.message(
+      "Order Picked Up",
+      name: "orderPickedUp",
+    );
+  }
+  String get outForDelivery {
+    return Intl.message(
+      "Out For Delivery",
+      name: "outForDelivery",
     );
   }
 
