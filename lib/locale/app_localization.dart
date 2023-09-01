@@ -491,6 +491,27 @@ class AppLocalization {
     );
   }
 
+  String get invalidWeight {
+    return Intl.message(
+      "Invalid Weight",
+      name: "invalidWeight",
+    );
+  }
+
+  String get invalidHeight {
+    return Intl.message(
+      "Invalid Height",
+      name: "invalidHeight",
+    );
+  }
+
+  String get invalidWidth {
+    return Intl.message(
+      "Invalid Width",
+      name: "invalidWidth",
+    );
+  }
+
   String get dailyPaymentLinkLimit {
     return Intl.message(
       "You can only send NGN${moneyDisplayNormalizer(200000 * 100)} at once.",
@@ -1013,8 +1034,15 @@ class AppLocalization {
 
   String get newOption {
     return Intl.message(
-      "New Option",
+      "New Variant",
       name: "newOption",
+    );
+  }
+
+  String get updateVariant {
+    return Intl.message(
+      "Update Variant",
+      name: "updateVariant",
     );
   }
 
@@ -1920,6 +1948,20 @@ class AppLocalization {
     );
   }
 
+  String get siUnit {
+    return Intl.message(
+      "SI Unit",
+      name: "siUnit",
+    );
+  }
+
+  String get type {
+    return Intl.message(
+      "Type",
+      name: "type",
+    );
+  }
+
   String get cardBrand {
     return Intl.message(
       "Card Brand",
@@ -2259,6 +2301,27 @@ class AppLocalization {
     );
   }
 
+  String get weight {
+    return Intl.message(
+      "Weight",
+      name: "weight",
+    );
+  }
+
+  String get height {
+    return Intl.message(
+      "Height",
+      name: "height",
+    );
+  }
+
+  String get width {
+    return Intl.message(
+      "Width",
+      name: "width",
+    );
+  }
+
   String get comparePrice {
     return Intl.message(
       "Compare Price At",
@@ -2270,6 +2333,27 @@ class AppLocalization {
     return Intl.message(
       "Please Enter Valid Amount",
       name: "pleaseEnterValidAmout",
+    );
+  }
+
+  String get pleaseEnterValidWeight {
+    return Intl.message(
+      "Please Enter Valid Weight",
+      name: "pleaseEnterValidWeight",
+    );
+  }
+
+  String get pleaseEnterValidHeight {
+    return Intl.message(
+      "Please Enter Valid Height",
+      name: "pleaseEnterValidHeight",
+    );
+  }
+
+  String get pleaseEnterValidWidth {
+    return Intl.message(
+      "Please Enter Valid Width",
+      name: "pleaseEnterValidWidth",
     );
   }
 
@@ -2319,6 +2403,13 @@ class AppLocalization {
     return Intl.message(
       "Please Select Product Category and Condition",
       name: "pleaseSelectProductCategoryAndCondition",
+    );
+  }
+
+  String get pleaseSelectWeightHeightWidth {
+    return Intl.message(
+      "Please Select Weight, Height and Width SI Unit",
+      name: "pleaseSelectWeightHeightWidth",
     );
   }
 
@@ -2973,6 +3064,27 @@ class AppLocalization {
     );
   }
 
+  String get subTotal {
+    return Intl.message(
+      "Subtotal",
+      name: "subTotal",
+    );
+  }
+
+  String get shipping {
+    return Intl.message(
+      "Shipping",
+      name: "shipping",
+    );
+  }
+
+  String get tax {
+    return Intl.message(
+      "Tax",
+      name: "tax",
+    );
+  }
+
   String get buy {
     return Intl.message(
       "Buy",
@@ -3071,6 +3183,24 @@ class AppLocalization {
       name: "onHold",
     );
   }
+  String get paymentReceived {
+    return Intl.message(
+      "Payment Received",
+      name: "paymentReceived",
+    );
+  }
+  String get orderPickedUp {
+    return Intl.message(
+      "Order Picked Up",
+      name: "orderPickedUp",
+    );
+  }
+  String get outForDelivery {
+    return Intl.message(
+      "Out For Delivery",
+      name: "outForDelivery",
+    );
+  }
 
   String get pending {
     return Intl.message(
@@ -3113,6 +3243,27 @@ class AppLocalization {
     return Intl.message(
       "You Can Not Purchase This Item !!",
       name: "youCanNotPurchaseThisItem",
+    );
+  }
+
+  String get selectVariantColor {
+    return Intl.message(
+      "Select colour first",
+      name: "selectVariantColor",
+    );
+  }
+
+  String get selectVariantSize {
+    return Intl.message(
+      "Select size first",
+      name: "selectVariantSize",
+    );
+  }
+
+  String get selectVariantColorSize {
+    return Intl.message(
+      "Select colour and size",
+      name: "selectVariantColorSize",
     );
   }
 

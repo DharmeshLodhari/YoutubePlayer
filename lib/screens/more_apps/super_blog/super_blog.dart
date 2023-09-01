@@ -318,18 +318,18 @@ class _SuperBlogState extends State<SuperBlog> {
         _pageViewCtrl.jumpToPage(pageNum);
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,
           color: _slydoBlogsMenu == slydoBlogsMenu
-              ? navyBlue.withOpacity(0.1)
+              ? navyBlue
               : Colors.white,
         ),
         child: Text(
           title,
           style: TextStyle(
-            color: _slydoBlogsMenu == slydoBlogsMenu ? navyBlue : blackFont,
+            color: _slydoBlogsMenu == slydoBlogsMenu ? white : blackFont,
             fontSize: 14,
             fontWeight: _slydoBlogsMenu == slydoBlogsMenu
                 ? FontWeight.w600

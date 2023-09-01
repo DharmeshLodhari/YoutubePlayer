@@ -1620,7 +1620,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     return list;
   }
 
-
   void upgradeAccount() async {
     Navigator.pushNamed(context, "/choose-subscriptions");
 

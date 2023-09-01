@@ -342,7 +342,7 @@ class TransactionTile extends StatelessWidget {
         "${transaction!.displayCustomer}",
         maxLines: 1,
         style: TextStyle(
-            color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+            color: blackFont, fontWeight: FontWeight.w600, fontSize: 15),
       ),
     );
   }
@@ -372,7 +372,7 @@ class TransactionTile extends StatelessWidget {
           style: TextStyle(
               fontFamily: "Roboto",
               color: transaction!.isCredit! ? navyBlue : blackFont,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
               fontSize: 14),
         ),
         Text(

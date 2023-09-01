@@ -399,14 +399,10 @@ class ServiceHubAuthService extends AuthService {
         showToast(message: response.body.toString());
         throw response.body;
       }
-
-      // var jsonData = json.decode(response.body);
-      // return Future.error("$jsonData");
     } on Exception catch (e) {
       showToast(message: e.toString());
       print(e);
     } catch (err) {
-      // showSnackbar(context, message: message)
       showToast(message: err.toString());
       print(err);
     }
@@ -417,13 +413,6 @@ class ServiceHubAuthService extends AuthService {
   Future<ActiveListingData?> retreiveListedJob({String? listingId}) async {
     try {
       var url = "${AppConfig.baseUrl}/api/v1/job-service/listing/$listingId/";
-      // if (next == null) {
-      //   return null;
-      // } else {
-      //   url = getSecureUrl(url: next);
-      // }
-      // url = getSecureUrl(url: next);
-
       debugPrint('RETREIVE Job URL ---> $url');
 
       var headers = await getAuthHeaders();
@@ -436,14 +425,10 @@ class ServiceHubAuthService extends AuthService {
         showToast(message: response.body.toString());
         throw response.body;
       }
-
-      // var jsonData = json.decode(response.body);
-      // return Future.error("$jsonData");
     } on Exception catch (e) {
       showToast(message: e.toString());
       print(e);
     } catch (err) {
-      // showSnackbar(context, message: message)
       showToast(message: err.toString());
       print(err);
     }
