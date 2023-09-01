@@ -113,7 +113,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     // Try if blog text is decodable, if it isn't the try blog won't run.
 
     try {
-      blogBodyTextJson = jsonDecode(userPost.text!);
+      blogBodyTextJson = jsonDecode(messageDecoderWithEmoji(userPost.text!)!);
 
       // debugPrint('USER POST :: ${userPost.text}');
       // debugPrint('USER POST 0000 :: ${blogBodyTextJson}');
@@ -324,7 +324,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
       }
     } else {
       return Text(
-        newsDetailItem.description!,
+        messageDecoderWithEmoji(newsDetailItem.description!) ?? "",
+        // newsDetailItem.description!,
         style: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 14,
@@ -962,15 +963,27 @@ class _PostDetailPageScaffoldBodyState
                   Navigator.pushNamed(context, Routes.USER_PROFILE,
                       arguments: {"searchedUserName": widget.authorUsername});
                 },
-                child: Text(
-                  widget.authorName.length <= 7
-                      ? "${widget.authorName} • "
-                      : "${widget.authorName.substring(0, 8)} • ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: blackFont,
-                  ),
+                child: Row(
+                  children: [
+                    userNameWithVerifiedIcon(
+                      name: widget.authorName,
+                      isVerified: false,
+                      lengthToTruncateAt: 20,
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: blackFont,
+                      ),
+                    ),
+                    Text(
+                      " • " ,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: blackFont,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Text(
@@ -1004,7 +1017,7 @@ class _PostDetailPageScaffoldBodyState
           height: 20,
         ),
         Text(
-          widget.shortDescription,
+          messageDecoderWithEmoji(widget.shortDescription) ?? "",
           style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 14,
@@ -1018,7 +1031,7 @@ class _PostDetailPageScaffoldBodyState
 
   Widget newsSubTitle() {
     return Text(
-      widget.subTitle,
+      messageDecoderWithEmoji(widget.subTitle) ?? "",
       style: TextStyle(
         fontSize: 16,
         color: blackFont,
@@ -1026,6 +1039,12 @@ class _PostDetailPageScaffoldBodyState
       textAlign: TextAlign.justify,
     );
   }
+
+  // Widget newsFullDescription2() {
+  //   return Text(
+  //     messageDecoderWithEmoji(widget.postFullDescription)! ?? "",
+  //   );
+  // }
 
   Widget newsFullDescription() {
     return widget.postFullDescription;

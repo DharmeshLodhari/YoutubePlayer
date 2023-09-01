@@ -75,9 +75,23 @@ class _EditProductState extends State<EditProduct> {
       TextEditingController();
   TextEditingController productManufacturerController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
+
+  TextEditingController weightController = TextEditingController();
+  TextEditingController heightController = TextEditingController();
+  TextEditingController widthController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
   bool inventoryIsAvailable = false;
+  var weightSi = ['Grams', 'Kilograms'];
+  var widthSi = ['Centimetres', 'Metres'];
+  var heightSi = ['Centimetres', 'Metres'];
+  double weight = 0.0;
+  double width = 0.0;
+  double height = 0.0;
+  String selectedWeight = "";
+  String selectedHeight = "";
+  String selectedWidth = "";
+  bool trackInventory = false;
 
   @override
   void deactivate() {
@@ -140,11 +154,25 @@ class _EditProductState extends State<EditProduct> {
           productAvailableFrom = currentProduct.availableFrom;
           productEnableInSuperStore = currentProduct.enableInSuperStore!;
 
+          // debugPrint('fola edit::::: ${currentProduct.toJson()}');
+
+          weight = currentProduct.weight!;
+          selectedWeight = currentProduct.weightSiUnit == 'g' ? 'Grams' : 'Kilograms';
+          height = currentProduct.height!;
+          selectedHeight = currentProduct.heightSiUnit == 'cm' ? 'Centimetres' : 'Metres';
+          width = currentProduct.width!;
+          selectedWidth = currentProduct.widthSiUnit == 'cm' ? 'Centimetres' : 'Metres';
+          trackInventory = currentProduct.trackInventory!;
+
+          weightController.text = currentProduct.weight.toString();
+          heightController.text = currentProduct.height.toString();
+          widthController.text = currentProduct.width.toString();
+          inventoryCount = currentProduct.quantity! ?? 0;
+
           //convert list to variant
           productVariantList = Variant.convertToVariantList(currentProduct.variant!);
 
           // assigning the dropdown from currentProduct
-
           productCategories?.forEach((catagory) {
             print('CURRENT CATEGORY :::: ${catagory}');
 
@@ -160,6 +188,7 @@ class _EditProductState extends State<EditProduct> {
               selectedProductCondition = condition;
             }
           });
+
         });
       }
     });
@@ -257,7 +286,60 @@ class _EditProductState extends State<EditProduct> {
                       SizedBox(height: 10),
                       getProductDescription(),
                       SizedBox(height: 10),
+                      //weight section
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: getWeightField(),
+                          ),
+                          SizedBox(width: 5.0),
+                          Flexible(
+                            flex: 1,
+                            child: getWeightSiUnitField(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+
+                      //height section
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: getHeightField(),
+                          ),
+                          SizedBox(width: 5.0),
+                          Flexible(
+                            flex: 1,
+                            child: getHeightSiUnitField(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+
+                      //width section
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: getWidthField(),
+                          ),
+                          SizedBox(width: 5.0),
+                          Flexible(
+                            flex: 1,
+                            child: getWidthSiUnitField(),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 10),
                       getIsAvailableField(),
+                      const SizedBox(height: 16),
+                      getTrackInventoryField(),
                       const SizedBox(height: 16),
                       getInventoryFormField(),
                       SizedBox(height: 16),
@@ -532,6 +614,407 @@ class _EditProductState extends State<EditProduct> {
       return true;
     }
     return false;
+  }
+
+  Widget getWeightSiUnitField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.siUnit,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedWeight.isNotEmpty ? selectedWeight : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          weightSiUnitAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  Widget getWeightField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.weight,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      controller: weightController,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            weight = double.parse(val);
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val);
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidWeight;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidWeight;
+      },
+    );
+  }
+
+  Widget getHeightSiUnitField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.siUnit,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedHeight.isNotEmpty ? selectedHeight : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          heightSiUnitAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  Widget getHeightField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.height,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      controller: heightController,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            height = double.parse(val);
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val);
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidHeight;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidHeight;
+      },
+    );
+  }
+
+  Widget getWidthSiUnitField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.siUnit,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedWidth.isNotEmpty ? selectedWidth : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          widthSiUnitAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  Widget getWidthField() {
+    return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.width,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      controller: widthController,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            width = double.parse(val);
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val);
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidWidth;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidWidth;
+      },
+    );
+  }
+
+  void weightSiUnitAndroidSheet() {
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.20,
+            child: Column(
+              children: [
+                Text(
+                  'Select Weight SI Unit',
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: weightSi.length,
+                    itemBuilder: (context, index) {
+                      var category = weightSi[index];
+                      if (selectedWeight == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              selectedWeight = category;
+                              Navigator.pop(context);
+                              setState(() {});
+
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          selectedWeight = category;
+                          Navigator.pop(context);
+                          setState(() {});
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void heightSiUnitAndroidSheet() {
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.20,
+            child: Column(
+              children: [
+                Text(
+                  'Select Height SI Unit',
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: heightSi.length,
+                    itemBuilder: (context, index) {
+                      var height = heightSi[index];
+                      if (selectedHeight == height) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              height,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              selectedHeight = height;
+                              Navigator.pop(context);
+                              setState(() {});
+
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          height,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          selectedHeight = height;
+                          Navigator.pop(context);
+                          setState(() {});
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void widthSiUnitAndroidSheet() {
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.20,
+            child: Column(
+              children: [
+                Text(
+                  'Select Width SI Unit',
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: widthSi.length,
+                    itemBuilder: (context, index) {
+                      var category = widthSi[index];
+                      if (selectedWidth == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              selectedWidth = category;
+                              Navigator.pop(context);
+                              setState(() {});
+
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          selectedWidth = category;
+                          Navigator.pop(context);
+                          setState(() {});
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getTrackInventoryField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        trackInventory = !trackInventory;
+        setState(() {});
+      },
+      isChecked: trackInventory,
+      title: "Track Inventory",
+    );
   }
 
   Widget addTitleField() {
@@ -925,6 +1408,15 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.manufacturer = productManufacturer;
           currentProduct.enableInSuperStore = productEnableInSuperStore;
 
+          currentProduct.weight = weight;
+          currentProduct.weightSiUnit = selectedWeight == 'Grams' ? 'g' : 'kg';
+          currentProduct.height = height;
+          currentProduct.heightSiUnit = selectedHeight == 'Centimetres' ? 'cm' : 'm';
+          currentProduct.width = width;
+          currentProduct.widthSiUnit = selectedWidth == 'Centimetres' ? 'cm' : 'm';
+          currentProduct.trackInventory = trackInventory;
+          currentProduct.quantity = inventoryCount;
+
           await _auth.editProduct(currentProduct).then((value) {
             showToast(
                 message:
@@ -1131,9 +1623,9 @@ class _EditProductState extends State<EditProduct> {
             });
 
         // // Handle the result (map) received from Product Add New Option
-        if (result != null && result is Variant) {
+        if (result != null && result is List<Variant>) {
           //save the variant details for later use
-          productVariantList.add(result);
+          productVariantList = result;
           if(mounted)setState(() {});
         }
       },

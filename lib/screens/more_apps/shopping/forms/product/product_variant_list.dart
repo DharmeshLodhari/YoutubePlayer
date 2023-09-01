@@ -152,6 +152,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
 
     return WillPopScope(
       onWillPop: () async {
+        Navigator.pop(context, productVariantList);
         return true;
       },
       child: ScaffoldMessenger(

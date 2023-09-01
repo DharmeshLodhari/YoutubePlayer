@@ -2485,7 +2485,8 @@ Widget userImageUserInitialsPic(
     String image, String fullName, double initialRadius, double imageWidth) {
   if (image == "" ||
       image ==
-          "https://slydo-assets.s3.amazonaws.com/static/notavailable.png") {
+          "https://slydo-assets.s3.amazonaws.com/static/notavailable.png" ||
+   image == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
     return CircleAvatar(
       backgroundColor: navyBlue,
       radius: initialRadius,
