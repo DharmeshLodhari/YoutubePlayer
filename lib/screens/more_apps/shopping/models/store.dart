@@ -739,6 +739,7 @@ class Order {
   String? createdAt;
   int? totalPrice;
   String? currency;
+  List<dynamic>? statusTimeStamp;
 
   Order({
     this.id,
@@ -755,6 +756,7 @@ class Order {
     this.createdAt,
     this.totalPrice,
     this.currency,
+    this.statusTimeStamp
   });
 
   Order.fromJson(object) {
@@ -772,5 +774,6 @@ class Order {
     createdAt = object["created_at"];
     totalPrice = object["total_price"];
     currency = object["currency"] ?? "NGN";
+    statusTimeStamp = object["status_time_stamps"];
   }
 }
