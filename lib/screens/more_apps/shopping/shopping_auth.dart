@@ -285,6 +285,15 @@ class ShoppingAuthService extends AuthService {
     product.enableInSuperStore = item["enable_in_superstore"] ?? false;
     product.variant = item["variants"] ?? null;
 
+    product.weight = item['weight'];
+    product.weightSiUnit = item['weight_si_unit'] ?? 0.0;
+    product.height = item['height'];
+    product.heightSiUnit = item['height_si_unit'] ?? 0.0;
+    product.width = item["width"];
+    product.widthSiUnit = item["width_si_unit"] ?? 0.0;
+    product.trackInventory = item["track_inventory"] ?? false;
+    product.quantity = item["quantity"];
+
     return product;
   }
 
@@ -384,22 +393,6 @@ class ShoppingAuthService extends AuthService {
       debugPrint('DATA from two ---> ${product.localImages![i].path}');
       // Add fields
       request.fields["imagefile_$i"] = product.localImages![i].path;
-
-      // File imageFile = File(product.localImages![i].path);
-      // if (imageFile.existsSync()) {
-      //   // Add fields
-      //   request.fields["imagefile_$i"] = product.localImages![i].path;
-      //
-      //   // Create multipart using filepath, string or bytes
-      //   var multipartFile = await http.MultipartFile.fromPath(
-      //       "imagefile_$i", product.localImages![i].path);
-      //
-      //   // Add multipart to newList
-      //   newList.add(multipartFile);
-      // } else {
-      //   print("Error: File not found at path: ${product.localImages![i].path}");
-      //   // Handle the error case accordingly, e.g., skip this image or abort the operation.
-      // }
 
       // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(

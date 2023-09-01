@@ -49,8 +49,8 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 0;
-  var typeList = ['Size', 'Color'];
-  // var typeList = ['Size', 'Color', 'Color n Size'];
+  // var typeList = ['Size', 'Color'];
+  var typeList = ['Size', 'Color', 'Color n Size'];
   String selectedType = "";
   String title = "";
   String value = "";
@@ -142,9 +142,9 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                 ],
                 if(selectedType == 'Color n Size')...[
                   const SizedBox(height: 10),
-                  addSizeField(),
-                  const SizedBox(height: 10),
                   getColorField(),
+                  const SizedBox(height: 10),
+                  addSizeField(),
                 ],
 
                 const SizedBox(
@@ -598,7 +598,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
 
   Widget getTypeField() {
     return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.category,
+      title: AppLocalization.of(context)!.type,
       child: ListTile(
         dense: true,
         title: Text(
@@ -767,7 +767,5 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
     _scrollController.dispose();
     super.dispose();
   }
-
-
 
 }

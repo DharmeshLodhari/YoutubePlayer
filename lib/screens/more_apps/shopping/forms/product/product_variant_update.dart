@@ -1,9 +1,6 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/shopping/forms/product/product_variant_list.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -53,8 +50,8 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 0;
-  var typeList = ['Size', 'Color'];
-  // var typeList = ['Size', 'Color', 'Color n Size'];
+  // var typeList = ['Size', 'Color'];
+  var typeList = ['Size', 'Color', 'Color n Size'];
   String selectedType = "";
   String title = "";
   String value = "";
@@ -140,7 +137,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.newOption,
+        AppLocalization.of(context)!.updateVariant,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -187,9 +184,9 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                 ],
                 if(selectedType == 'Color n Size')...[
                   const SizedBox(height: 10),
-                  addSizeField(),
-                  const SizedBox(height: 10),
                   getColorField(),
+                  const SizedBox(height: 10),
+                  addSizeField(),
                 ],
 
                 const SizedBox(
@@ -820,7 +817,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
 
   Widget getTypeField() {
     return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.category,
+      title: AppLocalization.of(context)!.type,
       child: ListTile(
         dense: true,
         title: Text(

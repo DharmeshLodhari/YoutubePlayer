@@ -27,6 +27,7 @@ class SlydoAppIcon {
   SlydoAppIcon._();
 
   static const _kFontFam = 'SlydoAppIcon';
+  static const _mFontFam = 'MaterialIcons';
   static const String? _kFontPkg = null;
 
   static const IconData naira =
@@ -298,5 +299,5 @@ class SlydoAppIcon {
   static const IconData services =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData delivery_dining =
-      IconData(0xe1bd, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+      IconData(0xe1bd, fontFamily: _mFontFam, fontPackage: _kFontPkg);
 }

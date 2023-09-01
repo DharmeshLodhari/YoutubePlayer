@@ -152,39 +152,55 @@ class Product {
   bool? canRate;
   bool? enableInSuperStore;
   List<dynamic>? variant;
-  Product(
-      {this.id,
-      this.name,
-      this.type,
-      this.webUrl,
-      this.enableInSuperStore,
-      this.description,
-      this.shortDescription,
-      this.price,
-      this.localImages,
-      this.serverImages,
-      this.seller,
-      this.cover = "",
-      this.sellerAvatar,
-      this.sellerFullName,
-      this.qrCode,
-      this.condition,
-      this.category,
-      this.manufacturer,
-      this.isAvailable,
-      this.availableFrom,
-      this.currency,
-      this.pictureMap,
-      this.rating = 0.0,
-      this.variant,
-      this.canRate = false});
+  double? weight;
+  String? weightSiUnit;
+  double? height;
+  String? heightSiUnit;
+  double? width;
+  String? widthSiUnit;
+  bool? trackInventory;
+  int? quantity;
+
+  Product({this.id,
+    this.name,
+    this.type,
+    this.webUrl,
+    this.enableInSuperStore,
+    this.description,
+    this.shortDescription,
+    this.price,
+    this.localImages,
+    this.serverImages,
+    this.seller,
+    this.cover = "",
+    this.sellerAvatar,
+    this.sellerFullName,
+    this.qrCode,
+    this.condition,
+    this.category,
+    this.manufacturer,
+    this.isAvailable,
+    this.availableFrom,
+    this.currency,
+    this.pictureMap,
+    this.rating = 0.0,
+    this.variant,
+    this.weight = 0.0,
+    this.weightSiUnit,
+    this.height = 0.0,
+    this.heightSiUnit,
+    this.width = 0.0,
+    this.widthSiUnit,
+    this.trackInventory,
+    this.quantity,
+    this.canRate = false});
 
   Map toMap() {
     return {
       "name": name,
       "description": description,
       "short_description":
-          getShortDescription(shortDescription ?? '', description ?? ''),
+      getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
       "category": category,
@@ -195,6 +211,14 @@ class Product {
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
       "variants": variant,
+      "weight": weight,
+      'weight_si_unit': weightSiUnit,
+      'height': height,
+      'height_si_unit': heightSiUnit,
+      'width': width,
+      'width_si_unit': widthSiUnit,
+      'track_inventory': trackInventory,
+      'quantity': quantity,
     };
   }
 
@@ -204,7 +228,7 @@ class Product {
       "name": name,
       "description": description,
       "short_description":
-          getShortDescription(shortDescription ?? '', description ?? ''),
+      getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
       "category": category,
@@ -347,22 +371,22 @@ class Variant {
   DateTime? availableFrom;
   String? currency;
   bool? trackInventory;
-  Variant(
-      {this.id,
-      this.title,
-      this.size,
-      this.colour,
-      this.trackInventory,
-      this.type,
-      this.price,
-      this.value,
-      this.quantity,
-      this.localImages,
-      this.serverImages,
-      this.category,
-      this.isAvailable,
-      this.availableFrom,
-      this.currency});
+
+  Variant({this.id,
+    this.title,
+    this.size,
+    this.colour,
+    this.trackInventory,
+    this.type,
+    this.price,
+    this.value,
+    this.quantity,
+    this.localImages,
+    this.serverImages,
+    this.category,
+    this.isAvailable,
+    this.availableFrom,
+    this.currency});
 
   Map toMap() {
     return {
@@ -465,8 +489,10 @@ class Variant {
       isAvailable: object["is_available"] ?? true,
       availableFrom: getProductDateTime(object["available_from"]),
       currency: object["currency"] ?? "NGN",
+
     );
   }
+
 
   static List<String> getProductImages(List? data) {
     List<String> images = [];
@@ -598,7 +624,7 @@ class Service {
       "name": name,
       "description": description,
       "short_description":
-          getShortDescription(shortDescription ?? '', description ?? ''),
+      getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "category": category,
       "is_available": isAvailable,
@@ -614,7 +640,7 @@ class Service {
       "name": name,
       "description": description,
       "short_description":
-          getShortDescription(shortDescription ?? '', description ?? ''),
+      getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "category": category,
       "is_available": isAvailable,
@@ -646,7 +672,8 @@ class Service {
     availableFrom = getServiceDateTime(object["available_from"]);
     currency = object["currency"] ?? "";
     pictureMap = object["pictureMap"] ?? [];
-    rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
+    rating =
+        formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
   }
 
@@ -710,28 +737,25 @@ class Order {
   String? transactionId;
   String? note;
   String? createdAt;
-  String? updatedAt;
   int? totalPrice;
   String? currency;
-  List<dynamic>? statusTimeStamp;
 
-  Order(
-      {this.id,
-      this.status,
-      this.customerName,
-      this.merchant,
-      this.customerAvatar,
-      this.customerType = "User",
-      this.merchantAvatar,
-      this.merchantType = "Business",
-      this.isPaid,
-      this.transactionId,
-      this.note,
-      this.createdAt,
-      this.updatedAt,
-      this.totalPrice,
-      this.currency,
-      this.statusTimeStamp});
+  Order({
+    this.id,
+    this.status,
+    this.customerName,
+    this.merchant,
+    this.customerAvatar,
+    this.customerType = "User",
+    this.merchantAvatar,
+    this.merchantType = "Business",
+    this.isPaid,
+    this.transactionId,
+    this.note,
+    this.createdAt,
+    this.totalPrice,
+    this.currency,
+  });
 
   Order.fromJson(object) {
     id = object["id"].toString();
@@ -746,9 +770,7 @@ class Order {
     transactionId = object["transaction_id"];
     note = object["note"];
     createdAt = object["created_at"];
-    updatedAt = object["updated_at"] ?? object["created_at"];
     totalPrice = object["total_price"];
     currency = object["currency"] ?? "NGN";
-    statusTimeStamp = object["status_time_stamps"];
   }
 }

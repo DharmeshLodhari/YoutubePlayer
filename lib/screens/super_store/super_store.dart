@@ -99,22 +99,6 @@ class _SuperStoreState extends State<SuperStore> {
       _cartBtn(),
       SizedBox(width: 20),
 
-      RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: YarnSettingsScreen(),
-            );
-          },
-          height: 15,
-          width: 15,
-          icon: SvgPicture.asset(
-            "yarn/setting".toSVG(),
-            height: 12,
-            width: 12,
-          )),
-      SizedBox(width: 20),
     ];
   }
 

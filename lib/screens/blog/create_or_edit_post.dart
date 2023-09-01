@@ -23,6 +23,8 @@ import '../../utils/video_player_controller/chewie_player.dart';
 import '../../utils/video_player_controller/chewie_progress_colors.dart';
 import '../../widget/LoadingIndicator.dart';
 import '../more_apps/user_post/models/user_post.dart';
+import '../more_apps/yarn/utils/utils.dart';
+import '../more_apps/yarn/widgets/ask_mention_view.dart';
 
 class CreateorEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
@@ -68,6 +70,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   List<String> blogPostInlineMediaIds = [];
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
   late StreamSubscription<bool> keyboardSubscription;
+  bool isMentionName = false;
+  String? searchString;
 
   @override
   void initState() {
@@ -129,10 +133,10 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     publishedDateTime = widget.userPost!.publishedDate;
     userTags = List<String>.from(widget.userPost!.tags!);
     // enableCommenting = widget.userPost!.enableCommenting!;
-    blogTitleCtrl = TextEditingController(text: widget.userPost!.title);
+    blogTitleCtrl = TextEditingController(text: messageDecoderWithEmoji(widget.userPost!.title));
 
     try {
-      blogBodyTextJson = jsonDecode(widget.userPost!.text!);
+      blogBodyTextJson = jsonDecode(messageDecoderWithEmoji(widget.userPost!.text!)!);
       _quillBodyTextController = flutterQuill.QuillController(
           document: flutterQuill.Document.fromJson(blogBodyTextJson),
           selection: TextSelection.collapsed(offset: 0));
@@ -292,9 +296,58 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
               ),
             ),
             getEditor(),
+            if (isMentionName) ...[
+              _buildUserNameContainer(),
+            ],
           ],
         ),
       ),
+    );
+  }
+
+  void onValueChange(String value) {
+    List<String> listOfWords = value.split(" ");
+
+    if (listOfWords.isNotEmpty) {
+      if ((listOfWords.last.contains("@") &&
+          !value.endsWith(" ") &&
+          !value.endsWith("@"))) {
+        isMentionName = true;
+        List<String> mentionString = getAllMentions(value);
+
+        if (mentionString.isNotEmpty) {
+          searchString = mentionString.last.substring(1);
+        }
+      } else if (value.endsWith("@")) {
+        isMentionName = true;
+
+        searchString = "";
+      } else {
+        isMentionName = false;
+      }
+    }
+    if (mounted) setState(() {});
+  }
+
+  Widget _buildUserNameContainer() {
+    return AskMentionView(
+      searchText: searchString,
+      key: UniqueKey(),
+      onTap: (String? tappedUser) {
+        if (tappedUser != null) {
+          // textController!.text = textController!.text.replaceRange(
+          //   (textController!.text.length - (searchString?.length ?? 0)),
+          //   textController!.text.length,
+          //   tappedUser,
+          // ) +
+          //     " ";
+          // textController!.selection = TextSelection.fromPosition(TextPosition(
+          //   offset: textController!.text.length,
+          // ));
+          searchString = "";
+          if (mounted) setState(() {});
+        }
+      },
     );
   }
 
@@ -424,7 +477,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
         title: AppLocalization.of(context)!.post,
         actionTwoText: AppLocalization.of(context)!.post,
         actionOneText: AppLocalization.of(context)!.notNow,
-        description: 'Are you sure you want to post\nyour content now?',
+        description: _userUpdatingPost ? 'Are you sure you want to update post'
+            :'Are you sure you want to post\nyour content now?',
         roundedBackgroundIcon: RoundedBackgroundIcon(
           enableMargin: false,
           width: 90,

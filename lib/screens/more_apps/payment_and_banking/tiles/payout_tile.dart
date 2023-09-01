@@ -109,7 +109,7 @@ class PayoutTile extends StatelessWidget {
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.w600,
-        fontSize: 14,
+        fontSize: 15,
       ),
     );
   }
@@ -176,7 +176,7 @@ class PayoutTile extends StatelessWidget {
       style: TextStyle(
         color: darkGrey,
         fontWeight: FontWeight.w600,
-        fontSize: 10,
+        fontSize: 12,
       ),
     );
   }
