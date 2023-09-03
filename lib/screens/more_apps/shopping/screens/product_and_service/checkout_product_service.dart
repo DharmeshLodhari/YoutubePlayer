@@ -54,7 +54,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     checkoutScreenBloc = Provider.of<CheckoutScreenBloc>(context);
 
     for (var item in basketBloc.productOrService) {
-      debugPrint('Fola product::: ${item}');
+      // debugPrint('Fola product::: ${item}');
 
       result = item['results'];
       type = item['type'];

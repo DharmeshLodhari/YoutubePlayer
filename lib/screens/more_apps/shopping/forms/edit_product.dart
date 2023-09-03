@@ -79,6 +79,7 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController weightController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController widthController = TextEditingController();
+  TextEditingController inventoryCountController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
   bool inventoryIsAvailable = false;
@@ -168,6 +169,7 @@ class _EditProductState extends State<EditProduct> {
           heightController.text = currentProduct.height.toString();
           widthController.text = currentProduct.width.toString();
           inventoryCount = currentProduct.quantity! ?? 0;
+          inventoryCountController.text = inventoryCount.toString();
 
           //convert list to variant
           productVariantList = Variant.convertToVariantList(currentProduct.variant!);
@@ -336,12 +338,14 @@ class _EditProductState extends State<EditProduct> {
                         ],
                       ),
 
+                      const SizedBox(height: 16),
+                      getInventoryFormField(),
+
                       SizedBox(height: 10),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
                       getTrackInventoryField(),
-                      const SizedBox(height: 16),
-                      getInventoryFormField(),
+
                       SizedBox(height: 16),
                       getEnableInSuperStoreField(),
                       const SizedBox(height: 16),
@@ -1013,7 +1017,9 @@ class _EditProductState extends State<EditProduct> {
         setState(() {});
       },
       isChecked: trackInventory,
-      title: "Track Inventory",
+      title: "Checking this field will automatically update the quantity when the product is purchased.",
+      fontSize: 12.0,
+      maxLines: 2,
     );
   }
 
@@ -1526,6 +1532,33 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget getInventoryFormField() {
+    return CustomizedTextFormField(
+      labelText: "Inventory (Available Quantity)",
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: false)
+          : TextInputType.number,
+      controller: inventoryCountController,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            inventoryCount = int.parse(val);
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            val;
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidCount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidCount;
+      },
+    );
     return CustomizedDropDownField(
       title: "Inventory (Available Quantity)",
       child: SizedBox(

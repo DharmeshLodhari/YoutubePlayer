@@ -65,6 +65,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void initializeShoppingCart() async {
     debugPrint("initializeShoppingCart called");
     basketBloc.resetShoppingCart();
+
   }
 
   AppConfigurationModel? appConfigurationModel;
@@ -73,6 +74,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void initState() {
     super.initState();
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
   }
 
   @override
@@ -151,6 +153,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget _buildBodyOfCart() {
+    debugPrint("initializeShoppingCart ::: ${basketBloc.items}");
+
     return basketBloc.total == 0
         ? Center(
             child: NoItemInList(

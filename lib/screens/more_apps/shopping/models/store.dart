@@ -242,6 +242,14 @@ class Product {
       "seller_avatar": sellerAvatar,
       "currency": currency,
       "variants": variant,
+      "weight": weight,
+      'weight_si_unit': weightSiUnit,
+      'height': height,
+      'height_si_unit': heightSiUnit,
+      'width': width,
+      'width_si_unit': widthSiUnit,
+      'track_inventory': trackInventory,
+      'quantity': quantity,
     };
   }
 
@@ -291,6 +299,13 @@ class Product {
       rating: formatRating(double.parse(object['rating']?.toString() ?? "0")),
       canRate: object["can_rate"] ?? false,
       variant: object["variants"],
+      weight: object["weight"],
+      weightSiUnit: object["weight_si_unit"],
+      height: object["height"],
+      heightSiUnit: object["height_si_unit"],
+      widthSiUnit: object["width_si_unit"],
+      trackInventory: object["track_inventory"],
+      quantity: object["quantity"],
     );
   }
 

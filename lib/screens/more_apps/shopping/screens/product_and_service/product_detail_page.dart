@@ -90,6 +90,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   List<String> oneImageEach = [];
   String selectedColor = "";
   String selectedSize = "";
+  String selectedVariantId = "";
   int selectedImageColorIndex = -1;
   int selectedSizeIndex = -1;
   String price = "";
@@ -458,7 +459,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       icon: badges.Badge(
         badgeContent: getBadgeContent(),
         position: badges.BadgePosition.topEnd(end: 0, top: 0),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -547,22 +548,65 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       onTap: () async {
         if (product!.isAvailable!) {
           if (isValidCustomer) {
-            String type = product is Product ? "product" : "service";
-            basketBloc.addItemToCart(item: product, type: type);
-            late var mapData;
-            basketBloc.items.forEach((element) {
-              if (element["item"].id == product!.id) {
-                mapData = element;
-                return;
+
+            if(productVariantList.isNotEmpty){
+              bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
+
+              if (colorGroups.isNotEmpty && !allKeysAreNullOrEmpty) {
+                // print("Both color and size lists are showing.");
+                if(selectedColor.isNotEmpty && selectedSize.isNotEmpty){
+                  addToCart();
+                  return;
+                }else{
+                  showToast(
+                      message:
+                      AppLocalization.of(context)!.selectVariantColorSize);
+                }
+              } else {
+                // print("Either color or size list is not showing.");
               }
-            });
-            Map data = {
-              "type": type,
-              "id": mapData["item"].id,
-              "qty": mapData["qty"],
-            };
-            debugPrint("Data From Product Page : $data");
-            await _auth.addItemToShoppingCart(data);
+
+              if (colorGroups.isNotEmpty && selectedColor.isNotEmpty) {
+                // print("Color list is showing.");
+                addToCart();
+                return;
+              } else {
+                showToast(
+                    message:
+                    AppLocalization.of(context)!.selectVariantColor);
+              }
+
+              if (!allKeysAreNullOrEmpty && selectedSize.isNotEmpty) {
+                // print("Size list is showing.");
+                addToCart();
+                return;
+              } else {
+                showToast(
+                    message:
+                    AppLocalization.of(context)!.selectVariantSize);
+              }
+
+            }else{
+              addToCart();
+              return;
+            }
+
+            // String type = product is Product ? "product" : "service";
+            // basketBloc.addItemToCart(item: product, type: type);
+            // late var mapData;
+            // basketBloc.items.forEach((element) {
+            //   if (element["item"].id == product!.id) {
+            //     mapData = element;
+            //     return;
+            //   }
+            // });
+            // Map data = {
+            //   "type": type,
+            //   "id": mapData["item"].id,
+            //   "qty": mapData["qty"],
+            // };
+            // debugPrint("Data From Product Page : $data");
+            // await _auth.addItemToShoppingCart(data);
           } else {
             showToast(
                 message:
@@ -573,6 +617,37 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         }
       },
     );
+  }
+
+  Future<void> addToCart() async {
+    String type = product is Product ? "product" : "service";
+
+    Map<String, dynamic> variant1 = {
+      "id": selectedVariantId, "quantity": 1,
+    };
+    List<Map<String, dynamic>> variantList = [variant1];
+
+    basketBloc.addItemToCart(item: product, type: type, variant: variant1);
+    late var mapData;
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == product!.id) {
+        mapData = element;
+        return;
+      }
+    });
+
+    Map<String, dynamic> variants = {
+      "id": selectedVariantId, "quantity": mapData["qty"],
+    };
+
+    Map data = {
+      "type": type,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"],
+      "variant": variants,
+    };
+    debugPrint("Data From Product Page : $data");
+    await _auth.addItemToShoppingCart(data);
   }
 
   Widget? getBadgeContent() {
@@ -1174,6 +1249,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     Variant variant = variantsWithSize[index];
                     // Update price or any other state based on the selected variant
                     price = variant.price!;
+                    selectedVariantId = variant.id!;
                   }
 
                 }else{
@@ -1242,6 +1318,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   Variant variant = variantsWithSize[index];
                   // Update price or any other state based on the selected variant
                   price = variant.price!;
+                  selectedVariantId = variant.id!;
                 }
 
                 if(mounted) setState(() {});
@@ -1678,10 +1755,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   void navigateToSendPayment() {
     basketBloc.productOrService.clear();
+
+    Map<String, dynamic> variants = {
+      "id": selectedVariantId, "quantity": 1,
+    };
+
     Map<dynamic, dynamic> result = {
       "type": 'product',
-      "results": product!.toJson()
+      "results": product!.toJson(),
+      "variant": variants
     };
+
+    // debugPrint('Product check:::: ${result}');
+    debugPrint('Product check:::: ${variants}');
 
     basketBloc.buyProductOrServiceNow('product', result);
     NavigationUtil.push(context, screen: CheckoutProductService());
