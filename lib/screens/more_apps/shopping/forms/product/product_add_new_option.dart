@@ -49,7 +49,6 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 0;
-  // var typeList = ['Size', 'Color'];
   var typeList = ['Size', 'Color', 'Color n Size'];
   String selectedType = "";
   String title = "";
@@ -151,10 +150,6 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                   height: 10,
                 ),
                 getAmountField(),
-                // const SizedBox(
-                //   height: 10,
-                // ),
-                // getComparePriceField(),
 
                 const SizedBox(height: 16),
                 getAvailableFromField(),

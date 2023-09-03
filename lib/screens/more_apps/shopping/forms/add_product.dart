@@ -84,6 +84,13 @@ class _AddProductState extends State<AddProduct> {
   @override
   void initState() {
     getCategories();
+
+    selectedWeight = 'Grams';
+    selectedHeight = 'Centimetres';
+    selectedWidth = 'Centimetres';
+
+    if(mounted)setState(() {});
+
     super.initState();
   }
 
@@ -230,15 +237,17 @@ class _AddProductState extends State<AddProduct> {
                           ),
                         ],
                       ),
+
+                      const SizedBox(height: 16),
+                      getInventoryFormField(),
                       const SizedBox(height: 40),
 
                       getIsAvailableField(),
                       const SizedBox(height: 16),
                       getTrackInventoryField(),
+
                       const SizedBox(height: 16),
-                      getInventoryFormField(),
-                      const SizedBox(height: 16),
-                      getIsInventoryAvailableField(),
+                      getEnableInSuperStoreField(),
 
                       //TODO: hide this variant option
                       // const SizedBox(height: 16),
@@ -860,33 +869,36 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getWeightField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.weight,
-      keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      // isAmountField: true,
+    return Container(
+      padding: EdgeInsets.only(top: 4.0),
+      child: CustomizedTextFormField(
+        labelText: AppLocalization.of(context)!.weight,
+        keyboardType: Platform.isIOS
+            ? const TextInputType.numberWithOptions(decimal: true)
+            : TextInputType.number,
+        // isAmountField: true,
 
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            weight = double.parse(val);
-          } catch (e) {
-            showToast(message: e.toString());
+        onChanged: (val) {
+          if (val.isNotEmpty) {
+            try {
+              weight = double.parse(val);
+            } catch (e) {
+              showToast(message: e.toString());
+            }
           }
-        }
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            double.parse(val);
-            return null;
-          } catch (e) {
-            return AppLocalization.of(context)!.invalidWeight;
+        },
+        validator: (val) {
+          if (val.isNotEmpty) {
+            try {
+              double.parse(val);
+              return null;
+            } catch (e) {
+              return AppLocalization.of(context)!.invalidWeight;
+            }
           }
-        }
-        return AppLocalization.of(context)!.pleaseEnterValidWeight;
-      },
+          return AppLocalization.of(context)!.pleaseEnterValidWeight;
+        },
+      ),
     );
   }
 
@@ -912,33 +924,36 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getHeightField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.height,
-      keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      // isAmountField: true,
+    return Container(
+      padding: EdgeInsets.only(top: 4.0),
+      child: CustomizedTextFormField(
+        labelText: AppLocalization.of(context)!.height,
+        keyboardType: Platform.isIOS
+            ? const TextInputType.numberWithOptions(decimal: true)
+            : TextInputType.number,
+        // isAmountField: true,
 
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            height = double.parse(val);
-          } catch (e) {
-            showToast(message: e.toString());
+        onChanged: (val) {
+          if (val.isNotEmpty) {
+            try {
+              height = double.parse(val);
+            } catch (e) {
+              showToast(message: e.toString());
+            }
           }
-        }
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            double.parse(val);
-            return null;
-          } catch (e) {
-            return AppLocalization.of(context)!.invalidHeight;
+        },
+        validator: (val) {
+          if (val.isNotEmpty) {
+            try {
+              double.parse(val);
+              return null;
+            } catch (e) {
+              return AppLocalization.of(context)!.invalidHeight;
+            }
           }
-        }
-        return AppLocalization.of(context)!.pleaseEnterValidHeight;
-      },
+          return AppLocalization.of(context)!.pleaseEnterValidHeight;
+        },
+      ),
     );
   }
 
@@ -964,32 +979,35 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getWidthField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.width,
-      keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
+    return Container(
+      padding: EdgeInsets.only(top: 4.0),
+      child: CustomizedTextFormField(
+        labelText: AppLocalization.of(context)!.width,
+        keyboardType: Platform.isIOS
+            ? const TextInputType.numberWithOptions(decimal: true)
+            : TextInputType.number,
 
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            width = double.parse(val);
-          } catch (e) {
-            showToast(message: e.toString());
+        onChanged: (val) {
+          if (val.isNotEmpty) {
+            try {
+              width = double.parse(val);
+            } catch (e) {
+              showToast(message: e.toString());
+            }
           }
-        }
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            double.parse(val);
-            return null;
-          } catch (e) {
-            return AppLocalization.of(context)!.invalidWidth;
+        },
+        validator: (val) {
+          if (val.isNotEmpty) {
+            try {
+              double.parse(val);
+              return null;
+            } catch (e) {
+              return AppLocalization.of(context)!.invalidWidth;
+            }
           }
-        }
-        return AppLocalization.of(context)!.pleaseEnterValidWidth;
-      },
+          return AppLocalization.of(context)!.pleaseEnterValidWidth;
+        },
+      ),
     );
   }
 
@@ -1387,7 +1405,9 @@ class _AddProductState extends State<AddProduct> {
         setState(() {});
       },
       isChecked: trackInventory,
-      title: "Track Inventory",
+      title: "Checking this field will automatically update the quantity when the product is purchased.",
+      fontSize: 12.0,
+      maxLines: 2,
     );
   }
 
@@ -1443,6 +1463,33 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getInventoryFormField() {
+    return CustomizedTextFormField(
+      labelText: "Inventory (Available Quantity)",
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: false)
+          : TextInputType.number,
+
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            inventoryCount = int.parse(val);
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            val;
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidCount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidCount;
+      },
+    );
     return CustomizedDropDownField(
       title: "Inventory (Available Quantity)",
       child: SizedBox(
@@ -1516,18 +1563,6 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  Widget getIsInventoryAvailableField() {
-    return CustomizedCheckBoxField(
-      onTap: () {
-        inventoryIsAvailable = !inventoryIsAvailable;
-        setState(() {});
-      },
-      isChecked: inventoryIsAvailable,
-      title: "Checking this field will automatically update the quantity when the product is purchased.",
-      fontSize: 10.0,
-      maxLines: 2,
-    );
-  }
 
   Widget getAddVariationFormField() {
     return GestureDetector(

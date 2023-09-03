@@ -505,6 +505,13 @@ class AppLocalization {
     );
   }
 
+  String get invalidCount {
+    return Intl.message(
+      "Invalid Inventory Count",
+      name: "invalidCount",
+    );
+  }
+
   String get invalidWidth {
     return Intl.message(
       "Invalid Width",
@@ -2347,6 +2354,13 @@ class AppLocalization {
     return Intl.message(
       "Please Enter Valid Height",
       name: "pleaseEnterValidHeight",
+    );
+  }
+
+  String get pleaseEnterValidCount {
+    return Intl.message(
+      "Please Enter Valid Count",
+      name: "pleaseEnterValidCount",
     );
   }
 

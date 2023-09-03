@@ -248,8 +248,9 @@ class BasketBloc extends ChangeNotifier {
   }
 
   // this will add the product or service in the cart;
-  void addItemToCart({required var item, required String type}) {
-    addItemInBasketWithQty(item, type);
+  void addItemToCart({required var item, required String type, Map<String, dynamic>? variant}) {
+    // addItemInBasketWithQty(item, type);
+    addItemInBasketWithQty(item, type, variant!);
     addMerchantName(item);
 
     notifyListeners();
@@ -303,7 +304,7 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMapCopy.remove(merchantFullName);
   }
 
-  void addItemInBasketWithQty(var item, String type) {
+  void addItemInBasketWithQty2(var item, String type) {
     bool flag = false;
 
     _items.forEach((element) {
@@ -323,6 +324,45 @@ class BasketBloc extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void addItemInBasketWithQty(var item, String type, Map<String, dynamic> variant) {
+    bool variantExists = false;
+
+    _items.forEach((element) {
+      if (element["item"].id == item.id) {
+        // Check if the variant ID already exists in the item's variants list
+        bool variantIdExists = false;
+        for (var existingVariant in element["variant"]) {
+          if (existingVariant["id"] == variant["id"]) {
+            existingVariant["quantity"] += variant["quantity"];
+            variantIdExists = true;
+            break;
+          }
+        }
+
+        // If the variant ID doesn't exist, add it as a new variant
+        if (!variantIdExists) {
+          element["variant"].add(variant);
+        }
+
+        // Increase the total quantity and exit the loop
+        element["qty"] += 1;
+        _total = _total + int.parse(item.price);
+        variantExists = true;
+        return;
+      }
+    });
+
+    if (!variantExists) {
+      // Item doesn't exist in the basket, so create a new entry
+      _items.add({"type": type, "item": item, "qty": 1, "variant": [variant]});
+      _total = _total + int.parse(item.price);
+    }
+
+    notifyListeners();
+  }
+
+
 
   // this will remove the product or service from the cart;
   void removeItemFromCart(item) {
