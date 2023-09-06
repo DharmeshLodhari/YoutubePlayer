@@ -91,10 +91,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   String selectedColor = "";
   String selectedSize = "";
   String selectedVariantId = "";
+  String selectedVariantImage = "";
+  String selectedVariantPrice = "";
   int selectedImageColorIndex = -1;
   int selectedSizeIndex = -1;
   String price = "";
   String moreInformation = "";
+  int stockLeft = 0;
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
 
@@ -623,9 +626,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     String type = product is Product ? "product" : "service";
 
     Map<String, dynamic> variant1 = {
-      "id": selectedVariantId, "quantity": 1,
+      "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage, "current_price": selectedVariantPrice,
     };
-    List<Map<String, dynamic>> variantList = [variant1];
 
     basketBloc.addItemToCart(item: product, type: type, variant: variant1);
     late var mapData;
@@ -637,7 +639,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     });
 
     Map<String, dynamic> variants = {
-      "id": selectedVariantId, "quantity": mapData["qty"],
+      "id": selectedVariantId, "quantity": mapData["qty"], "image": selectedVariantImage, "current_price": selectedVariantPrice
     };
 
     Map data = {
@@ -1094,8 +1096,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _buildProductTitleAndPriceWidget() {
 
-    // debugPrint('Fola print 2:::: ${sizeGroups}');
-
     bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
     bool allKeysAreNullOrEmptyColor = areAllKeysNullOrEmpty(colorGroups);
 
@@ -1198,6 +1198,26 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           ),
           SizedBox(height: 5.0,),
           showVariantSizes(),
+        ],
+
+        if(stockLeft >= 10)...[
+          SizedBox(height: 10.0,),
+          Text('In Stock',
+            style: TextStyle(
+                fontSize: 16,
+                color: naturalGreen,
+                fontWeight: FontWeight.bold),
+          ),
+        ]else if(stockLeft == 0)...[
+          SizedBox.shrink()
+        ]else if(stockLeft <= 9)...[
+          SizedBox(height: 10.0,),
+          Text('Only ${stockLeft.toString()} left in stock',
+            style: TextStyle(
+                fontSize: 16,
+                color: mateRed,
+                fontWeight: FontWeight.bold),
+          ),
         ]
 
       ],
@@ -1250,6 +1270,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     // Update price or any other state based on the selected variant
                     price = variant.price!;
                     selectedVariantId = variant.id!;
+                    selectedVariantImage = variant.serverImages![0]!;
+                    selectedVariantPrice = variant.price!;
+                    stockLeft = int.parse(variant.quantity!);
                   }
 
                 }else{
@@ -1319,6 +1342,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   // Update price or any other state based on the selected variant
                   price = variant.price!;
                   selectedVariantId = variant.id!;
+                  selectedVariantImage = variant.serverImages![0]!;
+                  selectedVariantPrice = variant.price!;
+                  stockLeft = int.parse(variant.quantity!);
                 }
 
                 if(mounted) setState(() {});
@@ -1690,6 +1716,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       getRecipient();
                       navigateToSendPayment();
                     }
+                    return;
                   }else{
                     showToast(
                         message:
@@ -1706,6 +1733,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     getRecipient();
                     navigateToSendPayment();
                   }
+                  return;
                 } else {
                   showToast(
                       message:
@@ -1719,6 +1747,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     getRecipient();
                     navigateToSendPayment();
                   }
+                  return;
                 } else {
                   showToast(
                       message:
@@ -1757,7 +1786,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     basketBloc.productOrService.clear();
 
     Map<String, dynamic> variants = {
-      "id": selectedVariantId, "quantity": 1,
+      "id": selectedVariantId, "quantity": 1, "current_price": selectedVariantPrice
     };
 
     Map<dynamic, dynamic> result = {

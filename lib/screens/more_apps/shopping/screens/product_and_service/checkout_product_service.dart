@@ -188,18 +188,42 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
   int getOrderTotalPrice() {
     int? totalPrice;
 
+    Map<dynamic, dynamic>? variant = getVariantAsMap();
+
     if (deliveryOption == 'Pickup') {
-      totalPrice = int.tryParse(result!['price'])!;
+      totalPrice = variant!['id'].isNotEmpty ? int.parse(variant['current_price'].toString()): int.tryParse(result!['price'])!;
     } else if (shippingOption != null) {
-      totalPrice = int.tryParse(result!['price'])! + shippingOption!.price;
+      totalPrice = variant!['id'].isNotEmpty ? int.parse(variant['current_price'].toString())+ shippingOption!.price
+          : int.tryParse(result!['price'])! + shippingOption!.price;
     } else {
-      totalPrice = int.tryParse(result!['price'])!;
+      totalPrice = variant!['id'].isNotEmpty ? int.parse(variant['current_price'].toString()) : int.tryParse(result!['price'])!;
     }
     return totalPrice;
   }
 
+  Map? getVariantAsMap(){
+    Map<dynamic, dynamic>? variant = {};
+
+    for (var product in basketBloc.productOrService) {
+      // Access the 'key' in the outer map
+      if (product.containsKey('results')) {
+        var results = product['variant'];
+        variant = results;
+      }
+    }
+    return variant;
+  }
+
   getSubTotalPrice() {
-    return int.tryParse(result!['price']);
+    Map<dynamic, dynamic>? variant = getVariantAsMap();
+
+    if(variant!['id'] != null && variant['id'].isNotEmpty){
+
+     return int.parse(variant['current_price'].toString());
+    }else{
+      return int.tryParse(result!['price']);
+    }
+
   }
 
   Widget priceRow(

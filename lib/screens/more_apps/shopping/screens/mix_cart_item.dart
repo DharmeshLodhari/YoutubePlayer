@@ -360,6 +360,12 @@ class _MixCartItemState extends State<MixCartItem> {
         onIncreaseQty: () {
           addItem(index);
         },
+        onDecreaseVariantQty: (val) {
+          removeVariantItem(index, val);
+        },
+        onIncreaseVariantQty: (val) {
+          addVariantItem(index, val);
+        },
       );
     }
     return ShoppingCartTileForService(
@@ -434,6 +440,64 @@ class _MixCartItemState extends State<MixCartItem> {
     debugPrint("Data send From Remove Button : $data");
     basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
     await ShoppingAuthService().removeItemFromShoppingCart(data);
+  }
+
+  void addVariantItem(int index, int variantIndex) async {
+    String type = basketBloc.items[index]["item"] is Product ? "product" : "service";
+
+    basketBloc.increaseVariantQuantity(basketBloc.items[index]["item"], basketBloc.items[index]["variant"][variantIndex]);
+    late var mapData;
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == basketBloc.items[index]["item"].id) {
+        mapData = element;
+        return;
+      }
+    });
+
+    Map<String, dynamic> variants = {
+      "id": mapData["id"], "quantity": mapData["qty"], "image": mapData["image"], "current_price": mapData["current_price"]
+    };
+
+    Map data = {
+      "type": type,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"],
+      "variant": variants,
+    };
+    // debugPrint("Data From Product Page : $data");
+    await ShoppingAuthService().addItemToShoppingCart(data);
+  }
+
+  void removeVariantItem(int index, int variantIndex) async {
+    String type =
+    basketBloc.items[index]["item"] is Product ? "product" : "service";
+
+    late var mapData;
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == basketBloc.items[index]["item"].id) {
+        mapData = element;
+        return;
+      }
+    });
+
+    Map<String, dynamic> variants = {
+      "id": mapData["id"], "quantity": mapData["qty"] - 1, "image": mapData["image"], "current_price": mapData["current_price"]
+    };
+
+    Map data = {
+      "type": type,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"] - 1,
+      "variant": variants,
+    };
+
+    debugPrint("Data send From Remove Button : $data");
+    basketBloc.removeOrReduceVariant(basketBloc.items[index]["item"], basketBloc.items[index]["variant"][variantIndex]);
+    await ShoppingAuthService().removeItemFromShoppingCart(data);
+    //close pop up if quantity to reduce is 1 currently
+    if(mapData["qty"] == 1){
+      Navigator.of(context).pop();
+    }
   }
 
   List<Widget> listActionSlideActions(int index) {
