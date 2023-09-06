@@ -304,26 +304,6 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMapCopy.remove(merchantFullName);
   }
 
-  void addItemInBasketWithQty2(var item, String type) {
-    bool flag = false;
-
-    _items.forEach((element) {
-      if (element["item"].id == item.id) {
-        flag = true;
-        element["qty"] = element["qty"] + 1;
-        _total = _total + int.parse(item.price);
-        debugPrint("Exising Item Added");
-        return;
-      }
-    });
-
-    if (!flag) {
-      _items.add({"type": type, "item": item, "qty": 1});
-      _total = _total + int.parse(item.price);
-      debugPrint("New Item Added");
-    }
-    notifyListeners();
-  }
 
   void addItemInBasketWithQty(var item, String type, Map<String, dynamic> variant) {
     bool variantExists = false;
@@ -335,6 +315,10 @@ class BasketBloc extends ChangeNotifier {
         for (var existingVariant in element["variant"]) {
           if (existingVariant["id"] == variant["id"]) {
             existingVariant["quantity"] += variant["quantity"];
+            // Add variant image to the existing variant
+            existingVariant["image"] = variant["image"];
+
+            debugPrint("Existing Item Added");
             variantIdExists = true;
             break;
           }
@@ -347,8 +331,19 @@ class BasketBloc extends ChangeNotifier {
 
         // Increase the total quantity and exit the loop
         element["qty"] += 1;
-        _total = _total + int.parse(item.price);
-        variantExists = true;
+
+        if (variant["id"] != null && variant["id"].isNotEmpty) {
+          // The variant has a non-empty "id" key
+          String price = variant["current_price"];
+          // Now, you can use the 'price' variable for further processing.
+          _total = _total + int.parse(price);
+          variantExists = true;
+        } else {
+          // The variant does not have a valid "id" key
+          _total = _total + int.parse(item.price);
+          variantExists = true;
+        }
+
         return;
       }
     });
@@ -356,12 +351,105 @@ class BasketBloc extends ChangeNotifier {
     if (!variantExists) {
       // Item doesn't exist in the basket, so create a new entry
       _items.add({"type": type, "item": item, "qty": 1, "variant": [variant]});
-      _total = _total + int.parse(item.price);
+      if (variant.containsKey("id") && variant["id"] != null && variant["id"].isNotEmpty) {
+        // The variant has a non-empty "id" key
+        String price = variant["current_price"];
+        // Now, you can use the 'price' variable for further processing.
+        _total = _total + int.parse(price);
+      } else {
+        // The variant does not have a valid "id" key
+        _total = _total + int.parse(item.price);
+        variantExists = true;
+      }
+
+      debugPrint("New Item Added");
     }
 
     notifyListeners();
   }
 
+
+  void increaseVariantQuantity(var item, Map<String, dynamic> variant) {
+    bool itemExists = false;
+
+    for (var i = 0; i < _items.length; i++) {
+      if (_items[i]["item"].id == item.id) {
+        // Check if the variant ID exists in the item's variants list
+        for (var j = 0; j < _items[i]["variant"].length; j++) {
+          if (_items[i]["variant"][j]["id"] == variant["id"]) {
+            // Add one to the variant quantity
+            _items[i]["variant"][j]["quantity"] += 1;
+
+            // Calculate the total price
+            _total += int.parse(variant["current_price"]);
+            // Increase the total quantity
+            _items[i]["qty"] += 1;
+
+            itemExists = true;
+            break;
+          }
+        }
+
+        break; // Exit the loop once the item is found
+      }
+    }
+
+    if (!itemExists) {
+      debugPrint("Item not found in the basket.");
+    }
+
+    notifyListeners();
+  }
+
+
+  void removeOrReduceVariant(var item, Map<String, dynamic> variant) {
+    bool itemExists = false;
+
+    for (var i = 0; i < _items.length; i++) {
+      if (_items[i]["item"].id == item.id) {
+        // Check if the variant ID exists in the item's variants list
+        for (var j = 0; j < _items[i]["variant"].length; j++) {
+          if (_items[i]["variant"][j]["id"] == variant["id"]) {
+            if (_items[i]["variant"][j]["quantity"] > 1) {
+              // Reduce the quantity by 1
+              _items[i]["variant"][j]["quantity"] -= 1;
+            } else {
+              // Remove the variant if the quantity is 1 or less
+              _items[i]["variant"].removeAt(j);
+            }
+            // Decrease the total quantity
+            _items[i]["qty"] -= 1;
+
+            // Calculate the total price
+            _total -= int.parse(variant["current_price"]);
+
+            // Log when the variant quantity becomes zero
+            if (_items[i]["variant"].isEmpty) {
+              debugPrint("Variant with ID ${variant["id"]} is now zero.");
+            }
+
+            itemExists = true;
+            break;
+          }
+        }
+
+        // Check if all variants are zero
+        if (_items[i]["variant"].isEmpty) {
+          debugPrint("All variants for item ${item.id} are zero.");
+          // Remove the item from the basket
+          _items.removeAt(i);
+        }
+
+        break; // Exit the loop once the item is found
+      }
+    }
+
+    if (!itemExists) {
+      debugPrint("Item not found in the basket.");
+    }
+
+    notifyListeners();
+  }
 
 
   // this will remove the product or service from the cart;
@@ -410,7 +498,7 @@ class BasketBloc extends ChangeNotifier {
         .getShoppingCart(); //Returns a list of product and services as a map
     items.forEach((element) {
       String type = element is Product ? "product" : "service";
-      addItemToCart(item: element, type: type);
+      addItemToCart(item: element, type: type, variant: element['variant']);
     });
   }
 }

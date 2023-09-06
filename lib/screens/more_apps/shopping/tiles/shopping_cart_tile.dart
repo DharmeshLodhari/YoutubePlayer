@@ -2,6 +2,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/variant_overlay.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -20,12 +21,17 @@ class ShoppingCartTileForProduct extends StatefulWidget {
   int? index;
   Function? onIncreaseQty;
   Function? onDecreaseQty;
+  Function(int variantIndex)? onIncreaseVariantQty;
+  Function(int variantIndex)? onDecreaseVariantQty;
+  List<Map<String, dynamic>>? variant;
 
   ShoppingCartTileForProduct(Map<String, dynamic> item,
-      {this.onIncreaseQty, this.onDecreaseQty, this.index}) {
+      {this.onIncreaseQty, this.onDecreaseQty, this.index,
+        this.onIncreaseVariantQty, this.onDecreaseVariantQty}) {
     type = item["type"];
     this.item = item["item"];
     qty = item["qty"];
+    variant = item["variant"];
   }
 
   @override
@@ -61,8 +67,44 @@ class _ShoppingCartTileForProductState
                     trailing: getTrailing(),
                     subtitle: getSubtitle(context),
                     onTap: () {
-                      Navigator.pushNamed(context, Routes.PRODUCT,
-                          arguments: {"product": widget.item});
+
+                      bool hasVariantId = widget.variant?.any((item) => item['id'] != null && item['id'].isNotEmpty) ?? false;
+
+                      if(hasVariantId){
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Opacity(
+                              opacity: 0.9, // Set the opacity level for the background (semi-transparent)
+                              child: FractionallySizedBox(
+                                // widthFactor: 0.75,
+                                heightFactor: 0.60,
+                                child: VariantOverlay(
+                                  variant: widget.variant,
+                                  currency: widget.item!.currency!,
+                                  onClose: () {
+                                    Navigator.of(context).pop(); // Close the overlay
+                                  },
+                                  onAdd: (val){
+                                    onAddVariant(val);
+                                    if(mounted)setState(() {});
+                                    },
+                                  onSubtract: (val){
+                                    onSubtractVariant(val);
+                                    if(mounted)setState(() {});
+                                    },
+                                ),
+                              ),
+                            );
+                          },
+                        );
+
+                      }else{
+                        Navigator.pushNamed(context, Routes.PRODUCT,
+                            arguments: {"product": widget.item});
+                      }
+
+
                     },
                   ),
                 ),
@@ -74,6 +116,14 @@ class _ShoppingCartTileForProductState
     } catch (e) {
       return Container();
     }
+  }
+
+  void onAddVariant(int variantIndex) {
+    widget.onIncreaseVariantQty!(variantIndex);
+  }
+
+  void onSubtractVariant(int variantIndex) {
+    widget.onDecreaseVariantQty!(variantIndex);
   }
 
   Widget getLeading() {
@@ -103,6 +153,9 @@ class _ShoppingCartTileForProductState
   }
 
   Widget getTrailing() {
+    //check if item has variant with id or not
+    bool hasVariantId = widget.variant?.any((item) => item['id'] != null && item['id'].isNotEmpty) ?? false;
+
     return Container(
       width: 100,
       color: Colors.transparent,
@@ -111,14 +164,15 @@ class _ShoppingCartTileForProductState
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            RoundedBackgroundIcon(
+
+            hasVariantId == false ? RoundedBackgroundIcon(
                 backgroundColor: iconBtnGrey,
                 icon: Icon(
                   SlydoAppIcon.minus,
                   color: blackFont,
                   size: 2,
                 ),
-                onTap: widget.onDecreaseQty),
+                onTap: widget.onDecreaseQty) : const SizedBox.shrink(),
             Expanded(
               child: SizedBox(
                 width: 10,
@@ -134,14 +188,14 @@ class _ShoppingCartTileForProductState
                 width: 10,
               ),
             ),
-            RoundedBackgroundIcon(
+            hasVariantId == false ?RoundedBackgroundIcon(
                 backgroundColor: iconBtnGrey,
                 icon: Icon(
                   SlydoAppIcon.plus,
                   color: blackFont,
                   size: 16,
                 ),
-                onTap: widget.onIncreaseQty),
+                onTap: widget.onIncreaseQty) : const SizedBox.shrink(),
           ],
         ),
       ),
@@ -155,12 +209,25 @@ class _ShoppingCartTileForProductState
     return widget.item!.price.toString();
   }
 
+
   String getTotalPrice() {
     var totalPrice =
         basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
 
+    bool hasVariantId = widget.variant?.any((item) => item['id'] != null && item['id'].isNotEmpty) ?? false;
+
+    if(hasVariantId && widget.variant != null && widget.variant!.isNotEmpty){
+
+      totalPrice = 0;
+      widget.variant?.forEach((variant) {
+
+        totalPrice += int.parse(variant['quantity'].toString()) * int.parse(variant['current_price'].toString());
+      });
+    }
+
     return totalPrice.toString();
   }
+
 
   Widget getSubtitle(BuildContext context) {
     return Column(
