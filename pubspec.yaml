@@ -58,7 +58,7 @@ dependencies:
   flutter_polyline_points: ^1.0.0
   flutter_quill: ^6.0.0
   flutter_quill_extensions: ^0.1.0
-  flutter_rating_bar: ^4.0.0
+  flutter_rating_bar: ^4.0.1
   flutter_secure_storage: ^4.2.1
   flutter_slidable: ^0.6.0
   flutter_sound: ^8.4.2

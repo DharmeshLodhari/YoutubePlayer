@@ -249,6 +249,12 @@ class AppLocalization {
       name: "recipient",
     );
   }
+  String get jobRefNumber {
+    return Intl.message(
+      "Job Reference Number",
+      name: "jobRefNumber",
+    );
+  }
 
   String get location {
     return Intl.message(
@@ -705,6 +711,13 @@ class AppLocalization {
     return Intl.message(
       "Reference",
       name: "reference",
+    );
+  }
+
+  String get saySomething {
+    return Intl.message(
+      "Say something about your experience",
+      name: "saySomething",
     );
   }
 
@@ -1641,6 +1654,13 @@ class AppLocalization {
     );
   }
 
+  String get payNow {
+    return Intl.message(
+      "Pay Now",
+      name: "payNow",
+    );
+  }
+
   String get areYouSureWantToAcceptThisRequest {
     return Intl.message(
       "Are you sure want to Accept this request?",
@@ -2389,6 +2409,13 @@ class AppLocalization {
     return Intl.message(
       "Unlist Successfully",
       name: "jobRemovedFromListingSuccessfully",
+    );
+  }
+
+  String get endJob {
+    return Intl.message(
+      "Job ended Successfully",
+      name: "endJob",
     );
   }
 

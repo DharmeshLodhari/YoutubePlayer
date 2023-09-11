@@ -104,10 +104,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       var result =
           await ServiceHubAuthService().retreiveListedJob(listingId: listingId);
 
-      logger.d('tor bad......${result?.toJson()}');
       if (result == null) {
-        // noJobsInList = true;
-
         isLoading = false;
         if (mounted) {
           setState(() {});
@@ -116,6 +113,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
         return;
       }
 
+      log('toror...${result.toJson()}');
       var tempList = result;
       if (mounted) {
         setState(() {
@@ -127,7 +125,6 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
         });
       }
       getSearchedChatConnections();
-      log('job gt job ${job!.toJson()}');
     }
   }
 
@@ -243,7 +240,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       actionTwoBgColor: navyBlue,
       actionTwoTextColor: white,
       title: "Apply",
-      description: "Are you sure you want to apply this job?",
+      description: "Are you sure you want to apply for this job?",
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.accept,
     );
@@ -628,17 +625,26 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                 const SizedBox(
                                   width: 10,
                                 ),
-                                Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                        color: navyBlue,
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: Icon(
-                                      Icons.check,
-                                      color: white,
-                                      size: 7,
-                                    ))
+                                job!.applicants!
+                                        .contains(userBloc.user.userName)
+                                    ? Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                            color: navyBlue,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Icon(
+                                          Icons.check,
+                                          color: white,
+                                          size: 7,
+                                        ))
+                                    : Container(
+                                        padding: const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                            color: darkGrey,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Container())
                               ],
                             ),
                             const SizedBox(
@@ -1085,6 +1091,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
   }
 
   removeJobListing() async {
+    print('print listing id $listingId');
     await ServiceHubAuthService().removeJobListing(listingId).then((value) {
       Navigator.pushNamed(context, Routes.SUPER_HUB);
       showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);

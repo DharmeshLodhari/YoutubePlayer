@@ -20,7 +20,7 @@ class ComposeMessage extends StatefulWidget {
   var arguments;
   String? username;
 
-  ComposeMessage({this.arguments,this.username});
+  ComposeMessage({this.arguments, this.username});
 
   @override
   _ComposeMessageState createState() =>
@@ -79,6 +79,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
   }
 
   void fetchCustomer() async {
+    print('recipient:::: $recipient');
     var customerProfile = await UserAuth().fetchCustomerProfile(recipient);
 
     messageReceiver = customerProfile;

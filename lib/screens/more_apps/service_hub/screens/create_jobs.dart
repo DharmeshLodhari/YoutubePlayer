@@ -240,7 +240,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         },
       ),
       title: Text(
-        "Create Job Request",
+        "Create Job",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -268,11 +268,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                       const SizedBox(
                         height: 20,
                       ),
-                      addWorkField(),
+                      getCategoryField(),
                       const SizedBox(
                         height: 20,
                       ),
-                      getCategoryField(),
+                      addWorkField(),
                       const SizedBox(
                         height: 20,
                       ),
@@ -1054,7 +1054,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       labelText: AppLocalization.of(context)!.wantToGetDone,
       hintText: 'What\'s the description of the job',
       labelColor: blackFont,
-      maxLines: 1,
+      maxLines: 7,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -1210,7 +1210,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             'picture_count': jobImages.length,
             'file': '',
             'list_now': checkedValue,
-            'is_online': taskMethod=='Remote'?true:false,
+            'is_online': taskMethod == 'Remote' ? true : false,
             'localImages': jobImages.map((file) => File(file.path)).toList(),
           }).then((value) {
             Navigator.pop(context);

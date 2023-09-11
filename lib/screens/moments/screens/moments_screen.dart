@@ -20,7 +20,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:story_view/controller/story_controller.dart';
-import 'package:story_view/widgets/story_view.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../locator.dart';

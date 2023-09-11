@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/applicant_list_model.dart';
@@ -53,6 +55,8 @@ class _ApplicantListState extends State<ApplicantList> {
             listNext, listPrevious,
             jobId: widget.job!.id);
 
+        print("message::$result");
+
         if (result == null) {
           noApplicantInList = true;
 
@@ -62,15 +66,8 @@ class _ApplicantListState extends State<ApplicantList> {
           }
           return;
         }
-
-        // listCount = result.count;
-        // listNext = result.next;
-        // listPrevious = result.previous;
-        // var tempList = result;
         if (mounted) {
           setState(() {
-            // noJobsInPostedList = false;
-
             applicantList.addAll(result);
             isLoading = false;
           });
@@ -226,13 +223,6 @@ class _ApplicantListState extends State<ApplicantList> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      // actions: [
-      //   _filterBtn(),
-      //   SizedBox(
-      //     width: 12,
-      //   )
-      // ],
-      // bottom: tabBar() as PreferredSizeWidget,
     );
   }
 
@@ -256,7 +246,7 @@ class _ApplicantListState extends State<ApplicantList> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: "Accept",
-      description: "Are you sure you want to accept this user?",
+      description: "Are you sure you want to accept this applicant?",
       actionOneText: AppLocalization.of(context)!.accept,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
@@ -304,7 +294,7 @@ class _ApplicantListState extends State<ApplicantList> {
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: "Reject",
-      description: "Are you sure want to reject this user?",
+      description: "Are you sure you want to reject this applicant?",
       actionOneText: AppLocalization.of(context)!.reject,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
@@ -360,7 +350,6 @@ class _ApplicantListState extends State<ApplicantList> {
 
   Widget _getSlidableWithLists(BuildContext context, int index) {
     return Slidable(
-      // key: Key(user.userName!),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
@@ -384,7 +373,6 @@ class VerticalListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('object....${applicant?.toJson()}');
     return GestureDetector(
       onTap: () async {
         Navigator.pushNamed(context, Routes.USER_PROFILE,

@@ -91,7 +91,7 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget getUserTile(var object) {
-
+    print('object::::$object');
     CustomerProfile user = CustomerProfile.fromJson(object);
 
     if (user.userName.toString().toLowerCase() == "slydo" ||

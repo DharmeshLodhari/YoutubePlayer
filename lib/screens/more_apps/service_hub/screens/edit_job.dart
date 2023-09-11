@@ -683,11 +683,11 @@ class _EditJobState extends State<EditJob> {
                 const SizedBox(
                   height: 20,
                 ),
-                addWorkField(),
+                getCategoryField(),
                 const SizedBox(
                   height: 20,
                 ),
-                getCategoryField(),
+                addWorkField(),
                 const SizedBox(
                   height: 20,
                 ),
@@ -1692,7 +1692,7 @@ class _EditJobState extends State<EditJob> {
       controller: descriptionController,
       labelText: AppLocalization.of(context)!.wantToGetDone,
       labelColor: blackFont,
-      maxLines: 1,
+      maxLines: 7,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;

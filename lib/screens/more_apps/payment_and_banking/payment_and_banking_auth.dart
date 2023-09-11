@@ -857,8 +857,21 @@ class PaymentAndBankingAuth extends AuthService {
     var url = "${AppConfig.baseUrl}/api/v1/transactions/make-payment/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
+    print('message data::::$_data');
     var response = await httpPost(url, headers: headers, body: _data);
+    print('message::::$response');
+    return response;
+  }
 
+  //Send payment to backend to update status
+  Future<http.Response> updateStatusPayment(
+      {String? jobId, String? transactionId}) async {
+    var url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/pay-for-job/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode({"transaction_id":transactionId});
+    print('message data::::$_data');
+    var response = await httpPatch(url, headers: headers, body: _data);
+    print('message::::$response');
     return response;
   }
 

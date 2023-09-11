@@ -380,7 +380,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
       "report": messageDecoderWithEmoji(textController.text)
     };
     await YarnAuth().reportJob(data).then((value) {
-      log('message::::::$value');
+      log('message::reporter::::$value');
       if (value != null) {
         if (value == true) {
           Navigator.pop(context);
