@@ -519,7 +519,6 @@ class _YarnTileState extends State<YarnTile> {
         break;
       case 'job':
         JobModel jobModel = JobModel.fromJson(widget.yarn.attachment ?? {});
-        log('messagemmmmmmmmmmmmm${widget.yarn.toString()}');
         childWidget = GestureDetector(
             onTap: () {
               userBloc.user.userName == jobModel.owner

@@ -1,21 +1,28 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../routes/route_constants.dart';
 
 class JobDescriptionCard extends StatelessWidget {
-  const JobDescriptionCard({Key? key, required this.job}) : super(key: key);
+  JobDescriptionCard({
+    Key? key,
+    required this.job,
+  }) : super(key: key);
   final JobModel? job;
+  String? user;
 
   String getTimeDifference() {
     var difference =
         DateTime.now().difference(DateTime.parse(job!.creationDate!));
     String time = '';
     print(difference.toString() + '-----');
-
     if (difference > const Duration(hours: 24)) {
       time = difference.inDays.toString() + ' days';
     } else if (difference > const Duration(hours: 1)) {
@@ -35,36 +42,52 @@ class JobDescriptionCard extends StatelessWidget {
     if (status.toLowerCase() == 'open') {
       return const Color(0xff3F61DB);
     }
-    if (status.toLowerCase() == 'in-progress') {
-      return Colors.yellow.shade700;
-    }
     if (status.toLowerCase() == 'closed') {
+      return Colors.red.shade400;
+    }
+    if (status.toLowerCase() == 'completed') {
       return Colors.green.shade400;
     }
     if (status.toLowerCase() == 'canceled') {
       return Colors.red.shade400;
     }
-    return const Color(0xff3F61DB);
+    if (status.toLowerCase() == 'in-progress' && user == job?.ownerName ||
+        user == job?.owner) {
+      return Colors.yellow.shade700;
+    } else if (status.toLowerCase() == 'in-progress' && job?.assignee != user) {
+      return Colors.red.shade400;
+    } else {
+      return Colors.yellow.shade700;
+    }
   }
 
   String textStatus(String status) {
     if (status.toLowerCase() == 'open') {
       return 'Open';
     }
-    if (status.toLowerCase() == 'in-progress') {
-      return 'In-Progress';
+    if (status.toLowerCase() == 'completed') {
+      return 'Completed';
     }
     if (status.toLowerCase() == 'closed') {
-      return 'Completed';
+      return 'Closed';
     }
     if (status.toLowerCase() == 'canceled') {
       return 'Canceled';
     }
-    return 'Active';
+    if (status.toLowerCase() == 'in-progress' && user == job?.ownerName ||
+        user == job?.owner) {
+      return 'In-Progress';
+    } else if (status.toLowerCase() == 'in-progress' && job?.assignee != user) {
+      return 'Closed';
+    } else {
+      return 'In-Progress';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<UserBloc>(context).user.userName;
+    print('$user && ${job?.owner}');
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
@@ -98,7 +121,29 @@ class JobDescriptionCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Container(
+                job?.assignee != null && user != job?.assignee &&
+                      job!.isListed == false &&
+                      job!.applicants!.contains(user)
+                  ? Container(
+                      width: 54,
+                      // height: 20,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: red),
+                        color: red.withOpacity(0.1),
+                      ),
+                      child: Text(
+                        'closed',
+                        style: TextStyle(
+                          color: red,
+                          fontSize: 10.80,
+                          fontFamily: "Open Sans",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ):Container(
                   padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
@@ -118,9 +163,6 @@ class JobDescriptionCard extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            // SizedBox(
-            //   width: 200,
-            // child:
             Text(
               job!.description!,
               maxLines: 4,
@@ -130,7 +172,6 @@ class JobDescriptionCard extends StatelessWidget {
                 fontSize: 12.6,
               ),
             ),
-            // ),
             const SizedBox(
               height: 10,
             ),

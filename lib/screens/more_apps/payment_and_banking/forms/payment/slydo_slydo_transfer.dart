@@ -240,7 +240,6 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
-
     return ScaffoldMessenger(
       key: _sendPaymentScaffoldMessenger,
       child: Scaffold(
@@ -307,7 +306,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                             children: <Widget>[
                               getDisplayCard(),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Column(
                                   children: [
                                     const SizedBox(
@@ -719,7 +719,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -893,7 +894,8 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       builder: (context) =>
           StatefulBuilder(builder: (context, rentDurationStateSetter) {
         return AlertDialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           contentPadding: EdgeInsets.zero,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -1070,15 +1072,6 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                   );
 
                   await Future.delayed(const Duration(seconds: 3));
-
-                  // if (transactionalAmount + 10.0 > currentBalance) {
-                  //   Navigator.pop(context);
-                  //
-                  //   errorMessage = "Insufficient funds !!";
-                  //   setState(() {});
-                  //   showToast(message: errorMessage);
-                  //   return;
-                  // }
 
                   deviceData = await getDeviceInfo();
 
@@ -1285,7 +1278,5 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       // print("The number is non-negative.");
       return value;
     }
-
-
   }
 }

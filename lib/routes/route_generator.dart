@@ -82,6 +82,7 @@ import 'package:Slydo/screens/more_apps/review/forms/edit_user_review.dart';
 import 'package:Slydo/screens/more_apps/review/main_review.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
+import 'package:Slydo/screens/more_apps/service_hub/screens/contractor_payment_screen.dart';
 import 'package:Slydo/screens/more_apps/settings/general_setting.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
@@ -340,6 +341,15 @@ class RouteGenerator {
       case Routes.ADD_ACCOUNT:
         return PageTransition(
           child: AddAccount(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.CONTRACTOR_SCREEN:
+        return PageTransition(
+          child: ContractorPaymentScreen(
+            arguments: settings.arguments
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

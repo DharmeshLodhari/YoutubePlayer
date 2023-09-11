@@ -230,6 +230,28 @@ Future<bool?> showDialogBox(
   ).show();
 }
 
+Future<bool?> showDialogBoxSuccess(
+    {Widget? content,
+    required BuildContext context,
+    String? title,
+    String? description,
+    bool firstActionPrimary = true,
+    String? image, // DialogButton's text
+    bool isOverlayTapDismiss = true,
+    RoundedBackgroundIcon? roundedBackgroundIcon}) {
+  return CustomizedAlert(
+    title: title,
+    content: content,
+    context: context,
+    desc: description,
+    roundedBackgroundIcon: roundedBackgroundIcon,
+    style: AlertStyle(
+      isOverlayTapDismiss: isOverlayTapDismiss,
+      isCloseButton: false,
+    ),
+  ).show();
+}
+
 Widget dropDownPickItemWidget(
     {required String? selectedItem, required Function onTap, String? label}) {
   return Column(

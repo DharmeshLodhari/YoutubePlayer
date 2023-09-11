@@ -158,6 +158,7 @@ class Routes {
   static const String WEB_VIEW = "/web-view";
   static const String SUPER_BLOG = "/super-blog";
   static const String SUPER_HUB = "/super-hub";
+  static const String CONTRACTOR_SCREEN = "/contractor-screen";
   static const String SEARCH_SERVICES = "/search-services";
   static const String SEARCH_YARN = "/search-yarn";
   static const String CATEGORY_JOBS = "/category-jobs";

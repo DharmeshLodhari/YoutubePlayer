@@ -27,16 +27,18 @@ class UserAuth extends AuthService {
     if (userName == null) {
       return CustomerProfile();
     }
-    var url = AppConfig.baseUrl + "/api/v1/user/customer/" + userName.trim();
+    var url = AppConfig.baseUrl + "/api/v1/user/customer/$userName";
     var uuid = Uuid();
     var transactionId = uuid.v4();
 
-    var headers = {
-      "Content-type": "application/json",
-      "TransactionId": transactionId,
-      "DeviceType": Platform.isAndroid ? "Android" : "IOS",
-      "User-Agent": "Slydo-Mobile",
-    };
+    var headers = await getAuthHeaders();
+    // var headers =
+    // {
+    //   "Content-type": "application/json",
+    //   "TransactionId": transactionId,
+    //   "DeviceType": Platform.isAndroid ? "Android" : "IOS",
+    //   "User-Agent": "Slydo-Mobile",
+    // };
     var response = await httpGet(url, headers: headers);
 
     debugPrint(
@@ -1210,9 +1212,7 @@ class UserAuth extends AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
-      Map<String, dynamic> result = {
-        "results": jsonData
-      };
+      Map<String, dynamic> result = {"results": jsonData};
 
       return result;
     }
@@ -1233,6 +1233,4 @@ class UserAuth extends AuthService {
     }
     return false;
   }
-
-
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/applicant_list_model.dart';
@@ -226,12 +227,56 @@ class ServiceHubAuthService extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
 
     debugPrint(
         "ACCEPT JOB APPLICANT URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
       return true;
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return false;
+    }
+  }
+
+  // rate and review contractor
+  Future<dynamic> rateAndReviewContrator({String? jobId, Map? data}) async {
+    var url =
+        "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/rate-contractor/";
+    var _data = jsonEncode(data);
+    debugPrint('ACCEPT JOB APPLICANT ::: $_data');
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _data);
+    var jsonData = jsonDecode(response.body);
+
+    debugPrint(
+        "REVIEW AND RATE URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return false;
+    }
+  }
+
+  // get rate and review contractor detail
+  Future<dynamic> rateAndReviewContratorDetail({String? jobId}) async {
+    var url =
+        "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/user-ratings/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(
+      url,
+      headers: headers,
+    );
+    var jsonData = jsonDecode(response.body);
+
+    debugPrint(
+        "REVIEW AND RATE URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      return response.body;
     } else {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -380,18 +425,13 @@ class ServiceHubAuthService extends AuthService {
   Future<JobModel?> retreiveJob({String? jobId}) async {
     try {
       var url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
-      // if (next == null) {
-      //   return null;
-      // } else {
-      //   url = getSecureUrl(url: next);
-      // }
-      // url = getSecureUrl(url: next);
 
       debugPrint('RETREIVE Job URL ---> $url');
 
       var headers = await getAuthHeaders();
       var response = await httpGet(url, headers: headers);
       debugPrint('RETREIVE Job LISTING URL BODY ---> ${response.body}');
+  
       print(response.statusCode);
       if (response.statusCode == 200) {
         return JobModel.fromJson(json.decode(response.body));
@@ -418,7 +458,6 @@ class ServiceHubAuthService extends AuthService {
       var headers = await getAuthHeaders();
       var response = await httpGet(url, headers: headers);
       debugPrint('RETREIVE Job LISTING URL BODY ---> ${response.body}');
-      print(response.statusCode);
       if (response.statusCode == 200) {
         return ActiveListingData.fromJson(json.decode(response.body));
       } else {
@@ -464,7 +503,21 @@ class ServiceHubAuthService extends AuthService {
         AppConfig.baseUrl + "/api/v1/job-service/listing/" + listingId! + '/';
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers, body: _data);
+    print('lister...$response');
+    print('lister. url..$url');
     if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
+  // end job
+  Future<bool> endJob(String? jobId) async {
+    var url = AppConfig.baseUrl + "/api/v1/job-service/job/$jobId/end-job/";
+    var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers);
+    print('end jobber...${response.body} and ${response.statusCode}');
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     return false;
@@ -519,8 +572,8 @@ class ServiceHubAuthService extends AuthService {
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
-    debugPrint("response:- ${response.body}");
-    debugPrint("response:- ${response.statusCode}");
+    debugPrint("response delete:- ${response.body}");
+    debugPrint("response deleter:- ${response.statusCode}");
     if (response.statusCode == 204) {
       return true;
     } else {

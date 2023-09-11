@@ -18,6 +18,7 @@ class JobModel {
   bool? isOnline;
   List<dynamic>? applicants;
   String? assignee;
+  String? assigneeAvatar;
   String? description;
   String? dueDate;
   String? creationDate;
@@ -25,6 +26,8 @@ class JobModel {
   bool? isNegotiable;
   bool? isVerified;
   String? currency;
+  int? transactionId;
+  String? referenceNumber;
 
   JobModel(
       {this.id,
@@ -44,13 +47,16 @@ class JobModel {
       this.isOnline,
       this.applicants,
       this.assignee,
+      this.assigneeAvatar,
       this.description,
       this.dueDate,
       this.creationDate,
       this.location,
       this.isVerified,
       this.isNegotiable,
-      this.currency});
+      this.transactionId,
+      this.currency,
+      this.referenceNumber});
 
   JobModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -78,10 +84,13 @@ class JobModel {
     isVerified = json['is_verified'];
     applicants = json['applicants'] == null ? [] : json['applicants'];
     assignee = json['assignee'];
+    assigneeAvatar = json['assignee_avatar'];
     description = json['description'];
     dueDate = json['due_date'];
+    referenceNumber = json['reference_number'];
     creationDate = json['creation_date'];
     location = json['location'];
+    transactionId = json['transaction_id'];
     isNegotiable =
         json.containsKey('is_negotiable') ? json['is_negotiable'] : false;
     currency = json.containsKey('currency') ? json['currency'] : 'NGN';
@@ -112,10 +121,13 @@ class JobModel {
     data['is_online'] = this.isOnline;
     data['applicants'] = this.applicants;
     data['assignee'] = this.assignee;
+    data['assignee_avatar'] = this.assigneeAvatar;
     data['description'] = this.description;
     data['due_date'] = this.dueDate;
     data['creation_date'] = this.creationDate;
+    data['reference_number'] = this.referenceNumber;
     data['location'] = this.location;
+    data['transaction_id'] = this.transactionId;
     data['is_verified'] = this.isVerified;
     return data;
   }

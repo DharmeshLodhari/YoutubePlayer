@@ -12,12 +12,14 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
+import 'package:Slydo/screens/more_apps/service_hub/models/user_review.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -76,6 +78,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     CustomPopupMenuItem(title: "Delete", imageUrl: "assets/images/delete.svg"),
   ];
 
+  List<UserReviewModel> myList = [];
+
   final List<String> items = [
     'Item1',
     'Item2',
@@ -123,6 +127,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           job = tempList;
         });
         getSearchedChatConnections();
+        getRatingsAndReveiw();
       }
     }
   }
@@ -395,70 +400,240 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                   getJobActivity(job!.status!),
                   getJobOnlineRow(),
                   job?.status?.toLowerCase() == 'in-progress' ||
-                          job?.status?.toLowerCase() == 'closed'
+                          job?.status?.toLowerCase() == 'completed'
                       ? getPaymentStatusRow()
                       : const SizedBox.shrink(),
                   const Divider(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const CustomText(
-                          title: "Posted By",
-                          fontSize: 14,
-                          fontweight: FontWeight.w700,
-                        ),
-                        GestureDetector(
-                          onTap: () => Navigator.pushNamed(
-                              context, Routes.USER_PROFILE,
-                              arguments: {"searchedUserName": job!.owner}),
-                          child: Row(
-                            children: [
-                              CachedNetworkImage(
-                                imageUrl: "${job!.ownerAvatar}",
-                                imageBuilder: (context, imageProvider) =>
-                                    Container(
-                                  width: 23.0,
-                                  height: 23.0,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover),
-                                  ),
+                  job!.assignee != null
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16),
+                          child: userBloc.user.userName ==
+                                      job!.ownerName!.toLowerCase() ||
+                                  userBloc.user.fullName?.toLowerCase() ==
+                                      job!.ownerName!.toLowerCase()
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const CustomText(
+                                      title: "Contractor",
+                                      fontSize: 14,
+                                      fontweight: FontWeight.w700,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => Navigator.pushNamed(
+                                          context, Routes.USER_PROFILE,
+                                          arguments: {
+                                            "searchedUserName": job!.assignee
+                                          }),
+                                      child: Row(
+                                        children: [
+                                          CachedNetworkImage(
+                                            imageUrl: "${job!.assigneeAvatar}",
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              width: 23.0,
+                                              height: 23.0,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.cover),
+                                              ),
+                                            ),
+                                            errorWidget:
+                                                productAndServiceBigErrorWidget,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          userNameWithVerifiedIcon(
+                                            name: job?.assignee ?? '',
+                                            isVerified: job!.isVerified,
+                                            verifiedIconColor: verifyGreen,
+                                            textStyle: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                color: HexColor("#151515")),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const CustomText(
+                                      title: "Posted By",
+                                      fontSize: 14,
+                                      fontweight: FontWeight.w700,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => Navigator.pushNamed(
+                                          context, Routes.USER_PROFILE,
+                                          arguments: {
+                                            "searchedUserName": job!.owner
+                                          }),
+                                      child: Row(
+                                        children: [
+                                          CachedNetworkImage(
+                                            imageUrl: "${job!.ownerAvatar}",
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              width: 23.0,
+                                              height: 23.0,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.cover),
+                                              ),
+                                            ),
+                                            errorWidget:
+                                                productAndServiceBigErrorWidget,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          userNameWithVerifiedIcon(
+                                            name: job!.ownerName!,
+                                            isVerified:
+                                                userBloc.user.isVerified,
+                                            verifiedIconColor: verifyGreen,
+                                            textStyle: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                color: HexColor("#151515")),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                errorWidget: productAndServiceBigErrorWidget,
+                        )
+                      : SizedBox.shrink(),
+                  job!.assignee != null ? Divider() : SizedBox.shrink(),
+                  myList.isEmpty
+                      ? SizedBox.shrink()
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const CustomText(
+                                title: "Review",
+                                fontSize: 14,
+                                fontweight: FontWeight.w700,
                               ),
-                              const SizedBox(
-                                width: 10,
+                              SizedBox(
+                                height: 20,
                               ),
-                              userNameWithVerifiedIcon(
-                                name: job!.ownerName!,
-                                isVerified: userBloc.user.isVerified,
-                                verifiedIconColor: verifyGreen,
-                                textStyle: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: HexColor("#151515")),
-                              ),
-                              // Text(
-                              //   "${job!.ownerName}",
-                              //   style: TextStyle(
-                              //     color: blackFont,
-                              //     fontSize: 14,
-                              //     fontFamily: "Open Sans",
-                              //     fontWeight: FontWeight.w600,
-                              //   ),
-                              // ),
+                              ...myList
+                                  .map((e) => Column(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10, horizontal: 10),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: greyBorderColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    CachedNetworkImage(
+                                                      imageUrl:
+                                                          "${e.ownerAvatar}",
+                                                      imageBuilder: (context,
+                                                              imageProvider) =>
+                                                          Container(
+                                                        width: 23.0,
+                                                        height: 23.0,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          image: DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit:
+                                                                  BoxFit.cover),
+                                                        ),
+                                                      ),
+                                                      errorWidget:
+                                                          productAndServiceBigErrorWidget,
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    userNameWithVerifiedIcon(
+                                                      name:
+                                                          e.jobOwnerName ?? '',
+                                                      isVerified:
+                                                          job!.isVerified,
+                                                      verifiedIconColor:
+                                                          verifyGreen,
+                                                      textStyle: TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: HexColor(
+                                                              "#151515")),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 6,
+                                                ),
+                                                RatingBar.builder(
+                                                  initialRating:
+                                                      e.score!.toDouble(),
+                                                  minRating: 1,
+                                                  direction: Axis.horizontal,
+                                                  allowHalfRating: false,
+                                                  itemCount: 5,
+                                                  itemSize: 20,
+                                                  itemPadding:
+                                                      EdgeInsets.symmetric(
+                                                          horizontal: 3.0),
+                                                  itemBuilder: (context, _) =>
+                                                      Icon(
+                                                    Icons.star,
+                                                    size: 10,
+                                                    color: Colors.amber,
+                                                  ),
+                                                  onRatingUpdate: (rating) {},
+                                                ),
+                                                SizedBox(
+                                                  height: 12,
+                                                ),
+                                                Text(
+                                                  e.review ?? '',
+                                                  style: TextStyle(
+                                                      fontSize: 14.4,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ))
+                                  .toList()
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const Divider(),
                   const SizedBox(
                     height: 55,
                   ),
@@ -476,6 +651,9 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       return Colors.yellow.shade700;
     }
     if (status.toLowerCase() == 'closed') {
+      return Colors.red.shade400;
+    }
+    if (status.toLowerCase() == 'completed') {
       return Colors.green.shade400;
     }
     if (status.toLowerCase() == 'canceled') {
@@ -495,6 +673,9 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       return 'In-Progress';
     }
     if (status.toLowerCase() == 'closed') {
+      return 'Closed';
+    }
+    if (status.toLowerCase() == 'completed') {
       return 'Completed';
     }
     if (status.toLowerCase() == 'canceled') {
@@ -510,7 +691,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     if (status.toLowerCase() == 'in-progress') {
       return Colors.yellow.shade400;
     }
-    return const Color(0xff3F61DB);
+    return Colors.green.shade400;
   }
 
   String textPayStatus(String status) {
@@ -521,48 +702,52 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   }
 
   getPaymentStatusRow() {
-    return Column(
-      children: [
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return job?.assignee == userBloc.user.userName
+        ? Column(
             children: [
-              const CustomText(
-                title: 'Payment',
-                fontSize: 14,
-                fontweight: FontWeight.w700,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: colorPayStatus(job!.status!)),
-                  color: colorPayStatus(job!.status!).withOpacity(0.1),
-                ),
-                child: Text(
-                  textPayStatus(job!.status!),
-                  style: TextStyle(
-                    color: colorStatus(job!.status!),
-                    fontSize: 10.80,
-                    fontFamily: "Open Sans",
-                    fontWeight: FontWeight.w600,
-                  ),
+              const Divider(),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const CustomText(
+                      title: 'Payment',
+                      fontSize: 14,
+                      fontweight: FontWeight.w700,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: colorPayStatus(job!.status!)),
+                        color: colorPayStatus(job!.status!).withOpacity(0.1),
+                      ),
+                      child: Text(
+                        textPayStatus(job!.status!),
+                        style: TextStyle(
+                          color: colorStatus(job!.status!),
+                          fontSize: 10.80,
+                          fontFamily: "Open Sans",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
-          ),
-        ),
-      ],
-    );
+          )
+        : SizedBox.shrink();
   }
 
   Column getJobActivityStatusRow() {
+    print(userBloc.user.userName! + ' oooo');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -580,24 +765,47 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               const SizedBox(
                 height: 10,
               ),
-              Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: colorStatus(job!.status!)),
-                  color: colorStatus(job!.status!).withOpacity(0.1),
-                ),
-                child: Text(
-                  textStatus(job!.status!),
-                  style: TextStyle(
-                    color: colorStatus(job!.status!),
-                    fontSize: 10.80,
-                    fontFamily: "Open Sans",
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+              userBloc.user.userName != job?.assignee &&
+                      job!.isListed == false &&
+                      job!.applicants!.contains(userBloc.user.userName)
+                  ? Container(
+                      width: 54,
+                      // height: 20,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: red),
+                        color: red.withOpacity(0.1),
+                      ),
+                      child: Text(
+                        'closed',
+                        style: TextStyle(
+                          color: red,
+                          fontSize: 10.80,
+                          fontFamily: "Open Sans",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: colorStatus(job!.status!)),
+                        color: colorStatus(job!.status!).withOpacity(0.1),
+                      ),
+                      child: Text(
+                        textStatus(job!.status!),
+                        style: TextStyle(
+                          color: colorStatus(job!.status!),
+                          fontSize: 10.80,
+                          fontFamily: "Open Sans",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
             ],
           ),
         ),
@@ -658,7 +866,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           ),
           GestureDetector(
             onTap: () {
-              if (job!.applicantsCount! > 0) {
+              if (job!.applicantsCount! > 0 &&
+                  userBloc.user.userName == job!.owner) {
                 Navigator.pushNamed(context, Routes.JOBS_APPLICANT_LIST,
                     arguments: job);
               } else {}
@@ -747,7 +956,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                   ),
                   if (job!.isNegotiable!)
                     const Text(
-                      " Negotiable",
+                      "Negotiable",
                       style: TextStyle(
                         color: Color(0xff030e36),
                         fontSize: 12,
@@ -760,8 +969,13 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
             ],
           ),
         ),
-        userBloc.user.userName == job!.ownerName!.toLowerCase()
-            ? const SizedBox.shrink()
+        userBloc.user.userName == job!.ownerName!.toLowerCase() ||
+                userBloc.user.fullName?.toLowerCase() ==
+                    job!.ownerName!.toLowerCase()
+            ? job?.status!.toLowerCase() == 'closed' &&
+                    job?.transactionId == null
+                ? payButton()
+                : const SizedBox.shrink()
             : searchedChatConnection.isNotEmpty &&
                     searchedChatConnection[0].userName!.toLowerCase() ==
                         job!.ownerName!.toLowerCase()
@@ -780,7 +994,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 : InkWell(
                     onTap: () {
                       Navigator.of(context)
-                          .pushNamed('/compose_message', arguments: {
+                          .pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
                         'recipient': job!.owner,
                         "subject": job!.title,
                       });
@@ -795,9 +1009,42 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     );
   }
 
+  Widget payButton() {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, Routes.CONTRACTOR_SCREEN,
+          arguments: job),
+      child: Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: navyBlue),
+          color: navyBlue.withOpacity(0.1),
+        ),
+        child: Text(
+          'Pay',
+          style: TextStyle(
+            color: navyBlue,
+            fontSize: 14.80,
+            fontFamily: "Open Sans",
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget getSubmitData() {
     if (job != null) {
       if (userBloc.user.userName == job!.owner) {
+        if (userBloc.user.userName == job!.owner &&
+            job!.status?.toLowerCase() == 'in-progress') {
+          return endJobButton();
+        }
+        if (job!.status?.toLowerCase() == 'closed' ||
+            job!.status?.toLowerCase() == 'completed') {
+          return Container();
+        }
         if (job!.isListed == true) {
           return getUnListNowBtn();
         } else {
@@ -819,6 +1066,99 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     } else {
       return Container();
     }
+  }
+
+  endJobButton() {
+    return CurvedButton(
+      onPressed: isAPILoading
+          ? () {}
+          : () async {
+              FocusScope.of(context).unfocus();
+              isAPILoading = true;
+              if (mounted) setState(() {});
+              endJobAlert();
+
+              isAPILoading = false;
+              if (mounted) setState(() {});
+            },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: 'End Job',
+      isLoading: isAPILoading,
+    );
+  }
+
+  endJob() async {
+    await ServiceHubAuthService().endJob(job!.id).then((value) {
+      print(value);
+      if (value == true) {
+        Navigator.pushNamed(context, Routes.CONTRACTOR_SCREEN, arguments: job);
+      } else {
+        showToast(message: 'Error trying to send payment to contractor');
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+  }
+
+  getRatingsAndReveiw() async {
+    await ServiceHubAuthService()
+        .rateAndReviewContratorDetail(jobId: job!.id)
+        .then((value) {
+      if (value.isNotEmpty || value != null) {
+        final parsed = jsonDecode(value).cast<Map<String, dynamic>>();
+        myList = parsed
+            .map<UserReviewModel>((json) => UserReviewModel.fromMap(json))
+            .toList();
+        setState(() {});
+      } else {
+        showToast(
+            message: 'Error trying to get contractors ratings and review');
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+  }
+
+  Future<void> endJobAlert() async {
+    await showDialogBox(
+      context: context,
+      leftButtonOnPressed: () => Navigator.pop(context),
+      rightButtonOnPressed: () {
+        FocusScope.of(context).unfocus();
+        isAPILoading = true;
+        if (mounted) setState(() {});
+        // applyForJob();
+
+        endJob();
+
+        isAPILoading = false;
+        if (mounted) setState(() {});
+      },
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 43,
+        height: 43,
+        icon: Icon(
+          Icons.cancel,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: black,
+      actionTwoBgColor: navyBlue,
+      actionTwoTextColor: white,
+      title: "End Job",
+      description:
+          "To end this job, you need to make payment to this applicant.",
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.payNow,
+    );
   }
 
   getListNowBtn() {
@@ -1025,33 +1365,37 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
 
   List<Widget> getDropDownWidget() {
     var menu = [
-      InkWell(
-        onTap: () =>
-            Navigator.pushNamed(context, Routes.EDIT_JOB, arguments: job),
-        child: Row(
-          children: [
-            Container(
-                height: 34,
-                width: 34,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
+      job!.assignee != null
+          ? SizedBox.shrink()
+          : InkWell(
+              onTap: () =>
+                  Navigator.pushNamed(context, Routes.EDIT_JOB, arguments: job),
+              child: Row(
+                children: [
+                  Container(
+                      height: 34,
+                      width: 34,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                        color: Color(0xfffafbff),
+                      ),
+                      child: SvgPicture.asset("assets/images/edit_job.svg")),
+                  const SizedBox(
+                    width: 20,
                   ),
-                  color: Color(0xfffafbff),
-                ),
-                child: SvgPicture.asset("assets/images/edit_job.svg")),
-            const SizedBox(
-              width: 20,
+                  Text(
+                    'Edit Job',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
-            Text(
-              'Edit Job',
-              style: TextStyle(
-                  fontSize: 16, color: black, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
       const SizedBox(
         height: 12,
       ),
@@ -1113,32 +1457,36 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       const SizedBox(
         height: 12,
       ),
-      InkWell(
-        onTap: () => deleteJob(),
-        child: Row(
-          children: [
-            Container(
-                height: 34,
-                width: 34,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
+      job!.assignee != null
+          ? SizedBox.shrink()
+          : InkWell(
+              onTap: () => deleteJob(),
+              child: Row(
+                children: [
+                  Container(
+                      height: 34,
+                      width: 34,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                        color: Color(0xfffafbff),
+                      ),
+                      child: SvgPicture.asset("assets/images/delete.svg")),
+                  const SizedBox(
+                    width: 20,
                   ),
-                  color: Color(0xfffafbff),
-                ),
-                child: SvgPicture.asset("assets/images/delete.svg")),
-            const SizedBox(
-              width: 20,
+                  Text(
+                    'Delete',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
-            Text(
-              'Delete',
-              style: TextStyle(
-                  fontSize: 16, color: black, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
     ];
 
     if (job!.owner != userBloc.user.userName) {
@@ -1216,9 +1564,11 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       menu.add(
         Column(
           children: [
-            const SizedBox(
-              height: 12,
-            ),
+            job!.assignee != null
+                ? SizedBox.shrink()
+                : SizedBox(
+                    height: 12,
+                  ),
             InkWell(
               onTap: () => Navigator.pushNamed(
                   context, Routes.JOBS_APPLICANT_LIST,
