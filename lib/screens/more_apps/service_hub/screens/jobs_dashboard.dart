@@ -1,8 +1,6 @@
-import 'dart:developer';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
@@ -10,7 +8,6 @@ import 'package:Slydo/screens/more_apps/service_hub/models/list_of_categories.da
 import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -19,15 +16,9 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../../data/environment.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
-import '../../../../widget/curved_btn.dart';
 import '../../../../widget/customized_dropdown_field.dart';
-import '../../../../widget/customized_popup_menu.dart';
 import '../../../../widget/debouncer_widget.dart';
 import '../../../../widget/noItemInList.dart';
-import '../../messaging/message_auth.dart';
-import '../../shopping/models/store.dart';
-import '../../user_post/models/user_post.dart';
-import '../../user_profile/models/user.dart';
 import '../tiles/jos_description_card.dart';
 
 class JobsDashboard extends StatefulWidget {
@@ -470,6 +461,10 @@ class _JobsDashboardState extends State<JobsDashboard> {
                 _debouncer.run(() {
                   onRefresh();
                 });
+              }else if(searchItemTextController!.text.isEmpty){
+                _debouncer.run(() {
+                  onRefresh();
+                });
               }
             });
 
@@ -591,8 +586,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
     categoryCount = 0;
     categoryNext = "";
     categoryPrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
-      bottomSheetStateSetterGlobal!(() {});
+    if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+    // bottomSheetStateSetterGlobal!(() {});
     }
     if (mounted) setState(() {});
   }
@@ -634,10 +629,13 @@ class _JobsDashboardState extends State<JobsDashboard> {
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
-        if (mounted) setState(() {});
+      }else{
+        noSearchedItem = false;
       }
+      if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        bottomSheetStateSetterGlobal!(() {});
+      }
+      if (mounted) setState(() {});
     }
   }
 
