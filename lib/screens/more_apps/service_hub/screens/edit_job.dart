@@ -11,7 +11,6 @@ import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
@@ -22,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
@@ -31,8 +29,6 @@ import '../../../../data/environment.dart';
 import '../../../../widget/debouncer_widget.dart';
 import '../../../../widget/noItemInList.dart';
 import '../models/job_location_model.dart';
-
-// import '../shopping_auth.dart';
 
 class EditJob extends StatefulWidget {
   EditJob({required this.job});
@@ -145,57 +141,6 @@ class _EditJobState extends State<EditJob> {
 
   List searchedCategoryList = [];
 
-  // void getCategoriesList() async {
-  //   if (!isCategoryLoading) {
-  //     if (categoryNext != null && !isCategoryLoading) {
-  //       isCategoryLoading = true;
-  //       if (mounted) setState(() {});
-
-  //       var result = await ServiceHubAuthService()
-  //           .getListOfCategories(categoryNext, categoryPrevious);
-
-  //       if (result == null) {
-  //         noCatinList = true;
-
-  //         isCategoryLoading = false;
-  //         if (mounted) {
-  //           setState(() {});
-  //         }
-  //         return;
-  //       }
-
-  //       categoryCount = result.count;
-  //       categoryNext = result.next;
-  //       categoryPrevious = result.previous;
-  //       var tempList = result.results;
-  //       if (mounted) {
-  //         setState(() {
-  //           noCatinList = false;
-  //           isCategoryLoading = false;
-  //           categoriesList.addAll(tempList!);
-  //           categoriesListCopy = categoriesList;
-  //           tempList.forEach((element) {
-  //             categoriesNameList.add(element.name!);
-  //           });
-  //         });
-  //       }
-  //     }
-  //     if (categoriesList.isEmpty) {
-  //       if (mounted) {
-  //         setState(() {
-  //           noCatinList = true;
-  //         });
-  //       }
-  //     } else if (categoryNext == null && categoriesList.length > 6) {
-  //       _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-  //         content:
-  //             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-  //         duration: const Duration(milliseconds: 500),
-  //       ));
-  //     }
-  //   }
-  // }
-
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
 
@@ -210,8 +155,9 @@ class _EditJobState extends State<EditJob> {
       if (categoryNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ServiceHubAuthService()
@@ -226,24 +172,26 @@ class _EditJobState extends State<EditJob> {
         List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
           searchedCategoryList.add(CategoryListData.fromJson(item));
         });
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
-        if (mounted) setState(() {});
+
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
-        if (mounted) setState(() {});
+      }else{
+        noSearchedItem = false;
       }
+      if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        bottomSheetStateSetterGlobal!(() {});
+      }
+      if (mounted) setState(() {});
     }
   }
 
@@ -257,8 +205,8 @@ class _EditJobState extends State<EditJob> {
     categoryCount = 0;
     categoryNext = "";
     categoryPrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
-      bottomSheetStateSetterGlobal!(() {});
+    if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+    // bottomSheetStateSetterGlobal!(() {});
     }
     if (mounted) setState(() {});
   }
@@ -278,6 +226,11 @@ class _EditJobState extends State<EditJob> {
 
             searchItemTextController!.addListener(() {
               if (searchItemTextController!.text.length >= 3) {
+                _debouncer.run(() {
+                  onRefresh();
+                });
+              }
+              else if(searchItemTextController!.text.isEmpty){
                 _debouncer.run(() {
                   onRefresh();
                 });
@@ -1718,6 +1671,7 @@ class _EditJobState extends State<EditJob> {
         if (val.isNotEmpty) {
           try {
             budget = double.parse(val.replaceAll(',', '')).toString();
+            if(mounted)setState(() {});
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -1772,7 +1726,7 @@ class _EditJobState extends State<EditJob> {
           await ServiceHubAuthService().editMyJob({
             'title': titleController.text,
             'location': locationSelected ?? locationState,
-            'pay': moneyInputNormalizer(priceController.text),
+            'pay': budget.isNotEmpty ? moneyInputNormalizer(budget) : moneyInputNormalizer(double.parse(priceController.text.replaceAll(',', '')).toString()),
             'description': descriptionController.text,
             'category': selectedCategory,
             'tags': [selectedCategory!.toLowerCase()],

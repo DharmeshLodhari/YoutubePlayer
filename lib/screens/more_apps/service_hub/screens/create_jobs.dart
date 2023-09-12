@@ -141,8 +141,9 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       if (categoryNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ServiceHubAuthService()
@@ -156,25 +157,30 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         categoryPrevious = result['previous'];
         List tempList = result['results'];
 
+
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
+        searchedCategoryList.clear();
+
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
           searchedCategoryList.add(CategoryListData.fromJson(item));
         });
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
-        if (mounted) setState(() {});
+
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
-        if (mounted) setState(() {});
+      }else{
+        noSearchedItem = false;
       }
+      if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+        bottomSheetStateSetterGlobal!(() {});
+      }
+      if (mounted) setState(() {});
     }
   }
 
@@ -716,7 +722,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           color: darkGrey,
         ),
         onTap: () {
-          // categoryAndroidSheet();
           clearSearchedListItems();
           showSearchProductAndServiceBottomSheet();
         },
@@ -1079,6 +1084,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         if (val.isNotEmpty) {
           try {
             budget = double.parse(val.replaceAll(',', '')).toString();
+            if(mounted)setState(() {});
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -1478,8 +1484,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     categoryCount = 0;
     categoryNext = "";
     categoryPrevious = "";
-    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
-      bottomSheetStateSetterGlobal!(() {});
+    if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
+    // bottomSheetStateSetterGlobal!(() {});
     }
     if (mounted) setState(() {});
   }
@@ -1499,6 +1505,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
             searchItemTextController!.addListener(() {
               if (searchItemTextController!.text.length >= 3) {
+                _debouncer.run(() {
+                  onRefresh();
+                });
+              }
+              else if(searchItemTextController!.text.isEmpty){
                 _debouncer.run(() {
                   onRefresh();
                 });
@@ -1567,6 +1578,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget buildSearchCategoryList() {
+
     return noSearchedItem
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noResultFound,
