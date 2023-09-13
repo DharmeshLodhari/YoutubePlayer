@@ -91,9 +91,9 @@ class _EditJobState extends State<EditJob> {
   bool isLoading = false;
   bool isAPILoading = false;
   String groupValue = "Fixed";
-  String taskValue = "Budget";
+  String? taskValue;
   String timingValue = "Fixed";
-  String taskMethod = "Online";
+  String? taskMethod;
 
   bool isSelected = false;
   String? selected;
@@ -156,7 +156,7 @@ class _EditJobState extends State<EditJob> {
         isItemLoading = true;
 
         if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
-        bottomSheetStateSetterGlobal!(() {});
+          bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
 
@@ -173,19 +173,17 @@ class _EditJobState extends State<EditJob> {
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
-        bottomSheetStateSetterGlobal!(() {});
+          bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
           searchedCategoryList.add(CategoryListData.fromJson(item));
         });
-
-
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;
-      }else{
+      } else {
         noSearchedItem = false;
       }
       if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
@@ -206,7 +204,7 @@ class _EditJobState extends State<EditJob> {
     categoryNext = "";
     categoryPrevious = "";
     if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
-    // bottomSheetStateSetterGlobal!(() {});
+      // bottomSheetStateSetterGlobal!(() {});
     }
     if (mounted) setState(() {});
   }
@@ -229,8 +227,7 @@ class _EditJobState extends State<EditJob> {
                 _debouncer.run(() {
                   onRefresh();
                 });
-              }
-              else if(searchItemTextController!.text.isEmpty){
+              } else if (searchItemTextController!.text.isEmpty) {
                 _debouncer.run(() {
                   onRefresh();
                 });
@@ -509,6 +506,8 @@ class _EditJobState extends State<EditJob> {
             selectedCategoryName = currentJob!.category!.name;
             jobAvailableFrom = DateTime.parse(currentJob!.creationDate!);
             jobEndDate = DateTime.parse(currentJob!.dueDate!);
+            taskMethod = currentJob?.isOnline == true ? 'Remote' : 'On Site';
+            taskValue = currentJob?.isNegotiable == true ? 'Negotiable' : 'Budget';
           });
         }
       });
@@ -536,6 +535,7 @@ class _EditJobState extends State<EditJob> {
       }
     });
     searchItemTextController = TextEditingController();
+    
     super.initState();
   }
 
@@ -1080,7 +1080,7 @@ class _EditJobState extends State<EditJob> {
         Expanded(
           flex: 1,
           child: CustomRadioTile(
-            groupVal: taskValue,
+            groupVal: taskValue!,
             callbackFunction: (value) {
               setState(() {
                 taskValue = value.toString();
@@ -1092,7 +1092,7 @@ class _EditJobState extends State<EditJob> {
         Expanded(
           flex: 1,
           child: CustomRadioTile(
-            groupVal: taskValue,
+            groupVal: taskValue!,
             callbackFunction: (value) {
               setState(() {
                 taskValue = value.toString();
@@ -1111,7 +1111,7 @@ class _EditJobState extends State<EditJob> {
         Expanded(
           flex: 1,
           child: CustomRadioTile(
-            groupVal: taskMethod,
+            groupVal: taskMethod!,
             callbackFunction: (value) {
               setState(() {
                 taskMethod = value.toString();
@@ -1123,7 +1123,7 @@ class _EditJobState extends State<EditJob> {
         Expanded(
           flex: 1,
           child: CustomRadioTile(
-            groupVal: taskMethod,
+            groupVal: taskMethod!,
             callbackFunction: (value) {
               setState(() {
                 taskMethod = value.toString();
@@ -1671,7 +1671,7 @@ class _EditJobState extends State<EditJob> {
         if (val.isNotEmpty) {
           try {
             budget = double.parse(val.replaceAll(',', '')).toString();
-            if(mounted)setState(() {});
+            if (mounted) setState(() {});
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -1726,7 +1726,11 @@ class _EditJobState extends State<EditJob> {
           await ServiceHubAuthService().editMyJob({
             'title': titleController.text,
             'location': locationSelected ?? locationState,
-            'pay': budget.isNotEmpty ? moneyInputNormalizer(budget) : moneyInputNormalizer(double.parse(priceController.text.replaceAll(',', '')).toString()),
+            'pay': budget.isNotEmpty
+                ? moneyInputNormalizer(budget)
+                : moneyInputNormalizer(
+                    double.parse(priceController.text.replaceAll(',', ''))
+                        .toString()),
             'description': descriptionController.text,
             'category': selectedCategory,
             'tags': [selectedCategory!.toLowerCase()],
@@ -1737,22 +1741,25 @@ class _EditJobState extends State<EditJob> {
             'file': '',
             'list_now': checkedValue,
             'is_online': taskMethod == 'Remote' ? true : false,
+            'is_negotiable': taskValue == 'Negotiable'?true:false,
             'localImages':
                 jobLocalImages.map((file) => File(file.path)).toList(),
           }, jobId: currentJob!.id!).then((value) {
             print(value.toString() + 'My job');
             Navigator.pop(context);
-            Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
-                arguments: {'jobId': value!.id, 'listingId': '', 'job': value});
+            // Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
+            //     arguments: {'jobId': value!.id, 'listingId': '', 'job': value});
             showToast(
                 message: AppLocalization.of(context)!.jobEditedSuccessfully);
+
+            Navigator.pushNamed(context, Routes.SUPER_HUB);
           }).catchError((error) {
             debugPrint(error.toString());
             showToast(message: error.toString());
           });
         }
       } else {
-        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
+        showToast(message: AppLocalization.of(context)!.createJobMessage);
       }
     }
   }
