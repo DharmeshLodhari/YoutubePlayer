@@ -2440,6 +2440,13 @@ class AppLocalization {
     );
   }
 
+  String get createJobMessage {
+    return Intl.message(
+      "Kindly fill in all information to create a job",
+      name: "createJobMessage",
+    );
+  }
+
   String get pleaseSelectProductCategoryAndCondition {
     return Intl.message(
       "Please Select Product Category and Condition",
