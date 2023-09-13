@@ -66,8 +66,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
       ),
       actions: [
         _searchBtn(),
-
-        if (currentIndex == 0)...[
+        if (currentIndex == 0) ...[
           const SizedBox(
             width: 20,
           ),
@@ -76,17 +75,15 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
             width: 20,
           ),
         ],
-
-        if (currentIndex == 1)...[
+        if (currentIndex == 1) ...[
           const SizedBox(
             width: 10,
           ),
-         _moreOptionsBtn(),
+          _moreOptionsBtn(),
           const SizedBox(
             width: 6,
           ),
         ],
-
       ],
       bottom: tabBar() as PreferredSizeWidget,
     );
@@ -113,25 +110,24 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              Navigator.pushNamed(
-                                context, Routes.JOBS_CREATE);
+                              Navigator.pushNamed(context, Routes.JOBS_CREATE);
                             },
                             child: Row(
                               children: [
-                                Container(
-                                    height: 34,
-                                    width: 34,
-                                    alignment: Alignment.center,
-                                    decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                      color: Color(0xfffafbff),
-                                    ),
-                                    child: SvgPicture.asset(
-                                        "assets/images/Edit.svg")),
+                                // Container(
+                                //     height: 34,
+                                //     width: 34,
+                                //     alignment: Alignment.center,
+                                //     decoration: const BoxDecoration(
+                                //       borderRadius: BorderRadius.all(
+                                //         Radius.circular(10),
+                                //       ),
+                                //       color: Color(0xfffafbff),
+                                //     ),
+                                //     child: SvgPicture.asset(
+                                //         "assets/images/Edit.svg")),
                                 const SizedBox(
-                                  width: 20,
+                                  width: 10,
                                 ),
                                 Text(
                                   'Create Job',
@@ -153,23 +149,23 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
                             },
                             child: Row(
                               children: [
-                                Container(
-                                    height: 34,
-                                    width: 34,
-                                    alignment: Alignment.center,
-                                    decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                      color: Color(0xfffafbff),
-                                    ),
-                                    child: SvgPicture.asset(
-                                        "assets/images/Document.svg")),
+                                // Container(
+                                //     height: 34,
+                                //     width: 34,
+                                //     alignment: Alignment.center,
+                                //     decoration: const BoxDecoration(
+                                //       borderRadius: BorderRadius.all(
+                                //         Radius.circular(10),
+                                //       ),
+                                //       color: Color(0xfffafbff),
+                                //     ),
+                                //     child: SvgPicture.asset(
+                                //         "assets/images/Document.svg")),
                                 const SizedBox(
-                                  width: 20,
+                                  width: 10,
                                 ),
                                 Text(
-                                  'My Job',
+                                  'My Jobs',
                                   style: TextStyle(
                                       fontSize: 14.8,
                                       color: black,
@@ -185,7 +181,6 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
                 },
               ),
             );
-
           },
           icon: Icon(
             Icons.more_vert,

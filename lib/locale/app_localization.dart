@@ -2440,10 +2440,16 @@ class AppLocalization {
     );
   }
 
-  String get createJobMessage {
+  String get categoryAndLocationSelection {
     return Intl.message(
-      "Kindly fill in all information to create a job",
-      name: "createJobMessage",
+      "Please select Location and Category",
+      name: "categoryAndLocationSelection",
+    );
+  }
+  String get addDueDate {
+    return Intl.message(
+      "Please add a due date for the Job",
+      name: "addDueDate",
     );
   }
 
