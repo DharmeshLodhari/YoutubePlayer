@@ -500,7 +500,6 @@ class _EditJobState extends State<EditJob> {
             checkedValue = currentJob!.isListed!;
             priceController.text = moneyNormalizer(currentJob!.pay).toString();
             locationState = currentJob!.location!;
-
             jobImagesFromServer.addAll(currentJob!.pictures!);
             selectedCategory = currentJob!.category!.slug;
             selectedCategoryName = currentJob!.category!.name;
@@ -1759,7 +1758,7 @@ class _EditJobState extends State<EditJob> {
           });
         }
       } else {
-        showToast(message: AppLocalization.of(context)!.createJobMessage);
+        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
     }
   }

@@ -89,7 +89,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   String groupValue = "Fixed";
   String taskValue = "Budget";
   String timingValue = "Fixed";
-  String taskMethod = "Online";
+  String taskMethod = "On Site";
 
   bool isSelected = false;
   String? selected;
@@ -142,7 +142,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         isItemLoading = true;
 
         if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
-        bottomSheetStateSetterGlobal!(() {});
+          bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
 
@@ -157,24 +157,21 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         categoryPrevious = result['previous'];
         List tempList = result['results'];
 
-
         isItemLoading = false;
         searchedCategoryList.clear();
 
         if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
-        bottomSheetStateSetterGlobal!(() {});
+          bottomSheetStateSetterGlobal!(() {});
         }
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
           searchedCategoryList.add(CategoryListData.fromJson(item));
         });
-
-
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;
-      }else{
+      } else {
         noSearchedItem = false;
       }
       if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
@@ -1084,7 +1081,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         if (val.isNotEmpty) {
           try {
             budget = double.parse(val.replaceAll(',', '')).toString();
-            if(mounted)setState(() {});
+            if (mounted) setState(() {});
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -1183,51 +1180,59 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   Future<void> addJob() async {
     if (_formKey.currentState!.validate()) {
       if (jobImages.length >= 1) {
-        if (true) {
-          CreateJobModel job = CreateJobModel();
-          Pictures pictures = Pictures();
-          Category category = Category();
-          job.pictures = jobImages
-              .map((file) => Pictures(
-                  image: File(file.path), caption: '$selectedCategory 1'))
-              .toList();
-          job.title = jobTitle;
-          job.creationDate = DateFormat('yyyy-MM-dd').format(jobAvailableFrom);
-          job.dueDate = DateFormat('yyyy-MM-dd').format(jobEndDate!);
-          job.category = Category(
-              name: selectedCategory,
-              slug: selectedCategory!.toLowerCase(),
-              image: '');
-          job.description = jobDescription;
-          job.pay = moneyInputNormalizer(budget);
-          job.location = locationSelected;
-          job.tags = [selectedCategory!.toLowerCase()];
+        if (validateDropdown()) {
+          if (jobEndDate != null) {
+            CreateJobModel job = CreateJobModel();
+            Pictures pictures = Pictures();
+            Category category = Category();
+            job.pictures = jobImages
+                .map((file) => Pictures(
+                    image: File(file.path), caption: '$selectedCategory 1'))
+                .toList();
+            job.title = jobTitle;
+            job.creationDate =
+                DateFormat('yyyy-MM-dd').format(jobAvailableFrom);
+            job.dueDate = DateFormat('yyyy-MM-dd').format(jobEndDate!);
+            job.category = Category(
+                name: selectedCategory,
+                slug: selectedCategory!.toLowerCase(),
+                image: '');
+            job.description = jobDescription;
+            job.pay = moneyInputNormalizer(budget);
+            job.location = locationSelected;
+            job.tags = [selectedCategory!.toLowerCase()];
 
-          await ServiceHubAuthService().createJobRequest({
-            'title': jobTitle,
-            'location': locationSelected,
-            'pay': moneyInputNormalizer(budget),
-            'description': jobDescription,
-            'category': selectedCategory,
-            'is_negotiable': getIsNegotiable(),
-            'tags': [selectedCategory!.toLowerCase()],
-            'due_date': DateFormat('yyyy-MM-dd').format(jobEndDate!),
-            'caption': selectedCategory,
-            'picture_count': jobImages.length,
-            'file': '',
-            'list_now': checkedValue,
-            'is_online': taskMethod == 'Remote' ? true : false,
-            'localImages': jobImages.map((file) => File(file.path)).toList(),
-          }).then((value) {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, Routes.MY_JOB_DETAILS,
-                arguments: {'jobId': value!.id, 'listingId': '', 'job': value});
-            showToast(
-                message: AppLocalization.of(context)!.jobAddedSuccessfully);
-          }).catchError((error) {
-            debugPrint(error.toString());
-            showToast(message: error.toString());
-          });
+            await ServiceHubAuthService().createJobRequest({
+              'title': jobTitle,
+              'location': locationSelected,
+              'pay': moneyInputNormalizer(budget),
+              'description': jobDescription,
+              'category': selectedCategory,
+              'is_negotiable': getIsNegotiable(),
+              'tags': [selectedCategory!.toLowerCase()],
+              'due_date': DateFormat('yyyy-MM-dd').format(jobEndDate!),
+              'caption': selectedCategory,
+              'picture_count': jobImages.length,
+              'file': '',
+              'list_now': checkedValue,
+              'is_online': taskMethod == 'Remote' ? true : false,
+              'localImages': jobImages.map((file) => File(file.path)).toList(),
+            }).then((value) {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, Routes.MY_JOB_DETAILS, arguments: {
+                'jobId': value!.id,
+                'listingId': '',
+                'job': value
+              });
+              showToast(
+                  message: AppLocalization.of(context)!.jobAddedSuccessfully);
+            }).catchError((error) {
+              debugPrint(error.toString());
+              showToast(message: error.toString());
+            });
+          } else {
+            showToast(message: AppLocalization.of(context)!.addDueDate);
+          }
         }
       } else {
         showToast(message: AppLocalization.of(context)!.pleaseAddImage);
@@ -1236,12 +1241,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   bool validateDropdown() {
-    if (selectedProductCategory != null && selectedProductCondition != null) {
+    if (selectedCategory != null && locationSelected != null) {
       return true;
     } else {
       showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectProductCategoryAndCondition);
+          message: AppLocalization.of(context)!.categoryAndLocationSelection);
       return false;
     }
   }
@@ -1485,7 +1489,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     categoryNext = "";
     categoryPrevious = "";
     if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
-    // bottomSheetStateSetterGlobal!(() {});
+      // bottomSheetStateSetterGlobal!(() {});
     }
     if (mounted) setState(() {});
   }
@@ -1508,8 +1512,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 _debouncer.run(() {
                   onRefresh();
                 });
-              }
-              else if(searchItemTextController!.text.isEmpty){
+              } else if (searchItemTextController!.text.isEmpty) {
                 _debouncer.run(() {
                   onRefresh();
                 });
@@ -1578,7 +1581,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   Widget buildSearchCategoryList() {
-
     return noSearchedItem
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noResultFound,
