@@ -442,6 +442,10 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                   if (job!.isListed!) getJobActivityStatusRow(),
 
                   getJobOnlineRow(),
+                  job?.status?.toLowerCase() == 'in-progress' ||
+                          job?.status?.toLowerCase() == 'completed'
+                      ? getPaymentStatusRow()
+                      : const SizedBox.shrink(),
                   const Divider(),
 
                   Padding(
@@ -508,6 +512,65 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
               )
             ],
           );
+  }
+
+  Color colorPayStatus(String status) {
+    if (status.toLowerCase() == 'in-progress') {
+      return Colors.yellow.shade400;
+    }
+    return Colors.green.shade400;
+  }
+
+  String textPayStatus(String status) {
+    if (status.toLowerCase() == 'in-progress') {
+      return 'Pending';
+    }
+    return 'Paid';
+  }
+
+  getPaymentStatusRow() {
+    return job?.assignee == userBloc.user.userName
+        ? Column(
+            children: [
+              const Divider(),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const CustomText(
+                      title: 'Payment',
+                      fontSize: 14,
+                      fontweight: FontWeight.w700,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: colorPayStatus(job!.status!)),
+                        color: colorPayStatus(job!.status!).withOpacity(0.1),
+                      ),
+                      child: Text(
+                        textPayStatus(job!.status!),
+                        style: TextStyle(
+                          color: colorPayStatus(job!.status!),
+                          fontSize: 10.80,
+                          fontFamily: "Open Sans",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        : SizedBox.shrink();
   }
 
   Column getJobOnlineRow() {
@@ -1017,8 +1080,13 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
             ],
           ),
         ),
-        userBloc.user.userName == job!.ownerName!.toLowerCase()
-            ? const SizedBox.shrink()
+        userBloc.user.userName == job!.ownerName!.toLowerCase() ||
+                userBloc.user.fullName?.toLowerCase() ==
+                    job!.ownerName!.toLowerCase()
+            ? job?.status!.toLowerCase() == 'closed' &&
+                    job?.transactionId == null
+                ? payButton()
+                : const SizedBox.shrink()
             : searchedChatConnection.isNotEmpty &&
                     searchedChatConnection[0].userName!.toLowerCase() ==
                         job!.ownerName!.toLowerCase()
@@ -1060,8 +1128,8 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     } else if (job!.isListed == true &&
         userBloc.user.userName != job!.owner &&
         job!.applicants!.contains(userBloc.user.userName)) {
-      return Container();
-    } else if (job!.isListed == true && userBloc.user.userName != job!.owner) {
+      return cancelApplicationNowBtn();
+    } else if (job!.isListed == true) {
       return getApplyNowBtn();
     } else {
       return Container();
@@ -1124,6 +1192,71 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       text: 'Apply',
       isLoading: isAPILoading,
     );
+  }
+
+  cancelApplicationNowBtn() {
+    return CurvedButton(
+      onPressed: isAPILoading
+          ? () {}
+          : () async {
+              cancelApplicant();
+            },
+      backgroundColor: Colors.black,
+      textColor: Colors.white,
+      text: 'Cancel Application',
+      isLoading: isAPILoading,
+      borderRadius: 20,
+    );
+  }
+
+  Future<void> cancelApplicant() async {
+    await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 43,
+        height: 43,
+        icon: Icon(
+          Icons.check_circle_sharp,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: black,
+      actionTwoBgColor: navyBlue,
+      actionTwoTextColor: white,
+      title: "Cancel",
+      description: "Are you sure you want to cancel your application?",
+      actionOneText: 'Keep',
+      actionTwoText: AppLocalization.of(context)!.cancel,
+      leftButtonOnPressed: () => Navigator.pop(context),
+      rightButtonOnPressed: () {
+        FocusScope.of(context).unfocus();
+        isAPILoading = true;
+        if (mounted) setState(() {});
+        cancelApplication();
+
+        isAPILoading = false;
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
+  cancelApplication() async {
+    await ServiceHubAuthService().cancelApplicationForJob(
+        {"applicant": "${userBloc.user.userName}"},
+        jobId: job!.id).then((value) {
+      Navigator.pushNamed(context, Routes.SUPER_HUB);
+      showToast(
+          message: AppLocalization.of(context)!
+              .cancelledApplicactionForJobSuccessfully);
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
   }
 
   createJobListing() async {
@@ -1376,6 +1509,31 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
     await sendDataToSocket(data);
   }
 
+  Widget payButton() {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, Routes.CONTRACTOR_SCREEN,
+          arguments: job),
+      child: Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: navyBlue),
+          color: navyBlue.withOpacity(0.1),
+        ),
+        child: Text(
+          'Pay',
+          style: TextStyle(
+            color: navyBlue,
+            fontSize: 14.80,
+            fontFamily: "Open Sans",
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
   CarouselSlider customImageSlider() {
     return CarouselSlider.builder(
       carouselController: carouselController,
@@ -1400,17 +1558,19 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
               child: Row(
                 children: List.generate(
                     job!.pictures!.length,
-                    (index) => Container(
-                          width: 8.0,
-                          height: 8.0,
-                          margin: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 2.0),
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: currentIndex == index
-                                  ? navyBlue
-                                  : Color(0xffBEC2F4)),
-                        )),
+                    (index) => job!.pictures!.length == 1
+                        ? SizedBox.fromSize()
+                        : Container(
+                            width: 8.0,
+                            height: 8.0,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 2.0),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: currentIndex == index
+                                    ? navyBlue
+                                    : Color(0xffBEC2F4)),
+                          )),
               ),
             )
           ],

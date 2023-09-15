@@ -689,7 +689,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
 
   Color colorPayStatus(String status) {
     if (status.toLowerCase() == 'in-progress') {
-      return Colors.yellow.shade400;
+      return Colors.yellow.shade700;
     }
     return Colors.green.shade400;
   }
@@ -702,48 +702,45 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
   }
 
   getPaymentStatusRow() {
-    return job?.assignee == userBloc.user.userName
-        ? Column(
+    return Column(
+      children: [
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Divider(),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const CustomText(
-                      title: 'Payment',
-                      fontSize: 14,
-                      fontweight: FontWeight.w700,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: colorPayStatus(job!.status!)),
-                        color: colorPayStatus(job!.status!).withOpacity(0.1),
-                      ),
-                      child: Text(
-                        textPayStatus(job!.status!),
-                        style: TextStyle(
-                          color: colorStatus(job!.status!),
-                          fontSize: 10.80,
-                          fontFamily: "Open Sans",
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
+              const CustomText(
+                title: 'Payment',
+                fontSize: 14,
+                fontweight: FontWeight.w700,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: colorPayStatus(job!.status!)),
+                  color: colorPayStatus(job!.status!).withOpacity(0.1),
+                ),
+                child: Text(
+                  textPayStatus(job!.status!),
+                  style: TextStyle(
+                    color: colorPayStatus(job!.status!),
+                    fontSize: 10.80,
+                    fontFamily: "Open Sans",
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
-          )
-        : SizedBox.shrink();
+          ),
+        ),
+      ],
+    );
   }
 
   Column getJobActivityStatusRow() {
@@ -1687,17 +1684,19 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               child: Row(
                 children: List.generate(
                     job!.pictures!.length,
-                    (index) => Container(
-                          width: 8.0,
-                          height: 8.0,
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 2.0),
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: currentIndex == index
-                                  ? navyBlue
-                                  : const Color(0xffBEC2F4)),
-                        )),
+                    (index) => job!.pictures!.length == 1
+                        ? SizedBox.fromSize()
+                        : Container(
+                            width: 8.0,
+                            height: 8.0,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 2.0),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: currentIndex == index
+                                    ? navyBlue
+                                    : const Color(0xffBEC2F4)),
+                          )),
               ),
             )
           ],
