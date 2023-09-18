@@ -1090,6 +1090,8 @@ class ShoppingAuthService extends AuthService {
     var response = await httpGet(url, headers: headers);
     var jsonData = jsonDecode(response.body);
 
+    // debugPrint('fola one jsonData:::: ${jsonData}');
+
     if (response.statusCode == 200) {
       return getCartItems(jsonData);
     }
@@ -1102,6 +1104,9 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
+
+    var jsonData = jsonDecode(response.body);
+    debugPrint('fola cart update:: ${jsonData}');
 
     if (response.statusCode == 200) {
       return true;
@@ -1168,9 +1173,13 @@ class ShoppingAuthService extends AuthService {
 
     for (int i = 0; i < data.length; i++) {
       if (data[i]["type"] == "product") {
+        debugPrint('fola one one:::: ${data[i]["qty"]}');
+
         for (int j = 0; j < data[i]["qty"]; j++) {
           var product = Product.fromJson(data[i]);
           items.add(product);
+
+          debugPrint('fola one jsonData:::: ${product.name}');
         }
       }
       if (data[i]["type"] == "service") {
@@ -1182,6 +1191,31 @@ class ShoppingAuthService extends AuthService {
     }
     return items;
   }
+
+  List<dynamic> getCartItems2(var jsonResponse) {
+    List items = [];
+    var data = jsonResponse["results"];
+
+    for (var itemData in data) {
+      if (itemData["type"] == "product") {
+        int quantity = itemData["qty"] ?? 0; // Default quantity to 1 if not specified
+        for (int j = 0; j < quantity; j++) {
+          var product = Product.fromJson(itemData);
+          items.add(product);
+          debugPrint('Product Name: ${product.name}');
+        }
+      }
+      if (itemData["type"] == "service") {
+        int quantity = itemData["qty"] ?? 1; // Default quantity to 1 if not specified
+        for (int j = 0; j < quantity; j++) {
+          var service = Service.fromJson(itemData);
+          items.add(service);
+        }
+      }
+    }
+    return items;
+  }
+
 
   Future<List<dynamic>> ownersOrderProductsAndServices(
       {required String type, required String? userId, String? exclude}) async {

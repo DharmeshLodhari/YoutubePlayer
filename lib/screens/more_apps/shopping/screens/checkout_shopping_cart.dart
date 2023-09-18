@@ -52,6 +52,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
         basketBloc.total = 0;
         //fetch items again
         initializeShoppingCart();
+        getTotalPrice();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -73,7 +74,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void initState() {
     super.initState();
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
-
   }
 
   @override
@@ -191,7 +191,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 ),
                 Text(
                   moneyDisplayNormalizer(
-                      int.parse(basketBloc.total.toString())),
+                      // int.parse(basketBloc.total.toString())),
+                      int.parse(getTotalPrice().toString())),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -245,7 +246,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     return getItemTileUI(index);
   }
 
-  Widget getItemTileUI(int index) {
+  Widget getItemTileUI2(int index) {
     basketBloc = Provider.of<BasketBloc>(context);
 
     if (index < basketBloc.items.length) {
@@ -284,6 +285,117 @@ class _ShoppingCartState extends State<ShoppingCart> {
     }
   }
 
+  Widget getItemTileUI(int index) {
+    basketBloc = Provider.of<BasketBloc>(context);
+
+    if (index < basketBloc.items.length) {
+      final item = basketBloc.items[index];
+
+      if (item["item"] is Product) {
+        final product = item["item"] as Product;
+        final variants = product.variant;
+
+        List<Map<String, dynamic>?> mapList = convertDynamicListToMapList(variants!);
+
+
+        if (variants != null && variants.isNotEmpty) {
+          // If the product has variants, create a separate tile for each variant.
+          return Column(
+            children: variants.map((variant) {
+              // debugPrint('fola one three:::: ${variant['id'].toString()}');
+              return ShoppingCartTileForProduct(
+                {
+                  "type": item["type"],
+                  "item": product,
+                  "qty": variant.isEmpty ? item['quantity'] : variant["quantity"],
+                  "variant": mapList, // Pass a single variant as a list
+                  "variantList": mapList, // Pass variant list
+                },
+                index: index,
+                onDecreaseQty: () {
+                  removeItem(index);
+                  if (mounted) setState(() {});
+                },
+                onIncreaseQty: () {
+                  addItem(index);
+                  if (mounted) setState(() {});
+                },
+                onDecreaseVariantQty: (val) {
+                  removeVariantItem(index, val);
+                  if (mounted) setState(() {});
+                },
+                onIncreaseVariantQty: (val) {
+                  addVariantItem(index, val);
+                  if (mounted) setState(() {});
+                },
+              );
+            }).toList(),
+          );
+        }
+        else {
+          return ShoppingCartTileForProduct(
+            {
+              "type": item["type"],
+              "item": product,
+              "qty": item['qty'],
+              "variant": mapList, // Pass a single variant as a list
+              "variantList": mapList, // Pass variant list
+            },
+            index: index,
+            onDecreaseQty: () {
+              removeItem(index);
+              if (mounted) setState(() {});
+            },
+            onIncreaseQty: () {
+              addItem(index);
+              if (mounted) setState(() {});
+            },
+            onDecreaseVariantQty: (val) {
+              removeVariantItem(index, val);
+              if (mounted) setState(() {});
+            },
+            onIncreaseVariantQty: (val) {
+              addVariantItem(index, val);
+              if (mounted) setState(() {});
+            },
+          );
+          // return Container();
+        }
+      } else {
+        // Handle other item types (not products) if needed.
+        return ShoppingCartTileForService(
+          basketBloc.items[index],
+          index: index,
+          onDecreaseQty: () {
+            removeItem(index);
+          },
+          onIncreaseQty: () {
+            addItem(index);
+          },
+        );
+      }
+    } else {
+      return Container();
+    }
+  }
+
+  List<Map<String, dynamic>?> convertDynamicListToMapList(List<dynamic> dynamicList) {
+    List<Map<String, dynamic>?> mapList = dynamicList.map((item) {
+      if (item is Map<String, dynamic>) {
+        return item; // If it's already a Map, no need to convert
+      } else {
+        // Handle other types if needed
+        // For example, if item is a String, you can create a Map with a specific key:
+        // return {'value': item};
+        // Or if item is an int, you can create a Map with a specific key:
+        // return {'number': item};
+        // Adjust this part according to your data and requirements.
+      }
+    }).toList();
+    return mapList;
+  }
+
+
   Widget addItemToBasket() {
     return Padding(
       padding: const EdgeInsets.only(right: 10.0),
@@ -305,7 +417,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void addItem(int index) async {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
+
     basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
+
     late var mapData;
     basketBloc.items.forEach((element) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
@@ -322,10 +436,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
     await ShoppingAuthService().addItemToShoppingCart(data);
   }
 
-  void addVariantItem(int index, int variantIndex) async {
+  void addVariantItem(int index, int variantId) async {
     String type = basketBloc.items[index]["item"] is Product ? "product" : "service";
 
-    basketBloc.increaseVariantQuantity(basketBloc.items[index]["item"], basketBloc.items[index]["variant"][variantIndex]);
     late var mapData;
     basketBloc.items.forEach((element) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
@@ -334,18 +447,32 @@ class _ShoppingCartState extends State<ShoppingCart> {
       }
     });
 
-    Map<String, dynamic> variants = {
-      "id": mapData["id"], "quantity": mapData["qty"], "image": mapData["image"], "current_price": mapData["current_price"]
-    };
+    for (var product in basketBloc.items) {
 
-    Map data = {
-      "type": type,
-      "id": mapData["item"].id,
-      "qty": mapData["qty"],
-      "variant": variants,
-    };
-    // debugPrint("Data From Product Page : $data");
-    await ShoppingAuthService().addItemToShoppingCart(data);
+      if (product['item'] is Product) {
+        var variantList = product['item'].variant;
+        // debugPrint("Data send From Remove one : ${variantList}");
+
+        for (var variant in variantList) {
+
+          if (variant!['id'] == variantId) {
+            // Reduce the quantity of the variant
+            int currentQuantity = int.parse(variant['quantity'].toString());
+            variant['quantity'] = currentQuantity + 1;
+          }
+        }
+
+        // debugPrint("Data send From Add one : ${variantList}");
+      }
+    }
+    if (mounted) setState(() {});
+
+    Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items[index]["item"], type, basketBloc.items[index]["item"].id);
+
+    debugPrint("fola cart From Add Button : ${dataInfo}");
+    await ShoppingAuthService().addItemToShoppingCart(dataInfo);
+    getTotalPrice();
+
   }
 
   void removeItem(int index) async {
@@ -370,7 +497,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     await ShoppingAuthService().removeItemFromShoppingCart(data);
   }
 
-  void removeVariantItem(int index, int variantIndex) async {
+  void removeVariantItem(int index, int variantId) async {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
@@ -382,25 +509,149 @@ class _ShoppingCartState extends State<ShoppingCart> {
       }
     });
 
-    Map<String, dynamic> variants = {
-      "id": mapData["id"], "quantity": mapData["qty"] - 1, "image": mapData["image"], "current_price": mapData["current_price"]
-    };
+    for (var product in basketBloc.items) {
 
-    Map data = {
-      "type": type,
-      "id": mapData["item"].id,
-      "qty": mapData["qty"] - 1,
-      "variant": variants,
-    };
+      if (product['item'] is Product) {
+        var variantList = product['item'].variant;
+        // debugPrint("Data send From Remove one : ${variantList}");
 
-    debugPrint("Data send From Remove Button : $data");
-    basketBloc.removeOrReduceVariant(basketBloc.items[index]["item"], basketBloc.items[index]["variant"][variantIndex]);
-    await ShoppingAuthService().removeItemFromShoppingCart(data);
+        for (var variant in variantList) {
+
+          if (variant!['id'] == variantId) {
+            // Reduce the quantity of the variant
+            int currentQuantity = int.parse(variant['quantity'].toString());
+            if (currentQuantity > 1) {
+              variant['quantity'] = currentQuantity - 1;
+            } else if (currentQuantity == 1) {
+              // Reduce the quantity to zero and then remove the variant
+              variant['quantity'] = 0;
+              // basketBloc.items.removeAt(index);
+              // product['item'].remove(variant);
+            } else {
+              // Handle the case where the quantity is already zero
+              // You can leave this empty or add further logic if needed
+            }
+            // return; // Variant found and quantity reduced or removed, exit the function
+          }
+        }
+
+
+        debugPrint("Data send From Remove one : ${variantList}");
+      }
+
+    }
+    if (mounted) setState(() {});
+
+    Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items[index]["item"], type, basketBloc.items[index]["item"].id);
+
+    debugPrint("fola cart From Remove Button : ${dataInfo}");
+    await ShoppingAuthService().addItemToShoppingCart(dataInfo);
+    getTotalPrice();
+
     //close pop up if quantity to reduce is 1 currently
-    if(mapData["qty"] == 0){
-      Navigator.of(context).pop();
+    if(dataInfo["qty"] == 0){
+      basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
     }
   }
+
+  Map<String, dynamic> getUpdatedCartItem(Product cartItem, String type, String productId){
+    Map<String, dynamic> dataInfo = {};
+
+    int totalVariantQuantity = getTotalVariantQuantity(cartItem.variant, cartItem.id);
+    var variantsList = cartItem.variant;
+    // Populate dataInfo with product information
+    dataInfo = {
+      "id": productId,
+      "qty": variantsList!.isNotEmpty ? totalVariantQuantity : cartItem.quantity,
+      "type": type,
+    };
+
+    dataInfo["variants"] = [];
+    if (variantsList.isNotEmpty) {
+      // Iterate through the productView and add them to dataInfo
+      for (var variant in variantsList) {
+
+        dataInfo["variants"].add({
+          "id": int.parse(variant["id"].toString()),
+          "quantity": int.parse(variant["quantity"].toString()),
+        });
+
+      }
+    }
+
+    return dataInfo;
+  }
+
+
+  int getTotalVariantQuantity(List<dynamic>? variantsList, id) {
+    int totalQuantity = 0;
+
+    if (variantsList!.isNotEmpty) {
+      // Iterate through the productView and add them to dataInfo
+      for (var variant in variantsList) {
+          int variantQuantity = int.parse(variant['quantity'].toString());
+          totalQuantity += variantQuantity;
+      }
+    }
+
+
+    return totalQuantity;
+  }
+
+  int getTotalPrice() {
+    int totalPrice = 0;
+
+    for (var item in basketBloc.items) {
+      int itemTotal = 0;
+      var product = item["item"];
+
+      if (product is Product){
+        if (product.variant!.isEmpty) {
+          // If the variant list is empty, multiply the item's price by quantity
+          itemTotal = int.parse(product.price.toString()) * int.parse(product.quantity.toString());
+        } else {
+          // If the variant list is not empty, calculate the total price using variants
+          for (var variant in product.variant!) {
+            int variantPrice = int.parse(variant["price"].toString());
+            int quantity = int.parse(variant["quantity"].toString());
+            itemTotal += variantPrice * quantity;
+          }
+        }
+      }else{
+        itemTotal = int.parse(product.price.toString()) * int.parse(product.quantity.toString());
+      }
+
+      totalPrice += itemTotal;
+    }
+    basketBloc.orderTotal = totalPrice;
+    if(mounted)setState(() {});
+
+    debugPrint("Data send From total one : ${basketBloc.orderTotal}");
+    debugPrint("Data send From total two : ${totalPrice}");
+
+    return totalPrice;
+  }
+
+  List<Map<String, dynamic>> convertDynamicList(List<dynamic> dynamicList) {
+    List<Map<String, dynamic>> resultList = [];
+
+    for (dynamic item in dynamicList) {
+      if (item is Map<String, dynamic>) {
+        resultList.add(item); // If the element is already a Map, add it as is
+      } else if (item is Map) {
+        // If the element is a Map with dynamic values, convert it to Map<String, dynamic>
+        Map<String, dynamic> typedMap = Map<String, dynamic>.from(item);
+        resultList.add(typedMap);
+      } else {
+        // Handle other cases as needed, e.g., converting non-Map items
+        // into a map or skipping them.
+        // For simplicity, we'll just skip them here.
+      }
+    }
+
+    return resultList;
+  }
+
 
   List<Widget> listActionSlideActions(int index) {
     String caption1 = AppLocalization.of(context)!.remove;

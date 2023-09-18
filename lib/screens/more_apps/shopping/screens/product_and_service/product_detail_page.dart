@@ -22,6 +22,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -554,12 +555,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
             if(productVariantList.isNotEmpty){
               bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
+              bool allKeysAreNullOrEmptyColor = areAllKeysNullOrEmpty(colorGroups);
 
               if (colorGroups.isNotEmpty && !allKeysAreNullOrEmpty) {
                 // print("Both color and size lists are showing.");
                 if(selectedColor.isNotEmpty && selectedSize.isNotEmpty){
                   addToCart();
-                  return;
+                  return true;
                 }else{
                   showToast(
                       message:
@@ -569,47 +571,34 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 // print("Either color or size list is not showing.");
               }
 
-              if (colorGroups.isNotEmpty && selectedColor.isNotEmpty) {
-                // print("Color list is showing.");
-                addToCart();
-                return;
-              } else {
-                showToast(
-                    message:
-                    AppLocalization.of(context)!.selectVariantColor);
-              }
-
-              if (!allKeysAreNullOrEmpty && selectedSize.isNotEmpty) {
+              if (sizeGroups.isNotEmpty && selectedSize.isNotEmpty) {
                 // print("Size list is showing.");
                 addToCart();
-                return;
+                return true;
               } else {
                 showToast(
                     message:
                     AppLocalization.of(context)!.selectVariantSize);
               }
 
+              if (colorGroups.isNotEmpty && selectedColor.isNotEmpty) {
+                // print("Color list is showing.");
+                addToCart();
+                return true;
+              } else {
+                showToast(
+                    message:
+                    AppLocalization.of(context)!.selectVariantColor);
+              }
+
+
+
             }else{
               addToCart();
-              return;
+              return true;
             }
 
-            // String type = product is Product ? "product" : "service";
-            // basketBloc.addItemToCart(item: product, type: type);
-            // late var mapData;
-            // basketBloc.items.forEach((element) {
-            //   if (element["item"].id == product!.id) {
-            //     mapData = element;
-            //     return;
-            //   }
-            // });
-            // Map data = {
-            //   "type": type,
-            //   "id": mapData["item"].id,
-            //   "qty": mapData["qty"],
-            // };
-            // debugPrint("Data From Product Page : $data");
-            // await _auth.addItemToShoppingCart(data);
+
           } else {
             showToast(
                 message:
@@ -625,12 +614,30 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future<void> addToCart() async {
     String type = product is Product ? "product" : "service";
 
+    var variantType = "";
+
+    if(colorGroups.isNotEmpty && sizeGroups.isNotEmpty){
+      variantType = "Color n Size";
+    }else if(colorGroups.isNotEmpty){
+      variantType = "Color";
+    }else if(sizeGroups.isNotEmpty){
+      variantType = "Size";
+    }
+
     Map<String, dynamic> variant1 = {
-      "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage, "current_price": selectedVariantPrice,
+      "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
+      "price": selectedVariantPrice, "colour": selectedColor,
+      "value": selectedSize, "type": variantType
     };
 
-    basketBloc.addItemToCart(item: product, type: type, variant: variant1);
+    if(colorGroups.isEmpty && sizeGroups.isEmpty){
+      basketBloc.addItemToCart(item: product, type: type);
+    }else{
+      basketBloc.addItemToCart(item: product, type: type, variant: variant1);
+    }
+
     late var mapData;
+
     basketBloc.items.forEach((element) {
       if (element["item"].id == product!.id) {
         mapData = element;
@@ -638,18 +645,107 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       }
     });
 
-    Map<String, dynamic> variants = {
-      "id": selectedVariantId, "quantity": mapData["qty"], "image": selectedVariantImage, "current_price": selectedVariantPrice
-    };
+    Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
 
-    Map data = {
-      "type": type,
-      "id": mapData["item"].id,
-      "qty": mapData["qty"],
-      "variant": variants,
-    };
-    debugPrint("Data From Product Page : $data");
-    await _auth.addItemToShoppingCart(data);
+    // var variantList = computeVariant(variant, basketBloc.items, mapData["item"].id);
+
+    debugPrint("Data From Product Page : $dataInfo");
+    await _auth.addItemToShoppingCart(dataInfo);
+  }
+
+  Map<String, dynamic> getUpdatedCartItem(List cartItem, String type){
+    Map<String, dynamic> dataInfo = {};
+
+
+    for (var element in basketBloc.items) {
+      final item = element["item"];
+      int totalVariantQuantity = 0;
+      if(element["variants"] != null){
+        totalVariantQuantity = getTotalVariantQuantity(element["variants"], item.id);
+
+        final variantsList = element["variants"] as List;
+        // Populate dataInfo with product information
+        dataInfo = {
+          "id": item.id,
+          "qty": variantsList.isNotEmpty ? totalVariantQuantity : item['qty'],
+          "type": type,
+        };
+
+        // Check if "productView" key exists and it's a list
+        if (element.containsKey("variants") && element["variants"] is List) {
+          final variantsList = element["variants"] as List;
+
+          // Iterate through the productView and add them to dataInfo
+          dataInfo["variants"] = [];
+          for (var variant in variantsList) {
+            if (variant.containsKey("id") && variant["id"] != null) {
+              dataInfo["variants"].add({
+                "id": int.parse(variant["id"].toString()),
+                "quantity": int.parse(variant["quantity"].toString()),
+              });
+            }
+          }
+        }
+
+      }else{
+        dataInfo = {
+          "id": item.id,
+          "qty": item['qty'],
+          "type": type,
+        };
+      }
+
+
+      // Once you've found a matching element, you can exit the loop
+      continue;
+    }
+    return dataInfo;
+  }
+
+  int getTotalVariantQuantity(List<dynamic> variantsList, id) {
+    int totalQuantity = 0;
+
+    if (variantsList.isNotEmpty) {
+      // Iterate through the productView and add them to dataInfo
+      for (var variant in variantsList) {
+        if (variant.containsKey("id") && variant["id"] != null) {
+          int variantQuantity = int.parse(variant['quantity'].toString());
+          totalQuantity += variantQuantity;
+        }
+      }
+    }
+
+
+    return totalQuantity;
+  }
+
+  List<Map<String, dynamic>> computeVariant(Map newVariant, List cartItems, String productId){
+    int productIndex = 0;
+    int? variantIndex;
+
+    cartItems.forEachIndexed((index, element) {
+      if(element['id'] == productId){
+        productIndex = index;
+        print('index: $index, element: $element');
+      }
+    });
+
+    var variants = cartItems[productIndex]["variants"];
+
+    variants.forEachIndexed((index, elements) {
+      if(elements['id'] == newVariant['id']){
+        variantIndex = index;
+        print('variantIndex: $index, elements: $elements');
+      }
+    });
+
+    if(variantIndex == null){
+      variants = [newVariant];
+    }else{
+      variants[variantIndex] = newVariant;
+    }
+
+    return variants;
   }
 
   Widget? getBadgeContent() {
@@ -1434,8 +1530,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         );
       }
     }
-
-
 
     return list;
   }

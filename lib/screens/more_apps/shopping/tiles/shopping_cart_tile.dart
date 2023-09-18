@@ -23,15 +23,17 @@ class ShoppingCartTileForProduct extends StatefulWidget {
   Function? onDecreaseQty;
   Function(int variantIndex)? onIncreaseVariantQty;
   Function(int variantIndex)? onDecreaseVariantQty;
-  List<Map<String, dynamic>>? variant;
+  List<Map<String, dynamic>?> variant = [];
+  List<Map<String, dynamic>?> variantList = [];
 
   ShoppingCartTileForProduct(Map<String, dynamic> item,
       {this.onIncreaseQty, this.onDecreaseQty, this.index,
         this.onIncreaseVariantQty, this.onDecreaseVariantQty}) {
     type = item["type"];
     this.item = item["item"];
-    qty = item["qty"];
+    qty = int.tryParse(item["qty"].toString());
     variant = item["variant"];
+    variantList = item["variantList"];
   }
 
   @override
@@ -47,6 +49,7 @@ class _ShoppingCartTileForProductState
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
     try {
+
       return Container(
         color: Colors.white,
         child: Card(
@@ -67,44 +70,8 @@ class _ShoppingCartTileForProductState
                     trailing: getTrailing(),
                     subtitle: getSubtitle(context),
                     onTap: () {
-
-                      bool hasVariantId = widget.variant?.any((item) => item['id'] != null && item['id'].isNotEmpty) ?? false;
-
-                      if(hasVariantId){
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Opacity(
-                              opacity: 0.9, // Set the opacity level for the background (semi-transparent)
-                              child: FractionallySizedBox(
-                                // widthFactor: 0.75,
-                                heightFactor: 0.60,
-                                child: VariantOverlay(
-                                  variant: widget.variant,
-                                  currency: widget.item!.currency!,
-                                  onClose: () {
-                                    Navigator.of(context).pop(); // Close the overlay
-                                  },
-                                  onAdd: (val){
-                                    onAddVariant(val);
-                                    if(mounted)setState(() {});
-                                    },
-                                  onSubtract: (val){
-                                    onSubtractVariant(val);
-                                    if(mounted)setState(() {});
-                                    },
-                                ),
-                              ),
-                            );
-                          },
-                        );
-
-                      }else{
-                        Navigator.pushNamed(context, Routes.PRODUCT,
-                            arguments: {"product": widget.item});
-                      }
-
-
+                      Navigator.pushNamed(context, Routes.PRODUCT,
+                          arguments: {"product": widget.item});
                     },
                   ),
                 ),
@@ -118,22 +85,17 @@ class _ShoppingCartTileForProductState
     }
   }
 
-  void onAddVariant(int variantIndex) {
-    widget.onIncreaseVariantQty!(variantIndex);
-  }
-
-  void onSubtractVariant(int variantIndex) {
-    widget.onDecreaseVariantQty!(variantIndex);
-  }
-
   Widget getLeading() {
+    //check if item has variant and not empty
+    bool hasVariant = widget.variant.isNotEmpty ?? false;
+
     return ClipOval(
       child: CachedNetworkImage(
         height: 48,
         width: 48,
-        imageUrl: widget.item?.cover ?? defaultImage,
+        imageUrl: hasVariant == true ? widget.variant[0]!["pictures"][0]["file"] : widget.item?.cover ?? defaultImage,
         colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorWidget: productAndServiceErrorWidget,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => widget.item?.cover == null
@@ -144,17 +106,37 @@ class _ShoppingCartTileForProductState
   }
 
   Widget getTitle() {
-    return Text(
-      "${widget.item!.name}",
-      maxLines: 1,
-      style: TextStyle(
-          color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
+    return Row(
+      // mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          appendStringDot("${widget.item!.name}", 15),
+          // "${widget.item!.name}",
+          maxLines: 1,
+          style: TextStyle(
+              color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
+        ),
+        // getSubTotalPriceWidget(),
+      ],
     );
   }
 
   Widget getTrailing() {
-    //check if item has variant with id or not
-    bool hasVariantId = widget.variant?.any((item) => item['id'] != null && item['id'].isNotEmpty) ?? false;
+    // Check if the item has a variant and is not empty
+    bool hasVariant = widget.variant.isNotEmpty ?? false;
+
+    int variantIndex = 0;
+
+    if (widget.variant != null && widget.variant!.isNotEmpty) {
+      String variant = widget.variant![0]!['id'].toString() ?? '';
+
+      if (variant.isNotEmpty) {
+        variantIndex = widget.variant![0]!['id'];
+        // variantIndex = findVariantIndex(variant, widget.variantList);
+      }
+    }
 
     return Container(
       width: 100,
@@ -164,64 +146,70 @@ class _ShoppingCartTileForProductState
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-
-            hasVariantId == false ? RoundedBackgroundIcon(
-                backgroundColor: iconBtnGrey,
-                icon: Icon(
-                  SlydoAppIcon.minus,
-                  color: blackFont,
-                  size: 2,
-                ),
-                onTap: widget.onDecreaseQty) : const SizedBox.shrink(),
+            RoundedBackgroundIcon(
+              backgroundColor: iconBtnGrey,
+              icon: Icon(
+                SlydoAppIcon.minus,
+                color: blackFont,
+                size: 2, // Adjust the size as needed
+              ),
+              onTap: hasVariant == false ? widget.onDecreaseQty : () => widget.onDecreaseVariantQty!(variantIndex),
+            ),
             Expanded(
               child: SizedBox(
                 width: 10,
               ),
             ),
             Text(
-              basketBloc.items[widget.index!]["qty"].toString(),
+              widget.qty.toString(),
               style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: blackFont,
+              ),
             ),
             Expanded(
               child: SizedBox(
                 width: 10,
               ),
             ),
-            hasVariantId == false ?RoundedBackgroundIcon(
-                backgroundColor: iconBtnGrey,
-                icon: Icon(
-                  SlydoAppIcon.plus,
-                  color: blackFont,
-                  size: 16,
-                ),
-                onTap: widget.onIncreaseQty) : const SizedBox.shrink(),
+            RoundedBackgroundIcon(
+              backgroundColor: iconBtnGrey,
+              icon: Icon(
+                SlydoAppIcon.plus,
+                color: blackFont,
+                size: 16, // Adjust the size as needed
+              ),
+              onTap: hasVariant == false ? widget.onIncreaseQty : () => widget.onIncreaseVariantQty!(variantIndex),
+            ),
           ],
         ),
       ),
     );
   }
 
-  String getProductPrice() {
-    if (widget.item!.price.toString().length > 5) {
-      return widget.item!.price.toString().substring(0, 5) + "..";
+
+  int findVariantIndex(String variantId, List<Map<String, dynamic>?> variantList) {
+    for (int i = 0; i < variantList.length; i++) {
+      if (variantList[i]!['id'] == variantId) {
+        return i; // Return the index when a match is found
+      }
     }
-    return widget.item!.price.toString();
+    return -1; // Return -1 if the variant ID is not found
   }
 
 
-  String getTotalPrice() {
-    var totalPrice =
-        basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
+  String getProductPrice() {
+    var totalPrice = int.parse(widget.item!.price!);
 
-    bool hasVariantId = widget.variant?.any((item) => item['id'] != null && item['id'].isNotEmpty) ?? false;
+    bool hasVariantId = widget.variant?.any((item) => item!['id'] != null && item['id'].isNotEmpty) ?? false;
 
     if(hasVariantId && widget.variant != null && widget.variant!.isNotEmpty){
 
       totalPrice = 0;
       widget.variant?.forEach((variant) {
 
-        totalPrice += int.parse(variant['quantity'].toString()) * int.parse(variant['current_price'].toString());
+        totalPrice = int.parse(variant!['price'].toString());
       });
     }
 
@@ -229,7 +217,44 @@ class _ShoppingCartTileForProductState
   }
 
 
+  String getTotalPrice() {
+    var totalPrice =
+        basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
+
+    // Check if the item has a variant and is not empty
+    bool hasVariant = widget.variant.isNotEmpty ?? false;
+
+    if(hasVariant && widget.variant != null && widget.variant.isNotEmpty){
+
+      totalPrice = 0;
+      for (var variant in widget.variant) {
+
+        totalPrice += int.parse(variant!['quantity'].toString()) * int.parse(variant['price'].toString());
+      }
+    }
+
+    return totalPrice.toString();
+  }
+
+
   Widget getSubtitle(BuildContext context) {
+    String color = '';
+    String size = '';
+
+    if (widget.variant != null && widget.variant.isNotEmpty) {
+      String variantColor = widget.variant[0]!['colour'] ?? '';
+      String variantSize = widget.variant[0]!['value'] ?? '';
+
+      if (variantColor.isNotEmpty) {
+        color = variantColor;
+      }
+
+      if (variantSize.isNotEmpty) {
+        size = variantSize;
+      }
+
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -237,10 +262,23 @@ class _ShoppingCartTileForProductState
           height: 2,
         ),
         getSellerName(context),
+        if(color.isNotEmpty)...[
+          SizedBox(
+            height: 2,
+          ),
+          getColor(color),
+        ],
+        if(size.isNotEmpty)...[
+          SizedBox(
+            height: 2,
+          ),
+          getSize(size)
+        ],
         getTotalPriceWidget(),
       ],
     );
   }
+
 
   Widget getTotalPriceWidget() {
     return Row(
@@ -263,11 +301,71 @@ class _ShoppingCartTileForProductState
     );
   }
 
+  Widget getSubTotalPriceWidget() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[widget.item!.currency!]!,
+          style: TextStyle(
+              color: darkGrey,
+              fontFamily: "Roboto",
+              fontWeight: FontWeight.w600,
+              fontSize: 12),
+        ),
+        Text(
+          moneyDisplayNormalizer(int.parse(getProductPrice())),
+          style: TextStyle(
+              color: darkGrey, fontWeight: FontWeight.w600, fontSize: 12),
+        ),
+      ],
+    );
+  }
+
   Widget getSellerName(BuildContext context) {
     return Text(
       widget.item!.seller!,
       style: TextStyle(fontSize: 10, color: darkGrey),
     );
+  }
+
+  Widget getColor(String color) {
+
+    return Row(
+      children: [
+        Text(
+          "Color: ",
+          style: TextStyle(fontSize: 10, color: darkGrey),
+        ),
+        Text(
+          color,
+          style: TextStyle(fontSize: 10, color: black, fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  Widget getSize(String size) {
+    return Row(
+      children: [
+        Text(
+          "Size: ",
+          style: TextStyle(fontSize: 10, color: darkGrey),
+        ),
+        Text(
+          size,
+          style: TextStyle(fontSize: 10, color: black, fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  void onAddVariant(int variantIndex) {
+    widget.onIncreaseVariantQty!(variantIndex);
+  }
+
+  void onSubtractVariant(int variantIndex) {
+    widget.onDecreaseVariantQty!(variantIndex);
   }
 }
 
