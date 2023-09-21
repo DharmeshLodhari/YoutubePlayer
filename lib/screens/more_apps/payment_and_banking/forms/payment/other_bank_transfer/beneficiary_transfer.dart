@@ -261,6 +261,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   }
 
   Widget getUserBankAccount() {
+
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.zero,
@@ -725,6 +726,12 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
           if (item.isDefault == true) {
             bankAccountBloc.bankAccount = item;
           }
+        }
+
+        //if there is no default set as true the pick first account
+        if ( bankAccountBloc.bankAccount!.accountName == null && bankAccountList.isNotEmpty) {
+          bankAccountBloc.bankAccount = bankAccountList[0]; // Pick the first item in the list
+
         }
       });
     }

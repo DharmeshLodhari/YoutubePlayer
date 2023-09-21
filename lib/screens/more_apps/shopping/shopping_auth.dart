@@ -14,6 +14,7 @@ import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
+import '../../../data/state_notifier.dart';
 import 'models/store.dart';
 
 class ShoppingAuthService extends AuthService {
