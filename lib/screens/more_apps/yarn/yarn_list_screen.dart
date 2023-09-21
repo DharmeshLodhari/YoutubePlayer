@@ -393,4 +393,11 @@ class YarnListScreenState extends State<YarnListScreen> {
 
     if (mounted) setState(() {});
   }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
 }

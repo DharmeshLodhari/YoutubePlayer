@@ -220,7 +220,7 @@ class BasketBloc extends ChangeNotifier {
 
     items.forEach((element) {
       if (element["item"].id == id) {
-        quantity = element['qty'] as int;
+        quantity = int.parse(element['qty'].toString());
       }
     });
 
@@ -343,7 +343,6 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMapCopy.remove(merchantFullName);
   }
 
-
   void addItemInBasketWithQty(var item, String type, Map<String, dynamic> variant) {
     bool variantExists = false;
 
@@ -353,14 +352,14 @@ class BasketBloc extends ChangeNotifier {
         bool variantIdExists = false;
 
         for (var existingVariant in element["variants"]) {
-          if (existingVariant["id"] == variant["id"]) {
+
+          if (existingVariant["id"] == variant["id"] && variantExists) {
             // Update the existing variant
             int existingQuantity = int.parse(existingVariant["quantity"].toString());
             int variantQuantity = int.tryParse(variant["quantity"].toString()) ?? 0;
             existingVariant["quantity"] = (existingQuantity + variantQuantity).toString();
             existingVariant["image"] = variant["image"];
 
-            print("Existing Item Added");
             variantIdExists = true;
             break;
           }
@@ -372,7 +371,8 @@ class BasketBloc extends ChangeNotifier {
         }
 
         // Increase the total quantity and exit the loop
-        element["qty"] += 1;
+        element["qty"] = (int.tryParse(element["qty"].toString()) ?? 0) + 1;
+
 
         if (variant["id"] != null && variant["id"].isNotEmpty) {
           // The variant has a non-empty "id" key
@@ -380,7 +380,8 @@ class BasketBloc extends ChangeNotifier {
           // Now, you can use the 'price' variable for further processing.
           _total = _total + int.parse(price);
           variantExists = true;
-        } else {
+        }
+        else {
           // The variant does not have a valid "id" key
           _total = _total + int.parse(item.price);
           variantExists = true;
@@ -392,20 +393,63 @@ class BasketBloc extends ChangeNotifier {
 
     if (!variantExists) {
       // Item doesn't exist in the basket, so create a new entry
-      _items.add({"type": type, "item": item, "qty": 1, "variants": [variant]});
+
+      var product = Product();
+      if (item is Product) {
+        product.quantity = int.parse(variant['quantity'].toString());
+        product.id = item.id;
+        product.name = item.name;
+        product.price = item.price;
+        product.currency = item.currency;
+        product.seller = item.seller;
+        product.sellerFullName = item.sellerFullName;
+        product.sellerAvatar = item.sellerAvatar;
+        product.serverImages = item.serverImages;
+        product.description = item.description;
+        product.variant = [variant];
+      }
+      var newItem = {"type": type, "item": product, "qty": variant['quantity'], "variants": [variant]};
+      // var newItem = {"type": type, "item": item, "qty": 1, "variants": [variant]};
+
+      _items.add(newItem);
+
       if (variant.containsKey("id") && variant["id"] != null && variant["id"].isNotEmpty) {
         // The variant has a non-empty "id" key
         String price = variant["price"];
         // Now, you can use the 'price' variable for further processing.
         _total = _total + int.parse(price);
-      } else {
-        // The variant does not have a valid "id" key
-        _total = _total + int.parse(item.price);
         variantExists = true;
       }
-
-      debugPrint("New Item Added");
+      else {
+        // The variant does not have a valid "id" key
+        _total = _total + int.parse(item.price);
+        // variantExists = true;
+      }
     }
+
+
+    // if (!variantExists) {
+    //   // Item doesn't exist in the basket, so create a new entry
+    //   if (item is Product) {
+    //     item.quantity = 1;
+    //   }
+    //   _items.add({"type": type, "item": item, "qty": 1, "variants": [variant]});
+    //
+    //   // debugPrint("New Item Added one:::: ${item.quantity}");
+    //
+    //   if (variant.containsKey("id") && variant["id"] != null && variant["id"].isNotEmpty) {
+    //     // The variant has a non-empty "id" key
+    //     String price = variant["price"];
+    //     // Now, you can use the 'price' variable for further processing.
+    //     _total = _total + int.parse(price);
+    //   } else {
+    //     // The variant does not have a valid "id" key
+    //     _total = _total + int.parse(item.price);
+    //     variantExists = true;
+    //   }
+    //
+    //   debugPrint("New Item Added");
+    // }
 
     notifyListeners();
   }
@@ -556,12 +600,10 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void resetShoppingCart() async {
-    List items = await ShoppingAuthService()
+    List itemsCart = await ShoppingAuthService()
         .getShoppingCart(); //Returns a list of product and services as a map
 
-    // debugPrint('fola one three:::: ${items.length}');
-
-    for (var element in items) {
+    for (var element in itemsCart) {
       String type = element is Product ? "product" : "service";
 
       //use the element to get product and its variables
@@ -581,7 +623,7 @@ class BasketBloc extends ChangeNotifier {
                 String? type2 = variant['type'];
                 String? colour = variant['colour'];
 
-                // debugPrint('fola one three:::: ${variant}');
+                debugPrint('fola one three one:::: ${variant}');
 
                 // Access the pictures list and get the first image (assuming pictures is a List)
                 // Get the first image from pictures then file
@@ -601,7 +643,6 @@ class BasketBloc extends ChangeNotifier {
 
         }
 
-
       } else {
         // debugPrint('Unknown item type: $element');
         addItemToCart(item: element, type: type);
@@ -611,6 +652,7 @@ class BasketBloc extends ChangeNotifier {
     }
     notifyListeners();
   }
+
 }
 
 class AddressBloc extends ChangeNotifier {

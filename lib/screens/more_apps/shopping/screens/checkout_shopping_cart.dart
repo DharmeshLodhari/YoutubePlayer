@@ -13,12 +13,10 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 import '../../../../locator.dart';
 import '../../../../services/app_config_bloc.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
@@ -31,7 +29,7 @@ class ShoppingCart extends StatefulWidget {
 }
 
 class _ShoppingCartState extends State<ShoppingCart> {
-  late BasketBloc basketBloc;
+  late BasketBloc basketBloc = BasketBloc();
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc userBloc;
   List<int?> orders = [];
@@ -65,6 +63,17 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   void initializeShoppingCart() async {
     basketBloc.resetShoppingCart();
+  }
+
+  void getLocalShoppingCart(){
+
+    // debugPrint('fola cart orderTotal::::${basketBloc.orderTotal}');
+    // debugPrint('fola cart items::::${basketBloc.items}');
+    // debugPrint('fola cart items::::${basketBloc.items.length}');
+
+    for(var data in basketBloc.items){
+      debugPrint('fola cart data::::${data}');
+    }
 
   }
 
@@ -152,6 +161,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget _buildBodyOfCart() {
+
+    // getLocalShoppingCart();
 
     return basketBloc.total == 0
         ? Center(
@@ -286,7 +297,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget getItemTileUI(int index) {
-    basketBloc = Provider.of<BasketBloc>(context);
+    // basketBloc = Provider.of<BasketBloc>(context);
 
     if (index < basketBloc.items.length) {
       final item = basketBloc.items[index];
@@ -294,20 +305,24 @@ class _ShoppingCartState extends State<ShoppingCart> {
       if (item["item"] is Product) {
         final product = item["item"] as Product;
         final variants = product.variant;
+        final variantss = item["variants"];
+
+        // debugPrint('fola one three:::: ${variants}');
+        // debugPrint('fola one three:::: ${variantss}');
 
         List<Map<String, dynamic>?> mapList = convertDynamicListToMapList(variants!);
-
 
         if (variants != null && variants.isNotEmpty) {
           // If the product has variants, create a separate tile for each variant.
           return Column(
             children: variants.map((variant) {
               // debugPrint('fola one three:::: ${variant['id'].toString()}');
+
               return ShoppingCartTileForProduct(
                 {
                   "type": item["type"],
                   "item": product,
-                  "qty": variant.isEmpty ? item['quantity'] : variant["quantity"],
+                  "qty": variants.isEmpty ? item['quantity'] : variant["quantity"],
                   "variant": mapList, // Pass a single variant as a list
                   "variantList": mapList, // Pass variant list
                 },
@@ -451,18 +466,16 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
       if (product['item'] is Product) {
         var variantList = product['item'].variant;
-        // debugPrint("Data send From Remove one : ${variantList}");
 
         for (var variant in variantList) {
 
-          if (variant!['id'] == variantId) {
+          if (int.parse(variant!['id'].toString()) == variantId) {
             // Reduce the quantity of the variant
             int currentQuantity = int.parse(variant['quantity'].toString());
             variant['quantity'] = currentQuantity + 1;
           }
         }
 
-        // debugPrint("Data send From Add one : ${variantList}");
       }
     }
     if (mounted) setState(() {});
@@ -513,11 +526,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
       if (product['item'] is Product) {
         var variantList = product['item'].variant;
-        // debugPrint("Data send From Remove one : ${variantList}");
 
         for (var variant in variantList) {
 
-          if (variant!['id'] == variantId) {
+          if (int.parse(variant!['id'].toString()) == variantId) {
             // Reduce the quantity of the variant
             int currentQuantity = int.parse(variant['quantity'].toString());
             if (currentQuantity > 1) {
@@ -525,8 +537,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
             } else if (currentQuantity == 1) {
               // Reduce the quantity to zero and then remove the variant
               variant['quantity'] = 0;
-              // basketBloc.items.removeAt(index);
-              // product['item'].remove(variant);
             } else {
               // Handle the case where the quantity is already zero
               // You can leave this empty or add further logic if needed
@@ -536,7 +546,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
         }
 
 
-        debugPrint("Data send From Remove one : ${variantList}");
+        // debugPrint("Data send From Remove one : ${variantList}");
       }
 
     }
@@ -625,9 +635,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
     }
     basketBloc.orderTotal = totalPrice;
     if(mounted)setState(() {});
-
-    debugPrint("Data send From total one : ${basketBloc.orderTotal}");
-    debugPrint("Data send From total two : ${totalPrice}");
 
     return totalPrice;
   }

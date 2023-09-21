@@ -1450,10 +1450,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         onTap: () {
           Navigator.pop(context);
           String merchantUrl =
-              'https://slydo.co/${searchedUser!.userName!}/payme';
+              'https://slydo.co/store/${searchedUser!.userName!}';
           var shareBody = userBloc.user.type != 'User'
               ? merchantUrl
-              : "https://slydo.co/store/" + searchedUser!.userName!;
+              : "https://slydo.co/user/${searchedUser!.userName!}";
           Share.share(shareBody, subject: "${searchedUser!.displayName()}");
         },
       ),

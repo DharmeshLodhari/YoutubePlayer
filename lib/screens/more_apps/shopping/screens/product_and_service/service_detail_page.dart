@@ -360,8 +360,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       iconData: SlydoAppIcon.share,
       onTap: () async {
         Navigator.pop(context);
-        var shareBody =
-            "http://slydo.co/store/service/" + service!.id.toString();
+
+        var shareBody = "http://slydo.co/store/${service!.provider}/services/${service!.id}";
         Share.share(shareBody, subject: "${service!.name}");
       },
     ));
@@ -623,7 +623,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   int getBadgeCount() {
     int totalItem = 0;
     basketBloc.items.forEach((element) {
-      totalItem = totalItem + element['qty'] as int;
+      totalItem = totalItem + int.parse(element['qty'].toString());
     });
     return totalItem;
   }

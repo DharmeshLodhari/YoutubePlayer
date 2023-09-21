@@ -86,8 +86,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   bool productIsLoading = false;
   late YarnDashboardBloc yarnDashboardBloc;
   List<Variant> productVariantList = [];
-  List<String> sizes = [];
-  List<String> colors = [];
   List<String> oneImageEach = [];
   String selectedColor = "";
   String selectedSize = "";
@@ -214,8 +212,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     basketBloc = Provider.of<BasketBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-    // productServiceBloc =
-    //     Provider.of<ProductServiceBloc>(context, listen: false);
 
     isValidCustomer = userBloc?.user.userName != product!.seller;
     return WillPopScope(
@@ -366,8 +362,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       iconData: SlydoAppIcon.share,
       onTap: () async {
         Navigator.pop(context);
-        var shareBody =
-            "http://slydo.co/store/product/" + product!.id.toString();
+
+        var shareBody = "http://slydo.co/store/${product!.seller}/products/" + product!.id.toString();
         Share.share(shareBody, subject: "${product!.name}");
       },
     ));
@@ -554,10 +550,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           if (isValidCustomer) {
 
             if(productVariantList.isNotEmpty){
-              bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
-              bool allKeysAreNullOrEmptyColor = areAllKeysNullOrEmpty(colorGroups);
 
-              if (colorGroups.isNotEmpty && !allKeysAreNullOrEmpty) {
+              if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
                 // print("Both color and size lists are showing.");
                 if(selectedColor.isNotEmpty && selectedSize.isNotEmpty){
                   addToCart();
@@ -567,33 +561,30 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       message:
                       AppLocalization.of(context)!.selectVariantColorSize);
                 }
-              } else {
-                // print("Either color or size list is not showing.");
+              } else if(sizeGroups.isNotEmpty && colorGroups.isEmpty){
+                // print("color list is showing.");
+                if (selectedSize.isNotEmpty) {
+                  addToCart();
+                  return true;
+                } else {
+                  showToast(
+                      message:
+                      AppLocalization.of(context)!.selectVariantSize);
+                }
+              }else if(sizeGroups.isEmpty && colorGroups.isNotEmpty){
+                // print("size list is showing.");
+                if (selectedColor.isNotEmpty) {
+                  addToCart();
+                  return true;
+                } else {
+                  showToast(
+                      message:
+                      AppLocalization.of(context)!.selectVariantColor);
+                }
               }
-
-              if (sizeGroups.isNotEmpty && selectedSize.isNotEmpty) {
-                // print("Size list is showing.");
-                addToCart();
-                return true;
-              } else {
-                showToast(
-                    message:
-                    AppLocalization.of(context)!.selectVariantSize);
-              }
-
-              if (colorGroups.isNotEmpty && selectedColor.isNotEmpty) {
-                // print("Color list is showing.");
-                addToCart();
-                return true;
-              } else {
-                showToast(
-                    message:
-                    AppLocalization.of(context)!.selectVariantColor);
-              }
-
-
 
             }else{
+              //product has no variant or is a service
               addToCart();
               return true;
             }
@@ -618,9 +609,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     if(colorGroups.isNotEmpty && sizeGroups.isNotEmpty){
       variantType = "Color n Size";
-    }else if(colorGroups.isNotEmpty){
+    }
+    else if(colorGroups.isNotEmpty){
       variantType = "Color";
-    }else if(sizeGroups.isNotEmpty){
+    }
+    else if(sizeGroups.isNotEmpty){
       variantType = "Size";
     }
 
@@ -646,10 +639,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     });
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
-
     // var variantList = computeVariant(variant, basketBloc.items, mapData["item"].id);
 
     debugPrint("Data From Product Page : $dataInfo");
+
     await _auth.addItemToShoppingCart(dataInfo);
   }
 
@@ -667,16 +660,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         // Populate dataInfo with product information
         dataInfo = {
           "id": item.id,
-          "qty": variantsList.isNotEmpty ? totalVariantQuantity : item['qty'],
+          "qty": variantsList.isNotEmpty ? totalVariantQuantity : item.quantity,
           "type": type,
         };
 
         // Check if "productView" key exists and it's a list
+        dataInfo["variants"] = [];
         if (element.containsKey("variants") && element["variants"] is List) {
           final variantsList = element["variants"] as List;
 
           // Iterate through the productView and add them to dataInfo
-          dataInfo["variants"] = [];
+
           for (var variant in variantsList) {
             if (variant.containsKey("id") && variant["id"] != null) {
               dataInfo["variants"].add({
@@ -688,10 +682,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         }
 
       }else{
+
         dataInfo = {
           "id": item.id,
-          "qty": item['qty'],
+          "qty": item.quantity,
           "type": type,
+          "variants": [],
         };
       }
 
@@ -762,7 +758,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   int getBadgeCount() {
     int totalItem = 0;
     basketBloc.items.forEach((element) {
-      totalItem = totalItem + element['qty'] as int;
+      totalItem = totalItem + int.parse(element['qty'].toString());
     });
     return totalItem;
   }
@@ -1124,6 +1120,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       price = product!.price.toString();
       moreInformation = product!.description.toString();
 
+      colorGroups = {};
+      sizeGroups = {};
       colorGroups = groupVariantsByColor(productVariantList);
       sizeGroups = groupVariantsBySize(productVariantList);
 
@@ -1143,24 +1141,30 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     Map<String, List<Variant>> groupedVariants = {};
 
     for (var variant in variants) {
-      if (!groupedVariants.containsKey(variant.colour)) {
-        groupedVariants[variant.colour!] = [];
+      if (variant.colour != null && variant.colour!.isNotEmpty) {
+        if (!groupedVariants.containsKey(variant.colour!)) {
+          groupedVariants[variant.colour!] = [];
+        }
+        groupedVariants[variant.colour]!.add(variant);
       }
-      groupedVariants[variant.colour]!.add(variant);
     }
 
     return groupedVariants;
   }
+
 
   // Group variants by size
   Map<String, List<Variant>> groupVariantsBySize(List<Variant> variants) {
     Map<String, List<Variant>> groupedVariants = {};
 
     for (var variant in variants) {
-      if (!groupedVariants.containsKey(variant.value)) {
-        groupedVariants[variant.value!] = [];
+      if (variant.value != null && variant.value!.isNotEmpty) {
+        if (!groupedVariants.containsKey(variant.value)) {
+          groupedVariants[variant.value!] = [];
+        }
+        groupedVariants[variant.value]!.add(variant);
       }
-      groupedVariants[variant.value]!.add(variant);
+
     }
 
     return groupedVariants;
@@ -1172,19 +1176,80 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     Map<String, List<Variant>> sizeGroups = {};
 
     // Filter variants that match the selected color
-    List<Variant> selectedColorVariants =
-    allVariants.where((variant) => variant.colour == selectedColor).toList();
+    List<Variant> selectedColorVariants = allVariants
+        .where((variant) => variant.colour == selectedColor)
+        .toList();
 
-    // Group the selected color variants by size
+    // Group the selected color variants by size, only if variant.value is not empty or null
     for (var variant in selectedColorVariants) {
-      if (!sizeGroups.containsKey(variant.value)) {
-        sizeGroups[variant.value!] = [];
+
+      if (variant.value != null && variant.value!.isNotEmpty) {
+        if (!sizeGroups.containsKey(variant.value)) {
+          sizeGroups[variant.value!] = [];
+        }
+        sizeGroups[variant.value]!.add(variant);
       }
-      sizeGroups[variant.value]!.add(variant);
     }
 
     return sizeGroups;
   }
+
+  // Define a function to group variants by color for the selected color/image
+  Map<String, List<Variant>> groupVariantsByColorForSelectedSize(
+      String selectedSize, List<Variant> allVariants) {
+    Map<String, List<Variant>> colorGroups = {};
+
+    // Filter variants that match the selected color
+    List<Variant> selectedSizeVariants = allVariants
+        .where((variant) => variant.size == selectedSize)
+        .toList();
+
+    // Group the selected color variants by size, only if variant.value is not empty or null
+    for (var variant in selectedSizeVariants) {
+
+      if (variant.colour != null && variant.colour!.isNotEmpty) {
+        if (!colorGroups.containsKey(variant.colour)) {
+          colorGroups[variant.colour!] = [];
+        }
+        colorGroups[variant.colour]!.add(variant);
+      }
+    }
+
+    return colorGroups;
+  }
+
+  bool hasVariantsWithoutColor(List<Variant> productVariantList, String variantId) {
+    // Iterate through the productVariantList
+    for (var variant in productVariantList) {
+      // Check if the variant has the specified variantId
+      if (variant.id == variantId) {
+        // Check if the variant has a color
+        if (variant.colour == null || variant.colour!.isEmpty) {
+          // Variant has no color
+          return true;
+        }
+      }
+    }
+    // No variants without color found for the specified variantId
+    return false;
+  }
+
+  bool hasVariantsWithoutSize(List<Variant> productVariantList, String variantId) {
+    // Iterate through the productVariantList
+    for (var variant in productVariantList) {
+      // Check if the variant has the specified variantId
+      if (variant.id == variantId) {
+        // Check if the variant has a color
+        if (variant.value == null || variant.value!.isEmpty) {
+          // Variant has no color
+          return true;
+        }
+      }
+    }
+    // No variants without color found for the specified variantId
+    return false;
+  }
+
 
   bool areAllKeysNullOrEmpty(Map<String, List<Variant>> sizeViewGroups) {
     return sizeViewGroups.keys.every((key) => key == null || key.isEmpty);
@@ -1306,7 +1371,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           ),
         ]else if(stockLeft == 0)...[
           SizedBox.shrink()
-        ]else if(stockLeft <= 9)...[
+        ]
+        else if(stockLeft <= 9)...[
           SizedBox(height: 10.0,),
           Text('Only ${stockLeft.toString()} left in stock',
             style: TextStyle(
@@ -1322,7 +1388,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
 
   Widget showVariantFirstImages(){
-    return Container(
+    return SizedBox(
       height: 80.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -1340,7 +1406,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             child: GestureDetector(
               onTap: () {
                 //update the price, more information and list of images
-                // moreInformation = product!.description.toString();
                 displayProductImages = [];
                 selectedColor = color;
                 selectedImageColorIndex = index;
@@ -1372,10 +1437,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   }
 
                 }else{
-                  sizeGroups = {};
-                  sizeGroups = groupVariantsBySizeForSelectedColor(selectedColor, productVariantList);
                   //set the selected size to zero
                   selectedSizeIndex = -1;
+                }
+
+                sizeGroups = {};
+                selectedSize = "";
+                sizeGroups = groupVariantsBySizeForSelectedColor(selectedColor, productVariantList);
+
+                //check if size is not empty, set stock to zero
+                if(sizeGroups.isNotEmpty && selectedSizeIndex == -1){
+                  stockLeft = 0;
                 }
 
                 if(mounted) setState(() {});
@@ -1395,7 +1467,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   placeholder: (context, url) => Container(
                     height: 20.0,
                       width: 20.0,
-                      child: Center(child: CircularProgressIndicator())),
+                      child: Center(child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
+                      ))),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               ),
@@ -1409,7 +1483,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget showVariantSizes(){
 
-    return Container(
+    return SizedBox(
       height: 50.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -1443,6 +1517,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   stockLeft = int.parse(variant.quantity!);
                 }
 
+                // colorGroups = {};
+                // colorGroups = groupVariantsBySizeForSelectedColor(selectedSize, productVariantList);
+
                 if(mounted) setState(() {});
               },
               child: Container(
@@ -1475,64 +1552,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   }
 
-  void variantActionsSheet(String type) {
-    showModalBottomSheet<void>(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (BuildContext context) {
-          return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-              ),
-              color: Colors.white,
-              margin: EdgeInsets.zero,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: variantBottomSheetItem(type),
-                ),
-              ));
-        });
-  }
-
-  List<Widget> variantBottomSheetItem(String type) {
-    List<Widget> list = [];
-
-    if(type == "size"){
-      for(var item in sizes){
-        list.add(
-          bottomSheetItem(
-            title: item,
-            // iconData: SlydoAppIcon.share,
-            onTap: () {
-              selectedSize = item;
-              if(mounted)setState(() {});
-              Navigator.pop(context);
-            },
-          ),
-        );
-      }
-    }else if(type == "color"){
-      for(var item in colors){
-        list.add(
-          bottomSheetItem(
-            title: item,
-            // iconData: SlydoAppIcon.share,
-            onTap: () {
-              selectedColor = item;
-              if(mounted)setState(() {});
-              Navigator.pop(context);
-            },
-          ),
-        );
-      }
-    }
-
-    return list;
-  }
 
   Widget copyQrCode() {
     return Card(
@@ -1798,62 +1817,42 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           if (product!.isAvailable!) {
             if (isValidCustomer) {
               //check if product has variant
-
               if(productVariantList.isNotEmpty){
-                bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
 
-                if (colorGroups.isNotEmpty && !allKeysAreNullOrEmpty) {
+                if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
                   // print("Both color and size lists are showing.");
                   if(selectedColor.isNotEmpty && selectedSize.isNotEmpty){
-                    bool result = await showDisclaimerDialogueForGoods(context);
-                    if (result) {
-                      getRecipient();
-                      navigateToSendPayment();
-                    }
-                    return;
+                    processCartBuyNow(context);
                   }else{
                     showToast(
                         message:
                         AppLocalization.of(context)!.selectVariantColorSize);
                   }
-                } else {
-                  // print("Either color or size list is not showing.");
                 }
-
-                if (colorGroups.isNotEmpty && selectedColor.isNotEmpty) {
-                  // print("Color list is showing.");
-                  bool result = await showDisclaimerDialogueForGoods(context);
-                  if (result) {
-                    getRecipient();
-                    navigateToSendPayment();
+                else if(colorGroups.isNotEmpty && sizeGroups.isEmpty){
+                  // print("color list is showing.");
+                  if (selectedColor.isNotEmpty) {
+                    // print("Color list is showing.");
+                    processCartBuyNow(context);
+                  } else {
+                    showToast(
+                        message:
+                        AppLocalization.of(context)!.selectVariantColor);
                   }
-                  return;
-                } else {
-                  showToast(
-                      message:
-                      AppLocalization.of(context)!.selectVariantColor);
-                }
-
-                if (!allKeysAreNullOrEmpty && selectedSize.isNotEmpty) {
-                  // print("Size list is showing.");
-                  bool result = await showDisclaimerDialogueForGoods(context);
-                  if (result) {
-                    getRecipient();
-                    navigateToSendPayment();
+                }else if(colorGroups.isEmpty && sizeGroups.isNotEmpty){
+                  // print("size list is showing.");
+                  if (selectedSize.isNotEmpty) {
+                    // print("Size list is showing.");
+                    processCartBuyNow(context);
+                  } else {
+                    showToast(
+                        message:
+                        AppLocalization.of(context)!.selectVariantSize);
                   }
-                  return;
-                } else {
-                  showToast(
-                      message:
-                      AppLocalization.of(context)!.selectVariantSize);
                 }
 
               }else{
-                bool result = await showDisclaimerDialogueForGoods(context);
-                if (result) {
-                  getRecipient();
-                  navigateToSendPayment();
-                }
+                processCartBuyNow(context);
               }
 
             } else {
@@ -1867,6 +1866,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         },
       ),
     );
+  }
+
+  Future<void> processCartBuyNow(BuildContext context) async {
+    bool result = await showDisclaimerDialogueForGoods(context);
+    if (result) {
+      getRecipient();
+      navigateToSendPayment();
+    }
+    return;
   }
   
 

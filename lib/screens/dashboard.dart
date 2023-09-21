@@ -403,7 +403,7 @@ class _DashboardState extends State<Dashboard> {
   int getBadgeCount() {
     int totalItem = 0;
     basketBloc.items.forEach((element) {
-      totalItem = totalItem + element['qty'] as int;
+      totalItem = totalItem + int.parse(element['qty'].toString());
     });
     return totalItem;
   }

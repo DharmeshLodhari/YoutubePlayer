@@ -469,7 +469,7 @@ class _SuperHubState extends State<SuperHub> {
   String getBadgeCount() {
     int totalItem = 0;
     basketBloc.items.forEach((element) {
-      totalItem = totalItem + element['qty'] as int;
+      totalItem = totalItem + int.parse(element['qty'].toString());
     });
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
