@@ -45,7 +45,8 @@ class _UserTileState extends State<UserTile> {
   Widget getAvatar() {
     Color borderColor = getUserTypeColorByType(type: widget.user!.type!);
 
-    if (widget.user!.avatar == null || widget.user!.avatar == "") {
+    if (widget.user!.avatar == null || widget.user!.avatar == ""
+    || widget.user!.avatar == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return CircleAvatar(
         backgroundColor: navyBlue,
         radius: 25,

@@ -55,15 +55,23 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   bool ageRestriction = false;
   bool? makeGroupPaid = false;
   bool? makeChannelPublic = false;
+  bool? createPaidChannel = false;
   bool? limitGroupMembers = false;
   AppConfigurationModel? appConfigurationModel;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String createTitle = "";
 
   @protected
   void initState() {
     groupNameController = TextEditingController();
     groupDescriptionController = TextEditingController();
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
+    createTitle = widget.arguments != null
+        && widget.arguments["create"] == "group" ? "New Group"
+        : "New Paid Channel";
+
+    // appConfigurationModel?.enablePaidGroupChat = true;
 
     fetchConnectionList();
 
@@ -117,7 +125,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         },
       ),
       title: Text(
-        "New Channel",
+        createTitle.isNotEmpty ? createTitle : "New Channel",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
@@ -355,6 +363,106 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   }
 
   Widget getPaidGroupChatField() {
+    return widget.arguments != null
+        && widget.arguments["create"] == "group" ? SizedBox.shrink()
+        : Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Create paid group chat',
+                style:
+                TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              ),
+            ),
+            Switch(
+              onChanged: (bool value) {
+                setState(() {
+                  makeGroupPaid = value;
+                });
+              },
+              value: makeGroupPaid!,
+            ),
+            SizedBox(width: 10),
+          ],
+        ),
+        if (makeGroupPaid!) ...[
+          SizedBox(
+            height: 10,
+          ),
+          CustomizedTextFormField(
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            keyboardType: TextInputType.phone,
+            controller: _channelFeeCtrl,
+            isAmountField: true,
+            labelText: AppLocalization.of(context)!.amount,
+            onChanged: (value) {},
+            validator: (val) {
+              try {
+                double userAmount = double.parse(val.replaceAll(',', ''));
+                // if (userAmount > amountLimit) {
+                //   return 'You cannot fund more than $amountLimit';
+                // }
+              } catch (e) {
+                return AppLocalization.of(context)!.invalidAmount;
+              }
+              return null;
+            },
+          ),
+        ],
+        SizedBox(height: 10),
+        // Row(
+        //   children: [
+        //     Expanded(
+        //       child: Text(
+        //         'Create paid group chat',
+        //         style:
+        //             TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+        //       ),
+        //     ),
+        //     Switch(
+        //       onChanged: (bool value) {
+        //         setState(() {
+        //           makeGroupPaid = value;
+        //         });
+        //       },
+        //       value: makeGroupPaid!,
+        //     ),
+        //     SizedBox(
+        //       width: 10,
+        //     )
+        //   ],
+        // ),
+        // if (makeGroupPaid!) ...[
+        //   SizedBox(
+        //     height: 10,
+        //   ),
+        //   CustomizedTextFormField(
+        //     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        //     keyboardType: TextInputType.phone,
+        //     controller: _maxNoOfUsersCtrl,
+        //     isAmountField: true,
+        //     labelText: AppLocalization.of(context)!.amount,
+        //     onChanged: (value) {},
+        //     validator: (val) {
+        //       try {
+        //         double userAmount = double.parse(val.replaceAll(',', ''));
+        //         if (userAmount > amountLimit) {
+        //           return 'You cannot fund more than $amountLimit';
+        //         }
+        //       } catch (e) {
+        //         return AppLocalization.of(context)!.invalidAmount;
+        //       }
+        //       return null;
+        //     },
+        //   ),
+        // ],
+        // SizedBox(height: 10),
+      ],
+    );
+
     return appConfigurationModel?.enablePayment == true &&
             appConfigurationModel?.enablePaidGroupChat == true
         ? Column(
@@ -405,53 +513,53 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                 ),
               ],
               SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Create paid group chat',
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  Switch(
-                    onChanged: (bool value) {
-                      setState(() {
-                        makeGroupPaid = value;
-                      });
-                    },
-                    value: makeGroupPaid!,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  )
-                ],
-              ),
-              if (makeGroupPaid!) ...[
-                SizedBox(
-                  height: 10,
-                ),
-                CustomizedTextFormField(
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  keyboardType: TextInputType.phone,
-                  controller: _maxNoOfUsersCtrl,
-                  isAmountField: true,
-                  labelText: AppLocalization.of(context)!.amount,
-                  onChanged: (value) {},
-                  validator: (val) {
-                    try {
-                      double userAmount = double.parse(val.replaceAll(',', ''));
-                      if (userAmount > amountLimit) {
-                        return 'You cannot fund more than $amountLimit';
-                      }
-                    } catch (e) {
-                      return AppLocalization.of(context)!.invalidAmount;
-                    }
-                    return null;
-                  },
-                ),
-              ],
-              SizedBox(height: 10),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       child: Text(
+              //         'Create paid group chat',
+              //         style:
+              //             TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              //       ),
+              //     ),
+              //     Switch(
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           makeGroupPaid = value;
+              //         });
+              //       },
+              //       value: makeGroupPaid!,
+              //     ),
+              //     SizedBox(
+              //       width: 10,
+              //     )
+              //   ],
+              // ),
+              // if (makeGroupPaid!) ...[
+              //   SizedBox(
+              //     height: 10,
+              //   ),
+              //   CustomizedTextFormField(
+              //     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              //     keyboardType: TextInputType.phone,
+              //     controller: _maxNoOfUsersCtrl,
+              //     isAmountField: true,
+              //     labelText: AppLocalization.of(context)!.amount,
+              //     onChanged: (value) {},
+              //     validator: (val) {
+              //       try {
+              //         double userAmount = double.parse(val.replaceAll(',', ''));
+              //         if (userAmount > amountLimit) {
+              //           return 'You cannot fund more than $amountLimit';
+              //         }
+              //       } catch (e) {
+              //         return AppLocalization.of(context)!.invalidAmount;
+              //       }
+              //       return null;
+              //     },
+              //   ),
+              // ],
+              // SizedBox(height: 10),
             ],
           )
         : SizedBox.shrink();

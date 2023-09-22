@@ -475,7 +475,7 @@ class _DisplayProductState extends State<DisplayProduct> {
       "qty": mapData["qty"] - 1,
     };
 
-    debugPrint("Data send From Remove Button : $data");
+    debugPrint("Data send From Remove Main : $data");
     basketBloc.removeItemFromCart(widget.product);
     await ShoppingAuthService().removeItemFromShoppingCart(data);
   }

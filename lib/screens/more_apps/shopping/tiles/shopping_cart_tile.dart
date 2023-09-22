@@ -50,38 +50,42 @@ class _ShoppingCartTileForProductState
     basketBloc = Provider.of<BasketBloc>(context);
     try {
 
-      debugPrint('fola cart tile:: ${widget.variant}');
-
-      return Container(
-        color: Colors.white,
-        child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-          shadowColor: boxShadowTwo,
-          elevation: 0,
-          child: Container(
-            decoration: decorateBox(),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    leading: getLeading(),
-                    title: getTitle(),
-                    trailing: getTrailing(),
-                    subtitle: getSubtitle(context),
-                    onTap: () {
-                      Navigator.pushNamed(context, Routes.PRODUCT,
-                          arguments: {"product": widget.item});
-                    },
+      if(int.parse(getTotalPrice()) == 0){
+        return Container();
+      }else{
+        return Container(
+          color: Colors.white,
+          child: Card(
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            shadowColor: boxShadowTwo,
+            elevation: 0,
+            child: Container(
+              decoration: decorateBox(),
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      leading: getLeading(),
+                      title: getTitle(),
+                      trailing: getTrailing(),
+                      subtitle: getSubtitle(context),
+                      onTap: () {
+                        Navigator.pushNamed(context, Routes.PRODUCT,
+                            arguments: {"product": widget.item});
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
+
+
     } catch (e) {
       return Container();
     }

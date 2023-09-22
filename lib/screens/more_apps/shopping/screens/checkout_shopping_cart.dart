@@ -65,18 +65,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
     basketBloc.resetShoppingCart();
   }
 
-  void getLocalShoppingCart(){
-
-    // debugPrint('fola cart orderTotal::::${basketBloc.orderTotal}');
-    // debugPrint('fola cart items::::${basketBloc.items}');
-    // debugPrint('fola cart items::::${basketBloc.items.length}');
-
-    for(var data in basketBloc.items){
-      debugPrint('fola cart data::::${data}');
-    }
-
-  }
-
   AppConfigurationModel? appConfigurationModel;
 
   @override
@@ -106,7 +94,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
         child: _buildBodyOfCart(),
       ),
       floatingActionButton:
-          basketBloc.total == 0 ? Container() : checkoutWidget(),
+      int.parse(getTotalPrice().toString()) == 0 ? Container() : checkoutWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -135,7 +123,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       ),
       actions: <Widget>[
         scanQRCodeBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -162,9 +150,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   Widget _buildBodyOfCart() {
 
-    // getLocalShoppingCart();
-
-    return basketBloc.total == 0
+    return int.parse(getTotalPrice().toString()) == 0
         ? Center(
             child: NoItemInList(
                 msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
@@ -178,12 +164,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
   Widget checkoutWidget() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       shadowColor: boxShadowTwo,
       elevation: 4,
       child: Container(
         decoration: decorateBox(),
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -195,20 +181,19 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 ),
                 Text(
                   worldCurrencies[userBloc.user.currency!]!,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontFamily: "Roboto",
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
                   moneyDisplayNormalizer(
-                      // int.parse(basketBloc.total.toString())),
                       int.parse(getTotalPrice().toString())),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
-            Expanded(
+            const Expanded(
               child: SizedBox(
                 width: 10,
               ),
@@ -218,7 +203,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
               color: navyBlue,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              child: SizedBox(
+              child: const SizedBox(
                 width: 66,
                 child: Text(
                   "Checkout",
@@ -232,7 +217,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 if (appConfigurationModel?.enableCheckout == true) {
                   NavigationUtil.push(
                     context,
-                    screen: CheckoutScreen(),
+                    screen: const CheckoutScreen(),
                   );
                 } else {
                   showToast(message: 'Checkout not available now');
@@ -454,14 +439,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void addVariantItem(int index, int variantId) async {
     String type = basketBloc.items[index]["item"] is Product ? "product" : "service";
 
-    late var mapData;
-    basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
-        mapData = element;
-        return;
-      }
-    });
-
     for (var product in basketBloc.items) {
 
       if (product['item'] is Product) {
@@ -470,7 +447,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
         for (var variant in variantList) {
 
           if (int.parse(variant!['id'].toString()) == variantId) {
-            // Reduce the quantity of the variant
+            // Increase the quantity of the variant
             int currentQuantity = int.parse(variant['quantity'].toString());
             variant['quantity'] = currentQuantity + 1;
           }
@@ -478,14 +455,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
       }
     }
-    if (mounted) setState(() {});
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items[index]["item"], type, basketBloc.items[index]["item"].id);
 
     debugPrint("fola cart From Add Button : ${dataInfo}");
     await ShoppingAuthService().addItemToShoppingCart(dataInfo);
-    getTotalPrice();
-
   }
 
   void removeItem(int index) async {
@@ -513,14 +487,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void removeVariantItem(int index, int variantId) async {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
-
-    late var mapData;
-    basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
-        mapData = element;
-        return;
-      }
-    });
 
     for (var product in basketBloc.items) {
 
@@ -556,11 +522,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
     debugPrint("fola cart From Remove Button : ${dataInfo}");
     await ShoppingAuthService().addItemToShoppingCart(dataInfo);
-    getTotalPrice();
 
     //close pop up if quantity to reduce is 1 currently
     if(dataInfo["qty"] == 0){
       basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
+      await ShoppingAuthService().removeItemFromShoppingCart(dataInfo);
     }
   }
 
@@ -578,15 +544,24 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
     dataInfo["variants"] = [];
     if (variantsList.isNotEmpty) {
+      int variantId = 0;
+      int variantQuantity = 0;
       // Iterate through the productView and add them to dataInfo
       for (var variant in variantsList) {
-
-        dataInfo["variants"].add({
-          "id": int.parse(variant["id"].toString()),
-          "quantity": int.parse(variant["quantity"].toString()),
-        });
+        if (variant.containsKey("id") && variant["id"] != null) {
+          variantId = int.parse(variant["id"].toString());
+          variantQuantity = variantQuantity + int.parse(variant["quantity"].toString());
+        }
 
       }
+      dataInfo["variants"].add({
+        "id": variantId,
+        "quantity": variantQuantity,
+      });
+    }
+    else if(variantsList.isEmpty){
+
+      dataInfo["variants"] = [];
     }
 
     return dataInfo;
@@ -714,8 +689,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
           return false;
         },
         child: AlertDialog(
-          titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           title: Text(

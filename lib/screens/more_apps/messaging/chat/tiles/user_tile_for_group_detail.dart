@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../routes/route_constants.dart';
+import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 // ignore: must_be_immutable
 class UserTileForGroupDetail extends StatefulWidget {
@@ -27,37 +28,37 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
 
     Color borderColor = getUserTypeColor(user: widget.user!);
 
-    avatarImage = GestureDetector(
-      onTap: () {
-        Navigator.of(context)
-            .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
-      },
-      child: GestureDetector(
-        onTap: () {
-          Navigator.of(context)
-              .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
-        },
-        child: Container(
-            height: 48,
-            width: 48,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                  25,
-                ),
-                border: Border.all(color: borderColor, width: 2)),
-            child: ClipOval(
-              child: CachedNetworkImage(
-                errorWidget: imageErrorWidget,
-                imageUrl: widget.user!.avatar == ""
-                    ? defaultImage
-                    : widget.user!.avatar!,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-              ),
-            )),
-      ),
-    );
+    // avatarImage = GestureDetector(
+    //   onTap: () {
+    //     Navigator.of(context)
+    //         .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
+    //   },
+    //   child: GestureDetector(
+    //     onTap: () {
+    //       Navigator.of(context)
+    //           .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
+    //     },
+    //     child: Container(
+    //         height: 48,
+    //         width: 48,
+    //         decoration: BoxDecoration(
+    //             borderRadius: BorderRadius.circular(
+    //               25,
+    //             ),
+    //             border: Border.all(color: borderColor, width: 2)),
+    //         child: ClipOval(
+    //           child: CachedNetworkImage(
+    //             errorWidget: imageErrorWidget,
+    //             imageUrl: widget.user!.avatar == ""
+    //                 ? defaultImage
+    //                 : widget.user!.avatar!,
+    //             colorBlendMode: BlendMode.darken,
+    //             fit: BoxFit.fill,
+    //             filterQuality: FilterQuality.high,
+    //           ),
+    //         )),
+    //   ),
+    // );
 
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -74,7 +75,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
             verifiedIconColor: verifyGreen,
           ),
           subtitle: getSubtitle(context),
-          leading: avatarImage,
+          leading: showSelectedUserAvatar(widget.user!.avatar!, widget.user!.fullName!),
           trailing: getTrailing(),
           onTap: () async {
             await Navigator.pushNamed(context, '/profile',
@@ -84,6 +85,54 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
       ),
     );
     return tile;
+  }
+
+  Widget showSelectedUserAvatar(String imageUrl, String fullName){
+    Color borderColor = getUserTypeColor(user: widget.user!);
+
+    if (imageUrl == null || imageUrl == ""
+        || imageUrl == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return GestureDetector(
+        onTap: (){
+          Navigator.of(context)
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: getInitials(fullName).toUpperCase());
+        },
+        child: CircleAvatar(
+          backgroundColor: navyBlue,
+          radius: 25,
+          child: Text(
+            getInitials(fullName).toUpperCase(),
+            style: TextStyle(color: white, fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
+    } else {
+      return GestureDetector(
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
+        },
+        child: Container(
+            height: 48,
+            width: 48,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(
+                  25,
+                ),
+                border: Border.all(color: borderColor, width: 2)),
+            child: ClipOval(
+              child: CachedNetworkImage(
+                errorWidget: imageErrorWidget,
+                imageUrl: imageUrl == ""
+                    ? defaultImage
+                    : imageUrl,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.high,
+              ),
+            )),
+      );
+    }
   }
 
   String? _buildName() {

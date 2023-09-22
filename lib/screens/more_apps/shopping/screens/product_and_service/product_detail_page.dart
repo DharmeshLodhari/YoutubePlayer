@@ -617,29 +617,78 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       variantType = "Size";
     }
 
-    Map<String, dynamic> variant1 = {
-      "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
-      "price": selectedVariantPrice, "colour": selectedColor,
-      "value": selectedSize, "type": variantType
-    };
+    Map<String, dynamic> variantPayLoad = {};
+
+    if(basketBloc.items.isEmpty){
+      variantPayLoad = {
+        "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
+        "price": selectedVariantPrice, "colour": selectedColor,
+        "value": selectedSize, "type": variantType
+      };
+    }else{
+      for (var item in basketBloc.items) {
+        Product product = item['item'];
+        //check if product id exist
+        if (product.id.toString() == productId) {
+          List variantList = item['item'].variant;
+
+          if(variantList.isNotEmpty){
+            for (var variant in variantList) {
+
+              //check if product variant id is the same as selected variant id
+              if (variant!['id'].toString() == selectedVariantId) {
+                // Increase the quantity of the variant by one
+                int currentQuantity = int.parse(variant['quantity'].toString());
+                variant['quantity'] = currentQuantity + 1;
+
+                Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+
+                debugPrint("Data From Product Page exist : $dataInfo");
+
+                await _auth.addItemToShoppingCart(dataInfo);
+                return;
+              }else{
+                //variant is not available yet
+                variantPayLoad = {
+                  "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
+                  "price": selectedVariantPrice, "colour": selectedColor,
+                  "value": selectedSize, "type": variantType
+                };
+                break;
+              }
+            }
+          }else{
+            //add quantity plus 1 to product without variant but already exist
+            product.quantity = int.parse(product.quantity.toString()) + 1;
+            Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+
+            debugPrint("Data From Product Page exist : $dataInfo");
+
+            await _auth.addItemToShoppingCart(dataInfo);
+            return;
+
+          }
+
+        }else{
+          //product id doesn't exit in the cart
+          variantPayLoad = {
+            "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
+            "price": selectedVariantPrice, "colour": selectedColor,
+            "value": selectedSize, "type": variantType
+          };
+        }
+      }
+    }
+
+    debugPrint("Data From Product variantPayLoad : $variantPayLoad");
 
     if(colorGroups.isEmpty && sizeGroups.isEmpty){
       basketBloc.addItemToCart(item: product, type: type);
     }else{
-      basketBloc.addItemToCart(item: product, type: type, variant: variant1);
+      basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
     }
 
-    late var mapData;
-
-    basketBloc.items.forEach((element) {
-      if (element["item"].id == product!.id) {
-        mapData = element;
-        return;
-      }
-    });
-
     Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
-    // var variantList = computeVariant(variant, basketBloc.items, mapData["item"].id);
 
     debugPrint("Data From Product Page : $dataInfo");
 
@@ -649,11 +698,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Map<String, dynamic> getUpdatedCartItem(List cartItem, String type){
     Map<String, dynamic> dataInfo = {};
 
-
     for (var element in basketBloc.items) {
       final item = element["item"];
       int totalVariantQuantity = 0;
-      if(element["variants"] != null){
+
+      if(element["variants"] != null && element.containsKey("variants")){
         totalVariantQuantity = getTotalVariantQuantity(element["variants"], item.id);
 
         final variantsList = element["variants"] as List;
@@ -664,25 +713,35 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           "type": type,
         };
 
-        // Check if "productView" key exists and it's a list
+        // Check if variantsList is not empty
         dataInfo["variants"] = [];
-        if (element.containsKey("variants") && element["variants"] is List) {
+        if (variantsList.isNotEmpty) {
           final variantsList = element["variants"] as List;
+          int variantId = 0;
+          int variantQuantity = 0;
 
-          // Iterate through the productView and add them to dataInfo
-
+          // Iterate through the variant and add id and quantity of all variant
           for (var variant in variantsList) {
             if (variant.containsKey("id") && variant["id"] != null) {
-              dataInfo["variants"].add({
-                "id": int.parse(variant["id"].toString()),
-                "quantity": int.parse(variant["quantity"].toString()),
-              });
+              variantId = int.parse(variant["id"].toString());
+              variantQuantity = variantQuantity + int.parse(variant["quantity"].toString());
             }
           }
+          dataInfo["variants"].add({
+            "id": variantId,
+            "quantity": variantQuantity,
+          });
+
+        }else if(variantsList.isEmpty){
+          dataInfo = {
+            "id": item.id,
+            "qty": item.quantity,
+            "type": type,
+            "variants": [],
+          };
         }
 
       }else{
-
         dataInfo = {
           "id": item.id,
           "qty": item.quantity,
@@ -690,7 +749,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           "variants": [],
         };
       }
-
 
       // Once you've found a matching element, you can exit the loop
       continue;
@@ -715,34 +773,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return totalQuantity;
   }
 
-  List<Map<String, dynamic>> computeVariant(Map newVariant, List cartItems, String productId){
-    int productIndex = 0;
-    int? variantIndex;
-
-    cartItems.forEachIndexed((index, element) {
-      if(element['id'] == productId){
-        productIndex = index;
-        print('index: $index, element: $element');
-      }
-    });
-
-    var variants = cartItems[productIndex]["variants"];
-
-    variants.forEachIndexed((index, elements) {
-      if(elements['id'] == newVariant['id']){
-        variantIndex = index;
-        print('variantIndex: $index, elements: $elements');
-      }
-    });
-
-    if(variantIndex == null){
-      variants = [newVariant];
-    }else{
-      variants[variantIndex] = newVariant;
-    }
-
-    return variants;
-  }
 
   Widget? getBadgeContent() {
     if (basketBloc.items.length == 0) {
@@ -1516,9 +1546,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   selectedVariantPrice = variant.price!;
                   stockLeft = int.parse(variant.quantity!);
                 }
-
-                // colorGroups = {};
-                // colorGroups = groupVariantsBySizeForSelectedColor(selectedSize, productVariantList);
 
                 if(mounted) setState(() {});
               },

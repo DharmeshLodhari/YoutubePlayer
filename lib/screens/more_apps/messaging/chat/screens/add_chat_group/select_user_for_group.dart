@@ -16,6 +16,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+
 // ignore: must_be_immutable
 class SelectUserForGroup extends StatefulWidget {
   var arguments;
@@ -48,8 +50,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
   ///For checking if this page is oprn to add user is existingGroup or not
   bool isForAddingUserInGroup = false;
-
   GroupDetailModel? groupDetailModel;
+
 
   @protected
   void initState() {
@@ -133,7 +135,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       Navigator.of(context).pop(selectedConnectionList);
     } else {
       Navigator.of(context).pushNamed(Routes.SET_NAME_AND_PROFILE_FOR_GROUP,
-          arguments: {"users": selectedConnectionList});
+          arguments: {"users": selectedConnectionList, "create": widget.arguments["create"]});
     }
   }
 
@@ -211,17 +213,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          ClipOval(
-            child: Container(
-              height: 64,
-              width: 64,
-              child: CachedNetworkImage(
-                imageUrl: selectedConnectionList[index].avatar!,
-                fit: BoxFit.fill,
-                errorWidget: imageErrorWidget,
-              ),
-            ),
-          ),
+          showSelectedUser(selectedConnectionList[index].avatar!, selectedConnectionList[index].fullName!),
+
           Positioned(
             top: 2,
             right: 2,
@@ -240,6 +233,32 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         ],
       ),
     );
+  }
+
+  Widget showSelectedUser(String imageUrl, String fullName){
+    if (imageUrl == null || imageUrl == ""
+        || imageUrl == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 32,
+        child: Text(
+          getInitials(fullName).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return ClipOval(
+        child: Container(
+          height: 64,
+          width: 64,
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
+            fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildConnectionsList() {
