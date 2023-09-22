@@ -10,8 +10,6 @@ Widget getFollowersWidget(widget,
     double radiusWidth: 32}) {
   List<UserFollowers> viewers = [];
 
-  debugPrint('Viewer 011:::: ${widget.yarn.viewersAvatars}');
-
   if (widget.yarn.viewersAvatars != null) {
     for (ViewersAvatars avatars in widget.yarn.viewersAvatars!) {
       UserFollowers follower = UserFollowers(avatar: avatars.avatar!);
@@ -36,7 +34,7 @@ Widget followersWidget(
   if (count == 0) {
     return SizedBox();
   } else if (4 > count) {
-    return buildStackedfollowersWidget(
+    return buildStackedFollowersWidget(
         images: userImages, radiusSize: radiusSize, radiusShift: radiusShift);
   } else if (4 <= count) {
     return buildMultipleFollowersWidget(
@@ -50,7 +48,7 @@ Widget followersWidget(
   }
 }
 
-Widget buildfollowersCountWidget(List<UserFollowers> userFollowers,
+Widget buildFollowersCountWidget(List<UserFollowers> userFollowers,
     {userImages, double radiusHeight: 32, double radiusWidth: 32}) {
   int count = userFollowers.length - 4;
   return Container(
@@ -74,7 +72,7 @@ Widget buildfollowersCountWidget(List<UserFollowers> userFollowers,
   );
 }
 
-Widget buildStackedfollowersWidget(
+Widget buildStackedFollowersWidget(
     {List<UserFollowers>? images,
     double radiusSize: 32,
     double radiusShift: 10}) {
@@ -112,7 +110,7 @@ Widget buildMultipleFollowersWidget(
             (index) => buildImage(userImages![index].avatar ?? "",
                 userImages[index].fullName ?? '')),
         if (userImages != null && userImages.length != 4)
-          buildfollowersCountWidget(userImages,
+          buildFollowersCountWidget(userImages,
               radiusWidth: radiusWidth, radiusHeight: radiusHeight),
       ],
     ),

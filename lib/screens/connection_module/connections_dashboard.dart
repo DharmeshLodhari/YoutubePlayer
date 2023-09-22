@@ -13,6 +13,8 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/slydo_app_icon_icons.dart';
+import '../../widget/bottom_sheet_item.dart';
 import 'block_list.dart';
 import 'connection_request_list.dart';
 import 'connections_list.dart';
@@ -235,6 +237,82 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     );
   }
 
+  Widget menuBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.plus,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        showUserProfileActionsSheet();
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  void showUserProfileActionsSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> generateBottomSheetItem() {
+    List<Widget> list = [];
+
+
+    list.add(bottomSheetItem(
+      title: "Create Group",
+      iconData: SlydoAppIcon.add_group,
+      onTap: () async {
+        Navigator.pop(context);
+        if (appConfigurationModel != null &&
+            appConfigurationModel!.enableGroupChat == true) {
+          Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+              arguments: {"create": "group"});
+        }
+
+      },
+    ));
+
+    list.add(
+      bottomSheetItem(
+        title: "Create Channel",
+        iconData: SlydoAppIcon.add_channel,
+        onTap: () async {
+          Navigator.pop(context);
+          if (appConfigurationModel != null &&
+              appConfigurationModel!.enableGroupChat == true) {
+            Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+                arguments: {"create": "channel"});
+          }
+        },
+      ),
+    );
+
+    return list;
+  }
+
   List<Widget> getActions() {
     List<Widget> list = [
       ///TODO:- To be enabled in future version
@@ -242,7 +320,8 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       // SizedBox(
       //   width: 8
       // ),
-      currentIndex == 0 ? createGroupBtn() : SizedBox.shrink(),
+      currentIndex == 0 ? menuBtn() : SizedBox.shrink(),
+      // currentIndex == 0 ? createGroupBtn() : SizedBox.shrink(),
       SizedBox(width: 16),
     ];
 

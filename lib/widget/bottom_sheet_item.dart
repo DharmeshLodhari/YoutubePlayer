@@ -41,7 +41,7 @@ Widget bottomSheetItem(
             SizedBox(width: icon != null ? 28 : 16),
             Text(
               title,
-              style: TextStyle(fontSize: 16, color: blackFont),
+              style: TextStyle(fontSize: 16, color: blackFont, fontWeight: FontWeight.w600),
             ),
             extraWidget ?? const SizedBox.shrink(),
           ],

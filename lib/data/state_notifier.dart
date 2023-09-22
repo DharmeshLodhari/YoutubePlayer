@@ -346,7 +346,7 @@ class BasketBloc extends ChangeNotifier {
   void addItemInBasketWithQty(var item, String type, Map<String, dynamic> variant) {
     bool variantExists = false;
 
-    _items.forEach((element) {
+    for (var element in _items) {
       if (element["item"].id == item.id) {
         // Check if the variant ID already exists in the item's variants list
         bool variantIdExists = false;
@@ -363,6 +363,16 @@ class BasketBloc extends ChangeNotifier {
             variantIdExists = true;
             break;
           }
+          // else if(existingVariant["id"] == variant["id"]){
+          //   // Update the existing variant
+          //   int existingQuantity = int.parse(existingVariant["quantity"].toString());
+          //   int variantQuantity = int.tryParse(variant["quantity"].toString()) ?? 0;
+          //   existingVariant["quantity"] = (existingQuantity + variantQuantity).toString();
+          //   existingVariant["image"] = variant["image"];
+          //
+          //   variantIdExists = true;
+          //   break;
+          // }
         }
 
         // If the variant ID doesn't exist, add it as a new variant
@@ -387,9 +397,9 @@ class BasketBloc extends ChangeNotifier {
           variantExists = true;
         }
 
-        return;
+        continue;
       }
-    });
+    }
 
     if (!variantExists) {
       // Item doesn't exist in the basket, so create a new entry
@@ -409,7 +419,6 @@ class BasketBloc extends ChangeNotifier {
         product.variant = [variant];
       }
       var newItem = {"type": type, "item": product, "qty": variant['quantity'], "variants": [variant]};
-      // var newItem = {"type": type, "item": item, "qty": 1, "variants": [variant]};
 
       _items.add(newItem);
 
@@ -426,30 +435,6 @@ class BasketBloc extends ChangeNotifier {
         // variantExists = true;
       }
     }
-
-
-    // if (!variantExists) {
-    //   // Item doesn't exist in the basket, so create a new entry
-    //   if (item is Product) {
-    //     item.quantity = 1;
-    //   }
-    //   _items.add({"type": type, "item": item, "qty": 1, "variants": [variant]});
-    //
-    //   // debugPrint("New Item Added one:::: ${item.quantity}");
-    //
-    //   if (variant.containsKey("id") && variant["id"] != null && variant["id"].isNotEmpty) {
-    //     // The variant has a non-empty "id" key
-    //     String price = variant["price"];
-    //     // Now, you can use the 'price' variable for further processing.
-    //     _total = _total + int.parse(price);
-    //   } else {
-    //     // The variant does not have a valid "id" key
-    //     _total = _total + int.parse(item.price);
-    //     variantExists = true;
-    //   }
-    //
-    //   debugPrint("New Item Added");
-    // }
 
     notifyListeners();
   }
