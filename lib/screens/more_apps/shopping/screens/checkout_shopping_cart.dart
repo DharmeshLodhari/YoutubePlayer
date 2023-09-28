@@ -526,7 +526,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     //close pop up if quantity to reduce is 1 currently
     if(dataInfo["qty"] == 0){
       basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
-      await ShoppingAuthService().removeItemFromShoppingCart(dataInfo);
+      // await ShoppingAuthService().removeItemFromShoppingCart(dataInfo);
     }
   }
 
@@ -598,11 +598,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
         } else {
           // If the variant list is not empty, calculate the total price using variants
           for (var variant in product.variant!) {
-            var vProduct = Variant.fromJson(variant);
+            if(variant['quantity'] != null || variant['price'] != null){
+              int variantPrice = int.parse(variant['price'].toString()) ?? 0;
+              int quantity = int.parse(variant['quantity'].toString()) ?? 0;
+              itemTotal += variantPrice * quantity;
+            }
 
-            int variantPrice = int.parse(vProduct.price.toString()) ?? 0;
-            int quantity = int.parse(vProduct.quantity.toString()) ?? 0;
-            itemTotal += variantPrice * quantity;
+
           }
         }
       }else{

@@ -472,7 +472,7 @@ class _DisplayProductState extends State<DisplayProduct> {
     Map data = {
       "type": type,
       "id": mapData["item"].id,
-      "qty": mapData["qty"] - 1,
+      "qty": int.parse(mapData["qty"].toString()) - 1,
     };
 
     debugPrint("Data send From Remove Main : $data");

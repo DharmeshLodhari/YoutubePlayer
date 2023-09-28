@@ -1317,28 +1317,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   // Define a function to group variants by color for the selected color/image
-  Map<String, List<Variant>> groupVariantsByColorForSelectedSize(
-      String selectedSize, List<Variant> allVariants) {
-    Map<String, List<Variant>> colorGroups = {};
-
-    // Filter variants that match the selected color
-    List<Variant> selectedSizeVariants = allVariants
-        .where((variant) => variant.size == selectedSize)
-        .toList();
-
-    // Group the selected color variants by size, only if variant.value is not empty or null
-    for (var variant in selectedSizeVariants) {
-
-      if (variant.colour != null && variant.colour!.isNotEmpty) {
-        if (!colorGroups.containsKey(variant.colour)) {
-          colorGroups[variant.colour!] = [];
-        }
-        colorGroups[variant.colour]!.add(variant);
-      }
-    }
-
-    return colorGroups;
-  }
+  // Map<String, List<Variant>> groupVariantsByColorForSelectedSize(
+  //     String selectedSize, List<Variant> allVariants) {
+  //   Map<String, List<Variant>> colorGroups = {};
+  //
+  //   // Filter variants that match the selected color
+  //   List<Variant> selectedSizeVariants = allVariants
+  //       .where((variant) => variant.size == selectedSize)
+  //       .toList();
+  //
+  //   // Group the selected color variants by size, only if variant.value is not empty or null
+  //   for (var variant in selectedSizeVariants) {
+  //
+  //     if (variant.colour != null && variant.colour!.isNotEmpty) {
+  //       if (!colorGroups.containsKey(variant.colour)) {
+  //         colorGroups[variant.colour!] = [];
+  //       }
+  //       colorGroups[variant.colour]!.add(variant);
+  //     }
+  //   }
+  //
+  //   return colorGroups;
+  // }
 
   bool hasVariantsWithoutColor(List<Variant> productVariantList, String variantId) {
     // Iterate through the productVariantList

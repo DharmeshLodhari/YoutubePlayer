@@ -377,10 +377,8 @@ class Variant {
   String? type;
   String? price;
   String? value;
-  String? comparePrice;
   List<File>? localImages;
   List<String?>? serverImages;
-  String? category;
   String? quantity;
   bool? isAvailable;
   DateTime? availableFrom;
@@ -398,7 +396,6 @@ class Variant {
     this.quantity,
     this.localImages,
     this.serverImages,
-    this.category,
     this.isAvailable,
     this.availableFrom,
     this.currency});
@@ -413,8 +410,6 @@ class Variant {
       "type": type,
       "value": value,
       "quantity": quantity,
-      "category": category,
-      "compare_price": comparePrice,
       "is_available": isAvailable,
       "available_from": availableFrom,
       "track_inventory": trackInventory,
@@ -432,8 +427,6 @@ class Variant {
       "type": type,
       "value": value,
       "quantity": quantity,
-      "category": category,
-      "compare_price": comparePrice,
       "is_available": isAvailable,
       "available_from": availableFrom.toString(),
       "track_inventory": trackInventory,
@@ -456,7 +449,6 @@ class Variant {
         trackInventory: data["track_inventory"] ?? false,
         localImages: data["localImages"] ?? [],
         serverImages: getProductImages(data["pictures"]),
-        category: data["category"] ?? "",
         isAvailable: data["is_available"] ?? true,
         availableFrom: getProductDateTime(data["available_from"]),
         currency: data["currency"] ?? "NGN",
@@ -492,7 +484,6 @@ class Variant {
     return Variant(
       id: object["id"].toString(),
       title: object["title"].toString(),
-      size: object["size"] ?? "",
       colour: object["colour"] ?? "",
       quantity: object["quantity"] ?? "",
       value: object["value"] ?? "",
@@ -500,7 +491,6 @@ class Variant {
       trackInventory: object["track_inventory"] ?? false,
       localImages: object["localImages"] ?? [],
       serverImages: getProductImages(object["pictures"]),
-      category: object["category"] ?? "",
       isAvailable: object["is_available"] ?? true,
       availableFrom: getProductDateTime(object["available_from"]),
       currency: object["currency"] ?? "NGN",
