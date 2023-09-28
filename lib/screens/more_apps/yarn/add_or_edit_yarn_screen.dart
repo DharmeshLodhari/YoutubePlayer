@@ -1438,7 +1438,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
     logger.d(yarn.toAddMap());
 
-    Yarn? data = await YarnAuth().addYarnAndQuestion(yarn, 'Add');
+    Yarn? data = await YarnAuth().addYarnAndQuestion(yarn, 'Add', "");
 
     if (data != null) {
       ///send yarn back list screen

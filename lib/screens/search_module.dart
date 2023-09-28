@@ -2,6 +2,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/moments/models/comment_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -16,16 +17,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
+import '../widget/custom_slydo_usercard.dart';
 import '../widget/dialog.dart';
 import '../widget/rounded_background_icon.dart';
 import 'connection_module/channels.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
-import 'more_apps/suggestions_tab.dart';
 import 'more_apps/user_profile/user_auth.dart';
+import 'more_apps/yarn/widgets/yarn_tab_selection.dart';
 
 class SearchModule extends StatefulWidget {
   final arguments;
@@ -77,6 +80,25 @@ class _SearchModuleState extends State<SearchModule> {
   List<String> userConnectionNames = [];
   AppConfigurationModel? appConfigurationModel;
   int currentIndex = 0;
+  bool _tabsVisible = true;
+  String? nextPageUrl;
+  bool isSuggestionLoading = false;
+  bool isFirstTime = true;
+  bool noItemInSuggestionList = false;
+  List<CustomerProfile> suggestionsList = [];
+  BasePaginationModel<List<CustomerProfile>>? basePaginationModel;
+  ScrollController _scrollCtrl = ScrollController();
+  RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
+  bool isSuggestion = true;
+
+
+  void _showTabs(bool visible) {
+    if (_tabsVisible != visible) {
+      setState(() {
+        _tabsVisible = visible;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -105,8 +127,17 @@ class _SearchModuleState extends State<SearchModule> {
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
         if (next != null) {
-          getList();
+          getSearchUserList();
         }
+      }
+    });
+
+    getListOfSuggestions();
+
+    _scrollCtrl.addListener(() {
+      if (_scrollCtrl.position.pixels == _scrollCtrl.position.maxScrollExtent &&
+          _scrollCtrl.position.pixels != 0) {
+        getListOfSuggestions();
       }
     });
 
@@ -164,79 +195,27 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
+
   Widget tabBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
-      child: TabBar(
-        labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
-        onTap: (int index) {
-          currentIndex = index;
-          setState(() {});
-        },
-        tabs: [
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 0
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                AppLocalization.of(context)!.search,
-                style: TextStyle(
-                  color: currentIndex == 0 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
+      preferredSize: const Size.fromHeight(80),
+      child: Column(
+        children: [
+          Divider(
+            color: darkGrey.withOpacity(.5),
           ),
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 1
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                AppLocalization.of(context)!.suggestions,
-                style: TextStyle(
-                  color: currentIndex == 1 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
+          YarnTabSelection(
+            onTap: (index) {
+              currentIndex = index;
+              _showTabs(true);
+              if (mounted) setState(() {});
+            },
+            currentIndex: currentIndex,
+            firstTab: AppLocalization.of(context)!.users,
+            secondTab: AppLocalization.of(context)!.chatChannels,
           ),
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 2
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                AppLocalization.of(context)!.chatChannels,
-                style: TextStyle(
-                  color: currentIndex == 2 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
+          Divider(
+            color: darkGrey.withOpacity(.5),
           ),
         ],
       ),
@@ -269,7 +248,7 @@ class _SearchModuleState extends State<SearchModule> {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: ScaffoldMessenger(
         key: _scaffoldMessengerSearchKey,
         child: Scaffold(
@@ -285,10 +264,8 @@ class _SearchModuleState extends State<SearchModule> {
 
   String getTabTitle() {
     if (currentIndex == 0) {
-      return AppLocalization.of(context)!.search;
+      return AppLocalization.of(context)!.users;
     } else if (currentIndex == 1) {
-      return AppLocalization.of(context)!.suggestions;
-    } else if (currentIndex == 2) {
       return AppLocalization.of(context)!.chatChannels;
     }
     return "";
@@ -299,7 +276,6 @@ class _SearchModuleState extends State<SearchModule> {
       index: currentIndex,
       children: [
         searchTab(),
-        SuggestionsTab(),
         ChatChannels(),
       ],
     );
@@ -351,7 +327,7 @@ class _SearchModuleState extends State<SearchModule> {
                   results.clear();
                   isLoading = false;
                   noItemInList = false;
-                  getList();
+                  getSearchUserList();
                 });
 
                 if (results.isNotEmpty ||
@@ -359,15 +335,23 @@ class _SearchModuleState extends State<SearchModule> {
                   if (mounted) {
                     setState(() {
                       isSearchIsEmpty = false;
+                      isSuggestion = false;
                     });
                   }
-                } else {
+                } else{
                   if (mounted) {
                     setState(() {
                       isSearchIsEmpty = true;
+                      isSuggestion = true;
                     });
                   }
                 }
+              }else if(value.length == 0){
+
+                setState(() {
+                  autoCompleteSearchText = value;
+                  isSuggestion = true;
+                });
               }
             },
             decoration: InputDecoration(
@@ -419,7 +403,7 @@ class _SearchModuleState extends State<SearchModule> {
                 isLoading = false;
 
                 setState(() {});
-                getList();
+                getSearchUserList();
                 FocusScope.of(context).unfocus();
               }
             },
@@ -482,7 +466,7 @@ class _SearchModuleState extends State<SearchModule> {
 
           noItemInList = false;
           setState(() {});
-          getList();
+          getSearchUserList();
           FocusScope.of(context).unfocus();
         }
       },
@@ -490,37 +474,65 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget _buildResultList() {
-    return isSearchIsEmpty
-        ? NoItemInList(
-            msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-            isResult: false,
-          )
-        : noItemInList
-            ? NoItemInList(
-                msg: AppLocalization.of(context)!.noResultFound,
-              )
-            : Container(
-                child: ListView.builder(
-                  //+1 for progressbar
-                  itemCount: results.length + 1,
-                  // ignore: missing_return
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == results.length) {
-                      return _buildIndicator();
-                    } else {
-                      try {
-                        debugPrint(' SHOW RESULT ->');
 
-                        return results[index];
-                      } catch (error) {
-                        debugPrint('ERROR RESULT -> ${error.toString()}');
-                      }
-                    }
-                    return _buildIndicator();
-                  },
-                  controller: _scrollController,
-                ),
-              );
+    if(isSuggestion && results.isEmpty && autoCompleteSearchText.length == 0){
+      return SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshCtrl,
+        onRefresh: _onRefresh,
+        child: noItemInSuggestionList
+            ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
+            : ListView.builder(
+          physics: ClampingScrollPhysics(),
+          controller: _scrollCtrl,
+          itemCount: suggestionsList.length + 1,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == suggestionsList.length) {
+              return buildLoadingIndicator(isLoading: isSuggestionLoading);
+            } else {
+              return CustomSlydoUserCard(user: suggestionsList[index]);
+            }
+          },
+        ),
+      );
+    }
+    else{
+      return isSearchIsEmpty
+          ? NoItemInList(
+        msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+        isResult: false,
+      )
+          : noItemInList
+          ? NoItemInList(
+        msg: AppLocalization.of(context)!.noResultFound,
+      )
+          : Container(
+        child: ListView.builder(
+          //+1 for progressbar
+          itemCount: results.length + 1,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == results.length) {
+              return _buildIndicator();
+            } else {
+              try {
+                debugPrint(' SHOW RESULT ->');
+
+                return results[index];
+              } catch (error) {
+                debugPrint('ERROR RESULT -> ${error.toString()}');
+              }
+            }
+            return _buildIndicator();
+          },
+          controller: _scrollController,
+        ),
+      );
+    }
+
   }
 
   Widget _buildIndicator() {
@@ -535,7 +547,44 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  void getList() async {
+  void getListOfSuggestions() {
+    if (isFirstTime == false) {
+      if (nextPageUrl == null || nextPageUrl!.isEmpty) return;
+    }
+    if (mounted) setState(() => isSuggestionLoading = true);
+
+    UserAuth().getListOfSuggestions(nextUrl: nextPageUrl).then((value) {
+      if (mounted) setState(() => isSuggestionLoading = false);
+
+      basePaginationModel = value;
+      suggestionsList.addAll(value.result);
+      nextPageUrl = basePaginationModel!.next;
+      isFirstTime = false;
+      debugPrint('NEXT PAGE URL -> ${basePaginationModel!.next}');
+
+      if (suggestionsList.isEmpty) {
+        if (mounted) setState(() => noItemInSuggestionList = true);
+      }
+    }).catchError((e) {
+      if (mounted) {
+        setState(() {
+          isSuggestionLoading = false;
+          noItemInSuggestionList = true;
+        });
+      }
+      isFirstTime = false;
+    });
+  }
+
+  void _onRefresh() {
+    isFirstTime = true;
+    suggestionsList.clear();
+    nextPageUrl = null;
+    getListOfSuggestions();
+    _refreshCtrl.refreshCompleted();
+  }
+
+  void getSearchUserList() async {
     if (!isLoading) {
       debugPrint('GET LIST ---------->');
 
@@ -588,7 +637,8 @@ class _SearchModuleState extends State<SearchModule> {
           noItemInList = true;
           setState(() {});
         }
-      } else if (next == null && results.length > 6) {
+      }
+      else if (next == null && results.length > 6) {
         _scaffoldMessengerSearchKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -1419,6 +1469,7 @@ class _SearchModuleState extends State<SearchModule> {
   void dispose() {
     searchItemTextController.dispose();
     _scrollController.dispose();
+    _scrollCtrl.dispose();
     super.dispose();
   }
 }

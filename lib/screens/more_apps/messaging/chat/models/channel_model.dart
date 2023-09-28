@@ -3,6 +3,7 @@ class ChannelModel {
   String? owner;
   String? description;
   String? banner;
+  String? avatar;
   int? noOfMembers;
   List<String>? blockedParticipants;
   List<String>? mutedParticipants;
@@ -23,6 +24,7 @@ class ChannelModel {
       this.isMember = false,
       this.description,
       this.banner,
+      this.avatar,
       this.noOfMembers,
       this.blockedParticipants,
       this.mutedParticipants,
@@ -42,7 +44,8 @@ class ChannelModel {
     isMember = json['is_member'] ?? false;
     description = json['description'];
     banner = json['banner'];
-    noOfMembers = json['no_of_members'] != null ? json['no_of_members'] : 0;
+    noOfMembers = json['no_of_members'] ?? 0;
+    avatar = json['avatar'] ?? "";
     mutedParticipants = json['muted_participants'] != null
         ? json['muted_participants'].cast<String>()
         : [];
@@ -62,23 +65,24 @@ class ChannelModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['owner'] = this.owner;
-    data['description'] = this.description;
-    data['banner'] = this.banner;
-    data['no_of_members'] = this.noOfMembers;
-    data['blocked_participants'] = this.blockedParticipants;
-    data['muted_participants'] = this.mutedParticipants;
-    data['admin_users'] = this.adminUsers;
-    data['group_name'] = this.groupName;
-    data['group_subscription_fee'] = this.groupSubscriptionFee;
-    data['group_subscription_currency'] = this.groupSubscriptionCurrency;
-    data['group_max_allowed_users'] = this.groupMaxAllowedUsers;
-    data['is_group_conversation'] = this.isGroupConversation;
-    data['is_public_group'] = this.isPublicGroup;
-    data['updated_at'] = this.updatedAt;
-    data['created_at'] = this.createdAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['owner'] = owner;
+    data['description'] = description;
+    data['banner'] = banner;
+    data['avatar'] = avatar;
+    data['no_of_members'] = noOfMembers;
+    data['blocked_participants'] = blockedParticipants;
+    data['muted_participants'] = mutedParticipants;
+    data['admin_users'] = adminUsers;
+    data['group_name'] = groupName;
+    data['group_subscription_fee'] = groupSubscriptionFee;
+    data['group_subscription_currency'] = groupSubscriptionCurrency;
+    data['group_max_allowed_users'] = groupMaxAllowedUsers;
+    data['is_group_conversation'] = isGroupConversation;
+    data['is_public_group'] = isPublicGroup;
+    data['updated_at'] = updatedAt;
+    data['created_at'] = createdAt;
     return data;
   }
 }

@@ -469,8 +469,12 @@ class MomentsService extends AuthService {
   }
 
   Future<bool> createMoment(
-      {required CreateMomentModel createMomentModel}) async {
+      {required CreateMomentModel createMomentModel,String? channelUsername }) async {
     String url = "${AppConfig.baseUrl}/api/v1/social/moments/";
+
+    if(channelUsername!.isNotEmpty){
+      url = "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/";
+    }
 
     final headers = await getAuthHeaders();
 
@@ -537,8 +541,13 @@ class MomentsService extends AuthService {
   }
 
   Future<MomentsModel> updateMoment(
-      {required String momentId, required Map<String, dynamic> data}) async {
+      {required String momentId, required Map<String, dynamic> data, String? channelUsername}) async {
     var url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
+
+    if(channelUsername!.isNotEmpty){
+      url = "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/$momentId/";
+    }
+
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpPatch(
       url,
@@ -653,8 +662,13 @@ class MomentsService extends AuthService {
     }
   }
 
-  Future<bool> deleteMoment(String momentId) async {
+  Future<bool> deleteMoment(String momentId, String? channelUsername) async {
     var url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
+
+    if(channelUsername!.isNotEmpty){
+      url = "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/$momentId/";
+    }
+
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
 

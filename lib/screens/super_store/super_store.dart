@@ -14,6 +14,7 @@ import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
 import '../../utils/util.dart';
 import '../../widget/rounded_background_icon.dart';
+import '../more_apps/shopping/models/store.dart';
 import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
 import '../more_apps/yarn/yarn_setting_screen.dart';
 
@@ -201,7 +202,7 @@ class _SuperStoreState extends State<SuperStore> {
             },
             currentIndex: currentAskTapOnHome,
             firstTab: 'Shop',
-            secondTab: 'Find Business',
+            secondTab: 'Find Businesses',
           ),
           SizedBox(
             height: 16,
@@ -321,6 +322,26 @@ class _SuperStoreState extends State<SuperStore> {
     basketBloc.items.forEach((element) {
       totalItem = totalItem +  int.parse(element['qty'].toString());
     });
+    // for (var item in basketBloc.items) {
+    //
+    //   if (item['item'] is Product) {
+    //     var product = item['item'] as Product;
+    //
+    //     if (product.variant!.isEmpty && product.variant != null) {
+    //       // If the variant list is empty, add the quantity to the total
+    //       totalItem += int.parse(item['qty'].toString());
+    //     } else {
+    //       // If there are variants, calculate the total quantity from variants
+    //       for(var variant in product.variant!){
+    //         var vProduct = Variant.fromJson(variant);
+    //         totalItem += int.parse(vProduct.quantity.toString());
+    //       }
+    //     }
+    //
+    //   } else if (item['item'] is Service) {
+    //     totalItem += int.parse(item['qty'].toString());
+    //   }
+    // }
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
 }

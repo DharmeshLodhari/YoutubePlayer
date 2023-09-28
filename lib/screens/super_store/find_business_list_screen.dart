@@ -322,7 +322,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "Nearby Business",
+                            "Nearby Businesses",
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 18,
@@ -432,27 +432,35 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
             return _buildLoadingIndicator();
           }
 
-          return FindBusiness(
-            customerProfile: customerProfileList[index],
-            tileRenderPlace: TileRenderPlace.YarnProductService,
-            callback: (username, value) {
-              //create a list to edit
-              List<CustomerProfile> customerProfileListEdit = customerProfileList;
-
-              // modify customerProfileList for the username and refresh the list
-              // set the isFollowing for that particular user
-              customerProfileListEdit.forEach((customer) {
-                if (customer.userName == username) {
-                  customer.isFollowing = value; // Modify the isFollowing property
-                }
+          return GestureDetector(
+            onTap: (){
+              Navigator.pushNamed(
+                  context, Routes.USER_PROFILE, arguments: {
+                "searchedUserName": customerProfileList[index].userName
               });
-
-              customerProfileList = [];
-              customerProfileList = customerProfileListEdit;
-
-              if(mounted)setState(() {});
-
             },
+            child: FindBusiness(
+              customerProfile: customerProfileList[index],
+              tileRenderPlace: TileRenderPlace.YarnProductService,
+              callback: (username, value) {
+                //create a list to edit
+                List<CustomerProfile> customerProfileListEdit = customerProfileList;
+
+                // modify customerProfileList for the username and refresh the list
+                // set the isFollowing for that particular user
+                for (var customer in customerProfileListEdit) {
+                  if (customer.userName == username) {
+                    customer.isFollowing = value; // Modify the isFollowing property
+                  }
+                }
+
+                customerProfileList = [];
+                customerProfileList = customerProfileListEdit;
+
+                if(mounted)setState(() {});
+
+              },
+            ),
           );
         },
         separatorBuilder: (context, int) {
@@ -484,27 +492,35 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
               width: 200,
               // height: 200,
               margin: const EdgeInsets.symmetric(horizontal: 8),
-              child: FindBusiness(
-                customerProfile: item,
-                tileRenderPlace: TileRenderPlace.Thiny,
-                callback: (username, value) {
-                  //create a list to edit
-                  List<CustomerProfile> customerProfileListEdit = customerProfileListNearBy;
-
-                  // modify customerProfileList for the username and refresh the list
-                  // set the isFollowing for that particular user
-                  customerProfileListEdit.forEach((customer) {
-                    if (customer.userName == username) {
-                      customer.isFollowing = value; // Modify the isFollowing property
-                    }
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pushNamed(
+                      context, Routes.USER_PROFILE, arguments: {
+                    "searchedUserName": item.userName
                   });
-
-                  customerProfileListNearBy = [];
-                  customerProfileListNearBy = customerProfileListEdit;
-
-                  if(mounted)setState(() {});
-
                 },
+                child: FindBusiness(
+                  customerProfile: item,
+                  tileRenderPlace: TileRenderPlace.Thiny,
+                  callback: (username, value) {
+                    //create a list to edit
+                    List<CustomerProfile> customerProfileListEdit = customerProfileListNearBy;
+
+                    // modify customerProfileList for the username and refresh the list
+                    // set the isFollowing for that particular user
+                    for (var customer in customerProfileListEdit) {
+                      if (customer.userName == username) {
+                        customer.isFollowing = value; // Modify the isFollowing property
+                      }
+                    }
+
+                    customerProfileListNearBy = [];
+                    customerProfileListNearBy = customerProfileListEdit;
+
+                    if(mounted)setState(() {});
+
+                  },
+                ),
               ),
             )
 

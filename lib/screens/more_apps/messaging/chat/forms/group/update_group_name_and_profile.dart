@@ -21,6 +21,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../../routes/route_constants.dart';
+import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+
 class UpdateGroupNameAndProfile extends StatefulWidget {
   final arguments;
 
@@ -494,34 +497,42 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   }
 
   Widget getGroupProfile() {
+    debugPrint('fola chat:::${groupDetail!.avatar}');
     return GestureDetector(
       onTap: () {
         pickGroupProfile();
       },
       child: ClipOval(
-        child: groupModel.avatar == null
-            ? Container(
-                height: 64,
-                width: 64,
-                color: chatBackgroundColor,
-                child: CachedNetworkImage(
-                  imageUrl:
-                      groupDetail!.avatar == null || groupDetail!.avatar == ""
-                          ? defaultImage
-                          : groupDetail!.avatar!,
-                  fit: BoxFit.fill,
-                  errorWidget: imageErrorWidget,
-                ),
-              )
-            : Container(
-                height: 64,
-                width: 64,
-                child: Image.file(
-                  File(groupModel.avatar!),
-                  fit: BoxFit.fill,
-                ),
-              ),
-      ),
+          child: groupModel.avatar != null || groupDetail!.avatar != ""
+              ? Container(
+                  height: 64,
+                  width: 64,
+                  color: chatBackgroundColor,
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        groupDetail!.avatar == null || groupDetail!.avatar == ""
+                            ? defaultImage
+                            : groupDetail!.avatar!,
+                    fit: BoxFit.fill,
+                    errorWidget: imageErrorWidget,
+                  ),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                        arguments:
+                            getInitials(groupDetail!.fullName!).toUpperCase());
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: navyBlue,
+                    radius: 30,
+                    child: Text(
+                      getInitials(groupDetail!.fullName!).toUpperCase(),
+                      style:
+                          TextStyle(color: white, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                )),
     );
   }
 

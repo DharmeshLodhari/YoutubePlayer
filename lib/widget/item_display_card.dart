@@ -304,7 +304,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                 ..attachment = {
                   "product": widget.product.toJson().cast<String, dynamic>()
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '');
+              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -920,7 +920,7 @@ class _DisplayServiceState extends State<DisplayService> {
                   "service":
                       widget.service.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '');
+              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -1015,8 +1015,8 @@ class _FindBusinessState extends State<FindBusiness> {
           ),
           Container(
             padding: widget.tileRenderPlace == TileRenderPlace.Thiny
-                ? EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
-                : EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
+                ? const EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
+                : const EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -1102,8 +1102,8 @@ class _FindBusinessState extends State<FindBusiness> {
                     borderRadius: BorderRadius.circular(60),
                   ),
                   padding: widget.tileRenderPlace == TileRenderPlace.Thiny
-                      ? EdgeInsets.symmetric(horizontal: 3, vertical: 1)
-                      : EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      ? const EdgeInsets.symmetric(horizontal: 3, vertical: 1)
+                      : const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   child: getRating(
                       numberOfRating: widget.customerProfile.rating.toInt()),
                 ),

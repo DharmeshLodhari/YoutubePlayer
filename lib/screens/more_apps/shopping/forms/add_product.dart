@@ -1296,10 +1296,11 @@ class _AddProductState extends State<AddProduct> {
           product.widthSiUnit = selectedWidth == 'Centimetres' ? 'cm' : 'm';
           product.trackInventory = trackInventory;
           product.quantity = inventoryCount;
+          // product.variant = [];
 
           //the api call will first create the product then use the id from the
           //response to save the variant
-          await _auth.addProduct(product).then((value) async {
+          await _auth.addProduct(product, '').then((value) async {
 
             var productId = value[1];
 

@@ -523,7 +523,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ..attachment = {
                   "blog": userPost?.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(yarn, '');
+              bool data = await YarnAuth().addYarnAndQuestion(yarn, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }

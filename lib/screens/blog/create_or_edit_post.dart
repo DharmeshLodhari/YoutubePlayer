@@ -28,8 +28,9 @@ import '../more_apps/yarn/widgets/ask_mention_view.dart';
 
 class CreateorEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
+  String? channel;
 
-  const CreateorEditPostScreen({Key? key, this.userPost}) : super(key: key);
+  CreateorEditPostScreen({Key? key, this.userPost, this.channel}) : super(key: key);
 
   @override
   State<CreateorEditPostScreen> createState() => _CreateOrEditPostScreenState();
@@ -77,6 +78,10 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   void initState() {
     super.initState();
     _textEditorScrollController = ScrollController();
+
+    if(widget.channel == "Channel"){
+      debugPrint('fola channel:::: ${widget.channel}');
+    }
 
     _initializeFocusNodes();
     _userUpdatingPost = widget.userPost != null;
@@ -549,6 +554,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
       publishedDate: publishedDateTime.toString(),
       blogPostBody:
           jsonEncode(_quillBodyTextController.document.toDelta().toJson()),
+      channelUsername: ""
     )
         .then(
       (posted) {

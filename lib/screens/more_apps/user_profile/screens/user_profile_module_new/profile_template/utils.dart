@@ -225,9 +225,17 @@ Widget hoursTab(CustomerProfile? searchedUser) {
   return KeepAlivePage(child: UserAboutScreen(user: searchedUser));
 }
 
-String getInitials(String fullName) => fullName.isNotEmpty
-    ? fullName.trim().split(' ').map((l) => l[0]).take(2).join()
-    : '';
+String getInitials(String fullName) {
+  if (fullName.isEmpty) {
+    return '';
+  }
+
+  final words = fullName.trim().split(' ');
+  final initials = words.where((word) => word.isNotEmpty).map((word) => word[0]);
+
+  return initials.take(2).join();
+}
+
 
 String getGroupUsername(String channelUsername) {
   if (channelUsername.contains(' ')) {

@@ -11,6 +11,7 @@ import '../../utils/slydo_app_icon_icons.dart';
 import '../../widget/noItemInList.dart';
 import '../moments/models/comment_model.dart';
 import '../more_apps/messaging/chat/models/channel_model.dart';
+import '../more_apps/yarn/utils/yarn_enum.dart';
 
 class ChatChannels extends StatefulWidget {
   ChatChannels();
@@ -43,19 +44,7 @@ class _ChatChannelsState extends State<ChatChannels> {
 
     searchTextCtrl.addListener(() {
       _onRefresh();
-      // if (channelModelList.isNotEmpty || searchTextCtrl.text.length != 0) {
-      //   if (mounted) {
-      //     setState(() {
-      //       noItemInList = false;
-      //     });
-      //   }
-      // } else {
-      //   if (mounted) {
-      //     setState(() {
-      //       noItemInList = true;
-      //     });
-      //   }
-      // }
+
     });
   }
 
@@ -152,8 +141,10 @@ class _ChatChannelsState extends State<ChatChannels> {
                       if (index == channelModelList.length) {
                         return buildLoadingIndicator(isLoading: _isLoading);
                       } else {
+
                         return GestureDetector(
                           onTap: () {
+
                             Navigator.pushNamed(context, Routes.USER_PROFILE,
                                 arguments: {
                                   "searchedUserName":
@@ -162,7 +153,8 @@ class _ChatChannelsState extends State<ChatChannels> {
                                 });
                           },
                           child: CustomSlydoChannelCard(
-                              channelModel: channelModelList[index]),
+                              channelModel: channelModelList[index],
+                            tileRenderPlace: TileRenderPlace.Thiny,),
                         );
                       }
                     },

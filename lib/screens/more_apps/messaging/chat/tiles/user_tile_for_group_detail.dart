@@ -24,41 +24,6 @@ class UserTileForGroupDetail extends StatefulWidget {
 class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
   @override
   Widget build(BuildContext context) {
-    Widget avatarImage;
-
-    Color borderColor = getUserTypeColor(user: widget.user!);
-
-    // avatarImage = GestureDetector(
-    //   onTap: () {
-    //     Navigator.of(context)
-    //         .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
-    //   },
-    //   child: GestureDetector(
-    //     onTap: () {
-    //       Navigator.of(context)
-    //           .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
-    //     },
-    //     child: Container(
-    //         height: 48,
-    //         width: 48,
-    //         decoration: BoxDecoration(
-    //             borderRadius: BorderRadius.circular(
-    //               25,
-    //             ),
-    //             border: Border.all(color: borderColor, width: 2)),
-    //         child: ClipOval(
-    //           child: CachedNetworkImage(
-    //             errorWidget: imageErrorWidget,
-    //             imageUrl: widget.user!.avatar == ""
-    //                 ? defaultImage
-    //                 : widget.user!.avatar!,
-    //             colorBlendMode: BlendMode.darken,
-    //             fit: BoxFit.fill,
-    //             filterQuality: FilterQuality.high,
-    //           ),
-    //         )),
-    //   ),
-    // );
 
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

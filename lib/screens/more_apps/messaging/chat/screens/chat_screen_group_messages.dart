@@ -85,6 +85,7 @@ import '../../../../../data/database_helper.dart';
 import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../services/app_config_bloc.dart';
+import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../service_hub/tiles/jos_description_card.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../tiles/document_file_tile_for_chat.dart';
@@ -1432,7 +1433,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             onTap: () async {
               stopShakeDetector();
               if (chatConversation!.isGroupConversation!) {
-                navigateToGroupDetailScreen();
+                // navigateToGroupDetailScreen();
+                showChannelMenuList();
               } else {
                 await Navigator.pushNamed(context, Routes.USER_PROFILE,
                     arguments: {
@@ -1453,6 +1455,100 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ]
       ],
     );
+  }
+
+  void showChannelMenuList() {
+    selectShareOptionBottomSheet();
+  }
+
+  void selectShareOptionBottomSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> generateBottomSheetItem() {
+    List<Widget> list = [];
+
+    list.add(bottomSheetItem(
+      title: "Settings",
+      iconData: SlydoAppIcon.settings,
+      onTap: () async {
+        Navigator.pop(context);
+        navigateToGroupDetailScreen();
+      },
+    ));
+
+    list.add(
+      bottomSheetItem(
+        title: "Add Product",
+        iconData: SlydoAppIconNew.add_product,
+        onTap: () async {
+          Navigator.pop(context);
+          // sendItemToUsersInChat();
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: "Create Yarn",
+        iconData: SlydoAppIconNew.dashboard_yarn,
+        onTap: () async {
+          Navigator.pop(context);
+          // sendItemToUsersInChat();
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: "Create Blog",
+        iconData: SlydoAppIcon.add_channel,
+        onTap: () async {
+          Navigator.pop(context);
+
+          Navigator.of(context).pushNamed(
+            Routes.CREATE_BLOG,
+            arguments: {
+              'channel': 'Channel',
+            },
+          );
+
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: "Create Moment",
+        iconData: SlydoAppIconNew.moment,
+        onTap: () async {
+          Navigator.pop(context);
+
+        },
+      ),
+    );
+
+
+    return list;
   }
 
   String getUserFullName() {
@@ -4850,6 +4946,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       showToast(message: "Failed to cancel Envelope");
     }
   }
+
 }
 
 void broadcastUserAvatarUpdate(

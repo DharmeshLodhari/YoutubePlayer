@@ -19,6 +19,7 @@ class SlydoAppIconNew {
   SlydoAppIconNew._();
 
   static const _kFontFam = 'SlydoAppIconNew';
+  static const _mFontFam = 'MaterialIcons';
   static const String? _kFontPkg = null;
 
   static const IconData vector_1 = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -41,4 +42,5 @@ class SlydoAppIconNew {
   static const IconData cart = IconData(0xe817, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData search = IconData(0xe818, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData moment = IconData(0xe819, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData add_product = IconData(0xe59a, fontFamily: _mFontFam, fontPackage: _kFontPkg);
 }

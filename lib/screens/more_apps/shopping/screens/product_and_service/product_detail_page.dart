@@ -100,7 +100,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
 
-
   @override
   void initState() {
     product = arguments[
@@ -405,7 +404,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ..attachment = {
                   "product": product?.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '');
+              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -602,7 +601,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  Future<void> addToCart() async {
+  Future<void> addToCart2() async {
     String type = product is Product ? "product" : "service";
 
     var variantType = "";
@@ -619,7 +618,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     Map<String, dynamic> variantPayLoad = {};
 
-    if(basketBloc.items.isEmpty){
+    //check if cart is empty and color or size is not empty
+    if(basketBloc.items.isEmpty && colorGroups.isNotEmpty || sizeGroups.isNotEmpty){
       variantPayLoad = {
         "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
         "price": selectedVariantPrice, "colour": selectedColor,
@@ -634,7 +634,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
           if(variantList.isNotEmpty){
             for (var variant in variantList) {
-
               //check if product variant id is the same as selected variant id
               if (variant!['id'].toString() == selectedVariantId) {
                 // Increase the quantity of the variant by one
@@ -659,18 +658,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             }
           }else{
             //add quantity plus 1 to product without variant but already exist
-            product.quantity = int.parse(product.quantity.toString()) + 1;
+            item['qty'] = int.parse(item['qty'].toString()) + 1;
             Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
-
-            debugPrint("Data From Product Page exist : $dataInfo");
 
             await _auth.addItemToShoppingCart(dataInfo);
             return;
-
           }
 
         }else{
-          //product id doesn't exit in the cart
+          //product id doesn't exit in the cart and variant is empty
           variantPayLoad = {
             "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
             "price": selectedVariantPrice, "colour": selectedColor,
@@ -694,6 +690,77 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     await _auth.addItemToShoppingCart(dataInfo);
   }
+
+  Future<void> addToCart() async {
+    String type = product is Product ? "product" : "service";
+    Map<String, dynamic> variantPayLoad = {};
+
+    if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+      variantPayLoad = {
+        "id": selectedVariantId,
+        "quantity": 1,
+        "image": selectedVariantImage,
+        "price": selectedVariantPrice,
+        "colour": selectedColor,
+        "value": selectedSize,
+        "type": "Color n Size",
+      };
+    } else if (colorGroups.isNotEmpty) {
+      variantPayLoad = {
+        "id": selectedVariantId,
+        "quantity": 1,
+        "image": selectedVariantImage,
+        "price": selectedVariantPrice,
+        "colour": selectedColor,
+        "type": "Color",
+      };
+    } else if (sizeGroups.isNotEmpty) {
+      variantPayLoad = {
+        "id": selectedVariantId,
+        "quantity": 1,
+        "image": selectedVariantImage,
+        "price": selectedVariantPrice,
+        "value": selectedSize,
+        "type": "Size",
+      };
+    }
+
+    if (basketBloc.items.isEmpty && variantPayLoad.isNotEmpty) {
+      basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
+    } else {
+      for (var item in basketBloc.items) {
+        Product productInCart = item['item'];
+
+        if (productInCart.id.toString() == productId) {
+          List variantList = item['item'].variant;
+
+          for (var variant in variantList) {
+            if (variant['id'].toString() == selectedVariantId) {
+              int currentQuantity = int.parse(variant['quantity'].toString());
+              variant['quantity'] = currentQuantity + 1;
+
+              Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+              await _auth.addItemToShoppingCart(dataInfo);
+              return;
+            }
+          }
+
+          // Variant is not available yet, add it
+          variantList.add(variantPayLoad);
+          Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+          await _auth.addItemToShoppingCart(dataInfo);
+          return;
+        }
+      }
+
+      // Product ID doesn't exist in the cart, add it with the variant
+      basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
+    }
+
+    Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+    await _auth.addItemToShoppingCart(dataInfo);
+  }
+
 
   Map<String, dynamic> getUpdatedCartItem(List cartItem, String type){
     Map<String, dynamic> dataInfo = {};
@@ -744,14 +811,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       }else{
         dataInfo = {
           "id": item.id,
-          "qty": item.quantity,
+          "qty": element['qty'],
           "type": type,
           "variants": [],
         };
+
+        debugPrint("Data From Product Page one : $dataInfo");
       }
 
       // Once you've found a matching element, you can exit the loop
-      continue;
+      // continue;
     }
     return dataInfo;
   }
@@ -787,9 +856,32 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   int getBadgeCount() {
     int totalItem = 0;
+
     basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
+      totalItem = totalItem +  int.parse(element['qty'].toString());
     });
+
+    // for (var item in basketBloc.items) {
+    //
+    //    if (item['item'] is Product) {
+    //     var product = item['item'] as Product;
+    //
+    //     if (product.variant!.isEmpty && product.variant != null) {
+    //       // If the variant list is empty, add the quantity to the total
+    //       totalItem += int.parse(item['qty'].toString());
+    //     } else {
+    //       // If there are variants, calculate the total quantity from variants
+    //       for(var variant in product.variant!){
+    //         var vProduct = Variant.fromJson(variant);
+    //         totalItem += int.parse(vProduct.quantity.toString());
+    //       }
+    //     }
+    //
+    //   } else if (item['item'] is Service) {
+    //     totalItem += int.parse(item['qty'].toString());
+    //   }
+    // }
+
     return totalItem;
   }
 

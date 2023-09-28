@@ -746,11 +746,15 @@ class YarnAuth extends AuthService {
   }
 
   // Add Yarn and Question
-  Future<dynamic> addYarnAndQuestion(Yarn addYarnAndQuestion, String s) async {
+  Future<dynamic> addYarnAndQuestion(Yarn addYarnAndQuestion, String s, String webUrl) async {
     log('ppppppp${addYarnAndQuestion.toJson().toString()}');
     debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
     var headers = await getAuthHeaders();
     var url = "${AppConfig.baseUrl}/api/v1/social/ask/";
+
+    if(webUrl.isNotEmpty){
+      url = "${AppConfig.baseUrl}/api/v1/social/ask/";
+    }
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
