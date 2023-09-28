@@ -587,18 +587,21 @@ class _ShoppingCartState extends State<ShoppingCart> {
     int totalPrice = 0;
 
     for (var item in basketBloc.items) {
+
       int itemTotal = 0;
       var product = item["item"];
 
       if (product is Product){
         if (product.variant!.isEmpty) {
           // If the variant list is empty, multiply the item's price by quantity
-          itemTotal = int.parse(product.price.toString()) * int.parse(product.quantity.toString());
+          itemTotal = int.parse(product.price.toString()) * int.parse(item["qty"].toString());
         } else {
           // If the variant list is not empty, calculate the total price using variants
           for (var variant in product.variant!) {
-            int variantPrice = int.parse(variant["price"].toString());
-            int quantity = int.parse(variant["quantity"].toString());
+            var vProduct = Variant.fromJson(variant);
+
+            int variantPrice = int.parse(vProduct.price.toString()) ?? 0;
+            int quantity = int.parse(vProduct.quantity.toString()) ?? 0;
             itemTotal += variantPrice * quantity;
           }
         }

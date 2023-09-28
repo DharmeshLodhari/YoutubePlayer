@@ -1675,7 +1675,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             userProfile: searchedUser,
             callback: (params) async {
               params..attachment = {"profile": searchedUser?.toJson()};
-              bool data = await YarnAuth().addYarnAndQuestion(params, '');
+              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }

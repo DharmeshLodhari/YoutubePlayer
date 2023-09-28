@@ -287,7 +287,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                 ..attachment = {
                   "job": job?.toJson().cast<String, dynamic>() ?? {},
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '');
+              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
                 Navigator.pop(context);

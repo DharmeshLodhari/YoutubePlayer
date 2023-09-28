@@ -8,17 +8,23 @@ import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../routes/route_constants.dart';
 import '../../../widget/LoadingIndicator.dart';
+import '../../../widget/item_display_card.dart';
 import '../../more_apps/messaging/message_auth.dart';
 import 'package:badges/badges.dart' as badges;
 
 import '../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../../more_apps/yarn/utils/utils.dart';
+import '../../more_apps/yarn/utils/yarn_enum.dart';
 
 // ignore: must_be_immutable
 class CustomSlydoChannelCard extends StatefulWidget {
   ChannelModel? channelModel;
+  final TileRenderPlace tileRenderPlace;
 
-  CustomSlydoChannelCard({required this.channelModel});
+  CustomSlydoChannelCard({required this.channelModel,
+    this.tileRenderPlace = TileRenderPlace.YarnTimeLine,});
 
   @override
   _CustomSlydoChannelCardState createState() => _CustomSlydoChannelCardState();
@@ -45,575 +51,297 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    Widget tile = Card(
+    return getNearByBusiness();
+  }
+
+
+  Widget getNearByBusiness() {
+    return Card(
+      semanticContainer: true,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+      shadowColor: boxShadow,
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
-        child: ListTile(
-          dense: true,
-          title: Text(
-            truncateString(
-                str: widget.channelModel!.groupName!, lengthToTruncateAt: 25),
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topCenter,
+            children: [
+              Container(
+                  height: getContainerHeight(widget.tileRenderPlace, context),
+                  child: getWallpaper()),
+              Positioned(
+                left: 10,
+                top: getContainerHeight(widget.tileRenderPlace, context) - 20,
+                child: InkWell(
+                  onTap: () {
+                    String? image = '';
+                    if (widget.channelModel!.avatar == "" ||
+                        widget.channelModel!.avatar ==
+                            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+                      image = getInitials(widget.channelModel!.owner!)
+                          .toUpperCase();
+                    } else {
+                      image = widget.channelModel!.avatar;
+                    }
+
+                    Navigator.of(context)
+                        .pushNamed(Routes.PHOTO_VIEWER, arguments: image);
+                  },
+                  child: SizedBox(
+                      width: widget.tileRenderPlace == TileRenderPlace.Thiny
+                          ? 40
+                          : 50,
+                      height: widget.tileRenderPlace == TileRenderPlace.Thiny
+                          ? 40
+                          : 50,
+                      child: CircularUserColorImage(
+                          imageUrl: widget.channelModel!.avatar!,
+                          name: widget.channelModel!.owner!)),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            padding: widget.tileRenderPlace == TileRenderPlace.Thiny
+                ? const EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
+                : const EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, Routes.USER_PROFILE, arguments: {
+                          "searchedUserName": widget.channelModel!.owner!
+                        });
+                      },
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  appendStringDot(
+                                      messageDecoderWithEmoji(
+                                          widget.channelModel!.groupName ??
+                                              "") ??
+                                          "",
+                                      widget.tileRenderPlace ==
+                                          TileRenderPlace.Thiny
+                                          ? 13
+                                          : 20),
+                                  style: TextStyle(
+                                      fontSize: widget.tileRenderPlace ==
+                                          TileRenderPlace.Thiny
+                                          ? 12
+                                          : 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: yarnBlack),
+                                )),
+                            Row(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: userNameWithVerifiedIcon(
+                                      name: appendStringDot(
+                                          messageDecoderWithEmoji(
+                                              '@${widget.channelModel!.owner}') ??
+                                              "",
+                                          widget.tileRenderPlace ==
+                                              TileRenderPlace.Thiny
+                                              ? 13
+                                              : 20),
+                                      isVerified: false,
+                                      textStyle: TextStyle(
+                                        fontSize: widget.tileRenderPlace ==
+                                            TileRenderPlace.Thiny
+                                            ? 11
+                                            : 14,
+                                        color: HexColor("#151515"),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      verifiedIconColor: verifyGreen,
+                                      verifiedIconSize: widget.tileRenderPlace ==
+                                          TileRenderPlace.Thiny
+                                          ? 12
+                                          : 15),
+                                ),
+
+                                if(widget.channelModel?.isMember == false)...[
+                                  SizedBox(width: 20),
+                                  Text(
+                                    '${getFormattedViewCount(
+                                      noOfViews: widget.channelModel!.noOfMembers!,
+                                      addViewText: false,
+                                    )} Member(s)',
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      color: black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                  )
+                                ],
+
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      // padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: getJoinUnJoinedBtn(),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: widget.tileRenderPlace == TileRenderPlace.Thiny
+                      ? 2.0
+                      : 5.0,
+                ),
+
+                if (widget.channelModel!.description!.isNotEmpty ||
+                    widget.channelModel!.description! != null) ...[
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          messageDecoderWithEmoji(widget.channelModel!.description!) ??
+                              "",
+                          style: TextStyle(
+                            fontSize:
+                            getFontSize(widget.tileRenderPlace, context),
+                            fontWeight: FontWeight.w600,
+                            color: blackFont,
+                          ),
+                          maxLines: 2,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
             ),
           ),
-          subtitle: getSubtitle(context),
-          leading: GestureDetector(
-              onTap: () {
-                String? link = widget.channelModel?.banner != null
-                    ? widget.channelModel?.banner
-                    : getInitials(widget.channelModel!.groupName!);
-
-                Navigator.of(context).pushNamed("/photo-viewer",
-                    arguments: link ?? defaultImage);
-              },
-              child: getAvatar()),
-          trailing: getTrailing(),
-        ),
+          SizedBox(
+            height:
+            widget.tileRenderPlace == TileRenderPlace.Thiny ? 5.0 : 10.0,
+          ),
+        ],
       ),
-    );
-    return tile;
-  }
-
-  Widget getSubtitle(BuildContext context) {
-    return Text(
-      '${getFormattedViewCount(
-        noOfViews: widget.channelModel!.noOfMembers!,
-        addViewText: false,
-      )} member(s)',
-      maxLines: 1,
-      style: TextStyle(
-        color: darkGrey,
-        fontSize: 12,
-      ),
-      overflow: TextOverflow.fade,
-      softWrap: false,
     );
   }
 
-  Widget getTrailing() {
+  Widget getJoinUnJoinedBtn() {
     return InkWell(
       onTap: widget.channelModel?.isMember == true
           ? () {
-              showToast(message: 'You are already a member');
-            }
+        showToast(message: 'You are already a member');
+      }
           : () {
-              if (mounted) setState(() => isLoading = true);
-              MessageAuth()
-                  .joinChannel(
-                      channelId: widget.channelModel!.id!,
-                      userName: userBloc.user.userName!)
-                  .then((value) {
-                if (mounted) setState(() => isLoading = false);
+        if (mounted) setState(() => isLoading = true);
+        MessageAuth()
+            .joinChannel(
+            channelId: widget.channelModel!.id!,
+            userName: userBloc.user.userName!)
+            .then((value) {
+          if (mounted) setState(() => isLoading = false);
 
-                if (value) {
-                  showToast(message: "Joined channel successfully");
-                  widget.channelModel!.isMember = true;
-                  if (mounted) setState(() {});
-                }
-              }).catchError((error) {
-                if (mounted) setState(() => isLoading = false);
-                if (error.toString().contains('is full')) {
-                  showToast(message: error.toString());
-                } else {
-                  showToast(message: 'Something went wrong, please try again.');
-                }
+          if (value) {
+            showToast(message: "Joined channel successfully");
+            widget.channelModel!.isMember = true;
+            if (mounted) setState(() {});
+          }
+        }).catchError((error) {
+          if (mounted) setState(() => isLoading = false);
+          if (error.toString().contains('is full')) {
+            showToast(message: error.toString());
+          } else {
+            showToast(message: 'Something went wrong, please try again.');
+          }
 
-                debugPrint("ERROR: $error");
-              });
-            },
+          debugPrint("ERROR: $error");
+        });
+      },
       child: isLoading
           ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularLoadingIndicator(color: naturalGreen),
-            )
+        width: 20,
+        height: 20,
+        child: CircularLoadingIndicator(color: navyBlue),
+      )
           : Container(
-              padding: EdgeInsets.symmetric(vertical: 6, horizontal: 14),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: naturalGreen.withOpacity(0.1),
-              ),
-              child: Text(
-                widget.channelModel?.isMember == true ? 'Joined' : 'Join',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: naturalGreen),
-              ),
-            ),
-    );
-  }
-
-  Widget getAvatar() {
-    Color borderColor = getUserTypeColorByType(type: 'user');
-
-    if (widget.channelModel!.banner == null) {
-      return CircleAvatar(
-        backgroundColor: navyBlue,
-        radius: 25,
-        child: Text(
-          getInitials(widget.channelModel!.groupName!).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w700),
-        ),
-      );
-    } else {
-      return Container(
-        height: 48,
-        width: 48,
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 20),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
-            ),
-            border: Border.all(color: borderColor, width: 2)),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.channelModel!.banner == "" ||
-                    widget.channelModel!.banner == null
-                ? defaultImage
-                : widget.channelModel!.banner!,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            errorWidget: imageErrorWidget,
-          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(width: 1, color: black),
+          color: widget.channelModel?.isMember == true ? black : white,
         ),
-      );
-    }
-  }
-
-  Widget getBadgeAndGroupLabel(int? count) {
-    if (!widget.channelModel!.isGroupConversation!) {
-      if (count == 0) {
-        return Container(
-          width: 0,
-          height: 0,
-        );
-      } else {
-        return getBadge(count!, padding: 12);
-      }
-    } else {
-      if (count == 0) {
-        return getGroupLabel();
-      } else {
-        return Column(
-          crossAxisAlignment: checkUserIsAdmin() || checkUserIsOwner()
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.center,
-          children: [
-            getBadge(count!,
-                padding: checkUserIsAdmin() || checkUserIsOwner() ? 10 : 0),
-            Expanded(
-              child: SizedBox(
-                height: 4,
-              ),
-            ),
-            getGroupLabel(),
-          ],
-        );
-      }
-    }
-  }
-
-  Widget getGroupLabel() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        checkUserIsAdmin() || checkUserIsOwner()
-            ? Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: navyBlue.withOpacity(0.1),
-                    ),
-                    child: Icon(
-                      checkUserIsOwner() ? Icons.group : Icons.person,
-                      color: navyBlue,
-                      size: 12,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 4,
-                  ),
-                ],
-              )
-            : Container(),
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            color: naturalGreen.withOpacity(0.1),
-          ),
-          child: Text(
-            "Group",
-            style: TextStyle(
-                fontSize: 11, fontWeight: FontWeight.w600, color: naturalGreen),
-          ),
+        child: Text(
+          widget.channelModel?.isMember == true ? 'Joined' : 'Join',
+          style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: widget.channelModel?.isMember == true ? white : black),
         ),
-      ],
+      ),
     );
+
   }
 
-  bool checkUserIsAdmin() {
-    if (widget.channelModel!.adminUsers!.contains(userBloc.user.userName))
-      return true;
-    return false;
-  }
-
-  bool checkUserIsOwner() {
-    if (widget.channelModel!.owner!.contains(userBloc.user.userName!))
-      return true;
-    return false;
-  }
-
-  Widget getBadge(int count, {double padding = 0}) {
-    return Container(
-        padding: EdgeInsets.symmetric(horizontal: padding),
-        child: badges.Badge(
-          badgeContent: Center(
-            child: Text(
-              getCountForMessage(count),
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12),
-            ),
+  Widget getWallpaper() {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(10),
+        topRight: Radius.circular(10),
+      ),
+      child: widget.channelModel!.banner == "" ||
+          widget.channelModel!.banner == null
+          ? Image.asset(
+        "assets/images/default_user_wallpaper.png",
+        width: double.infinity,
+        fit: BoxFit.cover,
+      )
+          : GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed("/photo-viewer",
+              arguments: widget.channelModel!.banner);
+        },
+        child: Container(
+          color: navyBlue,
+          child: CachedNetworkImage(
+            width: double.infinity,
+            // height: double.infinity,
+            errorWidget: wallpaperErrorWidget,
+            imageUrl: widget.channelModel!.banner!,
+            fit: BoxFit.cover,
+            placeholder: (context, url) =>
+                Center(child: CircularLoadingIndicator()),
+            color: blackFont.withOpacity(0.4),
+            colorBlendMode: BlendMode.darken,
+            filterQuality: FilterQuality.high,
           ),
-          position: badges.BadgePosition.topEnd(end: 0, top: 0),
-          badgeAnimation: badges.BadgeAnimation.rotation(
-            animationDuration: Duration(seconds: 1),
-            colorChangeAnimationDuration: Duration(seconds: 1),
-            loopAnimation: false,
-            curve: Curves.fastOutSlowIn,
-            colorChangeAnimationCurve: Curves.easeInCubic,
-          ),
-          badgeStyle: badges.BadgeStyle(
-            shape: badges.BadgeShape.circle,
-            badgeColor: naturalGreen,
-          ),
-        ));
-  }
-
-  String getCountForMessage(int count) {
-    return count > 999 ? "999+" : "$count";
+        ),
+      ),
+    );
   }
 }
 
-// class CustomSlydoChannelCard extends StatefulWidget {
-//   final ChatConversation chatConversation;
-//   const CustomSlydoChannelCard({Key? key, required this.chatConversation})
-//       : super(key: key);
-//
-//   @override
-//   _CustomSlydoChannelCardState createState() =>
-//       _CustomSlydoChannelCardState();
-// }
-//
-// class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
-//   SlidableController? _slideController;
-//   // int? count = 0;
-//   // String? next = "";
-//   // String? previous = "";
-//   // List connectionsList = [];
-//
-//   bool isLoading = false;
-//   bool noItemInList = false;
-//   bool isLoadingFromDB = false;
-//
-//   TextEditingController? searchChatConversation;
-//   bool isUserIsSearching = false;
-//   List<ChatConversation> searchedChatConnection = [];
-//
-//   AppConfigurationModel? appConfigurationModel;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return _getSlidableWithLists(
-//       context,
-//       widget.chatConversation,
-//     );
-//   }
-//
-//   // void getList() async {
-//   //   ConnectionListBloc connectionListBloc =
-//   //       Provider.of<ConnectionListBloc>(context, listen: false);
-//   //   if (!isLoading) {
-//   //     if (next != null && !isLoading) {
-//   //       isLoading = true;
-//   //       if (mounted) setState(() {});
-//   //       Map<String, dynamic>? result =
-//   //           await UserAuth().contacts(next, previous);
-//   //       if (result == null) {
-//   //         isLoading = false;
-//   //         return;
-//   //       }
-//   //       count = result['count'];
-//   //       next = result['next'];
-//   //       previous = result['previous'];
-//   //
-//   //       List tempList = result['results'];
-//   //
-//   //       debugPrint("List:- $tempList");
-//   //
-//   //       List<ChatConversation> users = [];
-//   //
-//   //       tempList.forEach(
-//   //           (element) => users.add(ChatConversation.fromJson(element)));
-//   //
-//   //       debugPrint('CONNECTION USERS 0 --> ${users[0].isVerified}');
-//   //
-//   //       // connectionsList.addAll(users);
-//   //
-//   //       connectionListBloc.setConnectionUsers(users: users);
-//   //
-//   //       isLoading = false;
-//   //       if (mounted) setState(() {});
-//   //
-//   //       // ConnectionListManager().saveConnectionsToDB(connections: users);
-//   //
-//   //       // if (mounted) setState(() {});
-//   //
-//   //       /// adding chat Users in database
-//   //       ChatUserManager().addUsers(users);
-//   //     }
-//   //     if (connectionListBloc.connectionUsers.isEmpty) {
-//   //       noItemInList = true;
-//   //       if (mounted) setState(() {});
-//   //     } else if (next == null &&
-//   //         connectionListBloc.connectionUsers.length > 6) {
-//   //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-//   //         content:
-//   //             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-//   //         duration: Duration(milliseconds: 500),
-//   //       ));
-//   //     }
-//   //   }
-//   // }
-//
-//   Widget _getSlidableWithLists(
-//       BuildContext context, ChatConversation chatConversation) {
-//     return Slidable(
-//       key: Key(chatConversation.userName!),
-//       controller: _slideController,
-//       direction: Axis.horizontal,
-//       actionPane: SlidableBehindActionPane(),
-//       actionExtentRatio: 0.25,
-//       child: VerticalListItem(chatConversation),
-//       actions: listActionSlideActions(chatConversation),
-//       secondaryActions: listSecondaryActions(chatConversation),
-//     );
-//   }
-//
-//   List<Widget> listActionSlideActions(ChatConversation chatConversation) {
-//     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-//
-//     if (chatConversation.userName!.toLowerCase() == 'slydo') {
-//       return [];
-//     }
-//
-//     if (chatConversation.isGroupConversation!) {
-//       if (userBloc.user.userName == chatConversation.owner) {
-//         return [];
-//       }
-//
-//       return [
-//         SlideActionButton(
-//           backgroundColor: mateRed,
-//           icon: SlydoAppIcon.leave,
-//           onTap: () {
-//             exitTheGroupAlert(chatConversation);
-//           },
-//           title: "Exit",
-//           slideController: _slideController,
-//         ),
-//       ];
-//     }
-//
-//     CustomerProfile customerProfile =
-//         CustomerProfile.fromChatConversation(chatConversation);
-//
-//     return [
-//       SlideActionButton(
-//         backgroundColor: mateRed,
-//         icon: SlydoAppIcon.remove_connection,
-//         onTap: () {
-//           removeFromConnectionUserAlert(customerProfile);
-//         },
-//         title: AppLocalization.of(context)!.remove,
-//         slideController: _slideController,
-//       ),
-//     ];
-//   }
-//
-//   List<Widget> listSecondaryActions(ChatConversation chatConversation) {
-//     if (chatConversation.userName!.toLowerCase() == 'slydo') {
-//       return [];
-//     }
-//
-//     if (chatConversation.isGroupConversation!) {
-//       return [];
-//     }
-//     CustomerProfile customerProfile =
-//         CustomerProfile.fromChatConversation(chatConversation);
-//
-//     return [
-//       SlideActionButton(
-//         backgroundColor: mateRed,
-//         icon: SlydoAppIcon.block,
-//         onTap: () {
-//           blockUserAlert(customerProfile);
-//         },
-//         title: AppLocalization.of(context)!.block,
-//         slideController: _slideController,
-//       ),
-//     ];
-//   }
-//
-//   void blockUserAlert(CustomerProfile user) async {
-//     bool? result = await showDialogBox(
-//       context: context,
-//       roundedBackgroundIcon: RoundedBackgroundIcon(
-//         backgroundColor: mateRed.withOpacity(0.08),
-//         borderRadius: 20,
-//         width: 48,
-//         height: 48,
-//         icon: Icon(
-//           SlydoAppIcon.block,
-//           color: mateRed,
-//           size: 16,
-//         ),
-//         enableMargin: false,
-//       ),
-//       actionOneBgColor: mateRed,
-//       actionOneTextColor: Colors.white,
-//       actionTwoBgColor: greyBorderColor,
-//       actionTwoTextColor: blackFont,
-//       title: AppLocalization.of(context)!.block,
-//       description: AppLocalization.of(context)!.areYouSureWantToBlock +
-//           " ${user.displayName()}",
-//       actionOneText: AppLocalization.of(context)!.block,
-//       actionTwoText: AppLocalization.of(context)!.cancel,
-//     );
-//     if (result != null && result) {
-//       bool done = await UserAuth().blockUser(user);
-//       // done = true;
-//       if (done) {
-//         _showSnackBar(
-//             context,
-//             "${user.displayName()} " +
-//                 AppLocalization.of(context)!.isBlockedSuccessfully);
-//         ConnectionListBloc connectionListBloc =
-//             Provider.of<ConnectionListBloc>(context, listen: false);
-//         connectionListBloc.deleteChatConversation(
-//             conversationId: user.conversationId);
-//
-//         // if (connectionsList.length <= 9) {
-//         //   getList();
-//         // }
-//         setState(() {});
-//       } else {
-//         _showSnackBar(context, AppLocalization.of(context)!.error);
-//       }
-//     }
-//   }
-//
-//   Future<void> exitTheGroupAlert(ChatConversation chatConversation) async {
-//     bool? result = await showDialogBox(
-//       context: context,
-//       roundedBackgroundIcon: RoundedBackgroundIcon(
-//         backgroundColor: mateRed.withOpacity(0.08),
-//         borderRadius: 20,
-//         width: 48,
-//         height: 48,
-//         icon: Icon(
-//           SlydoAppIcon.leave,
-//           color: mateRed,
-//           size: 16,
-//         ),
-//         enableMargin: false,
-//       ),
-//       actionOneBgColor: mateRed,
-//       actionOneTextColor: Colors.white,
-//       actionTwoBgColor: greyBorderColor,
-//       actionTwoTextColor: blackFont,
-//       title: "Exit",
-//       description: "Are you sure want to leave ${chatConversation.fullName} ?",
-//       actionOneText: "Exit",
-//       actionTwoText: AppLocalization.of(context)!.cancel,
-//     );
-//     if (result != null && result) {
-//       bool done = await MessageAuth()
-//           .exitFromGroup(conversationId: chatConversation.conversationId!);
-//       if (done) {
-//         _showSnackBar(context, "You left ${chatConversation.fullName}");
-//
-//         ConnectionListBloc connectionListBloc =
-//             Provider.of<ConnectionListBloc>(context, listen: false);
-//         connectionListBloc.deleteChatConversation(
-//             conversationId: chatConversation.conversationId);
-//
-//         setState(() {});
-//       } else {
-//         _showSnackBar(context, AppLocalization.of(context)!.error);
-//       }
-//     }
-//   }
-//
-//   Future<void> removeFromConnectionUserAlert(CustomerProfile user) async {
-//     bool? result = await showDialogBox(
-//       context: context,
-//       roundedBackgroundIcon: RoundedBackgroundIcon(
-//         backgroundColor: mateRed.withOpacity(0.08),
-//         borderRadius: 20,
-//         width: 48,
-//         height: 48,
-//         icon: Icon(
-//           SlydoAppIcon.delete,
-//           color: mateRed,
-//           size: 16,
-//         ),
-//         enableMargin: false,
-//       ),
-//       actionOneBgColor: mateRed,
-//       actionOneTextColor: Colors.white,
-//       actionTwoBgColor: greyBorderColor,
-//       actionTwoTextColor: blackFont,
-//       title: AppLocalization.of(context)!.delete,
-//       description: AppLocalization.of(context)!.areYouSureWantToDelete +
-//           " ${user.displayName()} " +
-//           "From Your Connection List",
-//       actionOneText: AppLocalization.of(context)!.delete,
-//       actionTwoText: AppLocalization.of(context)!.cancel,
-//     );
-//     if (result != null && result) {
-//       bool done = await UserAuth().removeFromContactList(user);
-//       if (done) {
-//         _showSnackBar(
-//             context,
-//             "${user.displayName()} " +
-//                 AppLocalization.of(context)!.isRemovedSuccessfully);
-//
-//         ConnectionListBloc connectionListBloc =
-//             Provider.of<ConnectionListBloc>(context, listen: false);
-//         connectionListBloc.deleteChatConversation(
-//             conversationId: user.conversationId);
-//         if (mounted) setState(() {});
-//       } else {
-//         _showSnackBar(context, AppLocalization.of(context)!.error);
-//       }
-//     }
-//   }
-//
-//   void _showSnackBar(BuildContext context, String text) {
-//     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
-//   }
-// }

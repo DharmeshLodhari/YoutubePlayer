@@ -60,7 +60,7 @@ class _YarnTabSelectionState extends State<YarnTabSelection> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(60),
           shape: BoxShape.rectangle,
-          color: currentIndex == tabIndex ? yarnBlack : Colors.transparent,
+          color: currentIndex == tabIndex ? navyBlue : Colors.transparent,
         ),
         child: Center(
           child: Text(

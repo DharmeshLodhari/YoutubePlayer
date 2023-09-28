@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import '../../../../../routes/route_constants.dart';
+import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final arguments;
@@ -209,6 +210,63 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   Widget getUserIcon() {
     Color borderColor = getUserTypeColorByType(type: groupDetail!.type!);
 
+    if (groupDetail!.avatar == null || groupDetail!.avatar == ""
+        || groupDetail!.avatar == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return GestureDetector(
+        onTap: (){
+          Navigator.of(context)
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: getInitials(groupDetail!.fullName!).toUpperCase());
+        },
+        child: CircleAvatar(
+          backgroundColor: navyBlue,
+          radius: 20,
+          child: Text(
+            getInitials(groupDetail!.fullName!).toUpperCase(),
+            style: TextStyle(color: white, fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
+    } else {
+      return GestureDetector(
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: groupDetail!.avatar);
+        },
+        child: Container(
+          height: 36,
+          width: 36,
+          child: Container(
+            height: 36,
+            width: 36,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(
+                  25,
+                ),
+                border: Border.all(color: borderColor, width: 2)),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: groupDetail != null
+                        ? groupDetail!.avatar ?? defaultImage
+                        : defaultImage);
+              },
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: groupDetail != null
+                      ? groupDetail!.avatar ?? defaultImage
+                      : defaultImage,
+                  colorBlendMode: BlendMode.darken,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  errorWidget: imageErrorWidget,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Container(
       height: 36,
       width: 36,
@@ -395,18 +453,18 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             height: 0,
             thickness: 1,
           ),
-          // SizedBox(
-          //   height: 16,
-          // ),
-          // getMuteNotificationTile(),
-          // SizedBox(
-          //   height: 16,
-          // ),
-          // Divider(
-          //   color: dividerColor,
-          //   height: 0,
-          //   thickness: 1,
-          // ),
+          SizedBox(
+            height: 16,
+          ),
+          getMuteNotificationTile(),
+          SizedBox(
+            height: 16,
+          ),
+          Divider(
+            color: dividerColor,
+            height: 0,
+            thickness: 1,
+          ),
           SizedBox(
             height: 16,
           ),

@@ -392,11 +392,14 @@ class RouteGenerator {
         );
 
       case Routes.CREATE_BLOG:
+        final args = settings.arguments as Map<String, dynamic>;
+
         return PageTransition(
           child: CreateorEditPostScreen(
             userPost: settings.arguments != null
                 ? settings.arguments as UserPost
                 : null,
+            channel: args['channel'],
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,

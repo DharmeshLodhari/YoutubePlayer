@@ -40,10 +40,6 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
   String? todayDealNext = "";
   String? productNext = "";
   String? productPrevious = "";
-  // GlobalKey<YarnListScreenState> topicViewStateKey =
-  // GlobalKey<YarnListScreenState>();
-  // GlobalKey<TrendingListScreenState> latestViewStateKey =
-  // GlobalKey<TrendingListScreenState>();
   late YarnDashboardBloc yarnDashboardBloc;
 
   bool _tabsVisible = true;

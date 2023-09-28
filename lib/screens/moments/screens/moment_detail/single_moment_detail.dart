@@ -293,7 +293,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                                                 LoadingIndicator());
                                         MomentsService()
                                             .deleteMoment(
-                                                widget.currentMoment.id!)
+                                                widget.currentMoment.id!, "")
                                             .then(
                                           (value) {
                                             Navigator.pop(

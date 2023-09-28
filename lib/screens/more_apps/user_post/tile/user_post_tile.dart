@@ -625,7 +625,7 @@ class _PostTileState extends State<PostTile> {
                 ..attachment = {
                   "blog": widget.post?.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '');
+              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }

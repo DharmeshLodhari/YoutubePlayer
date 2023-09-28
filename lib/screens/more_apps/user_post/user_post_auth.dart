@@ -208,9 +208,18 @@ class UserPostAuth extends AuthService {
     required String blogPostBody,
     bool enableCommenting = false,
     required String authorUserName,
+    String? channelUsername,
   }) async {
     var urlToPostBlog = AppConfig.baseUrl + "/api/v1/social/posts/";
+    if(channelUsername!.isNotEmpty){
+      urlToPostBlog = "${AppConfig.baseUrl}/api/v1/social/posts/channel/$channelUsername/";
+    }
+
     var urlToUpdateBlog = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
+    if(channelUsername.isNotEmpty){
+      urlToUpdateBlog = "${AppConfig.baseUrl}/api/v1/social/posts/channel/$blogId/";
+    }
+
     String url = isUpdating ? urlToUpdateBlog : urlToPostBlog;
     var headers = await getAuthHeaders();
 

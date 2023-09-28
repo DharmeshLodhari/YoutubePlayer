@@ -212,7 +212,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                                             builder: (dialogLoadingContext) =>
                                                 LoadingIndicator());
                                         MomentsService()
-                                            .deleteMoment(currentMoment!.id!)
+                                            .deleteMoment(currentMoment!.id!, "")
                                             .then(
                                           (value) {
                                             Navigator.pop(

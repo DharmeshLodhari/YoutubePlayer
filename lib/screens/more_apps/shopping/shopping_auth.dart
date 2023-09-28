@@ -370,9 +370,13 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Add Product
-  Future<List<dynamic>> addProduct(Product product) async {
+  Future<List<dynamic>> addProduct(Product product, String webUrl) async {
     var headers = await getAuthHeaders();
-    var url = AppConfig.baseUrl + "/api/v1/products/";
+    var url = "${AppConfig.baseUrl}/api/v1/products/";
+
+    if(webUrl.isNotEmpty){
+      url = "${AppConfig.baseUrl}/api/v1/products/";
+    }
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
