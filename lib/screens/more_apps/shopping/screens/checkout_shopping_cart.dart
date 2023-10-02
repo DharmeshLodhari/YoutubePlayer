@@ -242,144 +242,124 @@ class _ShoppingCartState extends State<ShoppingCart> {
     return getItemTileUI(index);
   }
 
-  Widget getItemTileUI2(int index) {
-    basketBloc = Provider.of<BasketBloc>(context);
-
-    if (index < basketBloc.items.length) {
-      if (basketBloc.items[index]["item"] is Product) {
-        return ShoppingCartTileForProduct(
-          basketBloc.items[index],
-          index: index,
-          onDecreaseQty: () {
-            removeItem(index);
-          },
-          onIncreaseQty: () {
-            addItem(index);
-          },
-          onDecreaseVariantQty: (val) {
-            removeVariantItem(index, val);
-            if(mounted)setState(() {});
-          },
-          onIncreaseVariantQty: (val) {
-            addVariantItem(index, val);
-            if(mounted)setState(() {});
-          },
-        );
-      }
-      return ShoppingCartTileForService(
-        basketBloc.items[index],
-        index: index,
-        onDecreaseQty: () {
-          removeItem(index);
-        },
-        onIncreaseQty: () {
-          addItem(index);
-        },
-      );
-    } else {
-      return Container();
-    }
-  }
 
   Widget getItemTileUI(int index) {
     // basketBloc = Provider.of<BasketBloc>(context);
+
+    List<Widget> itemWidgets = []; // Create an empty list to hold widgets
 
     if (index < basketBloc.items.length) {
       final item = basketBloc.items[index];
 
       if (item["item"] is Product) {
         final product = item["item"] as Product;
-        final variants = product.variant;
-        final variantss = item["variants"];
+        final variants = item["variants"];
 
-        // debugPrint('fola one three:::: ${variants}');
-        // debugPrint('fola one three:::: ${variantss}');
+        List<Map<String, dynamic>?>? mapList = convertDynamicListToMapList(variants);
 
-        List<Map<String, dynamic>?> mapList = convertDynamicListToMapList(variants!);
-
-        if (variants != null && variants.isNotEmpty) {
+        if (mapList != null && mapList.isNotEmpty) {
           // If the product has variants, create a separate tile for each variant.
-          return Column(
-            children: variants.map((variant) {
-              // debugPrint('fola one three:::: ${variant['id'].toString()}');
+          itemWidgets.addAll(mapList.map((variant) {
 
-              return ShoppingCartTileForProduct(
-                {
-                  "type": item["type"],
-                  "item": product,
-                  "qty": variants.isEmpty ? item['quantity'] : variant["quantity"],
-                  "variant": mapList, // Pass a single variant as a list
-                  "variantList": mapList, // Pass variant list
-                },
-                index: index,
-                onDecreaseQty: () {
-                  removeItem(index);
-                  if (mounted) setState(() {});
-                },
-                onIncreaseQty: () {
-                  addItem(index);
-                  if (mounted) setState(() {});
-                },
-                onDecreaseVariantQty: (val) {
-                  removeVariantItem(index, val);
-                  if (mounted) setState(() {});
-                },
-                onIncreaseVariantQty: (val) {
-                  addVariantItem(index, val);
-                  if (mounted) setState(() {});
-                },
-              );
-            }).toList(),
+            Map<String, dynamic> variant1 = {
+              "id": variant!["id"], "quantity": variant['quantity'].toString(),
+              "price": variant['price'], "colour": variant['colour'],
+              "value": variant['value'], "type": variant['type']
+            };
+
+            Variant single = Variant.fromJson(variant1);
+            // Variant single = Variant.fromJson(variant);
+            String image = variant!["image"];
+
+            return ShoppingCartTileForProduct(
+              {
+                "type": item["type"],
+                "item": product,
+                "qty": variants.isEmpty ? item['quantity'] : single.quantity,
+                "variant": single, // Pass a single variant as a list
+                "image": image, // Pass variant list
+              },
+              index: index,
+              onDecreaseQty: () {
+                removeItem(index);
+                if (mounted) setState(() {});
+              },
+              onIncreaseQty: () {
+                addItem(index);
+                if (mounted) setState(() {});
+              },
+              onDecreaseVariantQty: (val) {
+                removeVariantItem(index, val);
+                if (mounted) setState(() {});
+              },
+              onIncreaseVariantQty: (val) {
+                addVariantItem(index, val);
+                if (mounted) setState(() {});
+              },
+            );
+          }));
+        } else {
+          itemWidgets.add(
+            ShoppingCartTileForProduct(
+              {
+                "type": item["type"],
+                "item": product,
+                "qty": item['qty'],
+                "variant": null, // Pass a single variant as a list
+                "image": "",
+              },
+              index: index,
+              onDecreaseQty: () {
+                removeItem(index);
+                if (mounted) setState(() {});
+              },
+              onIncreaseQty: () {
+                addItem(index);
+                if (mounted) setState(() {});
+              },
+              onDecreaseVariantQty: (val) {
+                removeVariantItem(index, val);
+                if (mounted) setState(() {});
+              },
+              onIncreaseVariantQty: (val) {
+                addVariantItem(index, val);
+                if (mounted) setState(() {});
+              },
+            ),
           );
-        }
-        else {
-          return ShoppingCartTileForProduct(
-            {
-              "type": item["type"],
-              "item": product,
-              "qty": item['qty'],
-              "variant": mapList, // Pass a single variant as a list
-              "variantList": mapList, // Pass variant list
-            },
-            index: index,
-            onDecreaseQty: () {
-              removeItem(index);
-              if (mounted) setState(() {});
-            },
-            onIncreaseQty: () {
-              addItem(index);
-              if (mounted) setState(() {});
-            },
-            onDecreaseVariantQty: (val) {
-              removeVariantItem(index, val);
-              if (mounted) setState(() {});
-            },
-            onIncreaseVariantQty: (val) {
-              addVariantItem(index, val);
-              if (mounted) setState(() {});
-            },
-          );
-          // return Container();
         }
       } else {
         // Handle other item types (not products) if needed.
-        return ShoppingCartTileForService(
-          basketBloc.items[index],
-          index: index,
-          onDecreaseQty: () {
-            removeItem(index);
-          },
-          onIncreaseQty: () {
-            addItem(index);
-          },
+        itemWidgets.add(
+          ShoppingCartTileForService(
+            basketBloc.items[index],
+            index: index,
+            onDecreaseQty: () {
+              removeItem(index);
+            },
+            onIncreaseQty: () {
+              addItem(index);
+            },
+          ),
         );
       }
     } else {
       return Container();
     }
+
+    // Finally, return a parent widget (e.g., Column) that contains the list of widgets.
+    return Column(
+      children: itemWidgets,
+    );
   }
 
-  List<Map<String, dynamic>?> convertDynamicListToMapList(List<dynamic> dynamicList) {
+
+
+  List<Map<String, dynamic>?> convertDynamicListToMapList(List<dynamic>? dynamicList) {
+    if (dynamicList == null) {
+      return [];
+    }
+
     List<Map<String, dynamic>?> mapList = dynamicList.map((item) {
       if (item is Map<String, dynamic>) {
         return item; // If it's already a Map, no need to convert
@@ -390,8 +370,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
         // Or if item is an int, you can create a Map with a specific key:
         // return {'number': item};
         // Adjust this part according to your data and requirements.
+        return null; // Return null for unsupported types
       }
     }).toList();
+
     return mapList;
   }
 
@@ -439,26 +421,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void addVariantItem(int index, int variantId) async {
     String type = basketBloc.items[index]["item"] is Product ? "product" : "service";
 
-    for (var product in basketBloc.items) {
+    // debugPrint('fola cart:::: ${variantId}');
+    Product selectedProduct = basketBloc.items[index]["item"];
+    // debugPrint('fola cart:::: ${selectedProduct.id}');
 
-      if (product['item'] is Product) {
-        var variantList = product['item'].variant;
+    basketBloc.increaseVariantQuantity(selectedProduct.id.toString(), variantId);
 
-        for (var variant in variantList) {
+    Map<String, dynamic> dataInfo = getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
-          if (int.parse(variant!['id'].toString()) == variantId) {
-            // Increase the quantity of the variant
-            int currentQuantity = int.parse(variant['quantity'].toString());
-            variant['quantity'] = currentQuantity + 1;
-          }
-        }
-
-      }
-    }
-
-    Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items[index]["item"], type, basketBloc.items[index]["item"].id);
-
-    debugPrint("fola cart From Add Button : ${dataInfo}");
+    // debugPrint("fola cart From Add Button : ${dataInfo}");
     await ShoppingAuthService().addItemToShoppingCart(dataInfo);
   }
 
@@ -488,82 +459,82 @@ class _ShoppingCartState extends State<ShoppingCart> {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
-    for (var product in basketBloc.items) {
+    Product selectedProduct = basketBloc.items[index]["item"];
+    basketBloc.removeOrReduceVariant(selectedProduct.id.toString(), variantId);
 
-      if (product['item'] is Product) {
-        var variantList = product['item'].variant;
-
-        for (var variant in variantList) {
-
-          if (int.parse(variant!['id'].toString()) == variantId) {
-            // Reduce the quantity of the variant
-            int currentQuantity = int.parse(variant['quantity'].toString());
-            if (currentQuantity > 1) {
-              variant['quantity'] = currentQuantity - 1;
-            } else if (currentQuantity == 1) {
-              // Reduce the quantity to zero and then remove the variant
-              variant['quantity'] = 0;
-            } else {
-              // Handle the case where the quantity is already zero
-              // You can leave this empty or add further logic if needed
-            }
-            // return; // Variant found and quantity reduced or removed, exit the function
-          }
-        }
-
-
-        // debugPrint("Data send From Remove one : ${variantList}");
-      }
-
-    }
-    if (mounted) setState(() {});
-
-    Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items[index]["item"], type, basketBloc.items[index]["item"].id);
-
-    debugPrint("fola cart From Remove Button : ${dataInfo}");
-    await ShoppingAuthService().addItemToShoppingCart(dataInfo);
+    Map<String, dynamic> dataInfo = getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
     //close pop up if quantity to reduce is 1 currently
     if(dataInfo["qty"] == 0){
-      basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
-      // await ShoppingAuthService().removeItemFromShoppingCart(dataInfo);
+      // basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
+
+      Map<String, dynamic> data = {
+        "id": ["productId"],
+        "type": dataInfo["type"],
+        "qty": 0,
+      };
+      await ShoppingAuthService().removeItemFromShoppingCart(data);
+    }else{
+
+      await ShoppingAuthService().addItemToShoppingCart(dataInfo);
     }
   }
 
-  Map<String, dynamic> getUpdatedCartItem(Product cartItem, String type, String productId){
+  Map<String, dynamic> getUpdatedCartItem(String type, String productId) {
     Map<String, dynamic> dataInfo = {};
 
-    int totalVariantQuantity = getTotalVariantQuantity(cartItem.variant, cartItem.id);
-    var variantsList = cartItem.variant;
-    // Populate dataInfo with product information
-    dataInfo = {
-      "id": productId,
-      "qty": variantsList!.isNotEmpty ? totalVariantQuantity : cartItem.quantity,
-      "type": type,
-    };
+    for (var element in basketBloc.items) {
+      final item = element["item"];
+      int totalVariantQuantity = 0;
 
-    dataInfo["variants"] = [];
-    if (variantsList.isNotEmpty) {
-      int variantId = 0;
-      int variantQuantity = 0;
-      // Iterate through the productView and add them to dataInfo
-      for (var variant in variantsList) {
-        if (variant.containsKey("id") && variant["id"] != null) {
-          variantId = int.parse(variant["id"].toString());
-          variantQuantity = variantQuantity + int.parse(variant["quantity"].toString());
+      if (element["variants"] != null && element.containsKey("variants")) {
+        final variantsList = element["variants"] as List;
+
+        // Initialize dataInfo with common information
+        dataInfo = {
+          "id": productId,
+          "type": type,
+        };
+
+        // Check if variantsList is not empty
+        if (variantsList.isNotEmpty) {
+          List<Map<String, dynamic>> variantDataList = [];
+
+          // Iterate through the variants and add each variant to the variantDataList
+          for (var variant in variantsList) {
+            if (variant.containsKey("id") && variant["id"] != null) {
+              int variantId = int.parse(variant["id"].toString());
+              int variantQuantity = int.parse(variant["quantity"].toString());
+
+              variantDataList.add({
+                "id": variantId,
+                "quantity": variantQuantity,
+              });
+            }
+          }
+
+          // debugPrint("Data From Product Page v-id 5 : ${variantDataList}");
+
+          // Add the variantDataList to dataInfo["variants"]
+          dataInfo["variants"] = variantDataList;
+
+          // Calculate the totalVariantQuantity based on variantDataList
+          totalVariantQuantity = variantDataList.fold<int>(
+              0, (sum, variant) => sum + int.parse(variant['quantity'].toString()));
         }
 
+        // Set the total quantity in dataInfo
+        dataInfo["qty"] = variantsList.isNotEmpty ? totalVariantQuantity : item.quantity;
+      } else {
+        dataInfo = {
+          "id": item.id,
+          "qty": element['qty'],
+          "type": type,
+          "variants": [],
+        };
       }
-      dataInfo["variants"].add({
-        "id": variantId,
-        "quantity": variantQuantity,
-      });
-    }
-    else if(variantsList.isEmpty){
 
-      dataInfo["variants"] = [];
     }
-
     return dataInfo;
   }
 
@@ -584,6 +555,46 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   int getTotalPrice() {
+    int totalPrice = 0;
+
+    for (var item in basketBloc.items) {
+      var product = item["item"];
+      int itemTotal = 0;
+
+      if (product is Product) {
+        if (product.variant != null && product.variant!.isNotEmpty) {
+          // Calculate total price based on variants
+          for (var variant in product.variant!) {
+            if (variant['quantity'] != null && variant['price'] != null) {
+              int variantPrice = int.tryParse(variant['price'].toString()) ?? 0;
+              int quantity = int.tryParse(variant['quantity'].toString()) ?? 0;
+              itemTotal += variantPrice * quantity;
+            }
+          }
+        } else {
+          // If there are no variants, use the product qty and price
+          itemTotal = int.tryParse(product.price.toString())! *
+              int.tryParse(item["qty"].toString())! ??
+              0;
+        }
+      } else {
+        // If the item is not a Product, use its qty and price
+        itemTotal = int.tryParse(product.price.toString())! *
+            int.tryParse(product.quantity.toString())! ??
+            0;
+      }
+
+      totalPrice += itemTotal;
+    }
+
+    basketBloc.orderTotal = totalPrice;
+    if (mounted) setState(() {});
+
+    return totalPrice;
+  }
+
+
+  int getTotalPrice2() {
     int totalPrice = 0;
 
     for (var item in basketBloc.items) {

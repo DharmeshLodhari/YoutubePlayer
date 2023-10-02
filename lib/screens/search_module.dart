@@ -171,18 +171,18 @@ class _SearchModuleState extends State<SearchModule> {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.white,
-      titleSpacing: 0,
+      titleSpacing: 20,
       automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
+      // leading: IconButton(
+      //   icon: Icon(
+      //     Icons.keyboard_arrow_left,
+      //     color: navyBlue,
+      //     size: 24,
+      //   ),
+      //   onPressed: () {
+      //     Navigator.pop(context);
+      //   },
+      // ),
       title: Text(
         getTabTitle(),
         style: TextStyle(

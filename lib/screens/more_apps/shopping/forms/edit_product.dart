@@ -132,7 +132,7 @@ class _EditProductState extends State<EditProduct> {
 
           // assigning to our edit controllers
           productTitleController.text = currentProduct.name!;
-          productDescriptionController.text = currentProduct.description!;
+          productDescriptionController.text = messageDecoderWithEmoji(currentProduct.description!)!;
 
           productPriceController.text =
               moneyNormalizer(int.parse(currentProduct.price!)).toString();
@@ -140,17 +140,16 @@ class _EditProductState extends State<EditProduct> {
           if (currentProduct.manufacturer != null) {
             productManufacturerController.text = currentProduct.manufacturer!;
           }
-          productShortDescriptionController.text =
-              currentProduct.shortDescription!;
+          productShortDescriptionController.text = messageDecoderWithEmoji(currentProduct.shortDescription!)!;
 
           productImagesFromServer.addAll(currentProduct.serverImages!);
           productName = currentProduct.name;
           productCategory = currentProduct.category;
           productCondition = currentProduct.condition;
           productPrice = moneyNormalizer(int.parse(currentProduct.price!));
-          productDescription = currentProduct.description;
+          productDescription = messageDecoderWithEmoji(currentProduct.description);
           productManufacturer = currentProduct.manufacturer;
-          productShortDescription = currentProduct.shortDescription;
+          productShortDescription = messageDecoderWithEmoji(currentProduct.shortDescription);
           productIsAvailable = currentProduct.isAvailable;
           productAvailableFrom = currentProduct.availableFrom;
           productEnableInSuperStore = currentProduct.enableInSuperStore!;
@@ -1401,7 +1400,7 @@ class _EditProductState extends State<EditProduct> {
           debugPrint('PRODUCT CATEGORY ::: $productCategory');
           // setting updated value
           currentProduct.name = productName;
-          currentProduct.description = productDescription;
+          currentProduct.description = messageDecoderWithEmoji(productDescription);
           currentProduct.category = messageDecoderWithEmoji(productCategory);
           currentProduct.condition = productCondition;
           currentProduct.price = moneyInputNormalizer(productPrice!).toString();
@@ -1410,7 +1409,7 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.serverImages = productImagesFromServer;
           currentProduct.isAvailable = productIsAvailable;
           currentProduct.availableFrom = productAvailableFrom;
-          currentProduct.shortDescription = productShortDescription;
+          currentProduct.shortDescription = messageDecoderWithEmoji(productShortDescription);
           currentProduct.manufacturer = productManufacturer;
           currentProduct.enableInSuperStore = productEnableInSuperStore;
 

@@ -1434,6 +1434,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               stopShakeDetector();
               if (chatConversation!.isGroupConversation!) {
                 // navigateToGroupDetailScreen();
+
                 showChannelMenuList();
               } else {
                 await Navigator.pushNamed(context, Routes.USER_PROFILE,

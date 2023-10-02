@@ -1278,8 +1278,8 @@ class _AddProductState extends State<AddProduct> {
           product.localImages =
               productImages.map((file) => File(file.path)).toList();
           product.name = productName;
-          product.description = productDescription;
-          product.shortDescription = productShortDescription;
+          product.description = messageDecoderWithEmoji(productDescription);
+          product.shortDescription = messageDecoderWithEmoji(productShortDescription);
           product.category = productCategory;
           product.condition = productCondition;
           product.price = moneyInputNormalizer(productPrice).toString();

@@ -190,5 +190,6 @@ class Routes {
   static const String SEARCH_TRANSACTION_CARD = "/search-transaction-card";
 
   static const String CUSTOMIZE_PROFILE = "/customize-profile";
+  static const String HOME_QUICK_VIEW = "/home-quick-view";
 
 }

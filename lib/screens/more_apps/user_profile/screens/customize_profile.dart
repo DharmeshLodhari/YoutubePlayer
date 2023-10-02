@@ -11,10 +11,8 @@ import '../user_auth.dart';
 
 class CustomizeProfileScreen extends StatefulWidget {
   final arguments;
-  // final Function(Map<String, dynamic>)? callbackProductService;
 
   CustomizeProfileScreen({required this.arguments,
-    // this.callbackProductService,
     Key? key}) : super(key: key);
 
   @override

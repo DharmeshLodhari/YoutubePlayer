@@ -91,6 +91,8 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
 
   Widget _buildFloatingActionButton() {
     return SpeedDial(
+      backgroundColor: yarnBlack,
+      activeBackgroundColor: HexColor("#FFFFFF"),
       child: InkWell(
         onTap: () async {
           NavigationUtil.push(context,
@@ -121,8 +123,6 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
           color: Colors.white,
         ),
       ),
-      backgroundColor: yarnBlack,
-      activeBackgroundColor: HexColor("#FFFFFF"),
     );
   }
 

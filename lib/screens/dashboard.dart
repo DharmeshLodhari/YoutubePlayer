@@ -12,6 +12,7 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
@@ -22,6 +23,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +38,7 @@ import 'moments/screens/moments_screen.dart';
 import 'moments/screens/moments_service.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
+import 'more_apps/settings/general_setting.dart';
 import 'more_apps/yarn/yarn_auth.dart';
 import 'more_apps/yarn/yarn_dashboard.dart';
 import 'more_apps/yarn/yarn_dashboard_bloc.dart';
@@ -51,7 +54,7 @@ class Dashboard extends StatefulWidget {
   _DashboardState createState() => _DashboardState(arguments: arguments);
 }
 
-class _DashboardState extends State<Dashboard> {
+class _DashboardState extends State<Dashboard>  {
   //newUI Variables
   late DashboardBloc _dashboardBloc;
   DatabaseHelper _db = DatabaseHelper();
@@ -67,6 +70,23 @@ class _DashboardState extends State<Dashboard> {
 
   bool? isNFCPermissionAccepted;
   late AppLocalization appLocalization;
+  var _bottomNavIndex = 0; //default index of a first screen
+
+  final iconList = <IconData>[
+    Icons.home,
+    Icons.search,
+    Icons.chat,
+    Icons.settings,
+  ];
+
+  var list = ['Home', 'Search', 'Chat', 'Settings'];
+
+  final List<Widget> _pages = [
+    KeepAlivePage(wantKeepAlive: false, child: Home()),
+    KeepAlivePage(child: SearchModule()),
+    KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
+    KeepAlivePage(wantKeepAlive: true, child: GeneralSettingScreen()),
+  ];
 
   _DashboardState({this.arguments});
 
@@ -273,7 +293,8 @@ class _DashboardState extends State<Dashboard> {
             MyGlobals().navigationKey.currentContext!, Routes.CHAT_SCREEN,
             arguments: {"searchedUser": chatConversation});
       }
-    } else if (notification['type'] == "request-payment") {
+    }
+    else if (notification['type'] == "request-payment") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.ACCOUNTS));
@@ -287,17 +308,20 @@ class _DashboardState extends State<Dashboard> {
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed(Routes.TRANSACTIONS);
-    } else if (notification['type'] == "connection-request") {
+    }
+    else if (notification['type'] == "connection-request") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 1});
-    } else if (notification['type'] == "friends-dashboard") {
+    }
+    else if (notification['type'] == "friends-dashboard") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
-    } else if (notification['type'] == "detail_message") {
+    }
+    else if (notification['type'] == "detail_message") {
       //this variable will fetch the id of message from the response
       String? idOfMessage =
           notification['actions'].replaceAll("/detail_message/", "");
@@ -307,10 +331,12 @@ class _DashboardState extends State<Dashboard> {
           .pushNamed(Routes.DETAIL_MESSAGE, arguments: {
         'id': idOfMessage,
       });
-    } else if (notification['type'].toString().contains("orders-list")) {
+    }
+    else if (notification['type'].toString().contains("orders-list")) {
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(context).pushNamed(Routes.ORDERS_LIST);
-    } else if (notification['type'].toString().contains("order-detail-page")) {
+    }
+    else if (notification['type'].toString().contains("order-detail-page")) {
       Order order = Order.fromJson(notification["data"] is String
           ? jsonDecode(notification["data"])
           : notification["data"]);
@@ -318,7 +344,8 @@ class _DashboardState extends State<Dashboard> {
       Navigator.of(context).pushNamed(Routes.ORDER_DETAIL_PAGE, arguments: {
         'order': order,
       });
-    } else if (notification['type'].toString().contains("moment")) {
+    }
+    else if (notification['type'].toString().contains("moment")) {
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
       showDialog(
           context: context,
@@ -453,21 +480,35 @@ class _DashboardState extends State<Dashboard> {
       child: Scaffold(
         key: myGlobals.scaffoldKey,
         backgroundColor: whiteBackground,
-        body: PageView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: _dashboardBloc.pageController,
-          onPageChanged: (index) {
-            _dashboardBloc.index = index;
-            FocusScope.of(context).unfocus();
+        // body: PageView(
+        //   physics: const NeverScrollableScrollPhysics(),
+        //   controller: _dashboardBloc.pageController,
+        //   onPageChanged: (index) {
+        //     _dashboardBloc.index = index;
+        //     FocusScope.of(context).unfocus();
+        //   },
+        //   children: <Widget>[
+        //     KeepAlivePage(wantKeepAlive: false, child: Home()),
+        //     KeepAlivePage(wantKeepAlive: true, child: YarnDashboard()),
+        //     KeepAlivePage(wantKeepAlive: true, child: const SuperStore()),
+        //     KeepAlivePage(wantKeepAlive: true, child: const MomentsScreen()),
+        //     KeepAlivePage(child: ConnectionDashboard()),
+        //   ],
+        // ),
+        body: _pages[_bottomNavIndex],
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: navyBlue,
+          child: Icon(
+            Icons.add,
+            color: white,
+            size: 44,
+          ),
+          onPressed: () {
+            Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
+                arguments: {"view": appLocalization.create});
           },
-          children: <Widget>[
-            KeepAlivePage(wantKeepAlive: false, child: Home()),
-            KeepAlivePage(wantKeepAlive: true, child: YarnDashboard()),
-            KeepAlivePage(wantKeepAlive: true, child: const SuperStore()),
-            KeepAlivePage(wantKeepAlive: true, child: const MomentsScreen()),
-            KeepAlivePage(child: ConnectionDashboard()),
-          ],
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: bottomNavigationBar(),
       ),
     );
@@ -479,78 +520,125 @@ class _DashboardState extends State<Dashboard> {
         splashColor: Colors.white,
         highlightColor: Colors.white,
       ),
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedFontSize: 0,
-        iconSize: 0,
-        unselectedFontSize: 10,
-        showSelectedLabels: false,
-        backgroundColor: Colors.white,
-        elevation: 10,
-        currentIndex: _dashboardBloc.index,
-        onTap: (index) {
-          _dashboardBloc.index = index;
-          FocusScope.of(context).unfocus();
-          if (index == 1) {
-            _dashboardBloc.topYarn = true;
-            // debugPrint('Dashboard Yarn clicked:::: ${_dashboardBloc.top}');
-          }else if(index == 2){
-            _dashboardBloc.topStore = true;
-          }
+      child: AnimatedBottomNavigationBar.builder(
+        itemCount: iconList.length,
+        tabBuilder: (int index, bool isActive) {
+          final color = isActive ? navyBlue : darkGreyYarn;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                iconList[index],
+                size: 26,
+                color: color,
+              ),
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  list[index],
+                  maxLines: 1,
+                  style: TextStyle(color: color, fontWeight: FontWeight.w700),
+                  // group: autoSizeGroup,
+                ),
+              )
+            ],
+          );
         },
-        items: [
-          bottomNavigationBarItem(
-            iconData: SlydoAppIconNew.home,
-            title: AppLocalization.of(context)!.home,
-          ),
-
-          bottomNavigationBarItem(
-            iconSize: 20,
-            key: tutorialYarnKey,
-            iconData: SlydoAppIconNew.dashboard_yarn,
-            title: "Yarn",
-          ),
-          bottomNavigationBarItem(
-            key: tutorialSuperStoreKey,
-            iconSize: 20,
-            iconData: SlydoAppIconNew.super_store,
-            title: AppLocalization.of(context)!.store,
-          ),
-          bottomNavigationBarItem(
-            key: tutorialMomentKey,
-            iconData: SlydoAppIconNew.moment,
-            title: AppLocalization.of(context)!.moments,
-          ),
-          // bottomNavigationBarItem(
-          //   isChatIcon: true,
-          //   icon: SlydoAppIcon.more,
-          //   title: AppLocalization.of(context)!.chat,
-          // ),
-
-          bottomNavigationBarItem(
-            isChatIcon: true,
-            key: tutorialChatMessageKey,
-            iconData: SlydoAppIconNew.chat,
-            title: AppLocalization.of(context)!.chat,
-          ),
-
-          // BottomNavigationBarItem(
-          //   icon: Container(
-          //     key: tutorialExploreKey,
-          //     height: 50,
-          //     child: Icon(
-          //       Icons.explore,
-          //       color: blackFont,
-          //       size: 18,
-          //     ),
-          //   ),
-          //   label: "Explore",
-          //   activeIcon: activeIcon(
-          //       title: AppLocalization.of(context)!.explore,
-          //       icon: Icons.explore),
-          // ),
-        ],
+        backgroundColor: white,
+        activeIndex: _bottomNavIndex,
+        splashColor: naturalGreenLight,
+        splashSpeedInMilliseconds: 300,
+        notchSmoothness: NotchSmoothness.defaultEdge,
+        gapLocation: GapLocation.center,
+        leftCornerRadius: 0,
+        rightCornerRadius: 0,
+        onTap: (index) {
+          setState(() {
+            _bottomNavIndex = index;
+            navigateToPage(index);
+          });
+        },
+        shadow: BoxShadow(
+          offset: Offset(0, 1),
+          blurRadius: 2,
+          spreadRadius: 0.5,
+          color: greyBorderColor,
+        ),
       ),
+      // child: BottomNavigationBar(
+      //   type: BottomNavigationBarType.fixed,
+      //   selectedFontSize: 0,
+      //   iconSize: 0,
+      //   unselectedFontSize: 10,
+      //   showSelectedLabels: false,
+      //   backgroundColor: Colors.white,
+      //   elevation: 10,
+      //   currentIndex: _dashboardBloc.index,
+      //   onTap: (index) {
+      //     _dashboardBloc.index = index;
+      //     FocusScope.of(context).unfocus();
+      //     if (index == 1) {
+      //       _dashboardBloc.topYarn = true;
+      //       // debugPrint('Dashboard Yarn clicked:::: ${_dashboardBloc.top}');
+      //     }else if(index == 2){
+      //       _dashboardBloc.topStore = true;
+      //     }
+      //   },
+      //   items: [
+      //     bottomNavigationBarItem(
+      //       iconData: SlydoAppIconNew.home,
+      //       title: AppLocalization.of(context)!.home,
+      //     ),
+      //
+      //     bottomNavigationBarItem(
+      //       iconSize: 20,
+      //       key: tutorialYarnKey,
+      //       iconData: SlydoAppIconNew.dashboard_yarn,
+      //       title: "Yarn",
+      //     ),
+      //     bottomNavigationBarItem(
+      //       key: tutorialSuperStoreKey,
+      //       iconSize: 20,
+      //       iconData: SlydoAppIconNew.super_store,
+      //       title: AppLocalization.of(context)!.store,
+      //     ),
+      //     bottomNavigationBarItem(
+      //       key: tutorialMomentKey,
+      //       iconData: SlydoAppIconNew.moment,
+      //       title: AppLocalization.of(context)!.moments,
+      //     ),
+      //     // bottomNavigationBarItem(
+      //     //   isChatIcon: true,
+      //     //   icon: SlydoAppIcon.more,
+      //     //   title: AppLocalization.of(context)!.chat,
+      //     // ),
+      //
+      //     bottomNavigationBarItem(
+      //       isChatIcon: true,
+      //       key: tutorialChatMessageKey,
+      //       iconData: SlydoAppIconNew.chat,
+      //       title: AppLocalization.of(context)!.chat,
+      //     ),
+      //
+      //     // BottomNavigationBarItem(
+      //     //   icon: Container(
+      //     //     key: tutorialExploreKey,
+      //     //     height: 50,
+      //     //     child: Icon(
+      //     //       Icons.explore,
+      //     //       color: blackFont,
+      //     //       size: 18,
+      //     //     ),
+      //     //   ),
+      //     //   label: "Explore",
+      //     //   activeIcon: activeIcon(
+      //     //       title: AppLocalization.of(context)!.explore,
+      //     //       icon: Icons.explore),
+      //     // ),
+      //   ],
+      // ),
     );
   }
 
@@ -669,5 +757,30 @@ class _DashboardState extends State<Dashboard> {
     streamSubscription?.cancel();
     ShareManager().disposeShareManager();
     super.dispose();
+  }
+
+  Future<void> navigateToPage(int index) async {
+    switch (index) {
+      case 0:
+      // Navigate to the first page
+        KeepAlivePage(wantKeepAlive: false, child: Home());
+        break;
+      case 1:
+        await Navigator.of(context).pushNamed(Routes.SEARCH_MODULE);
+        // KeepAlivePage(wantKeepAlive: true, child: YarnDashboard());
+        break;
+      case 2:
+        KeepAlivePage(child: ConnectionDashboard());
+        break;
+      case 3:
+        KeepAlivePage(child: ConnectionDashboard());
+        break;
+
+      default:
+      // Handle cases where index is out of bounds or not recognized
+        break;
+
+
+    }
   }
 }

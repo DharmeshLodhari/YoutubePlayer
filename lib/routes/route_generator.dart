@@ -150,6 +150,7 @@ import 'package:Slydo/widget/webview_slydo/custom_webview.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../screens/home_quick_view.dart';
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/credit_card/add_virtual_card.dart';
 import '../screens/more_apps/credit_card/design_virtual_card.dart';
@@ -1739,6 +1740,15 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case Routes.HOME_QUICK_VIEW:
+        return PageTransition(
+          child: HomeQuickView(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
 
       default:
         // If there is no such named route in the switch statement, e.g. /third

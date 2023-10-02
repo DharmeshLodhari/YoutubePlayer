@@ -34,6 +34,7 @@ import '../widget/bottom_sheet_item.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../widget/rounded_background_icon.dart';
 import '../widget/user_dashboard_item_tile.dart';
+import 'moments/screens/moments_screen.dart';
 import 'more_apps/messaging/button/message_nav_btn.dart';
 import 'more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'more_apps/payment_link/payment_link.dart';
@@ -41,6 +42,7 @@ import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/models/SecureUser.dart';
 import 'more_apps/user_profile/models/user.dart';
 import 'more_apps/user_profile/user_auth.dart';
+import 'more_apps/yarn/yarn_dashboard.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -68,6 +70,7 @@ class _HomeState extends State<Home> {
   VirtualAccount? virtualAccount;
   String accountNumber = "";
   String bankName = "";
+  String accountName = "";
   bool isAccountExist = false;
 
   @override
@@ -124,6 +127,7 @@ class _HomeState extends State<Home> {
 
     accountNumber = virtualAccount!.accountNumber!;
     bankName = virtualAccount!.financialInstitution!.name!;
+    accountName = virtualAccount!.accountName!;
 
     if (mounted) setState(() {});
   }
@@ -162,6 +166,60 @@ class _HomeState extends State<Home> {
   }
 
   Widget _foregroundScreen() {
+    final List<Map<String, String>> shortcutExtra = [
+      {
+        'imagePath': 'home/small_payment',
+        'title': appLocalization.payment,
+        'subTitle': appLocalization.paymentSubTitle,
+        'color': '#9B51E0',
+      },
+      // {
+      //   'imagePath': 'home/small_business',
+      //   'title': appLocalization.business,
+      //   'subTitle': appLocalization.businessSubTitle,
+      //   'color': '#46CE7C',
+      // },
+      {
+        'imagePath': 'home/small_social',
+        'title': appLocalization.social,
+        'subTitle': appLocalization.socialSubTitle,
+        'color': '#FFA500',
+      },
+      {
+        'imagePath': 'home/small_lifestyle',
+        'title': appLocalization.lifestyle,
+        'subTitle': appLocalization.lifestyleSubTitle,
+        'color': '#F07097',
+      },
+    ];
+
+    final List<Map<String, String>> shortcutExtraBusiness = [
+      {
+        'imagePath': 'home/small_payment',
+        'title': appLocalization.payment,
+        'subTitle': appLocalization.paymentSubTitle,
+        'color': '#9B51E0',
+      },
+      {
+        'imagePath': 'home/small_business',
+        'title': appLocalization.business,
+        'subTitle': appLocalization.businessSubTitle,
+        'color': '#46CE7C',
+      },
+      {
+        'imagePath': 'home/small_social',
+        'title': appLocalization.social,
+        'subTitle': appLocalization.socialSubTitle,
+        'color': '#FFA500',
+      },
+      {
+        'imagePath': 'home/small_lifestyle',
+        'title': appLocalization.lifestyle,
+        'subTitle': appLocalization.lifestyleSubTitle,
+        'color': '#F07097',
+      },
+    ];
+
     return Container(
       padding: const EdgeInsets.only(
         left: 12,
@@ -192,34 +250,260 @@ class _HomeState extends State<Home> {
             ),
           ),
           const SizedBox(
-            height: 20,
+            height: 10,
           ),
+          // Container(
+          //     padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+          //     child: _displayPaymentButtons()),
           Container(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-              child: _displayPaymentButtons()),
+              child: _displayShortcutButtons()),
+          Container(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              child: userBloc.user.type!.toLowerCase() == 'user' ? _displayShortcutExtraCard(shortcutExtra) : _displayShortcutExtraCard(shortcutExtraBusiness)),
           const SizedBox(
             height: 25,
           ),
-          Container(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: Text(
-              appLocalization.explore,
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: HexColor("#151515")),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: checkUser(),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
+          // Container(
+          //   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+          //   child: Text(
+          //     appLocalization.explore,
+          //     style: TextStyle(
+          //         fontSize: 14,
+          //         fontWeight: FontWeight.w700,
+          //         color: HexColor("#151515")),
+          //   ),
+          // ),
+          // Container(
+          //   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+          //   child: checkUser(),
+          // ),
+          // const SizedBox(
+          //   height: 20,
+          // ),
         ],
       ),
     );
+  }
+
+
+  Widget _displayShortcutButtons() {
+    final List<Map<String, String>> shortcuts = [
+      {
+        'imagePath': 'home/send',
+        'title': 'Send',
+      },
+      {
+        'imagePath': 'home/request',
+        'title': 'Request',
+      },
+      {
+        'imagePath': 'home/yarn',
+        'title': 'Yarn',
+      },
+      {
+        'imagePath': 'home/moment',
+        'title': 'Moment',
+      },
+      {
+        'imagePath': 'home/service',
+        'title': 'Services',
+      },
+      {
+        'imagePath': 'home/service',
+        'title': 'Store',
+      },
+    ];
+
+    return Container(
+      height: 100.0,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          for (final shortcut in shortcuts)
+            Padding(
+              padding: const EdgeInsets.all(10.0), // Add padding between items
+              child: GestureDetector(
+                onTap: (){
+                  onClickShortcut(shortcut['title']);
+                },
+                  child: shortcutView(shortcut['imagePath']!, shortcut['title']!)),
+            ),
+        ],
+      ),
+    );
+
+
+  }
+
+  Widget shortcutView(String imagePath, String title){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        SvgPicture.asset(
+          imagePath.toSVG(),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void onClickShortcut(String? shortcut) {
+    switch (shortcut) {
+      case 'Send':
+        hideBalance();
+        Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+            arguments: <String, bool>{'isFromProfile': true});
+        break;
+      case 'Request':
+        hideBalance();
+        Navigator.pushNamed(context, Routes.ACCOUNTS);
+        break;
+      case 'Yarn':
+        hideBalance();
+        NavigationUtil.push(context, screen: YarnDashboard());
+        break;
+      case 'Moment':
+        hideBalance();
+        NavigationUtil.push(context, screen: MomentsScreen());
+        break;
+      case 'Service':
+        hideBalance();
+        Navigator.pushNamed(context, Routes.SUPER_HUB);
+        break;
+      case 'Store':
+        if (!storeLocked) {
+          storeItemAndroidSheet();
+        } else {
+          showToast(
+              message:
+              'You need to upgrade to a business account to use this feature.');
+        }
+        break;
+      default:
+      // Handle the default case (if any)
+        print('Tapped on an unknown shortcut');
+    }
+  }
+
+  Widget _displayShortcutExtraCard(List<Map<String, String>> shortcuts) {
+    return Container(
+      // height: 250.0,
+      child: Column(
+        // padding: EdgeInsets.zero,
+        children: List.generate(
+          (shortcuts.length / 2).ceil(),
+              (index) {
+            final startIndex = index * 2;
+            final endIndex = startIndex + 2;
+            final pairShortcuts = shortcuts.sublist(startIndex, endIndex);
+
+            return Row(
+              children: pairShortcuts.map((shortcut) {
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: GestureDetector(
+                      onTap: (){
+                        onClickShortcutExtra(shortcut['title']!);
+                      },
+                      child: shortcutViewExtra(
+                        shortcut['imagePath']!,
+                        shortcut['title']!,
+                        shortcut['subTitle']!,
+                        shortcut['color']!,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+
+  Widget shortcutViewExtra(String imagePath, String title,
+      String subTitle, String color){
+    double opacity = 0.8;
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
+      decoration: BoxDecoration(
+          color: HexColor(color).withOpacity(opacity),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Row(
+            children: [
+              SvgPicture.asset(
+                imagePath.toSVG(),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style:  TextStyle(
+                  fontSize: 14,
+                  color: white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            subTitle,
+            style: TextStyle(
+              fontSize: 12,
+              color: white,
+            ),
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+    );
+  }
+
+  void onClickShortcutExtra(String shortcut) {
+    switch (shortcut) {
+      case 'Payment':
+        hideBalance();
+        Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
+            arguments: {"view": appLocalization.payment});
+        break;
+      case 'Business':
+        hideBalance();
+        Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
+            arguments: {"view": appLocalization.business});
+        break;
+      case 'Socials':
+        hideBalance();
+        Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
+            arguments: {"view": appLocalization.social});
+        break;
+      case 'Lifestyles':
+        hideBalance();
+        Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
+            arguments: {"view": appLocalization.lifestyle});
+        break;
+      default:
+      // Handle the default case (if any)
+        print('Tapped on an unknown shortcut');
+    }
   }
 
   Widget _displayPaymentButtons() {
@@ -503,11 +787,11 @@ class _HomeState extends State<Home> {
         ),
       ),
       actions: <Widget>[
-        _searchBtn(),
-        const SizedBox(width: 4.0),
+        // _searchBtn(),
+        // const SizedBox(width: 4.0),
         _cartBtn(),
-        const SizedBox(width: 8.0),
-        _settingBtn(),
+        // const SizedBox(width: 8.0),
+        // _settingBtn(),
         const SizedBox(width: 8.0),
       ],
     );
@@ -650,166 +934,211 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.only(
                 left: 18,
                 right: 18,
-                top: MediaQuery.of(context).size.height > 600 ? 18 : 12,
-                bottom: MediaQuery.of(context).size.height > 600 ? 24 : 12),
+                top: MediaQuery.of(context).size.height > 600 ? 10 : 8,
+                bottom: MediaQuery.of(context).size.height > 600 ? 12 : 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                //balance, eye icon, bank name/ account number
+
+                //eye icon
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    getAccountBalanceBtn(),
+                    Text(
+                      "",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+
+                //Total balance , book balance
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
                       children: [
                         Text(
-                          "Balance",
+                          "Total Balance",
                           style: TextStyle(
                             fontSize: 14,
                             color: white,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        getAccountBalanceBtn()
+                        //actual balance
+                        isLoading == true
+                            ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularLoadingIndicator(color: naturalGreen),
+                        )
+                            : Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            isBalanceHidden
+                                ? Container()
+                                : Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
+                              child: Text(
+                                worldCurrencies[userBloc.user.currency!]!,
+                                style: TextStyle(
+                                  color: white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 20,
+                                  fontFamily: "Roboto",
+                                ),
+                              ),
+                            ),
+                            Text(
+                              isBalanceHidden
+                                  ? "****"
+                                  : moneyDisplayNormalizer(accountBalance),
+                              style: TextStyle(
+                                color: white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
 
-                    //bank name, account number
-                    Column(
-                      children: [
-                        if (accountNumber != "") ...[
-                          SizedBox(
-                            height: 15.0,
-                          ),
+                    //book balance
+                    isLoading == true
+                        ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: SizedBox.shrink(),
+                    )
+                        : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Book Balance",
+                      style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,),
+                    ),
+                            Text(
+                      isBalanceHidden
+                              ? "****"
+                              : "${worldCurrencies[userBloc.user.currency!]!}${moneyDisplayNormalizer(actualAccountBalance)}",
+                      style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              fontFamily: "Roboto"),
+                    ),
+                          ],
+                        ),
+                  ],
+                ),
+
+
+                //bank name, account number, account name
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (accountNumber != "") ...[
+                      const SizedBox(
+                        height: 15.0,
+                      ),
+                      Text(
+                        bankName,
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: white,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      Row(
+                        children: [
                           Text(
-                            bankName,
+                            accountNumber,
                             style: TextStyle(
                                 fontSize: 14,
                                 color: white,
                                 fontWeight: FontWeight.w600),
                           ),
-                          Row(
-                            children: [
-                              Text(
-                                accountNumber,
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: white,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Clipboard.setData(ClipboardData(
-                                      text:
-                                          "Bank name: ${virtualAccount!.financialInstitution!.name}\nAccount name: ${virtualAccount!.accountName}\nAccount number: ${virtualAccount!.accountNumber}"));
-                                  showToast(
-                                      message: "Account details copied !!");
-                                },
-                                child: SvgPicture.asset(
-                                  "ampersand".toSVG(),
-                                  width: 15,
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ],
-                    )
-                  ],
-                ),
-                //actual balance
-                isLoading == true
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularLoadingIndicator(color: naturalGreen),
-                      )
-                    : Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          isBalanceHidden
-                              ? Container()
-                              : Padding(
-                                  padding: const EdgeInsets.only(bottom: 2.0),
-                                  child: Text(
-                                    worldCurrencies[userBloc.user.currency!]!,
-                                    style: TextStyle(
-                                      color: white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 24,
-                                      fontFamily: "Roboto",
-                                    ),
-                                  ),
-                                ),
-                          Text(
-                            isBalanceHidden
-                                ? "****"
-                                : moneyDisplayNormalizer(accountBalance),
-                            style: TextStyle(
-                              color: white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 26,
+                          const SizedBox(
+                            width: 4,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Clipboard.setData(ClipboardData(
+                                  text:
+                                  "Bank name: ${virtualAccount!.financialInstitution!.name}\nAccount name: ${virtualAccount!.accountName}\nAccount number: ${virtualAccount!.accountNumber}"));
+                              showToast(
+                                  message: "Account details copied !!");
+                            },
+                            child: SvgPicture.asset(
+                              "ampersand".toSVG(),
+                              width: 15,
                             ),
                           ),
                         ],
                       ),
-
-                const SizedBox(
-                  height: 5,
-                ),
-                //book balance
-                isLoading == true
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: SizedBox.shrink(),
-                      )
-                    : Text(
-                        isBalanceHidden
-                            ? "Book Balance: ****"
-                            : "Book Balance: ${worldCurrencies[userBloc.user.currency!]!}${moneyDisplayNormalizer(actualAccountBalance)}",
-                        style: TextStyle(
-                            color: white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            fontFamily: "Roboto"),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            appendStringDot(accountName, 30),
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: white,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          // GestureDetector(
+                          //   onTap: () {
+                          //     NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
+                          //     // NavigationUtil.push(context,
+                          //     //     screen: QRCodeView(arguments: {'isRequest': false}));
+                          //   },
+                          //   child: SvgPicture.asset(
+                          //     "home/scan".toSVG(),
+                          //     width: 35,
+                          //   ),
+                          // ),
+                          qrCodeIcon()
+                        ],
                       ),
-
-                const SizedBox(
-                  height: 35,
-                ),
-                //Transaction history, fund wallet
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    contentContainer("transaction_icon", "Transaction History",
-                        ontap: () {
-                      hideBalance();
-                      BottomSheetPassCode(
-                          context: context,
-                          isValidCallback: () {
-                            Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
-                                arguments: {'page': 0});
-                          },
-                          cancelCallBack: () {
-                            Navigator.pop(context);
-                          });
-                    }),
-                    contentContainer("fund_icon", "Fund Wallet",
-                        ontap: () => Navigator.of(context)
-                            .pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE)),
+                    ],
                   ],
-                )
+                ),
+
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget qrCodeIcon() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: const Icon(
+        SlydoAppIcon.qr_code,
+        size: 16,
+        color: Colors.white,
+      ),
+      onTap: () async {
+        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
+      },
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: false,
     );
   }
 
@@ -1344,4 +1673,5 @@ class _HomeState extends State<Home> {
       }
     }
   }
+
 }

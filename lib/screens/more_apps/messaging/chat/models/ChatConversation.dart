@@ -75,21 +75,21 @@ class ChatConversation {
   /// Creating Server Payload From ChatConversation
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['avatar'] = this.avatar;
-    data['conversation_id'] = this.conversationId;
-    data['description'] = this.description;
-    data['full_name'] = this.fullName;
-    data['is_group_conversation'] = this.isGroupConversation;
-    data['owner'] = this.owner;
-    data['qr_code'] = this.qrCode;
-    data['created_at'] = this.createdAt;
-    data['type'] = this.type;
-    data['username'] = this.userName;
-    data['admin_users'] = this.adminUsers;
-    data['blocked_participants'] = this.blockedParticipants;
-    data['muted_participants'] = this.mutedParticipants;
-    data['participants'] = this.participants;
-    data['is_verified'] = this.isVerified;
+    data['avatar'] = avatar;
+    data['conversation_id'] = conversationId;
+    data['description'] = description;
+    data['full_name'] = fullName;
+    data['is_group_conversation'] = isGroupConversation;
+    data['owner'] = owner;
+    data['qr_code'] = qrCode;
+    data['created_at'] = createdAt;
+    data['type'] = type;
+    data['username'] = userName;
+    data['admin_users'] = adminUsers;
+    data['blocked_participants'] = blockedParticipants;
+    data['muted_participants'] = mutedParticipants;
+    data['participants'] = participants;
+    data['is_verified'] = isVerified;
     return data;
   }
 
@@ -125,22 +125,22 @@ class ChatConversation {
   /// Creating DB Payload From ChatConversation
   Map<String, dynamic> toDBJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['avatar'] = this.avatar;
-    data['conversation_id'] = this.conversationId;
-    data['description'] = this.description;
-    data['full_name'] = this.fullName;
-    data['is_group_conversation'] = this.isGroupConversation! ? 1 : 0;
-    data['owner'] = this.owner;
-    data['qr_code'] = this.qrCode;
-    data['type'] = this.type;
-    data['username'] = this.userName;
-    data['created_at'] = convertStringToMillisecondsSinceEpoch(this.createdAt);
-    data['admin_users'] = jsonEncode(this.adminUsers);
-    data['blocked_participants'] = jsonEncode(this.blockedParticipants);
-    data['muted_participants'] = jsonEncode(this.mutedParticipants);
-    data['participants'] = jsonEncode(this.participants);
+    data['avatar'] = avatar;
+    data['conversation_id'] = conversationId;
+    data['description'] = description;
+    data['full_name'] = fullName;
+    data['is_group_conversation'] = isGroupConversation! ? 1 : 0;
+    data['owner'] = owner;
+    data['qr_code'] = qrCode;
+    data['type'] = type;
+    data['username'] = userName;
+    data['created_at'] = convertStringToMillisecondsSinceEpoch(createdAt);
+    data['admin_users'] = jsonEncode(adminUsers);
+    data['blocked_participants'] = jsonEncode(blockedParticipants);
+    data['muted_participants'] = jsonEncode(mutedParticipants);
+    data['participants'] = jsonEncode(participants);
     data['is_verified'] =
-        this.isVerified != null && this.isVerified! == true ? 1 : 0;
+        isVerified != null && isVerified! == true ? 1 : 0;
 
     return data;
   }
