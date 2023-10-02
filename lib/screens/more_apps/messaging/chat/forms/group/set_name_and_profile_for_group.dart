@@ -174,6 +174,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           ),
         ),
         Switch(
+          activeColor: navyBlue,
+          // activeTrackColor: navyBlue,
           onChanged: (bool value) {
             setState(() {
               makeChannelPublic = value;
@@ -370,14 +372,15 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
       children: [
         Row(
           children: [
-            Expanded(
+            const Expanded(
               child: Text(
-                'Create paid group chat',
+                'Create paid channel',
                 style:
                 TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
             ),
             Switch(
+              activeColor: navyBlue,
               onChanged: (bool value) {
                 setState(() {
                   makeGroupPaid = value;
@@ -590,6 +593,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               ),
             ),
             Switch(
+              activeColor: navyBlue,
               onChanged: (bool value) {
                 setState(() {
                   limitGroupMembers = value;
@@ -647,6 +651,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               ),
             ),
             Switch(
+              activeColor: navyBlue,
               onChanged: (bool value) {
                 setState(() {
                   ageRestriction = value;
@@ -728,7 +733,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               child: CircularLoadingIndicator(),
             ));
 
-    await MessageAuth().createGroupChat(group: groupModel).then((value) async {
+    await MessageAuth().createGroupChat(group: groupModel, type: widget.arguments["create"]).then((value) async {
       Navigator.pop(context);
       ChatUserModel chatUserModel = ChatUserModel.fromChatConversation(value);
       ChatUserManager().addUser(conversationId: chatUserModel.conversationId);

@@ -336,6 +336,8 @@ class _YarnDashboardState extends State<YarnDashboard> {
 
   Widget _buildFloatingActionButton() {
     return SpeedDial(
+      backgroundColor: yarnBlack,
+      activeBackgroundColor: HexColor("#FFFFFF"),
       child: InkWell(
         onTap: () async {
           await NavigationUtil.push(context,
@@ -365,8 +367,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
           color: Colors.white,
         ),
       ),
-      backgroundColor: yarnBlack,
-      activeBackgroundColor: HexColor("#FFFFFF"),
     );
   }
 }

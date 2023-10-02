@@ -33,6 +33,9 @@ import 'package:uuid/uuid.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../../widget/item_display_card.dart';
+import '../../../../home_tab/qr_code_page.dart';
+import '../../../payment_and_banking/models/FinancialInstitution.dart';
+import '../../../payment_and_banking/models/VirtualAccount.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../../user_profile/user_auth.dart';
 import '../../../yarn/models/share_as_yarn_model.dart';
@@ -601,96 +604,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  Future<void> addToCart2() async {
-    String type = product is Product ? "product" : "service";
-
-    var variantType = "";
-
-    if(colorGroups.isNotEmpty && sizeGroups.isNotEmpty){
-      variantType = "Color n Size";
-    }
-    else if(colorGroups.isNotEmpty){
-      variantType = "Color";
-    }
-    else if(sizeGroups.isNotEmpty){
-      variantType = "Size";
-    }
-
-    Map<String, dynamic> variantPayLoad = {};
-
-    //check if cart is empty and color or size is not empty
-    if(basketBloc.items.isEmpty && colorGroups.isNotEmpty || sizeGroups.isNotEmpty){
-      variantPayLoad = {
-        "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
-        "price": selectedVariantPrice, "colour": selectedColor,
-        "value": selectedSize, "type": variantType
-      };
-    }else{
-      for (var item in basketBloc.items) {
-        Product product = item['item'];
-        //check if product id exist
-        if (product.id.toString() == productId) {
-          List variantList = item['item'].variant;
-
-          if(variantList.isNotEmpty){
-            for (var variant in variantList) {
-              //check if product variant id is the same as selected variant id
-              if (variant!['id'].toString() == selectedVariantId) {
-                // Increase the quantity of the variant by one
-                int currentQuantity = int.parse(variant['quantity'].toString());
-                variant['quantity'] = currentQuantity + 1;
-
-                Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
-
-                debugPrint("Data From Product Page exist : $dataInfo");
-
-                await _auth.addItemToShoppingCart(dataInfo);
-                return;
-              }else{
-                //variant is not available yet
-                variantPayLoad = {
-                  "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
-                  "price": selectedVariantPrice, "colour": selectedColor,
-                  "value": selectedSize, "type": variantType
-                };
-                break;
-              }
-            }
-          }else{
-            //add quantity plus 1 to product without variant but already exist
-            item['qty'] = int.parse(item['qty'].toString()) + 1;
-            Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
-
-            await _auth.addItemToShoppingCart(dataInfo);
-            return;
-          }
-
-        }else{
-          //product id doesn't exit in the cart and variant is empty
-          variantPayLoad = {
-            "id": selectedVariantId, "quantity": 1, "image": selectedVariantImage,
-            "price": selectedVariantPrice, "colour": selectedColor,
-            "value": selectedSize, "type": variantType
-          };
-        }
-      }
-    }
-
-    debugPrint("Data From Product variantPayLoad : $variantPayLoad");
-
-    if(colorGroups.isEmpty && sizeGroups.isEmpty){
-      basketBloc.addItemToCart(item: product, type: type);
-    }else{
-      basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
-    }
-
-    Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
-
-    debugPrint("Data From Product Page : $dataInfo");
-
-    await _auth.addItemToShoppingCart(dataInfo);
-  }
-
   Future<void> addToCart() async {
     String type = product is Product ? "product" : "service";
     Map<String, dynamic> variantPayLoad = {};
@@ -725,6 +638,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       };
     }
 
+    // debugPrint("Data From Product Page v-id : $selectedVariantId");
+    // debugPrint("Data From Product Page v-id : $variantPayLoad");
+    // debugPrint("Data From Product Page v-id one : ${basketBloc.items}");
+
     if (basketBloc.items.isEmpty && variantPayLoad.isNotEmpty) {
       basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
     } else {
@@ -745,9 +662,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             }
           }
 
-          // Variant is not available yet, add it
-          variantList.add(variantPayLoad);
+          basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
+
+          // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
+          // debugPrint("Data From Product Page v-id 3 : $variantList");
+
           Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+          debugPrint("Data From Product Page exist : $dataInfo");
+
           await _auth.addItemToShoppingCart(dataInfo);
           return;
         }
@@ -758,69 +680,66 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+    debugPrint("Data From Product Page : $dataInfo");
+
     await _auth.addItemToShoppingCart(dataInfo);
   }
 
-
-  Map<String, dynamic> getUpdatedCartItem(List cartItem, String type){
+  Map<String, dynamic> getUpdatedCartItem(List cartItem, String type) {
     Map<String, dynamic> dataInfo = {};
 
     for (var element in basketBloc.items) {
       final item = element["item"];
       int totalVariantQuantity = 0;
 
-      if(element["variants"] != null && element.containsKey("variants")){
-        totalVariantQuantity = getTotalVariantQuantity(element["variants"], item.id);
-
+      if (element["variants"] != null && element.containsKey("variants")) {
         final variantsList = element["variants"] as List;
-        // Populate dataInfo with product information
+
+        // Initialize dataInfo with common information
         dataInfo = {
           "id": item.id,
-          "qty": variantsList.isNotEmpty ? totalVariantQuantity : item.quantity,
           "type": type,
         };
 
         // Check if variantsList is not empty
-        dataInfo["variants"] = [];
         if (variantsList.isNotEmpty) {
-          final variantsList = element["variants"] as List;
-          int variantId = 0;
-          int variantQuantity = 0;
+          List<Map<String, dynamic>> variantDataList = [];
 
-          // Iterate through the variant and add id and quantity of all variant
+          // Iterate through the variants and add each variant to the variantDataList
           for (var variant in variantsList) {
             if (variant.containsKey("id") && variant["id"] != null) {
-              variantId = int.parse(variant["id"].toString());
-              variantQuantity = variantQuantity + int.parse(variant["quantity"].toString());
+              int variantId = int.parse(variant["id"].toString());
+              int variantQuantity = int.parse(variant["quantity"].toString());
+
+              variantDataList.add({
+                "id": variantId,
+                "quantity": variantQuantity,
+              });
             }
           }
-          dataInfo["variants"].add({
-            "id": variantId,
-            "quantity": variantQuantity,
-          });
 
-        }else if(variantsList.isEmpty){
-          dataInfo = {
-            "id": item.id,
-            "qty": item.quantity,
-            "type": type,
-            "variants": [],
-          };
+          // debugPrint("Data From Product Page v-id 5 : ${variantDataList}");
+
+          // Add the variantDataList to dataInfo["variants"]
+          dataInfo["variants"] = variantDataList;
+
+          // Calculate the totalVariantQuantity based on variantDataList
+          totalVariantQuantity = variantDataList.fold<int>(
+              0, (sum, variant) => sum + int.parse(variant['quantity'].toString()));
         }
 
-      }else{
+        // Set the total quantity in dataInfo
+        dataInfo["qty"] =
+        variantsList.isNotEmpty ? totalVariantQuantity : item.quantity;
+      } else {
         dataInfo = {
           "id": item.id,
           "qty": element['qty'],
           "type": type,
           "variants": [],
         };
-
-        debugPrint("Data From Product Page one : $dataInfo");
       }
 
-      // Once you've found a matching element, you can exit the loop
-      // continue;
     }
     return dataInfo;
   }
@@ -1430,7 +1349,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ],
               ),
             ),
-            copyQrCode(),
+            // copyQrCode(),
+            qrCodeIcon(),
           ],
         ),
 
@@ -1508,6 +1428,33 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
+
+  Widget qrCodeIcon() {
+    return RoundedBackgroundIcon(
+      height: 54,
+      width: 54,
+      icon:  Icon(
+        SlydoAppIcon.qr_code,
+        size: 36,
+        color: navyBlue,
+      ),
+      onTap: () async {
+        //get the account detail of clicked user
+        Map<String, dynamic> financial = {};
+
+        VirtualAccount virtualAccount = VirtualAccount(
+          accountName: product!.name,
+          accountNumber: product!.sellerFullName,
+          financialInstitution: FinancialInstitution.fromJson(financial),
+          customerUsername: product!.seller,
+          note: "",
+        );
+        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
+      },
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: false,
+    );
+  }
 
   Widget showVariantFirstImages(){
     return SizedBox(

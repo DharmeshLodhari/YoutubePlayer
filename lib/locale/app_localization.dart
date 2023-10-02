@@ -370,6 +370,41 @@ class AppLocalization {
     );
   }
 
+  String get searchHomeQuickViewHint {
+    return Intl.message(
+      "Search",
+      name: "searchHomeQuickViewHint",
+    );
+  }
+
+  String get paymentSubTitle {
+    return Intl.message(
+      "Manage all your payment activities in one place.",
+      name: "paymentSubTitle",
+    );
+  }
+
+  String get businessSubTitle {
+    return Intl.message(
+      "Manage all your business activities in one place.",
+      name: "paymentSubTitle",
+    );
+  }
+
+  String get socialSubTitle {
+    return Intl.message(
+      "Manage all your Social    activities  in  one  place.",
+      name: "paymentSubTitle",
+    );
+  }
+
+  String get lifestyleSubTitle {
+    return Intl.message(
+      "Manage all your lifestyles activities in one place.",
+      name: "paymentSubTitle",
+    );
+  }
+
   String get password {
     return Intl.message(
       "Password",
@@ -1464,7 +1499,7 @@ class AppLocalization {
 
   String get quickActions {
     return Intl.message(
-      "Quick Actions",
+      "Shortcut",
       name: "quickActions",
     );
   }
@@ -3426,6 +3461,20 @@ class AppLocalization {
     return Intl.message(
       "Business",
       name: "business",
+    );
+  }
+
+  String get social {
+    return Intl.message(
+      "Socials",
+      name: "social",
+    );
+  }
+
+  String get lifestyle {
+    return Intl.message(
+      "Lifestyles",
+      name: "lifestyle",
     );
   }
 

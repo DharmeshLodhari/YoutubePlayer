@@ -343,7 +343,7 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMapCopy.remove(merchantFullName);
   }
 
-  void addItemInBasketWithQty(var item, String type, Map<String, dynamic> variant) {
+  void addItemInBasketWithQty2(var item, String type, Map<String, dynamic> variant) {
     bool variantExists = false;
 
     for (var element in _items) {
@@ -352,10 +352,9 @@ class BasketBloc extends ChangeNotifier {
         bool variantIdExists = false;
 
         for (var existingVariant in element["variants"]) {
-
-          if (existingVariant["id"] == variant["id"] && variantExists) {
+          if (existingVariant["id"] == variant["id"]) {
             // Update the existing variant
-            int existingQuantity = int.parse(existingVariant["quantity"].toString());
+            int existingQuantity = int.tryParse(existingVariant["quantity"].toString()) ?? 0;
             int variantQuantity = int.tryParse(variant["quantity"].toString()) ?? 0;
             existingVariant["quantity"] = (existingQuantity + variantQuantity).toString();
             existingVariant["image"] = variant["image"];
@@ -363,35 +362,22 @@ class BasketBloc extends ChangeNotifier {
             variantIdExists = true;
             break;
           }
-          // else if(existingVariant["id"] == variant["id"]){
-          //   // Update the existing variant
-          //   int existingQuantity = int.parse(existingVariant["quantity"].toString());
-          //   int variantQuantity = int.tryParse(variant["quantity"].toString()) ?? 0;
-          //   existingVariant["quantity"] = (existingQuantity + variantQuantity).toString();
-          //   existingVariant["image"] = variant["image"];
-          //
-          //   variantIdExists = true;
-          //   break;
-          // }
         }
 
-        // If the variant ID doesn't exist, add it as a new variant
         if (!variantIdExists) {
+          // If the variant ID doesn't exist, add it as a new variant
           element["variants"].add(variant);
         }
 
         // Increase the total quantity and exit the loop
         element["qty"] = (int.tryParse(element["qty"].toString()) ?? 0) + 1;
 
-
         if (variant["id"] != null && variant["id"].isNotEmpty) {
           // The variant has a non-empty "id" key
           String price = variant["price"];
-          // Now, you can use the 'price' variable for further processing.
           _total = _total + int.parse(price);
           variantExists = true;
-        }
-        else {
+        } else {
           // The variant does not have a valid "id" key
           _total = _total + int.parse(item.price);
           variantExists = true;
@@ -403,7 +389,6 @@ class BasketBloc extends ChangeNotifier {
 
     if (!variantExists) {
       // Item doesn't exist in the basket, so create a new entry
-
       var product = Product();
       if (item is Product) {
         product.quantity = int.parse(variant['quantity'].toString());
@@ -425,19 +410,97 @@ class BasketBloc extends ChangeNotifier {
       if (variant.containsKey("id") && variant["id"] != null && variant["id"].isNotEmpty) {
         // The variant has a non-empty "id" key
         String price = variant["price"];
-        // Now, you can use the 'price' variable for further processing.
         _total = _total + int.parse(price);
         variantExists = true;
-      }
-      else {
+      } else {
         // The variant does not have a valid "id" key
         _total = _total + int.parse(item.price);
-        // variantExists = true;
       }
     }
 
     notifyListeners();
   }
+
+  void addItemInBasketWithQty(var item, String type, Map<String, dynamic> variant) {
+    bool itemExists = false;
+
+    for (var element in _items) {
+      if (element["item"].id == item.id) {
+        // Check if the variant ID already exists in the item's variants list
+        bool variantIdExists = false;
+
+        for (var existingVariant in element["variants"]) {
+          if (existingVariant["id"] == variant["id"]) {
+            // Update the existing variant
+            int existingQuantity = int.tryParse(existingVariant["quantity"].toString()) ?? 0;
+            int variantQuantity = int.tryParse(variant["quantity"].toString()) ?? 0;
+            existingVariant["quantity"] = (existingQuantity + variantQuantity).toString();
+            existingVariant["image"] = variant["image"];
+
+            variantIdExists = true;
+            break;
+          }
+        }
+
+        if (!variantIdExists) {
+          // If the variant ID doesn't exist, add it as a new variant
+          element["variants"].add(variant);
+        }
+
+        // Increase the total quantity and exit the loop
+        element["qty"] = (int.tryParse(element["qty"].toString()) ?? 0) + 1;
+
+        if (variant["id"] != null && variant["id"].isNotEmpty) {
+          // The variant has a non-empty "id" key
+          String price = variant["price"];
+          // Subtract the previous variant price and add the updated variant price
+          _total = _total - (int.tryParse(item.price)! * int.parse(variant["quantity"].toString())) + int.parse(price);
+          itemExists = true;
+        } else {
+          // The variant does not have a valid "id" key
+          _total = _total + int.parse(item.price);
+          itemExists = true;
+        }
+
+        continue;
+      }
+    }
+
+    if (!itemExists) {
+      // Item doesn't exist in the basket, so create a new entry
+      var product = Product();
+      if (item is Product) {
+        product.quantity = int.parse(variant['quantity'].toString());
+        product.id = item.id;
+        product.name = item.name;
+        product.price = item.price;
+        product.currency = item.currency;
+        product.seller = item.seller;
+        product.sellerFullName = item.sellerFullName;
+        product.sellerAvatar = item.sellerAvatar;
+        product.serverImages = item.serverImages;
+        product.description = item.description;
+        product.variant = [variant];
+      }
+      var newItem = {"type": type, "item": product, "qty": variant['quantity'], "variants": [variant]};
+
+      _items.add(newItem);
+
+      if (variant.containsKey("id") && variant["id"] != null && variant["id"].isNotEmpty) {
+        // The variant has a non-empty "id" key
+        String price = variant["price"];
+        _total = _total + int.parse(price);
+        itemExists = true;
+      } else {
+        // The variant does not have a valid "id" key
+        _total = _total + int.parse(item.price);
+      }
+    }
+
+    notifyListeners();
+  }
+
+
 
   void addItemInBasketWithQtyService(var item, String type) {
     bool flag = false;
@@ -445,7 +508,7 @@ class BasketBloc extends ChangeNotifier {
     _items.forEach((element) {
       if (element["item"].id == item.id) {
         flag = true;
-        element["qty"] = element["qty"] + 1;
+        element["qty"] = int.parse(element["qty"].toString()) + 1;
         _total = _total + int.parse(item.price);
         debugPrint("Exising Item Added");
         return;
@@ -460,21 +523,29 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void increaseVariantQuantity(var item, Map<String, dynamic> variant) {
+  void increaseVariantQuantity(String selectedProductId, int variantId) {
     bool itemExists = false;
 
     for (var i = 0; i < _items.length; i++) {
-      if (_items[i]["item"].id == item.id) {
+
+      Product product = _items[i]["item"];
+
+      if (product.id == selectedProductId) {
+
         // Check if the variant ID exists in the item's variants list
         for (var j = 0; j < _items[i]["variants"].length; j++) {
-          if (_items[i]["variants"][j]["id"] == variant["id"]) {
+
+          if (int.parse(_items[i]["variants"][j]["id"]) == variantId) {
+
             // Add one to the variant quantity
-            _items[i]["variants"][j]["quantity"] += 1;
+            var quantity = int.parse(_items[i]["variants"][j]["quantity"].toString()) + 1;
+            _items[i]["variants"][j]["quantity"] = quantity.toString();
 
-            // Calculate the total price
-            _total += int.parse(variant["price"]);
+            // Calculate the total price (assuming "price" is a string)
+            _total += int.parse(_items[i]["variants"][j]["price"]);
             // Increase the total quantity
-            _items[i]["qty"] += 1;
+            var qty = int.parse(_items[i]["qty"].toString()) + 1;
+            _items[i]["qty"] = qty;
 
             itemExists = true;
             break;
@@ -492,43 +563,51 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  void removeOrReduceVariant(var item, Map<String, dynamic> variant) {
+  Future<void> removeOrReduceVariant(String selectedProductId, int variantId) async {
     bool itemExists = false;
 
     for (var i = 0; i < _items.length; i++) {
-      if (_items[i]["item"].id == item.id) {
+
+      Product product = _items[i]["item"];
+
+      if (product.id == selectedProductId) {
+
         // Check if the variant ID exists in the item's variants list
         for (var j = 0; j < _items[i]["variants"].length; j++) {
-          if (_items[i]["variants"][j]["id"] == variant["id"]) {
-            if (_items[i]["variants"][j]["quantity"] > 1) {
-              // Reduce the quantity by 1
-              _items[i]["variants"][j]["quantity"] -= 1;
-            } else {
-              // Remove the variant if the quantity is 1 or less
+          if (int.parse(_items[i]["variants"][j]["id"]) == variantId) {
+
+            // Reduce the variant quantity by 1
+            var quantity = int.parse(_items[i]["variants"][j]["quantity"].toString()) - 1;
+            _items[i]["variants"][j]["quantity"] = quantity.toString();
+
+            // Calculate the total price (assuming "price" is a string)
+            _total -= int.parse(_items[i]["variants"][j]["price"]);
+
+            // Reduce the total quantity by 1
+            var qty = int.parse(_items[i]["qty"].toString()) - 1;
+            _items[i]["qty"] = qty;
+
+            // If the variant quantity becomes zero, remove it from the list
+            if (quantity == 0) {
               _items[i]["variants"].removeAt(j);
-            }
-            // Decrease the total quantity
-            _items[i]["qty"] -= 1;
 
-            // Calculate the total price
-            _total -= int.parse(variant["price"]);
+              debugPrint('fola cart state cart:::: ${qty}');
 
-            // Log when the variant quantity becomes zero
-            if (_items[i]["variants"].isEmpty) {
-              debugPrint("Variant with ID ${variant["id"]} is now zero.");
+              if(quantity == 0 && qty == 0){
+                //remove item from cart
+                Map<String, dynamic> data = {
+                  "id": selectedProductId,
+                  "type": "product",
+                  "qty": 0,
+                };
+                await ShoppingAuthService().removeItemFromShoppingCart(data);
+              }
+
             }
 
             itemExists = true;
             break;
           }
-        }
-
-        // Check if all variants are zero
-        if (_items[i]["variants"].isEmpty) {
-          debugPrint("All variants for item ${item.id} are zero.");
-          // Remove the item from the basket
-          _items.removeAt(i);
         }
 
         break; // Exit the loop once the item is found
@@ -541,6 +620,7 @@ class BasketBloc extends ChangeNotifier {
 
     notifyListeners();
   }
+
 
 
   // this will remove the product or service from the cart;
@@ -586,55 +666,55 @@ class BasketBloc extends ChangeNotifier {
 
   void resetShoppingCart() async {
     List itemsCart = await ShoppingAuthService()
-        .getShoppingCart(); //Returns a list of product and services as a map
+        .getShoppingCart();
 
     for (var element in itemsCart) {
       String type = element is Product ? "product" : "service";
 
-      //use the element to get product and its variables
+      debugPrint('Variant Data element: $element');
+      debugPrint('Variant Data element: $element');
+
       if (element is Product) {
         List<dynamic>? variantList = element.variant;
 
-        if(variantList!.isEmpty){
-          addItemToCart(item: element, type: type);
-        }else{
-            for (var variant in variantList) {
-              if (variant is Map<String, dynamic>) {
+        if (variantList != null && variantList.isNotEmpty) {
+          for (var variant in variantList) {
+            if (variant is Map<String, dynamic>) {
+              String? price = variant['price'].toString();
+              String? id = variant['id'].toString();
+              String? quantity = variant['quantity'].toString();
+              String? value = variant['value'];
+              String? type2 = variant['type'];
+              String? colour = variant['colour'];
 
-                String? price = variant['price'].toString();
-                String? id = variant['id'].toString();
-                String? quantity = variant['quantity'].toString();
-                String? value = variant['value'];
-                String? type2 = variant['type'];
-                String? colour = variant['colour'];
+              String? variantImage =
+              variant['pictures']?.first['file']; // Get the first image from pictures
 
-                debugPrint('fola one three one:::: ${variant}');
+              Map<String, dynamic> variant1 = {
+                "id": id,
+                "quantity": quantity,
+                "image": variantImage,
+                "price": price,
+                "colour": colour,
+                "value": value,
+                "type": type2,
+              };
 
-                // Access the pictures list and get the first image (assuming pictures is a List)
-                // Get the first image from pictures then file
-                String? variantImage = variant['pictures']?.first['file'];
+              debugPrint('Variant Data: $variant1');
 
-                Map<String, dynamic> variant1 = {
-                  "id": id, "quantity": quantity, "image": variantImage,
-                  "price": price, "colour": colour,
-                  "value": value, "type": type2
-                };
-
-                // Add the variant to the cart or perform other actions as needed.
-                // You can use these extracted values here.
-                addItemToCart(item: element, type: type, variant: variant1);
-              }
+              // Add each variant as a separate item to the cart
+              addItemToCart(item: element, type: type, variant: variant1);
             }
-
+          }
+        } else {
+          // If no variants are present, add the product as a single item to the cart
+          addItemToCart(item: element, type: type);
         }
-
       } else {
-        // debugPrint('Unknown item type: $element');
         addItemToCart(item: element, type: type);
       }
-
-
     }
+
     notifyListeners();
   }
 

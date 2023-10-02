@@ -13,17 +13,18 @@ import 'package:provider/provider.dart';
 
 import '../../../../utils/colors.dart';
 
-// ignore: must_be_immutable
+//ignore: must_be_immutable
 class ShoppingCartTileForProduct extends StatefulWidget {
   Product? item;
   String? type;
+  String? image;
   int? qty;
   int? index;
   Function? onIncreaseQty;
   Function? onDecreaseQty;
   Function(int variantIndex)? onIncreaseVariantQty;
   Function(int variantIndex)? onDecreaseVariantQty;
-  List<Map<String, dynamic>?> variant = [];
+  Variant? variant;
   List<Map<String, dynamic>?> variantList = [];
 
   ShoppingCartTileForProduct(Map<String, dynamic> item,
@@ -33,7 +34,7 @@ class ShoppingCartTileForProduct extends StatefulWidget {
     this.item = item["item"];
     qty = int.tryParse(item["qty"].toString());
     variant = item["variant"];
-    variantList = item["variantList"];
+    image = item["image"];
   }
 
   @override
@@ -92,14 +93,11 @@ class _ShoppingCartTileForProductState
   }
 
   Widget getLeading() {
-    //check if item has variant and not empty
-    bool hasVariant = widget.variant.isNotEmpty ?? false;
-
     return ClipOval(
       child: CachedNetworkImage(
         height: 48,
         width: 48,
-        imageUrl: hasVariant == true ? widget.variant[0]!["image"] : widget.item?.cover ?? defaultImage,
+        imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.contain,
         errorWidget: productAndServiceErrorWidget,
@@ -112,6 +110,7 @@ class _ShoppingCartTileForProductState
   }
 
   Widget getTitle() {
+
     return Row(
       // mainAxisSize: MainAxisSize.min,
       // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -134,21 +133,20 @@ class _ShoppingCartTileForProductState
 
   Widget getTrailing() {
     // Check if the item has a variant and is not empty
-    bool hasVariant = widget.variant.isNotEmpty ?? false;
+    // bool hasVariant = widget.variant.isNotEmpty ?? false;
 
     int variantId = 0;
     int variantQuantity = 0;
 
-    if (widget.variant != null && widget.variant.isNotEmpty) {
-      String variant = widget.variant[0]!['id'].toString() ?? '';
+    if (widget.variant != null ) {
+      String variant = widget.variant!.id.toString() ?? '';
 
       if (variant.isNotEmpty) {
-        variantId = int.parse(widget.variant[0]!['id'].toString());
-        variantQuantity = int.parse(widget.variant[0]!['quantity'].toString());
+        variantId = int.parse(widget.variant!.id.toString());
+        variantQuantity = int.parse(widget.variant!.quantity.toString());
       }
 
     }
-
 
     return Container(
       width: 100,
@@ -165,7 +163,7 @@ class _ShoppingCartTileForProductState
                 color: blackFont,
                 size: 2, // Adjust the size as needed
               ),
-              onTap: hasVariant == false ? widget.onDecreaseQty : () => widget.onDecreaseVariantQty!(variantId),
+              onTap: widget.variant == null ? widget.onDecreaseQty : () => widget.onDecreaseVariantQty!(variantId),
             ),
             Expanded(
               child: SizedBox(
@@ -173,7 +171,7 @@ class _ShoppingCartTileForProductState
               ),
             ),
             Text(
-              widget.variant != null && widget.variant.isNotEmpty ? variantQuantity.toString() : widget.qty.toString(),
+              widget.variant != null ? variantQuantity.toString() : widget.qty.toString(),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -192,7 +190,7 @@ class _ShoppingCartTileForProductState
                 color: blackFont,
                 size: 16, // Adjust the size as needed
               ),
-              onTap: hasVariant == false ? widget.onIncreaseQty : () => widget.onIncreaseVariantQty!(variantId),
+              onTap: widget.variant == null ? widget.onIncreaseQty : () => widget.onIncreaseVariantQty!(variantId),
             ),
           ],
         ),
@@ -204,14 +202,14 @@ class _ShoppingCartTileForProductState
   String getProductPrice() {
     var totalPrice = int.parse(widget.item!.price!);
 
-    bool hasVariantId = widget.variant?.any((item) => item!['id'] != null && item['id'].isNotEmpty) ?? false;
+    // bool hasVariantId = widget.variant?.any((item) => item!['id'] != null && item['id'].isNotEmpty) ?? false;
 
-    if(hasVariantId && widget.variant != null && widget.variant!.isNotEmpty){
+    if(widget.variant != null){
 
       totalPrice = 0;
-      widget.variant.forEach((variant) {
-        totalPrice = int.parse(variant!['price'].toString());
-      });
+      // widget.variant.forEach((variant) {
+        totalPrice = int.parse(widget.variant!.price.toString());
+      // });
     }
 
     return totalPrice.toString();
@@ -223,15 +221,15 @@ class _ShoppingCartTileForProductState
         basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
 
     // Check if the item has a variant and is not empty
-    bool hasVariant = widget.variant.isNotEmpty ?? false;
+    // bool hasVariant = widget.variant.isNotEmpty ?? false;
 
-    if(hasVariant && widget.variant != null && widget.variant.isNotEmpty){
+    if(widget.variant != null){
 
       totalPrice = 0;
-      for (var variant in widget.variant) {
+      // for (var variant in widget.variant) {
 
-        totalPrice += int.parse(variant!['quantity'].toString()) * int.parse(variant['price'].toString());
-      }
+        totalPrice += int.parse(widget.variant!.quantity.toString()) * int.parse(widget.variant!.price.toString());
+      // }
     }
 
     return totalPrice.toString();
@@ -242,9 +240,9 @@ class _ShoppingCartTileForProductState
     String color = '';
     String size = '';
 
-    if (widget.variant != null && widget.variant.isNotEmpty) {
-      String variantColor = widget.variant[0]!['colour'] ?? '';
-      String variantSize = widget.variant[0]!['value'] ?? '';
+    if (widget.variant != null) {
+      String variantColor = widget.variant!.colour?? '';
+      String variantSize = widget.variant!.value ?? '';
 
       if (variantColor.isNotEmpty) {
         color = variantColor;
@@ -368,6 +366,7 @@ class _ShoppingCartTileForProductState
   }
 
 }
+
 
 // ignore: must_be_immutable
 class ShoppingCartTileForService extends StatefulWidget {

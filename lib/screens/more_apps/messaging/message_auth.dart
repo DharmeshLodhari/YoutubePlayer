@@ -360,7 +360,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<ChatConversation> createGroupChat(
-      {required AddGroupModel group}) async {
+      {required AddGroupModel group, required String type}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/group-conversation/";
     // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
@@ -376,6 +376,7 @@ class MessageAuth extends AuthService {
     request.fields["group_name"] = group.name!;
     request.fields["participants"] = jsonEncode(listOfUser);
     request.fields["description"] = group.description!;
+    request.fields["type"] = type;
     request.fields["is_group_conversation"] = jsonEncode(true);
     request.fields["is_public_group"] = jsonEncode(group.makePublic);
     request.fields["age_restriction"] = jsonEncode(group.ageRestriction);

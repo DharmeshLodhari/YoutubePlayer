@@ -262,13 +262,13 @@ class _QrCodePageState extends State<QrCodePage> {
       child: Column(
         children: [
           const SizedBox(height: 10.0,),
-          Text(
+          virtualAccount!.financialInstitution!.name != null ? Text(
             appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
             maxLines: 1,
             style: TextStyle(fontSize: 16, color: HexColor("#151515"), fontWeight: FontWeight.w600),
-          ),
+          ): SizedBox.shrink(),
           Text(
-            virtualAccount!.accountNumber!,
+              appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
             style: TextStyle(fontSize: 30, color: HexColor("#151515"), fontWeight: FontWeight.w700),
           ),
@@ -337,13 +337,13 @@ class _QrCodePageState extends State<QrCodePage> {
       child: Column(
         children: [
           const SizedBox(height: 10.0,),
-          Text(
+          virtualAccount!.financialInstitution!.name != null ? Text(
             appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
             maxLines: 1,
             style: TextStyle(fontSize: 16, color: white, fontWeight: FontWeight.w600),
-          ),
+          ) : SizedBox.shrink(),
           Text(
-            virtualAccount!.accountNumber!,
+            appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
             style: TextStyle(fontSize: 30, color: white, fontWeight: FontWeight.w700),
           ),

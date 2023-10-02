@@ -271,19 +271,19 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   Widget appBar() {
     return AppBar(
       elevation: 0,
-      titleSpacing: 0,
+      titleSpacing: 20,
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
+      // leading: IconButton(
+      //   icon: Icon(
+      //     Icons.keyboard_arrow_left,
+      //     color: navyBlue,
+      //     size: 24,
+      //   ),
+      //   onPressed: () {
+      //     Navigator.pop(context);
+      //   },
+      // ),
       centerTitle: false,
       title: Text(
         "Settings",
