@@ -443,8 +443,6 @@ class _HomeState extends State<Home> {
     );
   }
 
-
-
   Widget shortcutViewExtra(String imagePath, String title,
       String subTitle, String color){
     double opacity = 0.8;
@@ -953,27 +951,15 @@ class _HomeState extends State<Home> {
               children: [
 
                 //eye icon
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    getAccountBalanceBtn(),
-                    Text(
-                      "",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+                getAccountBalanceBtn(),
 
                 //Total balance , book balance
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           "Total Balance",
@@ -991,7 +977,7 @@ class _HomeState extends State<Home> {
                           child: CircularLoadingIndicator(color: naturalGreen),
                         )
                             : Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             isBalanceHidden
@@ -1012,10 +998,11 @@ class _HomeState extends State<Home> {
                               isBalanceHidden
                                   ? "****"
                                   : moneyDisplayNormalizer(accountBalance),
+                                  // : moneyDisplayNormalizer(2000000000),
                               style: TextStyle(
                                 color: white,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                           ],
@@ -1045,6 +1032,7 @@ class _HomeState extends State<Home> {
                       isBalanceHidden
                               ? "****"
                               : "${worldCurrencies[userBloc.user.currency!]!}${moneyDisplayNormalizer(actualAccountBalance)}",
+                              // : "${worldCurrencies[userBloc.user.currency!]!}${moneyDisplayNormalizer(200000000)}",
                       style: TextStyle(
                               color: white,
                               fontWeight: FontWeight.w600,
@@ -1055,7 +1043,6 @@ class _HomeState extends State<Home> {
                         ),
                   ],
                 ),
-
 
                 //bank name, account number, account name
                 Column(
