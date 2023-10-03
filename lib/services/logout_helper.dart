@@ -49,7 +49,7 @@ class LogoutHelper {
         listen: false);
 
     bankAccountBlocPart.bankAccount = BankAccount();
-    dashboardBloc.index = 0;
+    // dashboardBloc.index = 0;
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
     _sharedPreferences.setBool('isAppTutorialDone', true);

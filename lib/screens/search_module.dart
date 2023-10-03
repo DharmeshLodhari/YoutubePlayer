@@ -195,7 +195,6 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-
   Widget tabBar() {
     return PreferredSize(
       preferredSize: const Size.fromHeight(80),

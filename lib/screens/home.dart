@@ -401,19 +401,29 @@ class _HomeState extends State<Home> {
       child: Column(
         // padding: EdgeInsets.zero,
         children: List.generate(
-          (shortcuts.length / 2).ceil(),
+          ((shortcuts.length + 1) / 2).ceil(), // Adjusted the generation logic
               (index) {
             final startIndex = index * 2;
             final endIndex = startIndex + 2;
-            final pairShortcuts = shortcuts.sublist(startIndex, endIndex);
+            final pairShortcuts = shortcuts.sublist(
+              startIndex,
+              endIndex.clamp(0, shortcuts.length), // Use clamp to avoid out-of-bounds
+            );
+
+            // If the pairShortcuts list has fewer than 2 items, add empty placeholders
+            while (pairShortcuts.length < 2) {
+              pairShortcuts.add({});
+            }
 
             return Row(
               children: pairShortcuts.map((shortcut) {
                 return Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(0.0),
-                    child: GestureDetector(
-                      onTap: (){
+                    child: shortcut.isEmpty
+                        ? Container() // Empty view placeholder
+                        : GestureDetector(
+                      onTap: () {
                         onClickShortcutExtra(shortcut['title']!);
                       },
                       child: shortcutViewExtra(
@@ -432,6 +442,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
 
 
   Widget shortcutViewExtra(String imagePath, String title,
