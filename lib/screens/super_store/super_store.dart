@@ -76,6 +76,16 @@ class _SuperStoreState extends State<SuperStore> {
       ),
       centerTitle: false,
       titleSpacing: 16,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context, "back pressed");
+        },
+      ),
       shadowColor: greySecondaryYarn,
       actions: currentAskTapOnHome == 0 ? _buildAppBarActionsShopList() : _buildAppBarActionsFindBusiness(),
       elevation: 0.5,

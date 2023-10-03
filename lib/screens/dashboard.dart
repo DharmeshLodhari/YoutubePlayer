@@ -13,6 +13,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/search_module.dart';
+import 'package:Slydo/screens/search_user.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
@@ -83,9 +84,9 @@ class _DashboardState extends State<Dashboard>  {
 
   final List<Widget> _pages = [
     KeepAlivePage(wantKeepAlive: false, child: Home()),
-    KeepAlivePage(child: SearchModule()),
+    SearchModule(),
     KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
-    KeepAlivePage(wantKeepAlive: true, child: GeneralSettingScreen()),
+    GeneralSettingScreen(),
   ];
 
   _DashboardState({this.arguments});

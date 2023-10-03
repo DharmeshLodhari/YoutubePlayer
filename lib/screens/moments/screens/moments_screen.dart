@@ -266,6 +266,16 @@ class _MomentsScreenState extends State<MomentsScreen> {
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
       centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context, "back pressed");
+        },
+      ),
       title: Text(
         AppLocalization.of(context)!.moments,
         style: TextStyle(

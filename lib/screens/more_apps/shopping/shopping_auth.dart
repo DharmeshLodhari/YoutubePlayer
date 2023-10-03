@@ -384,11 +384,13 @@ class ShoppingAuthService extends AuthService {
     Map<dynamic, dynamic> _data = product.toMap();
     _data["available_from"] = dateToString(product.availableFrom!);
     _data["image_count"] = product.localImages!.length;
+    _data.remove('variants');
     debugPrint('DATA from ---> $_data');
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
+
 
     debugPrint('DATA from two ---> $_data');
 

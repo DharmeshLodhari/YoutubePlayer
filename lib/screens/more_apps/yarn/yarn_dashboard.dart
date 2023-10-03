@@ -117,6 +117,16 @@ class _YarnDashboardState extends State<YarnDashboard> {
       ),
       centerTitle: false,
       titleSpacing: 16,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context, "back pressed");
+        },
+      ),
       shadowColor: greySecondaryYarn,
       actions: _buildAppBarActions(),
       elevation: 0.5,

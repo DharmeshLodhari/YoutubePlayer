@@ -81,7 +81,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   void checkForListToDisplay() {
     final List<Map<String, String>> payment = [
       {
-        'imagePath': 'home/yarn',
+        'imagePath': 'home/transaction',
         'title': 'Transaction',
       },
       {

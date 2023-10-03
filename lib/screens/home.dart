@@ -309,10 +309,6 @@ class _HomeState extends State<Home> {
         'imagePath': 'home/service',
         'title': 'Services',
       },
-      {
-        'imagePath': 'home/service',
-        'title': 'Store',
-      },
     ];
 
     return Container(
