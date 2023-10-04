@@ -18,6 +18,7 @@ import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/services/share_manager.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -27,6 +28,8 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:badges/badges.dart' as badges;
@@ -55,7 +58,7 @@ class Dashboard extends StatefulWidget {
   _DashboardState createState() => _DashboardState(arguments: arguments);
 }
 
-class _DashboardState extends State<Dashboard>  {
+class _DashboardState extends State<Dashboard> {
   //newUI Variables
   late DashboardBloc _dashboardBloc;
   DatabaseHelper _db = DatabaseHelper();
@@ -73,11 +76,11 @@ class _DashboardState extends State<Dashboard>  {
   late AppLocalization appLocalization;
   var _bottomNavIndex = 0; //default index of a first screen
 
-  final iconList = <IconData>[
-    Icons.home,
-    Icons.search,
-    Icons.chat,
-    Icons.settings,
+  final iconList = [
+    'home/home',
+    'home/search',
+    'home/chat_one',
+    'home/settings',
   ];
 
   var list = ['Home', 'Search', 'Chat', 'Settings'];
@@ -124,6 +127,7 @@ class _DashboardState extends State<Dashboard>  {
     // checkNotificationToNavigate();
     MyGlobals.notificationStream?.cancel();
     listenNotificationTap();
+
   }
 
   /// Handles fetching of all categories
@@ -136,11 +140,11 @@ class _DashboardState extends State<Dashboard>  {
   }
 
   void getProductCategories() async {
-    Map<String, dynamic>? result = await YarnAuth().getProductCategories("", "");
+    Map<String, dynamic>? result =
+        await YarnAuth().getProductCategories("", "");
     if (result != null && mounted) {
       yarnDashboardBloc.addProductCategories(result['results']);
     }
-
   }
 
   void fetchConnections() async {
@@ -294,8 +298,7 @@ class _DashboardState extends State<Dashboard>  {
             MyGlobals().navigationKey.currentContext!, Routes.CHAT_SCREEN,
             arguments: {"searchedUser": chatConversation});
       }
-    }
-    else if (notification['type'] == "request-payment") {
+    } else if (notification['type'] == "request-payment") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.ACCOUNTS));
@@ -309,20 +312,17 @@ class _DashboardState extends State<Dashboard>  {
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed(Routes.TRANSACTIONS);
-    }
-    else if (notification['type'] == "connection-request") {
+    } else if (notification['type'] == "connection-request") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 1});
-    }
-    else if (notification['type'] == "friends-dashboard") {
+    } else if (notification['type'] == "friends-dashboard") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
-    }
-    else if (notification['type'] == "detail_message") {
+    } else if (notification['type'] == "detail_message") {
       //this variable will fetch the id of message from the response
       String? idOfMessage =
           notification['actions'].replaceAll("/detail_message/", "");
@@ -332,12 +332,10 @@ class _DashboardState extends State<Dashboard>  {
           .pushNamed(Routes.DETAIL_MESSAGE, arguments: {
         'id': idOfMessage,
       });
-    }
-    else if (notification['type'].toString().contains("orders-list")) {
+    } else if (notification['type'].toString().contains("orders-list")) {
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(context).pushNamed(Routes.ORDERS_LIST);
-    }
-    else if (notification['type'].toString().contains("order-detail-page")) {
+    } else if (notification['type'].toString().contains("order-detail-page")) {
       Order order = Order.fromJson(notification["data"] is String
           ? jsonDecode(notification["data"])
           : notification["data"]);
@@ -345,8 +343,7 @@ class _DashboardState extends State<Dashboard>  {
       Navigator.of(context).pushNamed(Routes.ORDER_DETAIL_PAGE, arguments: {
         'order': order,
       });
-    }
-    else if (notification['type'].toString().contains("moment")) {
+    } else if (notification['type'].toString().contains("moment")) {
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
       showDialog(
           context: context,
@@ -481,33 +478,30 @@ class _DashboardState extends State<Dashboard>  {
       child: Scaffold(
         key: myGlobals.scaffoldKey,
         backgroundColor: whiteBackground,
-        // body: PageView(
-        //   physics: const NeverScrollableScrollPhysics(),
-        //   controller: _dashboardBloc.pageController,
-        //   onPageChanged: (index) {
-        //     _dashboardBloc.index = index;
-        //     FocusScope.of(context).unfocus();
-        //   },
-        //   children: <Widget>[
-        //     KeepAlivePage(wantKeepAlive: false, child: Home()),
-        //     KeepAlivePage(wantKeepAlive: true, child: YarnDashboard()),
-        //     KeepAlivePage(wantKeepAlive: true, child: const SuperStore()),
-        //     KeepAlivePage(wantKeepAlive: true, child: const MomentsScreen()),
-        //     KeepAlivePage(child: ConnectionDashboard()),
-        //   ],
-        // ),
         body: _pages[_bottomNavIndex],
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: navyBlue,
-          child: Icon(
-            Icons.add,
-            color: white,
-            size: 44,
+        floatingActionButton: SizedBox(
+          width: 70,
+          height: 70,
+          child: FloatingActionButton(
+            backgroundColor: navyBlue,
+            onPressed: () {
+              Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
+                  arguments: {"view": appLocalization.create});
+            },
+            mini: false,
+            heroTag: null,
+            child: Icon(
+              Icons.add,
+              color: white,
+              size: 60,
+            ),
+            // child: SvgPicture.asset(
+            //   'home/slydo'.toSVG(),
+            //   color: white,
+            //   width: 45,
+            //   height: 45,
+            // ),
           ),
-          onPressed: () {
-            Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
-                arguments: {"view": appLocalization.create});
-          },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: bottomNavigationBar(),
@@ -529,18 +523,67 @@ class _DashboardState extends State<Dashboard>  {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                iconList[index],
-                size: 26,
-                color: color,
+              Stack(
+                children: [
+                  SvgPicture.asset(
+                    iconList[index].toSVG(),
+                    color: color,
+                    width: 28,
+                    height: 28,
+                  ),
+                  if (list[index] == 'Chat') // Only show badge for Chat icon
+                    Positioned(
+                      top: 0, // Adjust the top value as needed
+                      right: 0, // Adjust the right value as needed
+                      child: StreamBuilder(
+                        stream: ChatMessageSynchronizer().getChatMessageCountStream,
+                        builder: (context, snapshot) {
+                          return FutureBuilder(
+                            future: ChatUserManager().checkForChatMessagesCount(),
+                            initialData: false,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.data == true) {
+
+                                  // debugPrint('fola chat:::: ${snapshot.data}');
+
+                                  return ClipOval(
+                                    child: Container(
+                                      height: 16,
+                                      width: 16,
+                                      color: naturalGreen,
+                                      // child: Center(
+                                      //   child: Text(
+                                      //     '410',
+                                      //     style: TextStyle(
+                                      //       color: Colors.white,
+                                      //       fontSize: 10,
+                                      //       fontWeight: FontWeight.bold,
+                                      //     ),
+                                      //   ),
+                                      // ),
+                                    ),
+                                  );
+                                }
+                                return Container();
+                              }
+                              return Container();
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                ],
               ),
+
               const SizedBox(height: 4),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   list[index],
                   maxLines: 1,
-                  style: TextStyle(color: color, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      color: color, fontWeight: FontWeight.w600, fontSize: 14),
                   // group: autoSizeGroup,
                 ),
               )
@@ -555,10 +598,12 @@ class _DashboardState extends State<Dashboard>  {
         gapLocation: GapLocation.center,
         leftCornerRadius: 0,
         rightCornerRadius: 0,
+        height: 55,
+        notchMargin: 15,
+        gapWidth: 80,
         onTap: (index) {
           setState(() {
             _bottomNavIndex = index;
-            navigateToPage(index);
           });
         },
         shadow: BoxShadow(
@@ -566,187 +611,6 @@ class _DashboardState extends State<Dashboard>  {
           blurRadius: 2,
           spreadRadius: 0.5,
           color: greyBorderColor,
-        ),
-      ),
-      // child: BottomNavigationBar(
-      //   type: BottomNavigationBarType.fixed,
-      //   selectedFontSize: 0,
-      //   iconSize: 0,
-      //   unselectedFontSize: 10,
-      //   showSelectedLabels: false,
-      //   backgroundColor: Colors.white,
-      //   elevation: 10,
-      //   currentIndex: _dashboardBloc.index,
-      //   onTap: (index) {
-      //     _dashboardBloc.index = index;
-      //     FocusScope.of(context).unfocus();
-      //     if (index == 1) {
-      //       _dashboardBloc.topYarn = true;
-      //       // debugPrint('Dashboard Yarn clicked:::: ${_dashboardBloc.top}');
-      //     }else if(index == 2){
-      //       _dashboardBloc.topStore = true;
-      //     }
-      //   },
-      //   items: [
-      //     bottomNavigationBarItem(
-      //       iconData: SlydoAppIconNew.home,
-      //       title: AppLocalization.of(context)!.home,
-      //     ),
-      //
-      //     bottomNavigationBarItem(
-      //       iconSize: 20,
-      //       key: tutorialYarnKey,
-      //       iconData: SlydoAppIconNew.dashboard_yarn,
-      //       title: "Yarn",
-      //     ),
-      //     bottomNavigationBarItem(
-      //       key: tutorialSuperStoreKey,
-      //       iconSize: 20,
-      //       iconData: SlydoAppIconNew.super_store,
-      //       title: AppLocalization.of(context)!.store,
-      //     ),
-      //     bottomNavigationBarItem(
-      //       key: tutorialMomentKey,
-      //       iconData: SlydoAppIconNew.moment,
-      //       title: AppLocalization.of(context)!.moments,
-      //     ),
-      //     // bottomNavigationBarItem(
-      //     //   isChatIcon: true,
-      //     //   icon: SlydoAppIcon.more,
-      //     //   title: AppLocalization.of(context)!.chat,
-      //     // ),
-      //
-      //     bottomNavigationBarItem(
-      //       isChatIcon: true,
-      //       key: tutorialChatMessageKey,
-      //       iconData: SlydoAppIconNew.chat,
-      //       title: AppLocalization.of(context)!.chat,
-      //     ),
-      //
-      //     // BottomNavigationBarItem(
-      //     //   icon: Container(
-      //     //     key: tutorialExploreKey,
-      //     //     height: 50,
-      //     //     child: Icon(
-      //     //       Icons.explore,
-      //     //       color: blackFont,
-      //     //       size: 18,
-      //     //     ),
-      //     //   ),
-      //     //   label: "Explore",
-      //     //   activeIcon: activeIcon(
-      //     //       title: AppLocalization.of(context)!.explore,
-      //     //       icon: Icons.explore),
-      //     // ),
-      //   ],
-      // ),
-    );
-  }
-
-  // to create BottomNavigationBarItem
-  BottomNavigationBarItem bottomNavigationBarItem(
-      {Widget? icon,
-      IconData? iconData,
-      required String title,
-      double? iconSize,
-      bool isChatIcon = false,
-      Key? key}) {
-    return BottomNavigationBarItem(
-      icon: isChatIcon
-          ? Stack(
-              children: [
-                Container(
-                  key: key,
-                  height: 50,
-                  width: 60,
-                  child: Icon(
-                    iconData,
-                    color: blackFont,
-                    size: iconSize ?? 16,
-                  ),
-                ),
-                StreamBuilder(
-                    stream: ChatMessageSynchronizer().getChatMessageCountStream,
-                    builder: (context, snapshot) {
-                      return FutureBuilder(
-                          future: ChatUserManager().checkForChatMessagesCount(),
-                          initialData: false,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data == true) {
-                                return Positioned(
-                                  top: 14,
-                                  right: 18,
-                                  child: ClipOval(
-                                    child: Container(
-                                      height: 8,
-                                      width: 8,
-                                      color: naturalGreen,
-                                    ),
-                                  ),
-                                );
-                              }
-                              return Container();
-                            }
-                            return Container();
-                          });
-                    }),
-              ],
-            )
-          : Container(
-              key: key,
-              height: 50,
-              width: 60,
-              child: icon ??
-                  Icon(
-                    iconData,
-                    color: blackFont,
-                    size: iconSize ?? 16,
-                  ),
-            ),
-      label: "",
-      activeIcon:
-          activeIcon(icon: iconData, title: title, isChatIcon: isChatIcon),
-    );
-  }
-
-  // How BottomNavigationBarItem will look when active
-  Widget activeIcon(
-      {IconData? icon, required String title, bool isChatIcon = false}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        height: 50,
-        width: 60,
-        color: navyBlue,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const SizedBox(
-              height: 4,
-            ),
-
-            // TODO: Add icon here.
-            Expanded(
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 16,
-              ),
-            ),
-            const SizedBox(
-              height: 4,
-            ),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -758,30 +622,5 @@ class _DashboardState extends State<Dashboard>  {
     streamSubscription?.cancel();
     ShareManager().disposeShareManager();
     super.dispose();
-  }
-
-  Future<void> navigateToPage(int index) async {
-    switch (index) {
-      case 0:
-      // Navigate to the first page
-        KeepAlivePage(wantKeepAlive: false, child: Home());
-        break;
-      case 1:
-        await Navigator.of(context).pushNamed(Routes.SEARCH_MODULE);
-        // KeepAlivePage(wantKeepAlive: true, child: YarnDashboard());
-        break;
-      case 2:
-        KeepAlivePage(child: ConnectionDashboard());
-        break;
-      case 3:
-        KeepAlivePage(child: ConnectionDashboard());
-        break;
-
-      default:
-      // Handle cases where index is out of bounds or not recognized
-        break;
-
-
-    }
   }
 }

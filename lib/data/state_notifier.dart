@@ -429,23 +429,30 @@ class BasketBloc extends ChangeNotifier {
         // Check if the variant ID already exists in the item's variants list
         bool variantIdExists = false;
 
-        for (var existingVariant in element["variants"]) {
-          if (existingVariant["id"] == variant["id"]) {
-            // Update the existing variant
-            int existingQuantity = int.tryParse(existingVariant["quantity"].toString()) ?? 0;
-            int variantQuantity = int.tryParse(variant["quantity"].toString()) ?? 0;
-            existingVariant["quantity"] = (existingQuantity + variantQuantity).toString();
-            existingVariant["image"] = variant["image"];
+        Product product = element["item"];
 
-            variantIdExists = true;
-            break;
+        if(product.variant!.isNotEmpty && product.variant != null){
+          for (var existingVariant in product.variant!) {
+            if (existingVariant["id"] == variant["id"]) {
+              // Update the existing variant
+              int existingQuantity = int.tryParse(existingVariant["quantity"].toString()) ?? 0;
+              int variantQuantity = int.tryParse(variant["quantity"].toString()) ?? 0;
+              existingVariant["quantity"] = (existingQuantity + variantQuantity).toString();
+              existingVariant["image"] = variant["image"];
+
+              variantIdExists = true;
+              break;
+            }
           }
         }
 
+        // If the variant doesn't exist, add it to the product's variants
         if (!variantIdExists) {
-          // If the variant ID doesn't exist, add it as a new variant
-          element["variants"].add(variant);
+          // product.variant.add(variant);
+          element["item"].variant.add(variant);
+          notifyListeners();
         }
+
 
         // Increase the total quantity and exit the loop
         element["qty"] = (int.tryParse(element["qty"].toString()) ?? 0) + 1;
@@ -572,41 +579,36 @@ class BasketBloc extends ChangeNotifier {
 
       if (product.id == selectedProductId) {
 
-        // Check if the variant ID exists in the item's variants list
-        for (var j = 0; j < _items[i]["variants"].length; j++) {
-          if (int.parse(_items[i]["variants"][j]["id"]) == variantId) {
+        List variantList = _items[i]['item'].variant;
 
-            // Reduce the variant quantity by 1
-            var quantity = int.parse(_items[i]["variants"][j]["quantity"].toString()) - 1;
-            _items[i]["variants"][j]["quantity"] = quantity.toString();
+        for (var j = 0; j < variantList.length; j++) {
+          var variant = variantList[j];
+          // debugPrint('fola cart state cart variant id:::: ${variant['id']}');
+          // debugPrint('fola cart state cart variantid:::: ${variantId}');
 
-            // Calculate the total price (assuming "price" is a string)
-            _total -= int.parse(_items[i]["variants"][j]["price"]);
-
-            // Reduce the total quantity by 1
-            var qty = int.parse(_items[i]["qty"].toString()) - 1;
-            _items[i]["qty"] = qty;
-
-            // If the variant quantity becomes zero, remove it from the list
-            if (quantity == 0) {
-              _items[i]["variants"].removeAt(j);
-
-              debugPrint('fola cart state cart:::: ${qty}');
-
-              if(quantity == 0 && qty == 0){
-                //remove item from cart
-                Map<String, dynamic> data = {
-                  "id": selectedProductId,
-                  "type": "product",
-                  "qty": 0,
-                };
-                await ShoppingAuthService().removeItemFromShoppingCart(data);
-              }
-
+          if (int.parse(variant['id'].toString()) == variantId) {
+            if (int.parse(variant['quantity'].toString()) > 1) {
+              // Update the quantity
+              variant['quantity'] = int.parse(variant['quantity'].toString()) - 1;
+            } else {
+              // Remove the variant
+              variantList.removeAt(j);
             }
+            _items[i]['qty'] = int.parse(_items[i]['qty'].toString()) - 1;
 
+            // debugPrint('fola cart state cart qty 2:::: ${_items[i]['qty']}');
+
+            if(_items[i]['qty'] == 0){
+              //remove item from cart
+              Map<String, dynamic> data = {
+                "id": selectedProductId,
+                "type": "product",
+                "qty": 0,
+              };
+              await ShoppingAuthService().removeItemFromShoppingCart(data);
+            }
             itemExists = true;
-            break;
+            break; // Stop searching for the variant
           }
         }
 
@@ -620,7 +622,6 @@ class BasketBloc extends ChangeNotifier {
 
     notifyListeners();
   }
-
 
 
   // this will remove the product or service from the cart;
@@ -648,6 +649,10 @@ class BasketBloc extends ChangeNotifier {
           _items.remove(foundItem);
           _total = _total - int.parse(item.price);
           removeMerchantName(item);
+        }else if (foundItem["qty"] == 0) {
+          _items.remove(foundItem);
+          _total = _total - int.parse(item.price);
+          removeMerchantName(item);
         } else {
           debugPrint("ERROR while removing element");
         }
@@ -671,7 +676,6 @@ class BasketBloc extends ChangeNotifier {
     for (var element in itemsCart) {
       String type = element is Product ? "product" : "service";
 
-      debugPrint('Variant Data element: $element');
       debugPrint('Variant Data element: $element');
 
       if (element is Product) {
@@ -716,6 +720,7 @@ class BasketBloc extends ChangeNotifier {
     }
 
     notifyListeners();
+
   }
 
 }

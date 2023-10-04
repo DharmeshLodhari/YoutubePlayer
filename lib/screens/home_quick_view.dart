@@ -3,6 +3,8 @@ import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../locator.dart';
 import '../routes/route_constants.dart';
@@ -47,7 +49,9 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
   String appBarTitle = "";
   List<Map<String, String>> selectedList = [];
+  List<Map<String, String>> filteredList = [];
 
+  late UserBloc userBloc;
 
   @override
   void initState() {
@@ -58,23 +62,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     checkForListToDisplay();
 
     searchItemTextController.addListener(() {
-      autoCompleteSearchText = searchItemTextController.text;
-
-      setState(() => _isRefreshing());
-
-      if (results.isNotEmpty || searchItemTextController.text.length != 0) {
-        if (mounted) {
-          setState(() {
-            isSearchIsEmpty = false;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            isSearchIsEmpty = true;
-          });
-        }
-      }
+      filterList(searchItemTextController.text);
     });
   }
 
@@ -92,7 +80,6 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         'imagePath': 'home/request',
         'title': 'Request money',
       },
-
       {
         'imagePath': 'home/payment_link',
         'title': 'Payment Links',
@@ -130,11 +117,11 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     ];
     final List<Map<String, String>> socials = [
       {
-        'imagePath': 'home/send',
+        'imagePath': 'home/chat_social',
         'title': 'Chat',
       },
       {
-        'imagePath': 'home/inbox',
+        'imagePath': 'home/inbox_social',
         'title': 'Inbox',
       },
       {
@@ -167,10 +154,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         'imagePath': 'home/service',
         'title': 'Services Hub',
       },
-
     ];
     final List<Map<String, String>> create = [
-
       {
         'imagePath': 'home/yarn',
         'title': 'Yarn',
@@ -231,7 +216,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
 
       default:
-      // Handle the default case (if any)
+        // Handle the default case (if any)
         print('Tapped on an unknown shortcut');
     }
   }
@@ -243,7 +228,6 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     results.clear();
     isLoading = false;
     noItemInList = false;
-
   }
 
   @override
@@ -255,6 +239,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
@@ -265,13 +251,12 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           searchBox(),
           SizedBox(height: 16),
           Expanded(
-            child: _displayShortcutCard(selectedList),
+            child: _displayShortcutCard(filteredList.isNotEmpty ? filteredList : selectedList),
           ),
         ],
       ),
     );
   }
-
 
   Widget _buildIndicator() {
     return Padding(
@@ -344,11 +329,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               ),
             ),
             onFieldSubmitted: (val) {
-              if (mounted) {
-                setState(() => _isRefreshing());
-
-                FocusScope.of(context).unfocus();
-              }
+              filterList(val);
             },
           ),
         ),
@@ -408,7 +389,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           // padding: EdgeInsets.zero,
           children: List.generate(
             (shortcuts.length / 2).ceil(),
-                (index) {
+            (index) {
               final startIndex = index * 2;
               final endIndex = startIndex + 2;
               final pairShortcuts = shortcuts.sublist(
@@ -434,15 +415,15 @@ class _HomeQuickViewState extends State<HomeQuickView> {
                         padding: const EdgeInsets.all(0.0),
                         child: GestureDetector(
                           onTap: () {
-                            if(appBarTitle == 'Create'){
+                            if (appBarTitle == 'Create') {
                               onClickShortcutCreate(shortcut['title']!);
-                            }else{
+                            } else {
                               onClickShortcut(shortcut['title']!);
                             }
-
                           },
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: shortcutView(
                               shortcut['imagePath']!,
                               shortcut['title']!,
@@ -461,12 +442,13 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     );
   }
 
-  Widget shortcutView(String imagePath, String title){
+
+  Widget shortcutView(String imagePath, String title) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
       decoration: BoxDecoration(
-          border: Border.all(color: greyBorderColor),
+        border: Border.all(color: greyBorderColor),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: Column(
@@ -481,11 +463,20 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               const SizedBox(width: 10),
               Text(
                 title,
-                style:  TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   color: black,
                 ),
               ),
+              if (userBloc.user.type!.toLowerCase() == 'user' &&
+                      title == 'Product' ||
+                  title == 'Services') ...[
+                const SizedBox(width: 10),
+                SvgPicture.asset(
+                  'home/padlock'.toSVG(),
+                  color: darkGreyYarn,
+                ),
+              ]
             ],
           ),
         ],
@@ -499,8 +490,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         BottomSheetPassCode(
             context: context,
             isValidCallback: () {
-              Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
-                  arguments: {'page': 0});
+              Navigator.of(context)
+                  .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
             },
             cancelCallBack: () {
               Navigator.pop(context);
@@ -517,12 +508,10 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         NavigationUtil.push(context, screen: PaymentLink());
         break;
       case 'Wallet':
-        Navigator.of(context)
-            .pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE);
+        Navigator.of(context).pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE);
         break;
       case 'Credit card':
         if (appConfigurationModel?.enableAddUserCreditCard == true) {
-
           Navigator.of(context).pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
         } else {
           showToast(message: 'Coming soon.');
@@ -580,7 +569,6 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         }
         break;
       case 'Channel':
-
         break;
       case 'Order':
         Navigator.pushNamed(context, Routes.ORDERS_LIST);
@@ -592,7 +580,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         Navigator.pushNamed(context, Routes.SUPER_HUB);
         break;
       default:
-      // Handle the default case (if any)
+        // Handle the default case (if any)
         print('Tapped on an unknown shortcut');
     }
   }
@@ -600,23 +588,32 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   void onClickShortcutCreate(String title) {
     switch (title) {
       case 'Yarn':
-         NavigationUtil.push(context,
+        NavigationUtil.push(context,
             screen: AddOrEditYarn(
               // askCategories: yarnDashboardBloc.yarnCategories,
               // shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
               isYarn: true,
               passedCategory: '',
-
             ));
         break;
       case 'Moment':
         NavigationUtil.push(context, screen: CreateMediaMomentScreen());
         break;
       case 'Product':
-        Navigator.pushNamed(context, Routes.ADD_PRODUCT);
+        if (userBloc.user.type!.toLowerCase() == 'user') {
+          Navigator.pushNamed(context, "/choose-subscriptions");
+        } else {
+          Navigator.pushNamed(context, Routes.ADD_PRODUCT);
+        }
+
         break;
       case 'Services':
-        Navigator.pushNamed(context, Routes.ADD_SERVICE);
+        if (userBloc.user.type!.toLowerCase() == 'user') {
+          Navigator.pushNamed(context, "/choose-subscriptions");
+        } else {
+          Navigator.pushNamed(context, Routes.ADD_SERVICE);
+        }
+
         break;
       case 'Inbox':
         Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
@@ -656,9 +653,17 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         }
         break;
       default:
-      // Handle the default case (if any)
+        // Handle the default case (if any)
         print('Tapped on an unknown shortcut');
     }
   }
 
+  void filterList(String searchText) {
+    setState(() {
+      filteredList = selectedList
+          .where((item) =>
+          item['title']!.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+    });
+  }
 }

@@ -47,7 +47,8 @@ class _SendPaymentState extends State<SendPayment> {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.white,
-      titleSpacing: 0,
+      titleSpacing: 10,
+      centerTitle: false,
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(

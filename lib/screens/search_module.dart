@@ -172,17 +172,8 @@ class _SearchModuleState extends State<SearchModule> {
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 20,
-      automaticallyImplyLeading: false,
-      // leading: IconButton(
-      //   icon: Icon(
-      //     Icons.keyboard_arrow_left,
-      //     color: navyBlue,
-      //     size: 24,
-      //   ),
-      //   onPressed: () {
-      //     Navigator.pop(context);
-      //   },
-      // ),
+      centerTitle: false,
+      automaticallyImplyLeading: true,
       title: Text(
         getTabTitle(),
         style: TextStyle(

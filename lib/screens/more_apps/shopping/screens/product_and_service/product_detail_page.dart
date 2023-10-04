@@ -656,7 +656,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               int currentQuantity = int.parse(variant['quantity'].toString());
               variant['quantity'] = currentQuantity + 1;
 
-              Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+              Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
               await _auth.addItemToShoppingCart(dataInfo);
               return;
             }
@@ -667,10 +667,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
           // debugPrint("Data From Product Page v-id 3 : $variantList");
 
-          Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+          Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
           debugPrint("Data From Product Page exist : $dataInfo");
 
           await _auth.addItemToShoppingCart(dataInfo);
+          // for(var item in basketBloc.items){
+          //   // Product productInCart = item['item'];
+          //   List variantList = item['item'].variant;
+          //   debugPrint('fola chat one twoo::: ${variantList.length}');
+          //   debugPrint('fola chat one twoo::: ${item['item'].variant}');
+          // }
           return;
         }
       }
@@ -679,21 +685,24 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
     }
 
-    Map<String, dynamic> dataInfo = getUpdatedCartItem(basketBloc.items, type);
+    Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
     debugPrint("Data From Product Page : $dataInfo");
 
     await _auth.addItemToShoppingCart(dataInfo);
   }
 
-  Map<String, dynamic> getUpdatedCartItem(List cartItem, String type) {
+  Map<String, dynamic> getUpdatedCartItem(String productId, String type) {
     Map<String, dynamic> dataInfo = {};
 
     for (var element in basketBloc.items) {
       final item = element["item"];
       int totalVariantQuantity = 0;
 
-      if (element["variants"] != null && element.containsKey("variants")) {
-        final variantsList = element["variants"] as List;
+      if (element["variants"] != null && element.containsKey("variants")
+      && productId == item.id) {
+        List variantsList = element['item'].variant;
+
+        // debugPrint('fola chat one fourrrr::: ${variantsList.length}');
 
         // Initialize dataInfo with common information
         dataInfo = {
@@ -711,14 +720,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               int variantId = int.parse(variant["id"].toString());
               int variantQuantity = int.parse(variant["quantity"].toString());
 
+              // debugPrint("Data From Product Page v-id 5 : ${variant}");
+
               variantDataList.add({
                 "id": variantId,
                 "quantity": variantQuantity,
               });
             }
           }
-
-          // debugPrint("Data From Product Page v-id 5 : ${variantDataList}");
 
           // Add the variantDataList to dataInfo["variants"]
           dataInfo["variants"] = variantDataList;
@@ -1443,8 +1452,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         Map<String, dynamic> financial = {};
 
         VirtualAccount virtualAccount = VirtualAccount(
-          accountName: product!.name,
-          accountNumber: product!.sellerFullName,
+          accountName: product!.shortDescription,
+          accountNumber: product!.name,
           financialInstitution: FinancialInstitution.fromJson(financial),
           customerUsername: product!.seller,
           note: "",
