@@ -100,6 +100,7 @@ class _HomeState extends State<Home> {
       }
     });
     getSlydoAccount();
+    getAccountBalance();
 
     super.initState();
   }
@@ -166,33 +167,6 @@ class _HomeState extends State<Home> {
   }
 
   Widget _foregroundScreen() {
-    final List<Map<String, String>> shortcutExtra = [
-      {
-        'imagePath': 'home/small_payment',
-        'title': appLocalization.payment,
-        'subTitle': appLocalization.paymentSubTitle,
-        'color': '#9B51E0',
-      },
-      // {
-      //   'imagePath': 'home/small_business',
-      //   'title': appLocalization.business,
-      //   'subTitle': appLocalization.businessSubTitle,
-      //   'color': '#46CE7C',
-      // },
-      {
-        'imagePath': 'home/small_social',
-        'title': appLocalization.social,
-        'subTitle': appLocalization.socialSubTitle,
-        'color': '#FFA500',
-      },
-      {
-        'imagePath': 'home/small_lifestyle',
-        'title': appLocalization.lifestyle,
-        'subTitle': appLocalization.lifestyleSubTitle,
-        'color': '#F07097',
-      },
-    ];
-
     final List<Map<String, String>> shortcutExtraBusiness = [
       {
         'imagePath': 'home/small_payment',
@@ -260,7 +234,7 @@ class _HomeState extends State<Home> {
               child: _displayShortcutButtons()),
           Container(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-              child: userBloc.user.type!.toLowerCase() == 'user' ? _displayShortcutExtraCard(shortcutExtra) : _displayShortcutExtraCard(shortcutExtraBusiness)),
+              child: _displayShortcutExtraCard(shortcutExtraBusiness)),
           const SizedBox(
             height: 25,
           ),
@@ -286,7 +260,6 @@ class _HomeState extends State<Home> {
     );
   }
 
-
   Widget _displayShortcutButtons() {
     final List<Map<String, String>> shortcuts = [
       {
@@ -308,6 +281,10 @@ class _HomeState extends State<Home> {
       {
         'imagePath': 'home/service',
         'title': 'Services',
+      },
+      {
+        'imagePath': 'home/blog',
+        'title': 'Blog',
       },
     ];
 
@@ -372,17 +349,19 @@ class _HomeState extends State<Home> {
         hideBalance();
         NavigationUtil.push(context, screen: MomentsScreen());
         break;
-      case 'Service':
+      case 'Services':
         hideBalance();
         Navigator.pushNamed(context, Routes.SUPER_HUB);
         break;
-      case 'Store':
-        if (!storeLocked) {
-          storeItemAndroidSheet();
+      case 'Blog':
+        hideBalance();
+        if (appConfigurationModel?.enableSuperBlog == true) {
+          NavigationUtil.push(
+            context,
+            screen: const SuperBlog(),
+          );
         } else {
-          showToast(
-              message:
-              'You need to upgrade to a business account to use this feature.');
+          showToast(message: 'Feature not available at the moment');
         }
         break;
       default:
@@ -444,7 +423,7 @@ class _HomeState extends State<Home> {
     double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
       decoration: BoxDecoration(
           color: HexColor(color).withOpacity(opacity),
           borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -467,6 +446,13 @@ class _HomeState extends State<Home> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+              if(userBloc.user.type!.toLowerCase() == 'user' && title == 'Business')...[
+                const SizedBox(width: 5),
+                SvgPicture.asset(
+                  'home/padlock'.toSVG(),
+                ),
+              ],
+
             ],
           ),
           const SizedBox(height: 10),
@@ -478,6 +464,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           const SizedBox(width: 10),
+
         ],
       ),
     );
@@ -491,9 +478,15 @@ class _HomeState extends State<Home> {
             arguments: {"view": appLocalization.payment});
         break;
       case 'Business':
-        hideBalance();
-        Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
-            arguments: {"view": appLocalization.business});
+
+        if(userBloc.user.type!.toLowerCase() != 'user'){
+          hideBalance();
+          Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
+              arguments: {"view": appLocalization.business});
+        }else{
+          Navigator.pushNamed(context, "/choose-subscriptions");
+        }
+
         break;
       case 'Socials':
         hideBalance();
@@ -992,7 +985,7 @@ class _HomeState extends State<Home> {
                             ),
                             Text(
                               isBalanceHidden
-                                  ? "****"
+                                  ? generateAsteriskMask(moneyDisplayNormalizer(accountBalance))
                                   : moneyDisplayNormalizer(accountBalance),
                                   // : moneyDisplayNormalizer(2000000000),
                               style: TextStyle(
@@ -1026,7 +1019,7 @@ class _HomeState extends State<Home> {
                     ),
                             Text(
                       isBalanceHidden
-                              ? "****"
+                              ? generateAsteriskMask("${worldCurrencies[userBloc.user.currency!]!}${moneyDisplayNormalizer(actualAccountBalance)}")
                               : "${worldCurrencies[userBloc.user.currency!]!}${moneyDisplayNormalizer(actualAccountBalance)}",
                               // : "${worldCurrencies[userBloc.user.currency!]!}${moneyDisplayNormalizer(200000000)}",
                       style: TextStyle(
@@ -1666,6 +1659,17 @@ class _HomeState extends State<Home> {
         debugPrint("Cannot Update Avatar : " + err.toString());
       }
     }
+  }
+
+  String generateAsteriskMask(String amount) {
+    // Determine the length of the amount
+    int amountLength = amount.length;
+
+    // Generate a string of asterisks of the same length as the amount
+    String asteriskMask = '*' * amountLength;
+
+    // Trim the trailing space and return the asterisk mask
+    return asteriskMask.trim();
   }
 
 }

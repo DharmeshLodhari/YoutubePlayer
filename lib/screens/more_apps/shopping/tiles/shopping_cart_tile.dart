@@ -67,7 +67,7 @@ class _ShoppingCartTileForProductState
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
+                    padding: EdgeInsets.symmetric(vertical: 10),
                     child: ListTile(
                       leading: getLeading(),
                       title: getTitle(),

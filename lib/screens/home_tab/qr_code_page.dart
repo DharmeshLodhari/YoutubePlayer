@@ -16,8 +16,10 @@ import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 import '../../routes/route_constants.dart';
+import '../../routes/route_constants.dart';
 import '../../utils/slydo_app_icon_icons.dart';
 import '../../widget/bottom_sheet_item.dart';
+import '../../widget/curved_btn.dart';
 import '../../widget/rounded_background_icon.dart';
 import '../more_apps/payment_and_banking/models/VirtualAccount.dart';
 import '../more_apps/user_profile/models/user.dart';
@@ -159,6 +161,9 @@ class _QrCodePageState extends State<QrCodePage> {
               },
             ),
           ),
+          const SizedBox(height: 20),
+          _scanQrButtonWidget(),
+          const SizedBox(height: 20),
 
         ],
       ),
@@ -429,6 +434,25 @@ class _QrCodePageState extends State<QrCodePage> {
             style: TextStyle(fontSize: 22, color: HexColor("#151515"), fontWeight: FontWeight.w700),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _scanQrButtonWidget() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+      child: SizedBox(
+        height: 50,
+        child: CurvedButton(
+          isPaymentBtn: true,
+          backgroundColor: navyBlue,
+          textColor: Colors.white,
+          text: "SCAN QR",
+          onPressed: () async {
+            Navigator.of(context)
+                .pushNamed(Routes.SCAN_QR, arguments: {'isRequest': false});
+          },
+        ),
       ),
     );
   }
