@@ -51,11 +51,11 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    return getNearByBusiness();
+    return getChannel();
   }
 
 
-  Widget getNearByBusiness() {
+  Widget getChannel() {
     return Card(
       semanticContainer: true,
       clipBehavior: Clip.antiAliasWithSaveLayer,

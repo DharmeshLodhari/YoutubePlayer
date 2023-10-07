@@ -34,7 +34,9 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:badges/badges.dart' as badges;
 import '../services/app_tutorial_controller.dart';
+import '../services/logout_helper.dart';
 import '../utils/navigation_util.dart';
+import '../widget/rounded_background_icon.dart';
 import 'connection_module/connections_dashboard.dart';
 import 'home.dart';
 import 'moments/screens/moment_detail/moment_detail_page.dart';
@@ -482,30 +484,69 @@ class _DashboardState extends State<Dashboard> {
         floatingActionButton: SizedBox(
           width: 70,
           height: 70,
-          child: FloatingActionButton(
-            backgroundColor: navyBlue,
-            onPressed: () {
-              Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
-                  arguments: {"view": appLocalization.create});
+          child: GestureDetector(
+            onLongPress: () {
+              logoutDialog(context);
             },
-            mini: false,
-            heroTag: null,
-            child: Icon(
-              Icons.add,
-              color: white,
-              size: 60,
+            child: FloatingActionButton(
+              backgroundColor: navyBlue,
+              onPressed: () {
+                Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
+                    arguments: {"view": appLocalization.create});
+              },
+              mini: false,
+              heroTag: null,
+              // child: Icon(
+              //   Icons.add,
+              //   color: white,
+              //   size: 60,
+              // ),
+              child: SvgPicture.asset(
+                'home/slydo'.toSVG(),
+                color: white,
+                width: 45,
+                height: 45,
+              ),
             ),
-            // child: SvgPicture.asset(
-            //   'home/slydo'.toSVG(),
-            //   color: white,
-            //   width: 45,
-            //   height: 45,
-            // ),
           ),
+
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: bottomNavigationBar(),
       ),
+    );
+  }
+
+  Future<void> logoutDialog(BuildContext context) async {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: naturalGreen,
+      title: AppLocalization.of(context)!.logout,
+      actionTwoText: AppLocalization.of(context)!.yes,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      description: AppLocalization.of(context)!.logoutMsg,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 43,
+        height: 43,
+        icon: Icon(
+          Icons.question_mark,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      rightButtonOnPressed: () async {
+        showDialog(
+            context: (context),
+            builder: (context) => Center(child: CircularLoadingIndicator()),
+            barrierDismissible: false);
+        await LogoutHelper().logoutUser();
+      },
     );
   }
 
@@ -583,7 +624,7 @@ class _DashboardState extends State<Dashboard> {
                   list[index],
                   maxLines: 1,
                   style: TextStyle(
-                      color: color, fontWeight: FontWeight.w600, fontSize: 14),
+                      color: color, fontWeight: FontWeight.w600, fontSize: 12, fontFamily: "Inter"),
                   // group: autoSizeGroup,
                 ),
               )

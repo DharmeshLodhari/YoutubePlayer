@@ -181,6 +181,7 @@ import '../screens/more_apps/shopping/forms/product/product_add_new_option.dart'
 import '../screens/more_apps/shopping/forms/product/product_variant_list.dart';
 import '../screens/more_apps/shopping/forms/product/product_variant_update.dart';
 import '../screens/more_apps/user_profile/screens/customize_profile.dart';
+import '../screens/more_apps/user_profile/screens/subscriptions/pre_account_upgrade.dart';
 import '../screens/super_store/near_by_list_screen.dart';
 import '../screens/super_store/search_nearby_business.dart';
 import '../screens/super_store/super_store.dart';
@@ -1745,6 +1746,14 @@ class RouteGenerator {
           child: HomeQuickView(
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.PRE_ACCOUNT_UPGRADE:
+        return PageTransition(
+          child: const PreAccountUpgrade(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

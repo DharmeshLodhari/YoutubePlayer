@@ -32,6 +32,7 @@ import '../widget/CustomBoxShadow.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/bottom_sheet_item.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import '../widget/dialog.dart';
 import '../widget/rounded_background_icon.dart';
 import '../widget/user_dashboard_item_tile.dart';
 import 'moments/screens/moments_screen.dart';
@@ -322,8 +323,9 @@ class _HomeState extends State<Home> {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
+              fontFamily: "Inter"
           ),
         ),
       ],
@@ -444,6 +446,7 @@ class _HomeState extends State<Home> {
                   fontSize: 14,
                   color: white,
                   fontWeight: FontWeight.w700,
+                    fontFamily: "Inter"
                 ),
               ),
               if(userBloc.user.type!.toLowerCase() == 'user' && title == 'Business')...[
@@ -461,6 +464,7 @@ class _HomeState extends State<Home> {
             style: TextStyle(
               fontSize: 12,
               color: white,
+                fontFamily: "Inter"
             ),
           ),
           const SizedBox(width: 10),
@@ -484,7 +488,7 @@ class _HomeState extends State<Home> {
           Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
               arguments: {"view": appLocalization.business});
         }else{
-          Navigator.pushNamed(context, "/choose-subscriptions");
+          showUpgradeDialog(context);
         }
 
         break;
@@ -502,6 +506,35 @@ class _HomeState extends State<Home> {
       // Handle the default case (if any)
         print('Tapped on an unknown shortcut');
     }
+  }
+
+  Future<void> showUpgradeDialog(BuildContext context) async {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: naturalGreen,
+      title: AppLocalization.of(context)!.upgrade,
+      actionTwoText: AppLocalization.of(context)!.upgrade,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      description: AppLocalization.of(context)!.upgradeHomeMsg,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 43,
+        height: 43,
+        icon: Icon(
+          Icons.check_circle_sharp,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      rightButtonOnPressed: () {
+        Navigator.of(context).pushNamed(Routes.PRE_ACCOUNT_UPGRADE);
+      },
+    );
   }
 
   Widget _displayPaymentButtons() {
@@ -1086,17 +1119,6 @@ class _HomeState extends State<Home> {
                                 color: white,
                                 fontWeight: FontWeight.w600),
                           ),
-                          // GestureDetector(
-                          //   onTap: () {
-                          //     NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
-                          //     // NavigationUtil.push(context,
-                          //     //     screen: QRCodeView(arguments: {'isRequest': false}));
-                          //   },
-                          //   child: SvgPicture.asset(
-                          //     "home/scan".toSVG(),
-                          //     width: 35,
-                          //   ),
-                          // ),
                           qrCodeIcon()
                         ],
                       ),
@@ -1122,7 +1144,9 @@ class _HomeState extends State<Home> {
         color: Colors.white,
       ),
       onTap: () async {
-        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
+        NavigationUtil.push(context,
+            screen: QRCodeView(arguments: {'isRequest': false}));
+        // NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,

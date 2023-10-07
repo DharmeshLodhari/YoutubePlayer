@@ -55,7 +55,7 @@ class UserPostAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> listUserPosts(
-      {String? next = "", String? pageSize, required String? userName}) async {
+      {String? next = "", String? pageSize, required String? userName, String? isChannel}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -66,7 +66,13 @@ class UserPostAuth extends AuthService {
         url = AppConfig.baseUrl +
             "/api/v1/social/posts/user/$userName/?page_size=$pageSize";
       } else {
-        url = AppConfig.baseUrl + "/api/v1/social/posts/user/$userName/";
+        if(isChannel == 'channel'){
+          url = "${AppConfig.baseUrl}/api/v1/social/posts/channel/$userName/";
+        }
+        else if (isChannel == ''){
+          url = "${AppConfig.baseUrl}/api/v1/social/posts/user/$userName/";
+        }
+
       }
     } else {
       url = getSecureUrl(url: next);

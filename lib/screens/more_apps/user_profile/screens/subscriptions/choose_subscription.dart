@@ -92,7 +92,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
           children: [
             SvgPicture.asset('assets/images/subscription_img.svg'),
             SizedBox(height: 20),
-            Text(
+            const Text(
               'Choose your plan',
               textAlign: TextAlign.center,
               style: TextStyle(

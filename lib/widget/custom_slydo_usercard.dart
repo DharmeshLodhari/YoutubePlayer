@@ -80,7 +80,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
                       isVerified: widget.user.isVerified,
                     ),
                     subtitle: Text(
-                      widget.user.userName!,
+                      '@${widget.user.userName!}',
                       maxLines: 1,
                       style: TextStyle(color: darkGrey, fontSize: 12),
                     ),

@@ -35,7 +35,7 @@ class SlydoAppIcon {
   static const IconData eye_close =
       IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData qr_code =
-      IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+      IconData(0xf00cc, fontFamily: _mFontFam, fontPackage: _kFontPkg);
   static const IconData payout =
       IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData payout_list =

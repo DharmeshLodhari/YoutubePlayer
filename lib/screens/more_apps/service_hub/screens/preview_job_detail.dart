@@ -269,7 +269,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
       actionOneTextColor: black,
       actionTwoBgColor: navyBlue,
       actionTwoTextColor: white,
-      title: "Upgrade",
+      title: AppLocalization.of(context)!.upgrade,
       description: AppLocalization.of(context)!.upgradeMessage,
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.upgrade,

@@ -73,11 +73,11 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
   return height;
 }
 
-fetchYarnData(String? searchedUserName) async {
+fetchYarnData(String? searchedUserName, String isChannel) async {
   Map<String, dynamic>? data;
   try {
     data = await YarnAuth().getAllYarn("", "",
-        type: "my-topics", isType: false, userName: searchedUserName);
+        type: "my-topics", isType: false, userName: searchedUserName, isChannel: isChannel);
   } catch (error) {}
   if (data != null) {
     // debugPrint('IS SHOW YARN ---> $data');
@@ -105,11 +105,11 @@ fetchChannelData(String? searchedUserName) async {
   return [];
 }
 
-fetchPostData(String? searchedUserName) async {
+fetchPostData(String? searchedUserName, String isChannel) async {
   Map<String, dynamic>? data;
   try {
     data = await UserPostAuth()
-        .listUserPosts(next: '', userName: searchedUserName);
+        .listUserPosts(next: '', userName: searchedUserName, isChannel: isChannel);
   } catch (error) {
     debugPrint('IS SHOW POST error ---> $error');
   }
@@ -125,11 +125,11 @@ fetchPostData(String? searchedUserName) async {
   return [];
 }
 
-fetchMomentData(String? searchedUserName) async {
+fetchMomentData(String? searchedUserName, String type) async {
   List<MomentsModel> momentsModel = [];
   try {
     momentsModel = await MomentsService()
-        .getMomentsWithOwnerName(ownerName: searchedUserName!);
+        .getMomentsWithOwnerName(ownerName: searchedUserName!, type: 'channel');
   } catch (error) {}
   if (momentsModel.isNotEmpty) {
     // debugPrint('IS SHOW MOMENTS ---> $momentsModel');

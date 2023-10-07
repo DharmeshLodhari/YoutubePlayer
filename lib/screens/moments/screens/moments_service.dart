@@ -99,14 +99,18 @@ class MomentsService extends AuthService {
 
   Future<List<MomentsModel>> getMomentsWithOwnerName({
     required String ownerName,
-    bool fromUserProfile =
-        false, // This is true when we click on the moment's button from a user's profile.
+    bool fromUserProfile = false, // This is true when we click on the moment's button from a user's profile.
+    required String? type,
+    // bool isChannel = false,
   }) async {
     late String url;
 
     if (fromUserProfile == true) {
       url = "${AppConfig.baseUrl}/api/v1/social/moments/public/$ownerName/";
-    } else {
+    }else if(type == 'channel'){
+      url = "${AppConfig.baseUrl}/api/v1/social/moments/channel/$ownerName/";
+    }
+    else if (type == ''){
       url = "${AppConfig.baseUrl}/api/v1/social/moments/user/$ownerName/";
     }
 

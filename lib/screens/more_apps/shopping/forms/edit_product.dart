@@ -86,6 +86,9 @@ class _EditProductState extends State<EditProduct> {
   var weightSi = ['Grams', 'Kilograms'];
   var widthSi = ['Centimetres', 'Metres'];
   var heightSi = ['Centimetres', 'Metres'];
+  List<String> measurementList = ['Weight', 'Height', 'Width'];
+  Map<String, bool> measurementCheckMark = {};
+  List<String> pickedMeasurementList = [];
   double weight = 0.0;
   double width = 0.0;
   double height = 0.0;
@@ -93,6 +96,8 @@ class _EditProductState extends State<EditProduct> {
   String selectedHeight = "";
   String selectedWidth = "";
   bool trackInventory = false;
+  bool trackInventoryView = false;
+  bool measurementView = false;
 
   @override
   void deactivate() {
@@ -157,16 +162,21 @@ class _EditProductState extends State<EditProduct> {
           // debugPrint('fola edit::::: ${currentProduct.toJson()}');
 
           weight = currentProduct.weight!;
-          selectedWeight = currentProduct.weightSiUnit == 'g' ? 'Grams' : 'Kilograms';
+          selectedWeight = currentProduct.weightSiUnit == 'g' ? 'Grams' :
+          currentProduct.weightSiUnit == '' ? '' : 'Kilograms';
           height = currentProduct.height!;
-          selectedHeight = currentProduct.heightSiUnit == 'cm' ? 'Centimetres' : 'Metres';
+          selectedHeight = currentProduct.heightSiUnit == 'cm' ? 'Centimetres' :
+          currentProduct.heightSiUnit == "" ? '' :'Metres';
           width = currentProduct.width!;
-          selectedWidth = currentProduct.widthSiUnit == 'cm' ? 'Centimetres' : 'Metres';
+          selectedWidth = currentProduct.widthSiUnit == 'cm' ? 'Centimetres' :
+          currentProduct.widthSiUnit == "" ? '' : 'Metres';
           trackInventory = currentProduct.trackInventory!;
 
-          weightController.text = currentProduct.weight.toString();
-          heightController.text = currentProduct.height.toString();
-          widthController.text = currentProduct.width.toString();
+          trackInventoryView = trackInventory;
+
+          weightController.text = currentProduct.weight != 0.0 ? currentProduct.weight.toString() : '';
+          heightController.text = currentProduct.height != 0.0 ? currentProduct.height.toString() : '';
+          widthController.text = currentProduct.width != 0.0 ? currentProduct.width.toString() : '';
           inventoryCount = currentProduct.quantity! ?? 0;
           inventoryCountController.text = inventoryCount.toString();
 
@@ -189,6 +199,19 @@ class _EditProductState extends State<EditProduct> {
               selectedProductCondition = condition;
             }
           });
+
+          if (weight != 0.0) {
+            pickedMeasurementList.add('Weight');
+          }
+
+          if (height != 0.0) {
+            pickedMeasurementList.add('Height');
+          }
+
+          if (width != 0.0) {
+            pickedMeasurementList.add('Width');
+          }
+          measurementView = pickedMeasurementList.isEmpty ? false : true;
 
         });
       }
@@ -281,69 +304,89 @@ class _EditProductState extends State<EditProduct> {
                       SizedBox(height: 10),
                       getProductConditionField(),
                       SizedBox(height: 16),
-                      getAvailableFromField(),
-                      SizedBox(height: 10),
                       getProductShortDescription(),
                       SizedBox(height: 10),
                       getProductDescription(),
-                      SizedBox(height: 10),
-                      //weight section
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: getWeightField(),
-                          ),
-                          SizedBox(width: 5.0),
-                          Flexible(
-                            flex: 1,
-                            child: getWeightSiUnitField(),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      //height section
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: getHeightField(),
-                          ),
-                          SizedBox(width: 5.0),
-                          Flexible(
-                            flex: 1,
-                            child: getHeightSiUnitField(),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      //width section
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: getWidthField(),
-                          ),
-                          SizedBox(width: 5.0),
-                          Flexible(
-                            flex: 1,
-                            child: getWidthSiUnitField(),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 16),
-                      getInventoryFormField(),
 
                       SizedBox(height: 10),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
-                      getTrackInventoryField(),
+                      if(productIsAvailable == true)...[
+                        getAvailableFromField(),
+                        const SizedBox(height: 16),
+                      ],
+                      getMeasurementField(),
+                      const SizedBox(height: 16),
+                      if(measurementView == true)...[
+                        getCategoryMeasurementField(),
+                        const SizedBox(height: 16),
+                      ],
+
+                      if(pickedMeasurementList.isNotEmpty && measurementView == true)...[
+                        if(containsWeight())...[
+                          //weight section
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                flex: 1,
+                                child: getWeightField(),
+                              ),
+                              SizedBox(width: 5.0),
+                              Flexible(
+                                flex: 1,
+                                child: getWeightSiUnitField(),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                        if(containsHeight())...[
+                          //height section
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                flex: 1,
+                                child: getHeightField(),
+                              ),
+                              SizedBox(width: 5.0),
+                              Flexible(
+                                flex: 1,
+                                child: getHeightSiUnitField(),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                        if(containsWidth())...[
+                          //width section
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                flex: 1,
+                                child: getWidthField(),
+                              ),
+                              SizedBox(width: 5.0),
+                              Flexible(
+                                flex: 1,
+                                child: getWidthSiUnitField(),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+                        ]
+                      ],
+
+                      getTrackInventoryViewField(),
+                      if(trackInventoryView == true)...[
+                        const SizedBox(height: 16),
+                        getInventoryFormField(),
+                        const SizedBox(height: 16),
+                        getTrackInventoryField(),
+                        const SizedBox(height: 16),
+                      ],
 
                       SizedBox(height: 16),
                       getEnableInSuperStoreField(),
@@ -597,6 +640,18 @@ class _EditProductState extends State<EditProduct> {
         ],
       ),
     );
+  }
+
+  bool containsWeight(){
+    return pickedMeasurementList.contains('Weight');
+  }
+
+  bool containsHeight(){
+    return pickedMeasurementList.contains('Height');
+  }
+
+  bool containsWidth(){
+    return pickedMeasurementList.contains('Width');
   }
 
   // decide that serverImage List is need to be show or not
@@ -1325,6 +1380,7 @@ class _EditProductState extends State<EditProduct> {
 
   Widget getAmountField() {
     return CustomizedTextFormField(
+      labelText: AppLocalization.of(context)!.price,
       controller: productPriceController,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
@@ -1396,8 +1452,23 @@ class _EditProductState extends State<EditProduct> {
   Future<void> editProduct() async {
     if (_formKey.currentState!.validate()) {
       if (productLocalImages.length >= 0) {
+        if(containsWeight() && selectedWeight.isEmpty && weight != 0.0){
+          showToast(message: AppLocalization.of(context)!
+              .pleaseFillWeight);
+          return;
+        }
+        if(containsHeight() && selectedHeight.isEmpty && height != 0.0){
+          showToast(message: AppLocalization.of(context)!
+              .pleaseFillHeight);
+          return;
+        }
+        if(containsWidth() && selectedWidth.isEmpty && width != 0.0){
+          showToast(message: AppLocalization.of(context)!
+              .pleaseFillWidth);
+          return;
+        }
+
         if (validateDropdown()) {
-          debugPrint('PRODUCT CATEGORY ::: $productCategory');
           // setting updated value
           currentProduct.name = productName;
           currentProduct.description = messageDecoderWithEmoji(productDescription);
@@ -1414,11 +1485,11 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.enableInSuperStore = productEnableInSuperStore;
 
           currentProduct.weight = weight;
-          currentProduct.weightSiUnit = selectedWeight == 'Grams' ? 'g' : 'kg';
+          currentProduct.weightSiUnit = selectedWeight == 'Grams' ? 'g' : selectedWeight == 'Kilograms' ? 'kg' : '';
           currentProduct.height = height;
-          currentProduct.heightSiUnit = selectedHeight == 'Centimetres' ? 'cm' : 'm';
+          currentProduct.heightSiUnit = selectedHeight == 'Centimetres' ? 'cm' : selectedHeight == 'Metres' ? 'm' : '';
           currentProduct.width = width;
-          currentProduct.widthSiUnit = selectedWidth == 'Centimetres' ? 'cm' : 'm';
+          currentProduct.widthSiUnit = selectedWidth == 'Centimetres' ? 'cm' : selectedWidth == 'Metres' ? 'm' : '';
           currentProduct.trackInventory = trackInventory;
           currentProduct.quantity = inventoryCount;
 
@@ -1558,77 +1629,115 @@ class _EditProductState extends State<EditProduct> {
         return AppLocalization.of(context)!.pleaseEnterValidCount;
       },
     );
+
+  }
+
+  Widget getMeasurementField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        measurementView = !measurementView;
+        setState(() {});
+      },
+      isChecked: measurementView,
+      title: AppLocalization.of(context)!.measurement,
+    );
+  }
+
+  Widget getTrackInventoryViewField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        trackInventoryView = !trackInventoryView;
+        setState(() {});
+      },
+      isChecked: trackInventoryView,
+      title: AppLocalization.of(context)!.trackInventoryView,
+    );
+  }
+
+  Widget getCategoryMeasurementField() {
     return CustomizedDropDownField(
-      title: "Inventory (Available Quantity)",
-      child: SizedBox(
-        height: 55,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: ListTile(
-            dense: true,
-            title: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: greyBorderColor,
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
-                  child: Text(
-                    inventoryCount.toString(),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            trailing: Padding(
-              padding: const EdgeInsets.only(right: 30.0),
-              child: RoundedBackgroundIcon(
-                  backgroundColor: greyBorderColor,
-                  icon: Icon(
-                    SlydoAppIcon.plus,
-                    color: blackFont,
-                    size: 14,
-                  ),
-                  onTap: () => addInventory()
-              ),
-            ),
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: RoundedBackgroundIcon(
-                  backgroundColor: greyBorderColor,
-                  icon: Icon(
-                    SlydoAppIcon.minus,
-                    color: blackFont,
-                    size: 2,
-                  ),
-                  onTap: () => subtractInventory()
-              ),
-            ),
-          ),
+      title: '',
+      child: ListTile(
+        dense: true,
+        title: Text(
+          pickedMeasurementList.isNotEmpty ? pickedMeasurementList.join(', ') : '',
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          measurementAndroidSheet();
+        },
       ),
     );
   }
 
-  void addInventory() {
-    setState(() {
-      inventoryCount++;
-    });
-  }
+  void measurementAndroidSheet() {
 
-  void subtractInventory() {
-    if (inventoryCount > 0) {
-      setState(() {
-        inventoryCount--;
-      });
-    }
+    measurementCheckMark['Height'] = containsHeight() ? true : false;
+    measurementCheckMark['Weight'] = containsWeight() ? true : false;
+    measurementCheckMark['Width'] = containsWidth() ? true : false;
+
+    androidBottomSheet(
+      context: context,
+      enableDrag: false,
+      isDismissible: false,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: measurementList.length,
+                    itemBuilder: (context, index) {
+                      String measurement = measurementList[index];
+                      return CheckboxListTile(
+                        value: measurementCheckMark[measurement] ?? false,
+                        onChanged: (isChecked) {
+                          changeState(() {
+                            measurementCheckMark[measurement] = isChecked!;
+                          });
+                          if (pickedMeasurementList.contains(measurement)) {
+                            pickedMeasurementList.remove(measurement);
+                          } else {
+                            pickedMeasurementList.add(measurement);
+                          }
+                          if(mounted)setState(() {});
+                        },
+                        title: Text(
+                          measurement,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      );
+
+                    },
+                  ),
+                ),
+                CurvedButton(
+                  text: 'Pick',
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget getIsInventoryAvailableField() {

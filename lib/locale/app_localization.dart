@@ -334,6 +334,20 @@ class AppLocalization {
     );
   }
 
+  String get upgrade {
+    return Intl.message(
+      "Upgrade",
+      name: "upgrade",
+    );
+  }
+
+  String get upgradeHomeMsg {
+    return Intl.message(
+      "Are you sure you want to upgrade account to business account?",
+      name: "upgradeHomeMsg",
+    );
+  }
+
   String get freeze {
     return Intl.message(
       "Freeze",
@@ -461,12 +475,6 @@ class AppLocalization {
     );
   }
 
-  String get upgrade {
-    return Intl.message(
-      "Upgrade",
-      name: "upgrade",
-    );
-  }
 
   String get process {
     return Intl.message(
@@ -1298,6 +1306,20 @@ class AppLocalization {
     );
   }
 
+  String get measurement {
+    return Intl.message(
+      "Measurement",
+      name: "measurement",
+    );
+  }
+
+  String get trackInventoryView {
+    return Intl.message(
+      "Track Inventory",
+      name: "trackInventoryView",
+    );
+  }
+
   String get superStore {
     return Intl.message(
       "Super Store",
@@ -1838,6 +1860,13 @@ class AppLocalization {
     return Intl.message(
       "Logout",
       name: "logout",
+    );
+  }
+
+  String get logoutMsg {
+    return Intl.message(
+      "Do you want to Logout?",
+      name: "logoutMsg",
     );
   }
 
@@ -2499,6 +2528,27 @@ class AppLocalization {
     return Intl.message(
       "Please Select Weight, Height and Width SI Unit",
       name: "pleaseSelectWeightHeightWidth",
+    );
+  }
+
+  String get pleaseFillWeight {
+    return Intl.message(
+      "Please Fill Weight and SI Unit",
+      name: "pleaseFillWeight",
+    );
+  }
+
+  String get pleaseFillHeight {
+    return Intl.message(
+      "Please Fill Height and SI Unit",
+      name: "pleaseFillHeight",
+    );
+  }
+
+  String get pleaseFillWidth {
+    return Intl.message(
+      "Please Fill Width and SI Unit",
+      name: "pleaseFillWidth",
     );
   }
 

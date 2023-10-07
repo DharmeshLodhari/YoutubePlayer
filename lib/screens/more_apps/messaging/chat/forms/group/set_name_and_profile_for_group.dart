@@ -381,12 +381,14 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
             ),
             Switch(
               activeColor: navyBlue,
+              value: false,
               onChanged: (bool value) {
                 setState(() {
-                  makeGroupPaid = value;
+                  // makeGroupPaid = value;
+                  showToast(message: 'Coming Soon');
                 });
               },
-              value: makeGroupPaid!,
+              // value: makeGroupPaid!,
             ),
             SizedBox(width: 10),
           ],
@@ -416,156 +418,10 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           ),
         ],
         SizedBox(height: 10),
-        // Row(
-        //   children: [
-        //     Expanded(
-        //       child: Text(
-        //         'Create paid group chat',
-        //         style:
-        //             TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-        //       ),
-        //     ),
-        //     Switch(
-        //       onChanged: (bool value) {
-        //         setState(() {
-        //           makeGroupPaid = value;
-        //         });
-        //       },
-        //       value: makeGroupPaid!,
-        //     ),
-        //     SizedBox(
-        //       width: 10,
-        //     )
-        //   ],
-        // ),
-        // if (makeGroupPaid!) ...[
-        //   SizedBox(
-        //     height: 10,
-        //   ),
-        //   CustomizedTextFormField(
-        //     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        //     keyboardType: TextInputType.phone,
-        //     controller: _maxNoOfUsersCtrl,
-        //     isAmountField: true,
-        //     labelText: AppLocalization.of(context)!.amount,
-        //     onChanged: (value) {},
-        //     validator: (val) {
-        //       try {
-        //         double userAmount = double.parse(val.replaceAll(',', ''));
-        //         if (userAmount > amountLimit) {
-        //           return 'You cannot fund more than $amountLimit';
-        //         }
-        //       } catch (e) {
-        //         return AppLocalization.of(context)!.invalidAmount;
-        //       }
-        //       return null;
-        //     },
-        //   ),
-        // ],
-        // SizedBox(height: 10),
+
       ],
     );
 
-    return appConfigurationModel?.enablePayment == true &&
-            appConfigurationModel?.enablePaidGroupChat == true
-        ? Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Create paid group chat',
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  Switch(
-                    onChanged: (bool value) {
-                      setState(() {
-                        makeGroupPaid = value;
-                      });
-                    },
-                    value: makeGroupPaid!,
-                  ),
-                  SizedBox(width: 10),
-                ],
-              ),
-              if (makeGroupPaid!) ...[
-                SizedBox(
-                  height: 10,
-                ),
-                CustomizedTextFormField(
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  keyboardType: TextInputType.phone,
-                  controller: _channelFeeCtrl,
-                  isAmountField: true,
-                  labelText: AppLocalization.of(context)!.amount,
-                  onChanged: (value) {},
-                  validator: (val) {
-                    try {
-                      double userAmount = double.parse(val.replaceAll(',', ''));
-                      // if (userAmount > amountLimit) {
-                      //   return 'You cannot fund more than $amountLimit';
-                      // }
-                    } catch (e) {
-                      return AppLocalization.of(context)!.invalidAmount;
-                    }
-                    return null;
-                  },
-                ),
-              ],
-              SizedBox(height: 10),
-              // Row(
-              //   children: [
-              //     Expanded(
-              //       child: Text(
-              //         'Create paid group chat',
-              //         style:
-              //             TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-              //       ),
-              //     ),
-              //     Switch(
-              //       onChanged: (bool value) {
-              //         setState(() {
-              //           makeGroupPaid = value;
-              //         });
-              //       },
-              //       value: makeGroupPaid!,
-              //     ),
-              //     SizedBox(
-              //       width: 10,
-              //     )
-              //   ],
-              // ),
-              // if (makeGroupPaid!) ...[
-              //   SizedBox(
-              //     height: 10,
-              //   ),
-              //   CustomizedTextFormField(
-              //     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              //     keyboardType: TextInputType.phone,
-              //     controller: _maxNoOfUsersCtrl,
-              //     isAmountField: true,
-              //     labelText: AppLocalization.of(context)!.amount,
-              //     onChanged: (value) {},
-              //     validator: (val) {
-              //       try {
-              //         double userAmount = double.parse(val.replaceAll(',', ''));
-              //         if (userAmount > amountLimit) {
-              //           return 'You cannot fund more than $amountLimit';
-              //         }
-              //       } catch (e) {
-              //         return AppLocalization.of(context)!.invalidAmount;
-              //       }
-              //       return null;
-              //     },
-              //   ),
-              // ],
-              // SizedBox(height: 10),
-            ],
-          )
-        : SizedBox.shrink();
   }
 
   Widget getLimitGroupMembersField() {

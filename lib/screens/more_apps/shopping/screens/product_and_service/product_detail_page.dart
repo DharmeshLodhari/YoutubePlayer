@@ -1445,7 +1445,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       icon:  Icon(
         SlydoAppIcon.qr_code,
         size: 36,
-        color: navyBlue,
+        color: black,
       ),
       onTap: () async {
         //get the account detail of clicked user

@@ -15,14 +15,18 @@ import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import '../widget/dialog.dart';
 import '../widget/noItemInList.dart';
+import '../widget/rounded_background_icon.dart';
 import 'connection_module/connections_dashboard.dart';
 import 'moments/screens/create_moment_screen.dart';
 import 'moments/screens/moments_screen.dart';
 import 'more_apps/payment_link/payment_link.dart';
 import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/yarn/add_or_edit_yarn_screen.dart';
+import 'more_apps/yarn/models/share_as_yarn_model.dart';
 import 'more_apps/yarn/yarn_dashboard.dart';
+import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 
 class HomeQuickView extends StatefulWidget {
   final arguments;
@@ -50,6 +54,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   String appBarTitle = "";
   List<Map<String, String>> selectedList = [];
   List<Map<String, String>> filteredList = [];
+  late YarnDashboardBloc yarnDashboardBloc;
 
   late UserBloc userBloc;
 
@@ -240,6 +245,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -248,8 +254,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       body: Column(
         children: [
           SizedBox(height: 6),
-          searchBox(),
-          SizedBox(height: 16),
+          // searchBox(),
+          // SizedBox(height: 16),
           Expanded(
             child: _displayShortcutCard(filteredList.isNotEmpty ? filteredList : selectedList),
           ),
@@ -470,7 +476,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               ),
               if (userBloc.user.type!.toLowerCase() == 'user' &&
                       title == 'Product' ||
-                  title == 'Services') ...[
+                  userBloc.user.type!.toLowerCase() == 'user' && title == 'Services') ...[
                 const SizedBox(width: 10),
                 SvgPicture.asset(
                   'home/padlock'.toSVG(),
@@ -590,8 +596,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       case 'Yarn':
         NavigationUtil.push(context,
             screen: AddOrEditYarn(
-              // askCategories: yarnDashboardBloc.yarnCategories,
-              // shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+              askCategories: yarnDashboardBloc.yarnCategories,
+              shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
               isYarn: true,
               passedCategory: '',
             ));
@@ -601,15 +607,16 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       case 'Product':
         if (userBloc.user.type!.toLowerCase() == 'user') {
-          Navigator.pushNamed(context, "/choose-subscriptions");
+          showUpgradeDialog(context);
         } else {
           Navigator.pushNamed(context, Routes.ADD_PRODUCT);
+
         }
 
         break;
       case 'Services':
         if (userBloc.user.type!.toLowerCase() == 'user') {
-          Navigator.pushNamed(context, "/choose-subscriptions");
+          showUpgradeDialog(context);
         } else {
           Navigator.pushNamed(context, Routes.ADD_SERVICE);
         }
@@ -621,6 +628,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
       case 'Blog':
         Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
+        // showToast(message: 'Coming soon');
         break;
       case 'Invoice':
         if (appConfigurationModel?.enableInvoice == true) {
@@ -656,6 +664,35 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         // Handle the default case (if any)
         print('Tapped on an unknown shortcut');
     }
+  }
+
+  Future<void> showUpgradeDialog(BuildContext context) async {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionOneBgColor: greyBorderColor,
+      actionTwoTextColor: white,
+      actionTwoBgColor: naturalGreen,
+      title: AppLocalization.of(context)!.upgrade,
+      actionTwoText: AppLocalization.of(context)!.upgrade,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      description: AppLocalization.of(context)!.upgradeHomeMsg,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 43,
+        height: 43,
+        icon: Icon(
+          Icons.check_circle_sharp,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      rightButtonOnPressed: () {
+        Navigator.of(context).pushNamed(Routes.PRE_ACCOUNT_UPGRADE);
+      },
+    );
   }
 
   void filterList(String searchText) {
