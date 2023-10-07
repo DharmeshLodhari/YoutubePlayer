@@ -112,7 +112,7 @@ class _ChatChannelsState extends State<ChatChannels> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: CustomizedTextFormField(
               hasBorder: true,
-              hintText: 'Search by name',
+              hintText: 'Search...',
               controller: searchTextCtrl,
               suffixIcon: IconButton(
                 icon: Icon(

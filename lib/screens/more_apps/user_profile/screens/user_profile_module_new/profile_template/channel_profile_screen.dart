@@ -3,9 +3,12 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/get_app_bar_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
+import '../../../../../../widget/rounded_background_icon.dart';
 import '../utils.dart';
 
 
@@ -60,6 +63,8 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     channelOwner = widget.searchedUser!;
 
     channelUserName = getGroupUsername(channelDetail!['group_username'] ?? channelDetail!['group_name']);
+
+    channelUserName = channelUserName!.replaceAll(' ', '');
 
     isOwner = widget.isOwner;
 
@@ -181,7 +186,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
         userTabs.add(UserTab(
           label: label,
           child: yarnTab(channelUserName),
-          apiCall: () async => await fetchYarnData(channelUserName),
+          apiCall: () async => await fetchYarnData(channelUserName, 'channel'),
         ));
         break;
 
@@ -189,14 +194,14 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
         userTabs.add(UserTab(
           label: label,
           child: momentTab(channelOwner),
-          apiCall: () async => await fetchMomentData(channelUserName),
+          apiCall: () async => await fetchMomentData(channelUserName, 'channel'),
         ));
         break;
       case "blog":
         userTabs.add(UserTab(
           label: label,
           child: postTab(channelOwner),
-          apiCall: () async => await fetchPostData(channelUserName),
+          apiCall: () async => await fetchPostData(channelUserName, 'channel'),
         ));
         break;
 
@@ -218,7 +223,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_pageController!.hasClients) {
         _pageController!.animateToPage(_currentIndex,
-            duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
+            duration: const Duration(milliseconds: 1), curve: Curves.easeInOut);
       }
     });
     if (mounted) setState(() {});
@@ -243,7 +248,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
               scrollController: scrollController,
               userType: userType,
               channelDetail: channelDetail),
-          SliverPersistentHeader(
+          channelDetail!['is_member'] == true ? SliverPersistentHeader(
             key: UniqueKey(),
             floating: true,
             pinned: true,
@@ -251,21 +256,54 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
               TabBar(
                 controller: _tabController,
                 isScrollable: true,
-                indicator: BoxDecoration(),
+                indicator: const BoxDecoration(),
                 onTap: (int index) {
                   changeIndex(index);
                 },
                 tabs: getTabsWidget(),
               ),
             ),
-          ),
+          ) : emptyView(),
         ];
       },
-      body: getTabViewLayout(),
+      body: channelDetail!['is_member'] == true ? getTabViewLayout() : Container(),
+    );
+  }
+
+  Widget emptyView(){
+    return  SliverToBoxAdapter(
+
+        child: Container(
+          width: MediaQuery.of(context).size.width, // Full width of the screen
+          height: MediaQuery.of(context).size.height, // Full height of the screen
+          color: Colors.white,
+          child: Column(
+
+            children: [
+              const Divider(
+                height: 1,
+                color: Colors.grey,
+              ),
+              const SizedBox(height: 50,),
+
+              Image.asset('assets/images/channel_loc.jpg'),
+
+              const SizedBox(height: 20,),
+              Text('This account is private',
+                style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              ),
+            ],
+          ),
+        ),
     );
   }
 
   List<Widget> getTabsWidget() {
+
     return getTabs();
   }
 
@@ -315,7 +353,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
               if (snapshot.hasData) {
                 return tab.child!;
               } else {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
             },
           ),
@@ -354,7 +392,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
         },
       ),
       title: widget.isLoading
-          ? SizedBox.shrink()
+          ? const SizedBox.shrink()
           : userNameWithVerifiedIcon(
               name: channelOwner.displayName()!,
               isVerified: channelOwner.isVerified),

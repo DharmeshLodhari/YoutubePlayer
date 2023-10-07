@@ -286,12 +286,12 @@ class ShoppingAuthService extends AuthService {
     product.enableInSuperStore = item["enable_in_superstore"] ?? false;
     product.variant = item["variants"] ?? null;
 
-    product.weight = item['weight'];
-    product.weightSiUnit = item['weight_si_unit'] ?? 0.0;
-    product.height = item['height'];
-    product.heightSiUnit = item['height_si_unit'] ?? 0.0;
-    product.width = item["width"];
-    product.widthSiUnit = item["width_si_unit"] ?? 0.0;
+    product.weight = item['weight'] ?? 0.0;
+    product.weightSiUnit = item['weight_si_unit'] ?? '';
+    product.height = item['height'] ?? 0.0;
+    product.heightSiUnit = item['height_si_unit'] ?? '';
+    product.width = item["width"] ?? 0.0;
+    product.widthSiUnit = item["width_si_unit"] ?? '';
     product.trackInventory = item["track_inventory"] ?? false;
     product.quantity = item["quantity"];
 
@@ -375,7 +375,7 @@ class ShoppingAuthService extends AuthService {
     var url = "${AppConfig.baseUrl}/api/v1/products/";
 
     if(webUrl.isNotEmpty){
-      url = "${AppConfig.baseUrl}/api/v1/products/";
+      url = "${AppConfig.baseUrl}/api/v1/channel/products/";
     }
 
     //create multipart request for POST or PATCH method
@@ -385,6 +385,19 @@ class ShoppingAuthService extends AuthService {
     _data["available_from"] = dateToString(product.availableFrom!);
     _data["image_count"] = product.localImages!.length;
     _data.remove('variants');
+
+    if(_data["height"] == null || _data["height"] == 0.0){
+      _data['height'] = 0.0;
+      _data['height_si_unit'] = '';
+    }
+    if(_data["weight"] == null || _data["weight"] == 0.0){
+      _data['weight'] = 0.0;
+      _data['weight_si_unit'] = '';
+    }
+    if(_data["width"] == null || _data["width"] == 0.0){
+      _data['width'] = 0.0;
+      _data['width_si_unit'] = '';
+    }
     debugPrint('DATA from ---> $_data');
 
     _data.forEach((k, v) {
@@ -609,6 +622,19 @@ class ShoppingAuthService extends AuthService {
     Map<dynamic, dynamic> _data = product.toMap();
     _data["available_from"] = dateToString(product.availableFrom!);
     _data["image_count"] = product.localImages!.length;
+
+    if(_data["height"] == null || _data["height"] == 0.0){
+      _data['height'] = 0.0;
+      _data['height_si_unit'] = '';
+    }
+    if(_data["weight"] == null || _data["weight"] == 0.0){
+      _data['weight'] = 0.0;
+      _data['weight_si_unit'] = '';
+    }
+    if(_data["width"] == null || _data["width"] == 0.0){
+      _data['width'] = 0.0;
+      _data['width_si_unit'] = '';
+    }
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();

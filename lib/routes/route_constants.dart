@@ -191,5 +191,6 @@ class Routes {
 
   static const String CUSTOMIZE_PROFILE = "/customize-profile";
   static const String HOME_QUICK_VIEW = "/home-quick-view";
+  static const String PRE_ACCOUNT_UPGRADE = "/pre-account-upgrade";
 
 }

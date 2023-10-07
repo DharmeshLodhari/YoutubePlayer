@@ -309,7 +309,7 @@ class YarnAuth extends AuthService {
       bool isType = false,
       String? categoryId,
       String? userName,
-      String? latestTrending}) async {
+      String? latestTrending, String? isChannel}) async {
     debugPrint("CALLING ALL YARNS");
     debugPrint("NEXT URL:- $next");
     String url = "";
@@ -329,8 +329,12 @@ class YarnAuth extends AuthService {
           }
         }
       } else {
-        url =
-            "${AppConfig.baseUrl}/api/v1/social/ask/$type/?username=$userName";
+        if(isChannel == 'channel'){
+          url = "${AppConfig.baseUrl}/api/v1/social/ask/channel/$userName/";
+        }
+        else if (type == ''){
+          url = "${AppConfig.baseUrl}/api/v1/social/ask/$type/?username=$userName/";
+        }
       }
     } else {
       url = getSecureUrl(url: next);

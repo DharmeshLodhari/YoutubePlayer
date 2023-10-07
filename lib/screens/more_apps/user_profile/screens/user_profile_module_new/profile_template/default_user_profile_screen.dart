@@ -170,7 +170,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
         userTabs.add(UserTab(
           label: label,
           child: yarnTab(searchedUserName),
-          apiCall: () async => await fetchYarnData(searchedUserName),
+          apiCall: () async => await fetchYarnData(searchedUserName, ''),
         ));
         break;
 
@@ -178,14 +178,14 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
         userTabs.add(UserTab(
           label: label,
           child: momentTab(widget.searchedUser),
-          apiCall: () async => await fetchMomentData(searchedUserName),
+          apiCall: () async => await fetchMomentData(searchedUserName, ''),
         ));
         break;
       case "blog":
         userTabs.add(UserTab(
           label: label,
           child: postTab(widget.searchedUser),
-          apiCall: () async => await fetchPostData(searchedUserName),
+          apiCall: () async => await fetchPostData(searchedUserName, ''),
         ));
         break;
       case "channels":

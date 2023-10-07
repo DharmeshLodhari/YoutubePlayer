@@ -50,7 +50,7 @@ class _MomentsTabState extends State<MomentsTab> {
         if (widget.searchedUser != null) {
           await MomentsService()
               .getMomentsWithOwnerName(
-                  ownerName: widget.searchedUser!.userName!)
+                  ownerName: widget.searchedUser!.userName!, type: '')
               .then(
             (myMomentsModelList) {
               isMyMomentsLoading = false;

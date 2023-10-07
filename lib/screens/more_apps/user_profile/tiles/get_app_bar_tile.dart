@@ -367,7 +367,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         channelDetail!['group_username'] ?? channelDetail!['group_name']);
 
     return Positioned(
-      top: searchedUser?.bio == null || searchedUser!.bio!.isEmpty ? 180 : 150,
+      top: searchedUser?.bio == null || searchedUser!.bio!.isEmpty ? 180 : 170,
       left: 20,
       right: 0,
       child: Column(
@@ -850,18 +850,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         const SizedBox(height: 12),
         Row(
           children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed("/photo-viewer",
-                    arguments: searchedUser!.avatar!);
-              },
-              child: CircleAvatar(
-                radius: 15,
-                backgroundImage: CachedNetworkImageProvider(
-                  searchedUser!.avatar!,
-                ),
-              ),
-            ),
+            getOwnerAvatar(),
             const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1680,6 +1669,55 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 showToast(message: "Shared in Yarn successfully");
               }
             }));
+  }
+
+  Widget getOwnerAvatar() {
+    if (searchedUser!.avatar! == "" ||
+        searchedUser!.avatar ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return GestureDetector(
+        onTap: (){
+          Navigator.of(context).pushNamed("/photo-viewer",
+              arguments: getInitials(searchedUser!.fullName!).toUpperCase());
+        },
+        child: CircleAvatar(
+          backgroundColor: navyBlue,
+          radius: 15,
+          child: Text(
+            getInitials(searchedUser!.fullName!).toUpperCase(),
+            style: TextStyle(color: white, fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
+    } else {
+      return GestureDetector(
+        onTap: (){
+              Navigator.of(context).pushNamed("/photo-viewer",
+                  arguments: searchedUser!.avatar!);
+        },
+        child: Container(
+          height: 15,
+          width: 15,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+          ),
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl:
+              searchedUser!.avatar! == "" || searchedUser!.avatar! == null
+                  ? defaultImage
+                  : searchedUser!.avatar!,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
+            ),
+          ),
+        ),
+      );
+    }
   }
 
 }

@@ -47,7 +47,7 @@ class _SearchModuleState extends State<SearchModule> {
   List<dynamic>? searchedResult;
   late CustomerProfileBloc customerProfileBloc;
   UserBloc? userBloc;
-  static String hint = "username, phone number, nickname";
+  static String hint = "Search...";
 
   final _auth = AuthService();
   SlidableController? slidableController;
@@ -253,12 +253,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   String getTabTitle() {
-    if (currentIndex == 0) {
-      return AppLocalization.of(context)!.users;
-    } else if (currentIndex == 1) {
-      return AppLocalization.of(context)!.chatChannels;
-    }
-    return "";
+    return "Search";
   }
 
   Widget tabViews() {
@@ -349,7 +344,6 @@ class _SearchModuleState extends State<SearchModule> {
               fillColor: Colors.white,
               filled: true,
               contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefixIcon: searchTypeSelection(),
               prefix: Padding(
                 padding: EdgeInsets.only(left: 12),
               ),
@@ -722,7 +716,7 @@ class _SearchModuleState extends State<SearchModule> {
                     isVerified: user.isVerified,
                   ),
                   subtitle: Text(
-                    user.userName!,
+                    '@${user.userName!}',
                     maxLines: 1,
                     style: TextStyle(color: darkGrey, fontSize: 12),
                   ),
