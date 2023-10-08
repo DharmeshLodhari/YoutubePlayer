@@ -26,7 +26,9 @@ import '../../../../widget/rounded_background_icon.dart';
 import '../shopping_auth.dart';
 
 class AddProduct extends StatefulWidget {
-  const AddProduct({Key? key}) : super(key: key);
+  var arguments;
+
+  AddProduct({Key? key, this.arguments}) : super(key: key);
 
   @override
   _AddProductState createState() => _AddProductState();
@@ -1353,7 +1355,7 @@ class _AddProductState extends State<AddProduct> {
 
           //the api call will first create the product then use the id from the
           //response to save the variant
-          await _auth.addProduct(product, '').then((value) async {
+          await _auth.addProduct(product, widget.arguments['channel'] ?? "" ).then((value) async {
 
             var productId = value[1];
 
@@ -1830,6 +1832,7 @@ class _AddProductState extends State<AddProduct> {
                       String measurement = measurementList[index];
                       return CheckboxListTile(
                         value: measurementCheckMark[measurement] ?? false,
+                        activeColor: navyBlue,
                         onChanged: (isChecked) {
                           changeState(() {
                             measurementCheckMark[measurement] = isChecked!;

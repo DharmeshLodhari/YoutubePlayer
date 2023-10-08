@@ -644,6 +644,8 @@ class _DashboardState extends State<Dashboard> {
         gapWidth: 80,
         onTap: (index) {
           setState(() {
+            // Unfocus the keyboard
+            FocusScope.of(context).requestFocus(new FocusNode());
             _bottomNavIndex = index;
           });
         },

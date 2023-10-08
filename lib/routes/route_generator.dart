@@ -432,7 +432,9 @@ class RouteGenerator {
         );
       case Routes.ADD_PRODUCT:
         return PageTransition(
-          child: AddProduct(),
+          child: AddProduct(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

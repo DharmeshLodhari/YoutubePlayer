@@ -42,10 +42,10 @@ class _ChatChannelsState extends State<ChatChannels> {
       }
     });
 
-    searchTextCtrl.addListener(() {
-      _onRefresh();
-
-    });
+    // searchTextCtrl.addListener(() {
+    //   _onRefresh();
+    //
+    // });
   }
 
   @override
@@ -95,73 +95,158 @@ class _ChatChannelsState extends State<ChatChannels> {
 
   @override
   Widget build(BuildContext context) {
-    return SmartRefresher(
-      enablePullDown: true,
-      header: WaterDropHeader(
-        complete: Container(),
-        waterDropColor: navyBlue,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 0.0),
+      child: SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshCtrl,
+        onRefresh: () {
+          searchTextCtrl.text = '';
+          _onRefresh();
+        },
+        child: Column(
+          children: [
+            searchBox(),
+            SizedBox(height: 6),
+            noItemInList
+                ? Expanded(
+                    child: NoItemInList(
+                        msg: AppLocalization.of(context)!.noChannels))
+                : Expanded(
+                    child: ListView.builder(
+                      physics: ClampingScrollPhysics(),
+                      controller: _scrollCtrl,
+                      itemCount: channelModelList.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == channelModelList.length) {
+                          return buildLoadingIndicator(isLoading: _isLoading);
+                        } else {
+
+                          return GestureDetector(
+                            onTap: () {
+
+                              Navigator.pushNamed(context, Routes.USER_PROFILE,
+                                  arguments: {
+                                    "searchedUserName":
+                                        channelModelList[index].id,
+                                    "channel": channelModelList[index].groupName,
+                                  });
+                            },
+                            child: CustomSlydoChannelCard(
+                                channelModel: channelModelList[index],
+                              tileRenderPlace: TileRenderPlace.Thiny,),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+          ],
+        ),
       ),
-      controller: _refreshCtrl,
-      onRefresh: () {
-        searchTextCtrl.text = '';
-        _onRefresh();
-      },
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: CustomizedTextFormField(
-              hasBorder: true,
-              hintText: 'Search...',
-              controller: searchTextCtrl,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  SlydoAppIcon.search,
-                  color: darkGrey,
-                  size: 16,
-                ),
-                onPressed: () {
-                  _onRefresh();
-                  FocusScope.of(context).unfocus();
-                },
-              ),
+    );
+  }
+
+  Widget searchBox() {
+    try {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            textSelectionTheme: TextSelectionThemeData(
+              selectionHandleColor: navyBlue,
             ),
           ),
-          SizedBox(height: 6),
-          noItemInList
-              ? Expanded(
-                  child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noChannels))
-              : Expanded(
-                  child: ListView.builder(
-                    physics: ClampingScrollPhysics(),
-                    controller: _scrollCtrl,
-                    itemCount: channelModelList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == channelModelList.length) {
-                        return buildLoadingIndicator(isLoading: _isLoading);
-                      } else {
+          child: TextFormField(
+            autofocus: true,
+            // key: textFormField,
+            controller: searchTextCtrl,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+            cursorWidth: 1.5,
+            cursorColor: navyBlue,
+            onChanged: (value) {
+              if (value.length >= 3) {
+                _onRefresh();
 
-                        return GestureDetector(
-                          onTap: () {
+              }else if(value.length == 0){
 
-                            Navigator.pushNamed(context, Routes.USER_PROFILE,
-                                arguments: {
-                                  "searchedUserName":
-                                      channelModelList[index].id,
-                                  "channel": channelModelList[index].groupName,
-                                });
-                          },
-                          child: CustomSlydoChannelCard(
-                              channelModel: channelModelList[index],
-                            tileRenderPlace: TileRenderPlace.Thiny,),
-                        );
-                      }
-                    },
-                  ),
+                setState(() {
+                  _onRefresh();
+                });
+              }
+            },
+            decoration: InputDecoration(
+              hintText: 'Search...',
+              fillColor: Colors.white,
+              filled: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 10),
+              prefix: Padding(
+                padding: EdgeInsets.only(left: 12),
+              ),
+              suffixIcon: searchIcon(),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
                 ),
-        ],
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
+                ),
+              ),
+            ),
+            onFieldSubmitted: (val) {
+              if (mounted) {
+                _onRefresh();
+                FocusScope.of(context).unfocus();
+              }
+            },
+          ),
+        ),
+      );
+    } catch (e) {
+      return Container();
+    }
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
       ),
+      onPressed: () {
+        if (mounted) {
+          _onRefresh();
+          FocusScope.of(context).unfocus();
+        }
+      },
     );
   }
 }

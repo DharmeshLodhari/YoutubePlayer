@@ -757,7 +757,7 @@ class YarnAuth extends AuthService {
     var url = "${AppConfig.baseUrl}/api/v1/social/ask/";
 
     if(webUrl.isNotEmpty){
-      url = "${AppConfig.baseUrl}/api/v1/social/ask/";
+      url = "${AppConfig.baseUrl}/api/v1/social/ask/channel";
     }
 
     //create multipart request for POST or PATCH method

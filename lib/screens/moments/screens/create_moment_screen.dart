@@ -14,7 +14,10 @@ import '../../../main.dart';
 import '../../../widget/image_crop.dart';
 
 class CreateMediaMomentScreen extends StatefulWidget {
-  const CreateMediaMomentScreen({Key? key}) : super(key: key);
+
+  String? channel;
+
+  CreateMediaMomentScreen({Key? key, String? channel}) : super(key: key);
 
   @override
   _CreateMediaMomentScreenState createState() =>
@@ -234,6 +237,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                               context,
                               screen: PreviewMomentScreen(
                                 filePath: getMediaPathToSendToPreviewScreen(),
+                                channel: 'channel',
                               ),
                             );
                             imagePath = null;

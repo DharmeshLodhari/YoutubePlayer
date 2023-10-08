@@ -86,8 +86,12 @@ import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../services/app_config_bloc.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
+import '../../../../moments/screens/create_moment_screen.dart';
 import '../../../service_hub/tiles/jos_description_card.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../../../yarn/add_or_edit_yarn_screen.dart';
+import '../../../yarn/models/share_as_yarn_model.dart';
+import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../tiles/document_file_tile_for_chat.dart';
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/job_service_card_in_chat.dart';
@@ -244,6 +248,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   /// CHAT SYNCHRONIZER
   Duration _chatSynchronizeTime = Duration(seconds: 2);
   Timer? _chatSynchronizerTimer;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -1301,6 +1306,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     userBloc = Provider.of<UserBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     mainSocketProvider = Provider.of<MainSocketProvider>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     initializeListener();
 
@@ -1503,7 +1509,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         iconData: SlydoAppIconNew.add_product,
         onTap: () async {
           Navigator.pop(context);
-          // sendItemToUsersInChat();
+          Navigator.pushNamed(context, Routes.ADD_PRODUCT,
+            arguments: {
+            'channel': 'Channel',
+          },);
         },
       ),
     );
@@ -1514,7 +1523,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         iconData: SlydoAppIconNew.dashboard_yarn,
         onTap: () async {
           Navigator.pop(context);
-          // sendItemToUsersInChat();
+          NavigationUtil.push(context,
+              screen: AddOrEditYarn(
+                askCategories: yarnDashboardBloc.yarnCategories,
+                shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                isYarn: true,
+                passedCategory: '',
+                channel: 'channel'
+              ));
+
         },
       ),
     );
@@ -1543,6 +1560,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         iconData: SlydoAppIconNew.moment,
         onTap: () async {
           Navigator.pop(context);
+          NavigationUtil.push(context, screen: CreateMediaMomentScreen(
+              channel: 'channel'
+          ));
 
         },
       ),
