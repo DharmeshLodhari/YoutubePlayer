@@ -1701,6 +1701,7 @@ class _EditProductState extends State<EditProduct> {
                       String measurement = measurementList[index];
                       return CheckboxListTile(
                         value: measurementCheckMark[measurement] ?? false,
+                        activeColor: navyBlue,
                         onChanged: (isChecked) {
                           changeState(() {
                             measurementCheckMark[measurement] = isChecked!;

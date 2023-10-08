@@ -594,7 +594,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                       onTap: () async {
                         toggleMediaPlayingState();
                         await NavigationUtil.push(context,
-                            screen: const CreateMediaMomentScreen());
+                            screen: CreateMediaMomentScreen());
                         toggleMediaPlayingState();
                       },
                       child: Container(

@@ -90,6 +90,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
       elevation: 0,
       backgroundColor: Colors.white,
       titleSpacing: 0,
+      centerTitle: false,
       automaticallyImplyLeading: false,
       leading: IconButton(
         icon: Icon(

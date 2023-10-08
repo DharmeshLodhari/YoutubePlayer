@@ -91,7 +91,6 @@ class _SearchModuleState extends State<SearchModule> {
   RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
   bool isSuggestion = true;
 
-
   void _showTabs(bool visible) {
     if (_tabsVisible != visible) {
       setState(() {
@@ -140,6 +139,7 @@ class _SearchModuleState extends State<SearchModule> {
         getListOfSuggestions();
       }
     });
+
 
     super.initState();
   }
@@ -280,6 +280,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget searchBox() {
+
     try {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 16),

@@ -181,7 +181,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                         debugPrint("Error:- $error");
                       }
                     }),
-                getLogoutTile(),
+                // getLogoutTile(),
               ],
             ),
           ),

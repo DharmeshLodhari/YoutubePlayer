@@ -971,7 +971,7 @@ class AppLocalization {
 
   String get variant {
     return Intl.message(
-      "Variant",
+      "Variants",
       name: "variant",
     );
   }
