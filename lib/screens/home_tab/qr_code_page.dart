@@ -337,7 +337,7 @@ class _QrCodePageState extends State<QrCodePage> {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName": userBloc.user.userName});
+            arguments: {"searchedUserName": virtualAccount!.customerUsername!});
       },
       child: Column(
         children: [
@@ -368,15 +368,15 @@ class _QrCodePageState extends State<QrCodePage> {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName": searchedUser == null ?
-            userBloc.user.userName : searchedUser!.userName});
+            arguments: {"searchedUserName":
+            virtualAccount!.customerUsername!});
       },
       child: Column(
         children: [
           const SizedBox(height: 10.0,),
           Text(
-            appendStringDot(searchedUser == null ? '@${userBloc.user.userName}' :
-            getGroupUsername('@${searchedUser!.userName!}'), 25),
+            appendStringDot(virtualAccount == null ? '@${virtualAccount!.customerUsername!}' :
+            getGroupUsername('@${virtualAccount!.customerUsername!}'), 25),
             maxLines: 1,
             style: TextStyle(fontSize: 14, color: white, fontWeight: FontWeight.w600),
           ),
@@ -404,29 +404,19 @@ class _QrCodePageState extends State<QrCodePage> {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName": searchedUser == null ?
-            userBloc.user.userName : searchedUser!.userName});
+            arguments: {"searchedUserName":
+            virtualAccount!.customerUsername!});
       },
       child: Column(
         children: [
           const SizedBox(height: 10.0,),
 
           Text(
-            appendStringDot(searchedUser == null ? '@${userBloc.user.userName}' :
-            getGroupUsername('@${searchedUser!.userName!}'), 25),
+            appendStringDot(virtualAccount == null ? '@${virtualAccount!.customerUsername!}' :
+            getGroupUsername('@${virtualAccount!.customerUsername!}'), 25),
             maxLines: 1,
             style: TextStyle(fontSize: 14, color: HexColor("#151515"), fontWeight: FontWeight.w600),
           ),
-
-          // userNameWithVerifiedIcon(
-          //   name: searchedUser == null ? '@${userBloc.user.userName}' : getGroupUsername('@${searchedUser!.userName!}'),
-          //   isVerified: searchedUser == null ? userBloc.user.isVerified : searchedUser!.isVerified,
-          //   verifiedIconColor: verifyGreen,
-          //   textStyle: TextStyle(
-          //       fontSize: 14,
-          //       color: HexColor("#151515"),
-          //       fontWeight: FontWeight.w600),
-          // ),
           const SizedBox(height: 10.0,),
           Text(
             "SCAN TO PAY",

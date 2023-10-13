@@ -148,7 +148,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "yarn":
         userTabs.add(UserTab(
           label: label,
-          child: yarnTab(searchedUserName),
+          child: yarnTab(searchedUserName, ''),
           apiCall: () async => await fetchYarnData(searchedUserName, ''),
         ));
         break;

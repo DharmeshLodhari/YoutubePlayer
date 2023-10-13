@@ -79,9 +79,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     super.initState();
     _textEditorScrollController = ScrollController();
 
-    if(widget.channel == "Channel"){
-      debugPrint('fola channel:::: ${widget.channel}');
-    }
+    //   debugPrint('fola channel:::: ${widget.channel}');
 
     _initializeFocusNodes();
     _userUpdatingPost = widget.userPost != null;
@@ -554,7 +552,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
       publishedDate: publishedDateTime.toString(),
       blogPostBody:
           jsonEncode(_quillBodyTextController.document.toDelta().toJson()),
-      channelUsername: ""
+      channelUsername: widget.channel ?? ""
     )
         .then(
       (posted) {

@@ -170,10 +170,11 @@ fetchServiceData(String? searchedUserName) async {
   return [];
 }
 
-Widget yarnTab(String? searchedUserName) {
+Widget yarnTab(String? searchedUserName, String isChannel) {
   return KeepAlivePage(
       child: MyFeedView(
     userName: searchedUserName,
+        isChannel: isChannel
   ));
 }
 

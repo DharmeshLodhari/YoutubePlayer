@@ -15,8 +15,9 @@ import '../yarn_detail_screen.dart';
 class MyFeedView extends StatefulWidget {
   String? selectedCategory;
   String? userName;
+  String? isChannel;
 
-  MyFeedView({Key? key, this.selectedCategory, this.userName})
+  MyFeedView({Key? key, this.selectedCategory, this.userName, this.isChannel})
       : super(key: key);
 
   @override
@@ -62,7 +63,9 @@ class MyFeedViewState extends State<MyFeedView> {
             type: type,
             isType: isType,
             categoryId: categoryId,
-            userName: widget.userName);
+            userName: widget.userName,
+            isChannel: widget.isChannel
+            );
 
         if (result == null) {
           noList = true;
