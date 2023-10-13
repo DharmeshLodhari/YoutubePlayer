@@ -476,6 +476,8 @@ class MomentsService extends AuthService {
       {required CreateMomentModel createMomentModel, String? channelUsername}) async {
     String url = "${AppConfig.baseUrl}/api/v1/social/moments/";
 
+    debugPrint("URL FOR CREATE MOMENT test ${channelUsername}");
+
     if(channelUsername!.isNotEmpty){
       url = "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/";
     }

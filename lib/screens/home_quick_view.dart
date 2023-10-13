@@ -22,6 +22,8 @@ import 'connection_module/connections_dashboard.dart';
 import 'moments/screens/create_moment_screen.dart';
 import 'moments/screens/moments_screen.dart';
 import 'more_apps/payment_link/payment_link.dart';
+import 'more_apps/shopping/screens/my_products.dart';
+import 'more_apps/shopping/screens/my_services.dart';
 import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/yarn/add_or_edit_yarn_screen.dart';
 import 'more_apps/yarn/models/share_as_yarn_model.dart';
@@ -511,7 +513,14 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         Navigator.pushNamed(context, Routes.ACCOUNTS);
         break;
       case 'Payment Links':
-        NavigationUtil.push(context, screen: PaymentLink());
+        BottomSheetPassCode(
+            context: context,
+            isValidCallback: () {
+              NavigationUtil.push(context, screen: PaymentLink());
+            },
+            cancelCallBack: () {
+              Navigator.pop(context);
+            });
         break;
       case 'Wallet':
         Navigator.of(context).pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE);
@@ -531,10 +540,11 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         }
         break;
       case 'Product':
-        Navigator.pushNamed(context, Routes.ADD_PRODUCT);
+
+        NavigationUtil.push(context, screen: const MyProducts());
         break;
       case 'Services':
-        Navigator.pushNamed(context, Routes.ADD_SERVICE);
+        NavigationUtil.push(context, screen: const MyServices());
         break;
       case 'Invoice':
         if (appConfigurationModel?.enableInvoice == true) {

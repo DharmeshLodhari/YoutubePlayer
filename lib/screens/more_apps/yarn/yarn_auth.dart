@@ -332,8 +332,8 @@ class YarnAuth extends AuthService {
         if(isChannel == 'channel'){
           url = "${AppConfig.baseUrl}/api/v1/social/ask/channel/$userName/";
         }
-        else if (type == ''){
-          url = "${AppConfig.baseUrl}/api/v1/social/ask/$type/?username=$userName/";
+        else if (isChannel == ''){
+          url = "${AppConfig.baseUrl}/api/v1/social/ask/$type/?username=$userName";
         }
       }
     } else {
@@ -750,14 +750,14 @@ class YarnAuth extends AuthService {
   }
 
   // Add Yarn and Question
-  Future<dynamic> addYarnAndQuestion(Yarn addYarnAndQuestion, String s, String webUrl) async {
+  Future<dynamic> addYarnAndQuestion(Yarn addYarnAndQuestion, String s, String channelUsername) async {
     log('ppppppp${addYarnAndQuestion.toJson().toString()}');
     debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
     var headers = await getAuthHeaders();
     var url = "${AppConfig.baseUrl}/api/v1/social/ask/";
 
-    if(webUrl.isNotEmpty){
-      url = "${AppConfig.baseUrl}/api/v1/social/ask/channel";
+    if(channelUsername.isNotEmpty){
+      url = "${AppConfig.baseUrl}/api/v1/social/ask/channel/$channelUsername/";
     }
 
     //create multipart request for POST or PATCH method
@@ -844,11 +844,17 @@ class YarnAuth extends AuthService {
 
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
+
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller images, One or all of your images are too large.");
     }
     var responseBody = await response.stream.bytesToString();
+
+    debugPrint('RESPONSE BODY url :::: ${url}');
+    debugPrint('RESPONSE BODY :::: ${responseBody}');
+    debugPrint('RESPONSE BODY 111 :::: ${jsonDecode(responseBody)}');
+
     if (response.statusCode == 201) {
       debugPrint('RESPONSE BODY create:::: ${responseBody}');
 

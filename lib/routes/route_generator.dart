@@ -401,7 +401,7 @@ class RouteGenerator {
             userPost: settings.arguments != null
                 ? settings.arguments as UserPost
                 : null,
-            channel: args['channel'],
+            // channel: args['channel'],
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,

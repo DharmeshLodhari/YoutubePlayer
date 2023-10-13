@@ -86,6 +86,7 @@ import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../services/app_config_bloc.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
+import '../../../../blog/create_or_edit_post.dart';
 import '../../../../moments/screens/create_moment_screen.dart';
 import '../../../service_hub/tiles/jos_description_card.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -1529,7 +1530,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                 isYarn: true,
                 passedCategory: '',
-                channel: 'channel'
+                channel: '${chatConversation!.userName}'
               ));
 
         },
@@ -1543,12 +1544,17 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         onTap: () async {
           Navigator.pop(context);
 
-          Navigator.of(context).pushNamed(
-            Routes.CREATE_BLOG,
-            arguments: {
-              'channel': 'Channel',
-            },
-          );
+          NavigationUtil.push(context, screen: CreateorEditPostScreen(
+              // arguments: {"channel": chatConversation!.userName}
+              channel: chatConversation!.userName
+          ));
+          // Navigator.of(context).pushNamed(
+          //   Routes.CREATE_BLOG,
+          //   arguments: {
+          //     userPost: null,
+          //     'channel': chatConversation!.userName,
+          //   },
+          // );
 
         },
       ),
@@ -1560,8 +1566,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         iconData: SlydoAppIconNew.moment,
         onTap: () async {
           Navigator.pop(context);
+          debugPrint("URL FOR CREATE MOMENT moment ${chatConversation!.userName}");
+
           NavigationUtil.push(context, screen: CreateMediaMomentScreen(
-              channel: 'channel'
+              arguments: {"channel": chatConversation!.userName}
           ));
 
         },

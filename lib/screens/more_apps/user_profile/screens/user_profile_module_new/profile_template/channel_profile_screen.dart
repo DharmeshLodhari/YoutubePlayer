@@ -60,6 +60,8 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
   void initState() {
     channelDetail = widget.channelDetail!;
 
+    // debugPrint('fola one two channel');
+
     channelOwner = widget.searchedUser!;
 
     channelUserName = getGroupUsername(channelDetail!['group_username'] ?? channelDetail!['group_name']);
@@ -185,7 +187,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       case "yarn":
         userTabs.add(UserTab(
           label: label,
-          child: yarnTab(channelUserName),
+          child: yarnTab(channelUserName, 'channel'),
           apiCall: () async => await fetchYarnData(channelUserName, 'channel'),
         ));
         break;

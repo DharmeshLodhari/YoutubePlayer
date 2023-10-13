@@ -29,9 +29,9 @@ import 'moments_service.dart';
 
 class PreviewMomentScreen extends StatefulWidget {
   final String filePath;
-  String? channel;
+  var arguments;
 
-  PreviewMomentScreen({Key? key, required this.filePath, this.channel})
+  PreviewMomentScreen({Key? key, required this.filePath, this.arguments})
       : super(key: key);
 
   @override
@@ -887,7 +887,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           duration: fileType == 'video'
               ? videoPlayerController?.value.duration.inSeconds.toString()
               : ''),
-      channelUsername: widget.channel ?? "",
+      channelUsername: widget.arguments['channel'] ?? "",
     )
         .then((momentPosted) {
       if (momentPosted == true) {

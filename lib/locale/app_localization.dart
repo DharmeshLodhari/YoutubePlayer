@@ -1327,6 +1327,20 @@ class AppLocalization {
     );
   }
 
+  String get myProducts {
+    return Intl.message(
+      "My Products",
+      name: "myProducts",
+    );
+  }
+
+  String get myServices {
+    return Intl.message(
+      "My Services",
+      name: "myServices",
+    );
+  }
+
   String get slydoBlogs {
     return Intl.message(
       "Slydo Blogs",

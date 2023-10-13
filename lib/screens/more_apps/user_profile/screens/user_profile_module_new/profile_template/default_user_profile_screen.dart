@@ -169,7 +169,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
       case "yarn":
         userTabs.add(UserTab(
           label: label,
-          child: yarnTab(searchedUserName),
+          child: yarnTab(searchedUserName, ''),
           apiCall: () async => await fetchYarnData(searchedUserName, ''),
         ));
         break;

@@ -34,8 +34,8 @@ class QRCodeView extends StatefulWidget {
 
 class _QRCodeViewState extends State<QRCodeView> {
   var arguments;
-  late bool
-      canShowDialogBox; // We need this variable to show the dialogbox just once cause qrscanner controller uses a stream(using a stream will make the dialogbox show up multiple times).
+  late bool canShowDialogBox;
+  // We need this variable to show the dialogbox just once cause qrscanner controller uses a stream(using a stream will make the dialogbox show up multiple times).
   _QRCodeViewState({this.arguments});
 
   bool? isRequest = false;
@@ -209,7 +209,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       var productId = scanDataList.last;
       var product = getProduct(productId);
 
-      _dashboardBloc.index = 0;
+      // _dashboardBloc.index = 0;
 
       final result = await Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
@@ -224,7 +224,7 @@ class _QRCodeViewState extends State<QRCodeView> {
     else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
-      _dashboardBloc.index = 0;
+      // _dashboardBloc.index = 0;
 
       final result = await Navigator.of(context)
           .pushNamed(Routes.SERVICE_DETAIL, arguments: {"service": service});
@@ -252,7 +252,7 @@ class _QRCodeViewState extends State<QRCodeView> {
             actionTwoBgColor: navyBlue,
             leftButtonOnPressed: () {
               canShowDialogBox = true;
-              _dashboardBloc.index = 0;
+              // _dashboardBloc.index = 0;
             },
             rightButtonOnPressed: () {
               if (appConfigurationModel?.enablePayment == true) {
@@ -268,7 +268,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                           .payForShoppingCart(cartId: shoppingCartModel.id);
                       if (isPaid) {
                         Navigator.pop(context);
-                        _dashboardBloc.index = 0;
+                        // _dashboardBloc.index = 0;
                         Navigator.pushNamed(context, Routes.ORDERS_LIST);
                         showToast(message: 'Paid successfully');
                       } else {
@@ -483,7 +483,7 @@ class _QRCodeViewState extends State<QRCodeView> {
 
       print('RECIPIENT ::: $recipient');
 
-      _dashboardBloc.index = 0;
+      // _dashboardBloc.index = 0;
 
       if (appConfigurationModel?.enablePayment == true) {
         if (isRequest!) {
