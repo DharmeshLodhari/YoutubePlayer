@@ -1459,7 +1459,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           note: "",
         );
 
-        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
+        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount, 'product': product!.seller}));
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,

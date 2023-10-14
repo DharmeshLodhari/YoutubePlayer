@@ -14,7 +14,8 @@ import 'package:shimmer/shimmer.dart';
 
 class MomentsTab extends StatefulWidget {
   CustomerProfile? searchedUser;
-  MomentsTab({Key? key, required this.searchedUser}) : super(key: key);
+  String? channelUsername;
+  MomentsTab({Key? key, required this.searchedUser, this.channelUsername}) : super(key: key);
 
   @override
   _MomentsTabState createState() => _MomentsTabState();
@@ -26,9 +27,9 @@ class _MomentsTabState extends State<MomentsTab> {
   int? myMomentsCount = 0;
   bool isMyMomentsLoading = false;
   List<MomentsModel> myMomentsList = [];
-  ScrollController _myMomentsScrollController = new ScrollController();
+  final ScrollController _myMomentsScrollController = new ScrollController();
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -50,9 +51,10 @@ class _MomentsTabState extends State<MomentsTab> {
         if (widget.searchedUser != null) {
           await MomentsService()
               .getMomentsWithOwnerName(
-                  ownerName: widget.searchedUser!.userName!, type: '')
+                  ownerName: widget.searchedUser!.userName!, channelUsername: widget.channelUsername ?? '')
               .then(
             (myMomentsModelList) {
+
               isMyMomentsLoading = false;
               myMomentsList.addAll(myMomentsModelList);
 
@@ -68,7 +70,6 @@ class _MomentsTabState extends State<MomentsTab> {
               isMyMomentsLoading = false;
 
               if (mounted) setState(() {});
-
               debugPrint('ERROR GETTING MY MOMENTS -> $error');
             },
           );
@@ -128,16 +129,16 @@ class _MomentsTabState extends State<MomentsTab> {
                     child: ListView(
                       controller: _myMomentsScrollController,
                       children: [
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         isMyMomentsLoading
                             ? Shimmer.fromColors(
                                 baseColor: Colors.white,
                                 highlightColor: greyBorderColor,
                                 child: GridView.builder(
                                   shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
+                                  physics: const NeverScrollableScrollPhysics(),
                                   gridDelegate:
-                                      SliverGridDelegateWithMaxCrossAxisExtent(
+                                      const SliverGridDelegateWithMaxCrossAxisExtent(
                                     maxCrossAxisExtent: 200,
                                     mainAxisExtent: 300,
                                   ),
@@ -152,7 +153,7 @@ class _MomentsTabState extends State<MomentsTab> {
                                   },
                                 ),
                               )
-                            : SizedBox.shrink(),
+                            : const SizedBox.shrink(),
                         myMomentsListWidget(),
                       ],
                     ),
@@ -170,12 +171,12 @@ class _MomentsTabState extends State<MomentsTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         myMomentsNext == "" && isMyMomentsLoading
-            ? SizedBox.shrink()
+            ? const SizedBox.shrink()
             : GridView.builder(
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisExtent: 300,
                   maxCrossAxisExtent: 200,
                 ),

@@ -105,11 +105,11 @@ fetchChannelData(String? searchedUserName) async {
   return [];
 }
 
-fetchPostData(String? searchedUserName, String isChannel) async {
+fetchPostData(String? searchedUserName, String? channelUserName) async {
   Map<String, dynamic>? data;
   try {
     data = await UserPostAuth()
-        .listUserPosts(next: '', userName: searchedUserName, isChannel: isChannel);
+        .listUserPosts(next: '', userName: searchedUserName, channelUserName: channelUserName);
   } catch (error) {
     debugPrint('IS SHOW POST error ---> $error');
   }
@@ -125,11 +125,11 @@ fetchPostData(String? searchedUserName, String isChannel) async {
   return [];
 }
 
-fetchMomentData(String? searchedUserName, String type) async {
+fetchMomentData(String? searchedUserName, String? channelUsername) async {
   List<MomentsModel> momentsModel = [];
   try {
     momentsModel = await MomentsService()
-        .getMomentsWithOwnerName(ownerName: searchedUserName!, type: 'channel');
+        .getMomentsWithOwnerName(ownerName: searchedUserName!, channelUsername: channelUsername);
   } catch (error) {}
   if (momentsModel.isNotEmpty) {
     // debugPrint('IS SHOW MOMENTS ---> $momentsModel');
@@ -186,15 +186,15 @@ Widget channelTab(String? searchedUserName) {
   ));
 }
 
-Widget postTab(CustomerProfile? searchedUser) {
+Widget postTab(CustomerProfile? searchedUser, String? channelUserName) {
   return KeepAlivePage(
-    child: UserPostList(user: searchedUser),
+    child: UserPostList(user: searchedUser, channelUserName: channelUserName),
   );
 }
 
-Widget momentTab(CustomerProfile? searchedUser) {
+Widget momentTab(CustomerProfile? searchedUser, String channelUsername) {
   return KeepAlivePage(
-    child: MomentsTab(searchedUser: searchedUser),
+    child: MomentsTab(searchedUser: searchedUser, channelUsername: channelUsername),
   );
 }
 

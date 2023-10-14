@@ -344,9 +344,13 @@ class YarnAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    debugPrint("GET DATA Yarn response:- ${response.statusCode}");
+
     if (response.statusCode == 200) {
       List<Yarn> yarnTopics = [];
       var jsonData = json.decode(response.body);
+
+      debugPrint("GET DATA Yarn jsonData:- ${jsonData["results"]}");
 
       // debugPrint("GET DATA yarn list:- $jsonData");
       for (var item in jsonData["results"]) {

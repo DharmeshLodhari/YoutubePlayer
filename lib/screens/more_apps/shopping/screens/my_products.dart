@@ -93,7 +93,7 @@ class _MyProductsState extends State<MyProducts> {
           backgroundColor: Colors.transparent,
           onTap: () {
             Navigator.of(context).pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH,
-                arguments: {"searchedUser": customerProfile});
+                arguments: {"searchedUser": customerProfile, "filter": "Products"});
           },
           height: 15,
           width: 15,
@@ -124,6 +124,7 @@ class _MyProductsState extends State<MyProducts> {
   Widget _buildBody() {
     return Column(
         children: [
+          const SizedBox(height: 20),
           _buildProductsView(),
         ],
     );

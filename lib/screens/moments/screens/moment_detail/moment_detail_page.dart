@@ -150,7 +150,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       for (int i = startIndex; i <= endIndex; i++) {
         List<MomentsModel> momentsModelList = await MomentsService()
             .getMomentsWithOwnerName(
-                ownerName: widget.listOfConnectionNames[i], type: '');
+                ownerName: widget.listOfConnectionNames[i], channelUsername: '');
         widget.momentsModelList = List.from(widget.momentsModelList)
           ..add(momentsModelList);
       }
@@ -200,7 +200,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
         try {
           List<MomentsModel> momentsModelList = await MomentsService()
               .getMomentsWithOwnerName(
-                  ownerName: widget.listOfConnectionNames[indexToWorkWith], type: '');
+                  ownerName: widget.listOfConnectionNames[indexToWorkWith], channelUsername: '');
           if (getNextList) {
             widget.momentsModelList.add(momentsModelList);
           } else {

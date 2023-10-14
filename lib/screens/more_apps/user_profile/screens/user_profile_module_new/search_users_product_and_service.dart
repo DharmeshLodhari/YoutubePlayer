@@ -93,6 +93,15 @@ class _SearchUsersProductAndServiceState
     searchedUser = widget.arguments["searchedUser"];
     filterModel.searchedUser = searchedUser;
 
+    if(widget.arguments["filter"] != null){
+      filterValue = widget.arguments["filter"];
+      filterValue == "Services" ? selectedMenuItemIndex = 1 : selectedMenuItemIndex = 0;
+      getSearchTypeIcon();
+
+      if(mounted)setState(() {});
+    }
+
+
     updateCategoryList();
 
     slidableController1 = SlidableController(

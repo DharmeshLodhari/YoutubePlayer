@@ -64,7 +64,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
 
     channelOwner = widget.searchedUser!;
 
-    channelUserName = getGroupUsername(channelDetail!['group_username'] ?? channelDetail!['group_name']);
+    channelUserName = getGroupUsername(channelDetail!['username'] ?? channelDetail!['group_name']);
 
     channelUserName = channelUserName!.replaceAll(' ', '');
 
@@ -119,40 +119,6 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       tabs: userTabs,
     );
 
-
-    // Define the tabs and their corresponding data for each user
-    // UserTabView channelView = UserTabView(
-    //   name: "channel",
-    //   tabs: [
-    //     UserTab(
-    //       label: "Yarn",
-    //       child: yarnTab(channelUserName),
-    //       apiCall: () async => await fetchYarnData(channelUserName),
-    //     ),
-    //     UserTab(
-    //       label: "Moment",
-    //       child: momentTab(channelOwner),
-    //       apiCall: () async => await fetchMomentData(channelUserName),
-    //     ),
-    //     UserTab(
-    //       label: "Post",
-    //       child: postTab(channelOwner),
-    //       apiCall: () async => await fetchPostData(channelUserName),
-    //     ),
-    //     UserTab(
-    //       label: "Event",
-    //       child: productTab(channelOwner, isOwner!),
-    //       apiCall: () async => await fetchProductData(channelUserName),
-    //     ),
-    //     UserTab(
-    //       label: "Merchandise",
-    //       child: productTab(channelOwner, isOwner!),
-    //       apiCall: () async => await fetchProductData(channelUserName),
-    //     ),
-    //   ],
-    // );
-
-    // Set the current user here
     _currentUser = channelView;
 
     _tabController = TabController(
@@ -195,15 +161,15 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       case "moment":
         userTabs.add(UserTab(
           label: label,
-          child: momentTab(channelOwner),
-          apiCall: () async => await fetchMomentData(channelUserName, 'channel'),
+          child: momentTab(channelOwner, channelUserName!),
+          apiCall: () async => await fetchMomentData(channelUserName, channelUserName),
         ));
         break;
       case "blog":
         userTabs.add(UserTab(
           label: label,
-          child: postTab(channelOwner),
-          apiCall: () async => await fetchPostData(channelUserName, 'channel'),
+          child: postTab(channelOwner, channelUserName!),
+          apiCall: () async => await fetchPostData(channelUserName, channelUserName),
         ));
         break;
 
