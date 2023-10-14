@@ -657,18 +657,18 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         }
         break;
       case 'Channel':
-        if (appConfigurationModel != null &&
-            appConfigurationModel!.enableGroupChat == true) {
+        // if (appConfigurationModel != null &&
+        //     appConfigurationModel!.enableGroupChat == true) {
           Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
               arguments: {"create": "channel"});
-        }
+        // }
         break;
       case 'Group':
-        if (appConfigurationModel != null &&
-            appConfigurationModel!.enableGroupChat == true) {
+        // if (appConfigurationModel != null &&
+        //     appConfigurationModel!.enableGroupChat == true) {
           Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
               arguments: {"create": "group"});
-        }
+        // }
         break;
       default:
         // Handle the default case (if any)

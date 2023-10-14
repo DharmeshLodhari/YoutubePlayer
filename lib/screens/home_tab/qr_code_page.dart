@@ -324,6 +324,11 @@ class _QrCodePageState extends State<QrCodePage> {
     var userObject;
     userObject = searchUser ?? user;
     var path = userObject.type!;
+
+    if(widget.arguments['product'] != null){
+      return "https://slydo.co/store/${widget.arguments['product']}";
+    }
+
     if(path == 'User' || path == null){
       path = 'user';
     }else{

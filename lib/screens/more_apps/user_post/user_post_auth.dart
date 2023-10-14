@@ -55,26 +55,27 @@ class UserPostAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> listUserPosts(
-      {String? next = "", String? pageSize, required String? userName, String? isChannel}) async {
-    var url = "";
+      {String? next = "", String? pageSize, required String? userName, String? channelUserName}) async {
+    var url = AppConfig.baseUrl;
     if (next == null) {
       return null;
     }
 
     if (next == "") {
       if (pageSize != null) {
-        url = AppConfig.baseUrl +
-            "/api/v1/social/posts/user/$userName/?page_size=$pageSize";
-      } else {
-        if(isChannel == 'channel'){
-          url = "${AppConfig.baseUrl}/api/v1/social/posts/channel/$userName/";
+        url = url+"/api/v1/social/posts/user/$userName/?page_size=$pageSize";
+      }
+      else {
+        if(channelUserName != ''){
+          url = "${AppConfig.baseUrl}/api/v1/social/posts/channel/$channelUserName/";
         }
-        else if (isChannel == ''){
+        else if (channelUserName == ''){
           url = "${AppConfig.baseUrl}/api/v1/social/posts/user/$userName/";
         }
 
       }
-    } else {
+    }
+    else {
       url = getSecureUrl(url: next);
     }
 
@@ -84,12 +85,8 @@ class UserPostAuth extends AuthService {
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
 
-    debugPrint('POST BODY ::: ${response.body}');
-    debugPrint('POST BODY ::: ${response.statusCode}');
-
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
-
       return jsonData;
     }
     debugPrint(
@@ -226,8 +223,11 @@ class UserPostAuth extends AuthService {
       urlToUpdateBlog = "${AppConfig.baseUrl}/api/v1/social/posts/channel/$blogId/";
     }
 
+
     String url = isUpdating ? urlToUpdateBlog : urlToPostBlog;
     var headers = await getAuthHeaders();
+
+    debugPrint('fola blog post::: ${url}');
 
     String? blogImagePath;
     String? blogVideoPath;

@@ -177,14 +177,14 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
       case "moment":
         userTabs.add(UserTab(
           label: label,
-          child: momentTab(widget.searchedUser),
+          child: momentTab(widget.searchedUser, ''),
           apiCall: () async => await fetchMomentData(searchedUserName, ''),
         ));
         break;
       case "blog":
         userTabs.add(UserTab(
           label: label,
-          child: postTab(widget.searchedUser),
+          child: postTab(widget.searchedUser, ''),
           apiCall: () async => await fetchPostData(searchedUserName, ''),
         ));
         break;

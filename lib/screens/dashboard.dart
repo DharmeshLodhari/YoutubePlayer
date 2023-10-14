@@ -13,14 +13,12 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/search_module.dart';
-import 'package:Slydo/screens/search_user.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/services/share_manager.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
-import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -29,26 +27,21 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:badges/badges.dart' as badges;
-import '../services/app_tutorial_controller.dart';
 import '../services/logout_helper.dart';
 import '../utils/navigation_util.dart';
 import '../widget/rounded_background_icon.dart';
 import 'connection_module/connections_dashboard.dart';
 import 'home.dart';
 import 'moments/screens/moment_detail/moment_detail_page.dart';
-import 'moments/screens/moments_screen.dart';
 import 'moments/screens/moments_service.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/settings/general_setting.dart';
 import 'more_apps/yarn/yarn_auth.dart';
-import 'more_apps/yarn/yarn_dashboard.dart';
 import 'more_apps/yarn/yarn_dashboard_bloc.dart';
-import 'super_store/super_store.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
@@ -480,7 +473,11 @@ class _DashboardState extends State<Dashboard> {
       child: Scaffold(
         key: myGlobals.scaffoldKey,
         backgroundColor: whiteBackground,
-        body: _pages[_bottomNavIndex],
+        extendBody: true,
+        body: SafeArea(
+            maintainBottomViewPadding: true,
+            child: _pages[_bottomNavIndex]),
+
         floatingActionButton: SizedBox(
           width: 70,
           height: 70,
@@ -635,7 +632,7 @@ class _DashboardState extends State<Dashboard> {
         activeIndex: _bottomNavIndex,
         splashColor: naturalGreenLight,
         splashSpeedInMilliseconds: 300,
-        notchSmoothness: NotchSmoothness.defaultEdge,
+        notchSmoothness: NotchSmoothness.softEdge,
         gapLocation: GapLocation.center,
         leftCornerRadius: 0,
         rightCornerRadius: 0,
@@ -650,10 +647,10 @@ class _DashboardState extends State<Dashboard> {
           });
         },
         shadow: BoxShadow(
-          offset: Offset(0, 1),
-          blurRadius: 2,
+          offset: Offset(0, 0),
+          blurRadius: 0,
           spreadRadius: 0.5,
-          color: greyBorderColor,
+          color: Colors.transparent,
         ),
       ),
     );

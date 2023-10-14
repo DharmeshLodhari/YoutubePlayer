@@ -59,7 +59,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   StateSetter? bottomSheetStateSetterGlobal;
   bool bottomSheetMounted = false;
   int bottomSheetSearchIndex = 0;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = new ScrollController();
   String? next = "", previous = "";
   int count = 0;
   bool noList = false;
@@ -67,12 +67,12 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   List bankAccountListStore = [];
   bool noItemInList = false;
   BankAccount? selectedBank;
-  TextEditingController _amountController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
   final searchItemTextController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
   //slidable tile
   SlidableController? _slideController;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -146,6 +146,12 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
   Widget scaffoldBody() {
     bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+
+    if(!isLoading && bankAccountBloc.bankAccount!.accountName == null){
+      return NoItemInList(
+        msg: AppLocalization.of(context)!.emptyBeneficiary,
+      );
+    }
 
     return isLoading
         ? Center(
@@ -261,7 +267,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   }
 
   Widget getUserBankAccount() {
-
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.zero,

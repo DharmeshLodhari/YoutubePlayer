@@ -586,7 +586,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     myMomentsLoading = true;
     if (mounted) setState(() {});
     MomentsService()
-        .getMomentsWithOwnerName(ownerName: userBloc.user.userName!, type: '')
+        .getMomentsWithOwnerName(ownerName: userBloc.user.userName!, channelUsername: '')
         .then((momentsModelList) {
       myMomentsLoading = false;
       if (mounted) setState(() {});
@@ -635,13 +635,13 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
 
   Future getListOfMomentsModelList(String owner) async {
     List<MomentsModel> momentsModelList =
-        await MomentsService().getMomentsWithOwnerName(ownerName: owner, type: '');
+        await MomentsService().getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     listOfMomentsModelList.add(momentsModelList);
   }
 
   Future getLengthOfOwnerMoments(String owner) async {
     List<MomentsModel> momentsModelList =
-        await MomentsService().getMomentsWithOwnerName(ownerName: owner, type: '');
+        await MomentsService().getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     lengthOfOwnerMoments = momentsModelList.length;
   }
 

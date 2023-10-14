@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/home_tab/qr_code_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
@@ -38,7 +37,6 @@ import '../widget/user_dashboard_item_tile.dart';
 import 'moments/screens/moments_screen.dart';
 import 'more_apps/messaging/button/message_nav_btn.dart';
 import 'more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'more_apps/payment_link/payment_link.dart';
 import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/models/SecureUser.dart';
 import 'more_apps/user_profile/models/user.dart';
@@ -90,10 +88,9 @@ class _HomeState extends State<Home> {
         isAppTutorialDone = false;
       }
 
-
       if (!isAppTutorialDone) {
         bool result =
-            await _sharedPreferences.setBool("isAppTutorialDone", true);
+        await _sharedPreferences.setBool("isAppTutorialDone", true);
         debugPrint("result:- $result");
         await Future.delayed(const Duration(milliseconds: 1500)).then((value) {
           AppTutorialController().showTutorial(context);
@@ -152,9 +149,15 @@ class _HomeState extends State<Home> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       body: Container(
-        height: MediaQuery.of(context).size.height -
+        height: MediaQuery
+            .of(context)
+            .size
+            .height -
             (AppBar().preferredSize.height),
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         color: Colors.white,
         child: SingleChildScrollView(
           child: Column(
@@ -303,19 +306,19 @@ class _HomeState extends State<Home> {
             Padding(
               padding: const EdgeInsets.all(10.0), // Add padding between items
               child: GestureDetector(
-                onTap: (){
-                  onClickShortcut(shortcut['title']);
-                },
-                  child: shortcutView(shortcut['imagePath']!, shortcut['title']!)),
+                  key: showTutorial(shortcut['title']),
+                  onTap: () {
+                    onClickShortcut(shortcut['title']);
+                  },
+                  child:
+                  shortcutView(shortcut['imagePath']!, shortcut['title']!)),
             ),
         ],
       ),
     );
-
-
   }
 
-  Widget shortcutView(String imagePath, String title){
+  Widget shortcutView(String imagePath, String title) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -327,10 +330,7 @@ class _HomeState extends State<Home> {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-              fontFamily: "Inter"
-          ),
+              fontSize: 13, fontWeight: FontWeight.w600, fontFamily: "Inter"),
         ),
       ],
     );
@@ -400,7 +400,8 @@ class _HomeState extends State<Home> {
             final endIndex = startIndex + 2;
             final pairShortcuts = shortcuts.sublist(
               startIndex,
-              endIndex.clamp(0, shortcuts.length), // Use clamp to avoid out-of-bounds
+              endIndex.clamp(
+                  0, shortcuts.length), // Use clamp to avoid out-of-bounds
             );
 
             // If the pairShortcuts list has fewer than 2 items, add empty placeholders
@@ -436,15 +437,15 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget shortcutViewExtra(String imagePath, String title,
-      String subTitle, String color){
+  Widget shortcutViewExtra(String imagePath, String title, String subTitle,
+      String color) {
     double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
       decoration: BoxDecoration(
-          color: HexColor(color).withOpacity(opacity),
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
+        color: HexColor(color).withOpacity(opacity),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -458,33 +459,27 @@ class _HomeState extends State<Home> {
               const SizedBox(width: 10),
               Text(
                 title,
-                style:  TextStyle(
-                  fontSize: 14,
-                  color: white,
-                  fontWeight: FontWeight.w700,
-                    fontFamily: "Inter"
-                ),
+                style: TextStyle(
+                    fontSize: 14,
+                    color: white,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: "Inter"),
               ),
-              if(userBloc.user.type!.toLowerCase() == 'user' && title == 'Business')...[
+              if (userBloc.user.type!.toLowerCase() == 'user' &&
+                  title == 'Business') ...[
                 const SizedBox(width: 5),
                 SvgPicture.asset(
                   'home/padlock'.toSVG(),
                 ),
               ],
-
             ],
           ),
           const SizedBox(height: 10),
           Text(
             subTitle,
-            style: TextStyle(
-              fontSize: 12,
-              color: white,
-                fontFamily: "Inter"
-            ),
+            style: TextStyle(fontSize: 12, color: white, fontFamily: "Inter"),
           ),
           const SizedBox(width: 10),
-
         ],
       ),
     );
@@ -498,12 +493,11 @@ class _HomeState extends State<Home> {
             arguments: {"view": appLocalization.payment});
         break;
       case 'Business':
-
-        if(userBloc.user.type!.toLowerCase() != 'user'){
+        if (userBloc.user.type!.toLowerCase() != 'user') {
           hideBalance();
           Navigator.of(context).pushNamed(Routes.HOME_QUICK_VIEW,
               arguments: {"view": appLocalization.business});
-        }else{
+        } else {
           showUpgradeDialog(context);
         }
 
@@ -624,10 +618,10 @@ class _HomeState extends State<Home> {
           padding: basketBloc.items.length == 0
               ? const EdgeInsets.all(0)
               : EdgeInsets.only(
-                  left: getBadgeCount().length == 1 ? 6 : 8,
-                  right: 6,
-                  top: 4,
-                  bottom: 4),
+              left: getBadgeCount().length == 1 ? 6 : 8,
+              right: 6,
+              top: 4,
+              bottom: 4),
           elevation: 0,
         ),
         child: Center(
@@ -666,7 +660,6 @@ class _HomeState extends State<Home> {
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
-
   Widget accountBalanceCard() {
     return CustomBoxShadow(
       child: Card(
@@ -699,11 +692,17 @@ class _HomeState extends State<Home> {
   }
 
   double topPadding() {
-    return MediaQuery.of(context).size.height > 600 ? 4 : 2;
+    return MediaQuery
+        .of(context)
+        .size
+        .height > 600 ? 4 : 2;
   }
 
   double bottomPadding() {
-    return MediaQuery.of(context).size.height > 600 ? 6 : 4;
+    return MediaQuery
+        .of(context)
+        .size
+        .height > 600 ? 6 : 4;
   }
 
   Widget balanceRow() {
@@ -724,29 +723,56 @@ class _HomeState extends State<Home> {
         const SizedBox(
           height: 15.0,
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: white,
-            fontWeight: FontWeight.w500,
+        InkWell(
+          onTap: () {
+            if (label == 'Total Balance') {
+              toggleBalanceVisibility();
+            }
+          },
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: white,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         Row(
           children: [
-            if (label == 'Total Balance')...[
-              actualBalance(balance),
-              getAccountBalanceBtn(),
-            ]else...[
-              actualBalance(balance),
-            ]
-
+            if (label == 'Total Balance') ...[
+              InkWell(
+                  onTap: () {
+                    toggleBalanceVisibility();
+                  },
+                  child: actualBalance(balance)),
+              const SizedBox(
+                width: 10.0,
+              ),
+              InkWell(
+                onTap: () {
+                  toggleBalanceVisibility();
+                },
+                child: Padding(
+                  padding: isBalanceHidden
+                      ? const EdgeInsets.only(bottom: 5.0)
+                      : const EdgeInsets.only(bottom: 0.0),
+                  child: Icon(
+                    isBalanceHidden ? SlydoAppIcon.eye : SlydoAppIcon.eye_close,
+                    color: white,
+                    size: 12,
+                  ),
+                ),
+              ),
+            ] else
+              ...[
+                actualBalance(balance),
+              ]
           ],
         ),
       ],
     );
   }
-
 
   Widget actualBalance(int balance) {
     return isLoading == true
@@ -787,6 +813,26 @@ class _HomeState extends State<Home> {
         ),
       ],
     );
+  }
+
+  void toggleBalanceVisibility() {
+    if (isBalanceHidden) {
+      BottomSheetPassCode(
+        context: context,
+        isValidCallback: () {
+          isLoading = true;
+          getAccountBalance();
+          isBalanceHidden = false;
+          setState(() {});
+        },
+        cancelCallBack: () {
+          Navigator.pop(context);
+        },
+      );
+    } else {
+      isBalanceHidden = !isBalanceHidden;
+      setState(() {});
+    }
   }
 
   Widget accountInfo() {
@@ -848,7 +894,9 @@ class _HomeState extends State<Home> {
   void copyAccountDetails() {
     Clipboard.setData(ClipboardData(
       text:
-      "Bank name: ${virtualAccount!.financialInstitution!.name}\nAccount name: ${virtualAccount!.accountName}\nAccount number: ${virtualAccount!.accountNumber}",
+      "Bank name: ${virtualAccount!.financialInstitution!
+          .name}\nAccount name: ${virtualAccount!
+          .accountName}\nAccount number: ${virtualAccount!.accountNumber}",
     ));
     showToast(message: "Account details copied !!");
   }
@@ -863,94 +911,13 @@ class _HomeState extends State<Home> {
         color: Colors.white,
       ),
       onTap: () async {
-        NavigationUtil.push(context, screen: QRCodeView(arguments: {'isRequest': false}));
+        NavigationUtil.push(context,
+            screen: QRCodeView(arguments: {'isRequest': false}));
         // NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount}));
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
     );
-  }
-
-  Widget getAccountBalanceBtn2() {
-    return isBalanceHidden
-        ? IconButton(
-          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4.0),
-            alignment: Alignment.center,
-            icon: Icon(
-              SlydoAppIcon.eye,
-              color: white,
-              size: 12,
-            ),
-            onPressed: () {
-              BottomSheetPassCode(
-                context: context,
-                isValidCallback: () {
-                  isLoading = true;
-                  getAccountBalance();
-                  isBalanceHidden = false;
-                  setState(() {});
-                },
-                cancelCallBack: () {
-                  Navigator.pop(context);
-                },
-              );
-            },
-          )
-        : IconButton(
-          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4.0),
-            alignment: Alignment.center,
-            icon: Icon(
-              SlydoAppIcon.eye_close,
-              color: white,
-              size: 12,
-            ),
-            onPressed: () {
-              isBalanceHidden = true;
-              setState(() {});
-            },
-          );
-  }
-
-  Widget getAccountBalanceBtn() {
-    return isBalanceHidden
-        ? GestureDetector(
-      onTap: (){
-              BottomSheetPassCode(
-                context: context,
-                isValidCallback: () {
-                  isLoading = true;
-                  getAccountBalance();
-                  isBalanceHidden = false;
-                  setState(() {});
-                },
-                cancelCallBack: () {
-                  Navigator.pop(context);
-                },
-              );
-      },
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
-            child: Icon(
-      SlydoAppIcon.eye,
-      color: white,
-      size: 12,
-      ),
-          ),
-        )
-        :GestureDetector(
-      onTap: (){
-              isBalanceHidden = true;
-              setState(() {});
-      },
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Icon(
-      SlydoAppIcon.eye_close,
-      color: white,
-      size: 12,
-      ),
-          ),
-        );
   }
 
   void hideBalance() {
@@ -1090,20 +1057,20 @@ class _HomeState extends State<Home> {
             children: [
               Expanded(
                   child: UserDashboardItemTile(
-                icon: SlydoAppIcon.store,
-                title: "My Store",
-                isLocked: storeLocked,
-                onTap: () {
-                  if (!storeLocked) {
-                    storeItemAndroidSheet();
-                  } else {
-                    showToast(
-                        message:
+                    icon: SlydoAppIcon.store,
+                    title: "My Store",
+                    isLocked: storeLocked,
+                    onTap: () {
+                      if (!storeLocked) {
+                        storeItemAndroidSheet();
+                      } else {
+                        showToast(
+                            message:
                             'You need to upgrade to a business account to use this feature.');
-                  }
-                },
-                iconColor: HexColor("#46CE7C"),
-              )),
+                      }
+                    },
+                    iconColor: HexColor("#46CE7C"),
+                  )),
               const SizedBox(width: 12),
               Expanded(
                   key: tutorialOrderKey,
@@ -1168,7 +1135,7 @@ class _HomeState extends State<Home> {
                     } else {
                       showToast(
                           message:
-                              'You need to upgrade to a business account to use this feature.');
+                          'You need to upgrade to a business account to use this feature.');
                     }
                   },
                   iconColor: HexColor("#5218E9"),
@@ -1233,7 +1200,7 @@ class _HomeState extends State<Home> {
               margin: EdgeInsets.zero,
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -1375,11 +1342,11 @@ class _HomeState extends State<Home> {
         User? _user = await DatabaseHelper().getUser();
 
         SharedPreferences sharedPreferences =
-            await SharedPreferences.getInstance();
+        await SharedPreferences.getInstance();
         String countryFromPref = sharedPreferences.getString('country') ?? "NG";
 
         Country country =
-            CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+        CountryPickerUtils.getCountryByIsoCode(countryFromPref);
 
         SecureUser secureUser = await SecureStorage().getUser();
         String phoneNumber = secureUser.phoneNumber ?? "";
@@ -1428,6 +1395,32 @@ class _HomeState extends State<Home> {
 
     // Trim the trailing space and return the asterisk mask
     return asteriskMask.trim();
+  }
+
+  showTutorial(String? shortcut) {
+    switch (shortcut) {
+      case 'Send':
+        tutorialSendPaymentKey;
+        break;
+      case 'Transaction':
+        tutorialTransactionKey;
+        break;
+      case 'Request':
+        tutorialRequestPaymentKey;
+        break;
+      case 'Yarn':
+        tutorialYarnKey;
+        break;
+      case 'Moment':
+        break;
+      case 'Services':
+        break;
+      case 'Blog':
+        break;
+      default:
+      // Handle the default case (if any)
+        print('Tapped on an unknown shortcut');
+    }
   }
 
 }

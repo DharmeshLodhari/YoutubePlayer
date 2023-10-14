@@ -201,6 +201,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       CustomerProfile profile = CustomerProfile(
         fullName: name,
         userName: channelDetail['group_name'] ?? '',
+        nickName: channelDetail['username'] ?? '',
         avatar: channelDetail['owner']['avatar'],
         bio: channelDetail['description'],
         dateJoined: channelDetail['created_at'],
@@ -212,7 +213,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       return ChannelProfileScreen(
         searchedUser: profile,
         channelDetail: channelDetail,
-        searchedUserName: channelDetail['group_username'] ?? '',
+        searchedUserName: channelDetail['username'] ?? '',
         isOwner: isOwner,
         isLoading: isLoading,
       );

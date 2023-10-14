@@ -1524,13 +1524,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         iconData: SlydoAppIconNew.dashboard_yarn,
         onTap: () async {
           Navigator.pop(context);
+
+          // debugPrint('Fola channel yarn:::: ${chatConversation!.userName}');
+
           NavigationUtil.push(context,
               screen: AddOrEditYarn(
                 askCategories: yarnDashboardBloc.yarnCategories,
                 shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                 isYarn: true,
                 passedCategory: '',
-                channel: '${chatConversation!.userName}'
+                channel: chatConversation!.userName!
               ));
 
         },
@@ -1546,15 +1549,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
           NavigationUtil.push(context, screen: CreateorEditPostScreen(
               // arguments: {"channel": chatConversation!.userName}
-              channel: chatConversation!.userName
+              channel: chatConversation!.userName!
           ));
-          // Navigator.of(context).pushNamed(
-          //   Routes.CREATE_BLOG,
-          //   arguments: {
-          //     userPost: null,
-          //     'channel': chatConversation!.userName,
-          //   },
-          // );
 
         },
       ),
@@ -1566,10 +1562,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         iconData: SlydoAppIconNew.moment,
         onTap: () async {
           Navigator.pop(context);
-          debugPrint("URL FOR CREATE MOMENT moment ${chatConversation!.userName}");
+          debugPrint("URL FOR CREATE MOMENT moment ${chatConversation!.fullName!.replaceAll(" ", "")}");
 
           NavigationUtil.push(context, screen: CreateMediaMomentScreen(
-              arguments: {"channel": chatConversation!.userName}
+              arguments: {"channel": chatConversation!.userName!}
           ));
 
         },

@@ -13,8 +13,9 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class UserPostList extends StatefulWidget {
   CustomerProfile? user;
   final String? titleToSearch;
+  String? channelUserName;
 
-  UserPostList({@required this.user, this.titleToSearch, Key? key})
+  UserPostList({@required this.user, this.titleToSearch, this.channelUserName, Key? key})
       : super(key: key);
 
   @override
@@ -27,18 +28,18 @@ class _UserPostListState extends State<UserPostList> {
   String? postPrevious = "";
   bool isPostLoading = false;
   List<UserPost> postList = [];
-  ScrollController _postScrollController = new ScrollController();
+  final ScrollController _postScrollController = ScrollController();
 
   bool isFirstTime = true;
   bool noPostInList = false;
-  GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
-  RefreshController _postRefreshController =
+  final GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
+  final RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     debugPrint('CUSTOMER PROFILE ---> ${widget.user!.toJson()}');
-    this.getPostList();
+    getPostList();
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
               _postScrollController.position.maxScrollExtent &&
@@ -61,8 +62,6 @@ class _UserPostListState extends State<UserPostList> {
         postList = [];
         isFirstTime = true;
         if (mounted) setState(() {});
-
-        debugPrint("Refresh called on posts!!  ");
         getPostList();
         _postRefreshController.refreshCompleted();
       } else {
@@ -104,14 +103,13 @@ class _UserPostListState extends State<UserPostList> {
 
         try {
           result = await UserPostAuth()
-              .listUserPosts(next: postNext, userName: widget.user!.userName);
+              .listUserPosts(next: postNext, userName: widget.user!.userName, channelUserName: widget.channelUserName);
         } catch (e) {
           isPostLoading = false;
           noPostInList = true;
           if (mounted) {
             setState(() {});
           }
-
           // showToast(
           //     message: 'Server error. Please refresh ::: ${e.toString()}');
           return;
@@ -129,6 +127,7 @@ class _UserPostListState extends State<UserPostList> {
         postNext = result['next'];
         postPrevious = result['previous'];
         List tempList = result['results'] as List;
+
 
         List<UserPost> posts = [];
 
@@ -155,7 +154,7 @@ class _UserPostListState extends State<UserPostList> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
       ));
     }
   }
@@ -166,8 +165,8 @@ class _UserPostListState extends State<UserPostList> {
             msg: AppLocalization.of(context)!.noPosts,
           )
         : ListView.builder(
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.only(right: 16, left: 16, top: 8, bottom: 0),
+            physics: const ClampingScrollPhysics(),
+            padding: const EdgeInsets.only(right: 16, left: 16, top: 8, bottom: 0),
             controller: _postScrollController,
             itemCount: postList.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -191,10 +190,10 @@ class _UserPostListState extends State<UserPostList> {
   }
 
   Widget _buildReviewIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
           opacity: isPostLoading ? 1.0 : 00,
           child: isPostLoading ? CircularLoadingIndicator() : Container(),
         ),
