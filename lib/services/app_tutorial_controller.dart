@@ -62,9 +62,11 @@ class AppTutorialController {
         onClickTarget: (target) {
           print(target);
         },
-        onSkip: () {
-          print("skip");
-        })
+      onSkip: () {
+        print("skip");
+        return true;
+      },
+        )
       ..show(context: context);
 
     // tutorial.skip();
@@ -758,24 +760,24 @@ class AppTutorialController {
 
   void _fillTargets() {
     _targets.add(_getUserProfileTutorial());
-    _targets.add(_getSendPaymentTutorial());
-    _targets.add(_getRequestPaymentTutorial());
-    _targets.add(_getQrCodeTutorial());
+    // _targets.add(_getSendPaymentTutorial());
+    // _targets.add(_getRequestPaymentTutorial());
+    // _targets.add(_getQrCodeTutorial());
     _targets.add(_getScanQrCodeTutorial());
 
-    _targets.add(_getSearchItemTutorial());
+    // _targets.add(_getSearchItemTutorial());
     _targets.add(_getShoppingCartTutorial());
-    _targets.add(_getSettingsTutorial());
-    _targets.add(_getYarnTutorial());
-    _targets.add(_getSuperStoreTutorial());
-    _targets.add(_getMomentTutorial());
-    _targets.add(_getChatMessagesTutorial());
+    // _targets.add(_getSettingsTutorial());
+    // _targets.add(_getYarnTutorial());
+    // _targets.add(_getSuperStoreTutorial());
+    // _targets.add(_getMomentTutorial());
+    // _targets.add(_getChatMessagesTutorial());
 
-    _targets.add(_getOrderTutorial());
-    _targets.add(_getServicesTutorial());
-    _targets.add(_getTransactionTutorial());
-    _targets.add(_getInboxTutorial());
-    _targets.add(_getWalletTutorial());
-    _targets.add(_getBlogsTutorial());
+    // _targets.add(_getOrderTutorial());
+    // _targets.add(_getServicesTutorial());
+    // _targets.add(_getTransactionTutorial());
+    // _targets.add(_getInboxTutorial());
+    // _targets.add(_getWalletTutorial());
+    // _targets.add(_getBlogsTutorial());
   }
 }

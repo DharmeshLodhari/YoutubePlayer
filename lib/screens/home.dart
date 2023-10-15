@@ -306,7 +306,7 @@ class _HomeState extends State<Home> {
             Padding(
               padding: const EdgeInsets.all(10.0), // Add padding between items
               child: GestureDetector(
-                  key: showTutorial(shortcut['title']),
+                  // key: showTutorial(shortcut['title']),
                   onTap: () {
                     onClickShortcut(shortcut['title']);
                   },
@@ -903,6 +903,7 @@ class _HomeState extends State<Home> {
 
   Widget qrCodeIcon() {
     return RoundedBackgroundIcon(
+      key: tutorialScanQrCodeKey,
       height: 34,
       width: 34,
       icon: const Icon(
