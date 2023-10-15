@@ -80,6 +80,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
         onPageChanged: (currentPage) {
           updateCurrentAskTapOnHome(index: currentPage);
         },
+        physics: NeverScrollableScrollPhysics(),
         controller: _pageViewController,
         children: [
           NewBeneficiaryTransfer(

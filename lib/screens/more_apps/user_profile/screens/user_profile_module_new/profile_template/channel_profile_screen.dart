@@ -60,8 +60,6 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
   void initState() {
     channelDetail = widget.channelDetail!;
 
-    // debugPrint('fola one two channel');
-
     channelOwner = widget.searchedUser!;
 
     channelUserName = getGroupUsername(channelDetail!['username'] ?? channelDetail!['group_name']);
@@ -244,7 +242,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
         child: Container(
           width: MediaQuery.of(context).size.width, // Full width of the screen
           height: MediaQuery.of(context).size.height, // Full height of the screen
-          color: Colors.white,
+          color: Colors.transparent,
           child: Column(
 
             children: [
@@ -254,7 +252,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
               ),
               const SizedBox(height: 50,),
 
-              Image.asset('assets/images/channel_loc.jpg'),
+              Image.asset('assets/images/lock_channel.png'),
 
               const SizedBox(height: 20,),
               Text('This account is private',
