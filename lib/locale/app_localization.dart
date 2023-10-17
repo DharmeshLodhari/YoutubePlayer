@@ -407,7 +407,7 @@ class AppLocalization {
 
   String get socialSubTitle {
     return Intl.message(
-      "Manage all your    Social  activities in    one  place.",
+      "Manage all your Social activities in one place.",
       name: "paymentSubTitle",
     );
   }

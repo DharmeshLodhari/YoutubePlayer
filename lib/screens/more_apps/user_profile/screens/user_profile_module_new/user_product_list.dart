@@ -201,7 +201,7 @@ class _UserProductListState extends State<UserProductList> {
     return productNext == "" && isProductLoading
         ? SizedBox.shrink()
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
             child: GridView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,

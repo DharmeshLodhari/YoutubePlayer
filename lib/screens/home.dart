@@ -443,6 +443,7 @@ class _HomeState extends State<Home> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+      height: 110.0,
       decoration: BoxDecoration(
         color: HexColor(color).withOpacity(opacity),
         borderRadius: const BorderRadius.all(Radius.circular(10)),

@@ -1459,7 +1459,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           note: "",
         );
 
-        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount, 'product': product!.seller}));
+        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false',
+          'virtualAccount': virtualAccount, 'product': product!.seller, 'productUrl': "https://slydo.co/store/${product!.seller}/products/" + product!.id.toString()}));
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,

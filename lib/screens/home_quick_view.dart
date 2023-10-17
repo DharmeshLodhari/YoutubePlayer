@@ -540,7 +540,6 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         }
         break;
       case 'Product':
-
         NavigationUtil.push(context, screen: const MyProducts());
         break;
       case 'Services':
