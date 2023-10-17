@@ -18,6 +18,8 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:flutter/material.dart';
 
+import '../event_list.dart';
+
 double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
   int bioLength = bio.length;
   debugPrint('GET BIO LEN -> $bioLength');
@@ -219,6 +221,12 @@ Widget serviceTab(CustomerProfile? searchedUser, bool isOwner) {
 Widget reviewTab(CustomerProfile? searchedUser) {
   return KeepAlivePage(
     child: Center(child: UserReviewList(user: searchedUser)),
+  );
+}
+
+Widget eventTab(CustomerProfile? searchedUser) {
+  return KeepAlivePage(
+    child: Center(child: EventList(user: searchedUser)),
   );
 }
 

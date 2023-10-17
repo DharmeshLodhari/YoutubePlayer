@@ -69,7 +69,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
     createTitle = widget.arguments != null
         && widget.arguments["create"] == "group" ? "New Group"
-        : "New Paid Channel";
+        : "New Channel";
+        // : "New Paid Channel";
 
     // appConfigurationModel?.enablePaidGroupChat = true;
 
