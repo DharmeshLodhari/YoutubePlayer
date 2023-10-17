@@ -394,7 +394,7 @@ class RouteGenerator {
         );
 
       case Routes.CREATE_BLOG:
-        final args = settings.arguments as Map<String, dynamic>;
+        // final args = settings.arguments as Map<String, dynamic>;
 
         return PageTransition(
           child: CreateorEditPostScreen(

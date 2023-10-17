@@ -124,7 +124,6 @@ class _MyProductsState extends State<MyProducts> {
   Widget _buildBody() {
     return Column(
         children: [
-          const SizedBox(height: 20),
           _buildProductsView(),
         ],
     );
@@ -132,8 +131,6 @@ class _MyProductsState extends State<MyProducts> {
 
 
   Widget _buildProductsView() {
-
-
     return Expanded(
       child: UserProductList(
         user: customerProfile,
