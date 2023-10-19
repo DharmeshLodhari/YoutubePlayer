@@ -188,7 +188,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         )),
         _infoTile(),
         SizedBox(
-          height: 20,
+          height: 90,
         ),
       ],
     );

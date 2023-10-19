@@ -11,6 +11,7 @@ class AddGroupModel {
   int? ageRestriction;
   String? groupConversationId;
   String? avatar;
+  String? banner;
 
   AddGroupModel({
     this.groupConversationId,
@@ -23,5 +24,6 @@ class AddGroupModel {
     this.users,
     this.description,
     this.avatar,
+    this.banner,
   });
 }

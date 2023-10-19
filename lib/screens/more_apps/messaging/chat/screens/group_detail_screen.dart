@@ -343,7 +343,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       ),
       onTap: () async {
         var result = await Navigator.of(context).pushNamed(
-            "/update-name-and-profile-for-group",
+            Routes.UPDATE_NAME_AND_PROFILE_FOR_GROUP,
             arguments: {"groupDetail": groupDetail});
 
         if (result != null) {
@@ -553,7 +553,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         decoration: decorateBox(),
         child: ListTile(
           title: Text(
-            "Delete Channel",
+            groupDetail!.conversationType == 'channel' ? "Delete Channel" : "Delete Group",
             maxLines: 1,
             style: TextStyle(
               color: mateRed,
@@ -585,7 +585,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         decoration: decorateBox(),
         child: ListTile(
           title: Text(
-            "Exit Channel",
+            groupDetail!.conversationType == 'channel' ? "Exit Channel" : "Exit Group",
             maxLines: 1,
             style: TextStyle(
               color: mateRed,
@@ -1007,8 +1007,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           dashboardBloc.index = 3;
           showToast(message: "You deleted the ${groupDetail?.fullName}!!");
           if (mounted)
-            Navigator.of(context)
-                .popUntil(ModalRoute.withName(Routes.DASHBOARD));
+            Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
         }
       }).catchError((error) {
         isExitingGroup = false;

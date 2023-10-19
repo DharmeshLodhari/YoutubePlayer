@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 class GroupDetailModel {
   List<String?> adminUsers;
   String? avatar;
+  String? banner;
   List<String?> blockedParticipants;
   String? conversationId;
   String? fullName;
@@ -12,6 +13,7 @@ class GroupDetailModel {
   List<String?> mutedParticipants;
   List<Participant> participants;
   String? type;
+  String? conversationType;
   String? username;
   String? owner;
   String? description;
@@ -26,6 +28,7 @@ class GroupDetailModel {
   GroupDetailModel(
       {this.adminUsers = const [],
       this.avatar,
+      this.banner,
       this.blockedParticipants = const [],
       this.conversationId,
       this.fullName,
@@ -33,6 +36,7 @@ class GroupDetailModel {
       this.mutedParticipants = const [],
       this.participants = const [],
       this.type,
+      this.conversationType,
       this.createdAt,
       this.username,
       this.owner,
@@ -50,6 +54,7 @@ class GroupDetailModel {
           ? new List<String>.from(json['admin_users'])
           : [],
       avatar: json['avatar'],
+      banner: json['banner'],
       blockedParticipants: json['blocked_participants'] != null
           ? new List<String>.from(json['blocked_participants'])
           : [],
@@ -66,6 +71,7 @@ class GroupDetailModel {
               .toList()
           : [],
       type: json['type'],
+      conversationType: json['conversation_type'],
       username: json['username'],
       owner: json['owner'],
       isVerified: json['is_verified'],
@@ -83,6 +89,7 @@ class GroupDetailModel {
     return GroupDetailModel(
         adminUsers: chatConversation.adminUsers,
         avatar: chatConversation.avatar,
+        banner: chatConversation.banner,
         blockedParticipants: chatConversation.blockedParticipants,
         conversationId: chatConversation.conversationId,
         fullName: chatConversation.fullName,
@@ -91,6 +98,7 @@ class GroupDetailModel {
         participants: [],
         createdAt: chatConversation.createdAt,
         type: chatConversation.type,
+        conversationType: chatConversation.conversationType,
         username: chatConversation.userName,
         owner: chatConversation.owner,
         isVerified: chatConversation.isVerified,
@@ -100,10 +108,12 @@ class GroupDetailModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['avatar'] = this.avatar;
+    data['banner'] = this.banner;
     data['conversation_id'] = this.conversationId;
     data['full_name'] = this.fullName;
     data['is_group_conversation'] = this.isGroupConversation;
     data['type'] = this.type;
+    data['conversation_type'] = this.conversationType;
     data['username'] = this.username;
     data['owner'] = this.owner;
     data['description'] = this.description;

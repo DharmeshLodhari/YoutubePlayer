@@ -59,6 +59,8 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   final TextEditingController _channelFeeCtrl = TextEditingController();
   final TextEditingController _maxNoOfUsersCtrl =
       TextEditingController(text: '255');
+  bool isAvatar = false;
+  bool? isBanner = false;
 
   @protected
   void initState() {
@@ -146,7 +148,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         },
       ),
       title: Text(
-        "Edit Group",
+        groupDetail!.conversationType == "channel" ? "Edit Channel" : "Edit Group",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
@@ -163,6 +165,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         child: Container(
           child: Column(
             children: [
+              getProfileCover(),
               getGroupNameAndProfile(),
               getGroupDescription(),
               Padding(
@@ -185,6 +188,80 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
     );
   }
 
+  Widget getProfileCover() {
+
+    return GestureDetector(
+        onTap: (){
+          pickWallpaper();
+        },
+        child: Container(height: 150, child: getProfileWallpaper()));
+  }
+
+  Widget getProfileWallpaper() {
+
+    return isBanner == true ?
+    Container(
+      child: Image.file(
+        File(groupModel.groupProfilePhoto!),
+        fit: BoxFit.fill,
+      ),
+    )
+    : CachedNetworkImage(
+      imageUrl:
+      groupDetail!.banner == null || groupDetail!.banner == ""
+          ? defaultWallPaper
+          : groupDetail!.banner!,
+      fit: BoxFit.fill,
+      errorWidget: imageErrorWidget,
+    );
+
+  }
+
+  void pickWallpaper() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10)),
+          title: Text(
+            AppLocalization.of(context)!.selectTheImageSource,
+            style: TextStyle(fontSize: 18, color: blackFont),
+          ),
+          actions: <Widget>[
+            MaterialButton(
+              child: Text(
+                AppLocalization.of(context)!.camera,
+                style: TextStyle(fontSize: 16, color: blackFont),
+              ),
+              onPressed: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            MaterialButton(
+              child: Text(
+                "Gallery",
+                style: TextStyle(fontSize: 16, color: blackFont),
+              ),
+              onPressed: () => Navigator.pop(context, ImageSource.gallery),
+            )
+          ],
+        ));
+
+    if (imageSource != null) {
+      final file =
+      await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
+      if (file != null) {
+        /// for cropping the image
+        String? croppedImage = await ImageCrop().cropImage(file.path);
+        if (croppedImage == null) {
+          return;
+        }
+
+        groupModel.groupProfilePhoto = croppedImage;
+        isBanner = true;
+        if (mounted) setState(() {});
+      }
+    }
+  }
+
   Widget getMakePublicField() {
     return Row(
       children: [
@@ -200,6 +277,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
               makeChannelPublic = value;
             });
           },
+          activeColor: navyBlue,
           value: makeChannelPublic!,
         ),
         SizedBox(
@@ -323,7 +401,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Limit channel members',
+                    groupDetail!.conversationType == "channel" ? 'Limit channel members' : 'Limit group members',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                   Text(
@@ -342,6 +420,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                   limitGroupMembers = value;
                 });
               },
+              activeColor: navyBlue,
               value: limitGroupMembers!,
             ),
             SizedBox(width: 10)
@@ -399,6 +478,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                   ageRestriction = value;
                 });
               },
+              activeColor: navyBlue,
               value: ageRestriction,
             ),
             SizedBox(width: 10)
@@ -476,13 +556,13 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
               cursorColor: blackFont,
               validator: (value) {
                 if (value!.isNotEmpty) return null;
-                return "Please Enter group name";
+                return groupDetail!.conversationType == "channel" ?  "Please Enter channel name" : "Please Enter group name";
               },
               style: TextStyle(
                   color: blackFont, fontWeight: FontWeight.w700, fontSize: 16),
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.zero,
-                  hintText: "Type group name here",
+                  hintText: groupDetail!.conversationType == "channel" ? "Type channel name here" : "Type group name here",
                   helperStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -497,13 +577,21 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   }
 
   Widget getGroupProfile() {
-    debugPrint('fola chat:::${groupDetail!.avatar}');
     return GestureDetector(
       onTap: () {
-        pickGroupProfile();
+        pickGroupAvatar();
       },
       child: ClipOval(
-          child: groupModel.avatar != null || groupDetail!.avatar != ""
+          child: isAvatar == true ?
+          Container(
+            height: 64,
+            width: 64,
+            child: Image.file(
+              File(groupModel.avatar!),
+              fit: BoxFit.fill,
+            ),
+          )
+          : groupModel.avatar != null || groupDetail!.avatar != ""
               ? Container(
                   height: 64,
                   width: 64,
@@ -519,9 +607,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                 )
               : GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments:
-                            getInitials(groupDetail!.fullName!).toUpperCase());
+                    pickGroupAvatar();
                   },
                   child: CircleAvatar(
                     backgroundColor: navyBlue,
@@ -536,7 +622,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
     );
   }
 
-  void pickGroupProfile() async {
+  void pickGroupAvatar() async {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
@@ -575,6 +661,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         }
 
         groupModel.avatar = croppedImage;
+        isAvatar = true;
         if (mounted) setState(() {});
       }
     }
@@ -624,7 +711,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         return;
       } else if (int.parse(_maxNoOfUsersCtrl.text) < 3) {
         showToast(
-            message: 'You can not create channels with less than 3 members');
+            message: groupDetail!.conversationType == "channel" ? 'You can not create channel with less than 3 members' : 'You can not create group with less than 3 members');
         return;
       }
     }
@@ -665,7 +752,8 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
           log("Group detail updated successfully !! $value");
           Map<String, dynamic> data = value;
 
-          groupDetail!.avatar = data["banner"];
+          groupDetail!.avatar = data["avatar"];
+          groupDetail!.banner = data["banner"];
           groupDetail!.fullName = data["group_name"];
           groupDetail!.username = data["group_name"];
           groupDetail!.description = data["description"];

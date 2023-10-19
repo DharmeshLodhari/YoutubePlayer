@@ -108,7 +108,12 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       ),
       controller: _refreshController,
       onRefresh: _onRefresh,
-      child: _buildFriendsList(),
+      child: Column(
+        children: [
+          Expanded(child: _buildFriendsList()),
+          SizedBox(height: 80),
+        ],
+      ),
     );
   }
 
@@ -120,9 +125,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             msg: noConnectionRequestMsg,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(
-              vertical: 4,
-            ),
+          padding: EdgeInsets.only(bottom: 80.0),
             //+1 for progressbar
             itemCount: connectionRequestList.length + 1,
             itemBuilder: (BuildContext context, int index) {

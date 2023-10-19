@@ -265,7 +265,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
             color: naturalGreen.withOpacity(0.1),
           ),
           child: Text(
-            "Channel",
+            widget.user!.conversationType == "channel" ? "Channel" : "Group",
             style: TextStyle(
                 fontSize: 11, fontWeight: FontWeight.w600, color: naturalGreen),
           ),

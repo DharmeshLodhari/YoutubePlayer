@@ -87,7 +87,7 @@ class _MyServicesState extends State<MyServices> {
           backgroundColor: Colors.transparent,
           onTap: () {
             Navigator.of(context).pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH,
-                arguments: {"searchedUser": customerProfile, "filter": "Services"});
+                arguments: {"searchedUser": customerProfile, "filter": "Services", "hidePreIcon": true});
           },
           height: 15,
           width: 15,

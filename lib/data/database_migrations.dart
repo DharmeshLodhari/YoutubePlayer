@@ -78,6 +78,7 @@ final initialDBSchema = [
       "delivered" INTEGER,
       "created_at" TEXT,
       "type" TEXT,
+      "conversation_type" TEXT,
       "replied_to" TEXT);
     ''',
   // Create the userConnections table
@@ -87,8 +88,10 @@ final initialDBSchema = [
       "full_name" TEXT,
       "username" TEXT,
       "avatar" TEXT,
+      "banner" TEXT,
       "qr_code" TEXT,
       "type" TEXT,
+      "conversation_type" TEXT,
       "created_at" INTEGER,
       "admin_users" TEXT,
       "blocked_participants" TEXT,
@@ -123,6 +126,7 @@ final initialDBSchema = [
       "replied_to" TEXT,
       "text" TEXT,
       "type" TEXT,
+      "conversation_type" TEXT,
       "was_edited" INTEGER,
       "conversation_id" TEXT,
       FOREIGN KEY(conversation_id) REFERENCES UserConnection(conversation_id) ON DELETE CASCADE,
@@ -207,5 +211,5 @@ List<String> dbMigrations = [
           "user_id" TEXT,
           "categories" TEXT
         );
-    '''
+    ''',
 ];

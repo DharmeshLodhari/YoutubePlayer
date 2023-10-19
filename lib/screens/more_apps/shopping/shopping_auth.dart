@@ -370,13 +370,15 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Add Product
-  Future<List<dynamic>> addProduct(Product product, String webUrl) async {
+  Future<List<dynamic>> addProduct(Product product, String channelUsername) async {
     var headers = await getAuthHeaders();
     var url = "${AppConfig.baseUrl}/api/v1/products/";
 
-    if(webUrl.isNotEmpty){
-      url = "${AppConfig.baseUrl}/api/v1/channel/products/";
+    if(channelUsername.isNotEmpty){
+      url = "${AppConfig.baseUrl}/api/v1/products/channels/$channelUsername/";
     }
+
+    debugPrint('url from product channel ---> $url');
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -433,6 +435,10 @@ class ShoppingAuthService extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     var responseBody = await response.stream.bytesToString();
+
+    debugPrint(
+        "URL $url PRODUCT STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
     bool backValue = false;
     if (response.statusCode == 201) {
 
