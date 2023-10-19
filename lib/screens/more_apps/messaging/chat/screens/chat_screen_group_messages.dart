@@ -1458,9 +1458,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 onTap: () async {
                   stopShakeDetector();
                   if (chatConversation!.isGroupConversation!) {
-                    // navigateToGroupDetailScreen();
 
-                    showChannelMenuList();
+                    chatConversation!.conversationType == 'group' ?
+                    navigateToGroupDetailScreen() : showChannelMenuList();
+
                   } else {
                     await Navigator.pushNamed(context, Routes.USER_PROFILE,
                         arguments: {
@@ -1471,14 +1472,17 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 20.0),
-                  // child: Icon(
-                  //   Icons.menu,
-                  //   color: blackFont,
-                  //   size: 22,
-                  // ),
-                  child: SvgPicture.asset(
+                  child: chatConversation!.conversationType == 'group' ? Icon(
+                      Icons.settings,
+                      color: blackFont,
+                      size: 22,
+                    )
+                      : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SvgPicture.asset(
                     'assets/images/menu.svg',
                   ),
+                      ),
                 ),
               ),
             ]
@@ -1535,7 +1539,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           Navigator.pop(context);
           Navigator.pushNamed(context, Routes.ADD_PRODUCT,
             arguments: {
-            'channel': 'Channel',
+            'channelUsername': chatConversation!.userName,
           },);
         },
       ),

@@ -377,11 +377,13 @@ class MessageAuth extends AuthService {
     request.fields["participants"] = jsonEncode(listOfUser);
     request.fields["description"] = group.description!;
     request.fields["type"] = type;
+    request.fields["conversation_type"] = type;
     request.fields["is_group_conversation"] = jsonEncode(true);
     request.fields["is_public_group"] = jsonEncode(group.makePublic);
     request.fields["age_restriction"] = jsonEncode(group.ageRestriction);
     //PAID GROUP OPTIONS
     request.fields["group_subscription_currency"] = 'NGN';
+    // request.fields["conversation_type"] = 'NGN';
     if (group.channelFee != null) {
       request.fields["group_subscription_fee"] =
           jsonEncode(group.channelFee! * 100);
@@ -390,11 +392,17 @@ class MessageAuth extends AuthService {
         jsonEncode(group.maxAllowedMembers);
     if (group.groupProfilePhoto != null) {
       // Create multipart using filepath, string or bytes
-      var multipartFile1 =
-          await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
+      var multipartFile1 = await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
 
       // Add multipart to request
       request.files.add(multipartFile1);
+    }
+    if (group.avatar != null) {
+      // Create multipart using filepath, string or bytes
+      var multipartFile2 = await http.MultipartFile.fromPath("avatar", group.avatar!);
+
+      // Add multipart to request
+      request.files.add(multipartFile2);
     }
 
     debugPrint('CREATE GROUP FIELDS -> ${request.fields}');
@@ -451,13 +459,21 @@ class MessageAuth extends AuthService {
     request.fields["group_max_allowed_users"] =
         jsonEncode(group.maxAllowedMembers);
 
-    if (group.avatar != null) {
+    if (group.groupProfilePhoto != null) {
       // Create multipart using filepath, string or bytes
       var multipartFile1 =
-          await http.MultipartFile.fromPath("banner", group.avatar!);
+          await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
 
       // Add multipart to request
       request.files.add(multipartFile1);
+    }
+
+    if (group.avatar != null) {
+      // Create multipart using filepath, string or bytes
+      var multipartFile2 = await http.MultipartFile.fromPath("avatar", group.avatar!);
+
+      // Add multipart to request
+      request.files.add(multipartFile2);
     }
 
     headers.forEach((k, v) => request.headers[k] = v);

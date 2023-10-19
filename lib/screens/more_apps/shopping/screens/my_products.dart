@@ -1,15 +1,11 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:badges/badges.dart' as badges;
-
 import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/navigation_util.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../../user_profile/models/user.dart';
 import '../../user_profile/screens/user_profile_module_new/user_product_list.dart';
@@ -93,7 +89,7 @@ class _MyProductsState extends State<MyProducts> {
           backgroundColor: Colors.transparent,
           onTap: () {
             Navigator.of(context).pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH,
-                arguments: {"searchedUser": customerProfile, "filter": "Products"});
+                arguments: {"searchedUser": customerProfile, "filter": "Products", "hidePreIcon": true});
           },
           height: 15,
           width: 15,

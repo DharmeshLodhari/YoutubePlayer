@@ -99,7 +99,12 @@ class _BlockedListState extends State<BlockedList> {
             ),
             controller: _refreshController,
             onRefresh: _onRefresh,
-            child: _buildFriendsList()),
+            child: Column(
+              children: [
+                Expanded(child: _buildFriendsList()),
+                SizedBox(height: 80),
+              ],
+            )),
       ),
     );
   }
@@ -111,9 +116,7 @@ class _BlockedListState extends State<BlockedList> {
             msg: noBlockedListMsg,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(
-              vertical: 4,
-            ),
+            padding: EdgeInsets.only(bottom: 80.0),
             //+1 for progressbar
             itemCount: blockList.length + 1,
             itemBuilder: (BuildContext context, int index) {

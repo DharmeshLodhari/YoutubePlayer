@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 class ChatConversation {
   List<String?> adminUsers;
   String? avatar;
+  String? banner;
   List<String?> blockedParticipants;
   String? conversationId;
   String? description;
@@ -20,12 +21,14 @@ class ChatConversation {
   List<String?> participants;
   String? qrCode;
   String? type;
+  String? conversationType;
   String? userName;
   bool? isVerified;
 
   ChatConversation(
       {this.adminUsers = const [],
       this.avatar,
+      this.banner,
       this.blockedParticipants = const [],
       this.conversationId,
       this.description,
@@ -37,6 +40,7 @@ class ChatConversation {
       this.participants = const [],
       this.qrCode,
       this.type,
+      this.conversationType,
       this.userName,
       this.isVerified = false});
 
@@ -48,6 +52,7 @@ class ChatConversation {
           ? new List<String>.from(json['admin_users'])
           : [],
       avatar: json['avatar'],
+      banner: json['banner'],
       blockedParticipants: json['blocked_participants'] != null
           ? new List<String>.from(json['blocked_participants'])
           : [],
@@ -68,6 +73,7 @@ class ChatConversation {
           ? ''
           : json['qr_code'],
       type: json['type'],
+      conversationType: json['conversation_type'],
       userName: json['username'] != null ? json['username'] : '',
     );
   }
@@ -76,6 +82,7 @@ class ChatConversation {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['avatar'] = avatar;
+    data['banner'] = banner;
     data['conversation_id'] = conversationId;
     data['description'] = description;
     data['full_name'] = fullName;
@@ -84,6 +91,7 @@ class ChatConversation {
     data['qr_code'] = qrCode;
     data['created_at'] = createdAt;
     data['type'] = type;
+    data['conversation_type'] = conversationType;
     data['username'] = userName;
     data['admin_users'] = adminUsers;
     data['blocked_participants'] = blockedParticipants;
@@ -100,6 +108,7 @@ class ChatConversation {
           ? new List<String>.from(jsonDecode(json['admin_users']))
           : [],
       avatar: json['avatar'],
+      banner: json['banner'],
       blockedParticipants: json['blocked_participants'] != null
           ? new List<String>.from(jsonDecode(json['blocked_participants']))
           : [],
@@ -118,6 +127,7 @@ class ChatConversation {
           : [],
       qrCode: json['qr_code'],
       type: json['type'],
+      conversationType: json['conversation_type'],
       userName: json['username'],
     );
   }
@@ -126,6 +136,7 @@ class ChatConversation {
   Map<String, dynamic> toDBJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['avatar'] = avatar;
+    data['banner'] = banner;
     data['conversation_id'] = conversationId;
     data['description'] = description;
     data['full_name'] = fullName;
@@ -133,6 +144,7 @@ class ChatConversation {
     data['owner'] = owner;
     data['qr_code'] = qrCode;
     data['type'] = type;
+    data['conversation_type'] = conversationType;
     data['username'] = userName;
     data['created_at'] = convertStringToMillisecondsSinceEpoch(createdAt);
     data['admin_users'] = jsonEncode(adminUsers);
@@ -151,6 +163,7 @@ class ChatConversation {
     return ChatConversation(
       adminUsers: groupDetailModel.adminUsers,
       avatar: groupDetailModel.avatar,
+      banner: groupDetailModel.banner,
       blockedParticipants: groupDetailModel.blockedParticipants,
       conversationId: groupDetailModel.conversationId,
       description: groupDetailModel.description ?? "",
@@ -163,6 +176,7 @@ class ChatConversation {
       participants: getParticipants(groupDetailModel.participants),
       qrCode: "",
       type: groupDetailModel.type,
+      conversationType: groupDetailModel.conversationType,
       userName: groupDetailModel.username,
     );
   }
@@ -176,6 +190,7 @@ class ChatConversation {
     ChatConversation _chatConversation = ChatConversation();
     _chatConversation.adminUsers = chatConversation.adminUsers;
     _chatConversation.avatar = chatConversation.avatar;
+    _chatConversation.banner = chatConversation.banner;
     _chatConversation.blockedParticipants =
         chatConversation.blockedParticipants;
     _chatConversation.conversationId = chatConversation.conversationId;
@@ -189,6 +204,7 @@ class ChatConversation {
     _chatConversation.participants = chatConversation.participants;
     _chatConversation.qrCode = chatConversation.qrCode;
     _chatConversation.type = chatConversation.type;
+    _chatConversation.conversationType = chatConversation.conversationType;
     _chatConversation.userName = chatConversation.userName;
     _chatConversation.isVerified = chatConversation.isVerified;
 
