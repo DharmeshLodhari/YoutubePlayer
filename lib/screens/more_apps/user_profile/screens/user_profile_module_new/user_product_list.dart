@@ -22,8 +22,9 @@ import '../../../../../widget/noItemInList.dart';
 class UserProductList extends StatefulWidget {
   CustomerProfile? user;
   bool isOwner;
+  bool? channel;
 
-  UserProductList({required this.user, this.isOwner = false});
+  UserProductList({required this.user, this.isOwner = false, this.channel = false});
 
   @override
   _UserProductListState createState() => _UserProductListState();
@@ -88,9 +89,11 @@ class _UserProductListState extends State<UserProductList> {
         isProductLoading = true;
         if (mounted) setState(() {});
 
+        debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
+
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious, "",
-                userName: widget.user!.userName);
+            .listOfProduct(productNext, productPrevious, "", widget.channel!,
+                userName: widget.channel == false ? widget.user!.userName : widget.user!.nickName);
 
         if (result == null) {
           isProductLoading = false;

@@ -300,9 +300,10 @@ class ShoppingAuthService extends AuthService {
 
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(
-      String? next, String? previous, String? category,
+      String? next, String? previous, String? category, bool? channel,
       {String? userName, bool otherDeals = false}) async {
     debugPrint('CALLING PRODUCT');
+    debugPrint('CALLING PRODUCT channel::: ${channel}');
     var url = "";
     if (next == null) {
       return null;
@@ -324,6 +325,10 @@ class ShoppingAuthService extends AuthService {
       } else {
         url += AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
       }
+    }
+
+    if(channel == true){
+      url = AppConfig.baseUrl + "/api/v1/channels-merchandise/$userName";
     }
     debugPrint(url);
     var headers = await getAuthHeaders();
@@ -375,10 +380,8 @@ class ShoppingAuthService extends AuthService {
     var url = "${AppConfig.baseUrl}/api/v1/products/";
 
     if(channelUsername.isNotEmpty){
-      url = "${AppConfig.baseUrl}/api/v1/products/channels/$channelUsername/";
+      url = "${AppConfig.baseUrl}/api/v1/channels-merchandise/$channelUsername/";
     }
-
-    debugPrint('url from product channel ---> $url');
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
