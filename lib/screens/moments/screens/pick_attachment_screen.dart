@@ -67,7 +67,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
     switch (widget.attachmentType) {
       case AttachmentType.Product:
         return ShoppingAuthService()
-            .listOfProduct(next, "", "", userName: userBloc.user.userName);
+            .listOfProduct(next, "", "", false, userName: userBloc.user.userName);
 
       case AttachmentType.Service:
         return ShoppingAuthService()

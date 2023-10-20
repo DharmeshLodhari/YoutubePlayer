@@ -145,8 +145,8 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       case "product":
         userTabs.add(UserTab(
           label: 'Merchandise',
-          child: productTab(channelOwner, isOwner!),
-          apiCall: () async => await fetchProductData(channelUserName),
+          child: productTab(channelOwner, isOwner!, true),
+          apiCall: () async => await fetchProductData(channelUserName, true),
         ));
         break;
 

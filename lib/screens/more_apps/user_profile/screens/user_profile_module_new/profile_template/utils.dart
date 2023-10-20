@@ -143,11 +143,11 @@ fetchMomentData(String? searchedUserName, String? channelUsername) async {
   return [];
 }
 
-fetchProductData(String? searchedUserName) async {
+fetchProductData(String? searchedUserName, bool? isChannel) async {
   Map<String, dynamic>? data;
   try {
     data = await ShoppingAuthService()
-        .listOfProduct("", "", "", userName: searchedUserName);
+        .listOfProduct("", "", "", isChannel, userName: searchedUserName);
   } catch (error) {}
   if (data != null) {
     debugPrint('IS SHOW PRODUCT ---> $data');
@@ -200,11 +200,12 @@ Widget momentTab(CustomerProfile? searchedUser, String channelUsername) {
   );
 }
 
-Widget productTab(CustomerProfile? searchedUser, bool isOwner) {
+Widget productTab(CustomerProfile? searchedUser, bool isOwner, bool isChannel) {
   return KeepAlivePage(
     child: UserProductList(
       user: searchedUser,
       isOwner: isOwner,
+      channel: isChannel
     ),
   );
 }

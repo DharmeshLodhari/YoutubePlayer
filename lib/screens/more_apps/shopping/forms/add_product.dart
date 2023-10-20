@@ -1355,7 +1355,8 @@ class _AddProductState extends State<AddProduct> {
 
           //the api call will first create the product then use the id from the
           //response to save the variant
-          await _auth.addProduct(product, widget.arguments['channel'] ?? "" ).then((value) async {
+
+          await _auth.addProduct(product, widget.arguments['channelUsername'] ?? "" ).then((value) async {
 
             var productId = value[1];
 

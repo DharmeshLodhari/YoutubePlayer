@@ -66,7 +66,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious, widget.productCategories!.name , otherDeals: true);
+            .listOfProduct(productNext, productPrevious, widget.productCategories!.name ,false, otherDeals: true);
 
         if (result == null) {
           noProductInList = true;

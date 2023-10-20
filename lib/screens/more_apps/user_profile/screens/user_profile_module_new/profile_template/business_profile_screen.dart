@@ -134,8 +134,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "product":
         userTabs.add(UserTab(
           label: productLabel,
-          child: productTab(widget.searchedUser, isOwner!),
-          apiCall: () async => await fetchProductData(searchedUserName),
+          child: productTab(widget.searchedUser, isOwner!, false),
+          apiCall: () async => await fetchProductData(searchedUserName, false),
         ));
         break;
       case "service":
