@@ -719,6 +719,9 @@ class ShoppingAuthService extends AuthService {
       headers: headers,
     );
 
+    // debugPrint("fola add product delete ${response.statusCode}");
+    // debugPrint("fola add product delete 2 ${response.body}");
+
     if (response.statusCode == 204) {
       return true;
     } else {

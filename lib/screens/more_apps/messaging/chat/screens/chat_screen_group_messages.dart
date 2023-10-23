@@ -1358,14 +1358,18 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       child: GestureDetector(
         onTap: () async {
           stopShakeDetector();
-          if (chatConversation!.isGroupConversation!) {
-            Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-              "searchedUserName": chatConversation!.conversationId,
-              "channel": chatConversation!.fullName,
-            });
-          } else {
-            await Navigator.pushNamed(context, Routes.USER_PROFILE,
-                arguments: {"searchedUserName": chatConversation!.userName});
+          if(chatConversation!.conversationType == 'group'){
+
+          }else{
+            if (chatConversation!.isGroupConversation!) {
+              Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                "searchedUserName": chatConversation!.conversationId,
+                "channel": chatConversation!.fullName,
+              });
+            } else {
+              await Navigator.pushNamed(context, Routes.USER_PROFILE,
+                  arguments: {"searchedUserName": chatConversation!.userName});
+            }
           }
           setupShakeDetector();
         },
@@ -1392,15 +1396,20 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           title: GestureDetector(
             onTap: () async {
               stopShakeDetector();
-              if (chatConversation!.isGroupConversation!) {
-                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                  "searchedUserName": chatConversation!.conversationId,
-                  "channel": chatConversation!.fullName,
-                });
-              } else {
-                await Navigator.pushNamed(context, Routes.USER_PROFILE,
-                    arguments: {"searchedUserName": chatConversation!.userName});
+              if(chatConversation!.conversationType == 'group'){
+
+              }else{
+                if (chatConversation!.isGroupConversation!) {
+                  Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                    "searchedUserName": chatConversation!.conversationId,
+                    "channel": chatConversation!.fullName,
+                  });
+                } else {
+                  await Navigator.pushNamed(context, Routes.USER_PROFILE,
+                      arguments: {"searchedUserName": chatConversation!.userName});
+                }
               }
+
               setupShakeDetector();
             },
             child: Row(
@@ -1471,7 +1480,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   setupShakeDetector();
                 },
                 child: Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
+                  padding: const EdgeInsets.only(right: 20.0, left: 30.0),
                   child: chatConversation!.conversationType == 'group' ? Icon(
                       Icons.settings,
                       color: blackFont,

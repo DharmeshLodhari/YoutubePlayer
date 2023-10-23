@@ -1535,7 +1535,7 @@ class AppLocalization {
 
   String get quickActions {
     return Intl.message(
-      "Shortcut",
+      "Shortcuts",
       name: "quickActions",
     );
   }

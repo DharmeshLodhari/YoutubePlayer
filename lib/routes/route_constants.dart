@@ -188,9 +188,13 @@ class Routes {
   static const String FUND_VIRTUAL_CARD = "/fund-virtual-card";
   static const String WITHDRAW_VIRTUAL_CARD = "/withdraw-virtual-card";
   static const String SEARCH_TRANSACTION_CARD = "/search-transaction-card";
-
   static const String CUSTOMIZE_PROFILE = "/customize-profile";
   static const String HOME_QUICK_VIEW = "/home-quick-view";
   static const String PRE_ACCOUNT_UPGRADE = "/pre-account-upgrade";
+
+  static const String PRODUCT_ADD_ON_LIST = "/product-add-on-list";
+  static const String PRODUCT_ADD_ON_OPTION_CREATE = "/product-add-on-option-create";
+  static const String PRODUCT_ADD_ON_OPTION_UPDATE = "/product-add-on-option-update";
+  static const String PRODUCT_CREATE_ADD_ON = "/product-create-add-on";
 
 }

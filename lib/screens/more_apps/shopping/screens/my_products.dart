@@ -102,7 +102,7 @@ class _MyProductsState extends State<MyProducts> {
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
-            Navigator.pushNamed(context, Routes.ADD_PRODUCT);
+            Navigator.pushNamed(context, Routes.ADD_PRODUCT, arguments: {"channelUsername": ""});
           },
           height: 15,
           width: 15,
@@ -134,6 +134,7 @@ class _MyProductsState extends State<MyProducts> {
       ),
     );
   }
+
 
 }
 
