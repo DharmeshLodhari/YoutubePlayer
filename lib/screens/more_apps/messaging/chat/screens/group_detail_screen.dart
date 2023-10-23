@@ -185,23 +185,28 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         },
       ),
       leadingWidth: 40,
-      title: Row(
-        children: [
-          getUserIcon(),
-          SizedBox(
-            width: 12,
+      title: Padding(
+        padding: const EdgeInsets.only(right: 30.0),
+        child: Container(
+          child: Row(
+            children: [
+              getUserIcon(),
+              SizedBox(
+                width: 12,
+              ),
+              Expanded(
+                child: Text(
+                  messageDecoderWithEmoji(groupDetail?.fullName ?? "") ?? "",
+                  style: TextStyle(
+                      color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: Text(
-              messageDecoderWithEmoji(groupDetail?.fullName ?? "") ?? "",
-              style: TextStyle(
-                  color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
-              maxLines: 1,
-            ),
-          ),
-        ],
+        ),
       ),
       actions: getGroupActions(),
     );

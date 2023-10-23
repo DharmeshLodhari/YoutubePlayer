@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/shopping/forms/product/product_variant_list.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -14,15 +13,12 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../data/currency.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/navigation_util.dart';
-import '../../../../widget/rounded_background_icon.dart';
 import '../shopping_auth.dart';
 
 class AddProduct extends StatefulWidget {
@@ -276,10 +272,15 @@ class _AddProductState extends State<AddProduct> {
                       //TODO: hide this variant option
                       // const SizedBox(height: 16),
                       // if(productVariantList.isEmpty)...[
-                      //   getAddVariationFormField(),
+                      //   // getAddVariationFormField(),
+                      //   productVariation(),
                       // ]else...[
                       //   displaySelectedVariant(),
                       // ],
+
+                      //TODO: hide this add-on
+                      // const SizedBox(height: 16),
+                      // productAddOns(),
 
                       const SizedBox(height: 16),
                       getSubmitButton(),
@@ -1719,13 +1720,14 @@ class _AddProductState extends State<AddProduct> {
                                           color: blackFont,
                                           fontWeight: FontWeight.w600),
                                     ),
-                                    Text(
-                                      moneyDisplayNormalizer(
-                                          int.parse(productVariantList[index].price.toString())),
-                                      style: TextStyle(
-                                          fontSize: 18.0,
-                                          color: blackFont,
-                                          fontWeight: FontWeight.w600),
+                                    Expanded(
+                                      child: Text(moneyDisplayNormalizer(int.parse(productVariantList[index].price.toString())),
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -1869,6 +1871,103 @@ class _AddProductState extends State<AddProduct> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget productVariation(){
+    return GestureDetector(
+      onTap: () async {
+        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+          'option': 'new',
+          'productId': '',
+        });
+
+        // Handle the result (map) received from Product Add New Option
+        if (result != null && result is Variant) {
+          //save the variant details for later use
+          productVariantList.add(result);
+          if(mounted)setState(() {});
+        }
+      },
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Add Product Variation',
+              maxLines: 1,
+              style: TextStyle(
+                  color: navyBlue,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: blackFont,
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget productAddOns(){
+    return GestureDetector(
+      onTap: (){
+      //disable click if variant is not empty
+      },
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Add Product Add-ons',
+              maxLines: 1,
+              style: TextStyle(
+                  color: productVariantList.isEmpty ? navyBlue : greyBorderColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: blackFont,
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget dispatchAddress(){
+    return GestureDetector(
+      onTap: (){
+
+      },
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Add a dispatch Address',
+              maxLines: 1,
+              style: TextStyle(
+                  color: productVariantList.isEmpty ? navyBlue : greyBorderColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: blackFont,
+            ),
+
+          ],
+        ),
       ),
     );
   }

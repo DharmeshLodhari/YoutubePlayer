@@ -1533,24 +1533,32 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 if(mounted) setState(() {});
               },
               child: Container(
-                height: 70.0,
-                width: 70.0,
+                height: 80.0,
+                width: 80.0,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  borderRadius: BorderRadius.all(Radius.circular(14)),
                   border: Border.all(
-                    color: index == selectedImageColorIndex ? black : greyBorderColor,
-                    width: 1.0,
+                    color: index == selectedImageColorIndex ? black : transparent,
+                    width: 3.0,
                   ),
                 ),
-                child: CachedNetworkImage(
-                  imageUrl: image,
-                  placeholder: (context, url) => Container(
-                    height: 20.0,
-                      width: 20.0,
-                      child: Center(child: CircularProgressIndicator(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: CachedNetworkImage(
+                      imageUrl: image,
+                      placeholder: (context, url) => Center(
+                          child: Transform.scale(
+                            scale: 0.5,
+                            child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
-                      ))),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
+                        strokeWidth: 2.0,
+                      ),
+                          )),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1628,6 +1636,78 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
 
   }
+
+  Widget showVariantSizes2() {
+    final screenSize = MediaQuery.of(context).size;
+    final itemsPerRow = (screenSize.width / 100).floor(); // Adjust the value as needed
+
+    return SizedBox(
+      height: 50.0,
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: itemsPerRow,
+          crossAxisSpacing: 8.0, // Adjust spacing as needed
+          mainAxisSpacing: 8.0,  // Adjust spacing as needed
+        ),
+        itemCount: sizeGroups.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          String size = sizeGroups.keys.elementAt(index);
+          List<Variant> variantsWithSize = sizeGroups[size]!;
+
+          for (int index = 0; index < variantsWithSize.length; index++) {
+            Variant variant = variantsWithSize[index];
+            if (variant.value == null) {
+              return SizedBox.shrink();
+            }
+          }
+
+          return GestureDetector(
+            onTap: () {
+              selectedSize = sizeGroups.keys.elementAt(index);
+              selectedSizeIndex = index;
+
+              for (int index = 0; index < variantsWithSize.length; index++) {
+                Variant variant = variantsWithSize[index];
+                // Update price or any other state based on the selected variant
+                price = variant.price!;
+                selectedVariantId = variant.id!;
+                selectedVariantImage = variant.serverImages![0]!;
+                selectedVariantPrice = variant.price!;
+                stockLeft = int.parse(variant.quantity!);
+              }
+
+              if (mounted) setState(() {});
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: index == selectedSizeIndex ? black : white,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                border: Border.all(
+                  color: black,
+                  width: 1.0,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: Center(
+                  child: Text(
+                    size,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: index == selectedSizeIndex ? white : blackFont,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
 
 
   Widget copyQrCode() {
