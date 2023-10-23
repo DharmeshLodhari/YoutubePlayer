@@ -189,12 +189,12 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: productImages.length + 1,
+        itemCount: croppedImageList.length + 1,
         itemBuilder: (context, index) => Container(
           padding: const EdgeInsets.only(right: 6),
-          child: index != productImages.length
+          child: index != croppedImageList.length
               ? showImage(index)
-              : productImages.length != imageCount
+              : croppedImageList.length != imageCount
               ? addImageButton()
               : null,
         ),
@@ -276,6 +276,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   }
 
   Widget showImage(int index) {
+
     return SizedBox(
       height: 100,
       child: Stack(
@@ -289,13 +290,19 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
             margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: FileImage(
-                      File(productImages[index].path),
-                    ),
-                    fit: BoxFit.fill),
+              // decoration: BoxDecoration(
+              //   borderRadius: BorderRadius.circular(10),
+              //   image: DecorationImage(
+              //       image: FileImage(
+              //         File(productImages[index].path),
+              //       ),
+              //       fit: BoxFit.fill),
+              // ),
+              child: Image.asset(
+                croppedImageList[index],
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -319,7 +326,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
               ),
               onPressed: () {
                 setState(() {
-                  productImages.removeAt(index);
+                  croppedImageList.removeAt(index);
                 });
               },
             ),

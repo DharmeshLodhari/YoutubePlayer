@@ -39,6 +39,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   final ScrollController _scrollController = ScrollController();
   List<PickedFile> productLocalImages = [];
   List<String?> productImagesFromServer = [];
+  List<String> croppedImageList = [];
   String size = "";
   String variantPrice = "";
   String comparePrice = "";
@@ -228,24 +229,24 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     );
   }
 
-  Widget addImages() {
-    return Container(
-      height: 100,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: productLocalImages.length + 1,
-        itemBuilder: (context, index) => Container(
-          padding: const EdgeInsets.only(right: 6),
-          child: index != productLocalImages.length
-              ? showImage(index)
-              : productLocalImages.length != imageCount
-              ? addImageButton()
-              : null,
-        ),
-      ),
-    );
-  }
+  // Widget addImages() {
+  //   return Container(
+  //     height: 100,
+  //     child: ListView.builder(
+  //       controller: _scrollController,
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: croppedImageList.length + 1,
+  //       itemBuilder: (context, index) => Container(
+  //         padding: const EdgeInsets.only(right: 6),
+  //         child: index != croppedImageList.length
+  //             ? showImage(index)
+  //             : croppedImageList.length != imageCount
+  //             ? addImageButton()
+  //             : null,
+  //       ),
+  //     ),
+  //   );
+  // }
 
 
   Widget addImageButton() {
@@ -312,66 +313,73 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
             return;
           }
 
-          productLocalImages.add(PickedFile(croppedImage));
+          croppedImageList.add(croppedImage);
+          // productLocalImages.add(PickedFile(croppedImage));
           if (mounted) setState(() {});
         }
       });
     }
   }
 
-  Widget showImage(int index) {
-    return SizedBox(
-      height: 100,
-      child: Stack(
-        children: <Widget>[
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: dividerColor,
-            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: FileImage(
-                      File(productLocalImages[index].path),
-                    ),
-                    fit: BoxFit.fill),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            child: IconButton(
-              padding: const EdgeInsets.only(right: 6, top: 6),
-              alignment: Alignment.topRight,
-              icon: Container(
-                padding: const EdgeInsets.all(2.0),
-                decoration: BoxDecoration(
-                  color: iconBtnGrey,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Icon(
-                  SlydoAppIcon.remove,
-                  color: blackFont,
-                  size: 15,
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  productLocalImages.removeAt(index);
-                });
-              },
-            ),
-          )
-        ],
-      ),
-    );
-  }
+  // Widget showImage(int index) {
+  //   return SizedBox(
+  //     height: 100,
+  //     child: Stack(
+  //       children: <Widget>[
+  //         Card(
+  //           elevation: 2,
+  //           shape: RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //           ),
+  //           shadowColor: dividerColor,
+  //           margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+  //           child: Container(
+  //             width: 100,
+  //             // decoration: BoxDecoration(
+  //             //   borderRadius: BorderRadius.circular(10),
+  //             //   image: DecorationImage(
+  //             //       image: FileImage(
+  //             //         File(productLocalImages[index].path),
+  //             //       ),
+  //             //       fit: BoxFit.fill),
+  //             // ),
+  //             child: Image.asset(
+  //               croppedImageList[index],
+  //               width: 100,
+  //               height: 100,
+  //               fit: BoxFit.cover,
+  //             ),
+  //           ),
+  //         ),
+  //         Positioned(
+  //           right: 0,
+  //           top: 0,
+  //           child: IconButton(
+  //             padding: const EdgeInsets.only(right: 6, top: 6),
+  //             alignment: Alignment.topRight,
+  //             icon: Container(
+  //               padding: const EdgeInsets.all(2.0),
+  //               decoration: BoxDecoration(
+  //                 color: iconBtnGrey,
+  //                 borderRadius: BorderRadius.circular(5),
+  //               ),
+  //               child: Icon(
+  //                 SlydoAppIcon.remove,
+  //                 color: blackFont,
+  //                 size: 15,
+  //               ),
+  //             ),
+  //             onPressed: () {
+  //               setState(() {
+  //                 croppedImageList.removeAt(index);
+  //               });
+  //             },
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget viewServerImages() {
     return Container(
@@ -455,7 +463,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   }
 
   bool checkImageLimitForServerImage() {
-    if (productLocalImages.length + productImagesFromServer.length !=
+    if (croppedImageList.length + productImagesFromServer.length !=
         imageCount ||
         productImagesFromServer.length != 0) {
       return true;
@@ -465,9 +473,9 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
 
   // decide that localImage List is need to be show or not
   bool checkImageLimitForLocalImage() {
-    if (productLocalImages.length + productImagesFromServer.length !=
+    if (croppedImageList.length + productImagesFromServer.length !=
         imageCount ||
-        productLocalImages.length != 0) {
+        croppedImageList.length != 0) {
       return true;
     }
     return false;
@@ -479,12 +487,12 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: productLocalImages.length + 1,
+        itemCount: croppedImageList.length + 1,
         itemBuilder: (context, index) => Container(
           padding: EdgeInsets.only(right: 6),
-          child: index != productLocalImages.length
+          child: index != croppedImageList.length
               ? showLocalImage(index)
-              : productLocalImages.length + productImagesFromServer.length !=
+              : croppedImageList.length + productImagesFromServer.length !=
               imageCount
               ? addImageButton()
               : null,
@@ -505,13 +513,19 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
           child: Container(
             width: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                  image: FileImage(
-                    File(productLocalImages[index].path),
-                  ),
-                  fit: BoxFit.fill),
+            // decoration: BoxDecoration(
+            //   borderRadius: BorderRadius.circular(10),
+            //   image: DecorationImage(
+            //       image: FileImage(
+            //         File(productLocalImages[index].path),
+            //       ),
+            //       fit: BoxFit.fill),
+            // ),
+            child: Image.asset(
+              croppedImageList[index],
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
             ),
           ),
         ),
@@ -536,7 +550,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
             onPressed: () {
               if (mounted) {
                 setState(() {
-                  productLocalImages.removeAt(index);
+                  croppedImageList.removeAt(index);
                 });
               }
             },
@@ -938,12 +952,12 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
 
   Future<void> updateVariant() async {
     if (_formKey.currentState!.validate()) {
-      if (productLocalImages.length >= 0) {
+      if (croppedImageList.length >= 1 || productImagesFromServer.length >= 1) {
         if (validateDropdown()) {
           Variant variant = Variant();
           variant.id = id;
-          variant.localImages =
-              productLocalImages.map((file) => File(file.path)).toList();
+          // variant.localImages = productLocalImages.map((file) => File(file.path)).toList();
+          variant.localImages = croppedImageList.map((filePath) => File(filePath)).toList();
           variant.title = title;
           variant.colour = color;
           variant.value = value;
