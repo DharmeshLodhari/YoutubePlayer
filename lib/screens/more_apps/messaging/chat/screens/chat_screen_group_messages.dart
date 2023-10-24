@@ -1355,63 +1355,46 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget appBar() {
     return PreferredSize(
       preferredSize: Size.fromHeight(kToolbarHeight),
-      child: GestureDetector(
-        onTap: () async {
-          stopShakeDetector();
-          if(chatConversation!.conversationType == 'group'){
-
-          }else{
-            if (chatConversation!.isGroupConversation!) {
-              Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                "searchedUserName": chatConversation!.conversationId,
-                "channel": chatConversation!.fullName,
-              });
-            } else {
-              await Navigator.pushNamed(context, Routes.USER_PROFILE,
-                  arguments: {"searchedUserName": chatConversation!.userName});
-            }
-          }
-          setupShakeDetector();
-        },
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          titleSpacing: 0,
-          automaticallyImplyLeading: false,
-          leading: IconButton(
-            icon: Icon(
-              Icons.keyboard_arrow_left,
-              color: navyBlue,
-              size: 28,
-            ),
-            onPressed: () {
-              disposeAudioPlayers();
-              mainSocketProvider!.removeStreamSubscription(streamSubscription);
-              mainSocketProvider!.currentConversationId = null;
-              mainSocketProvider!.isChatOnScreen = false;
-              Navigator.pop(context);
-            },
+      child: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        titleSpacing: 0,
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: navyBlue,
+            size: 28,
           ),
-          leadingWidth: 40,
-          title: GestureDetector(
-            onTap: () async {
-              stopShakeDetector();
-              if(chatConversation!.conversationType == 'group'){
+          onPressed: () {
+            disposeAudioPlayers();
+            mainSocketProvider!.removeStreamSubscription(streamSubscription);
+            mainSocketProvider!.currentConversationId = null;
+            mainSocketProvider!.isChatOnScreen = false;
+            Navigator.pop(context);
+          },
+        ),
+        leadingWidth: 40,
+        title: GestureDetector(
+          onTap: () async {
+            stopShakeDetector();
+            if(chatConversation!.conversationType == 'group'){
 
-              }else{
-                if (chatConversation!.isGroupConversation!) {
-                  Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                    "searchedUserName": chatConversation!.conversationId,
-                    "channel": chatConversation!.fullName,
-                  });
-                } else {
-                  await Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {"searchedUserName": chatConversation!.userName});
-                }
+            }else{
+              if (chatConversation!.isGroupConversation!) {
+                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                  "searchedUserName": chatConversation!.conversationId,
+                  "channel": chatConversation!.fullName,
+                });
+              } else {
+                await Navigator.pushNamed(context, Routes.USER_PROFILE,
+                    arguments: {"searchedUserName": chatConversation!.userName});
               }
+            }
 
-              setupShakeDetector();
-            },
+            setupShakeDetector();
+          },
+          child: Container(
             child: Row(
               children: [
                 StreamBuilder<Object>(
@@ -1460,43 +1443,50 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               ],
             ),
           ),
-          actions: [
-            if (chatConversation != null &&
-                chatConversation!.isGroupConversation!) ...[
-              GestureDetector(
-                onTap: () async {
-                  stopShakeDetector();
-                  if (chatConversation!.isGroupConversation!) {
-
-                    chatConversation!.conversationType == 'group' ?
-                    navigateToGroupDetailScreen() : showChannelMenuList();
-
-                  } else {
-                    await Navigator.pushNamed(context, Routes.USER_PROFILE,
-                        arguments: {
-                          "searchedUserName": chatConversation!.userName
-                        });
-                  }
-                  setupShakeDetector();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20.0, left: 30.0),
-                  child: chatConversation!.conversationType == 'group' ? Icon(
-                      Icons.settings,
-                      color: blackFont,
-                      size: 22,
-                    )
-                      : Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SvgPicture.asset(
-                    'assets/images/menu.svg',
-                  ),
-                      ),
-                ),
-              ),
-            ]
-          ],
         ),
+        actions: [
+          if (chatConversation != null &&
+              chatConversation!.isGroupConversation!) ...[
+            GestureDetector(
+              onTap: () async {
+                stopShakeDetector();
+                if (chatConversation!.isGroupConversation!) {
+
+                  chatConversation!.conversationType == 'group' ?
+                  navigateToGroupDetailScreen() : showChannelMenuList();
+
+                } else {
+                  await Navigator.pushNamed(context, Routes.USER_PROFILE,
+                      arguments: {
+                        "searchedUserName": chatConversation!.userName
+                      });
+                }
+                setupShakeDetector();
+              },
+              child: chatConversation!.conversationType == 'group' ? Container(
+                color: white,
+                width: 100.0,
+                padding: EdgeInsets.only(left: 40.0, right: 10.0),
+                child: Icon(
+                    Icons.settings,
+                    color: blackFont,
+                    size: 22,
+                  ),
+              )
+                  : Container(
+                    width: 100.0,
+                    padding: EdgeInsets.only(left: 40.0, right: 10.0),
+                    color: white,
+                    child: Center(
+                      child: SvgPicture.asset(
+                'assets/images/menu.svg',
+                        width: 22.0,
+              ),
+                    ),
+                  ),
+            ),
+          ]
+        ],
       ),
     );
   }

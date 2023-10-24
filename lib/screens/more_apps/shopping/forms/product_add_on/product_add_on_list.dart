@@ -192,7 +192,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context)!.variant,
+        AppLocalization.of(context)!.addOn,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -216,7 +216,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       ),
       onTap: () async {
 
-        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+        final result = await Navigator.of(context).pushNamed(Routes.NEW_ADD_ON, arguments: {
           'option': 'edit',
           'productId': productId,
         });
@@ -237,8 +237,8 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   Widget _buildProductVariantList() {
     return noItemInList
         ? NoItemInList(
-      title: AppLocalization.of(context)!.noVariantYet,
-      msg: AppLocalization.of(context)!.noVariantDetail,
+      title: AppLocalization.of(context)!.noAddOnYet,
+      msg: AppLocalization.of(context)!.noAddOnYetSub,
     )
         : ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 16),
