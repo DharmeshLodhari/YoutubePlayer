@@ -290,16 +290,8 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
             margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
-              // decoration: BoxDecoration(
-              //   borderRadius: BorderRadius.circular(10),
-              //   image: DecorationImage(
-              //       image: FileImage(
-              //         File(productImages[index].path),
-              //       ),
-              //       fit: BoxFit.fill),
-              // ),
-              child: Image.asset(
-                croppedImageList[index],
+              child: Image.file(
+                File(croppedImageList[index]),
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,

@@ -39,22 +39,13 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
   final ScrollController _scrollController = ScrollController();
   List<PickedFile> productImages = [];
   List<String> croppedImageList = [];
-  String size = "";
   String variantPrice = "";
-  String comparePrice = "";
-  String color = "";
-  bool productIsAvailable = false;
-  bool inventoryIsAvailable = false;
-  bool trackInventory = false;
-  DateTime productAvailableFrom = DateTime.now();
+  bool isAvailable = false;
   bool isLoading = false;
   bool isAPILoading = false;
-  int inventoryCount = 0;
-  var typeList = ['Size', 'Color', 'Color n Size'];
-  String selectedType = "";
-  String title = "";
-  String value = "";
-  String optionOnWhatToDo = "";
+  String name = "";
+  String description = "";
+  // String optionOnWhatToDo = "";
 
   @override
   void deactivate() {
@@ -65,7 +56,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
   @override
   void initState() {
     //get value if its form edit or add product
-    optionOnWhatToDo = widget.arguments["option"];
+    // optionOnWhatToDo = widget.arguments["option"];
     super.initState();
   }
 
@@ -104,7 +95,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.newOption,
+        AppLocalization.of(context)!.option,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -131,37 +122,15 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
                 const SizedBox(height: 10),
                 addTitleField(),
                 const SizedBox(height: 10),
-                getTypeField(),
-
-                if(selectedType == 'Size')...[
-                  const SizedBox(height: 10),
-                  addSizeField(),
-                ],
-                if(selectedType == 'Color')...[
-                  const SizedBox(height: 10),
-                  getColorField(),
-                ],
-                if(selectedType == 'Color n Size')...[
-                  const SizedBox(height: 10),
-                  getColorField(),
-                  const SizedBox(height: 10),
-                  addSizeField(),
-                ],
+                getDescription(),
 
                 const SizedBox(
                   height: 10,
                 ),
                 getAmountField(),
 
-                const SizedBox(height: 16),
-                getAvailableFromField(),
                 const SizedBox(height: 40),
                 getIsAvailableField(),
-
-                const SizedBox(height: 16),
-                getInventoryFormField(),
-                const SizedBox(height: 16),
-                getIsInventoryAvailableField(),
 
                 const SizedBox(height: 30),
                 getSubmitButton(),
@@ -339,40 +308,31 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
         return AppLocalization.of(context)!.pleaseEnterTitle;
       },
       onChanged: (val) {
-        title = val;
+        name = val;
       },
     );
   }
 
-  Widget addSizeField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.size,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.pleaseEnterSize;
-      },
-      onChanged: (val) {
-        value = val;
-      },
+  Widget getDescription() {
+    return Container(
+      child: CustomizedTextFormField(
+        maxLines: 3,
+        labelText: "Description",
+        textCapitalization: TextCapitalization.sentences,
+        // controller: groupDescriptionController,
+        validator: (val) {
+          if (val.isNotEmpty) {
+            return null;
+          }
+          return AppLocalization.of(context)!.descriptionMustNotEmpty;
+        },
+        onChanged: (val) {
+          description = val;
+        },
+      ),
     );
   }
 
-  Widget getColorField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.color,
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return AppLocalization.of(context)!.pleaseEnterColor;
-      },
-      onChanged: (val) {
-        color = val;
-      },
-    );
-  }
 
   Widget getAmountField() {
     return CustomizedTextFormField(
@@ -404,295 +364,18 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     );
   }
 
-  Widget getComparePriceField() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.comparePrice,
-      keyboardType: Platform.isIOS
-          ? const TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      isAmountField: true,
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            comparePrice = double.parse(val.replaceAll(',', '')).toString();
-          } catch (e) {
-            showToast(message: e.toString());
-          }
-        }
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            double.parse(val.replaceAll(',', ''));
-            return null;
-          } catch (e) {
-            return AppLocalization.of(context)!.invalidAmount;
-          }
-        }
-        return AppLocalization.of(context)!.pleaseEnterValidAmout;
-      },
-    );
-  }
-
-  bool validateDropdown() {
-    if (selectedType != null && selectedType != '') {
-      return true;
-    } else {
-      showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectCategory);
-      return false;
-    }
-  }
 
   Widget getIsAvailableField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        productIsAvailable = !productIsAvailable;
+        isAvailable = !isAvailable;
         setState(() {});
       },
-      isChecked: productIsAvailable,
-      title: "Is product available now?",
+      isChecked: isAvailable,
+      title: "Available",
     );
   }
 
-  Widget getEnableInSuperStoreField() {
-    return CustomizedCheckBoxField(
-      onTap: () {
-        trackInventory = !trackInventory;
-        setState(() {});
-      },
-      isChecked: trackInventory,
-      title: AppLocalization.of(context)!.enableInSuperStore,
-    );
-  }
-
-  Widget getAvailableFromField() {
-    return GestureDetector(
-      onTap: () {
-        showDatePicker(
-          builder: customThemeBuilder,
-          context: context,
-          initialDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          firstDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-          lastDate: DateTime(2101),
-        ).then((value) {
-          productAvailableFrom = DateTime(value!.year, value.month, value.day);
-          setState(() {});
-        }).catchError((error) {});
-      },
-      child: CustomizedDropDownField(
-        title: "Available from",
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              formatDate(productAvailableFrom),
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-            ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget getInventoryFormField() {
-    return CustomizedDropDownField(
-      title: "Inventory (Available Quantity)",
-      child: SizedBox(
-        height: 55,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: ListTile(
-            dense: true,
-            title: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: greyBorderColor,
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
-                  child: Text(
-                    inventoryCount.toString(),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            trailing: Padding(
-              padding: const EdgeInsets.only(right: 30.0),
-              child: RoundedBackgroundIcon(
-                  backgroundColor: greyBorderColor,
-                  icon: Icon(
-                    SlydoAppIcon.plus,
-                    color: blackFont,
-                    size: 14,
-                  ),
-                  onTap: () => addInventory()
-              ),
-            ),
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 30.0),
-              child: RoundedBackgroundIcon(
-                  backgroundColor: greyBorderColor,
-                  icon: Icon(
-                    SlydoAppIcon.minus,
-                    color: blackFont,
-                    size: 2,
-                  ),
-                  onTap: () => subtractInventory()
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void addInventory() {
-    setState(() {
-      inventoryCount++;
-    });
-  }
-
-  void subtractInventory() {
-    if (inventoryCount > 0) {
-      setState(() {
-        inventoryCount--;
-      });
-    }
-  }
-
-  Widget getIsInventoryAvailableField() {
-    return CustomizedCheckBoxField(
-      onTap: () {
-        inventoryIsAvailable = !inventoryIsAvailable;
-        setState(() {});
-      },
-      isChecked: inventoryIsAvailable,
-      title: "Checking this field will automatically update the quantity when the product is purchased.",
-      fontSize: 10.0,
-      maxLines: 2,
-    );
-  }
-
-  Widget getTypeField() {
-    return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.type,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          selectedType != null ? selectedType : "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          categoryAndroidSheet();
-        },
-      ),
-    );
-  }
-
-  void categoryAndroidSheet() {
-    androidBottomSheet(
-      context: context,
-      child: StatefulBuilder(
-        builder: (context, changeState) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.45,
-            child: Column(
-              children: [
-                Text(
-                  'Select Category',
-                  style: TextStyle(
-                      color: blackFont,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400),
-                ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: typeList.length,
-                    itemBuilder: (context, index) {
-                      var category = typeList[index];
-                      if (selectedType == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              selectedType = category;
-                              Navigator.pop(context);
-                              setState(() {});
-
-                            },
-                          ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        dense: true,
-                        onTap: () {
-                          selectedType = category;
-                          Navigator.pop(context);
-                          setState(() {});
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
 
   Widget getSubmitButton() {
     return CurvedButton(
@@ -703,7 +386,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
         isAPILoading = true;
         if (mounted) setState(() {});
 
-        await addVariant();
+        // await addVariant();
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -716,32 +399,24 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     if (_formKey.currentState!.validate()) {
       if (croppedImageList.length >= 1) {
         // if (productImages.length >= 1) {
-        if (validateDropdown()) {
           Variant variant = Variant();
           // variant.localImages = productImages.map((file) => File(file.path)).toList();
           variant.localImages = croppedImageList.map((filePath) => File(filePath)).toList();
-          variant.title = title;
-          variant.colour = color;
-          variant.value = value;
-          variant.quantity = inventoryCount.toString();
-          variant.type = selectedType;
+          variant.title = name;
           variant.price = moneyInputNormalizer(variantPrice).toString();
-          variant.isAvailable = productIsAvailable;
-          variant.availableFrom = productAvailableFrom;
-          variant.trackInventory = trackInventory;
+          variant.isAvailable = isAvailable;
           variant.currency = 'NGN';
-          if(optionOnWhatToDo == 'new'){
-            //send the variant detail back to the previous page
-            debugPrint('file path::: ${variant.localImages}');
+          // if(optionOnWhatToDo == 'new'){
+          //   //send the variant detail back to the previous page
+          //   debugPrint('file path::: ${variant.localImages}');
+          //
+          //   Navigator.pop(context, variant);
+          // }else if(optionOnWhatToDo == 'edit'){
+          //   String productId = widget.arguments["productId"];
+          //   //make api call to save the variant details
+          //   saveVariant(productId, variant);
+          // }
 
-            Navigator.pop(context, variant);
-          }else if(optionOnWhatToDo == 'edit'){
-            String productId = widget.arguments["productId"];
-            //make api call to save the variant details
-            saveVariant(productId, variant);
-          }
-
-        }
       } else {
         isAPILoading = false;
         if (mounted) setState(() {});

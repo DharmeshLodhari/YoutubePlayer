@@ -98,7 +98,7 @@ class _MyProductsState extends State<MyProducts> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 20),
+      SizedBox(width: 30),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {

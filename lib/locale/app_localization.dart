@@ -976,6 +976,13 @@ class AppLocalization {
     );
   }
 
+  String get addOn {
+    return Intl.message(
+      "Add-Ons",
+      name: "addOn",
+    );
+  }
+
   String get cards {
     return Intl.message(
       "Cards",
@@ -1102,10 +1109,38 @@ class AppLocalization {
     );
   }
 
+  String get option {
+    return Intl.message(
+      "Option",
+      name: "option",
+    );
+  }
+
+  String get newAddOns {
+    return Intl.message(
+      "New Add-ons",
+      name: "newAddOns",
+    );
+  }
+
   String get updateVariant {
     return Intl.message(
       "Update Variant",
       name: "updateVariant",
+    );
+  }
+
+  String get noAddOnYet {
+    return Intl.message(
+      "No Add-Ons Yet",
+      name: "noAddOnYet",
+    );
+  }
+
+  String get noAddOnYetSub {
+    return Intl.message(
+      "No add-ons yet, when you create add-ons you will see them on this page",
+      name: "noAddOnYetSub",
     );
   }
 
@@ -2064,6 +2099,13 @@ class AppLocalization {
     return Intl.message(
       "Type",
       name: "type",
+    );
+  }
+
+  String get selectType {
+    return Intl.message(
+      "Select Type",
+      name: "selectType",
     );
   }
 
