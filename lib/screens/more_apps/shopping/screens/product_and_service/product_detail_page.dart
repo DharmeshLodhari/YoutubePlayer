@@ -102,6 +102,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   int stockLeft = 0;
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
+  String staticImage = "";
 
   @override
   void initState() {
@@ -1163,6 +1164,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     await _auth.getProduct(productId).then((value) {
       product = value;
       displayProductImages = product!.serverImages;
+      staticImage = product!.serverImages![0]!;
       productIsLoading = false;
       productVariantList = Variant.convertToVariantList(product!.variant!);
 
@@ -1468,10 +1470,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget showVariantFirstImages(){
+    int itemCount = colorGroups.length; // Replace with your actual item count
+    int maxItemsPerRow = 5;
+    int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
+
     return SizedBox(
-      height: 80.0,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
+      height: 82.0 * totalColumns,
+      child: GridView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 5,
+          crossAxisSpacing: 5.0,
+          mainAxisSpacing: 5.0,
+          childAspectRatio: 1.1,
+        ),
+        // scrollDirection: Axis.horizontal,
         itemCount: colorGroups.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
@@ -1569,7 +1582,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   }
 
-  Widget showVariantSizes(){
+  Widget showVariantSizesold(){
+    final screenWidth = MediaQuery.of(context).size.width;
+    final maxItemsPerRow = 5;
+    final itemWidth = screenWidth / maxItemsPerRow;
 
     return SizedBox(
       height: 50.0,
@@ -1577,6 +1593,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         scrollDirection: Axis.horizontal,
         itemCount: sizeGroups.length,
         shrinkWrap: true,
+        itemExtent: itemWidth,
         itemBuilder: (context, index) {
           String size = sizeGroups.keys.elementAt(index);
           List<Variant> variantsWithSize = sizeGroups[size]!;
@@ -1637,17 +1654,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   }
 
-  Widget showVariantSizes2() {
-    final screenSize = MediaQuery.of(context).size;
-    final itemsPerRow = (screenSize.width / 100).floor(); // Adjust the value as needed
+
+  int calculateColumnCount(int itemCount, int maxItemsPerRow) {
+    return (itemCount / maxItemsPerRow).ceil();
+  }
+
+  Widget showVariantSizes(){
+
+    int itemCount = sizeGroups.length; // Replace with your actual item count
+    int maxItemsPerRow = 3;
+    int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(
-      height: 50.0,
+      height: 55.0 * totalColumns,
       child: GridView.builder(
+        // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: itemsPerRow,
-          crossAxisSpacing: 8.0, // Adjust spacing as needed
-          mainAxisSpacing: 8.0,  // Adjust spacing as needed
+          // maxCrossAxisExtent: maxTextLengthWithSpace, // Maximum width for each item
+          crossAxisCount: 3,
+          crossAxisSpacing: 8.0,
+          mainAxisSpacing: 8.0,
+          childAspectRatio: 2.5,
         ),
         itemCount: sizeGroups.length,
         shrinkWrap: true,
@@ -1672,31 +1700,34 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 // Update price or any other state based on the selected variant
                 price = variant.price!;
                 selectedVariantId = variant.id!;
-                selectedVariantImage = variant.serverImages![0]!;
+                selectedVariantImage = variant.serverImages!.isNotEmpty ? variant.serverImages![0]! : staticImage;
                 selectedVariantPrice = variant.price!;
                 stockLeft = int.parse(variant.quantity!);
               }
 
-              if (mounted) setState(() {});
+              if(mounted) setState(() {});
             },
-            child: Container(
-              decoration: BoxDecoration(
-                color: index == selectedSizeIndex ? black : white,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                border: Border.all(
-                  color: black,
-                  width: 1.0,
+            child: SizedBox(
+              height: 20.0,
+              child: Container(
+                // height: 20.0,
+                decoration: BoxDecoration(
+                  color: index == selectedSizeIndex ? black : white,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(
+                    color: black,
+                    width: 1.0,
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                child: Center(
-                  child: Text(
-                    size,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: index == selectedSizeIndex ? white : blackFont,
-                      fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0,right: 10.0),
+                  child: Center(
+                    child: Text(
+                      size,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: index == selectedSizeIndex ? white : blackFont,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -1706,8 +1737,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         },
       ),
     );
-  }
 
+  }
 
 
   Widget copyQrCode() {
