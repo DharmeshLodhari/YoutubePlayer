@@ -1053,19 +1053,45 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                   child: ClipRRect(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(10)),
-                                child: CachedNetworkImage(
-                                  placeholder: (context, url) =>
-                                      Center(child: CircularLoadingIndicator()),
-                                  imageUrl: displayProductImages?[0] ?? "",
-                                  fit: BoxFit.fitHeight,
-                                  height: double.infinity,
-                                  width: double.infinity,
-                                  errorWidget: productAndServiceBigErrorWidget,
+                                child: Stack(
+                                  children: [
+                                    CachedNetworkImage(
+                                      placeholder: (context, url) =>
+                                          Center(child: CircularLoadingIndicator()),
+                                      imageUrl: displayProductImages?[0] ?? "",
+                                      fit: BoxFit.fitHeight,
+                                      height: double.infinity,
+                                      width: double.infinity,
+                                      errorWidget: productAndServiceBigErrorWidget,
+                                    ),
+
+                                    if(product!.pricePercentageChange != 0.0)...[
+                                      Positioned(
+                                        top: 8,
+                                        right: 100,
+                                        child: Container(
+                                          padding: EdgeInsets.only(left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+                                          decoration: BoxDecoration(
+                                            color: naturalGreen,
+                                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                                          ),
+                                          child: Text(
+                                            "${product!.pricePercentageChange!.toInt()}% off",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ]
+
+                                  ],
                                 ),
                               )),
                             ),
                           ),
                           getOutOfStockTag(),
+
                         ],
                       )
                     : Column(
@@ -1091,17 +1117,40 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                                 child: ClipRRect(
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(10)),
-                                              child: CachedNetworkImage(
-                                                placeholder: (context, url) =>
-                                                    Center(
-                                                        child:
-                                                            CircularLoadingIndicator()),
-                                                imageUrl: item!,
-                                                fit: BoxFit.fitHeight,
-                                                height: double.infinity,
-                                                width: double.infinity,
-                                                errorWidget:
-                                                    productAndServiceBigErrorWidget,
+                                              child: Stack(
+                                                children: [
+                                                  CachedNetworkImage(
+                                                    placeholder: (context, url) =>
+                                                        Center(
+                                                            child:
+                                                                CircularLoadingIndicator()),
+                                                    imageUrl: item!,
+                                                    fit: BoxFit.fitHeight,
+                                                    height: double.infinity,
+                                                    width: double.infinity,
+                                                    errorWidget:
+                                                        productAndServiceBigErrorWidget,
+                                                  ),
+                                                  if(product!.pricePercentageChange != 0.0)...[
+                                                    Positioned(
+                                                      top: 8,
+                                                      right: 100,
+                                                      child: Container(
+                                                        padding: EdgeInsets.only(left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+                                                        decoration: BoxDecoration(
+                                                          color: naturalGreen,
+                                                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                                                        ),
+                                                        child: Text(
+                                                          "${product!.pricePercentageChange!.toInt()}% off",
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ]
+                                                ],
                                               ),
                                             )),
                                           ),
@@ -1360,8 +1409,33 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ],
               ),
             ),
-            // copyQrCode(),
-            qrCodeIcon(),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                qrCodeIcon(),
+                if(stockLeft >= 10)...[
+                  SizedBox(height: 10.0,),
+                  Text('In Stock',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: naturalGreen,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ]else if(stockLeft == 0)...[
+                  SizedBox.shrink()
+                ]
+                else if(stockLeft <= 9)...[
+                    SizedBox(height: 10.0,),
+                    Text('Only ${stockLeft.toString()} left in stock',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: mateRed,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ]
+              ],
+            ),
           ],
         ),
 
@@ -1413,27 +1487,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           SizedBox(height: 5.0,),
           showVariantSizes(),
         ],
-
-        if(stockLeft >= 10)...[
-          SizedBox(height: 10.0,),
-          Text('In Stock',
-            style: TextStyle(
-                fontSize: 16,
-                color: naturalGreen,
-                fontWeight: FontWeight.bold),
-          ),
-        ]else if(stockLeft == 0)...[
-          SizedBox.shrink()
-        ]
-        else if(stockLeft <= 9)...[
-          SizedBox(height: 10.0,),
-          Text('Only ${stockLeft.toString()} left in stock',
-            style: TextStyle(
-                fontSize: 16,
-                color: mateRed,
-                fontWeight: FontWeight.bold),
-          ),
-        ]
 
       ],
     );
@@ -1570,78 +1623,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       ),
                           )),
                       errorWidget: (context, url, error) => Icon(Icons.error),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-
-  }
-
-  Widget showVariantSizesold(){
-    final screenWidth = MediaQuery.of(context).size.width;
-    final maxItemsPerRow = 5;
-    final itemWidth = screenWidth / maxItemsPerRow;
-
-    return SizedBox(
-      height: 50.0,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: sizeGroups.length,
-        shrinkWrap: true,
-        itemExtent: itemWidth,
-        itemBuilder: (context, index) {
-          String size = sizeGroups.keys.elementAt(index);
-          List<Variant> variantsWithSize = sizeGroups[size]!;
-
-          for (int index = 0; index < variantsWithSize.length; index++) {
-            Variant variant = variantsWithSize[index];
-            if (variant.value == null) {
-              return SizedBox.shrink();
-            }
-          }
-
-          return Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: GestureDetector(
-              onTap: () {
-                selectedSize = sizeGroups.keys.elementAt(index);
-                selectedSizeIndex = index;
-
-                for (int index = 0; index < variantsWithSize.length; index++) {
-                  Variant variant = variantsWithSize[index];
-                  // Update price or any other state based on the selected variant
-                  price = variant.price!;
-                  selectedVariantId = variant.id!;
-                  selectedVariantImage = variant.serverImages![0]!;
-                  selectedVariantPrice = variant.price!;
-                  stockLeft = int.parse(variant.quantity!);
-                }
-
-                if(mounted) setState(() {});
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: index == selectedSizeIndex ? black : white,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(
-                    color: black,
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0,right: 10.0),
-                  child: Center(
-                    child: Text(
-                      size,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: index == selectedSizeIndex ? white : blackFont,
-                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

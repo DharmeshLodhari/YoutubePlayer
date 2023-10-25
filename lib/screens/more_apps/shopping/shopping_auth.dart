@@ -294,6 +294,7 @@ class ShoppingAuthService extends AuthService {
     product.widthSiUnit = item["width_si_unit"] ?? '';
     product.trackInventory = item["track_inventory"] ?? false;
     product.quantity = item["quantity"];
+    product.pricePercentageChange = item["price_percentage_change"] ?? 0.0;
 
     return product;
   }
