@@ -126,6 +126,26 @@ class _DisplayProductState extends State<DisplayProduct> {
                         child: getRating(
                             numberOfRating: widget.product.rating?.toInt()),
                       ),
+                      if(widget.product.pricePercentageChange != 0.0)...[
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: EdgeInsets.only(left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+                            decoration: BoxDecoration(
+                              color: naturalGreen,
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                            ),
+                            child: Text(
+                              "${widget.product.pricePercentageChange!.toInt()}% off",
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+
                       displayShoppingCartControls(),
                       // TODO: to be added in future
                       // Positioned(right: 10, top: 10, child: favouriteIcon())

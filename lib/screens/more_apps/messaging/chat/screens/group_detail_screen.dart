@@ -18,7 +18,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
+import '../../../../../widget/dialog.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class GroupDetailScreen extends StatefulWidget {
@@ -572,8 +574,25 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             SlydoAppIcon.delete,
             color: mateRed,
           ),
-          onTap: () {
-            deleteGroup();
+          onTap: () async {
+
+            bool? result = await showDialogBox(
+              context: context,
+              actionOneBgColor: mateRed,
+              actionOneTextColor: white,
+              actionTwoBgColor: naturalGreen,
+              actionTwoTextColor: Colors.white,
+              title: groupDetail!.conversationType == 'channel' ? "Delete Channel" : "Delete Group",
+              description: groupDetail!.conversationType == 'channel' ? "Are you sure you want to delete channel?" : "Are you sure you want to delete group?",
+              actionOneText: AppLocalization.of(context)!.delete,
+              actionTwoText: AppLocalization.of(context)!.noContinue,
+            );
+
+            if (result != null && result) {
+              deleteGroup();
+            }
+
+
           },
         ),
       ),

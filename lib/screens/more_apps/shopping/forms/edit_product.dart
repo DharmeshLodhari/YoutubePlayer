@@ -390,14 +390,14 @@ class _EditProductState extends State<EditProduct> {
 
                       SizedBox(height: 16),
                       getEnableInSuperStoreField(),
-                      // const SizedBox(height: 20),
-                      // if(productVariantList == null || productVariantList.isEmpty)...[
-                      //   // getAddVariationFormField(),
-                      //   productVariation(),
-                      // ]else...[
-                      //   displaySelectedVariant(),
-                      // ],
-                      //
+                      const SizedBox(height: 20),
+                      if(productVariantList == null || productVariantList.isEmpty)...[
+                        // getAddVariationFormField(),
+                        productVariation(),
+                      ]else...[
+                        displaySelectedVariant(),
+                      ],
+
                       // const SizedBox(height: 20),
                       // productAddOns(),
 
@@ -2011,7 +2011,7 @@ class _EditProductState extends State<EditProduct> {
     return GestureDetector(
       onTap: () async {
         final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
-          'productId': productId,
+          'productId': productId, 'option': 'edit'
         });
 
         // Handle the result (map) received from Product Add New Option
