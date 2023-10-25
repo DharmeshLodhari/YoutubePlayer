@@ -182,15 +182,14 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                       }
                     }),
                 Center(child: _infoTile()),
+                SizedBox(
+                  height: 120,
+                ),
                 // getLogoutTile(),
               ],
             ),
           ),
         )),
-        // _infoTile(),
-        SizedBox(
-          height: 120,
-        ),
       ],
     );
   }
