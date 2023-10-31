@@ -853,7 +853,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 children: [
                   _buildProductTitleAndPriceWidget(),
                   SizedBox(
-                    height: 24,
+                    height: 10,
                   ),
                   Divider(
                     height: 0,
@@ -1528,14 +1528,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(
-      height: 82.0 * totalColumns,
+      height: 75.0 * totalColumns,
       child: GridView.builder(
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 5,
-          crossAxisSpacing: 5.0,
+          crossAxisSpacing: 2.0,
           mainAxisSpacing: 5.0,
-          childAspectRatio: 1.1,
+          childAspectRatio: 1.0,
         ),
         // scrollDirection: Axis.horizontal,
         itemCount: colorGroups.length,
@@ -1599,7 +1599,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 if(mounted) setState(() {});
               },
               child: Container(
-                height: 80.0,
+                height: 0.0,
                 width: 80.0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(14)),
@@ -1635,7 +1635,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   }
 
-
   int calculateColumnCount(int itemCount, int maxItemsPerRow) {
     return (itemCount / maxItemsPerRow).ceil();
   }
@@ -1647,16 +1646,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(
-      height: 55.0 * totalColumns,
+      height: 60.0 * totalColumns,
       child: GridView.builder(
-        // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          // maxCrossAxisExtent: maxTextLengthWithSpace, // Maximum width for each item
           crossAxisCount: 3,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
-          childAspectRatio: 2.5,
+          childAspectRatio: 2.4,
         ),
         itemCount: sizeGroups.length,
         shrinkWrap: true,
@@ -1689,9 +1686,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               if(mounted) setState(() {});
             },
             child: SizedBox(
-              height: 20.0,
+              // height: 20.0,
               child: Container(
-                // height: 20.0,
                 decoration: BoxDecoration(
                   color: index == selectedSizeIndex ? black : white,
                   borderRadius: BorderRadius.all(Radius.circular(10)),

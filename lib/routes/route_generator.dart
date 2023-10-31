@@ -177,10 +177,11 @@ import '../screens/more_apps/service_hub/screens/search_filter.dart';
 import '../screens/more_apps/service_hub/screens/search_my_job.dart';
 import '../screens/more_apps/service_hub/screens/search_services.dart';
 import '../screens/more_apps/service_hub/service_hub_dashboard.dart';
+import '../screens/more_apps/shopping/forms/product_add_on/add_on_option_list.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_list.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_create.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_update.dart';
-import '../screens/more_apps/shopping/forms/product_add_on/new_add_on.dart';
+import '../screens/more_apps/shopping/forms/product_add_on/create_add_on.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_add_new_option.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_variant_list.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_variant_update.dart';
@@ -1775,6 +1776,16 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case Routes.ADD_ON_OPTION_LIST:
+        return PageTransition(
+          child: AddOnOptionList(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case Routes.PRODUCT_ADD_ON_OPTION_CREATE:
         return PageTransition(
           child: ProductAddOnOptionCreate(
@@ -1797,7 +1808,7 @@ class RouteGenerator {
 
       case Routes.NEW_ADD_ON:
         return PageTransition(
-          child: NewAddOn(
+          child: CreateAddOn(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

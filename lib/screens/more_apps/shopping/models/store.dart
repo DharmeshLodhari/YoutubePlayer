@@ -550,6 +550,128 @@ class Variant {
   }
 }
 
+class AddOnOption {
+  int? id;
+  String? picture;
+  String? name;
+  String? description;
+  String? merchant;
+  String? currency;
+  String? price;
+  bool? isAvailable;
+  DateTime? createdAt;
+
+  AddOnOption(
+      {this.id,
+        this.picture,
+        this.name,
+        this.description,
+        this.merchant,
+        this.currency,
+        this.price,
+        this.isAvailable,
+        this.createdAt});
+
+  AddOnOption.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    picture = json['picture'];
+    name = json['name'];
+    description = json['description'];
+    merchant = json['merchant'];
+    currency = json['currency'];
+    price = json['price'].toString();
+    isAvailable = json['is_available'];
+    createdAt = getProductDateTime(json['created_at']);
+  }
+
+  static DateTime getProductDateTime(var date) {
+    if (date != null) {
+      DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['picture'] = this.picture;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['merchant'] = this.merchant;
+    data['currency'] = this.currency;
+    data['price'] = this.price;
+    data['is_available'] = this.isAvailable;
+    data['created_at'] = this.createdAt;
+    return data;
+  }
+}
+
+class AddOns {
+  int? id;
+  List<AddOnOption>? options;
+  String? merchant;
+  String? name;
+  String? description;
+  String? inputType;
+  String? selectType;
+  bool? isRequired;
+  DateTime? createdAt;
+
+  AddOns(
+      {this.id,
+        this.options,
+        this.merchant,
+        this.name,
+        this.description,
+        this.inputType,
+        this.selectType,
+        this.isRequired,
+        this.createdAt});
+
+  AddOns.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    if (json['options'] != null) {
+      options = <AddOnOption>[];
+      json['options'].forEach((v) {
+        options!.add(new AddOnOption.fromJson(v));
+      });
+    }
+    merchant = json['merchant'];
+    name = json['name'];
+    description = json['description'];
+    inputType = json['input_type'];
+    selectType = json['select_type'];
+    isRequired = json['is_required'];
+    createdAt = getProductDateTime(json['created_at']);
+  }
+
+  static DateTime getProductDateTime(var date) {
+    if (date != null) {
+      DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    if (this.options != null) {
+      data['options'] = this.options!.map((v) => v.toJson()).toList();
+    }
+    data['merchant'] = this.merchant;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['input_type'] = this.inputType;
+    data['select_type'] = this.selectType;
+    data['is_required'] = this.isRequired;
+    data['created_at'] = this.createdAt;
+    return data;
+  }
+
+}
+
 class Service {
   String? id;
   String? name;

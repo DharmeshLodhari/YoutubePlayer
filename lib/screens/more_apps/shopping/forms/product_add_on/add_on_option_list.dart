@@ -19,17 +19,17 @@ import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 
-class ProductAddOnList extends StatefulWidget {
+class AddOnOptionList extends StatefulWidget {
 
   var arguments;
 
-  ProductAddOnList({this.arguments, Key? key}) : super(key: key);
+  AddOnOptionList({this.arguments,  Key? key}) : super(key: key);
 
   @override
-  _ProductAddOnListState createState() => _ProductAddOnListState();
+  _AddOnOptionListState createState() => _AddOnOptionListState();
 }
 
-class _ProductAddOnListState extends State<ProductAddOnList> {
+class _AddOnOptionListState extends State<AddOnOptionList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
   GlobalKey<ScaffoldMessengerState>();
@@ -40,8 +40,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   String? next = "";
   String? previous = "";
   String? productId = "";
-  // List<AddOns> productAddOnList = [];
-  List productAddOnList = [];
+  List addOnOptionList = [];
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
   RefreshController(initialRefresh: false);
@@ -57,14 +56,14 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
 
     productId = widget.arguments["productId"];
 
-    getAddOnList();
+    getAddOnOptionList();
 
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        getAddOnList();
+        getAddOnOptionList();
       }
     });
 
@@ -74,7 +73,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
     );
   }
 
-  void getAddOnList() async {
+  void getAddOnOptionList() async {
     if (!isLoading) {
       if (mounted) {
         setState(() {
@@ -82,7 +81,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         });
       }
       Map<String, dynamic>? result =
-      await _auth.getAddOnsList(productId!, next, previous);
+      await _auth.getAddOnOptionsList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
         noItemInList = true;
@@ -93,7 +92,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       previous = result['previous'];
       var tempList = result['results'];
 
-      productAddOnList.addAll(tempList);
+      addOnOptionList.addAll(tempList);
 
       if (mounted) {
         setState(() {
@@ -102,13 +101,13 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         });
       }
 
-      if (productAddOnList.isEmpty) {
+      if (addOnOptionList.isEmpty) {
         if (mounted) {
           setState(() {
             noItemInList = true;
           });
         }
-      } else if (next == null && productAddOnList.length > 6) {
+      } else if (next == null && addOnOptionList.length > 6) {
         _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
           Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -128,9 +127,9 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         count = 0;
         next = "";
         previous = "";
-        productAddOnList = [];
+        addOnOptionList = [];
         if (mounted) setState(() {});
-        getAddOnList();
+        getAddOnOptionList();
         setState(() {
           // Call the callback function with the updated list
           //to pass the list back to edit product page
@@ -152,7 +151,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context, productAddOnList);
+        Navigator.pop(context, addOnOptionList);
         return true;
       },
       child: ScaffoldMessenger(
@@ -169,7 +168,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
               ),
               controller: _refreshController,
               onRefresh: _onRefresh,
-              child: _buildProductAddOnList()),
+              child: _buildAddOnOptionList()),
         ),
       ),
     );
@@ -187,12 +186,12 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context, productAddOnList);
+          Navigator.pop(context, addOnOptionList);
         },
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context)!.addOn,
+        AppLocalization.of(context)!.option,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -222,10 +221,10 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         });
 
         // Handle the result (map) received from Product Add New Option
-        if (result != null && result is AddOns) {
+        if (result != null && result is Variant) {
           //save the variant details for later use
-          // _onRefresh();
-          productAddOnList.add(result);
+          _onRefresh();
+          // variantData = result;
           if(mounted)setState(() {});
         }
       },
@@ -234,7 +233,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
     );
   }
 
-  Widget _buildProductAddOnList() {
+  Widget _buildAddOnOptionList() {
     return noItemInList
         ? NoItemInList(
       title: AppLocalization.of(context)!.noAddOnYet,
@@ -243,18 +242,18 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         : ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 16),
       //+1 for progressbar
-      itemCount: productAddOnList.length + 1,
+      itemCount: addOnOptionList.length + 1,
       itemBuilder: (BuildContext context, int index) {
 
-        if (index == productAddOnList.length) {
+        if (index == addOnOptionList.length) {
           return buildLoadingIndicator(isLoading: isLoading);
         } else {
           return _getSlidableWithLists(
               context,
-              productAddOnTile(
-                addOns: productAddOnList[index],
+              addOnOptionTile(
+                addOnOption: addOnOptionList[index],
               ),
-              productAddOnList[index]);
+              addOnOptionList[index]);
         }
       },
       controller: _scrollController,
@@ -262,7 +261,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   }
 
 
-  Widget productAddOnTile({required AddOns addOns}) {
+  Widget addOnOptionTile({required AddOnOption addOnOption}) {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -277,7 +276,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                appendStringDot(addOns.name!, 20),
+                appendStringDot(addOnOption.name!, 20),
                 maxLines: 1,
                 style: TextStyle(
                     color: blackFont,
@@ -285,7 +284,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                     fontSize: 18),
               ),
               Text(
-                '${addOns.options!.length} items',
+                'Created: ${addOnOption.createdAt} ',
                 maxLines: 1,
                 style: TextStyle(
                     color: blackFont.withOpacity(.5),
@@ -295,42 +294,110 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
 
             ],
           ),
+          leading: checkProductImage(addOnOption),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                worldCurrencies[addOnOption.currency!]!,
+                style: TextStyle(
+                    fontFamily: "Roboto",
+                    fontSize: 18.0,
+                    color: blackFont,
+                    fontWeight: FontWeight.w600),
+              ),
+              Text(
+                moneyDisplayNormalizer(
+                    int.parse(addOnOption.price.toString())),
+                style: TextStyle(
+                    fontSize: 18.0,
+                    color: blackFont,
+                    fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
 
         ),
       ),
     );
   }
 
+  Widget checkProductImage(AddOnOption addOnOption) {
+    // Retrieve the first image from the 'pictures' list
+    String? url = "";
+
+    url = addOnOption.picture;
+
+    String imageUrl = url!.replaceAll('https//', 'https://');
+    if (url == "") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(addOnOption.name!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 100,
+        child: CustomBoxShadow(
+          child: Card(
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: boxShadowTwo,
+            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Container(
+              width: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: NetworkImage(
+                      imageUrl,
+                    ),
+                    fit: BoxFit.cover),
+              ),
+            ),
+          ),
+        ),
+      );
+
+    }
+  }
+
 
   Widget _getSlidableWithLists(
-      BuildContext context, Widget bankAccountTile, AddOns addOns) {
+      BuildContext context, Widget bankAccountTile, AddOnOption addOnOption) {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(bankAccountTile),
-      actions: listActionSlideActions(addOns: addOns),
-      secondaryActions: listSecondaryActions(addOns: addOns),
+      actions: listActionSlideActions(addOnOption: addOnOption),
+      secondaryActions: listSecondaryActions(addOnOption: addOnOption),
     );
   }
 
-  List<Widget> listSecondaryActions({required AddOns addOns}) {
+  List<Widget> listSecondaryActions({required AddOnOption addOnOption}) {
     return [
       SlideActionButton(
           backgroundColor: starYellow,
           icon: Icons.edit,
           onTap:  () async {
-            // final data = await Navigator.of(context).pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
-            //   'addOns': addOns,
-            // });
-            //
-            // // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
-            // if (data != null && data is AddOns) {
-            //   //save the variant details for later use
-            //   _onRefresh();
-            //   if(mounted)setState(() {});
-            // }
+            final data = await Navigator.of(context).pushNamed(Routes.PRODUCT_ADD_ON_OPTION_UPDATE, arguments: {
+              'addOnOption': addOnOption, 'productId': productId,
+            });
+
+            // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
+            if (data != null && data is AddOnOption) {
+              //save the add-on option details for later use
+              // _onRefresh();
+              updateItemById(data.id!, data);
+              if(mounted)setState(() {});
+            }
 
           },
           title: AppLocalization.of(context)!.edit,
@@ -339,33 +406,43 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
     ];
   }
 
-  List<Widget> listActionSlideActions({AddOns? addOns}) {
+  void updateItemById(int id, AddOnOption updatedItem) {
+    for (int i = 0; i < addOnOptionList.length; i++) {
+      if (addOnOptionList[i]["id"] == id) {
+        addOnOptionList[i] = updatedItem;
+        break; // Stop iterating once the item is found and updated
+      }
+    }
+  }
+
+
+  List<Widget> listActionSlideActions({AddOnOption? addOnOption}) {
     return [
       SlideActionButton(
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () async {
-            deleteAddOn(addOns);
+            deleteAddOnOption(addOnOption!);
           },
           title: AppLocalization.of(context)!.delete,
           slideController: _slideController),
     ];
   }
 
-  void deleteAddOn(AddOns? addOns) {
-    _auth.deleteAddOn(addOns!.id!).then((value) {
+  void deleteAddOnOption(AddOnOption addOnOption) {
+    _auth.deleteAddOnOption(addOnOption.id!).then((value) {
       if (value) {
         showToast(
             message:
-            AppLocalization.of(context)!.addOnDeletedSuccessfully);
-        //remove the selected add-on from the list using it id
+            AppLocalization.of(context)!.addOnOptionDeletedSuccessfully);
+        //remove the selected add-on option from the list using it id
         // _onRefresh();
-        productAddOnList.removeWhere((addOn) => addOn.id == addOns.id);
+        addOnOptionList.removeWhere((addOn) => addOn.id == addOnOption.id);
         if(mounted)setState(() {});
 
       } else {
         showToast(
-            message: AppLocalization.of(context)!.addOnIsNotDeleted);
+            message: AppLocalization.of(context)!.addOnOptionIsNotDeleted);
       }
     }).catchError((error) {
       showToast(message: error.toString());

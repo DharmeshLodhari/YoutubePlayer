@@ -39,7 +39,7 @@ class UserAuth extends AuthService {
     //   "DeviceType": Platform.isAndroid ? "Android" : "IOS",
     //   "User-Agent": "Slydo-Mobile",
     // };
-    var response = await httpGet(url, headers: headers);
+    var response = await httpGet(url, headers: headers, newTimeOutDuration: Duration(seconds: 45));
 
     debugPrint(
         "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");

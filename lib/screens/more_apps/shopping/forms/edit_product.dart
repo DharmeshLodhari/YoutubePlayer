@@ -82,6 +82,7 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController inventoryCountController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
+  List<AddOns> productAddOnsList = [];
   bool inventoryIsAvailable = false;
   var weightSi = ['Grams', 'Kilograms'];
   var widthSi = ['Centimetres', 'Metres'];
@@ -398,10 +399,14 @@ class _EditProductState extends State<EditProduct> {
                         displaySelectedVariant(),
                       ],
 
-                      // const SizedBox(height: 20),
-                      // productAddOns(),
+                      const SizedBox(height: 20),
+                      if(productAddOnsList == null || productAddOnsList.isEmpty)...[
+                        productAddOns(),
+                      ]else...[
+                        displaySelectedAddOn(),
+                      ],
 
-                      SizedBox(height: 16),
+                      SizedBox(height: 26),
                       getSubmitButton(),
                       SizedBox(height: 20),
                     ],
@@ -2053,10 +2058,10 @@ class _EditProductState extends State<EditProduct> {
           'productId': productId,
         });
 
-        // Handle the result (map) received from Product Add New Option
-        if (result != null && result is List<Variant>) {
-          //save the add-on details for later use
-          // productVariantList = result;
+        // Handle the result (map) received from PRODUCT_ADD_ON_LIST
+        if (result != null && result is AddOns) {
+          //save the add-on details
+          productAddOnsList.add(result);
           if(mounted)setState(() {});
         }
       },
@@ -2079,6 +2084,112 @@ class _EditProductState extends State<EditProduct> {
             ),
 
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget displaySelectedAddOn(){
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Product Add-ons',
+              maxLines: 1,
+              style: TextStyle(
+                  color: blackFont.withOpacity(.5),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            GestureDetector(
+              onTap: () async {
+                final data = await Navigator.of(context).pushNamed(Routes.PRODUCT_ADD_ON_LIST,
+                    arguments: {
+                      'productId': productId,
+                    });
+
+                // Handle the result (map) received from PRODUCT_ADD_ON_LIST
+                if (data != null && data is AddOns) {
+                  //save the add-on details
+                  productAddOnsList.add(data);
+                  if(mounted)setState(() {});
+                }
+              },
+              child: Text(
+                'See all',
+                maxLines: 1,
+                style: TextStyle(
+                    color: navyBlue,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 5.0),
+        _buildAddOnList(),
+      ],
+    );
+
+  }
+
+  Widget _buildAddOnList() {
+    return Container(
+      height: 200,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        //+1 for progressbar
+        itemCount: productAddOnsList.length + 1,
+        controller: scrollControllerVariant,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == productAddOnsList.length) {
+            return buildLoadingIndicator(isLoading: isLoading);
+          } else {
+            return addOnTile(
+              addOns: productAddOnsList[index],
+            );
+          }
+        },
+
+      ),
+    );
+  }
+
+  Widget addOnTile({required AddOns addOns}) {
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          dense:  true,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                appendStringDot(addOns.name!, 20),
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18),
+              ),
+              Text(
+                '${addOns.options!.length} items',
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14),
+              ),
+            ],
+          ),
         ),
       ),
     );

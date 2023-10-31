@@ -1033,12 +1033,17 @@ String? checkSlydoName(String name) {
   String? result;
 
   if (name.isNotEmpty && name != "") {
-    String lowerCaseInput = name.toLowerCase();
+    String lowerCaseInput = name.trim().toLowerCase();
+
+    debugPrint("ERROR lowerCaseInput:- $lowerCaseInput");
+
     String cleanName = lowerCaseInput
         .replaceAll(".", "")
         .replaceAll(" ", "")
         .replaceAll("_", "")
         .replaceAll("-", "");
+
+    debugPrint("ERROR cleanName:- $cleanName");
 
     if (cleanName.contains('slydo')) {
       result = slydoNameMsg;
