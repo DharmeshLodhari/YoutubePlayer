@@ -82,7 +82,7 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController inventoryCountController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
-  List<AddOns> productAddOnsList = [];
+  List productAddOnsList = [];
   bool inventoryIsAvailable = false;
   var weightSi = ['Grams', 'Kilograms'];
   var widthSi = ['Centimetres', 'Metres'];
@@ -391,7 +391,7 @@ class _EditProductState extends State<EditProduct> {
 
                       SizedBox(height: 16),
                       getEnableInSuperStoreField(),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 25),
                       if(productVariantList == null || productVariantList.isEmpty)...[
                         // getAddVariationFormField(),
                         productVariation(),
@@ -399,14 +399,14 @@ class _EditProductState extends State<EditProduct> {
                         displaySelectedVariant(),
                       ],
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 25),
                       if(productAddOnsList == null || productAddOnsList.isEmpty)...[
                         productAddOns(),
                       ]else...[
                         displaySelectedAddOn(),
                       ],
 
-                      SizedBox(height: 26),
+                      SizedBox(height: 30),
                       getSubmitButton(),
                       SizedBox(height: 20),
                     ],
@@ -2015,6 +2015,9 @@ class _EditProductState extends State<EditProduct> {
   Widget productVariation(){
     return GestureDetector(
       onTap: () async {
+        if(productAddOnsList.isNotEmpty){
+          return;
+        }
         final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
           'productId': productId, 'option': 'edit'
         });
@@ -2034,7 +2037,7 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue,
+                  color: productAddOnsList.isEmpty ? navyBlue : blackFont.withOpacity(.5),
                   fontWeight: FontWeight.w600,
                   fontSize: 14),
             ),
@@ -2054,14 +2057,18 @@ class _EditProductState extends State<EditProduct> {
     return GestureDetector(
       onTap: () async {
         //disable click if variant is not empty
+        if(productVariantList.isNotEmpty){
+          return;
+        }
+
         final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
           'productId': productId,
         });
 
         // Handle the result (map) received from PRODUCT_ADD_ON_LIST
-        if (result != null && result is AddOns) {
+        if (result != null && result is List<dynamic>) {
           //save the add-on details
-          productAddOnsList.add(result);
+          productAddOnsList = result;
           if(mounted)setState(() {});
         }
       },
@@ -2073,7 +2080,7 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color: productVariantList.isEmpty ? navyBlue : greyBorderColor,
+                  color: productVariantList.isEmpty ? navyBlue : blackFont.withOpacity(.5),
                   fontWeight: FontWeight.w600,
                   fontSize: 14),
             ),
@@ -2138,9 +2145,10 @@ class _EditProductState extends State<EditProduct> {
 
   Widget _buildAddOnList() {
     return Container(
-      height: 200,
+      // height: 200,
+      height: 80 * productAddOnsList.length.toDouble(),
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         //+1 for progressbar
         itemCount: productAddOnsList.length + 1,
         controller: scrollControllerVariant,
@@ -2162,11 +2170,15 @@ class _EditProductState extends State<EditProduct> {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
-        decoration: decorateBox(),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+        decoration: BoxDecoration(
+          border: Border.all(width: 1, color: greyBorderColor),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
         child: ListTile(
           dense:  true,
           title: Column(

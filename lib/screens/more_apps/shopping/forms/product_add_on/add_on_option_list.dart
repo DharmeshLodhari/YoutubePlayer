@@ -15,6 +15,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../../data/currency.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/CustomBoxShadow.dart';
+import '../../../../../widget/curved_btn.dart';
 import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
@@ -47,6 +48,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   bool isLoading = false;
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
+  bool isAPILoading = false;
 
   //slidable tile
   SlidableController? _slideController;
@@ -186,7 +188,9 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context, addOnOptionList);
+          List addOnOption = addOnOptionList.where((addOnOption) => addOnOption.isChecked == true).toList();
+          Navigator.pop(context, addOnOption);
+          // Navigator.pop(context, addOnOptionList);
         },
       ),
       centerTitle: false,
@@ -234,46 +238,65 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   }
 
   Widget _buildAddOnOptionList() {
-    return noItemInList
-        ? NoItemInList(
-      title: AppLocalization.of(context)!.noAddOnYet,
-      msg: AppLocalization.of(context)!.noAddOnYetSub,
-    )
-        : ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      //+1 for progressbar
-      itemCount: addOnOptionList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
+    return Stack(
+      children: [
+        noItemInList
+            ? NoItemInList(
+          title: AppLocalization.of(context)!.noAddOnYet,
+          msg: AppLocalization.of(context)!.noAddOnYetSub,
+        )
+            : ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          //+1 for progressbar
+          itemCount: addOnOptionList.length + 1,
+          itemBuilder: (BuildContext context, int index) {
 
-        if (index == addOnOptionList.length) {
-          return buildLoadingIndicator(isLoading: isLoading);
-        } else {
-          return _getSlidableWithLists(
-              context,
-              addOnOptionTile(
-                addOnOption: addOnOptionList[index],
-              ),
-              addOnOptionList[index]);
-        }
-      },
-      controller: _scrollController,
+            if (index == addOnOptionList.length) {
+              return buildLoadingIndicator(isLoading: isLoading);
+            } else {
+              return _getSlidableWithLists(
+                  context,
+                  GestureDetector(
+                    onTap: (){
+                      toggleAddOnCheckedState(index);
+                    },
+                    child: addOnOptionTile(
+                      addOnOption: addOnOptionList[index], index: index
+                    ),
+                  ),
+                  addOnOptionList[index]);
+            }
+          },
+          controller: _scrollController,
+        ),
+        Positioned(
+          bottom: 25, // Adjust the distance from the bottom as needed
+          right: 25,
+          left: 25,
+
+          child: getSubmitButton(),
+        ),
+      ],
     );
   }
 
 
-  Widget addOnOptionTile({required AddOnOption addOnOption}) {
+  Widget addOnOptionTile({required AddOnOption addOnOption, int? index}) {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
+        height: 100,
+        // padding: EdgeInsets.symmetric(horizontal: 0, vertical: 15),
         decoration: decorateBox(),
         child: ListTile(
           // dense: variant.isDefault! ? true : false,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 appendStringDot(addOnOption.name!, 20),
@@ -281,7 +304,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w600,
-                    fontSize: 18),
+                    fontSize: 16),
               ),
               Text(
                 'Created: ${addOnOption.createdAt} ',
@@ -289,37 +312,94 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                 style: TextStyle(
                     color: blackFont.withOpacity(.5),
                     fontWeight: FontWeight.w400,
-                    fontSize: 14),
+                    fontSize: 12),
               ),
 
             ],
           ),
           leading: checkProductImage(addOnOption),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                worldCurrencies[addOnOption.currency!]!,
-                style: TextStyle(
-                    fontFamily: "Roboto",
-                    fontSize: 18.0,
-                    color: blackFont,
-                    fontWeight: FontWeight.w600),
-              ),
-              Text(
-                moneyDisplayNormalizer(
-                    int.parse(addOnOption.price.toString())),
-                style: TextStyle(
-                    fontSize: 18.0,
-                    color: blackFont,
-                    fontWeight: FontWeight.w600),
-              ),
-            ],
+          trailing: Container(
+            child: Column(
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              // mainAxisAlignment: MainAxisAlignment.center,
+              // mainAxisSize: MainAxisSize.max,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      worldCurrencies[addOnOption.currency!]!,
+                      style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontSize: 12.0,
+                          color: blackFont.withOpacity(.5),
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          int.parse(addOnOption.price.toString())),
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          color: blackFont.withOpacity(.5),
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+                Checkbox(
+                  value: addOnOption.isChecked,
+                  activeColor: navyBlue,
+                  onChanged: (bool? value) {
+                    // Handle checkbox state change here
+                    toggleAddOnCheckedState(index!);
+                  },
+                ),
+              ],
+            ),
           ),
 
         ),
       ),
     );
+  }
+
+  void toggleAddOnCheckedState(int index) {
+    if (index >= 0 && index < addOnOptionList.length) {
+      addOnOptionList[index].isChecked = !addOnOptionList[index].isChecked;
+      if(mounted)setState(() {});
+    }
+  }
+
+  Widget getSubmitButton() {
+    return CurvedButton(
+      onPressed:
+      isAPILoading
+          ? () {}
+          :
+          () async {
+        FocusScope.of(context).unfocus();
+
+        isAPILoading = true;
+        if (mounted) setState(() {});
+
+        await loadAllCheckedAddOn();
+
+        isAPILoading = false;
+        if (mounted) setState(() {});
+
+      },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Save",
+      isLoading: isAPILoading,
+    );
+  }
+
+  Widget loadAllCheckedAddOn() {
+
+    List addOnOption = addOnOptionList.where((addOnOption) => addOnOption.isChecked == true).toList();
+
+    Navigator.pop(context, addOnOption);
+    return Container();
   }
 
   Widget checkProductImage(AddOnOption addOnOption) {

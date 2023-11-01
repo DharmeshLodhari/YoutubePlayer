@@ -23,23 +23,22 @@ import '../../../user_profile/screens/user_profile_module_new/profile_template/u
 import '../../shopping_auth.dart';
 
 
-class CreateAddOn extends StatefulWidget {
+class UpdateAddOn extends StatefulWidget {
   var arguments;
 
-  CreateAddOn({this.arguments, Key? key}) : super(key: key);
+  UpdateAddOn({this.arguments, Key? key}) : super(key: key);
 
   @override
-  _CreateAddOnState createState() => _CreateAddOnState();
+  _UpdateAddOnState createState() => _UpdateAddOnState();
 }
 
-class _CreateAddOnState extends State<CreateAddOn> {
+class _UpdateAddOnState extends State<UpdateAddOn> {
   final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
 
   UserBloc? userBloc;
 
   final ScrollController _scrollController = ScrollController();
-
   bool isRequired = false;
   bool isLoading = false;
   bool isAPILoading = false;
@@ -48,11 +47,15 @@ class _CreateAddOnState extends State<CreateAddOn> {
   String name = "";
   String description = "";
   String value = "";
-  String optionOnWhatToDo = "";
-  TextEditingController? groupDescriptionController;
-  List<AddOnOption> productAddOnOptionList = [];
+  int id = 0;
+  List productAddOnOptionList = [];
   ScrollController scrollControllerAddOnOption = ScrollController();
   AddOns addOns = AddOns();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController comparePriceController = TextEditingController();
+  final TextEditingController isAvailableController = TextEditingController();
 
   @override
   void deactivate() {
@@ -63,10 +66,23 @@ class _CreateAddOnState extends State<CreateAddOn> {
   @override
   void initState() {
     //get value if its form edit or add product
-    optionOnWhatToDo = widget.arguments["option"];
+    addOns = widget.arguments["addOns"];
+
+    id = addOns.id!;
+    nameController.text = addOns.name!.toString();
+    descriptionController.text = addOns.description!.toString();
+    isRequired = addOns.isRequired!;
+
+    name = addOns.name!.toString();
+    description = addOns.description!.toString();
+    selectedType = capitalizeFirstLetter(addOns.selectType!.toString());
+
     super.initState();
   }
 
+  String capitalizeFirstLetter(String input) {
+    return input.substring(0, 1).toUpperCase() + input.substring(1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,12 +164,13 @@ class _CreateAddOnState extends State<CreateAddOn> {
 
                 if(productAddOnOptionList == null || productAddOnOptionList.isEmpty)...[
                   getAddOns(),
+                  const SizedBox(height: 30),
+                  selectFromAddOns(),
                 ]else...[
                   displaySelectedAddOnOption(),
                 ],
 
-
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
                 getSubmitButton(),
                 const SizedBox(height: 40),
               ],
@@ -179,7 +196,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
         maxLines: 3,
         labelText: "Description",
         textCapitalization: TextCapitalization.sentences,
-        // controller: groupDescriptionController,
+        controller: descriptionController,
         validator: (val) {
           if (val.isNotEmpty) {
             return null;
@@ -196,6 +213,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
   Widget addNameField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.name,
+      controller: nameController,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -373,6 +391,45 @@ class _CreateAddOnState extends State<CreateAddOn> {
     );
   }
 
+  Widget selectFromAddOns(){
+    return GestureDetector(
+      onTap: () async {
+        //disable click if add-on option is not empty
+        final result = await Navigator.of(context).pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
+          'productId': widget.arguments['productId'],
+        });
+
+        // Handle the result (map) received from Product Add-on Option
+        if (result != null && result is List<dynamic>) {
+          //save the add-on option details for later use
+          productAddOnOptionList = result;
+          if(mounted)setState(() {});
+        }
+      },
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Select from available options',
+              maxLines: 1,
+              style: TextStyle(
+                  color: navyBlue,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: blackFont,
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: isAPILoading
@@ -397,27 +454,27 @@ class _CreateAddOnState extends State<CreateAddOn> {
 
   Future<void> addNewAddOns() async {
     if (_formKey.currentState!.validate()) {
-        if (validateDropdown()) {
+      if (validateDropdown()) {
 
-          addOns.name = name;
-          addOns.description = description;
-          addOns.isRequired = isRequired;
-          addOns.selectType = selectedType;
-          addOns.options = productAddOnOptionList;
+        addOns.name = name;
+        addOns.description = description;
+        addOns.isRequired = isRequired;
+        addOns.selectType = selectedType;
+        addOns.options = productAddOnOptionList.cast<AddOnOption>();
 
-          await _auth.createAddOn(addOns,
-              widget.arguments["productId"]).then((value) async {
+        await _auth.createAddOn(addOns,
+            widget.arguments["productId"]).then((value) async {
 
-            Navigator.pop(context, value);
+          Navigator.pop(context, value);
 
-          }).catchError((error) {
-            debugPrint("ERROR While createAddOnOption :- $error");
-            isAPILoading = false;
-            if (mounted) setState(() {});
-            showToast(message: "$error");
-          });
+        }).catchError((error) {
+          debugPrint("ERROR While createAddOnOption :- $error");
+          isAPILoading = false;
+          if (mounted) setState(() {});
+          showToast(message: "$error");
+        });
 
-        }
+      }
 
     }
 

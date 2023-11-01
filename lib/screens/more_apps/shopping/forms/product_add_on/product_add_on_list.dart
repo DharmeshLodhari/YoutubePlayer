@@ -15,6 +15,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../../data/currency.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/CustomBoxShadow.dart';
+import '../../../../../widget/curved_btn.dart';
 import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
@@ -40,7 +41,6 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   String? next = "";
   String? previous = "";
   String? productId = "";
-  // List<AddOns> productAddOnList = [];
   List productAddOnList = [];
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
@@ -48,6 +48,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   bool isLoading = false;
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
+  bool isAPILoading = false;
 
   //slidable tile
   SlidableController? _slideController;
@@ -187,7 +188,8 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context, productAddOnList);
+          List addOnList = productAddOnList.where((addOn) => addOn.isChecked == true).toList();
+          Navigator.pop(context, addOnList);
         },
       ),
       centerTitle: false,
@@ -235,34 +237,83 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   }
 
   Widget _buildProductAddOnList() {
-    return noItemInList
-        ? NoItemInList(
-      title: AppLocalization.of(context)!.noAddOnYet,
-      msg: AppLocalization.of(context)!.noAddOnYetSub,
-    )
-        : ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      //+1 for progressbar
-      itemCount: productAddOnList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
+    return Stack(
+      children: [
+        noItemInList
+            ? NoItemInList(
+          title: AppLocalization.of(context)!.noAddOnYet,
+          msg: AppLocalization.of(context)!.noAddOnYetSub,
+        )
+            : ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          //+1 for progressbar
+          itemCount: productAddOnList.length + 1,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == productAddOnList.length) {
+              return buildLoadingIndicator(isLoading: isLoading);
+            } else {
+              return _getSlidableWithLists(
+                context,
+                GestureDetector(
+                  onTap: () {
+                    toggleAddOnCheckedState(index);
+                  },
+                  child: productAddOnTile(
+                    addOns: productAddOnList[index], index: index
+                  ),
+                ),
+                productAddOnList[index],
+              );
+            }
+          },
+          controller: _scrollController,
+        ),
+        Positioned(
+          bottom: 25, // Adjust the distance from the bottom as needed
+          right: 25,
+          left: 25,
 
-        if (index == productAddOnList.length) {
-          return buildLoadingIndicator(isLoading: isLoading);
-        } else {
-          return _getSlidableWithLists(
-              context,
-              productAddOnTile(
-                addOns: productAddOnList[index],
-              ),
-              productAddOnList[index]);
-        }
-      },
-      controller: _scrollController,
+          child: getSubmitButton(),
+        ),
+      ],
     );
   }
 
 
-  Widget productAddOnTile({required AddOns addOns}) {
+  Widget getSubmitButton() {
+    return CurvedButton(
+      onPressed:
+      isAPILoading
+          ? () {}
+          :
+          () async {
+        FocusScope.of(context).unfocus();
+
+        isAPILoading = true;
+        if (mounted) setState(() {});
+
+        await loadAllCheckedAddOn();
+
+        isAPILoading = false;
+        if (mounted) setState(() {});
+
+      },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Save",
+      isLoading: isAPILoading,
+    );
+  }
+
+  Widget loadAllCheckedAddOn() {
+
+    List addOnList = productAddOnList.where((addOn) => addOn.isChecked == true).toList();
+
+    Navigator.pop(context, addOnList);
+    return Container();
+  }
+
+  Widget productAddOnTile({required AddOns addOns, int? index} ) {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -296,11 +347,26 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
             ],
           ),
 
+          trailing: Checkbox(
+            value: addOns.isChecked,
+            activeColor: navyBlue,
+            onChanged: (bool? value) {
+              // Handle checkbox state change here
+              toggleAddOnCheckedState(index!);
+            },
+          ),
+
         ),
       ),
     );
   }
 
+  void toggleAddOnCheckedState(int index) {
+    if (index >= 0 && index < productAddOnList.length) {
+      productAddOnList[index].isChecked = !productAddOnList[index].isChecked;
+      if(mounted)setState(() {});
+    }
+  }
 
   Widget _getSlidableWithLists(
       BuildContext context, Widget bankAccountTile, AddOns addOns) {
@@ -321,16 +387,17 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           backgroundColor: starYellow,
           icon: Icons.edit,
           onTap:  () async {
-            // final data = await Navigator.of(context).pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
-            //   'addOns': addOns,
-            // });
-            //
-            // // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
-            // if (data != null && data is AddOns) {
-            //   //save the variant details for later use
-            //   _onRefresh();
-            //   if(mounted)setState(() {});
-            // }
+            final data = await Navigator.of(context).pushNamed(Routes.UPDATE_ADD_ON,
+                arguments: {
+              'addOns': addOns, 'productId': productId,
+            });
+
+            // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+            if (data != null && data is AddOns) {
+              //save the variant details for later use
+              _onRefresh();
+              if(mounted)setState(() {});
+            }
 
           },
           title: AppLocalization.of(context)!.edit,

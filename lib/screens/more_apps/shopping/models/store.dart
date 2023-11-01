@@ -559,6 +559,7 @@ class AddOnOption {
   String? currency;
   String? price;
   bool? isAvailable;
+  bool? isChecked;
   DateTime? createdAt;
 
   AddOnOption(
@@ -570,6 +571,7 @@ class AddOnOption {
         this.currency,
         this.price,
         this.isAvailable,
+        this.isChecked,
         this.createdAt});
 
   AddOnOption.fromJson(Map<String, dynamic> json) {
@@ -581,6 +583,7 @@ class AddOnOption {
     currency = json['currency'];
     price = json['price'].toString();
     isAvailable = json['is_available'];
+    isChecked = json['is_checked'] ?? false;
     createdAt = getProductDateTime(json['created_at']);
   }
 
@@ -616,6 +619,7 @@ class AddOns {
   String? inputType;
   String? selectType;
   bool? isRequired;
+  bool? isChecked;
   DateTime? createdAt;
 
   AddOns(
@@ -627,6 +631,7 @@ class AddOns {
         this.inputType,
         this.selectType,
         this.isRequired,
+        this.isChecked,
         this.createdAt});
 
   AddOns.fromJson(Map<String, dynamic> json) {
@@ -643,6 +648,7 @@ class AddOns {
     inputType = json['input_type'];
     selectType = json['select_type'];
     isRequired = json['is_required'];
+    isChecked = json['is_checked'] ?? false;
     createdAt = getProductDateTime(json['created_at']);
   }
 
@@ -666,6 +672,9 @@ class AddOns {
     data['input_type'] = this.inputType;
     data['select_type'] = this.selectType;
     data['is_required'] = this.isRequired;
+    // if(data['is_checked'] == null){
+    //   isRequired = data['is_checked'] ?? false;
+    // }
     data['created_at'] = this.createdAt;
     return data;
   }

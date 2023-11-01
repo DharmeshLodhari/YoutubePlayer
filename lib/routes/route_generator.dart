@@ -182,6 +182,7 @@ import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_list.d
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_create.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_update.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/create_add_on.dart';
+import '../screens/more_apps/shopping/forms/product_add_on/update_add_on.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_add_new_option.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_variant_list.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_variant_update.dart';
@@ -1809,6 +1810,16 @@ class RouteGenerator {
       case Routes.NEW_ADD_ON:
         return PageTransition(
           child: CreateAddOn(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.UPDATE_ADD_ON:
+        return PageTransition(
+          child: UpdateAddOn(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
