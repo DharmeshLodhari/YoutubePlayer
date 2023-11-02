@@ -152,6 +152,7 @@ class Product {
   bool? canRate;
   bool? enableInSuperStore;
   List<dynamic>? variant;
+  List<dynamic>? addOns;
   double? weight;
   String? weightSiUnit;
   double? height;
@@ -161,6 +162,12 @@ class Product {
   bool? trackInventory;
   int? quantity;
   double? pricePercentageChange;
+  int? oldPrice;
+  int? discountValue;
+  String? discountType;
+  bool? discountIsActive;
+  int? discountedPrice;
+  bool? isShippable;
 
   Product({this.id,
     this.name,
@@ -186,6 +193,7 @@ class Product {
     this.pictureMap,
     this.rating = 0.0,
     this.variant,
+    this.addOns,
     this.weight = 0.0,
     this.weightSiUnit,
     this.height = 0.0,
@@ -195,6 +203,12 @@ class Product {
     this.trackInventory,
     this.quantity,
     this.pricePercentageChange,
+    this.discountedPrice,
+    this.discountIsActive,
+    this.discountType,
+    this.discountValue,
+    this.oldPrice,
+    this.isShippable,
     this.canRate = false});
 
   Map toMap() {
@@ -213,6 +227,7 @@ class Product {
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
       "variants": variant,
+      "add_ons": addOns,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -222,6 +237,12 @@ class Product {
       'track_inventory': trackInventory,
       'quantity': quantity,
       'price_percentage_change': pricePercentageChange ?? 0.0,
+      'old_price': oldPrice,
+      'discount_value': discountValue,
+      'discount_type': discountType,
+      'discount_is_active': discountIsActive,
+      'discounted_price': discountedPrice,
+      'is_shippable': isShippable,
     };
   }
 
@@ -245,6 +266,7 @@ class Product {
       "seller_avatar": sellerAvatar,
       "currency": currency,
       "variants": variant,
+      "add_ons": addOns,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -254,6 +276,12 @@ class Product {
       'track_inventory': trackInventory,
       'quantity': quantity,
       'price_percentage_change': pricePercentageChange ?? 0.0,
+      'old_price': oldPrice,
+      'discount_value': discountValue,
+      'discount_type': discountType,
+      'discount_is_active': discountIsActive,
+      'discounted_price': discountedPrice,
+      'is_shippable': isShippable,
     };
   }
 
@@ -303,6 +331,7 @@ class Product {
       rating: formatRating(double.parse(object['rating']?.toString() ?? "0")),
       canRate: object["can_rate"] ?? false,
       variant: object["variants"],
+      addOns: object["add_ons"],
       weight: object["weight"],
       weightSiUnit: object["weight_si_unit"],
       height: object["height"],
@@ -311,6 +340,13 @@ class Product {
       trackInventory: object["track_inventory"],
       quantity: object["quantity"],
       pricePercentageChange: object["price_percentage_change"] ?? 0.0,
+
+      discountedPrice: object["discounted_price"],
+      discountIsActive: object["discount_is_active"],
+      discountType: object["discount_type"],
+      discountValue: object["discount_value"],
+      oldPrice: object["old_price"],
+      isShippable: object["is_shippable"],
     );
   }
 
@@ -678,6 +714,38 @@ class AddOns {
     data['created_at'] = this.createdAt;
     return data;
   }
+
+  static List<AddOns> convertToAddOnList(List<dynamic> dataList) {
+    List<AddOns> addOnList = [];
+
+    for (var data in dataList) {
+      AddOns addOns = AddOns(
+        id: data['id'],
+        name: data['name'],
+        description: data['description'],
+        merchant: data["merchant"] ?? "",
+        inputType: data["input_type"],
+        selectType: data["select_type"],
+        isRequired: data["is_required"] ?? false,
+        options: getAddOnOption(data["options"]),
+      );
+      addOnList.add(addOns);
+    }
+
+    return addOnList;
+  }
+
+  static List<AddOnOption> getAddOnOption(List? data) {
+    List<AddOnOption> addOnOption = [];
+
+    if (data != null) {
+      for (int i = 0; i < data.length; i++) {
+          addOnOption.add(AddOnOption.fromJson(data[i]));
+      }
+    }
+    return addOnOption;
+  }
+
 
 }
 

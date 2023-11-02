@@ -183,6 +183,7 @@ class _EditProductState extends State<EditProduct> {
 
           //convert list to variant
           productVariantList = Variant.convertToVariantList(currentProduct.variant!);
+          productAddOnsList = AddOns.convertToAddOnList(currentProduct.addOns!);
 
           // assigning the dropdown from currentProduct
           productCategories?.forEach((catagory) {
@@ -1503,7 +1504,7 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.trackInventory = trackInventory;
           currentProduct.quantity = inventoryCount;
 
-          await _auth.editProduct(currentProduct).then((value) {
+          await _auth.editProduct(currentProduct, productAddOnsList).then((value) {
             showToast(
                 message:
                     AppLocalization.of(context)!.productEditedSuccessfully);

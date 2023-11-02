@@ -73,6 +73,8 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
     descriptionController.text = addOns.description!.toString();
     isRequired = addOns.isRequired!;
 
+    productAddOnOptionList = addOns.options!;
+
     name = addOns.name!.toString();
     description = addOns.description!.toString();
     selectedType = capitalizeFirstLetter(addOns.selectType!.toString());
@@ -462,7 +464,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
         addOns.selectType = selectedType;
         addOns.options = productAddOnOptionList.cast<AddOnOption>();
 
-        await _auth.createAddOn(addOns,
+        await _auth.updateAddOn(addOns,
             widget.arguments["productId"]).then((value) async {
 
           Navigator.pop(context, value);
