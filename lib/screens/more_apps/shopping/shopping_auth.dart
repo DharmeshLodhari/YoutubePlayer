@@ -633,12 +633,8 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var url = AppConfig.baseUrl + "/api/v1/products/" + product.id.toString() + "/";
 
-    // if(productAddOnsList!.isNotEmpty){
-    //   url = AppConfig.baseUrl + "/api/v1/products/" + product.id.toString() + "/add_ons/";
-    // }
-    //create multipart request for POST or PATCH method
+    //create multipart request for PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
-    // var request = http.MultipartRequest(productAddOnsList.isNotEmpty ? "POST" : "PATCH", Uri.parse(url));
 
     Map<dynamic, dynamic> _data = product.toMap();
     _data["available_from"] = dateToString(product.availableFrom!);
@@ -657,18 +653,14 @@ class ShoppingAuthService extends AuthService {
       _data['width_si_unit'] = '';
     }
 
-    // if(productAddOnsList!.isNotEmpty){
-    //   // List idList = productAddOnsList.map((option) => option.id).toList();
-    //   List ids = productAddOnsList
-    //       .where((addOn) => addOn.id != null)
-    //       .map((addOn) => addOn.id!)
-    //       .toList();
-    //   _data["add_ons"] = ids;
-    //
-    //   debugPrint('UPDATE ADD-ON -> ${ids}');
-    //   debugPrint('UPDATE ADD-ON -> ${ids.runtimeType}');
-    //
-    // }
+    if(productAddOnsList!.isNotEmpty){
+      List ids = productAddOnsList
+          .where((addOn) => addOn.id != null)
+          .map((addOn) => addOn.id!)
+          .toList();
+      _data["add_ons"] = ids;
+
+    }
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();
@@ -2041,21 +2033,20 @@ class ShoppingAuthService extends AuthService {
       "description": addOns.description!,
       "is_required": addOns.isRequired,
       "select_type": addOns.selectType!.toLowerCase(),
-      "options": idList
+      "options": idList.isNotEmpty ? idList : "null"
     });
 
-
-    // debugPrint('DATA from ---> ${request.body}');
+    debugPrint('DATA from ---> ${addOns.id}');
+    debugPrint('DATA from ---> ${request.body}');
 
     headers.forEach((k, v) => request.headers[k] = v);
-
 
     var response = await request.send();
 
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 200) {
       // debugPrint("DATA:- ${request.fields}");
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
@@ -2073,14 +2064,17 @@ class ShoppingAuthService extends AuthService {
       List<AddOnOption> options = [];
 
       for(var item in jsonData['options']){
-        AddOnOption addOnOption = AddOnOption();
-        addOnOption.id = item;
-        addOnOption.name = "";
-        addOnOption.description = "";
-        addOnOption.picture = "";
-        addOnOption.merchant = "";
-        addOnOption.price = "";
-        addOnOption.currency = "";
+        debugPrint("add-on option id:- ${item['id']}");
+
+        AddOnOption addOnOption = AddOnOption.fromJson(item);
+        // addOnOption.id = item['id'];
+        // addOnOption.name = "";
+        // addOnOption.description = "";
+        // addOnOption.picture = "";
+        // addOnOption.merchant = "";
+        // addOnOption.price = "";
+        // addOnOption.currency = "";
+
         options.add(addOnOption);
       }
 

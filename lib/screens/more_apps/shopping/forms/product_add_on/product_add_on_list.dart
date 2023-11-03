@@ -348,7 +348,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           ),
 
           trailing: Checkbox(
-            value: addOns.isChecked,
+            value: addOns.isChecked ?? false,
             activeColor: navyBlue,
             onChanged: (bool? value) {
               // Handle checkbox state change here
