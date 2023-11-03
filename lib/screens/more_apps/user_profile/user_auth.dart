@@ -31,14 +31,14 @@ class UserAuth extends AuthService {
     var uuid = Uuid();
     var transactionId = uuid.v4();
 
-    var headers = await getAuthHeaders();
-    // var headers =
-    // {
-    //   "Content-type": "application/json",
-    //   "TransactionId": transactionId,
-    //   "DeviceType": Platform.isAndroid ? "Android" : "IOS",
-    //   "User-Agent": "Slydo-Mobile",
-    // };
+    // var headers = await getAuthHeaders();
+    var headers =
+    {
+      "Content-type": "application/json",
+      "TransactionId": transactionId,
+      "DeviceType": Platform.isAndroid ? "Android" : "IOS",
+      "User-Agent": "Slydo-Mobile",
+    };
     var response = await httpGet(url, headers: headers);
 
     debugPrint(
