@@ -38,6 +38,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   int imageCount = 5;
   final ScrollController _scrollController = ScrollController();
   List<PickedFile> productImages = [];
+  List<String> croppedImageList = [];
   String size = "";
   String variantPrice = "";
   String comparePrice = "";
@@ -188,12 +189,12 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: productImages.length + 1,
+        itemCount: croppedImageList.length + 1,
         itemBuilder: (context, index) => Container(
           padding: const EdgeInsets.only(right: 6),
-          child: index != productImages.length
+          child: index != croppedImageList.length
               ? showImage(index)
-              : productImages.length != imageCount
+              : croppedImageList.length != imageCount
               ? addImageButton()
               : null,
         ),
@@ -266,7 +267,8 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
             return;
           }
 
-          productImages.add(PickedFile(croppedImage));
+          // productImages.add(PickedFile(croppedImage));
+          croppedImageList.add(croppedImage);
           if (mounted) setState(() {});
         }
       });
@@ -274,6 +276,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   }
 
   Widget showImage(int index) {
+
     return SizedBox(
       height: 100,
       child: Stack(
@@ -287,13 +290,11 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
             margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: FileImage(
-                      File(productImages[index].path),
-                    ),
-                    fit: BoxFit.fill),
+              child: Image.file(
+                File(croppedImageList[index]),
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -317,7 +318,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
               ),
               onPressed: () {
                 setState(() {
-                  productImages.removeAt(index);
+                  croppedImageList.removeAt(index);
                 });
               },
             ),
@@ -702,9 +703,6 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
         if (mounted) setState(() {});
 
         await addVariant();
-
-        isAPILoading = false;
-        if (mounted) setState(() {});
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -715,11 +713,12 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
 
   Future<void> addVariant() async {
     if (_formKey.currentState!.validate()) {
-      if (productImages.length >= 0) {
+      if (croppedImageList.length >= 1) {
+      // if (productImages.length >= 1) {
         if (validateDropdown()) {
           Variant variant = Variant();
-          variant.localImages =
-              productImages.map((file) => File(file.path)).toList();
+          // variant.localImages = productImages.map((file) => File(file.path)).toList();
+          variant.localImages = croppedImageList.map((filePath) => File(filePath)).toList();
           variant.title = title;
           variant.colour = color;
           variant.value = value;
@@ -732,6 +731,8 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
           variant.currency = 'NGN';
           if(optionOnWhatToDo == 'new'){
             //send the variant detail back to the previous page
+            debugPrint('file path::: ${variant.localImages}');
+
             Navigator.pop(context, variant);
           }else if(optionOnWhatToDo == 'edit'){
             String productId = widget.arguments["productId"];
@@ -741,9 +742,13 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
 
         }
       } else {
+        isAPILoading = false;
+        if (mounted) setState(() {});
         showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
+
     }
+
   }
 
   Future<void> saveVariant(String productId, Variant item) async {
@@ -753,6 +758,8 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
 
     }).catchError((error) {
       debugPrint(error.toString());
+      isAPILoading = false;
+      if (mounted) setState(() {});
       showToast(message: error.toString());
       // backValue = false;
     });

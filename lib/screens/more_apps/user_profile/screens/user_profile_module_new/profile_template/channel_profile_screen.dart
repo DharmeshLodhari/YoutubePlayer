@@ -111,6 +111,8 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       }
     });
 
+    addTab('event', capitalizeAndRemoveUnderscores('event'));
+
     // Define the UserTabView using the created userTabs list
     UserTabView channelView = UserTabView(
       name: "channel",
@@ -143,8 +145,8 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       case "product":
         userTabs.add(UserTab(
           label: 'Merchandise',
-          child: productTab(channelOwner, isOwner!),
-          apiCall: () async => await fetchProductData(channelUserName),
+          child: productTab(channelOwner, isOwner!, true),
+          apiCall: () async => await fetchProductData(channelUserName, true),
         ));
         break;
 
@@ -168,6 +170,14 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
           label: label,
           child: postTab(channelOwner, channelUserName!),
           apiCall: () async => await fetchPostData(channelUserName, channelUserName),
+        ));
+        break;
+
+      case "event":
+        userTabs.add(UserTab(
+          label: 'Event',
+          child: eventTab(widget.searchedUser),
+          apiCall: () async => ['1'],
         ));
         break;
 
@@ -392,6 +402,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
           addTab(key, capitalizeAndRemoveUnderscores(key));
         }
       });
+      addTab('event', capitalizeAndRemoveUnderscores('event'));
 
       // Define the UserTabView using the created userTabs list
       UserTabView channelView = UserTabView(

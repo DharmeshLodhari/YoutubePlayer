@@ -209,8 +209,6 @@ class _QRCodeViewState extends State<QRCodeView> {
       var productId = scanDataList.last;
       var product = getProduct(productId);
 
-      // _dashboardBloc.index = 0;
-
       final result = await Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
       // Handle the result here
@@ -480,10 +478,6 @@ class _QRCodeViewState extends State<QRCodeView> {
       }
 
       getRecipient(recipient);
-
-      print('RECIPIENT ::: $recipient');
-
-      // _dashboardBloc.index = 0;
 
       if (appConfigurationModel?.enablePayment == true) {
         if (isRequest!) {

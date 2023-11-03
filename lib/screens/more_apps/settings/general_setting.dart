@@ -181,15 +181,15 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                         debugPrint("Error:- $error");
                       }
                     }),
+                Center(child: _infoTile()),
+                SizedBox(
+                  height: 120,
+                ),
                 // getLogoutTile(),
               ],
             ),
           ),
         )),
-        _infoTile(),
-        SizedBox(
-          height: 20,
-        ),
       ],
     );
   }

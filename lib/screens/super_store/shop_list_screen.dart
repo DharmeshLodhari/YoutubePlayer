@@ -116,7 +116,7 @@ class ShopListScreenState extends State<ShopListScreen> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious, _currentCategory, otherDeals: true);
+            .listOfProduct(productNext, productPrevious, _currentCategory, false, otherDeals: true);
 
         if (result == null) {
           noProductInList = true;

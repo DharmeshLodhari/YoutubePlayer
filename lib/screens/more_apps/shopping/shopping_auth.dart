@@ -294,15 +294,17 @@ class ShoppingAuthService extends AuthService {
     product.widthSiUnit = item["width_si_unit"] ?? '';
     product.trackInventory = item["track_inventory"] ?? false;
     product.quantity = item["quantity"];
+    product.pricePercentageChange = item["price_percentage_change"] ?? 0.0;
 
     return product;
   }
 
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(
-      String? next, String? previous, String? category,
+      String? next, String? previous, String? category, bool? channel,
       {String? userName, bool otherDeals = false}) async {
     debugPrint('CALLING PRODUCT');
+    debugPrint('CALLING PRODUCT channel::: ${channel}');
     var url = "";
     if (next == null) {
       return null;
@@ -324,6 +326,10 @@ class ShoppingAuthService extends AuthService {
       } else {
         url += AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
       }
+    }
+
+    if(channel == true){
+      url = AppConfig.baseUrl + "/api/v1/channels-merchandise/$userName";
     }
     debugPrint(url);
     var headers = await getAuthHeaders();
@@ -370,12 +376,12 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Add Product
-  Future<List<dynamic>> addProduct(Product product, String webUrl) async {
+  Future<List<dynamic>> addProduct(Product product, String channelUsername) async {
     var headers = await getAuthHeaders();
     var url = "${AppConfig.baseUrl}/api/v1/products/";
 
-    if(webUrl.isNotEmpty){
-      url = "${AppConfig.baseUrl}/api/v1/channel/products/";
+    if(channelUsername.isNotEmpty){
+      url = "${AppConfig.baseUrl}/api/v1/channels-merchandise/$channelUsername/";
     }
 
     //create multipart request for POST or PATCH method
@@ -433,6 +439,10 @@ class ShoppingAuthService extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     var responseBody = await response.stream.bytesToString();
+
+    debugPrint(
+        "URL $url PRODUCT STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
     bool backValue = false;
     if (response.statusCode == 201) {
 
@@ -709,6 +719,9 @@ class ShoppingAuthService extends AuthService {
       url,
       headers: headers,
     );
+
+    // debugPrint("fola add product delete ${response.statusCode}");
+    // debugPrint("fola add product delete 2 ${response.body}");
 
     if (response.statusCode == 204) {
       return true;

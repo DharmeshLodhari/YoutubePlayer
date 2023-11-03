@@ -69,6 +69,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
@@ -1341,127 +1342,152 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         },
         child: Platform.isAndroid
             ? mainStack()
-            : Banner(
-                message: 'BETA',
-                child: mainStack(),
-                location: BannerLocation.topEnd,
-              ),
+            // : Banner(
+            //     message: 'BETA',
+            //     child: mainStack(),
+            //     location: BannerLocation.topEnd,
+            //   ),
+            : mainStack()
       ),
     );
   }
 
   Widget appBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 28,
+    return PreferredSize(
+      preferredSize: Size.fromHeight(kToolbarHeight),
+      child: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        titleSpacing: 0,
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: navyBlue,
+            size: 28,
+          ),
+          onPressed: () {
+            disposeAudioPlayers();
+            mainSocketProvider!.removeStreamSubscription(streamSubscription);
+            mainSocketProvider!.currentConversationId = null;
+            mainSocketProvider!.isChatOnScreen = false;
+            Navigator.pop(context);
+          },
         ),
-        onPressed: () {
-          disposeAudioPlayers();
-          mainSocketProvider!.removeStreamSubscription(streamSubscription);
-          mainSocketProvider!.currentConversationId = null;
-          mainSocketProvider!.isChatOnScreen = false;
-          Navigator.pop(context);
-        },
-      ),
-      leadingWidth: 40,
-      title: GestureDetector(
-        onTap: () async {
-          stopShakeDetector();
-          if (chatConversation!.isGroupConversation!) {
-            Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-              "searchedUserName": chatConversation!.conversationId,
-              "channel": chatConversation!.fullName,
-            });
-          } else {
-            await Navigator.pushNamed(context, Routes.USER_PROFILE,
-                arguments: {"searchedUserName": chatConversation!.userName});
-          }
-          setupShakeDetector();
-        },
-        child: Row(
-          children: [
-            StreamBuilder<Object>(
-                initialData: false,
-                stream: ChatMessageSynchronizer().getChatMessageStream,
-                builder: (context, snapshot) {
-                  if (snapshot.data == true) {
-                    ChatMessageSynchronizer().setStreamFalse();
-                    getMissedMessageFromDB();
-                  }
-                  return getUserIcon();
-                }),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  userNameWithVerifiedIcon(
-                    name: chatConversation?.fullName != null
-                        ? chatConversation!.fullName!
-                        : '',
-                    isVerified: chatConversation?.isVerified,
-                    verifiedIconColor: verifyGreen,
-                  ),
-                  Text(
-                    chatConversation != null
-                        ? isRecipientTyping
-                            ? typingMessage!
-                            : isOtherUserRecordingAudio
-                                ? "recording audio"
-                                : userStatus
-                        : "", //"Online",
-                    style: TextStyle(
-                        color: isRecipientTyping || isOtherUserRecordingAudio
-                            ? naturalGreen
-                            : darkGrey,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w400),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        if (chatConversation != null &&
-            chatConversation!.isGroupConversation!) ...[
-          GestureDetector(
-            onTap: () async {
-              stopShakeDetector();
-              if (chatConversation!.isGroupConversation!) {
-                // navigateToGroupDetailScreen();
+        leadingWidth: 40,
+        title: GestureDetector(
+          onTap: () async {
+            stopShakeDetector();
+            if(chatConversation!.conversationType == 'group'){
 
-                showChannelMenuList();
+            }else{
+              if (chatConversation!.isGroupConversation!) {
+                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                  "searchedUserName": chatConversation!.conversationId,
+                  "channel": chatConversation!.fullName,
+                });
               } else {
                 await Navigator.pushNamed(context, Routes.USER_PROFILE,
-                    arguments: {
-                      "searchedUserName": chatConversation!.userName
-                    });
+                    arguments: {"searchedUserName": chatConversation!.userName});
               }
-              setupShakeDetector();
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: Icon(
-                Icons.settings,
-                color: blackFont,
-                size: 22,
-              ),
+            }
+
+            setupShakeDetector();
+          },
+          child: Container(
+            child: Row(
+              children: [
+                StreamBuilder<Object>(
+                    initialData: false,
+                    stream: ChatMessageSynchronizer().getChatMessageStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.data == true) {
+                        ChatMessageSynchronizer().setStreamFalse();
+                        getMissedMessageFromDB();
+                      }
+                      return getUserIcon();
+                    }),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      userNameWithVerifiedIcon(
+                        name: chatConversation?.fullName != null
+                            ? chatConversation!.fullName!
+                            : '',
+                        isVerified: chatConversation?.isVerified,
+                        verifiedIconColor: verifyGreen,
+                      ),
+                      Text(
+                        chatConversation != null
+                            ? isRecipientTyping
+                                ? typingMessage!
+                                : isOtherUserRecordingAudio
+                                    ? "recording audio"
+                                    : userStatus
+                            : "", //"Online",
+                        style: TextStyle(
+                            color: isRecipientTyping || isOtherUserRecordingAudio
+                                ? naturalGreen
+                                : darkGrey,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400),
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-        ]
-      ],
+        ),
+        actions: [
+          if (chatConversation != null &&
+              chatConversation!.isGroupConversation!) ...[
+            GestureDetector(
+              onTap: () async {
+                stopShakeDetector();
+                if (chatConversation!.isGroupConversation!) {
+
+                  chatConversation!.conversationType == 'group' ?
+                  navigateToGroupDetailScreen() : showChannelMenuList();
+
+                } else {
+                  await Navigator.pushNamed(context, Routes.USER_PROFILE,
+                      arguments: {
+                        "searchedUserName": chatConversation!.userName
+                      });
+                }
+                setupShakeDetector();
+              },
+              child: chatConversation!.conversationType == 'group' ? Container(
+                color: white,
+                width: 100.0,
+                padding: EdgeInsets.only(left: 40.0, right: 10.0),
+                child: Icon(
+                    Icons.settings,
+                    color: blackFont,
+                    size: 22,
+                  ),
+              )
+                  : Container(
+                    width: 100.0,
+                    padding: EdgeInsets.only(left: 40.0, right: 10.0),
+                    color: white,
+                    child: Center(
+                      child: SvgPicture.asset(
+                'assets/images/menu.svg',
+                        width: 22.0,
+              ),
+                    ),
+                  ),
+            ),
+          ]
+        ],
+      ),
     );
   }
 
@@ -1512,7 +1538,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           Navigator.pop(context);
           Navigator.pushNamed(context, Routes.ADD_PRODUCT,
             arguments: {
-            'channel': 'Channel',
+            'channelUsername': chatConversation!.userName,
           },);
         },
       ),

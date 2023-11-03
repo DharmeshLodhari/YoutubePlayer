@@ -160,6 +160,7 @@ class Product {
   String? widthSiUnit;
   bool? trackInventory;
   int? quantity;
+  double? pricePercentageChange;
 
   Product({this.id,
     this.name,
@@ -193,6 +194,7 @@ class Product {
     this.widthSiUnit,
     this.trackInventory,
     this.quantity,
+    this.pricePercentageChange,
     this.canRate = false});
 
   Map toMap() {
@@ -219,6 +221,7 @@ class Product {
       'width_si_unit': widthSiUnit,
       'track_inventory': trackInventory,
       'quantity': quantity,
+      'price_percentage_change': pricePercentageChange ?? 0.0,
     };
   }
 
@@ -250,6 +253,7 @@ class Product {
       'width_si_unit': widthSiUnit,
       'track_inventory': trackInventory,
       'quantity': quantity,
+      'price_percentage_change': pricePercentageChange ?? 0.0,
     };
   }
 
@@ -306,6 +310,7 @@ class Product {
       widthSiUnit: object["width_si_unit"],
       trackInventory: object["track_inventory"],
       quantity: object["quantity"],
+      pricePercentageChange: object["price_percentage_change"] ?? 0.0,
     );
   }
 

@@ -18,7 +18,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
+import '../../../../../widget/dialog.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class GroupDetailScreen extends StatefulWidget {
@@ -185,23 +187,28 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         },
       ),
       leadingWidth: 40,
-      title: Row(
-        children: [
-          getUserIcon(),
-          SizedBox(
-            width: 12,
+      title: Padding(
+        padding: const EdgeInsets.only(right: 30.0),
+        child: Container(
+          child: Row(
+            children: [
+              getUserIcon(),
+              SizedBox(
+                width: 12,
+              ),
+              Expanded(
+                child: Text(
+                  messageDecoderWithEmoji(groupDetail?.fullName ?? "") ?? "",
+                  style: TextStyle(
+                      color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: Text(
-              messageDecoderWithEmoji(groupDetail?.fullName ?? "") ?? "",
-              style: TextStyle(
-                  color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
-              maxLines: 1,
-            ),
-          ),
-        ],
+        ),
       ),
       actions: getGroupActions(),
     );
@@ -343,7 +350,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       ),
       onTap: () async {
         var result = await Navigator.of(context).pushNamed(
-            "/update-name-and-profile-for-group",
+            Routes.UPDATE_NAME_AND_PROFILE_FOR_GROUP,
             arguments: {"groupDetail": groupDetail});
 
         if (result != null) {
@@ -553,7 +560,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         decoration: decorateBox(),
         child: ListTile(
           title: Text(
-            "Delete Channel",
+            groupDetail!.conversationType == 'channel' ? "Delete Channel" : "Delete Group",
             maxLines: 1,
             style: TextStyle(
               color: mateRed,
@@ -567,8 +574,25 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             SlydoAppIcon.delete,
             color: mateRed,
           ),
-          onTap: () {
-            deleteGroup();
+          onTap: () async {
+
+            bool? result = await showDialogBox(
+              context: context,
+              actionOneBgColor: mateRed,
+              actionOneTextColor: white,
+              actionTwoBgColor: naturalGreen,
+              actionTwoTextColor: Colors.white,
+              title: groupDetail!.conversationType == 'channel' ? "Delete Channel" : "Delete Group",
+              description: groupDetail!.conversationType == 'channel' ? "Are you sure you want to delete channel?" : "Are you sure you want to delete group?",
+              actionOneText: AppLocalization.of(context)!.delete,
+              actionTwoText: AppLocalization.of(context)!.noContinue,
+            );
+
+            if (result != null && result) {
+              deleteGroup();
+            }
+
+
           },
         ),
       ),
@@ -585,7 +609,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         decoration: decorateBox(),
         child: ListTile(
           title: Text(
-            "Exit Channel",
+            groupDetail!.conversationType == 'channel' ? "Exit Channel" : "Exit Group",
             maxLines: 1,
             style: TextStyle(
               color: mateRed,
@@ -1007,8 +1031,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           dashboardBloc.index = 3;
           showToast(message: "You deleted the ${groupDetail?.fullName}!!");
           if (mounted)
-            Navigator.of(context)
-                .popUntil(ModalRoute.withName(Routes.DASHBOARD));
+            Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
         }
       }).catchError((error) {
         isExitingGroup = false;

@@ -390,12 +390,17 @@ class _EditProductState extends State<EditProduct> {
 
                       SizedBox(height: 16),
                       getEnableInSuperStoreField(),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       if(productVariantList == null || productVariantList.isEmpty)...[
-                        getAddVariationFormField(),
+                        // getAddVariationFormField(),
+                        productVariation(),
                       ]else...[
                         displaySelectedVariant(),
                       ],
+
+                      // const SizedBox(height: 20),
+                      // productAddOns(),
+
                       SizedBox(height: 16),
                       getSubmitButton(),
                       SizedBox(height: 20),
@@ -2000,6 +2005,83 @@ class _EditProductState extends State<EditProduct> {
       );
 
     }
+  }
+
+  Widget productVariation(){
+    return GestureDetector(
+      onTap: () async {
+        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+          'productId': productId, 'option': 'edit'
+        });
+
+        // Handle the result (map) received from Product Add New Option
+        if (result != null && result is List<Variant>) {
+          //save the variant details for later use
+          productVariantList = result;
+          if(mounted)setState(() {});
+        }
+      },
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Add Product Variation',
+              maxLines: 1,
+              style: TextStyle(
+                  color: navyBlue,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: blackFont,
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget productAddOns(){
+    return GestureDetector(
+      onTap: () async {
+        //disable click if variant is not empty
+        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+          'productId': productId,
+        });
+
+        // Handle the result (map) received from Product Add New Option
+        if (result != null && result is List<Variant>) {
+          //save the add-on details for later use
+          // productVariantList = result;
+          if(mounted)setState(() {});
+        }
+      },
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Add Product Add-ons',
+              maxLines: 1,
+              style: TextStyle(
+                  color: productVariantList.isEmpty ? navyBlue : greyBorderColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: blackFont,
+            ),
+
+          ],
+        ),
+      ),
+    );
   }
 
   @override

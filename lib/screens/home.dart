@@ -389,8 +389,16 @@ class _HomeState extends State<Home> {
   }
 
   Widget _displayShortcutExtraCard(List<Map<String, String>> shortcuts) {
+    final longestSubTitle = shortcuts
+        .map((shortcut) => shortcut['subTitle'])
+        .reduce((a, b) => a!.length > b!.length ? a : b);
+
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Calculate the dynamic height
+    final dynamicHeight = calculateDynamicHeight(longestSubTitle!, screenHeight);
+
     return Container(
-      // height: 250.0,
       child: Column(
         // padding: EdgeInsets.zero,
         children: List.generate(
@@ -425,6 +433,7 @@ class _HomeState extends State<Home> {
                         shortcut['title']!,
                         shortcut['subTitle']!,
                         shortcut['color']!,
+                          dynamicHeight
                       ),
                     ),
                   ),
@@ -438,11 +447,13 @@ class _HomeState extends State<Home> {
   }
 
   Widget shortcutViewExtra(String imagePath, String title, String subTitle,
-      String color) {
+      String color, double dynamicHeight) {
     double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+      height: 80.0 + dynamicHeight,
+      // height: 110.0,
       decoration: BoxDecoration(
         color: HexColor(color).withOpacity(opacity),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -460,7 +471,7 @@ class _HomeState extends State<Home> {
               Text(
                 title,
                 style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     color: white,
                     fontWeight: FontWeight.w700,
                     fontFamily: "Inter"),
@@ -477,12 +488,33 @@ class _HomeState extends State<Home> {
           const SizedBox(height: 10),
           Text(
             subTitle,
-            style: TextStyle(fontSize: 12, color: white, fontFamily: "Inter"),
+            style: TextStyle(fontSize: 14, color: white, fontFamily: "Inter"),
           ),
           const SizedBox(width: 10),
         ],
       ),
     );
+  }
+
+  double calculateDynamicHeight(String longestSubTitle, double screenWidth) {
+    // Define a maximum font size to avoid overflow
+    const double maxFontSize = 14.0;
+
+    // Calculate the dynamic height based on the longest subtitle
+    final textSpan = TextSpan(
+      text: longestSubTitle,
+      style: TextStyle(fontSize: maxFontSize),
+    );
+
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+
+    textPainter.layout(maxWidth: screenWidth);
+
+    // You can add some padding to the height if needed
+    return textPainter.height + 20; // 20 for padding
   }
 
   void onClickShortcutExtra(String shortcut) {

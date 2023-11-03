@@ -208,7 +208,7 @@ class CustomizedPopUpMenu {
         child: ListTile(
           dense: true,
           title: Text(
-            children[index].title,
+            children[index].name,
             style: TextStyle(
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -281,7 +281,7 @@ class CustomizedPopUpMenu {
                 width: 10,
               ),
               Text(
-                children[index].title,
+                children[index].name,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,

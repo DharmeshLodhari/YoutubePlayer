@@ -480,7 +480,7 @@ class _SearchUsersProductAndServiceState
                   fillColor: Colors.white,
                   filled: true,
                   contentPadding: EdgeInsets.symmetric(vertical: 10),
-                  prefixIcon: searchTypeSelection(),
+                  prefixIcon: widget.arguments["hidePreIcon"] == true ? SizedBox.shrink() :searchTypeSelection(),
                   prefix: Padding(
                     padding: EdgeInsets.only(left: 12),
                   ),

@@ -87,7 +87,7 @@ class _MyServicesState extends State<MyServices> {
           backgroundColor: Colors.transparent,
           onTap: () {
             Navigator.of(context).pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH,
-                arguments: {"searchedUser": customerProfile, "filter": "Services"});
+                arguments: {"searchedUser": customerProfile, "filter": "Services", "hidePreIcon": true});
           },
           height: 15,
           width: 15,
@@ -96,7 +96,7 @@ class _MyServicesState extends State<MyServices> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 20),
+      SizedBox(width: 30),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {

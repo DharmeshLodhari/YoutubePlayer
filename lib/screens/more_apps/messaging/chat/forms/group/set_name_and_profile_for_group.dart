@@ -16,6 +16,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
     createTitle = widget.arguments != null
         && widget.arguments["create"] == "group" ? "New Group"
-        : "New Paid Channel";
+        : "New Channel";
+        // : "New Paid Channel";
 
     // appConfigurationModel?.enablePaidGroupChat = true;
 
@@ -141,10 +143,11 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         key: _formKey,
         child: Column(
           children: [
+            getProfileCover(),
             getGroupNameAndProfile(),
             getGroupDescription(),
             Container(
-                height: (160 * selectedConnectionList.length).toDouble(),
+                height: (100 * selectedConnectionList.length).toDouble(),
                 child: _buildConnectionsList()),
             Padding(
               padding: const EdgeInsets.all(18.0),
@@ -162,6 +165,55 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         ),
       ),
     );
+  }
+
+  Widget getProfileCover() {
+
+    return GestureDetector(
+        onTap: (){
+          pickWallpaper();
+        },
+        child: Container(height: 150, child: getProfileWallpaper()));
+  }
+
+  Widget getProfileWallpaper() {
+
+    return  groupModel.groupProfilePhoto == null
+        ? Container(
+      color: greyBorderColor,
+      child: Stack(
+        children: [
+          Positioned(
+            bottom: 10, // Adjust the position as needed
+            right: 20, // Adjust the position as needed
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: darkGreyYarn, // Color of the border
+                  width: 2.0, // Border width
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(4.0), // Padding around the icon
+                child: Icon(
+                  Icons.camera_alt, // Replace with your desired icon
+                  size: 25, // Adjust the size of the icon as needed
+                  color: darkGreyYarn, // Color of the icon
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    )
+    : Container(
+      child: Image.file(
+        File(groupModel.groupProfilePhoto!),
+        fit: BoxFit.fill,
+      ),
+    );
+
   }
 
   Widget getMakePublicField() {
@@ -232,7 +284,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                   color: blackFont, fontWeight: FontWeight.w700, fontSize: 16),
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.zero,
-                  hintText: "Type group name here",
+                  hintText:  widget.arguments["create"] == "group" ? "Type group name here" : "Type channel name here",
                   hintStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w300,
@@ -253,10 +305,10 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   Widget getGroupProfile() {
     return GestureDetector(
       onTap: () {
-        pickGroupProfile();
+        pickGroupAvatar();
       },
       child: ClipOval(
-        child: groupModel.groupProfilePhoto == null
+        child: groupModel.avatar == null
             ? Container(
                 height: 64,
                 width: 64,
@@ -271,7 +323,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                 height: 64,
                 width: 64,
                 child: Image.file(
-                  File(groupModel.groupProfilePhoto!),
+                  File(groupModel.avatar!),
                   fit: BoxFit.fill,
                 ),
               ),
@@ -279,7 +331,51 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
     );
   }
 
-  void pickGroupProfile() async {
+  void pickGroupAvatar() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              title: Text(
+                AppLocalization.of(context)!.selectTheImageSource,
+                style: TextStyle(fontSize: 18, color: blackFont),
+              ),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(
+                    AppLocalization.of(context)!.camera,
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(
+                    "Gallery",
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      final file =
+          await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
+      if (file != null) {
+        /// for cropping the image
+        String? croppedImage = await ImageCrop().cropImage(file.path);
+        if (croppedImage == null) {
+          return;
+        }
+
+        groupModel.avatar = croppedImage;
+        if (mounted) setState(() {});
+      }
+    }
+  }
+
+  void pickWallpaper() async {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
@@ -435,7 +531,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Limit channel members',
+                    widget.arguments["create"] == "group" ? 'Limit group members' : 'Limit channel members',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                   Text(
@@ -561,7 +657,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         return;
       } else if (int.parse(_maxNoOfUsersCtrl.text) < 3) {
         showToast(
-            message: 'You can not create channels with less than 3 members');
+            message: widget.arguments["create"] == "group" ? 'You can not create group with less than 3 members' : 'You can not create channel with less than 3 members');
         return;
       }
     }

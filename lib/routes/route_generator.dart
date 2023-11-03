@@ -177,9 +177,13 @@ import '../screens/more_apps/service_hub/screens/search_filter.dart';
 import '../screens/more_apps/service_hub/screens/search_my_job.dart';
 import '../screens/more_apps/service_hub/screens/search_services.dart';
 import '../screens/more_apps/service_hub/service_hub_dashboard.dart';
-import '../screens/more_apps/shopping/forms/product/product_add_new_option.dart';
-import '../screens/more_apps/shopping/forms/product/product_variant_list.dart';
-import '../screens/more_apps/shopping/forms/product/product_variant_update.dart';
+import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_list.dart';
+import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_create.dart';
+import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_update.dart';
+import '../screens/more_apps/shopping/forms/product_add_on/new_add_on.dart';
+import '../screens/more_apps/shopping/forms/product_variant/product_add_new_option.dart';
+import '../screens/more_apps/shopping/forms/product_variant/product_variant_list.dart';
+import '../screens/more_apps/shopping/forms/product_variant/product_variant_update.dart';
 import '../screens/more_apps/user_profile/screens/customize_profile.dart';
 import '../screens/more_apps/user_profile/screens/subscriptions/pre_account_upgrade.dart';
 import '../screens/super_store/near_by_list_screen.dart';
@@ -394,7 +398,7 @@ class RouteGenerator {
         );
 
       case Routes.CREATE_BLOG:
-        final args = settings.arguments as Map<String, dynamic>;
+        // final args = settings.arguments as Map<String, dynamic>;
 
         return PageTransition(
           child: CreateorEditPostScreen(
@@ -1756,6 +1760,46 @@ class RouteGenerator {
       case Routes.PRE_ACCOUNT_UPGRADE:
         return PageTransition(
           child: const PreAccountUpgrade(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.PRODUCT_ADD_ON_LIST:
+        return PageTransition(
+          child: ProductAddOnList(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.PRODUCT_ADD_ON_OPTION_CREATE:
+        return PageTransition(
+          child: ProductAddOnOptionCreate(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.PRODUCT_ADD_ON_OPTION_UPDATE:
+        return PageTransition(
+          child: ProductAddOnOptionUpdate(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.NEW_ADD_ON:
+        return PageTransition(
+          child: NewAddOn(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

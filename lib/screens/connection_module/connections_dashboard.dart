@@ -242,7 +242,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.plus,
+        SlydoAppIcon.add,
         size: 16,
         color: blackFont,
       ),

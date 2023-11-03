@@ -102,6 +102,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   int stockLeft = 0;
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
+  String staticImage = "";
 
   @override
   void initState() {
@@ -1052,19 +1053,45 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                   child: ClipRRect(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(10)),
-                                child: CachedNetworkImage(
-                                  placeholder: (context, url) =>
-                                      Center(child: CircularLoadingIndicator()),
-                                  imageUrl: displayProductImages?[0] ?? "",
-                                  fit: BoxFit.fitHeight,
-                                  height: double.infinity,
-                                  width: double.infinity,
-                                  errorWidget: productAndServiceBigErrorWidget,
+                                child: Stack(
+                                  children: [
+                                    CachedNetworkImage(
+                                      placeholder: (context, url) =>
+                                          Center(child: CircularLoadingIndicator()),
+                                      imageUrl: displayProductImages?[0] ?? "",
+                                      fit: BoxFit.fitHeight,
+                                      height: double.infinity,
+                                      width: double.infinity,
+                                      errorWidget: productAndServiceBigErrorWidget,
+                                    ),
+
+                                    if(product!.pricePercentageChange != 0.0)...[
+                                      Positioned(
+                                        top: 8,
+                                        right: 100,
+                                        child: Container(
+                                          padding: EdgeInsets.only(left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+                                          decoration: BoxDecoration(
+                                            color: naturalGreen,
+                                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                                          ),
+                                          child: Text(
+                                            "${product!.pricePercentageChange!.toInt()}% off",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ]
+
+                                  ],
                                 ),
                               )),
                             ),
                           ),
                           getOutOfStockTag(),
+
                         ],
                       )
                     : Column(
@@ -1090,17 +1117,40 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                                 child: ClipRRect(
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(10)),
-                                              child: CachedNetworkImage(
-                                                placeholder: (context, url) =>
-                                                    Center(
-                                                        child:
-                                                            CircularLoadingIndicator()),
-                                                imageUrl: item!,
-                                                fit: BoxFit.fitHeight,
-                                                height: double.infinity,
-                                                width: double.infinity,
-                                                errorWidget:
-                                                    productAndServiceBigErrorWidget,
+                                              child: Stack(
+                                                children: [
+                                                  CachedNetworkImage(
+                                                    placeholder: (context, url) =>
+                                                        Center(
+                                                            child:
+                                                                CircularLoadingIndicator()),
+                                                    imageUrl: item!,
+                                                    fit: BoxFit.fitHeight,
+                                                    height: double.infinity,
+                                                    width: double.infinity,
+                                                    errorWidget:
+                                                        productAndServiceBigErrorWidget,
+                                                  ),
+                                                  if(product!.pricePercentageChange != 0.0)...[
+                                                    Positioned(
+                                                      top: 8,
+                                                      right: 100,
+                                                      child: Container(
+                                                        padding: EdgeInsets.only(left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+                                                        decoration: BoxDecoration(
+                                                          color: naturalGreen,
+                                                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                                                        ),
+                                                        child: Text(
+                                                          "${product!.pricePercentageChange!.toInt()}% off",
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ]
+                                                ],
                                               ),
                                             )),
                                           ),
@@ -1163,6 +1213,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     await _auth.getProduct(productId).then((value) {
       product = value;
       displayProductImages = product!.serverImages;
+      staticImage = product!.serverImages![0]!;
       productIsLoading = false;
       productVariantList = Variant.convertToVariantList(product!.variant!);
 
@@ -1358,8 +1409,33 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ],
               ),
             ),
-            // copyQrCode(),
-            qrCodeIcon(),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                qrCodeIcon(),
+                if(stockLeft >= 10)...[
+                  SizedBox(height: 10.0,),
+                  Text('In Stock',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: naturalGreen,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ]else if(stockLeft == 0)...[
+                  SizedBox.shrink()
+                ]
+                else if(stockLeft <= 9)...[
+                    SizedBox(height: 10.0,),
+                    Text('Only ${stockLeft.toString()} left in stock',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: mateRed,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ]
+              ],
+            ),
           ],
         ),
 
@@ -1412,27 +1488,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           showVariantSizes(),
         ],
 
-        if(stockLeft >= 10)...[
-          SizedBox(height: 10.0,),
-          Text('In Stock',
-            style: TextStyle(
-                fontSize: 16,
-                color: naturalGreen,
-                fontWeight: FontWeight.bold),
-          ),
-        ]else if(stockLeft == 0)...[
-          SizedBox.shrink()
-        ]
-        else if(stockLeft <= 9)...[
-          SizedBox(height: 10.0,),
-          Text('Only ${stockLeft.toString()} left in stock',
-            style: TextStyle(
-                fontSize: 16,
-                color: mateRed,
-                fontWeight: FontWeight.bold),
-          ),
-        ]
-
       ],
     );
   }
@@ -1459,7 +1514,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           note: "",
         );
 
-        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false', 'virtualAccount': virtualAccount, 'product': product!.seller}));
+        NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile': 'false',
+          'virtualAccount': virtualAccount, 'product': product!.seller, 'productUrl': "https://slydo.co/store/${product!.seller}/products/" + product!.id.toString()}));
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
@@ -1467,10 +1523,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget showVariantFirstImages(){
+    int itemCount = colorGroups.length; // Replace with your actual item count
+    int maxItemsPerRow = 5;
+    int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
+
     return SizedBox(
-      height: 80.0,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
+      height: 82.0 * totalColumns,
+      child: GridView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 5,
+          crossAxisSpacing: 5.0,
+          mainAxisSpacing: 5.0,
+          childAspectRatio: 1.1,
+        ),
+        // scrollDirection: Axis.horizontal,
         itemCount: colorGroups.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
@@ -1532,24 +1599,32 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 if(mounted) setState(() {});
               },
               child: Container(
-                height: 70.0,
-                width: 70.0,
+                height: 80.0,
+                width: 80.0,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  borderRadius: BorderRadius.all(Radius.circular(14)),
                   border: Border.all(
-                    color: index == selectedImageColorIndex ? black : greyBorderColor,
-                    width: 1.0,
+                    color: index == selectedImageColorIndex ? black : transparent,
+                    width: 3.0,
                   ),
                 ),
-                child: CachedNetworkImage(
-                  imageUrl: image,
-                  placeholder: (context, url) => Container(
-                    height: 20.0,
-                      width: 20.0,
-                      child: Center(child: CircularProgressIndicator(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: CachedNetworkImage(
+                      imageUrl: image,
+                      placeholder: (context, url) => Center(
+                          child: Transform.scale(
+                            scale: 0.5,
+                            child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
-                      ))),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
+                        strokeWidth: 2.0,
+                      ),
+                          )),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1560,12 +1635,29 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   }
 
+
+  int calculateColumnCount(int itemCount, int maxItemsPerRow) {
+    return (itemCount / maxItemsPerRow).ceil();
+  }
+
   Widget showVariantSizes(){
 
+    int itemCount = sizeGroups.length; // Replace with your actual item count
+    int maxItemsPerRow = 3;
+    int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
+
     return SizedBox(
-      height: 50.0,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
+      height: 55.0 * totalColumns,
+      child: GridView.builder(
+        // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          // maxCrossAxisExtent: maxTextLengthWithSpace, // Maximum width for each item
+          crossAxisCount: 3,
+          crossAxisSpacing: 8.0,
+          mainAxisSpacing: 8.0,
+          childAspectRatio: 2.5,
+        ),
         itemCount: sizeGroups.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
@@ -1579,26 +1671,27 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             }
           }
 
-          return Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: GestureDetector(
-              onTap: () {
-                selectedSize = sizeGroups.keys.elementAt(index);
-                selectedSizeIndex = index;
+          return GestureDetector(
+            onTap: () {
+              selectedSize = sizeGroups.keys.elementAt(index);
+              selectedSizeIndex = index;
 
-                for (int index = 0; index < variantsWithSize.length; index++) {
-                  Variant variant = variantsWithSize[index];
-                  // Update price or any other state based on the selected variant
-                  price = variant.price!;
-                  selectedVariantId = variant.id!;
-                  selectedVariantImage = variant.serverImages![0]!;
-                  selectedVariantPrice = variant.price!;
-                  stockLeft = int.parse(variant.quantity!);
-                }
+              for (int index = 0; index < variantsWithSize.length; index++) {
+                Variant variant = variantsWithSize[index];
+                // Update price or any other state based on the selected variant
+                price = variant.price!;
+                selectedVariantId = variant.id!;
+                selectedVariantImage = variant.serverImages!.isNotEmpty ? variant.serverImages![0]! : staticImage;
+                selectedVariantPrice = variant.price!;
+                stockLeft = int.parse(variant.quantity!);
+              }
 
-                if(mounted) setState(() {});
-              },
+              if(mounted) setState(() {});
+            },
+            child: SizedBox(
+              height: 20.0,
               child: Container(
+                // height: 20.0,
                 decoration: BoxDecoration(
                   color: index == selectedSizeIndex ? black : white,
                   borderRadius: BorderRadius.all(Radius.circular(10)),

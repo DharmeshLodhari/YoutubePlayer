@@ -146,7 +146,7 @@ class _UserServiceListState extends State<UserServiceList> {
     return serviceNext == "" && isServiceLoading
         ? SizedBox.shrink()
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
             child: GridView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
@@ -170,41 +170,6 @@ class _UserServiceListState extends State<UserServiceList> {
             ),
           );
 
-    return noServiceInList
-        ? NoItemInList(
-            msg: AppLocalization.of(context)!.noServices,
-          )
-        : ListView.builder(
-            itemCount: serviceList.length + 1,
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            controller: _serviceScrollController,
-            itemBuilder: (context, index) {
-              if (index == serviceList.length) {
-                return _buildServiceIndicator();
-              } else {
-                return serviceTile(index);
-              }
-            },
-          );
-
-    // StaggeredGridView.countBuilder(
-    //   controller: _serviceScrollController,
-    //   crossAxisCount: 2,
-    //   shrinkWrap: true,
-    //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-    //   mainAxisSpacing: 20,
-    //   itemCount: serviceList.length + 1,
-    //   itemBuilder: (BuildContext context, int index) {
-    //     if (index == serviceList.length) {
-    //       return _buildServiceIndicator();
-    //     } else {
-    //       return serviceTile(index);
-    //     }
-    //   },
-    //   staggeredTileBuilder: (int index) => new StaggeredTile.count(2, 1.2),
-    // );
   }
 
   Widget _buildServiceIndicator() {

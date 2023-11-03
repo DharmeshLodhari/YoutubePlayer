@@ -18,6 +18,7 @@ import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../widget/dialog.dart';
 import '../widget/noItemInList.dart';
 import '../widget/rounded_background_icon.dart';
+import 'connection_module/channels_list.dart';
 import 'connection_module/connections_dashboard.dart';
 import 'moments/screens/create_moment_screen.dart';
 import 'moments/screens/moments_screen.dart';
@@ -540,7 +541,6 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         }
         break;
       case 'Product':
-
         NavigationUtil.push(context, screen: const MyProducts());
         break;
       case 'Services':
@@ -575,16 +575,20 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         NavigationUtil.push(context, screen: MomentsScreen());
         break;
       case 'Blog':
-        if (appConfigurationModel?.enableSuperBlog == true) {
+        // if (appConfigurationModel?.enableSuperBlog == true) {
           NavigationUtil.push(
             context,
             screen: const SuperBlog(),
           );
-        } else {
-          showToast(message: 'Feature not available at the moment');
-        }
+        // } else {
+        //   showToast(message: 'Feature not available at the moment');
+        // }
         break;
       case 'Channel':
+        NavigationUtil.push(
+          context,
+          screen:  ChannelsList(),
+        );
         break;
       case 'Order':
         Navigator.pushNamed(context, Routes.ORDERS_LIST);
@@ -619,7 +623,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         if (userBloc.user.type!.toLowerCase() == 'user') {
           showUpgradeDialog(context);
         } else {
-          Navigator.pushNamed(context, Routes.ADD_PRODUCT);
+          Navigator.pushNamed(context, Routes.ADD_PRODUCT, arguments: {"channelUsername": ""});
 
         }
 

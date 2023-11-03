@@ -281,6 +281,7 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   String noContactMsg = "No contact found\nPull down to refresh";
+
   Widget _buildConnectionsList() {
     try {
       return _connectionListBloc.connectionUsers.length == 0
@@ -288,25 +289,29 @@ class _ConnectionListState extends State<ConnectionList> {
           
       : ListView.builder(
           shrinkWrap: true,
-          padding: EdgeInsets.symmetric(vertical: 4),
+          // padding: EdgeInsets.symmetric(vertical: 4),
+        padding: EdgeInsets.only(bottom: 80.0),
           //+1 for progressbar
           itemCount: getConnectionListItemCount(),
           physics: const BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics()),
           itemBuilder: (BuildContext context, int index) {
-            ChatConversation chatConversation =
-                _connectionListBloc.connectionUsers[index];
 
-            if (appConfigurationModel?.enableGroupChat == false) {
-              if (chatConversation.isGroupConversation!) {
-                return SizedBox.shrink();
+              ChatConversation chatConversation =
+              _connectionListBloc.connectionUsers[index];
+
+              if (appConfigurationModel?.enableGroupChat == false) {
+                if (chatConversation.isGroupConversation!) {
+                  return SizedBox.shrink();
+                }
               }
-            }
-            return _getSlidableWithLists(
-                context, _connectionListBloc.connectionUsers[index], index);
+              return _getSlidableWithLists(
+                  context, _connectionListBloc.connectionUsers[index], index);
+
           },
           controller: _scrollController,
-        );
+
+      );
     } catch (error) {
       debugPrint("ERROR building list =>:- $error");
       return _connectionListBloc.connectionUsers.length == 0
