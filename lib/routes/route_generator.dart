@@ -353,9 +353,7 @@ class RouteGenerator {
         );
       case Routes.CONTRACTOR_SCREEN:
         return PageTransition(
-          child: ContractorPaymentScreen(
-            arguments: settings.arguments
-          ),
+          child: ContractorPaymentScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -965,14 +963,14 @@ class RouteGenerator {
 
       case Routes.SEARCH_MY_JOBS:
         return PageTransition(
-            child:  SearchMyJobs(),
+            child: SearchMyJobs(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
 
       case Routes.SEARCH_SERVICES:
         return PageTransition(
-            child:  SearchServices(),
+            child: SearchServices(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1075,7 +1073,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    // Find jobs
+      // Find jobs
       case Routes.CATEGORY_JOBS:
         return PageTransition(
             child: JobsCategoryJobsList(
@@ -1142,7 +1140,8 @@ class RouteGenerator {
 
       case Routes.JOBS_SEARCH:
         return PageTransition(
-            child:  JobsSearch(filterMap:settings.arguments as Map<String, dynamic>?),
+            child: JobsSearch(
+                filterMap: settings.arguments as Map<String, dynamic>?),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1165,7 +1164,7 @@ class RouteGenerator {
             curve: Curves.ease,
             settings: settings);
 
-    /// Movie Route
+      /// Movie Route
 
       case Routes.MOVIES:
         return PageTransition(
@@ -1672,8 +1671,7 @@ class RouteGenerator {
 
       case Routes.VIRTUAL_CARD_HOME:
         return PageTransition(
-          child: VirtualCardHome(
-          ),
+          child: VirtualCardHome(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1796,6 +1794,17 @@ class RouteGenerator {
         );
 
       case Routes.NEW_ADD_ON:
+        return PageTransition(
+          child: NewAddOn(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// FLASH tags
+      case Routes.FLASH_TAG_LIST:
         return PageTransition(
           child: NewAddOn(
             arguments: settings.arguments,
