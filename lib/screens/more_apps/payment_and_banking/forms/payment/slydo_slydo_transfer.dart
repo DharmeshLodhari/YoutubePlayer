@@ -624,23 +624,24 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            amount = double.parse(val.replaceAll(',', ''));
-          });
+        double? value = double.tryParse(val.replaceAll(',', ''));
+
+        if (value != null) {
+          amount = value;
+          if (mounted) setState(() {});
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
             double amount = double.parse(val.replaceAll(',', ''));
-            if (amount > 0.0) {
+            if (amount >= 1.0) {
               return null;
             } else {
               throw Exception("Invalid amount");
             }
           } catch (e) {
-            return AppLocalization.of(context)!.invalidAmount;
+            return "Please enter an amount greater than ₦1";
           }
         }
         return AppLocalization.of(context)!.invalidAmount;
@@ -1043,7 +1044,6 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
         if (userBloc.user.userName != recipient) {
           var userLocation;
           Map deviceData;
-
           try {
             BottomSheetPassCode(
                 context: context,
@@ -1053,148 +1053,164 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                       builder: (context) => const Center(child: SizedBox()));
                   // Center(child: CircularLoadingIndicator()));
 
-                  if (Platform.isIOS) {
-                    userLocation = await locationService.getLocation();
-                  }
-
-                  // double currentBalance = await getAccountBalance();
-                  // double transactionalAmount = double.parse(amount.toString());
-
-                  //show loading screen
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PaymentLoadingScreen(
-                              text: 'Sending Payment...',
-                              imagePath: 'assets/images/app_logo.png',
-                            )),
-                  );
-
-                  await Future.delayed(const Duration(seconds: 3));
-
-                  deviceData = await getDeviceInfo();
-
-                  String description = 'General Payment';
-                  var data = {
-                    "from_customer": userBloc.user.userName,
-                    "to_customer": _recipientController.text.trim(),
-                    "currency": userBloc.user.currency,
-                    "amount": moneyInputNormalizer(amount.toString()),
-                    "category": selectedCategory!.trim(),
-                    "notes": reference.isEmpty ? description : reference.trim(),
-                    "description":
-                        reference.isEmpty ? description : reference.trim(),
-                    "latitude": Platform.isIOS ? userLocation.latitude : "",
-                    "longitude": Platform.isIOS ? userLocation.longitude : "",
-                    "deviceData": deviceData,
-                    "is_anonymous": sendMoneyAnonymous,
-                    "made_from_chat": isFromChat ?? false,
-                  };
-                  bool updateYarnSupporter = false;
-                  bool updateMomentSupporter = false;
-
-                  if (isFromYarn == true) {
-                    data['category'] = "Gift";
-                    data['description'] = "Merchandise Payment in Yarn";
-                  }
-
-                  if (isFromMoment == true) {
-                    data['category'] = "Gift";
-                    data['description'] = "Merchandise Payment in Moment";
-                  }
-
-                  if (conversationId != null) {
-                    data["conversation_id"] = conversationId;
-                  }
-
-                  await _auth.makePayment(data).then((value) async {
-                    debugPrint(
-                        "status code:- ${value.statusCode}  body:- ${value.body}");
-
-                    response = value;
-                    if (response.statusCode == 200) {
-                      popFromShoppingCart(product);
-                      //Pop Circular Progress Indicator
-
-                      ///check if page is from yarn
-                      if (isFromYarn == true) {
-                        var jsonData = json.decode(response.body);
-
-                        updateYarnSupporter = await _auth.updateYarnSupporter(
-                            widget.arguments['yarnId'],
-                            jsonData['transaction_id']);
-
-                        if (updateYarnSupporter == false) {
-                          showToast(message: 'Unable to update yarn payment');
-                        } else {
-                          widget.callback!(true);
-                          Navigator.pop(context);
-                          //Pop send payment page
-                          Navigator.pop(context);
-                          return;
-                        }
-                      }
-
-                      ///check if page is from moment
-                      if (isFromMoment == true) {
-                        var jsonData = json.decode(response.body);
-
-                        updateMomentSupporter =
-                            await _auth.updateMomentSupporter(
-                                widget.arguments['momentId'],
-                                jsonData['transaction_id']);
-
-                        if (updateMomentSupporter == false) {
-                          showToast(message: 'Unable to update moment payment');
-                        } else {
-                          widget.callback!(true);
-                          Navigator.pop(context);
-                          //Pop send payment page
-                          Navigator.pop(context);
-                          return;
-                        }
-                      }
-
-                      Navigator.pop(context);
-                      //Pop send payment page
-                      Navigator.pop(context);
-
-                      debugPrint(" isFromChat:- $isFromChat");
-
-                      if (!isFromChat!) {
-                        Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
-                            arguments: {'page': 0});
-                      }
-                    } else if (response.statusCode == 400) {
-                      Navigator.pop(context);
-                      setState(() {
-                        errorMessage = "${jsonDecode(value.body)["errors"]}";
-
-                        showToast(message: errorMessage);
-                      });
-                    } else if (response.statusCode == 500) {
-                      Navigator.pop(context);
-                      setState(() {
-                        errorMessage = AppLocalization.of(context)!.serverError;
-                        showToast(message: errorMessage);
-                      });
-                    } else {
-                      Navigator.pop(context);
-                      if (response.statusCode == 406) {
-                        errorMessage = jsonDecode(value.body)[0];
-                        showToast(message: "$errorMessage");
-                        setState(() {});
-                      } else {
-                        debugPrint("ERROR:- ${response.body}");
-                        setState(() {
-                          errorMessage =
-                              AppLocalization.of(context)!.somethingWentWrong;
-                          showToast(message: "$errorMessage");
-                        });
+                  try {
+                    if (Platform.isIOS) {
+                      try {
+                        userLocation =
+                            await locationService.getLocationEndless();
+                      } catch (e) {
+                        Navigator.pop(context);
+                        debugPrint(e.toString());
+                        showToast(message: e.toString());
+                        return;
                       }
                     }
-                  });
+
+                    // double currentBalance = await getAccountBalance();
+                    // double transactionalAmount = double.parse(amount.toString());
+
+                    //show loading screen
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PaymentLoadingScreen(
+                                text: 'Sending Payment...',
+                                imagePath: 'assets/images/app_logo.png',
+                              )),
+                    );
+
+                    await Future.delayed(const Duration(seconds: 3));
+
+                    deviceData = await getDeviceInfo();
+
+                    String description = 'General Payment';
+                    var data = {
+                      "from_customer": userBloc.user.userName,
+                      "to_customer": _recipientController.text.trim(),
+                      "currency": userBloc.user.currency,
+                      "amount": moneyInputNormalizer(amount.toString()),
+                      "category": selectedCategory!.trim(),
+                      "notes":
+                          reference.isEmpty ? description : reference.trim(),
+                      "description":
+                          reference.isEmpty ? description : reference.trim(),
+                      "latitude": Platform.isIOS ? userLocation.latitude : "",
+                      "longitude": Platform.isIOS ? userLocation.longitude : "",
+                      "deviceData": deviceData,
+                      "is_anonymous": sendMoneyAnonymous,
+                      "made_from_chat": isFromChat ?? false,
+                    };
+                    bool updateYarnSupporter = false;
+                    bool updateMomentSupporter = false;
+
+                    if (isFromYarn == true) {
+                      data['category'] = "Gift";
+                      data['description'] = "Merchandise Payment in Yarn";
+                    }
+
+                    if (isFromMoment == true) {
+                      data['category'] = "Gift";
+                      data['description'] = "Merchandise Payment in Moment";
+                    }
+
+                    if (conversationId != null) {
+                      data["conversation_id"] = conversationId;
+                    }
+
+                    await _auth.makePayment(data).then((value) async {
+                      debugPrint(
+                          "status code:- ${value.statusCode}  body:- ${value.body}");
+
+                      response = value;
+                      if (response.statusCode == 200) {
+                        popFromShoppingCart(product);
+                        //Pop Circular Progress Indicator
+
+                        ///check if page is from yarn
+                        if (isFromYarn == true) {
+                          var jsonData = json.decode(response.body);
+
+                          updateYarnSupporter = await _auth.updateYarnSupporter(
+                              widget.arguments['yarnId'],
+                              jsonData['transaction_id']);
+
+                          if (updateYarnSupporter == false) {
+                            showToast(message: 'Unable to update yarn payment');
+                          } else {
+                            widget.callback!(true);
+                            Navigator.pop(context);
+                            //Pop send payment page
+                            Navigator.pop(context);
+                            return;
+                          }
+                        }
+
+                        ///check if page is from moment
+                        if (isFromMoment == true) {
+                          var jsonData = json.decode(response.body);
+
+                          updateMomentSupporter =
+                              await _auth.updateMomentSupporter(
+                                  widget.arguments['momentId'],
+                                  jsonData['transaction_id']);
+
+                          if (updateMomentSupporter == false) {
+                            showToast(
+                                message: 'Unable to update moment payment');
+                          } else {
+                            widget.callback!(true);
+                            Navigator.pop(context);
+                            //Pop send payment page
+                            Navigator.pop(context);
+                            return;
+                          }
+                        }
+
+                        Navigator.pop(context);
+                        //Pop send payment page
+                        Navigator.pop(context);
+
+                        debugPrint(" isFromChat:- $isFromChat");
+
+                        if (!isFromChat!) {
+                          Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
+                              arguments: {'page': 0});
+                        }
+                      } else if (response.statusCode == 400) {
+                        Navigator.pop(context);
+                        setState(() {
+                          errorMessage = "${jsonDecode(value.body)["errors"]}";
+
+                          showToast(message: errorMessage);
+                        });
+                      } else if (response.statusCode == 500) {
+                        Navigator.pop(context);
+                        setState(() {
+                          errorMessage =
+                              AppLocalization.of(context)!.serverError;
+                          showToast(message: errorMessage);
+                        });
+                      } else {
+                        Navigator.pop(context);
+                        if (response.statusCode == 406) {
+                          errorMessage = jsonDecode(value.body)[0];
+                          showToast(message: "$errorMessage");
+                          setState(() {});
+                        } else {
+                          debugPrint("ERROR:- ${response.body}");
+                          setState(() {
+                            errorMessage =
+                                AppLocalization.of(context)!.somethingWentWrong;
+                            showToast(message: "$errorMessage");
+                          });
+                        }
+                      }
+                    });
+                  } catch (e) {
+                    debugPrint(e.toString());
+                    showToast(message: e.toString());
+                  }
                 },
                 cancelCallBack: () {
                   Navigator.pop(context);
