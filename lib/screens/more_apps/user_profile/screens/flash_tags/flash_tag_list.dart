@@ -1,24 +1,31 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/flash_tags/add_flash_tag_alert.dart';
+import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/item_display_card.dart';
+
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class FlashTagList extends StatefulWidget {
+  var arguments;
   CustomerProfile? user;
 
-  FlashTagList({required this.user});
+  FlashTagList({required this.arguments, Key? key}) : super(key: key) {
+    this.user = arguments["user"] as CustomerProfile;
+  }
 
   @override
   _FlashTagListState createState() => _FlashTagListState();
@@ -29,7 +36,7 @@ class _FlashTagListState extends State<FlashTagList> {
   int? productCount = 0;
   String? productNext = "";
   String? productPrevious = "";
-  List<Product> productList = [];
+  List<FlashTagAlertModel> flashTagList = [];
   ScrollController _productScrollController = new ScrollController();
   final GlobalKey<ScaffoldState> _productScaffoldKey =
       new GlobalKey<ScaffoldState>();
@@ -39,8 +46,6 @@ class _FlashTagListState extends State<FlashTagList> {
       RefreshController(initialRefresh: false);
   bool isProductLoading = false;
   bool noProductInList = false;
-
-  Product? product;
 
   @override
   void initState() {
@@ -64,7 +69,7 @@ class _FlashTagListState extends State<FlashTagList> {
         productCount = 0;
         productNext = "";
         productPrevious = "";
-        productList = [];
+        flashTagList = [];
         debugPrint("Refresh called on products!!  ");
         getProductList();
         _productsRefreshController.refreshCompleted();
@@ -84,8 +89,8 @@ class _FlashTagListState extends State<FlashTagList> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious, "", false,
-                userName: widget.user!.userName);
+            .listOfFlashTags(
+                productNext, productPrevious, widget.user!.userName);
 
         if (result == null) {
           isProductLoading = false;
@@ -104,17 +109,17 @@ class _FlashTagListState extends State<FlashTagList> {
           setState(() {
             noProductInList = false;
             isProductLoading = false;
-            productList.addAll(tempList);
+            flashTagList.addAll(tempList);
           });
         }
       }
-      if (productList.isEmpty) {
+      if (flashTagList.isEmpty) {
         if (mounted) {
           setState(() {
             noProductInList = true;
           });
         }
-      } else if (productNext == null && productList.length > 6) {
+      } else if (productNext == null && flashTagList.length > 6) {
         _productMessengerScaffoldKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -130,6 +135,7 @@ class _FlashTagListState extends State<FlashTagList> {
       key: _productMessengerScaffoldKey,
       child: Scaffold(
         key: _productScaffoldKey,
+        appBar: _buildAppBar() as PreferredSizeWidget,
         body: Container(
           color: lightGrey,
           padding: EdgeInsets.symmetric(horizontal: 4),
@@ -192,76 +198,153 @@ class _FlashTagListState extends State<FlashTagList> {
     );
   }
 
+  Widget _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: Text(
+        'Flash Tag',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: yarnBlack,
+          height: 1.3,
+        ),
+      ),
+      centerTitle: false,
+      titleSpacing: 16,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context, "back pressed");
+        },
+      ),
+      shadowColor: greySecondaryYarn,
+      actions: _buildAppBarActions(),
+      elevation: 0.5,
+    );
+  }
+
+  List<Widget> _buildAppBarActions() {
+    return [
+      RoundedBackgroundIcon(
+          backgroundColor: Colors.transparent,
+          onTap: () {
+            NavigationUtil.push(
+              context,
+              screen: AddFlashTagAlert(
+                user: widget.user!,
+              ),
+            );
+          },
+          height: 20,
+          width: 20,
+          icon: SvgPicture.asset(
+            "add_payment".toSVG(),
+            height: 12,
+            width: 12,
+          )),
+      SizedBox(width: 30),
+    ];
+  }
+
   Widget _buildProductList() {
     return productNext == "" && isProductLoading
         ? SizedBox.shrink()
         : Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
-            child: GridView.builder(
+            child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
               controller: _productScrollController,
               physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                mainAxisSpacing: 8,
-                mainAxisExtent: 274,
-                crossAxisSpacing: 15,
-                maxCrossAxisExtent: 200,
-              ),
-              itemCount: productList.length,
+              itemCount: flashTagList.length,
               itemBuilder: (context, index) {
-                return SizedBox(
-                  child: DisplayProduct(
-                    product: productList[index],
-                    onProductRefresh: () {
-                      _onProductRefresh();
-                    },
-                  ),
-                );
+                return productTile(index);
               },
             ),
           );
   }
 
   Widget productTile(int index) {
-    return CustomBoxShadow(
-      child: SizedBox(
-        height: 250,
+    return InkWell(
+      onTap: () {
+        NavigationUtil.push(
+          context,
+          screen: AddFlashTagAlert(
+            user: widget.user!,
+            flashTagAlertModel: flashTagList[index],
+          ),
+        );
+      },
+      child: CustomBoxShadow(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: DisplayProduct(
-            product: productList[index],
+          child: CustomBoxShadow(
+            child: Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              margin: EdgeInsets.zero,
+              shadowColor: boxShadowTwo,
+              color: lightGrey,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              messageDecoderWithEmoji(
+                                  flashTagList[index].message)!,
+                              maxLines: 1,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: blackFont),
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            Text(
+                              "Last Updated: 20/06/2023",
+                              maxLines: 1,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: darkGrey),
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        messageDecoderWithEmoji(
+                            flashTagList[index].type.toString())!,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: navyBlue),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),
     );
-  }
-
-  Widget getOutOfStockTag(int index) {
-    if (!productList[index].isAvailable!) {
-      return Positioned(
-        left: 38,
-        top: 14,
-        child: getColoredLabeledWidget(
-            text: AppLocalization.of(context)!.outOfStock, color: starYellow),
-      );
-    }
-    return SizedBox.shrink();
-  }
-
-  Widget _buildProductIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isProductLoading ? 1.0 : 00,
-            child: isProductLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
-  }
-
-  String? getDisplayImage(int index, List<Product> productList) {
-    return productList[index].serverImages![0];
   }
 }
