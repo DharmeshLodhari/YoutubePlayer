@@ -90,7 +90,7 @@ class _HomeState extends State<Home> {
 
       if (!isAppTutorialDone) {
         bool result =
-        await _sharedPreferences.setBool("isAppTutorialDone", true);
+            await _sharedPreferences.setBool("isAppTutorialDone", true);
         debugPrint("result:- $result");
         await Future.delayed(const Duration(milliseconds: 1500)).then((value) {
           AppTutorialController().showTutorial(context);
@@ -149,15 +149,9 @@ class _HomeState extends State<Home> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       body: Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height -
+        height: MediaQuery.of(context).size.height -
             (AppBar().preferredSize.height),
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         color: Colors.white,
         child: SingleChildScrollView(
           child: Column(
@@ -311,7 +305,7 @@ class _HomeState extends State<Home> {
                     onClickShortcut(shortcut['title']);
                   },
                   child:
-                  shortcutView(shortcut['imagePath']!, shortcut['title']!)),
+                      shortcutView(shortcut['imagePath']!, shortcut['title']!)),
             ),
         ],
       ),
@@ -383,7 +377,7 @@ class _HomeState extends State<Home> {
         }
         break;
       default:
-      // Handle the default case (if any)
+        // Handle the default case (if any)
         print('Tapped on an unknown shortcut');
     }
   }
@@ -396,14 +390,15 @@ class _HomeState extends State<Home> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     // Calculate the dynamic height
-    final dynamicHeight = calculateDynamicHeight(longestSubTitle!, screenHeight);
+    final dynamicHeight =
+        calculateDynamicHeight(longestSubTitle!, screenHeight);
 
     return Container(
       child: Column(
         // padding: EdgeInsets.zero,
         children: List.generate(
           ((shortcuts.length + 1) / 2).ceil(), // Adjusted the generation logic
-              (index) {
+          (index) {
             final startIndex = index * 2;
             final endIndex = startIndex + 2;
             final pairShortcuts = shortcuts.sublist(
@@ -425,17 +420,16 @@ class _HomeState extends State<Home> {
                     child: shortcut.isEmpty
                         ? Container() // Empty view placeholder
                         : GestureDetector(
-                      onTap: () {
-                        onClickShortcutExtra(shortcut['title']!);
-                      },
-                      child: shortcutViewExtra(
-                        shortcut['imagePath']!,
-                        shortcut['title']!,
-                        shortcut['subTitle']!,
-                        shortcut['color']!,
-                          dynamicHeight
-                      ),
-                    ),
+                            onTap: () {
+                              onClickShortcutExtra(shortcut['title']!);
+                            },
+                            child: shortcutViewExtra(
+                                shortcut['imagePath']!,
+                                shortcut['title']!,
+                                shortcut['subTitle']!,
+                                shortcut['color']!,
+                                dynamicHeight),
+                          ),
                   ),
                 );
               }).toList(),
@@ -545,7 +539,7 @@ class _HomeState extends State<Home> {
             arguments: {"view": appLocalization.lifestyle});
         break;
       default:
-      // Handle the default case (if any)
+        // Handle the default case (if any)
         print('Tapped on an unknown shortcut');
     }
   }
@@ -650,10 +644,10 @@ class _HomeState extends State<Home> {
           padding: basketBloc.items.length == 0
               ? const EdgeInsets.all(0)
               : EdgeInsets.only(
-              left: getBadgeCount().length == 1 ? 6 : 8,
-              right: 6,
-              top: 4,
-              bottom: 4),
+                  left: getBadgeCount().length == 1 ? 6 : 8,
+                  right: 6,
+                  top: 4,
+                  bottom: 4),
           elevation: 0,
         ),
         child: Center(
@@ -665,6 +659,12 @@ class _HomeState extends State<Home> {
         ),
       ),
       onTap: () {
+        // Navigator.of(context).pushNamed(Routes.SIGN_UP, arguments: {
+        //   'phoneNumber': "+000000000000",
+        //   'otpCode': "123456",
+        //   'accountType': "Business"
+        // });
+
         hideBalance();
         NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
       },
@@ -724,17 +724,11 @@ class _HomeState extends State<Home> {
   }
 
   double topPadding() {
-    return MediaQuery
-        .of(context)
-        .size
-        .height > 600 ? 4 : 2;
+    return MediaQuery.of(context).size.height > 600 ? 4 : 2;
   }
 
   double bottomPadding() {
-    return MediaQuery
-        .of(context)
-        .size
-        .height > 600 ? 6 : 4;
+    return MediaQuery.of(context).size.height > 600 ? 6 : 4;
   }
 
   Widget balanceRow() {
@@ -796,10 +790,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-            ] else
-              ...[
-                actualBalance(balance),
-              ]
+            ] else ...[
+              actualBalance(balance),
+            ]
           ],
         ),
       ],
@@ -809,42 +802,42 @@ class _HomeState extends State<Home> {
   Widget actualBalance(int balance) {
     return isLoading == true
         ? SizedBox(
-      width: 20,
-      height: 20,
-      child: CircularLoadingIndicator(color: naturalGreen),
-    )
+            width: 20,
+            height: 20,
+            child: CircularLoadingIndicator(color: naturalGreen),
+          )
         : Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        isBalanceHidden
-            ? Container()
-            : Padding(
-          padding: const EdgeInsets.only(bottom: 2.0),
-          child: Text(
-            worldCurrencies[userBloc.user.currency!]!,
-            style: TextStyle(
-              color: white,
-              fontWeight: FontWeight.w700,
-              fontSize: 22,
-              fontFamily: "Roboto",
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 2.0),
-          child: Text(
-            isBalanceHidden
-                ? generateAsteriskMask(moneyDisplayNormalizer(balance))
-                : moneyDisplayNormalizer(balance),
-            style: TextStyle(
-              color: white,
-              fontWeight: FontWeight.w700,
-              fontSize: 19,
-            ),
-          ),
-        ),
-      ],
-    );
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              isBalanceHidden
+                  ? Container()
+                  : Padding(
+                      padding: const EdgeInsets.only(bottom: 2.0),
+                      child: Text(
+                        worldCurrencies[userBloc.user.currency!]!,
+                        style: TextStyle(
+                          color: white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 22,
+                          fontFamily: "Roboto",
+                        ),
+                      ),
+                    ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 2.0),
+                child: Text(
+                  isBalanceHidden
+                      ? generateAsteriskMask(moneyDisplayNormalizer(balance))
+                      : moneyDisplayNormalizer(balance),
+                  style: TextStyle(
+                    color: white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 19,
+                  ),
+                ),
+              ),
+            ],
+          );
   }
 
   void toggleBalanceVisibility() {
@@ -926,9 +919,7 @@ class _HomeState extends State<Home> {
   void copyAccountDetails() {
     Clipboard.setData(ClipboardData(
       text:
-      "Bank name: ${virtualAccount!.financialInstitution!
-          .name}\nAccount name: ${virtualAccount!
-          .accountName}\nAccount number: ${virtualAccount!.accountNumber}",
+          "Bank name: ${virtualAccount!.financialInstitution!.name}\nAccount name: ${virtualAccount!.accountName}\nAccount number: ${virtualAccount!.accountNumber}",
     ));
     showToast(message: "Account details copied !!");
   }
@@ -1090,20 +1081,20 @@ class _HomeState extends State<Home> {
             children: [
               Expanded(
                   child: UserDashboardItemTile(
-                    icon: SlydoAppIcon.store,
-                    title: "My Store",
-                    isLocked: storeLocked,
-                    onTap: () {
-                      if (!storeLocked) {
-                        storeItemAndroidSheet();
-                      } else {
-                        showToast(
-                            message:
+                icon: SlydoAppIcon.store,
+                title: "My Store",
+                isLocked: storeLocked,
+                onTap: () {
+                  if (!storeLocked) {
+                    storeItemAndroidSheet();
+                  } else {
+                    showToast(
+                        message:
                             'You need to upgrade to a business account to use this feature.');
-                      }
-                    },
-                    iconColor: HexColor("#46CE7C"),
-                  )),
+                  }
+                },
+                iconColor: HexColor("#46CE7C"),
+              )),
               const SizedBox(width: 12),
               Expanded(
                   key: tutorialOrderKey,
@@ -1168,7 +1159,7 @@ class _HomeState extends State<Home> {
                     } else {
                       showToast(
                           message:
-                          'You need to upgrade to a business account to use this feature.');
+                              'You need to upgrade to a business account to use this feature.');
                     }
                   },
                   iconColor: HexColor("#5218E9"),
@@ -1233,7 +1224,7 @@ class _HomeState extends State<Home> {
               margin: EdgeInsets.zero,
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -1375,11 +1366,11 @@ class _HomeState extends State<Home> {
         User? _user = await DatabaseHelper().getUser();
 
         SharedPreferences sharedPreferences =
-        await SharedPreferences.getInstance();
+            await SharedPreferences.getInstance();
         String countryFromPref = sharedPreferences.getString('country') ?? "NG";
 
         Country country =
-        CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+            CountryPickerUtils.getCountryByIsoCode(countryFromPref);
 
         SecureUser secureUser = await SecureStorage().getUser();
         String phoneNumber = secureUser.phoneNumber ?? "";
@@ -1451,9 +1442,8 @@ class _HomeState extends State<Home> {
       case 'Blog':
         break;
       default:
-      // Handle the default case (if any)
+        // Handle the default case (if any)
         print('Tapped on an unknown shortcut');
     }
   }
-
 }
