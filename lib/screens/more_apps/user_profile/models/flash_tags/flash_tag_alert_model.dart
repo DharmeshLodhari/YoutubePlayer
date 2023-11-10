@@ -13,6 +13,7 @@ class FlashTagAlertModel {
     this.type,
     this.startDate,
     this.endDate,
+    this.updatedAt,
     this.message,
     this.isActive = true,
   }) {
@@ -32,6 +33,9 @@ class FlashTagAlertModel {
     if (json['end_date'] != null) {
       endDate = DateTime.parse(json['end_date']);
     }
+    if (json['updated_at'] != null) {
+      updatedAt = DateTime.parse(json['updated_at']);
+    }
 
     message = json['message'];
     isActive = json['is_active'] ?? true;
@@ -43,6 +47,7 @@ class FlashTagAlertModel {
   FlashTagCategory? type;
   DateTime? startDate;
   DateTime? endDate;
+  DateTime? updatedAt;
   String? message;
   bool isActive = true;
 
@@ -59,6 +64,10 @@ class FlashTagAlertModel {
     if (endDate != null) {
       map['end_date'] = endDate?.toString();
     }
+
+    if (updatedAt != null) {
+      map['updated_at'] = updatedAt?.toString();
+    }
     map['message'] = message;
     map['is_active'] = isActive;
     return map;
@@ -69,8 +78,12 @@ class FlashTagAlertModel {
     map['merchant'] = merchant;
     map['title'] = title;
     map['type'] = type?.toValue();
-    map['start_date'] = startDate;
-    map['end_date'] = endDate;
+    if (startDate != null) {
+      map['start_date'] = startDate?.toString();
+    }
+    if (endDate != null) {
+      map['end_date'] = endDate?.toString();
+    }
     map['message'] = message;
     map['is_active'] = isActive;
     return map;
@@ -83,6 +96,7 @@ class FlashTagAlertModel {
     FlashTagCategory? type,
     DateTime? startDate,
     DateTime? endDate,
+    DateTime? updatedAt,
     String? message,
     bool? isActive,
   }) {
@@ -93,6 +107,7 @@ class FlashTagAlertModel {
       type: type ?? this.type,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
+      updatedAt: updatedAt ?? this.updatedAt,
       message: message ?? this.message,
       isActive: isActive ?? this.isActive,
     );

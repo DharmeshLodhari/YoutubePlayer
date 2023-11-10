@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -1848,6 +1849,127 @@ class ShoppingAuthService extends AuthService {
       return flashTagAlertModel;
     }
     return null;
+  }
+
+  // delete flashTag
+  Future<bool> deleteFlashTag(String id) async {
+    var url = AppConfig.baseUrl + "/api/v1/notification/alerts/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // List Discounts
+  Future<Map<String, dynamic>?> listOfDiscounts(
+      String? next, String? previous) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/business/discounts/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      List<DiscountModel> discountList = [];
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        DiscountModel discount = DiscountModel.fromJson(item);
+        discountList.add(discount);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": discountList
+      };
+
+      debugPrint('CALLING OTHER check ---> ${result}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  //add update  discount
+  Future<DiscountModel?> addUpdateDiscount(DiscountModel itemModel,
+      {bool isEdit = false}) async {
+    String url = AppConfig.baseUrl + "/api/v1/business/discounts/";
+
+    if (isEdit == false) {
+      url = AppConfig.baseUrl + "/api/v1/business/discounts/";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/business/discounts/${itemModel.id}/";
+    }
+
+    var _data = jsonEncode(itemModel.toAddUpdate());
+
+    var headers = await getAuthHeaders();
+    Response? response;
+
+    if (isEdit == false) {
+      response = await httpPost(url, headers: headers, body: _data);
+    } else {
+      response = await httpPatch(url, headers: headers, body: _data);
+    }
+
+    if (response.statusCode == 400) {
+      throw jsonDecode(response.body);
+    }
+
+    if (response.statusCode == 201) {
+      DiscountModel item = DiscountModel.fromJson(jsonDecode(response.body));
+      return item;
+    }
+    return null;
+  }
+
+  // delete discount
+  Future<bool> deleteDiscount(String id) async {
+    var url = AppConfig.baseUrl + "/api/v1/business/discounts/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
   }
 }
 

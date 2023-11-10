@@ -12,8 +12,8 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 
 import 'package:flutter/material.dart';
 
-class AddFlashTagAlert extends StatefulWidget {
-  AddFlashTagAlert({Key? key, required this.user, this.flashTagAlertModel})
+class AddEditFlashTagAlert extends StatefulWidget {
+  AddEditFlashTagAlert({Key? key, required this.user, this.flashTagAlertModel})
       : super(key: key);
 
   final CustomerProfile user;
@@ -21,10 +21,10 @@ class AddFlashTagAlert extends StatefulWidget {
   final FlashTagAlertModel? flashTagAlertModel;
 
   @override
-  _AddFlashTagAlertState createState() => _AddFlashTagAlertState();
+  _AddEditFlashTagAlertState createState() => _AddEditFlashTagAlertState();
 }
 
-class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
+class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
   final _formKey = GlobalKey<FormState>();
 
   List<FlashTagCategory> flashTagCategory = [
@@ -35,6 +35,8 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
   DateTime? startFrom;
   DateTime? endFrom;
   bool isAPILoading = false;
+
+  bool isDeleteLoading = false;
 
   late FlashTagAlertModel flashTagAlertModel;
   bool isEdit = false;
@@ -71,7 +73,7 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
 
   Widget appBar() {
     return AppBar(
-      elevation: 0,
+      elevation: 0.5,
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
@@ -90,6 +92,7 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
+      shadowColor: greySecondaryYarn,
     );
   }
 
@@ -103,14 +106,14 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 addTitleField(),
                 const SizedBox(
-                  height: 10,
+                  height: 16,
                 ),
                 flashTagDescription(),
                 const SizedBox(
-                  height: 10,
+                  height: 16,
                 ),
                 flashTagType(),
                 const SizedBox(height: 16),
@@ -121,7 +124,7 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
                     Expanded(child: endDate())
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 toggleActiveTag(),
                 const SizedBox(height: 56),
                 getSubmitButton(),
@@ -151,7 +154,7 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context)!.pleaseEnterProductName;
+        return "This field should not be empty";
       },
       onChanged: (val) {
         flashTagAlertModel.title = val;
@@ -267,7 +270,7 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context)!.pleaseEnterManufacturerName;
+        return "This field should not be empty";
       },
       onChanged: (val) {
         flashTagAlertModel.message = val;
@@ -276,6 +279,56 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
   }
 
   Widget getSubmitButton() {
+    if (isEdit) {
+      return Row(
+        children: [
+          Expanded(
+            child: CurvedButton(
+              onPressed: isDeleteLoading
+                  ? () {}
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      isDeleteLoading = true;
+                      if (mounted) setState(() {});
+
+                      await deleteItem();
+
+                      isDeleteLoading = false;
+                      if (mounted) setState(() {});
+                    },
+              backgroundColor: red,
+              textColor: Colors.white,
+              text: "Delete",
+              isLoading: isDeleteLoading,
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+          Expanded(
+            child: CurvedButton(
+              onPressed: isAPILoading
+                  ? () {}
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      isAPILoading = true;
+                      if (mounted) setState(() {});
+
+                      await addEditItem();
+
+                      isAPILoading = false;
+                      if (mounted) setState(() {});
+                    },
+              backgroundColor: navyBlue,
+              textColor: Colors.white,
+              text: "Update",
+              isLoading: isAPILoading,
+            ),
+          )
+        ],
+      );
+    }
+
     return CurvedButton(
       onPressed: isAPILoading
           ? () {}
@@ -284,7 +337,7 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
               isAPILoading = true;
               if (mounted) setState(() {});
 
-              await addItem();
+              await addEditItem();
 
               isAPILoading = false;
               if (mounted) setState(() {});
@@ -296,7 +349,7 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
     );
   }
 
-  Future<void> addItem() async {
+  Future<void> addEditItem() async {
     if (_formKey.currentState?.validate() ?? false) {
       //the api call will first create the product then use the id from the
       //response to save the variant
@@ -304,16 +357,33 @@ class _AddFlashTagAlertState extends State<AddFlashTagAlert> {
       await ShoppingAuthService()
           .addUpdateFlashTag(flashTagAlertModel, isEdit: isEdit)
           .then((value) async {
-        Navigator.pop(context);
+        Navigator.pop(context, true);
         showToast(
-            message: AppLocalization.of(context)!.productAddedSuccessfully);
+          message: isEdit
+              ? "Flash Tag updated successfully"
+              : "Flash Tag added successfully",
+        );
       }).catchError((error) {
         debugPrint("Product check::: ${error.toString()}");
         showToast(message: error.toString());
       });
     } else {
-      showToast(message: AppLocalization.of(context)!.pleaseAddImage);
+      showToast(message: "Please fill all the details");
     }
+  }
+
+  Future<void> deleteItem() async {
+    await ShoppingAuthService()
+        .deleteFlashTag(flashTagAlertModel.id!)
+        .then((value) async {
+      Navigator.pop(context, true);
+      showToast(
+        message: "Flash Tag deleted successfully",
+      );
+    }).catchError((error) {
+      debugPrint("Product check::: ${error.toString()}");
+      showToast(message: error.toString());
+    });
   }
 
   Widget toggleActiveTag() {

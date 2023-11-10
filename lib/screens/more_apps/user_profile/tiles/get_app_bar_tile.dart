@@ -1621,17 +1621,17 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       list.add(
         bottomSheetItem(
           title: "Discount",
-          iconData: SlydoAppIcon.edit,
+          iconData: Icons.discount_outlined,
           onTap: () async {
             Navigator.pop(context);
-            Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
+            Navigator.of(context).pushNamed(Routes.DISCOUNT_LIST);
           },
         ),
       );
       list.add(
         bottomSheetItem(
           title: "Flash Tag",
-          iconData: SlydoAppIcon.edit,
+          iconData: Icons.add_alert,
           onTap: () async {
             Navigator.pop(context);
             Navigator.of(context).pushNamed(Routes.FLASH_TAG_LIST,

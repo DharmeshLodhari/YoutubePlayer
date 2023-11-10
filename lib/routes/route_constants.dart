@@ -200,4 +200,5 @@ class Routes {
   static const String NEW_ADD_ON = "/new-add-on";
 
   static const String FLASH_TAG_LIST = "/flash-tag-list";
+  static const String DISCOUNT_LIST = "/discount-list";
 }

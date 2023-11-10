@@ -1,0 +1,415 @@
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/CustomBoxShadow.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/item_display_card_for_discount.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:text_scroll/text_scroll.dart';
+
+import '../../../../../widget/item_display_card.dart';
+import '../../../../../widget/noItemInList.dart';
+
+// ignore: must_be_immutable
+class UserProductListForDiscount extends StatefulWidget {
+  DiscountModel item;
+
+  UserProductListForDiscount({
+    required this.item,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _UserProductListForDiscountState createState() =>
+      _UserProductListForDiscountState();
+}
+
+class _UserProductListForDiscountState
+    extends State<UserProductListForDiscount> {
+  // this variable responsible for product pagination
+  int? productCount = 0;
+  String? productNext = "";
+  String? productPrevious = "";
+  List<Product> productList = [];
+  ScrollController _productScrollController = new ScrollController();
+  final GlobalKey<ScaffoldState> _productScaffoldKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _productMessengerScaffoldKey =
+      new GlobalKey<ScaffoldMessengerState>();
+  RefreshController _productsRefreshController =
+      RefreshController(initialRefresh: false);
+  bool isProductLoading = false;
+  bool noProductInList = false;
+
+  String? flashTagString;
+  List<FlashTagAlertModel> flashTagAlerts = [];
+  String? flashTagNext = "";
+  String? flashTagPrevious = "";
+  int? flashTagCount = 0;
+  bool isFlashTagLoading = false;
+
+  FlashTagAlertModel? flashTagAlertModel;
+
+  late UserBloc userBloc;
+
+  bool isSelectAll = false;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      userBloc = Provider.of<UserBloc>(context, listen: false);
+      this.getProductList();
+    });
+
+    _productScrollController.addListener(() {
+      if (_productScrollController.position.pixels ==
+              _productScrollController.position.maxScrollExtent &&
+          _productScrollController.position.pixels != 0) {
+        getProductList();
+      }
+    });
+
+    super.initState();
+  }
+
+  void toggleSelectAll() {
+    isSelectAll = !isSelectAll;
+
+    productList.forEach((element) {
+      element.isSelected = isSelectAll;
+    });
+    if (mounted) setState(() {});
+  }
+
+  void _onProductRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        productCount = 0;
+        productNext = "";
+        productPrevious = "";
+        productList = [];
+        debugPrint("Refresh called on products!!  ");
+        getProductList();
+        _productsRefreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _productsRefreshController.refreshCompleted();
+      }
+    });
+  }
+
+  void getProductList() async {
+    if (!isProductLoading) {
+      if (productNext != null && !isProductLoading) {
+        isProductLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfProduct(productNext, productPrevious, "", false,
+                userName: userBloc.user.userName);
+
+        if (result == null) {
+          isProductLoading = false;
+          noProductInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        productCount = result['count'];
+        productNext = result['next'];
+        productPrevious = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noProductInList = false;
+            isProductLoading = false;
+            productList.addAll(tempList);
+          });
+        }
+      }
+      if (productList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noProductInList = true;
+          });
+        }
+      } else if (productNext == null && productList.length > 6) {
+        _productMessengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaffoldMessenger(
+      key: _productMessengerScaffoldKey,
+      child: Scaffold(
+        key: _productScaffoldKey,
+        appBar: appBar() as PreferredSizeWidget,
+        body: Container(
+          color: lightGrey,
+          // padding: EdgeInsets.symmetric(horizontal: 4),
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _productsRefreshController,
+            onRefresh: _onProductRefresh,
+            child: Column(
+              children: [
+                if (noProductInList)
+                  Expanded(
+                    child: NoItemInList(
+                        msg: AppLocalization.of(context)!.noResultFound
+                        // msg: AppLocalization.of(context)!.noProducts,
+                        ),
+                  )
+                else
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: isProductLoading
+                              ? Shimmer.fromColors(
+                                  baseColor: Colors.white,
+                                  highlightColor: greyBorderColor,
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 20.0),
+                                    itemCount: 5,
+                                    itemBuilder: (context, index) {
+                                      return CustomBoxShadow(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4.0),
+                                          child: CustomBoxShadow(
+                                            child: Card(
+                                              elevation: 3,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              margin: EdgeInsets.zero,
+                                              shadowColor: boxShadowTwo,
+                                              color: lightGrey,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 20,
+                                                      horizontal: 12),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Container(
+                                                              height: 10,
+                                                              width: 50,
+                                                              color: Colors
+                                                                  .blueGrey,
+                                                            ),
+                                                            SizedBox(
+                                                              height: 12,
+                                                            ),
+                                                            Container(
+                                                              height: 8,
+                                                              width: 50,
+                                                              color: Colors
+                                                                  .blueGrey,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        height: 10,
+                                                        width: 50,
+                                                        color: Colors.blueGrey,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : _buildProductList(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: getSubmitButton(),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        )
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getSubmitButton() {
+    return CurvedButton(
+      onPressed: () async {
+        List<Product> selectedProducts =
+            productList.where((e) => e.isSelected).toList();
+
+        Map<String, dynamic> items = {
+          "products": selectedProducts,
+          "ids": selectedProducts.map((e) => e.id).toList(),
+          "isSelectAll": isSelectAll
+        };
+        Navigator.pop(context, items);
+      },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Save",
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0.5,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: blackFont,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Product",
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          Text(
+            "${productList.where((e) => e.isSelected == true).toList().length} Selected",
+            style: TextStyle(
+                color: blackFont, fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+      shadowColor: greySecondaryYarn,
+      actions: [
+        InkWell(
+          onTap: () {
+            toggleSelectAll();
+          },
+          child: Center(
+            child: Text(
+              "Select All",
+              style: TextStyle(
+                  color: isSelectAll ? navyBlue : blackFont,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+        IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.filter_list,
+              color: blackFont,
+            ))
+      ],
+    );
+  }
+
+  Widget _buildProductList() {
+    return productNext == "" && isProductLoading
+        ? SizedBox.shrink()
+        : Padding(
+            padding: const EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+              top: 8.0,
+              bottom: 16,
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              controller: _productScrollController,
+              itemCount: productList.length,
+              itemBuilder: (context, index) {
+                return SizedBox(
+                  child: DisplayProductForDiscount(
+                    product: productList[index],
+                    onChange: (bool value) {
+                      productList[index].isSelected = value;
+                      if (mounted) setState(() {});
+                    },
+                    isSelected: productList[index].isSelected,
+                  ),
+                );
+              },
+            ),
+          );
+  }
+
+  Widget getOutOfStockTag(int index) {
+    if (!productList[index].isAvailable!) {
+      return Positioned(
+        left: 38,
+        top: 14,
+        child: getColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: starYellow),
+      );
+    }
+    return SizedBox.shrink();
+  }
+
+  String? getDisplayImage(int index, List<Product> productList) {
+    return productList[index].serverImages![0];
+  }
+}

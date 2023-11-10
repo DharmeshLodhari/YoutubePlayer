@@ -1,8 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_flash_tag_alert.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_discount.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 
@@ -19,24 +18,19 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
-class FlashTagList extends StatefulWidget {
-  var arguments;
-  CustomerProfile? user;
-
-  FlashTagList({required this.arguments, Key? key}) : super(key: key) {
-    this.user = arguments["user"] as CustomerProfile;
-  }
+class DiscountList extends StatefulWidget {
+  DiscountList({Key? key}) : super(key: key);
 
   @override
-  _FlashTagListState createState() => _FlashTagListState();
+  _DiscountListState createState() => _DiscountListState();
 }
 
-class _FlashTagListState extends State<FlashTagList> {
+class _DiscountListState extends State<DiscountList> {
   // this variable responsible for product pagination
   int? itemCount = 0;
   String? next = "";
   String? previous = "";
-  List<FlashTagAlertModel> itemList = [];
+  List<DiscountModel> itemList = [];
   ScrollController _scrollController = new ScrollController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
@@ -69,7 +63,7 @@ class _FlashTagListState extends State<FlashTagList> {
         next = "";
         previous = "";
         itemList = [];
-        debugPrint("Refresh called on products!!  ");
+        debugPrint("Refresh called on discount!!  ");
         getList();
         _refreshController.refreshCompleted();
       } else {
@@ -94,8 +88,8 @@ class _FlashTagListState extends State<FlashTagList> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfFlashTags(next, previous, widget.user!.userName);
+        Map<String, dynamic>? result =
+            await ShoppingAuthService().listOfDiscounts(next, previous);
 
         if (result == null) {
           isLoading = false;
@@ -235,7 +229,7 @@ class _FlashTagListState extends State<FlashTagList> {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        'Flash Tag',
+        'Discount',
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,
@@ -268,11 +262,8 @@ class _FlashTagListState extends State<FlashTagList> {
           onTap: () async {
             var result = await NavigationUtil.push(
               context,
-              screen: AddEditFlashTagAlert(
-                user: widget.user!,
-              ),
+              screen: AddEditDiscount(),
             );
-
             if (result != null && result == true) {
               getList(fetchFresh: true);
             }
@@ -312,9 +303,8 @@ class _FlashTagListState extends State<FlashTagList> {
       onTap: () async {
         var result = await NavigationUtil.push(
           context,
-          screen: AddEditFlashTagAlert(
-            user: widget.user!,
-            flashTagAlertModel: itemList[index],
+          screen: AddEditDiscount(
+            discountModel: itemList[index],
           ),
         );
         if (result != null && result == true) {
@@ -343,8 +333,9 @@ class _FlashTagListState extends State<FlashTagList> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              messageDecoderWithEmoji(itemList[index].title ??
-                                  itemList[index].message)!,
+                              messageDecoderWithEmoji(itemList[index].name) ??
+                                  itemList[index].merchant ??
+                                  "",
                               maxLines: 1,
                               style: TextStyle(
                                   fontWeight: FontWeight.w600,
@@ -370,13 +361,11 @@ class _FlashTagListState extends State<FlashTagList> {
                         ),
                       ),
                       Text(
-                        messageDecoderWithEmoji(
-                            itemList[index].type.toString())!,
+                        itemList[index].type.toString(),
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: navyBlue,
-                        ),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: navyBlue),
                       ),
                     ],
                   ),
