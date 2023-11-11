@@ -20,27 +20,36 @@ class ShoppingProduct {
   String? sellerFullname;
   String? shortDescription;
   String? type;
+  num? discountValue;
+  String? discountType;
+  bool? discountIsActive;
+  num? discountedPrice;
 
-  ShoppingProduct(
-      {this.availableFrom,
-      this.category,
-      this.condition,
-      this.cover,
-      this.createdAt,
-      this.currency,
-      this.description,
-      this.id,
-      this.isAvailable,
-      this.manufacturer,
-      this.name,
-      this.images,
-      this.price,
-      this.qrCode,
-      this.seller,
-      this.sellerAvatar,
-      this.sellerFullname,
-      this.shortDescription,
-      this.type});
+  ShoppingProduct({
+    this.availableFrom,
+    this.category,
+    this.condition,
+    this.cover,
+    this.createdAt,
+    this.currency,
+    this.description,
+    this.id,
+    this.isAvailable,
+    this.manufacturer,
+    this.name,
+    this.images,
+    this.price,
+    this.qrCode,
+    this.seller,
+    this.sellerAvatar,
+    this.sellerFullname,
+    this.shortDescription,
+    this.type,
+    this.discountValue,
+    this.discountType,
+    this.discountIsActive,
+    this.discountedPrice,
+  });
 
   factory ShoppingProduct.fromJson(Map<String, dynamic> json) {
     return ShoppingProduct(
@@ -65,6 +74,10 @@ class ShoppingProduct {
       sellerFullname: json['seller_fullname'],
       shortDescription: json['short_description'],
       type: json['type'],
+      discountValue: json['discount_value'],
+      discountType: json['discount_type'],
+      discountIsActive: json['discount_is_active'],
+      discountedPrice: json['discounted_price'],
     );
   }
 
@@ -87,9 +100,14 @@ class ShoppingProduct {
     data['seller_avatar'] = this.sellerAvatar;
     data['short_description'] = this.shortDescription;
     data['type'] = this.type;
+    data["discount_value"] = this.discountValue;
+    data["discount_type"] = this.discountType;
+    data["discount_is_active"] = this.discountIsActive;
+    data["discounted_price"] = this.discountedPrice;
     if (this.images != null) {
       data['pictures'] = this.images!.map((v) => v.toJson()).toList();
     }
+
     return data;
   }
 }

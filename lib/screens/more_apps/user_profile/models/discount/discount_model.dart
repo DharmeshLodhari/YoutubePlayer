@@ -16,6 +16,7 @@ class DiscountModel {
   DateTime? createdAt;
   DateTime? updatedAt;
   Consumables? consumables;
+  String? poster;
 
   DiscountModel({
     this.id,
@@ -31,6 +32,7 @@ class DiscountModel {
     this.createdAt,
     this.updatedAt,
     this.consumables,
+    this.poster,
   }) {
     type ??= DiscountTagCategory("Percentage %");
   }
@@ -105,6 +107,7 @@ class DiscountModel {
     consumables = json['consumables'] != null
         ? new Consumables.fromJson(json['consumables'])
         : null;
+    poster = json['poster'];
   }
 
   Map<String, dynamic> toJson() {
@@ -137,6 +140,7 @@ class DiscountModel {
     if (this.consumables != null) {
       data['consumables'] = this.consumables!.toJson();
     }
+    data['poster'] = this.poster;
     return data;
   }
 
@@ -162,6 +166,7 @@ class DiscountModel {
     if (consumables != null) {
       map['consumables'] = consumables?.toJson() ?? {};
     }
+    map['poster'] = poster;
 
     return map;
   }
@@ -184,6 +189,7 @@ class DiscountModel {
       onlyFrom: onlyFrom ?? this.onlyFrom,
       onlyTo: onlyTo ?? this.onlyTo,
       consumables: consumables ?? this.consumables,
+      poster: poster ?? this.poster
     );
   }
 

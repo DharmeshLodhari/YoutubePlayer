@@ -227,7 +227,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       );
     }
     else if (searchedUser != null) {
-      return BusinessProfileScreen(
+      return 
+      BusinessProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
         isOwner: isOwner,

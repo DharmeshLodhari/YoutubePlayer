@@ -202,7 +202,6 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     );
   }
 
-  List<String> banner = ["meal", "meal"];
 
   Widget specialDeals() {
     return Container(

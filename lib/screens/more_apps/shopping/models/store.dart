@@ -162,6 +162,10 @@ class Product {
   int? quantity;
   double? pricePercentageChange;
   bool isSelected;
+  num? discountValue;
+  String? discountType;
+  bool? discountIsActive;
+  num? discountedPrice;
 
   Product({
     this.id,
@@ -199,6 +203,10 @@ class Product {
     this.pricePercentageChange,
     this.canRate = false,
     this.isSelected = false,
+    this.discountValue,
+    this.discountType,
+    this.discountIsActive,
+    this.discountedPrice,
   });
 
   Map toMap() {
@@ -226,6 +234,10 @@ class Product {
       'track_inventory': trackInventory,
       'quantity': quantity,
       'price_percentage_change': pricePercentageChange ?? 0.0,
+      "discount_value": discountValue,
+      "discount_type": discountType,
+      "discount_is_active": discountIsActive,
+      "discounted_price": discountedPrice,
     };
   }
 
@@ -258,6 +270,10 @@ class Product {
       'track_inventory': trackInventory,
       'quantity': quantity,
       'price_percentage_change': pricePercentageChange ?? 0.0,
+      "discount_value": discountValue,
+      "discount_type": discountType,
+      "discount_is_active": discountIsActive,
+      "discounted_price": discountedPrice,
     };
   }
 
@@ -282,7 +298,6 @@ class Product {
       }
       return DateTime.now();
     }
-
     return Product(
       id: object["id"].toString(),
       name: object["name"] ?? "",
@@ -315,6 +330,10 @@ class Product {
       trackInventory: object["track_inventory"],
       quantity: object["quantity"],
       pricePercentageChange: object["price_percentage_change"] ?? 0.0,
+      discountValue: object['discount_value'],
+      discountType: object['discount_type'],
+      discountIsActive: object['discount_is_active'],
+      discountedPrice: object['discounted_price'],
     );
   }
 

@@ -238,7 +238,7 @@ class _UserProductListState extends State<UserProductList> {
           }
           return;
         }
-
+        
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];

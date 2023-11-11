@@ -297,6 +297,10 @@ class ShoppingAuthService extends AuthService {
     product.trackInventory = item["track_inventory"] ?? false;
     product.quantity = item["quantity"];
     product.pricePercentageChange = item["price_percentage_change"] ?? 0.0;
+    product.discountValue = item['discount_value'];
+    product.discountType = item['discount_type'];
+    product.discountIsActive = item['discount_is_active'];
+    product.discountedPrice = item['discounted_price'];
 
     return product;
   }
@@ -380,6 +384,10 @@ class ShoppingAuthService extends AuthService {
 
       for (var item in jsonData["results"]) {
         Product product = createProduct(item);
+         print("________________________________________________");
+        print(product.name);
+
+        print("________________________________________________");
         productList.add(product);
       }
 
@@ -1892,14 +1900,18 @@ class ShoppingAuthService extends AuthService {
 
   // List Discounts
   Future<Map<String, dynamic>?> listOfDiscounts(
-      String? next, String? previous) async {
+      String? next, String? previous,{ bool? activeDiscount}) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/business/discounts/";
-    } else {
+    } 
+    else if (activeDiscount!) {
+      url = AppConfig.baseUrl + "/api/v1/business/discounts/active-discounts";
+    }
+    else {
       url = getSecureUrl(url: next);
     }
     debugPrint(url);
@@ -1926,6 +1938,10 @@ class ShoppingAuthService extends AuthService {
 
       for (var item in jsonData["results"]) {
         DiscountModel discount = DiscountModel.fromJson(item);
+         print("________________________________________________");
+        print(discount.name);
+
+        print("________________________________________________");
         discountList.add(discount);
       }
 
