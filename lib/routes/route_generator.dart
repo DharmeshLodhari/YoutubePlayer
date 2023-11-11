@@ -1470,7 +1470,9 @@ class RouteGenerator {
 
       case Routes.SUPER_STORE:
         return PageTransition(
-          child: const SuperStore(),
+          child: SuperStore(
+            arguments: settings.arguments
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

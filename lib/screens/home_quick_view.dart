@@ -1,4 +1,5 @@
 import 'package:Slydo/screens/super_store/super_store.dart';
+import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -594,7 +595,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         Navigator.pushNamed(context, Routes.ORDERS_LIST);
         break;
       case 'Super store':
-        NavigationUtil.push(context, screen: SuperStore());
+        NavigationUtil.push(context, screen: SuperStoreHome());
         break;
       case 'Services Hub':
         Navigator.pushNamed(context, Routes.SUPER_HUB);

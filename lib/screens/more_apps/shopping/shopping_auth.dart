@@ -302,7 +302,7 @@ class ShoppingAuthService extends AuthService {
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(
       String? next, String? previous, String? category, bool? channel,
-      {String? userName, bool otherDeals = false}) async {
+      {String? userName, bool otherDeals = false, num page_size = 20, String tag = "", String industry= ""}) async {
     debugPrint('CALLING PRODUCT');
     debugPrint('CALLING PRODUCT channel::: ${channel}');
     var url = "";
@@ -327,11 +327,34 @@ class ShoppingAuthService extends AuthService {
         url += AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
       }
     }
+    
 
     if(channel == true){
       url = AppConfig.baseUrl + "/api/v1/channels-merchandise/$userName";
     }
-    debugPrint(url);
+    // if(tag != ""){
+    //   if(url.contains("?")){
+    //     url = url + "&tag=$tag";
+    //   }
+    //   else{
+    //     url = url + "?tag=$tag";
+    //   }
+    // }
+    // if (industry != "") {
+    //   if (url.contains("?")) {
+    //     url = url + "&industry=$industry";
+    //   } else {
+    //     url = url + "?industry=$industry";
+    //   }
+    // }
+    if (page_size != "") {
+      if (url.contains("?")) {
+        url = url + "&page_size=$page_size";
+      } else {
+        url = url + "?page_size=$page_size";
+      }
+    }
+    debugPrint("product list url _______________________"+url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
