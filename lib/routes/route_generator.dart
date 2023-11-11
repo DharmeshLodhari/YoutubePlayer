@@ -127,6 +127,8 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/discount/discount_list.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/flash_tags/flash_tag_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/shipping_options/add_shipping_options.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/shipping_options/edit_shipping_options.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/shipping_options/shipping_options_list.dart';
@@ -353,9 +355,7 @@ class RouteGenerator {
         );
       case Routes.CONTRACTOR_SCREEN:
         return PageTransition(
-          child: ContractorPaymentScreen(
-            arguments: settings.arguments
-          ),
+          child: ContractorPaymentScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -965,14 +965,14 @@ class RouteGenerator {
 
       case Routes.SEARCH_MY_JOBS:
         return PageTransition(
-            child:  SearchMyJobs(),
+            child: SearchMyJobs(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
 
       case Routes.SEARCH_SERVICES:
         return PageTransition(
-            child:  SearchServices(),
+            child: SearchServices(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1075,7 +1075,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    // Find jobs
+      // Find jobs
       case Routes.CATEGORY_JOBS:
         return PageTransition(
             child: JobsCategoryJobsList(
@@ -1142,7 +1142,8 @@ class RouteGenerator {
 
       case Routes.JOBS_SEARCH:
         return PageTransition(
-            child:  JobsSearch(filterMap:settings.arguments as Map<String, dynamic>?),
+            child: JobsSearch(
+                filterMap: settings.arguments as Map<String, dynamic>?),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
             settings: settings);
@@ -1165,7 +1166,7 @@ class RouteGenerator {
             curve: Curves.ease,
             settings: settings);
 
-    /// Movie Route
+      /// Movie Route
 
       case Routes.MOVIES:
         return PageTransition(
@@ -1674,8 +1675,7 @@ class RouteGenerator {
 
       case Routes.VIRTUAL_CARD_HOME:
         return PageTransition(
-          child: VirtualCardHome(
-          ),
+          child: VirtualCardHome(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1800,6 +1800,26 @@ class RouteGenerator {
       case Routes.NEW_ADD_ON:
         return PageTransition(
           child: NewAddOn(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Discount
+      case Routes.DISCOUNT_LIST:
+        return PageTransition(
+          child: DiscountList(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// FLASH tags
+      case Routes.FLASH_TAG_LIST:
+        return PageTransition(
+          child: FlashTagList(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

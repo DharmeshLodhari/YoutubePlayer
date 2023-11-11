@@ -161,8 +161,10 @@ class Product {
   bool? trackInventory;
   int? quantity;
   double? pricePercentageChange;
+  bool isSelected;
 
-  Product({this.id,
+  Product({
+    this.id,
     this.name,
     this.type,
     this.webUrl,
@@ -195,14 +197,16 @@ class Product {
     this.trackInventory,
     this.quantity,
     this.pricePercentageChange,
-    this.canRate = false});
+    this.canRate = false,
+    this.isSelected = false,
+  });
 
   Map toMap() {
     return {
       "name": name,
       "description": description,
       "short_description":
-      getShortDescription(shortDescription ?? '', description ?? ''),
+          getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
       "category": category,
@@ -231,7 +235,7 @@ class Product {
       "name": name,
       "description": description,
       "short_description":
-      getShortDescription(shortDescription ?? '', description ?? ''),
+          getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
       "category": category,
@@ -390,20 +394,21 @@ class Variant {
   String? currency;
   bool? trackInventory;
 
-  Variant({this.id,
-    this.title,
-    this.size,
-    this.colour,
-    this.trackInventory,
-    this.type,
-    this.price,
-    this.value,
-    this.quantity,
-    this.localImages,
-    this.serverImages,
-    this.isAvailable,
-    this.availableFrom,
-    this.currency});
+  Variant(
+      {this.id,
+      this.title,
+      this.size,
+      this.colour,
+      this.trackInventory,
+      this.type,
+      this.price,
+      this.value,
+      this.quantity,
+      this.localImages,
+      this.serverImages,
+      this.isAvailable,
+      this.availableFrom,
+      this.currency});
 
   Map toMap() {
     return {
@@ -499,10 +504,8 @@ class Variant {
       isAvailable: object["is_available"] ?? true,
       availableFrom: getProductDateTime(object["available_from"]),
       currency: object["currency"] ?? "NGN",
-
     );
   }
-
 
   static List<String> getProductImages(List? data) {
     List<String> images = [];
@@ -634,7 +637,7 @@ class Service {
       "name": name,
       "description": description,
       "short_description":
-      getShortDescription(shortDescription ?? '', description ?? ''),
+          getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "category": category,
       "is_available": isAvailable,
@@ -650,7 +653,7 @@ class Service {
       "name": name,
       "description": description,
       "short_description":
-      getShortDescription(shortDescription ?? '', description ?? ''),
+          getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "category": category,
       "is_available": isAvailable,
@@ -682,8 +685,7 @@ class Service {
     availableFrom = getServiceDateTime(object["available_from"]);
     currency = object["currency"] ?? "";
     pictureMap = object["pictureMap"] ?? [];
-    rating =
-        formatRating(double.parse(object['rating']?.toString() ?? "0"));
+    rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
   }
 
@@ -751,23 +753,22 @@ class Order {
   String? currency;
   List<dynamic>? statusTimeStamp;
 
-  Order({
-    this.id,
-    this.status,
-    this.customerName,
-    this.merchant,
-    this.customerAvatar,
-    this.customerType = "User",
-    this.merchantAvatar,
-    this.merchantType = "Business",
-    this.isPaid,
-    this.transactionId,
-    this.note,
-    this.createdAt,
-    this.totalPrice,
-    this.currency,
-    this.statusTimeStamp
-  });
+  Order(
+      {this.id,
+      this.status,
+      this.customerName,
+      this.merchant,
+      this.customerAvatar,
+      this.customerType = "User",
+      this.merchantAvatar,
+      this.merchantType = "Business",
+      this.isPaid,
+      this.transactionId,
+      this.note,
+      this.createdAt,
+      this.totalPrice,
+      this.currency,
+      this.statusTimeStamp});
 
   Order.fromJson(object) {
     id = object["id"].toString();
