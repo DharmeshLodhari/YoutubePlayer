@@ -304,8 +304,8 @@ class _SignUpState extends State<SignUp> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 20),
-        chooseYourPlanWidget(),
-        SizedBox(height: 20),
+        // chooseYourPlanWidget(),
+        // SizedBox(height: 20),
         Text(
           'Industry',
           style: TextStyle(color: darkGrey, fontSize: 14),
@@ -435,6 +435,7 @@ class _SignUpState extends State<SignUp> {
       labelColor: darkGrey,
       labelText: 'Account type',
       keyboardType: TextInputType.name,
+      enabled: false,
     );
   }
 
@@ -758,39 +759,53 @@ class _SignUpState extends State<SignUp> {
             width: 12,
           ),
           Expanded(
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(text: 'By checking the box, you are agreeing to our ',
-                      style: TextStyle(fontSize: 14, color: blackFont),),
-                    TextSpan(
-                      text: 'Terms & Conditions, ',
-                      style: TextStyle(fontSize: 14, color: navyBlue, fontWeight: FontWeight.w600),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          launch('http://https://slydo.co/termsandconditions');
-                        },
-                    ),
-                    TextSpan(
-                      text: 'Privacy Policy',
-                      style: TextStyle(fontSize: 14, color: navyBlue, fontWeight: FontWeight.w600),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          launch('http://https://slydo.co/privacypolicy');
-                        },
-                    ),
-                    TextSpan(text: ' which includes our ', style: TextStyle(fontSize: 14, color: blackFont),),
-                    TextSpan(
-                      text: 'EULA terms.',
-                      style: TextStyle(fontSize: 14, color: navyBlue, fontWeight: FontWeight.w600),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          launch('http://https://slydo.co/termsandconditions');
-                        },
-                    ),
-                  ],
-                ),
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'By checking the box, you are agreeing to our ',
+                    style: TextStyle(fontSize: 14, color: blackFont),
+                  ),
+                  TextSpan(
+                    text: 'Terms & Conditions, ',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: navyBlue,
+                        fontWeight: FontWeight.w600),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launch('http://https://slydo.co/termsandconditions');
+                      },
+                  ),
+                  TextSpan(
+                    text: 'Privacy Policy',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: navyBlue,
+                        fontWeight: FontWeight.w600),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launch('http://https://slydo.co/privacypolicy');
+                      },
+                  ),
+                  TextSpan(
+                    text: ' which includes our ',
+                    style: TextStyle(fontSize: 14, color: blackFont),
+                  ),
+                  TextSpan(
+                    text: 'EULA terms.',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: navyBlue,
+                        fontWeight: FontWeight.w600),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launch('http://https://slydo.co/termsandconditions');
+                      },
+                  ),
+                ],
               ),
+            ),
           )
         ],
       ),
@@ -803,14 +818,15 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-
   Widget registerBtn() {
-    return isUserAgree == true ? CurvedButton(
-      onPressed: registerUser,
-      text: "Register",
-      textColor: Colors.white,
-      backgroundColor: navyBlue,
-    ) : SizedBox.shrink();
+    return isUserAgree == true
+        ? CurvedButton(
+            onPressed: registerUser,
+            text: "Register",
+            textColor: Colors.white,
+            backgroundColor: navyBlue,
+          )
+        : SizedBox.shrink();
   }
 
   bool showButton = false;
@@ -1027,7 +1043,7 @@ class _SignUpState extends State<SignUp> {
 
       if (accountType != 'Personal') {
         data['profile'] = {
-          'id': subscriptionsId,
+          'id': 1,
           'industry': industryType,
           "account_type": accountType,
           "business_name": businessOrNickName,
