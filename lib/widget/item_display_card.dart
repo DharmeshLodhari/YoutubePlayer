@@ -126,7 +126,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                         child: getRating(
                             numberOfRating: widget.product.rating?.toInt()),
                       ),
-                      if(widget.product.pricePercentageChange != 0.0)...[
+                      if(widget.product.pricePercentageChange != 0.0 && widget.product.pricePercentageChange != null)...[
                         Positioned(
                           top: 8,
                           right: 8,
@@ -137,7 +137,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                               borderRadius: BorderRadius.all(Radius.circular(8)),
                             ),
                             child: Text(
-                              "${widget.product.pricePercentageChange!.toInt()}% off",
+                              "${widget.product.pricePercentageChange.toString()}% off",
                               style: TextStyle(
                                 color: Colors.white,
                               ),

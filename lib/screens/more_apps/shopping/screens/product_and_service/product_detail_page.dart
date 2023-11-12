@@ -568,7 +568,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       message:
                       AppLocalization.of(context)!.selectVariantColorSize);
                 }
-              } else if(sizeGroups.isNotEmpty && colorGroups.isEmpty){
+              }
+              else if(sizeGroups.isNotEmpty && colorGroups.isEmpty){
                 // print("color list is showing.");
                 if (selectedSize.isNotEmpty) {
                   addToCart();
@@ -578,7 +579,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       message:
                       AppLocalization.of(context)!.selectVariantSize);
                 }
-              }else if(sizeGroups.isEmpty && colorGroups.isNotEmpty){
+              }
+              else if(sizeGroups.isEmpty && colorGroups.isNotEmpty){
                 // print("size list is showing.");
                 if (selectedColor.isNotEmpty) {
                   addToCart();
@@ -590,7 +592,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 }
               }
 
-            }else{
+            }
+            else if(addOnList.isNotEmpty){
+              addToCart();
+              return true;
+            }
+            else{
               //product has no variant or is a service
               addToCart();
               return true;
@@ -612,6 +619,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future<void> addToCart() async {
     String type = product is Product ? "product" : "service";
     Map<String, dynamic> variantPayLoad = {};
+    Map<String, dynamic> addOnPayLoad = {};
+    List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
+    List<Map<String, dynamic>> selectedAddOnsList = [];
+
+    Product productSend = product!;
+    productSend = productSend.copyWith(quantity: 1);
 
     if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
       variantPayLoad = {
@@ -623,7 +636,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         "value": selectedSize,
         "type": "Color n Size",
       };
-    } else if (colorGroups.isNotEmpty) {
+    }
+    else if (colorGroups.isNotEmpty) {
       variantPayLoad = {
         "id": selectedVariantId,
         "quantity": 1,
@@ -632,7 +646,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         "colour": selectedColor,
         "type": "Color",
       };
-    } else if (sizeGroups.isNotEmpty) {
+    }
+    else if (sizeGroups.isNotEmpty) {
       variantPayLoad = {
         "id": selectedVariantId,
         "quantity": 1,
@@ -643,12 +658,58 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       };
     }
 
-    // debugPrint("Data From Product Page v-id : $selectedVariantId");
-    // debugPrint("Data From Product Page v-id : $variantPayLoad");
-    // debugPrint("Data From Product Page v-id one : ${basketBloc.items}");
+    addOnList.forEach((addOn) {
+      if (addOn.options != null) {
+        // Filter the options to include only those with option.isChecked == true
+        List<AddOnOption> selectedOptions = addOn.options!.where((option) => option.isChecked == true).toList();
+
+        if (selectedOptions.isNotEmpty) {
+          Map<String, dynamic> selectedAddOn = {
+            "id": addOn.id,
+            "options": selectedOptions.map((option) => {
+              "id": option.id,
+              "quantity": 1,
+              "name": option.name,
+              "price": option.price,
+              "currency": option.currency,
+            }).toList(),
+          };
+
+          Map<String, dynamic> selectedAddOnServer = {
+            "id": addOn.id,
+            "options": selectedOptions.map((option) => {
+              "id": option.id,
+              "quantity": 1,
+            }).toList(),
+          };
+
+          selectedAddOnsList.add(selectedAddOn);
+          selectedAddOnsCartServerList.add(selectedAddOnServer);
+
+        }
+      }
+    });
+
+    debugPrint("Data From Product option : $selectedAddOnsList");
+    debugPrint("Data From Product selectedAddOnsCartServerList : $selectedAddOnsCartServerList");
+
+    if (selectedAddOnsList.isNotEmpty && addOnList.isNotEmpty) {
+      addOnPayLoad = {
+        "id": productId,
+        "qty": 1,
+        "type": type,
+        "add_ons": selectedAddOnsList,
+      };
+
+      // basketBloc.addItemInBasketWithAddOns(product, type, selectedAddOnsCartServerList);
+      basketBloc.addItemToCart(item: productSend, type: type, variant: null, addOns: selectedAddOnsList);
+
+      await _auth.addItemToShoppingCart(addOnPayLoad);
+      return;
+    }
 
     if (basketBloc.items.isEmpty && variantPayLoad.isNotEmpty) {
-      basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
+      basketBloc.addItemToCart(item: productSend, type: type, variant: variantPayLoad, addOns:  null);
     } else {
       for (var item in basketBloc.items) {
         Product productInCart = item['item'];
@@ -667,7 +728,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             }
           }
 
-          basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
+          basketBloc.addItemToCart(item: productSend, type: type, variant: variantPayLoad, addOns:  null);
 
           // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
           // debugPrint("Data From Product Page v-id 3 : $variantList");
@@ -676,18 +737,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           debugPrint("Data From Product Page exist : $dataInfo");
 
           await _auth.addItemToShoppingCart(dataInfo);
-          // for(var item in basketBloc.items){
-          //   // Product productInCart = item['item'];
-          //   List variantList = item['item'].variant;
-          //   debugPrint('fola chat one twoo::: ${variantList.length}');
-          //   debugPrint('fola chat one twoo::: ${item['item'].variant}');
-          // }
+
           return;
         }
       }
 
       // Product ID doesn't exist in the cart, add it with the variant
-      basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
+      basketBloc.addItemToCart(item: productSend, type: type, variant: variantPayLoad, addOns: null);
     }
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
@@ -1274,7 +1330,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return groupedVariants;
   }
 
-
   // Group variants by size
   Map<String, List<Variant>> groupVariantsBySize(List<Variant> variants) {
     Map<String, List<Variant>> groupedVariants = {};
@@ -1315,30 +1370,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     return sizeGroups;
   }
-
-  // Define a function to group variants by color for the selected color/image
-  // Map<String, List<Variant>> groupVariantsByColorForSelectedSize(
-  //     String selectedSize, List<Variant> allVariants) {
-  //   Map<String, List<Variant>> colorGroups = {};
-  //
-  //   // Filter variants that match the selected color
-  //   List<Variant> selectedSizeVariants = allVariants
-  //       .where((variant) => variant.size == selectedSize)
-  //       .toList();
-  //
-  //   // Group the selected color variants by size, only if variant.value is not empty or null
-  //   for (var variant in selectedSizeVariants) {
-  //
-  //     if (variant.colour != null && variant.colour!.isNotEmpty) {
-  //       if (!colorGroups.containsKey(variant.colour)) {
-  //         colorGroups[variant.colour!] = [];
-  //       }
-  //       colorGroups[variant.colour]!.add(variant);
-  //     }
-  //   }
-  //
-  //   return colorGroups;
-  // }
 
   bool hasVariantsWithoutColor(List<Variant> productVariantList, String variantId) {
     // Iterate through the productVariantList
@@ -1896,7 +1927,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         SizedBox(
           height: 8,
         ),
-
+        // Divider(
+        //   height: 0,
+        //   color: dividerColor,
+        //   thickness: 1,
+        // ),
         _buildAddonList(),
 
       ],
@@ -1935,7 +1970,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       // shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
         // decoration: BoxDecoration(
         //   border: Border.all(width: 1, color: greyBorderColor),
         //   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -1971,12 +2006,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 )
               ],
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 10),
+            Divider(
+              height: 0,
+              color: dividerColor,
+              thickness: 1,
+            ),
+
             Container(
               child: ListView.builder(
                 itemCount: addOnOption!.length,
                 shrinkWrap: true,
-                // scrollDirection: Axis.horizontal,
+                physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) => _displayAddOnOption(
                     addOnOption[index], addOns,
                 ),
@@ -2004,60 +2045,80 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     fontWeight: FontWeight.w600,
                     fontSize: 14),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    worldCurrencies[addOnOption.currency!]!,
-                    style: TextStyle(
-                        fontFamily: "Roboto",
-                        fontSize: 14.0,
-                        color: blackFont.withOpacity(.5),
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    moneyDisplayNormalizer(
-                        int.parse(addOnOption.price.toString())),
-                    style: TextStyle(
-                        fontSize: 14.0,
-                        color: blackFont.withOpacity(.5),
-                        fontWeight: FontWeight.w600),
-                  ),
-                   if(addOns.inputType == 'checkbox')...[
-                     Checkbox(
-                       value: addOnOption.isChecked,
-                       activeColor: navyBlue,
-                       onChanged: (bool? value) {
-                         // Handle checkbox state change here
-                         addOns.options!.forEach((data) {
-                           if (data.id == addOnOption.id) {
-                             // Found the option with the target ID, change its isChecked value
-                             addOnOption.isChecked = !addOnOption.isChecked!;
-                           }
-                         });
-                         if(mounted)setState(() {});
-
-                       },
-                     ),
-                   ],
-                  if(addOns.inputType == 'radio')...[
-                    Radio<bool>(
-                      value: addOnOption.isChecked!,
-                      groupValue: true, // You need to provide a unique group value for the radio buttons
-                      activeColor: navyBlue,
-                      onChanged: (bool? value) {
-                        // Handle radio button selection here
-                        updateAddOnOptions(addOns.options!, addOnOption.id!);
-                      },
+              GestureDetector(
+                onTap: (){
+                  if(addOns.inputType == 'checkbox'){
+                    addOns.options!.forEach((data) {
+                      if (data.id == addOnOption.id) {
+                        // Found the option with the target ID, change its isChecked value
+                        addOnOption.isChecked = !addOnOption.isChecked!;
+                      }
+                    });
+                    if(mounted)setState(() {});
+                  }else if(addOns.inputType == 'radio'){
+                    updateAddOnOptions(addOns.options!, addOnOption.id!);
+                  }
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      '(${worldCurrencies[addOnOption.currency!]!}',
+                      style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontSize: 14.0,
+                          color: blackFont.withOpacity(.5),
+                          fontWeight: FontWeight.w600),
                     ),
+                    Text(
+                      '${moneyDisplayNormalizer(
+                          int.parse(addOnOption.price.toString()))})',
+                      style: TextStyle(
+                          fontSize: 14.0,
+                          color: blackFont.withOpacity(.5),
+                          fontWeight: FontWeight.w600),
+                    ),
+                     if(addOns.inputType == 'checkbox')...[
+                       Checkbox(
+                         value: addOnOption.isChecked,
+                         activeColor: navyBlue,
+                         onChanged: (bool? value) {
+                           // Handle checkbox state change here
+                           addOns.options!.forEach((data) {
+                             if (data.id == addOnOption.id) {
+                               // Found the option with the target ID, change its isChecked value
+                               addOnOption.isChecked = !addOnOption.isChecked!;
+                             }
+                           });
+                           if(mounted)setState(() {});
+
+                         },
+                       ),
+                     ],
+                    if(addOns.inputType == 'radio')...[
+                      Radio<bool>(
+                        value: addOnOption.isChecked!,
+                        groupValue: true, // You need to provide a unique group value for the radio buttons
+                        activeColor: navyBlue,
+                        onChanged: (bool? value) {
+                          // Handle radio button selection here
+                          updateAddOnOptions(addOns.options!, addOnOption.id!);
+                        },
+                      ),
+                    ],
+
+
                   ],
-
-
-                ],
+                ),
               ),
+
             ],
           ),
-
+          Divider(
+            height: 0,
+            color: dividerColor,
+            thickness: 1,
+          ),
         ],
       ),
     );
@@ -2068,6 +2129,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     options.forEach((addOnOption) {
       if (addOnOption.id == targetId) {
         addOnOption.isChecked = true;
+
       } else {
         addOnOption.isChecked = false;
       }
@@ -2275,17 +2337,82 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   void navigateToSendPayment() {
     basketBloc.productOrService.clear();
 
+    List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
+    List<Map<String, dynamic>> selectedAddOnsList = [];
+    int addOnPrice = 0;
+
+    addOnList.forEach((addOn) {
+      if (addOn.options != null) {
+        // Filter the options to include only those with option.isChecked == true
+        List<AddOnOption> selectedOptions = addOn.options!.where((option) => option.isChecked == true).toList();
+
+        if (selectedOptions.isNotEmpty) {
+
+          for(var item in selectedOptions){
+            debugPrint("Data From Product addOnPrice : ${item.price}");
+            addOnPrice += int.parse(item.price.toString());
+
+          }
+
+          debugPrint("Data From Product addOnPrice Total : ${addOnPrice}");
+
+          Map<String, dynamic> selectedAddOn = {
+            "id": addOn.id,
+            "options": selectedOptions.map((option) => {
+              "id": option.id,
+              "quantity": 1,
+              "name": option.name,
+              "price": option.price,
+              "currency": option.currency,
+            }).toList(),
+          };
+
+          Map<String, dynamic> selectedAddOnServer = {
+            "id": addOn.id,
+            "options": selectedOptions.map((option) => {
+              "id": option.id,
+              "quantity": 1,
+            }).toList(),
+          };
+
+          selectedAddOnsList.add(selectedAddOn);
+          selectedAddOnsCartServerList.add(selectedAddOnServer);
+
+        }
+      }
+    });
+
+    debugPrint("Data From Product option : $selectedAddOnsList");
+    debugPrint("Data From Product selectedAddOnsCartServerList : $selectedAddOnsCartServerList");
+
+
     Map<String, dynamic> variants = {
       "id": selectedVariantId, "quantity": 1, "current_price": selectedVariantPrice
     };
 
-    Map<dynamic, dynamic> result = {
-      "type": 'product',
-      "results": product!.toJson(),
-      "variant": variants
+    Map<String, dynamic> addOn = {
+      "id": productId, "quantity": 1, "current_price": addOnPrice
     };
 
-    // debugPrint('Product check:::: ${result}');
+    Map<dynamic, dynamic> result = {};
+
+    if(selectedAddOnsCartServerList.isNotEmpty){
+       result = {
+        "type": 'product',
+        "results": product!.toJson(),
+        "add_ons": addOn,
+        "add_ons_list": selectedAddOnsCartServerList,
+      };
+    }else{
+       result = {
+        "type": 'product',
+        "results": product!.toJson(),
+        "variant": variants
+      };
+    }
+
+
+    debugPrint('Product check result:::: ${result}');
     debugPrint('Product check:::: ${variants}');
 
     basketBloc.buyProductOrServiceNow('product', result);

@@ -220,6 +220,7 @@ class Product {
       "price": price,
       "condition": condition,
       "category": category,
+      "cover": cover,
       "manufacturer": manufacturer,
       "is_available": isAvailable,
       "available_from": availableFrom,
@@ -341,10 +342,10 @@ class Product {
       quantity: object["quantity"],
       pricePercentageChange: object["price_percentage_change"] ?? 0.0,
 
-      discountedPrice: object["discounted_price"],
-      discountIsActive: object["discount_is_active"],
-      discountType: object["discount_type"],
-      discountValue: object["discount_value"],
+      // discountedPrice: object["discounted_price"],
+      // discountIsActive: object["discount_is_active"],
+      // discountType: object["discount_type"],
+      // discountValue: object["discount_value"],
       oldPrice: object["old_price"],
       isShippable: object["is_shippable"],
     );
@@ -407,6 +408,51 @@ class Product {
           "https://borinhalbich.com/wp-content/uploads/2018/06/placeholder-250x300.png");
     }
     return imageLinks;
+  }
+
+  Product copyWith({required int quantity}) {
+    return Product(
+      id: this.id,
+      name: this.name ?? "",
+      description: this.description ?? "",
+      shortDescription: this.shortDescription ?? "",
+      price: this.price,
+      enableInSuperStore: this.enableInSuperStore ?? false,
+      localImages: this.localImages ?? [],
+      serverImages: this.serverImages,
+      cover:this.cover ?? "",
+      seller: this.seller ?? "",
+      sellerAvatar: this.sellerAvatar ?? "",
+      sellerFullName: this.sellerFullName ?? "",
+      qrCode: this.qrCode ?? "",
+      condition: this.condition ?? "",
+      category: this.category ?? "",
+      manufacturer: this.manufacturer ?? "",
+      isAvailable: this.isAvailable ?? true,
+      availableFrom: this.availableFrom,
+      currency: this.currency ?? "NGN",
+      pictureMap: this.pictureMap ?? [],
+      rating: this.rating,
+      canRate: this.canRate ?? false,
+      variant: this.variant,
+      addOns: this.addOns,
+      weight: this.weight,
+      weightSiUnit: this.widthSiUnit,
+      height: this.height,
+      heightSiUnit: this.heightSiUnit,
+      widthSiUnit: this.widthSiUnit,
+      trackInventory: this.trackInventory,
+      quantity: quantity ?? this.quantity,
+      pricePercentageChange: this.pricePercentageChange ?? 0.0,
+
+      // discountedPrice: object["discounted_price"],
+      // discountIsActive: object["discount_is_active"],
+      // discountType: object["discount_type"],
+      // discountValue: object["discount_value"],
+      oldPrice: this.oldPrice,
+      isShippable: this.isShippable,
+    );
+
   }
 }
 
