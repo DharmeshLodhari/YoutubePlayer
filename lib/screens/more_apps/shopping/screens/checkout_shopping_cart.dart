@@ -252,7 +252,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
       if (item is Product) {
         final product = item as Product;
-        List variants = data['item'].variant;
+
+        List? variants = data['item'].variant;
+        List? addOn = item.addOns;
 
         if (variants != null && variants.isNotEmpty) {
           for (var variant in variants) {
@@ -276,16 +278,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   "qty": variants.isEmpty ? data['quantity'] : single.quantity,
                   "variant": single,
                   "image": image,
+                  "addOn": null,
                 },
                 index: index,
-                onDecreaseQty: () {
-                  removeItem(index);
-                  // if (mounted) setState(() {});
-                },
-                onIncreaseQty: () {
-                  addItem(index);
-                  // if (mounted) setState(() {});
-                },
                 onDecreaseVariantQty: (val) {
                   removeVariantItem(index, val);
                   // if (mounted) setState(() {});
@@ -297,7 +292,32 @@ class _ShoppingCartState extends State<ShoppingCart> {
               ),
             );
           }
-        } else {
+        }
+        else if(addOn != null && addOn.isNotEmpty){
+          debugPrint('fola cart:::: ${addOn}');
+
+          itemWidgets.add(
+            ShoppingCartTileForProduct(
+              {
+                "type": data["type"],
+                "item": product,
+                "qty": data['qty'],
+                "addOn": addOn,
+                "variant": null,
+                "image": "",
+              },
+              index: index,
+              onDecreaseQty: () {
+                removeItemAddOn(index);
+              },
+              onIncreaseQty: () {
+                addItemAddOn(index);
+              },
+
+            ),
+          );
+        }
+        else {
           itemWidgets.add(
             ShoppingCartTileForProduct(
               {
@@ -305,6 +325,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 "item": product,
                 "qty": data['qty'],
                 "variant": null,
+                "addOn": null,
                 "image": "",
               },
               index: index,
@@ -314,14 +335,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
               },
               onIncreaseQty: () {
                 addItem(index);
-                // if (mounted) setState(() {});
-              },
-              onDecreaseVariantQty: (val) {
-                removeVariantItem(index, val);
-                // if (mounted) setState(() {});
-              },
-              onIncreaseVariantQty: (val) {
-                addVariantItem(index, val);
                 // if (mounted) setState(() {});
               },
             ),
@@ -368,6 +381,90 @@ class _ShoppingCartState extends State<ShoppingCart> {
     );
   }
 
+  void addItemAddOn(int index) async {
+    late var mapData;
+    String type =
+    basketBloc.items[index]["item"] is Product ? "product" : "service";
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == basketBloc.items[index]["item"].id) {
+        element['qty'] = int.parse(element['qty'].toString()) + 1;
+        mapData = element;
+        return;
+      }
+    });
+    if (mounted) setState(() {});
+    //update to server
+    var addOn = mapData['add_ons'];
+
+    List<dynamic> transformedList = addOn?.map((item) {
+      List<dynamic> options = item['options']?.map((option) {
+        return {"id": option['id'], "quantity": option['quantity']};
+      })?.toList() ?? [];
+
+      return {"id": item['id'], "options": options};
+    })?.toList() ?? [];
+
+    Map data = {
+      "type": type,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"],
+      "add_ons": transformedList,
+    };
+    debugPrint("Data From increasing the  item : $data");
+    await ShoppingAuthService().addItemToShoppingCart(data);
+  }
+
+  void removeItemAddOn(int index) async {
+    late var mapData;
+    String type =
+    basketBloc.items[index]["item"] is Product ? "product" : "service";
+    basketBloc.items.forEach((element) async {
+      if (element["item"].id == basketBloc.items[index]["item"].id) {
+        element['qty'] = int.parse(element['qty'].toString()) - 1;
+        mapData = element;
+        return;
+      }
+    });
+    if (mounted) setState(() {});
+
+    if(mapData['qty'] == 0 || mapData['qty'] == -1){
+      //remove item from cart and local
+      Map data = {
+        "type": type,
+        "id": mapData["item"].id,
+        "qty": mapData["qty"],
+      };
+      basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
+      await ShoppingAuthService().removeItemFromShoppingCart(data);
+    }else{
+      //update to server is qty is not zero
+      debugPrint('add-on add mapData qty not 0/-1::: ${mapData['qty']}');
+      if(mapData['qty'] != 0){
+        // debugPrint('add-on add three::: ${mapData['add_ons']}');
+
+        var addOn = mapData['add_ons'];
+
+        List<dynamic> transformedList = addOn?.map((item) {
+          List<dynamic> options = item['options']?.map((option) {
+            return {"id": option['id'], "quantity": option['quantity']};
+          })?.toList() ?? [];
+
+          return {"id": item['id'], "options": options};
+        })?.toList() ?? [];
+
+        Map data = {
+          "type": type,
+          "id": mapData["item"].id,
+          "qty": mapData["qty"],
+          "add_ons": transformedList,
+        };
+        debugPrint("Data From increasing the  item : $data");
+        await ShoppingAuthService().addItemToShoppingCart(data);
+      }
+    }
+
+  }
+
   void addItem(int index) async {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
@@ -395,13 +492,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
     // debugPrint('fola cart:::: ${variantId}');
     Product selectedProduct = basketBloc.items[index]["item"];
-    // debugPrint('fola cart:::: ${selectedProduct.id}');
 
     basketBloc.increaseVariantQuantity(selectedProduct.id.toString(), variantId);
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
-    // debugPrint("fola cart From Add Button : ${dataInfo}");
     await ShoppingAuthService().addItemToShoppingCart(dataInfo);
   }
 
@@ -541,29 +636,65 @@ class _ShoppingCartState extends State<ShoppingCart> {
     for (var item in basketBloc.items) {
 
       int itemTotal = 0;
+      int AddOnTotal = 0;
       var product = item["item"];
 
       if (product is Product){
-        if (product.variant!.isEmpty) {
-          // If the variant list is empty, multiply the item's price by quantity
-          itemTotal = int.parse(product.price.toString()) * int.parse(item["qty"].toString());
-        } else {
-          // If the variant list is not empty, calculate the total price using variants
-          for (var variant in product.variant!) {
-            // if(variant['quantity'] != null || variant['price'] != null){
-              int variantPrice = int.parse(variant['price'].toString()) ?? 0;
-              int quantity = int.parse(variant['quantity'].toString()) ?? 0;
-              itemTotal += variantPrice * quantity;
 
-            // }
+        if(product.addOns != null){
+
+          if(product.addOns!.isNotEmpty){
+            for(var itemAddOn in product.addOns!){
+
+              if (itemAddOn.containsKey('options')) {
+                List<Map<String, dynamic>> options = List<Map<String, dynamic>>.from(itemAddOn['options']);
+
+                for (var option in options) {
+                  int AddOnOptionPrice = int.parse(option['price'].toString()) ?? 0;
+                  int quantity = int.parse(option['quantity'].toString()) ?? 0;
+                  AddOnTotal += AddOnOptionPrice * quantity;
+                }
+
+                int price = int.parse(product.price.toString()) ?? 0;
+                int quantity = int.parse(item['qty'].toString()) ?? 0;
+                int priceQuantity = price * quantity;
+                totalPrice += AddOnTotal + priceQuantity;
+
+              }
+            }
 
           }
+
         }
+
+        if(product.variant != null){
+          // If the variant list is not empty, calculate the total price using variants
+            if(product.variant!.isNotEmpty){
+              for (var variant in product.variant!) {
+                // if(variant['quantity'] != null || variant['price'] != null){
+                int variantPrice = int.parse(variant['price'].toString()) ?? 0;
+                int quantity = int.parse(variant['quantity'].toString()) ?? 0;
+                itemTotal += variantPrice * quantity;
+                // }
+
+              }
+            }
+            totalPrice += itemTotal;
+
+        }
+
+        if(product.addOns != null && product.variant != null){
+          int normalTotal = 0;
+          normalTotal = int.parse(product.price.toString()) * int.parse(item['qty'].toString());
+          totalPrice += normalTotal;
+        }
+
       }else{
         itemTotal = int.parse(product.price.toString()) * int.parse(product.quantity.toString());
+        totalPrice += itemTotal;
       }
 
-      totalPrice += itemTotal;
+      // totalPrice += itemTotal;
     }
     basketBloc.orderTotal = totalPrice;
     if(mounted)setState(() {});

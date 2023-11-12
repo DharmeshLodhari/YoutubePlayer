@@ -152,6 +152,7 @@ class Product {
   bool? canRate;
   bool? enableInSuperStore;
   List<dynamic>? variant;
+  List<dynamic>? addOns;
   double? weight;
   String? weightSiUnit;
   double? height;
@@ -161,6 +162,12 @@ class Product {
   bool? trackInventory;
   int? quantity;
   double? pricePercentageChange;
+  int? oldPrice;
+  int? discountValue;
+  String? discountType;
+  bool? discountIsActive;
+  int? discountedPrice;
+  bool? isShippable;
 
   Product({this.id,
     this.name,
@@ -186,6 +193,7 @@ class Product {
     this.pictureMap,
     this.rating = 0.0,
     this.variant,
+    this.addOns,
     this.weight = 0.0,
     this.weightSiUnit,
     this.height = 0.0,
@@ -195,6 +203,12 @@ class Product {
     this.trackInventory,
     this.quantity,
     this.pricePercentageChange,
+    this.discountedPrice,
+    this.discountIsActive,
+    this.discountType,
+    this.discountValue,
+    this.oldPrice,
+    this.isShippable,
     this.canRate = false});
 
   Map toMap() {
@@ -206,6 +220,7 @@ class Product {
       "price": price,
       "condition": condition,
       "category": category,
+      "cover": cover,
       "manufacturer": manufacturer,
       "is_available": isAvailable,
       "available_from": availableFrom,
@@ -213,6 +228,7 @@ class Product {
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
       "variants": variant,
+      "add_ons": addOns,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -222,6 +238,12 @@ class Product {
       'track_inventory': trackInventory,
       'quantity': quantity,
       'price_percentage_change': pricePercentageChange ?? 0.0,
+      'old_price': oldPrice,
+      'discount_value': discountValue,
+      'discount_type': discountType,
+      'discount_is_active': discountIsActive,
+      'discounted_price': discountedPrice,
+      'is_shippable': isShippable,
     };
   }
 
@@ -245,6 +267,7 @@ class Product {
       "seller_avatar": sellerAvatar,
       "currency": currency,
       "variants": variant,
+      "add_ons": addOns,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -254,6 +277,12 @@ class Product {
       'track_inventory': trackInventory,
       'quantity': quantity,
       'price_percentage_change': pricePercentageChange ?? 0.0,
+      'old_price': oldPrice,
+      'discount_value': discountValue,
+      'discount_type': discountType,
+      'discount_is_active': discountIsActive,
+      'discounted_price': discountedPrice,
+      'is_shippable': isShippable,
     };
   }
 
@@ -303,6 +332,7 @@ class Product {
       rating: formatRating(double.parse(object['rating']?.toString() ?? "0")),
       canRate: object["can_rate"] ?? false,
       variant: object["variants"],
+      addOns: object["add_ons"],
       weight: object["weight"],
       weightSiUnit: object["weight_si_unit"],
       height: object["height"],
@@ -311,6 +341,13 @@ class Product {
       trackInventory: object["track_inventory"],
       quantity: object["quantity"],
       pricePercentageChange: object["price_percentage_change"] ?? 0.0,
+
+      // discountedPrice: object["discounted_price"],
+      // discountIsActive: object["discount_is_active"],
+      // discountType: object["discount_type"],
+      // discountValue: object["discount_value"],
+      oldPrice: object["old_price"],
+      isShippable: object["is_shippable"],
     );
   }
 
@@ -371,6 +408,51 @@ class Product {
           "https://borinhalbich.com/wp-content/uploads/2018/06/placeholder-250x300.png");
     }
     return imageLinks;
+  }
+
+  Product copyWith({required int quantity}) {
+    return Product(
+      id: this.id,
+      name: this.name ?? "",
+      description: this.description ?? "",
+      shortDescription: this.shortDescription ?? "",
+      price: this.price,
+      enableInSuperStore: this.enableInSuperStore ?? false,
+      localImages: this.localImages ?? [],
+      serverImages: this.serverImages,
+      cover:this.cover ?? "",
+      seller: this.seller ?? "",
+      sellerAvatar: this.sellerAvatar ?? "",
+      sellerFullName: this.sellerFullName ?? "",
+      qrCode: this.qrCode ?? "",
+      condition: this.condition ?? "",
+      category: this.category ?? "",
+      manufacturer: this.manufacturer ?? "",
+      isAvailable: this.isAvailable ?? true,
+      availableFrom: this.availableFrom,
+      currency: this.currency ?? "NGN",
+      pictureMap: this.pictureMap ?? [],
+      rating: this.rating,
+      canRate: this.canRate ?? false,
+      variant: this.variant,
+      addOns: this.addOns,
+      weight: this.weight,
+      weightSiUnit: this.widthSiUnit,
+      height: this.height,
+      heightSiUnit: this.heightSiUnit,
+      widthSiUnit: this.widthSiUnit,
+      trackInventory: this.trackInventory,
+      quantity: quantity ?? this.quantity,
+      pricePercentageChange: this.pricePercentageChange ?? 0.0,
+
+      // discountedPrice: object["discounted_price"],
+      // discountIsActive: object["discount_is_active"],
+      // discountType: object["discount_type"],
+      // discountValue: object["discount_value"],
+      oldPrice: this.oldPrice,
+      isShippable: this.isShippable,
+    );
+
   }
 }
 
@@ -548,6 +630,169 @@ class Variant {
     }
     return imageLinks;
   }
+}
+
+class AddOnOption {
+  int? id;
+  String? picture;
+  String? name;
+  String? description;
+  String? merchant;
+  String? currency;
+  String? price;
+  bool? isAvailable;
+  bool? isChecked;
+  DateTime? createdAt;
+
+  AddOnOption(
+      {this.id,
+        this.picture,
+        this.name,
+        this.description,
+        this.merchant,
+        this.currency,
+        this.price,
+        this.isAvailable,
+        this.isChecked,
+        this.createdAt});
+
+  AddOnOption.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    picture = json['picture'];
+    name = json['name'];
+    description = json['description'];
+    merchant = json['merchant'];
+    currency = json['currency'];
+    price = json['price'].toString();
+    isAvailable = json['is_available'];
+    isChecked = json['is_checked'] ?? false;
+    createdAt = getProductDateTime(json['created_at']);
+  }
+
+  static DateTime getProductDateTime(var date) {
+    if (date != null) {
+      DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['picture'] = this.picture;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['merchant'] = this.merchant;
+    data['currency'] = this.currency;
+    data['price'] = this.price;
+    data['is_available'] = this.isAvailable;
+    data['created_at'] = this.createdAt;
+    return data;
+  }
+}
+
+class AddOns {
+  int? id;
+  List<AddOnOption>? options;
+  String? merchant;
+  String? name;
+  String? description;
+  String? inputType;
+  String? selectType;
+  bool? isRequired;
+  bool? isChecked;
+  DateTime? createdAt;
+
+  AddOns(
+      {this.id,
+        this.options,
+        this.merchant,
+        this.name,
+        this.description,
+        this.inputType,
+        this.selectType,
+        this.isRequired,
+        this.isChecked,
+        this.createdAt});
+
+  AddOns.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    if (json['options'] != null) {
+      options = <AddOnOption>[];
+      json['options'].forEach((v) {
+        options!.add(new AddOnOption.fromJson(v));
+      });
+    }
+    merchant = json['merchant'];
+    name = json['name'];
+    description = json['description'];
+    inputType = json['input_type'];
+    selectType = json['select_type'];
+    isRequired = json['is_required'];
+    isChecked = json['is_checked'] ?? false;
+    createdAt = getProductDateTime(json['created_at']);
+  }
+
+  static DateTime getProductDateTime(var date) {
+    if (date != null) {
+      DateTime dateTime = DateTime.parse(date);
+      return dateTime;
+    }
+    return DateTime.now();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    if (this.options != null) {
+      data['options'] = this.options!.map((v) => v.toJson()).toList();
+    }
+    data['merchant'] = this.merchant;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['input_type'] = this.inputType;
+    data['select_type'] = this.selectType;
+    data['is_required'] = this.isRequired;
+    // if(data['is_checked'] == null){
+    //   isRequired = data['is_checked'] ?? false;
+    // }
+    data['created_at'] = this.createdAt;
+    return data;
+  }
+
+  static List<AddOns> convertToAddOnList(List<dynamic> dataList) {
+    List<AddOns> addOnList = [];
+
+    for (var data in dataList) {
+      AddOns addOns = AddOns(
+        id: data['id'],
+        name: data['name'],
+        description: data['description'],
+        merchant: data["merchant"] ?? "",
+        inputType: data["input_type"],
+        selectType: data["select_type"],
+        isRequired: data["is_required"] ?? false,
+        options: getAddOnOption(data["options"]),
+      );
+      addOnList.add(addOns);
+    }
+
+    return addOnList;
+  }
+
+  static List<AddOnOption> getAddOnOption(List? data) {
+    List<AddOnOption> addOnOption = [];
+
+    if (data != null) {
+      for (int i = 0; i < data.length; i++) {
+          addOnOption.add(AddOnOption.fromJson(data[i]));
+      }
+    }
+    return addOnOption;
+  }
+
+
 }
 
 class Service {

@@ -285,6 +285,7 @@ class ShoppingAuthService extends AuthService {
     product.canRate = item["can_rate"] ?? false;
     product.enableInSuperStore = item["enable_in_superstore"] ?? false;
     product.variant = item["variants"] ?? null;
+    product.addOns = item["add_ons"] ?? null;
 
     product.weight = item['weight'] ?? 0.0;
     product.weightSiUnit = item['weight_si_unit'] ?? '';
@@ -295,6 +296,13 @@ class ShoppingAuthService extends AuthService {
     product.trackInventory = item["track_inventory"] ?? false;
     product.quantity = item["quantity"];
     product.pricePercentageChange = item["price_percentage_change"] ?? 0.0;
+
+    product.isShippable = item['is_shippable'] ?? false;
+    // product.discountedPrice = item['discounted_price'] ?? 0;
+    product.discountIsActive = item['discount_is_active'] ?? false;
+    product.discountType = item['discount_type'] ?? '';
+    product.discountValue = item["discount_value"] ?? 0;
+    product.oldPrice = item["old_price"] ?? 0;
 
     return product;
   }
@@ -621,12 +629,11 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Edit Product
-  Future<bool> editProduct(Product product) async {
+  Future<bool> editProduct(Product product, List<dynamic>? productAddOnsList) async {
     var headers = await getAuthHeaders();
-    var url =
-        AppConfig.baseUrl + "/api/v1/products/" + product.id.toString() + "/";
+    var url = AppConfig.baseUrl + "/api/v1/products/" + product.id.toString() + "/";
 
-    //create multipart request for POST or PATCH method
+    //create multipart request for PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     Map<dynamic, dynamic> _data = product.toMap();
@@ -644,6 +651,15 @@ class ShoppingAuthService extends AuthService {
     if(_data["width"] == null || _data["width"] == 0.0){
       _data['width'] = 0.0;
       _data['width_si_unit'] = '';
+    }
+
+    if(productAddOnsList!.isNotEmpty){
+      List ids = productAddOnsList
+          .where((addOn) => addOn.id != null)
+          .map((addOn) => addOn.id!)
+          .toList();
+      _data["add_ons"] = ids;
+
     }
 
     _data.forEach((k, v) {
@@ -1765,6 +1781,369 @@ class ShoppingAuthService extends AuthService {
       return result;
     }
   }
+
+  // List the  add-on with pagination
+  Future<dynamic> getAddOnsList(
+      String productId, String? next, String? previous) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/products/add-ons/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('Add-Ons BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      List items = [];
+      var data = jsonData["results"];
+
+      for (int i = 0; i < data.length; i++) {
+        var addOn = AddOns.fromJson(data[i]);
+        items.add(addOn);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": items
+      };
+
+      // jsonData["results"] = items;
+      return result;
+
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // List the  add-on options with pagination
+  Future<dynamic> getAddOnOptionsList(
+      String productId, String? next, String? previous) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/products/add-on-options/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('Add-On Options BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      List items = [];
+      var data = jsonData["results"];
+
+      for (int i = 0; i < data.length; i++) {
+        var addOnOptions = AddOnOption.fromJson(data[i]);
+        items.add(addOnOptions);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": items
+      };
+
+      // jsonData["results"] = items;
+      return result;
+
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+
+  // Create Addon option
+  Future<dynamic> createAddOnOption(AddOnOption addOnOption, String productId) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-on-options/";
+
+    var headers = await getAuthHeaders();
+
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    request.fields["name"] = addOnOption.name!;
+    request.fields["description"] = addOnOption.description!;
+    request.fields["is_available"] =jsonEncode(addOnOption.isAvailable);
+    request.fields["price"] = addOnOption.price!;
+
+    if (addOnOption.picture != null) {
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath("picture", addOnOption.picture!);
+
+      // Add multipart to request
+      request.files.add(multipartFile);
+    }
+
+    debugPrint('createAddOnOption FIELDS -> ${request.fields}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      debugPrint("$key :- $value");
+    });
+
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+
+    if (response.statusCode == 201) {
+      debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+      AddOnOption addOnOption = AddOnOption.fromJson(jsonDecode(responseBody));
+
+      return addOnOption;
+    } else {
+      debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+
+  }
+
+  // Create Addon
+  Future<dynamic> createAddOn(AddOns addOns, String productId) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-ons/";
+
+    var headers = await getAuthHeaders();
+
+    var request = http.Request("POST", Uri.parse(url));
+
+    List<int?> idList = addOns.options!.map((option) => option.id).toList();
+    request.body = json.encode({
+      "name": addOns.name!,
+      "description": addOns.description!,
+      "is_required": addOns.isRequired,
+      "select_type": addOns.selectType!.toLowerCase(),
+      "options": idList
+    });
+
+
+    // debugPrint('DATA from ---> ${request.body}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+
+    var response = await request.send();
+
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+
+    if (response.statusCode == 201) {
+      // debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+      var jsonData = jsonDecode(responseBody);
+
+      AddOns addOns = AddOns();
+      addOns.id = jsonData['id'];
+      addOns.name = jsonData['name'];
+      addOns.description = jsonData['description'];
+      addOns.inputType = jsonData['input_type'];
+      addOns.selectType = jsonData['select_type'];
+      addOns.isRequired = jsonData['is_required'];
+
+      List<AddOnOption> options = [];
+
+      for(var item in jsonData['options']){
+        AddOnOption addOnOption = AddOnOption();
+        addOnOption.id = item;
+        addOnOption.name = "";
+        addOnOption.description = "";
+        addOnOption.picture = "";
+        addOnOption.merchant = "";
+        addOnOption.price = "";
+        addOnOption.currency = "";
+        options.add(addOnOption);
+      }
+
+      addOns.options = options;
+
+      return addOns;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+
+  }
+
+  // delete Add-on
+  Future<bool> deleteAddOn(int? id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-ons/$id/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(
+      url,
+      headers: headers,
+    );
+
+    debugPrint(
+        "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // delete Add-on option
+  Future<bool> deleteAddOnOption(int? id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-on-option/$id/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(
+      url,
+      headers: headers,
+    );
+
+    debugPrint(
+        "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // Update Addon
+  Future<dynamic> updateAddOn(AddOns addOns, String productId) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-ons/${addOns.id}/";
+
+    var headers = await getAuthHeaders();
+
+    var request = http.Request("PATCH", Uri.parse(url));
+
+    List idList = addOns.options!.map((option) => option.id).toList();
+    request.body = json.encode({
+      "name": addOns.name!,
+      "description": addOns.description!,
+      "is_required": addOns.isRequired,
+      "select_type": addOns.selectType!.toLowerCase(),
+      "options": idList.isNotEmpty ? idList : "null"
+    });
+
+    debugPrint('DATA from ---> ${addOns.id}');
+    debugPrint('DATA from ---> ${request.body}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    var response = await request.send();
+
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      // debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+      var jsonData = jsonDecode(responseBody);
+
+      AddOns addOns = AddOns();
+      addOns.id = jsonData['id'];
+      addOns.name = jsonData['name'];
+      addOns.description = jsonData['description'];
+      addOns.inputType = jsonData['input_type'];
+      addOns.selectType = jsonData['select_type'];
+      addOns.isRequired = jsonData['is_required'];
+
+      List<AddOnOption> options = [];
+
+      for(var item in jsonData['options']){
+        debugPrint("add-on option id:- ${item['id']}");
+
+        AddOnOption addOnOption = AddOnOption.fromJson(item);
+        // addOnOption.id = item['id'];
+        // addOnOption.name = "";
+        // addOnOption.description = "";
+        // addOnOption.picture = "";
+        // addOnOption.merchant = "";
+        // addOnOption.price = "";
+        // addOnOption.currency = "";
+
+        options.add(addOnOption);
+      }
+
+      addOns.options = options;
+
+      return addOns;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+
+  }
+
+
+  // Update Addon option
+  Future<dynamic> updateAddOnOption(AddOnOption addOnOption, String productId) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-on-options/${addOnOption.id}/";
+
+    var headers = await getAuthHeaders();
+
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    request.fields["name"] = addOnOption.name!;
+    request.fields["description"] = addOnOption.description!;
+    request.fields["is_available"] =jsonEncode(addOnOption.isAvailable);
+    request.fields["price"] = addOnOption.price!;
+
+    if (addOnOption.picture != null && !addOnOption.picture!.contains("http")) {
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath("picture", addOnOption.picture!);
+
+      // Add multipart to request
+      request.files.add(multipartFile);
+    }
+
+    debugPrint('createAddOnOption FIELDS -> ${request.fields}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      debugPrint("$key :- $value");
+    });
+
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+
+    if (response.statusCode == 201) {
+      debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+      AddOnOption addOnOption = AddOnOption.fromJson(jsonDecode(responseBody));
+
+      return addOnOption;
+    } else {
+      debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+
+  }
+
 }
 
 class ShoppingCartModelFromQrCode {

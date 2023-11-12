@@ -103,6 +103,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
   String staticImage = "";
+  List addOnList = [];
+  ScrollController scrollControllerAddOn = ScrollController();
+  bool isLoading = false;
+
 
   @override
   void initState() {
@@ -564,7 +568,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       message:
                       AppLocalization.of(context)!.selectVariantColorSize);
                 }
-              } else if(sizeGroups.isNotEmpty && colorGroups.isEmpty){
+              }
+              else if(sizeGroups.isNotEmpty && colorGroups.isEmpty){
                 // print("color list is showing.");
                 if (selectedSize.isNotEmpty) {
                   addToCart();
@@ -574,7 +579,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       message:
                       AppLocalization.of(context)!.selectVariantSize);
                 }
-              }else if(sizeGroups.isEmpty && colorGroups.isNotEmpty){
+              }
+              else if(sizeGroups.isEmpty && colorGroups.isNotEmpty){
                 // print("size list is showing.");
                 if (selectedColor.isNotEmpty) {
                   addToCart();
@@ -586,7 +592,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 }
               }
 
-            }else{
+            }
+            else if(addOnList.isNotEmpty){
+              addToCart();
+              return true;
+            }
+            else{
               //product has no variant or is a service
               addToCart();
               return true;
@@ -608,6 +619,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future<void> addToCart() async {
     String type = product is Product ? "product" : "service";
     Map<String, dynamic> variantPayLoad = {};
+    Map<String, dynamic> addOnPayLoad = {};
+    List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
+    List<Map<String, dynamic>> selectedAddOnsList = [];
+
+    Product productSend = product!;
+    productSend = productSend.copyWith(quantity: 1);
 
     if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
       variantPayLoad = {
@@ -619,7 +636,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         "value": selectedSize,
         "type": "Color n Size",
       };
-    } else if (colorGroups.isNotEmpty) {
+    }
+    else if (colorGroups.isNotEmpty) {
       variantPayLoad = {
         "id": selectedVariantId,
         "quantity": 1,
@@ -628,7 +646,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         "colour": selectedColor,
         "type": "Color",
       };
-    } else if (sizeGroups.isNotEmpty) {
+    }
+    else if (sizeGroups.isNotEmpty) {
       variantPayLoad = {
         "id": selectedVariantId,
         "quantity": 1,
@@ -639,12 +658,58 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       };
     }
 
-    // debugPrint("Data From Product Page v-id : $selectedVariantId");
-    // debugPrint("Data From Product Page v-id : $variantPayLoad");
-    // debugPrint("Data From Product Page v-id one : ${basketBloc.items}");
+    addOnList.forEach((addOn) {
+      if (addOn.options != null) {
+        // Filter the options to include only those with option.isChecked == true
+        List<AddOnOption> selectedOptions = addOn.options!.where((option) => option.isChecked == true).toList();
+
+        if (selectedOptions.isNotEmpty) {
+          Map<String, dynamic> selectedAddOn = {
+            "id": addOn.id,
+            "options": selectedOptions.map((option) => {
+              "id": option.id,
+              "quantity": 1,
+              "name": option.name,
+              "price": option.price,
+              "currency": option.currency,
+            }).toList(),
+          };
+
+          Map<String, dynamic> selectedAddOnServer = {
+            "id": addOn.id,
+            "options": selectedOptions.map((option) => {
+              "id": option.id,
+              "quantity": 1,
+            }).toList(),
+          };
+
+          selectedAddOnsList.add(selectedAddOn);
+          selectedAddOnsCartServerList.add(selectedAddOnServer);
+
+        }
+      }
+    });
+
+    debugPrint("Data From Product option : $selectedAddOnsList");
+    debugPrint("Data From Product selectedAddOnsCartServerList : $selectedAddOnsCartServerList");
+
+    if (selectedAddOnsList.isNotEmpty && addOnList.isNotEmpty) {
+      addOnPayLoad = {
+        "id": productId,
+        "qty": 1,
+        "type": type,
+        "add_ons": selectedAddOnsList,
+      };
+
+      // basketBloc.addItemInBasketWithAddOns(product, type, selectedAddOnsCartServerList);
+      basketBloc.addItemToCart(item: productSend, type: type, variant: null, addOns: selectedAddOnsList);
+
+      await _auth.addItemToShoppingCart(addOnPayLoad);
+      return;
+    }
 
     if (basketBloc.items.isEmpty && variantPayLoad.isNotEmpty) {
-      basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
+      basketBloc.addItemToCart(item: productSend, type: type, variant: variantPayLoad, addOns:  null);
     } else {
       for (var item in basketBloc.items) {
         Product productInCart = item['item'];
@@ -663,7 +728,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             }
           }
 
-          basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
+          basketBloc.addItemToCart(item: productSend, type: type, variant: variantPayLoad, addOns:  null);
 
           // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
           // debugPrint("Data From Product Page v-id 3 : $variantList");
@@ -672,18 +737,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           debugPrint("Data From Product Page exist : $dataInfo");
 
           await _auth.addItemToShoppingCart(dataInfo);
-          // for(var item in basketBloc.items){
-          //   // Product productInCart = item['item'];
-          //   List variantList = item['item'].variant;
-          //   debugPrint('fola chat one twoo::: ${variantList.length}');
-          //   debugPrint('fola chat one twoo::: ${item['item'].variant}');
-          // }
+
           return;
         }
       }
 
       // Product ID doesn't exist in the cart, add it with the variant
-      basketBloc.addItemToCart(item: product, type: type, variant: variantPayLoad);
+      basketBloc.addItemToCart(item: productSend, type: type, variant: variantPayLoad, addOns: null);
     }
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
@@ -853,7 +913,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 children: [
                   _buildProductTitleAndPriceWidget(),
                   SizedBox(
-                    height: 24,
+                    height: 10,
                   ),
                   Divider(
                     height: 0,
@@ -899,6 +959,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   SizedBox(
                     height: 10,
                   ),
+                  if(addOnList.isNotEmpty)...[
+                    _buildAddonWidget(),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Divider(
+                      height: 0,
+                      color: dividerColor,
+                      thickness: 1,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                  ],
+
                   _buildSellerInfoWidget(),
                   SizedBox(height: 10),
                   _buildReviewList(),
@@ -1221,6 +1296,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       price = product!.price.toString();
       moreInformation = product!.description.toString();
 
+      addOnList = AddOns.convertToAddOnList(product!.addOns!);
+
       colorGroups = {};
       sizeGroups = {};
       colorGroups = groupVariantsByColor(productVariantList);
@@ -1252,7 +1329,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     return groupedVariants;
   }
-
 
   // Group variants by size
   Map<String, List<Variant>> groupVariantsBySize(List<Variant> variants) {
@@ -1294,30 +1370,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     return sizeGroups;
   }
-
-  // Define a function to group variants by color for the selected color/image
-  // Map<String, List<Variant>> groupVariantsByColorForSelectedSize(
-  //     String selectedSize, List<Variant> allVariants) {
-  //   Map<String, List<Variant>> colorGroups = {};
-  //
-  //   // Filter variants that match the selected color
-  //   List<Variant> selectedSizeVariants = allVariants
-  //       .where((variant) => variant.size == selectedSize)
-  //       .toList();
-  //
-  //   // Group the selected color variants by size, only if variant.value is not empty or null
-  //   for (var variant in selectedSizeVariants) {
-  //
-  //     if (variant.colour != null && variant.colour!.isNotEmpty) {
-  //       if (!colorGroups.containsKey(variant.colour)) {
-  //         colorGroups[variant.colour!] = [];
-  //       }
-  //       colorGroups[variant.colour]!.add(variant);
-  //     }
-  //   }
-  //
-  //   return colorGroups;
-  // }
 
   bool hasVariantsWithoutColor(List<Variant> productVariantList, String variantId) {
     // Iterate through the productVariantList
@@ -1528,14 +1580,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(
-      height: 82.0 * totalColumns,
+      height: 75.0 * totalColumns,
       child: GridView.builder(
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 5,
-          crossAxisSpacing: 5.0,
+          crossAxisSpacing: 2.0,
           mainAxisSpacing: 5.0,
-          childAspectRatio: 1.1,
+          childAspectRatio: 1.0,
         ),
         // scrollDirection: Axis.horizontal,
         itemCount: colorGroups.length,
@@ -1599,7 +1651,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 if(mounted) setState(() {});
               },
               child: Container(
-                height: 80.0,
+                height: 0.0,
                 width: 80.0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(14)),
@@ -1635,7 +1687,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   }
 
-
   int calculateColumnCount(int itemCount, int maxItemsPerRow) {
     return (itemCount / maxItemsPerRow).ceil();
   }
@@ -1647,16 +1698,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(
-      height: 55.0 * totalColumns,
+      height: 60.0 * totalColumns,
       child: GridView.builder(
-        // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          // maxCrossAxisExtent: maxTextLengthWithSpace, // Maximum width for each item
           crossAxisCount: 3,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
-          childAspectRatio: 2.5,
+          childAspectRatio: 2.4,
         ),
         itemCount: sizeGroups.length,
         shrinkWrap: true,
@@ -1689,9 +1738,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               if(mounted) setState(() {});
             },
             child: SizedBox(
-              height: 20.0,
+              // height: 20.0,
               child: Container(
-                // height: 20.0,
                 decoration: BoxDecoration(
                   color: index == selectedSizeIndex ? black : white,
                   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -1854,6 +1902,239 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
       ],
     );
+  }
+
+  Widget _buildAddonWidget() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Available Add-ons",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          "Spices up your orders with the available aad-ons below.",
+          style: TextStyle(
+            fontSize: 14,
+            color: darkGrey,
+          ),
+          textAlign: TextAlign.justify,
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        // Divider(
+        //   height: 0,
+        //   color: dividerColor,
+        //   thickness: 1,
+        // ),
+        _buildAddonList(),
+
+      ],
+    );
+  }
+
+  Widget _buildAddonList() {
+    return Container(
+      // height: 200,
+      height: 100 * addOnList.length.toDouble(),
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        //+1 for progressbar
+        itemCount: addOnList.length + 1,
+        controller: scrollControllerAddOn,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == addOnList.length) {
+            return buildLoadingIndicator(isLoading: isLoading);
+          } else {
+            return addOnTile(
+              addOns: addOnList[index],
+            );
+          }
+        },
+
+      ),
+    );
+  }
+
+  Widget addOnTile({required AddOns addOns}) {
+    List<AddOnOption>? addOnOption = addOns.options;
+
+    return Card(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      // shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        // decoration: BoxDecoration(
+        //   border: Border.all(width: 1, color: greyBorderColor),
+        //   borderRadius: BorderRadius.all(Radius.circular(10)),
+        // ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  appendStringDot(addOns.name!, 15),
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: navyBlue),
+                    borderRadius: BorderRadius.all(Radius.circular(7)),
+                    color: addOns.isRequired == true ? navyBlue : white,
+                  ),
+                  child: Text(
+                    addOns.isRequired == true ? 'Required' : 'Optional',
+                    maxLines: 1,
+                    style: TextStyle(
+                        color: addOns.isRequired == true ? white : navyBlue,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(height: 10),
+            Divider(
+              height: 0,
+              color: dividerColor,
+              thickness: 1,
+            ),
+
+            Container(
+              child: ListView.builder(
+                itemCount: addOnOption!.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => _displayAddOnOption(
+                    addOnOption[index], addOns,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _displayAddOnOption(AddOnOption addOnOption, AddOns addOns) {
+    return Container(
+      child: Column(
+        children: [
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                appendStringDot(addOnOption.name!, 15),
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14),
+              ),
+              GestureDetector(
+                onTap: (){
+                  if(addOns.inputType == 'checkbox'){
+                    addOns.options!.forEach((data) {
+                      if (data.id == addOnOption.id) {
+                        // Found the option with the target ID, change its isChecked value
+                        addOnOption.isChecked = !addOnOption.isChecked!;
+                      }
+                    });
+                    if(mounted)setState(() {});
+                  }else if(addOns.inputType == 'radio'){
+                    updateAddOnOptions(addOns.options!, addOnOption.id!);
+                  }
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      '(${worldCurrencies[addOnOption.currency!]!}',
+                      style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontSize: 14.0,
+                          color: blackFont.withOpacity(.5),
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      '${moneyDisplayNormalizer(
+                          int.parse(addOnOption.price.toString()))})',
+                      style: TextStyle(
+                          fontSize: 14.0,
+                          color: blackFont.withOpacity(.5),
+                          fontWeight: FontWeight.w600),
+                    ),
+                     if(addOns.inputType == 'checkbox')...[
+                       Checkbox(
+                         value: addOnOption.isChecked,
+                         activeColor: navyBlue,
+                         onChanged: (bool? value) {
+                           // Handle checkbox state change here
+                           addOns.options!.forEach((data) {
+                             if (data.id == addOnOption.id) {
+                               // Found the option with the target ID, change its isChecked value
+                               addOnOption.isChecked = !addOnOption.isChecked!;
+                             }
+                           });
+                           if(mounted)setState(() {});
+
+                         },
+                       ),
+                     ],
+                    if(addOns.inputType == 'radio')...[
+                      Radio<bool>(
+                        value: addOnOption.isChecked!,
+                        groupValue: true, // You need to provide a unique group value for the radio buttons
+                        activeColor: navyBlue,
+                        onChanged: (bool? value) {
+                          // Handle radio button selection here
+                          updateAddOnOptions(addOns.options!, addOnOption.id!);
+                        },
+                      ),
+                    ],
+
+
+                  ],
+                ),
+              ),
+
+            ],
+          ),
+          Divider(
+            height: 0,
+            color: dividerColor,
+            thickness: 1,
+          ),
+        ],
+      ),
+    );
+
+  }
+
+  void updateAddOnOptions(List<AddOnOption> options, int targetId) {
+    options.forEach((addOnOption) {
+      if (addOnOption.id == targetId) {
+        addOnOption.isChecked = true;
+
+      } else {
+        addOnOption.isChecked = false;
+      }
+      if(mounted)setState(() {});
+    });
   }
 
   Widget _buildSellerInfoWidget() {
@@ -2056,17 +2337,82 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   void navigateToSendPayment() {
     basketBloc.productOrService.clear();
 
+    List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
+    List<Map<String, dynamic>> selectedAddOnsList = [];
+    int addOnPrice = 0;
+
+    addOnList.forEach((addOn) {
+      if (addOn.options != null) {
+        // Filter the options to include only those with option.isChecked == true
+        List<AddOnOption> selectedOptions = addOn.options!.where((option) => option.isChecked == true).toList();
+
+        if (selectedOptions.isNotEmpty) {
+
+          for(var item in selectedOptions){
+            debugPrint("Data From Product addOnPrice : ${item.price}");
+            addOnPrice += int.parse(item.price.toString());
+
+          }
+
+          debugPrint("Data From Product addOnPrice Total : ${addOnPrice}");
+
+          Map<String, dynamic> selectedAddOn = {
+            "id": addOn.id,
+            "options": selectedOptions.map((option) => {
+              "id": option.id,
+              "quantity": 1,
+              "name": option.name,
+              "price": option.price,
+              "currency": option.currency,
+            }).toList(),
+          };
+
+          Map<String, dynamic> selectedAddOnServer = {
+            "id": addOn.id,
+            "options": selectedOptions.map((option) => {
+              "id": option.id,
+              "quantity": 1,
+            }).toList(),
+          };
+
+          selectedAddOnsList.add(selectedAddOn);
+          selectedAddOnsCartServerList.add(selectedAddOnServer);
+
+        }
+      }
+    });
+
+    debugPrint("Data From Product option : $selectedAddOnsList");
+    debugPrint("Data From Product selectedAddOnsCartServerList : $selectedAddOnsCartServerList");
+
+
     Map<String, dynamic> variants = {
       "id": selectedVariantId, "quantity": 1, "current_price": selectedVariantPrice
     };
 
-    Map<dynamic, dynamic> result = {
-      "type": 'product',
-      "results": product!.toJson(),
-      "variant": variants
+    Map<String, dynamic> addOn = {
+      "id": productId, "quantity": 1, "current_price": addOnPrice
     };
 
-    // debugPrint('Product check:::: ${result}');
+    Map<dynamic, dynamic> result = {};
+
+    if(selectedAddOnsCartServerList.isNotEmpty){
+       result = {
+        "type": 'product',
+        "results": product!.toJson(),
+        "add_ons": addOn,
+        "add_ons_list": selectedAddOnsCartServerList,
+      };
+    }else{
+       result = {
+        "type": 'product',
+        "results": product!.toJson(),
+        "variant": variants
+      };
+    }
+
+
+    debugPrint('Product check result:::: ${result}');
     debugPrint('Product check:::: ${variants}');
 
     basketBloc.buyProductOrServiceNow('product', result);
@@ -2080,5 +2426,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     sliderIndex.close();
     super.dispose();
   }
+
 }
 

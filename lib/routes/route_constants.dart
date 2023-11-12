@@ -193,8 +193,10 @@ class Routes {
   static const String PRE_ACCOUNT_UPGRADE = "/pre-account-upgrade";
 
   static const String PRODUCT_ADD_ON_LIST = "/product-add-on-list";
+  static const String ADD_ON_OPTION_LIST = "/add-on-option-list";
   static const String PRODUCT_ADD_ON_OPTION_CREATE = "/product-add-on-option-create";
   static const String PRODUCT_ADD_ON_OPTION_UPDATE = "/product-add-on-option-update";
   static const String NEW_ADD_ON = "/new-add-on";
+  static const String UPDATE_ADD_ON = "/update-add-on";
 
 }

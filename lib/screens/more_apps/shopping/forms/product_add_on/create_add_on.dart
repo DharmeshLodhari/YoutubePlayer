@@ -16,41 +16,33 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../data/currency.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/rounded_background_icon.dart';
+import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../shopping_auth.dart';
 
 
-class NewAddOn extends StatefulWidget {
+class CreateAddOn extends StatefulWidget {
   var arguments;
 
-  NewAddOn({this.arguments, Key? key}) : super(key: key);
+  CreateAddOn({this.arguments, Key? key}) : super(key: key);
 
   @override
-  _NewAddOnState createState() => _NewAddOnState();
+  _CreateAddOnState createState() => _CreateAddOnState();
 }
 
-class _NewAddOnState extends State<NewAddOn> {
+class _CreateAddOnState extends State<CreateAddOn> {
   final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
 
   UserBloc? userBloc;
 
-  int imageCount = 5;
   final ScrollController _scrollController = ScrollController();
-  List<PickedFile> productImages = [];
-  List<String> croppedImageList = [];
-  String size = "";
-  String variantPrice = "";
-  String comparePrice = "";
-  String color = "";
-  bool IsRequired = false;
-  bool inventoryIsAvailable = false;
-  bool trackInventory = false;
-  DateTime productAvailableFrom = DateTime.now();
+
+  bool isRequired = false;
   bool isLoading = false;
   bool isAPILoading = false;
-  int inventoryCount = 0;
   var typeList = ['Single', 'Multiple'];
   String selectedType = "";
   String name = "";
@@ -58,6 +50,9 @@ class _NewAddOnState extends State<NewAddOn> {
   String value = "";
   String optionOnWhatToDo = "";
   TextEditingController? groupDescriptionController;
+  List<AddOnOption> productAddOnOptionList = [];
+  ScrollController scrollControllerAddOnOption = ScrollController();
+  AddOns addOns = AddOns();
 
   @override
   void deactivate() {
@@ -137,7 +132,7 @@ class _NewAddOnState extends State<NewAddOn> {
                 getTypeField(),
 
                 const SizedBox(height: 20),
-                getIsAvailableField(),
+                getIsRequiredField(),
 
                 const SizedBox(height: 10),
                 Text(
@@ -150,9 +145,15 @@ class _NewAddOnState extends State<NewAddOn> {
                 ),
 
                 const SizedBox(height: 30),
-                addOns(),
 
-                const SizedBox(height: 30),
+                if(productAddOnOptionList == null || productAddOnOptionList.isEmpty)...[
+                  getAddOns(),
+                ]else...[
+                  displaySelectedAddOnOption(),
+                ],
+
+
+                const SizedBox(height: 20),
                 getSubmitButton(),
                 const SizedBox(height: 40),
               ],
@@ -219,13 +220,13 @@ class _NewAddOnState extends State<NewAddOn> {
     }
   }
 
-  Widget getIsAvailableField() {
+  Widget getIsRequiredField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        IsRequired = !IsRequired;
+        isRequired = !isRequired;
         setState(() {});
       },
-      isChecked: IsRequired,
+      isChecked: isRequired,
       title: "Required",
     );
   }
@@ -330,18 +331,21 @@ class _NewAddOnState extends State<NewAddOn> {
     );
   }
 
-  Widget addOns(){
+  Widget getAddOns(){
     return GestureDetector(
       onTap: () async {
-        //disable click if variant is not empty
+        //disable click if add-on option is not empty
         final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_ADD_ON_OPTION_CREATE, arguments: {
           'productId': widget.arguments['productId'],
         });
+        // final result = await Navigator.of(context).pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
+        //   'productId': widget.arguments['productId'],
+        // });
 
-        // Handle the result (map) received from Product Add New Option
-        if (result != null && result is List<Variant>) {
-          //save the add-on details for later use
-          // productVariantList = result;
+        // Handle the result (map) received from Product Add-on Option
+        if (result != null && result is AddOnOption) {
+          //save the add-on option details for later use
+          productAddOnOptionList.add(result);
           if(mounted)setState(() {});
         }
       },
@@ -378,7 +382,11 @@ class _NewAddOnState extends State<NewAddOn> {
         isAPILoading = true;
         if (mounted) setState(() {});
 
-        // await addVariant();
+        await addNewAddOns();
+
+        isAPILoading = false;
+        if (mounted) setState(() {});
+
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -387,58 +395,252 @@ class _NewAddOnState extends State<NewAddOn> {
     );
   }
 
-  Future<void> addVariant() async {
+  Future<void> addNewAddOns() async {
     if (_formKey.currentState!.validate()) {
-      if (croppedImageList.length >= 1) {
-        // if (productImages.length >= 1) {
         if (validateDropdown()) {
-          Variant variant = Variant();
-          // variant.localImages = productImages.map((file) => File(file.path)).toList();
-          variant.localImages = croppedImageList.map((filePath) => File(filePath)).toList();
-          variant.title = name;
-          variant.colour = color;
-          variant.value = value;
-          variant.quantity = inventoryCount.toString();
-          variant.type = selectedType;
-          variant.price = moneyInputNormalizer(variantPrice).toString();
-          variant.isAvailable = IsRequired;
-          variant.availableFrom = productAvailableFrom;
-          variant.trackInventory = trackInventory;
-          variant.currency = 'NGN';
-          if(optionOnWhatToDo == 'new'){
-            //send the variant detail back to the previous page
-            debugPrint('file path::: ${variant.localImages}');
 
-            Navigator.pop(context, variant);
-          }else if(optionOnWhatToDo == 'edit'){
-            String productId = widget.arguments["productId"];
-            //make api call to save the variant details
-            saveVariant(productId, variant);
-          }
+          addOns.name = name;
+          addOns.description = description;
+          addOns.isRequired = isRequired;
+          addOns.selectType = selectedType;
+          addOns.options = productAddOnOptionList;
+
+          await _auth.createAddOn(addOns,
+              widget.arguments["productId"]).then((value) async {
+
+            Navigator.pop(context, value);
+
+          }).catchError((error) {
+            debugPrint("ERROR While createAddOnOption :- $error");
+            isAPILoading = false;
+            if (mounted) setState(() {});
+            showToast(message: "$error");
+          });
 
         }
-      } else {
-        isAPILoading = false;
-        if (mounted) setState(() {});
-        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
-      }
 
     }
 
   }
 
-  Future<void> saveVariant(String productId, Variant item) async {
-    await _auth.addVariant(item, productId).then((value) {
-      Navigator.pop(context, item);
-      return true;
+  Widget displaySelectedAddOnOption(){
 
-    }).catchError((error) {
-      debugPrint(error.toString());
-      isAPILoading = false;
-      if (mounted) setState(() {});
-      showToast(message: error.toString());
-      // backValue = false;
-    });
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Options',
+              maxLines: 1,
+              style: TextStyle(
+                  color: blackFont.withOpacity(.5),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            GestureDetector(
+              onTap: () async {
+                //disable click if add-on option is not empty
+                final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_ADD_ON_OPTION_CREATE, arguments: {
+                  'productId': widget.arguments['productId'],
+                });
+
+                // Handle the result (map) received from Product Add-on Option
+                if (result != null && result is AddOnOption) {
+                  //save the add-on option details for later use
+                  productAddOnOptionList.add(result);
+                  if(mounted)setState(() {});
+                }
+              },
+              child: Icon(
+                SlydoAppIcon.add,
+                size: 16,
+                color: blackFont,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 5.0),
+        _buildAddOnOptionList(),
+        SizedBox(height: 5.0),
+        GestureDetector(
+          onTap: () async {
+            //disable click if add-on option is not empty
+            final result = await Navigator.of(context).pushNamed(Routes.ADD_ON_OPTION_LIST, arguments: {
+              'productId': widget.arguments['productId'],
+            });
+
+            // Handle the result (map) received from Product Add-on Option
+            if (result != null && result is AddOnOption) {
+              //save the add-on option details for later use
+              productAddOnOptionList.add(result);
+              if(mounted)setState(() {});
+            }
+          },
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              'See all',
+              maxLines: 1,
+              style: TextStyle(
+                  color: navyBlue,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16),
+            ),
+          ),
+        ),
+      ],
+    );
+
+  }
+
+  Widget _buildAddOnOptionList() {
+
+    return Container(
+      height: 80 * productAddOnOptionList.length.toDouble(),
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        //+1 for progressbar
+        itemCount: productAddOnOptionList.length + 1,
+        controller: scrollControllerAddOnOption,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == productAddOnOptionList.length) {
+            return buildLoadingIndicator(isLoading: isLoading);
+          } else {
+            return addOnOptionTile(
+              addOnOption: productAddOnOptionList[index],
+            );
+          }
+        },
+
+      ),
+    );
+  }
+
+  Widget addOnOptionTile({required AddOnOption addOnOption}) {
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          dense:  true,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("",
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12),
+              ),
+              Text(
+                appendStringDot(addOnOption.name!, 10),
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14),
+              ),
+              Text(
+                'Created: ${addOnOption.createdAt.toString()}',
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12),
+              ),
+              Text("",
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12),
+              ),
+
+            ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                worldCurrencies[addOnOption.currency!]!,
+                style: TextStyle(
+                    fontFamily: "Roboto",
+                    fontSize: 18.0,
+                    color: blackFont,
+                    fontWeight: FontWeight.w600),
+              ),
+              Text(
+                moneyDisplayNormalizer(
+                    int.parse(addOnOption.price.toString())),
+                style: TextStyle(
+                    fontSize: 18.0,
+                    color: blackFont,
+                    fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          leading: GestureDetector(
+            onTap: () {
+              String? url = addOnOption.picture;
+              Navigator.of(context)
+                  .pushNamed("/photo-viewer", arguments: url);
+            },
+            child: checkProductImage(addOnOption),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget checkProductImage(AddOnOption addOnOption) {
+    // Retrieve the first image from the 'pictures' list
+    String? url = "";
+
+    url = addOnOption.picture;
+
+    String imageUrl = url!.replaceAll('https//', 'https://');
+    if (url == "") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(addOnOption.name!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 100,
+        child: CustomBoxShadow(
+          child: Card(
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: boxShadowTwo,
+            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Container(
+              width: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: NetworkImage(
+                      imageUrl,
+                    ),
+                    fit: BoxFit.cover),
+              ),
+            ),
+          ),
+        ),
+      );
+
+    }
   }
 
   @override

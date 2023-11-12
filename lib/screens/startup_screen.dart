@@ -133,6 +133,11 @@ class _StartupScreenState extends State<StartupScreen> {
                         backgroundColor: Color.fromARGB(38, 255, 255, 255),
                         onPressed: () {
                           Navigator.of(context).pushNamed(Routes.REGISTRATION);
+                          // Navigator.of(context).popAndPushNamed(Routes.SIGN_UP, arguments: {
+                          //   'phoneNumber': '07035235209',
+                          //   'otpCode': '2341',
+                          //   'accountType': 'Personal'
+                          // });
                         },
                         text: "Register",
                         textColor: Colors.white,

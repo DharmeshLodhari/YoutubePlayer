@@ -554,8 +554,9 @@ class _SignUpState extends State<SignUp> {
       verifyingUsername = true;
     });
     try {
+
       await UserAuth()
-          .fetchCustomerProfile(_userNameController.text.toLowerCase());
+          .fetchCustomerProfile(_userNameController.text.trim().toLowerCase());
       verifiedInput = true;
     } catch (e) {
       verifiedInput = false;
@@ -1214,6 +1215,9 @@ class _SignUpState extends State<SignUp> {
 }
 
 List<String> industryList = [
+  'Restaurant/Cafe',
+  'Grocery Store',
+  'E-commerce',
   'Aerospace',
   'Agriculture',
   'Architect',
@@ -1241,7 +1245,6 @@ List<String> industryList = [
   'Consulting/Business Services',
   'Day care',
   'Dealership',
-  'E-commerce',
   'Education',
   'Electrician',
   'Elementary School',
@@ -1250,10 +1253,9 @@ List<String> industryList = [
   'Fashion',
   'Finance',
   'Fitness',
-  'Food & Beverage',
-  'Food/Grocery',
+  // 'Food & Beverage',
+  // 'Food/Beverages',
   'Food Industry',
-  'Food/Beverages',
   'Government Organization',
   'Health/Beauty',
   'High School',
@@ -1268,7 +1270,9 @@ List<String> industryList = [
   'Labor Union',
   'Legal/Law',
   'Local Business',
+  'Liquor Store',
   'Manufacturing',
+  'Miscellaneous',
   'Marketing',
   'Mechanic',
   'Media/News',
@@ -1287,11 +1291,10 @@ List<String> industryList = [
   'Regulation',
   'Religion',
   'Research',
-  'Restaurant/Cafe',
-  'Retail',
+  // 'Retail',
   'Retail and Consumer Merchandise',
   'School',
-  'Shopping/Retail',
+  // 'Shopping/Retail',
   'Spas/Beauty/Personal',
   'Startup',
   'Technology',
