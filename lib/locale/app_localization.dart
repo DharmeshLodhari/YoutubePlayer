@@ -286,6 +286,13 @@ class AppLocalization {
     );
   }
 
+  String get alreadyHaveOtp {
+    return Intl.message(
+      "Already Have OTP?",
+      name: "alreadyHaveOtp",
+    );
+  }
+
   String get enterYourPhoneNumber {
     return Intl.message(
       "Enter Your Phone Number",
@@ -1207,6 +1214,20 @@ class AppLocalization {
     );
   }
 
+  String get addOnDeletedSuccessfully {
+    return Intl.message(
+      "Add-on Deleted Successfully",
+      name: "addOnDeletedSuccessfully",
+    );
+  }
+
+  String get addOnOptionDeletedSuccessfully {
+    return Intl.message(
+      "Add-on Option Deleted Successfully",
+      name: "addOnOptionDeletedSuccessfully",
+    );
+  }
+
   String get cardDeletedSuccessfully {
     return Intl.message(
       "Credit Card Deleted Successfully",
@@ -1225,6 +1246,20 @@ class AppLocalization {
     return Intl.message(
       "Variant is not deleted !!",
       name: "variantIsNotDeleted",
+    );
+  }
+
+  String get addOnIsNotDeleted {
+    return Intl.message(
+      "Add-on is not deleted !!",
+      name: "addOnIsNotDeleted",
+    );
+  }
+
+  String get addOnOptionIsNotDeleted {
+    return Intl.message(
+      "Add-on option is not deleted !!",
+      name: "addOnOptionIsNotDeleted",
     );
   }
 

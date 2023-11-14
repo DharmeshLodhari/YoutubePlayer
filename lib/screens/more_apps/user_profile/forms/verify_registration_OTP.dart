@@ -6,7 +6,12 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinput/pin_put/pin_put.dart';
+import '../../../../locale/app_localization.dart';
+import '../../../../utils/country_picker/country.dart';
+import '../../../../utils/country_picker/country_picker_dialog.dart';
+import '../../../../utils/country_picker/utils.dart';
 import '../../../../widget/LoadingIndicator.dart';
+import '../../../../widget/customized_textform_field.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
@@ -33,6 +38,11 @@ class _VerifyRegistrationOTPScreenState
   Timer? _timer;
   int _duration = 10 * 60; // 10 minutes in seconds
   bool _isRunning = false;
+  Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
+  TextEditingController phoneNumberController = TextEditingController();
+  bool showButton = false;
+  String phoneNumberWithCountryCode = "";
+
 
   @override
   void initState() {
@@ -140,13 +150,24 @@ class _VerifyRegistrationOTPScreenState
                                 flexibleSpace(flex: 1),
                                 expirationNote(),
                                 flexibleSpace(flex: 3),
+
+                                if(phoneNumber!.isEmpty)...[
+                                  selectCountryField(),
+                                  SizedBox(height: 12),
+                                  phoneNumberField(),
+                                  SizedBox(height: 12),
+                                ],
                                 otpFillUpField(),
                                 flexibleSpace(flex: 1),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: resendOtp(),
 
-                                ),
+                                if(phoneNumber!.isNotEmpty)...[
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: resendOtp(),
+
+                                  ),
+                                ],
+
                                 flexibleSpace(flex: 2),
                                 verifyBtn(),
                                 flexibleSpace(flex: 1),
@@ -184,23 +205,26 @@ class _VerifyRegistrationOTPScreenState
             "Please enter the code sent to your phone number.",
             style: TextStyle(fontSize: 14, color: darkGrey),
           ),
-          Row(
-            children: <Widget>[
-              Text(
-                "This code will expire in",
-                style: TextStyle(fontSize: 14, color: darkGrey),
-              ),
-              Text(
-                getTimerText(),
-                style: TextStyle(fontSize: 14, color: Colors.red),
-              ),
+          if(phoneNumber!.isNotEmpty)...[
+            Row(
+              children: <Widget>[
+                Text(
+                  "This code will expire in",
+                  style: TextStyle(fontSize: 14, color: darkGrey),
+                ),
+                Text(
+                  getTimerText(),
+                  style: TextStyle(fontSize: 14, color: Colors.red),
+                ),
 
-              Text(
-                "minutes.",
-                style: TextStyle(fontSize: 14, color: darkGrey),
-              ),
-            ],
-          ),
+                Text(
+                  "minutes.",
+                  style: TextStyle(fontSize: 14, color: darkGrey),
+                ),
+              ],
+            ),
+          ]
+
         ],
       ),
     );
@@ -221,7 +245,6 @@ class _VerifyRegistrationOTPScreenState
       ),
     );
   }
-
 
 
   Widget otpFillUpField() {
@@ -289,10 +312,33 @@ class _VerifyRegistrationOTPScreenState
   }
 
   void verifyOTP() {
+
+    if(phoneNumber!.isEmpty){
+      var phoneNumberFromTextField = phoneNumberController.text.trim();
+
+      if(phoneNumberController.text.trim().length <= 9){
+        showToast(message: AppLocalization.of(context)!.invalidPhoneNumber);
+        return;
+      }
+
+      if (phoneNumberFromTextField.substring(0, 1) == "0") {
+        phoneNumberFromTextField = phoneNumberFromTextField.replaceFirst("0", "");
+      }
+
+      //adding country code and '+' sign to phoneNumber
+      phoneNumberWithCountryCode =
+          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+    }
+
+    debugPrint('Phone number fola -> $phoneNumberWithCountryCode');
+
+
     if (_verifyOtpFormKey.currentState!.validate()) {
       String enteredOTP = otpController!.text.trim();
       String passwordToken = "false";
       showDialog(context: context, builder: (context) => LoadingIndicator());
+
+      phoneNumber = phoneNumberWithCountryCode;
 
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
@@ -381,4 +427,138 @@ class _VerifyRegistrationOTPScreenState
       showToast(message: "$error");
     });
   }
+
+  Widget selectCountryField() {
+    return Container(
+      child: getCountryDropdown(),
+    );
+  }
+
+  Widget phoneNumberField() {
+    return CustomizedTextFormField(
+      labelColor: darkGrey,
+      labelText: "Phone number",
+      hintText: "08023000000",
+      isNumberOnlyInput: true,
+      keyboardType: TextInputType.phone,
+      controller: phoneNumberController,
+      validator: validatePhoneNumber,
+      onChanged: (value) {
+        if (value.isEmpty || value.length < 10) {
+          setState(() {
+            showButton = false;
+          });
+        }
+      },
+      // whenToVerifyInputFromServer: (value) => value.length >= 10,
+      // verifyInputFromServerFunc: () => true,
+      // extraFunctionWhenInputWasVerifiedFromServerSuccessfully: () {
+      //   if (phoneNumberController.text.length >= 10) {
+      //     setState(() {
+      //       showButton = true;
+      //     });
+      //   }
+      // },
+      // extraFunctionWhenInputWasNotVerifiedFromServer: () {
+      //   setState(() {
+      //     showButton = false;
+      //     showToast(message: 'Phone number already exists');
+      //   });
+      // },
+    );
+  }
+
+  String? validatePhoneNumber(number) {
+    if (number.contains('+') ||
+        number.contains('-') ||
+        number.contains('*') ||
+        number.contains('#') ||
+        number.contains(',') ||
+        number.contains(';') ||
+        number.contains('(') ||
+        number.contains(')') ||
+        number.contains('/') ||
+        number.contains('N') ||
+        number.contains(' ')) {
+      return "Please enter phone number without country code";
+    }
+    if (number.isNotEmpty && number.length >= 9) {
+      return null;
+    }
+    return AppLocalization.of(context)!.invalidPhoneNumber;
+  }
+
+  Widget getCountryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          AppLocalization.of(context)!.selectYourCountry,
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            onTap: _openCountryPickerDialog,
+            title: _buildDialogItem(_selectedDialogCountry),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  //showing select country dialog
+  void _openCountryPickerDialog() => showDialog(
+    context: context,
+    builder: (context) => Theme(
+      data: Theme.of(context).copyWith(primaryColor: Colors.pink),
+      child: CountryPickerDialog(
+        titlePadding: EdgeInsets.all(8.0),
+        searchCursorColor: Colors.pinkAccent,
+        searchInputDecoration:
+        InputDecoration(hintText: AppLocalization.of(context)!.search),
+        isSearchable: true,
+        title: Text(AppLocalization.of(context)!.selectYourPhoneCode),
+        onValuePicked: (Country country) =>
+            setState(() => _selectedDialogCountry = country),
+        itemBuilder: _buildDialogItem,
+      ),
+    ),
+  );
+
+  Widget _buildDialogItem(Country country) {
+    return Row(
+      children: <Widget>[
+        CountryPickerUtils.getDefaultFlagImage(country),
+        SizedBox(width: 8.0),
+        Text(
+          "+${country.phoneCode}",
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
+        ),
+        SizedBox(width: 8.0),
+        Flexible(
+            child: Text(
+              country.name!,
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
+            ))
+      ],
+    );
+  }
+
 }

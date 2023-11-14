@@ -82,6 +82,10 @@ class _RegistrationState extends State<Registration> {
                     SizedBox(height: 12),
                     getUserAgreeCheckBoxWidget(),
                     SizedBox(height: 12),
+                    Align(
+                        alignment: Alignment.centerRight,
+                        child: alreadyHaveOtp()),
+                    SizedBox(height: 12),
 
                     continueBtn(),
                     SizedBox(
@@ -286,6 +290,25 @@ class _RegistrationState extends State<Registration> {
             backgroundColor: navyBlue,
           )
         : Container(height: 42);
+  }
+
+  Widget alreadyHaveOtp(){
+    return GestureDetector(
+        onTap: (){
+
+          Navigator.of(context).popAndPushNamed(
+            Routes.VERIFY_REGISTRATION_OTP,
+            arguments: {
+              "phoneNumber": '',
+            },
+          );
+        },
+        child: Text(
+          AppLocalization.of(context)!.alreadyHaveOtp,
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w600, color: navyBlue),
+        )
+    );
   }
 
   void submit() {
