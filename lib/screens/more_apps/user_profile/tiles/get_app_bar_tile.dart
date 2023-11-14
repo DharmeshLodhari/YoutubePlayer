@@ -60,8 +60,8 @@ class GetAppbarTile extends StatefulWidget {
       required this.isShrink,
       required this.scrollController,
       this.userType,
-        this.callback,
-        this.callbackProductService,
+      this.callback,
+      this.callbackProductService,
       this.channelDetail})
       : super(key: key);
 
@@ -85,7 +85,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   bool isLoading = false;
   bool hasAddress = false;
   bool hasContact = false;
-
 
   @override
   void initState() {
@@ -1001,7 +1000,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           children: [
             YarnSmartText(
               text: messageDecoderWithEmoji(searchedUser?.bio)! ?? '',
-              style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
+              style: TextStyle(
+                  color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
               maxLines: 6,
               disableAt: false,
               onTagClick: (tag) {
@@ -1127,23 +1127,27 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         color: Colors.white,
       ),
       onTap: () async {
-        if(channelDetail != null){
+        if (channelDetail != null) {
           //get the account detail of clicked channel
 
-          Map<String, dynamic> financial = channelDetail!['owner']['wallet']['financial_institution'];
+          Map<String, dynamic> financial =
+              channelDetail!['owner']['wallet']['financial_institution'];
 
-              VirtualAccount virtualAccount = VirtualAccount(
+          VirtualAccount virtualAccount = VirtualAccount(
             accountName: channelDetail!['owner']['wallet']['account_name'],
             accountNumber: channelDetail!['owner']['wallet']['account_number'],
             financialInstitution: FinancialInstitution.fromJson(financial),
-            customerUsername: channelDetail!['owner']['wallet']['customer_username'],
+            customerUsername: channelDetail!['owner']['wallet']
+                ['customer_username'],
             note: "",
           );
 
-          NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile':
-          searchedUser,
-            'virtualAccount': virtualAccount}));
-        }else{
+          NavigationUtil.push(context,
+              screen: QrCodePage(arguments: {
+                'isProfile': searchedUser,
+                'virtualAccount': virtualAccount
+              }));
+        } else {
           //get the account detail of clicked user
           VirtualAccount virtualAccount = VirtualAccount(
             accountName: searchedUser!.wallet!.accountName,
@@ -1153,11 +1157,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             note: "",
           );
 
-          NavigationUtil.push(context, screen: QrCodePage(arguments: {'isProfile':
-          searchedUser,
-            'virtualAccount': virtualAccount}));
+          NavigationUtil.push(context,
+              screen: QrCodePage(arguments: {
+                'isProfile': searchedUser,
+                'virtualAccount': virtualAccount
+              }));
         }
-
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
@@ -1343,11 +1348,38 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: generateBottomSheetItem(),
+                  ),
+                ),
+              ));
+        });
+  }
+
+  void userProfileManageBusinessActionsSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: generateBottomSheetItemForManageBusiness(),
                   ),
                 ),
               ));
@@ -1385,51 +1417,14 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
       list.add(
         bottomSheetItem(
-          title: "Customize Profile",
+          title: "Manage Business",
           iconData: Icons.dashboard_customize_sharp,
           onTap: () async {
-
-            var business = '';
-            if(searchedUser!.type!.toLowerCase() == "user"){
-              business = 'no';
-            }else if(widget.userType == 'channel'){
-              business = 'no';
-            }else{
-              business = 'yes';
-            }
             Navigator.pop(context);
-            final data = await Navigator.of(context).pushNamed(Routes.CUSTOMIZE_PROFILE,
-                arguments: {"business": business,
-                  "callbackProductService": (Map<String, dynamic> updatedData) {
-                    // This callback will be invoked when the profile menu for product/service label is saved in CustomizeProfileScreen
-                    if (widget.callbackProductService != null) {
-                      widget.callbackProductService!(updatedData);
-                      if(mounted)setState(() {});
-                    }
-                  },
-                  });
-
-            if (data != null && data is Map<String, bool>) {
-                widget.callback!(data);
-              if(mounted)setState(() {});
-            }
-
+            userProfileManageBusinessActionsSheet(context);
           },
         ),
       );
-
-      if (searchedUser?.type?.toLowerCase() != "user") {
-        list.add(
-          bottomSheetItem(
-            title: AppLocalization.of(context)!.shippingOptions,
-            iconData: SlydoAppIcon.delivery_dining,
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context).pushNamed(Routes.SHIPPING_OPTIONS);
-            },
-          ),
-        );
-      }
     }
 
     list.add(
@@ -1512,17 +1507,17 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               iconData: SlydoAppIcon.send,
               onTap: () {
                 // if (appConfigurationModel?.enablePayment == true) {
-                  UserAuth()
-                      .fetchCustomerProfile(searchedUserName)
-                      .then((fetchedUser) {
-                    customerProfileBloc.customer = fetchedUser;
-                    Navigator.pop(context);
-                    Navigator.of(context).pushNamed('/send-payment',
-                        arguments: <String, dynamic>{
-                          'isFromProfile': false,
-                          'recipient': searchedUser!.userName
-                        });
-                  });
+                UserAuth()
+                    .fetchCustomerProfile(searchedUserName)
+                    .then((fetchedUser) {
+                  customerProfileBloc.customer = fetchedUser;
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed('/send-payment',
+                      arguments: <String, dynamic>{
+                        'isFromProfile': false,
+                        'recipient': searchedUser!.userName
+                      });
+                });
                 // } else {
                 //   showToast(message: 'Payment not available at the moment');
                 // }
@@ -1533,18 +1528,18 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 iconData: SlydoAppIcon.receive,
                 onTap: () {
                   // if (appConfigurationModel?.enablePayment == true) {
-                    UserAuth()
-                        .fetchCustomerProfile(searchedUserName)
-                        .then((fetchedUser) {
-                      customerProfileBloc.customer = fetchedUser;
-                      Navigator.pop(context);
-                      Navigator.of(context).pushNamed('/request-payment',
-                          arguments: <String, dynamic>{
-                            'recipient': searchedUser!.userName,
-                            'isFromProfile': false,
-                            'isRequest': true
-                          });
-                    });
+                  UserAuth()
+                      .fetchCustomerProfile(searchedUserName)
+                      .then((fetchedUser) {
+                    customerProfileBloc.customer = fetchedUser;
+                    Navigator.pop(context);
+                    Navigator.of(context).pushNamed('/request-payment',
+                        arguments: <String, dynamic>{
+                          'recipient': searchedUser!.userName,
+                          'isFromProfile': false,
+                          'isRequest': true
+                        });
+                  });
                   // } else {
                   //   showToast(message: 'Payment not available at the moment');
                   // }
@@ -1604,6 +1599,102 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           ),
         );
       }
+    }
+
+    return list;
+  }
+
+  List<Widget> generateBottomSheetItemForManageBusiness() {
+    List<Widget> list = [];
+
+    if (searchedUser!.userName == userBloc.user.userName) {
+      list.add(
+        bottomSheetItem(
+          title: "Add-ons",
+          iconData: Icons.add_circle_outlined,
+          onTap: () {
+            Navigator.pop(context);
+          },
+        ),
+      );
+
+      list.add(
+        bottomSheetItem(
+          title: "Discount",
+          iconData: Icons.discount_outlined,
+          onTap: () async {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed(Routes.DISCOUNT_LIST);
+          },
+        ),
+      );
+      list.add(
+        bottomSheetItem(
+          title: "Flash Tag",
+          iconData: Icons.add_alert,
+          onTap: () async {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed(Routes.FLASH_TAG_LIST,
+                arguments: {"user": searchedUser});
+          },
+        ),
+      );
+
+      list.add(
+        bottomSheetItem(
+          title: "Customize Profile",
+          iconData: Icons.dashboard_customize_sharp,
+          onTap: () async {
+            var business = '';
+            if (searchedUser!.type!.toLowerCase() == "user") {
+              business = 'no';
+            } else if (widget.userType == 'channel') {
+              business = 'no';
+            } else {
+              business = 'yes';
+            }
+            Navigator.pop(context);
+            final data = await Navigator.of(context)
+                .pushNamed(Routes.CUSTOMIZE_PROFILE, arguments: {
+              "business": business,
+              "callbackProductService": (Map<String, dynamic> updatedData) {
+                // This callback will be invoked when the profile menu for product/service label is saved in CustomizeProfileScreen
+                if (widget.callbackProductService != null) {
+                  widget.callbackProductService!(updatedData);
+                  if (mounted) setState(() {});
+                }
+              },
+            });
+
+            if (data != null && data is Map<String, bool>) {
+              widget.callback!(data);
+              if (mounted) setState(() {});
+            }
+          },
+        ),
+      );
+
+      if (searchedUser?.type?.toLowerCase() != "user") {
+        list.add(
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.shippingOptions,
+            iconData: SlydoAppIcon.delivery_dining,
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).pushNamed(Routes.SHIPPING_OPTIONS);
+            },
+          ),
+        );
+      }
+      list.add(
+        bottomSheetItem(
+          title: "Dispatch Address",
+          iconData: SlydoAppIcon.edit,
+          onTap: () async {
+            Navigator.pop(context);
+          },
+        ),
+      );
     }
 
     return list;
@@ -1676,7 +1767,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         searchedUser!.avatar ==
             "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return GestureDetector(
-        onTap: (){
+        onTap: () {
           Navigator.of(context).pushNamed("/photo-viewer",
               arguments: getInitials(searchedUser!.fullName!).toUpperCase());
         },
@@ -1691,9 +1782,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       );
     } else {
       return GestureDetector(
-        onTap: (){
-              Navigator.of(context).pushNamed("/photo-viewer",
-                  arguments: searchedUser!.avatar!);
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed("/photo-viewer", arguments: searchedUser!.avatar!);
         },
         child: Container(
           height: 15,
@@ -1706,9 +1797,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           child: ClipOval(
             child: CachedNetworkImage(
               imageUrl:
-              searchedUser!.avatar! == "" || searchedUser!.avatar! == null
-                  ? defaultImage
-                  : searchedUser!.avatar!,
+                  searchedUser!.avatar! == "" || searchedUser!.avatar! == null
+                      ? defaultImage
+                      : searchedUser!.avatar!,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
@@ -1719,5 +1810,4 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       );
     }
   }
-
 }

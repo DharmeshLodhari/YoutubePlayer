@@ -1447,12 +1447,53 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                         ),
                         Text(
                           moneyDisplayNormalizer(
-                              int.parse(price)),
+                              int.parse(((checkDiscount(
+                                  product!.discountIsActive!,
+                                  product!.discountedPrice!,
+                                  num.parse(product!.price!)))
+                              ? product!.discountedPrice.toString()
+                              : product!.price!))),
                           style: TextStyle(
                               fontSize: 18.0,
                               color: navyBlue,
                               fontWeight: FontWeight.bold),
                         ),
+                        SizedBox(width: 10),
+                        if (checkDiscount(
+                            product!.discountIsActive!,
+                            product!.discountedPrice!,
+                            num.parse(product!.price!)))
+                          Row(
+                            children: [
+                              Text(
+                                worldCurrencies[product!.currency!]!,
+                                style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12.8,
+                                  color: navyBlue,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                              Text(
+                                moneyDisplayNormalizer(
+                                    int.parse(product!.price!)),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: navyBlue,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                            ],
+                          ),
+                        SizedBox(width: 10),
+                        if(checkDiscount(product!.discountIsActive!, product!.discountedPrice!, num.parse(product!.price!)))
+                        showDiscountValue(
+                              product!.discountType!,
+                              product!.discountValue!,
+                              product!.currency)
+
                       ],
                     ),
                   ),

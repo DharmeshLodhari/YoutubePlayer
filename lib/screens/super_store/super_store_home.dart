@@ -1,6 +1,8 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
+import 'package:Slydo/screens/super_store/shop_list_screen_with_tags.dart';
+import 'package:Slydo/screens/super_store/super_store.dart';
 import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -18,30 +20,24 @@ import '../more_apps/shopping/models/store.dart';
 import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
 import '../more_apps/yarn/yarn_setting_screen.dart';
 
-class SuperStore extends StatefulWidget {
-  var arguments;
-  SuperStore({Key? key, this.arguments}) : super(key: key);
+class SuperStoreHome extends StatefulWidget {
+  const SuperStoreHome({Key? key}) : super(key: key);
 
   @override
-  State<SuperStore> createState() => _SuperStoreState();
+  State<SuperStoreHome> createState() => _SuperStoreHomeState();
 }
 
-class _SuperStoreState extends State<SuperStore> {
+class _SuperStoreHomeState extends State<SuperStoreHome> {
   int? productCount = 0;
   late BasketBloc basketBloc;
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   bool _tabsVisible = true;
   String categoryName = '';
-  String firstTabName = 'Shop';
-  String secondTabName = 'Find Stores';
-  String? appTitle;
-  List<String> categoryList = [];
 
   @override
   void initState() {
     _pageViewController = PageController(initialPage: 0);
-    updateAppSetup(widget.arguments['industry']);
     super.initState();
   }
 
@@ -50,62 +46,6 @@ class _SuperStoreState extends State<SuperStore> {
       setState(() {
         _tabsVisible = visible;
       });
-    }
-  }
-  getIndustryCategories(String industry){
-  String url  = "/api/v1/products/categories/?industry=$industry";
-
-  }
-  updateAppSetup(String industry) {
-    switch (industry) {
-      case 'Restaurant':
-        setState(() {
-          secondTabName = 'Find Restaurants';
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Drinks':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Groceries':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Retail':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Pharmacy':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Electronics':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Home & Office':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      default:
-        setState(() {
-          appTitle = "";
-        });
-        return;
     }
   }
 
@@ -124,7 +64,7 @@ class _SuperStoreState extends State<SuperStore> {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        appTitle!,
+        AppLocalization.of(context)!.superStore,
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,
@@ -250,12 +190,162 @@ class _SuperStoreState extends State<SuperStore> {
           SizedBox(
             height: 16,
           ),
-          _buildCategoryAndTabs(),
+          // _buildCategoryAndTabs(),
+          Container(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: _displayShortcutButtons(),
+          ),
+          specialDeals(),
           _buildPageView(),
         ],
       ),
     );
   }
+
+
+  Widget specialDeals() {
+    return Container(
+      alignment: Alignment.bottomLeft,
+      padding: const EdgeInsets.only(left: 18.0, right: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Special Deal",
+            style: const TextStyle(
+                fontSize: 14, fontWeight: FontWeight.w600, fontFamily: "Inter"),
+            textAlign: TextAlign.left,
+          ),
+          SizedBox(
+            height: 8,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _displayShortcutButtons() {
+    final List<Map<String, String>> shortcuts = [
+      {
+        'imagePath': 'store/restaurant',
+        'title': 'Restaurant',
+      },
+      {
+        'imagePath': 'store/drinks',
+        'title': 'Drinks',
+      },
+      {
+        'imagePath': 'store/groceries',
+        'title': 'Groceries',
+      },
+      {
+        'imagePath': 'store/retail',
+        'title': 'Retail',
+      },
+      {
+        'imagePath': 'store/pharmacy',
+        'title': 'Pharmacy',
+      },
+      {
+        'imagePath': 'store/electronics',
+        'title': 'Electronics',
+      },
+      {
+        'imagePath': 'store/homeandoffice',
+        'title': 'Home & Office',
+      },
+    ];
+
+    return Container(
+      height: 100.0,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          for (final shortcut in shortcuts)
+            Padding(
+              padding: const EdgeInsets.all(10.0), // Add padding between items
+              child: GestureDetector(
+                  // key: showTutorial(shortcut['title']),
+                  onTap: () {
+                    NavigationUtil.push(context, screen: SuperStore(arguments: {"industry": shortcut['title']},), );
+                  },
+                  child: shortcutView(shortcut['imagePath']!, shortcut['title']!)),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget shortcutView(String imagePath, String title) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        SvgPicture.asset(
+          imagePath.toSVG(), height: 32, width: 32,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          title,
+          style: const TextStyle(
+              fontSize: 13, fontWeight: FontWeight.w600, fontFamily: "Inter"),
+        ),
+      ],
+    );
+  }
+
+  // void onClickShortcut(String? shortcut) {
+  //   switch (shortcut) {
+  //     case 'Send':
+  //       hideBalance();
+  //       Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+  //           arguments: <String, bool>{'isFromProfile': true});
+  //       break;
+  //     case 'Transaction':
+  //       hideBalance();
+  //       BottomSheetPassCode(
+  //           context: context,
+  //           isValidCallback: () {
+  //             Navigator.of(context)
+  //                 .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
+  //           },
+  //           cancelCallBack: () {
+  //             Navigator.pop(context);
+  //           });
+  //       break;
+  //     case 'Request':
+  //       hideBalance();
+  //       Navigator.pushNamed(context, Routes.ACCOUNTS);
+  //       break;
+  //     case 'Yarn':
+  //       hideBalance();
+  //       NavigationUtil.push(context, screen: YarnDashboard());
+  //       break;
+  //     case 'Moment':
+  //       hideBalance();
+  //       NavigationUtil.push(context, screen: MomentsScreen());
+  //       break;
+  //     case 'Services':
+  //       hideBalance();
+  //       Navigator.pushNamed(context, Routes.SUPER_HUB);
+  //       break;
+  //     case 'Blog':
+  //       hideBalance();
+  //       if (appConfigurationModel?.enableSuperBlog == true) {
+  //         NavigationUtil.push(
+  //           context,
+  //           screen: const SuperBlog(),
+  //         );
+  //       } else {
+  //         showToast(message: 'Feature not available at the moment');
+  //       }
+  //       break;
+  //     default:
+  //       // Handle the default case (if any)
+  //       print('Tapped on an unknown shortcut');
+  //   }
+  // }
 
   Widget _buildCategoryAndTabs() {
     return Column(
@@ -269,8 +359,8 @@ class _SuperStoreState extends State<SuperStore> {
               if (mounted) setState(() {});
             },
             currentIndex: currentAskTapOnHome,
-            firstTab: firstTabName,
-            secondTab: secondTabName,
+            firstTab: 'Shop',
+            secondTab: 'Find Businesses',
           ),
           SizedBox(
             height: 16,
@@ -303,14 +393,13 @@ class _SuperStoreState extends State<SuperStore> {
         },
         controller: _pageViewController,
         children: [
-          ShopListScreen(
+          ShopListScreenWithTags(
             onPageRefresh: (bool data) {
               if (data == true) {
                 _showTabs(true);
               }
             },
             category: categoryName,
-            industry: appTitle!
           ),
           FindBusinessListScreen(
             onPageRefresh: (bool data) {
@@ -319,7 +408,6 @@ class _SuperStoreState extends State<SuperStore> {
               }
             },
             category: categoryName,
-            industry: appTitle
           )
         ],
       ),

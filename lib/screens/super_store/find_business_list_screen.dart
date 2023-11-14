@@ -16,8 +16,8 @@ import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 class FindBusinessListScreen extends StatefulWidget {
   Function(bool)? onPageRefresh;
   String? category;
-
-  FindBusinessListScreen({Key? key, this.onPageRefresh, this.category}) : super(key: key);
+  final String? industry;
+  FindBusinessListScreen({Key? key, this.onPageRefresh, this.category, this.industry}) : super(key: key);
 
   @override
   State<FindBusinessListScreen> createState() => FindBusinessListScreenState();

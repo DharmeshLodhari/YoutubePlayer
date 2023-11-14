@@ -249,6 +249,7 @@ class AppLocalization {
       name: "recipient",
     );
   }
+
   String get jobRefNumber {
     return Intl.message(
       "Job Reference Number",
@@ -481,7 +482,6 @@ class AppLocalization {
       name: "ignore",
     );
   }
-
 
   String get process {
     return Intl.message(
@@ -2553,6 +2553,13 @@ class AppLocalization {
     );
   }
 
+  String get addOns {
+    return Intl.message(
+      "Add-ons",
+      name: "add-ons",
+    );
+  }
+
   String get productAddedSuccessfully {
     return Intl.message(
       "Product Added Successfully",
@@ -2601,6 +2608,7 @@ class AppLocalization {
       name: "categoryAndLocationSelection",
     );
   }
+
   String get addDueDate {
     return Intl.message(
       "Please add a due date for the Job",
@@ -3413,18 +3421,21 @@ class AppLocalization {
       name: "onHold",
     );
   }
+
   String get paymentReceived {
     return Intl.message(
       "Payment Received",
       name: "paymentReceived",
     );
   }
+
   String get orderPickedUp {
     return Intl.message(
       "Order Picked Up",
       name: "orderPickedUp",
     );
   }
+
   String get outForDelivery {
     return Intl.message(
       "Out For Delivery",
