@@ -308,17 +308,24 @@ class ShoppingAuthService extends AuthService {
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(
       String? next, String? previous, String? category, bool? channel,
-      {String? userName, bool otherDeals = false, num page_size = 20, String tag = "", String industry= ""}) async {
-    debugPrint('CALLING PRODUCT');
+      {String? userName, bool otherDeals = false, num page_size = 20, String tag = "", String industry= "", String nearby = ""}) async {
+        debugPrint('CALLING PRODUCT');
     debugPrint('CALLING PRODUCT channel::: ${channel}');
     var url = "";
     if (next == null) {
       return null;
     }
+    // if(nearby.isNotEmpty){
+    //   url = AppConfig.baseUrl + "/api/v1/products/nearby/";
+    // }
     if (next == "") {
       if (otherDeals == true) {
         url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
-      } else {
+      } 
+      // else if (nearby.isNotEmpty) {
+      //   url = AppConfig.baseUrl + "/api/v1/products/nearby/";
+      // }
+       else {
         url =
             AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName! + "/";
       }
@@ -334,10 +341,12 @@ class ShoppingAuthService extends AuthService {
       }
     }
     
+    
 
     if (channel == true) {
       url = AppConfig.baseUrl + "/api/v1/channels-merchandise/$userName";
     }
+    
     // if(tag != ""){
     //   if(url.contains("?")){
     //     url = url + "&tag=$tag";
@@ -384,10 +393,6 @@ class ShoppingAuthService extends AuthService {
 
       for (var item in jsonData["results"]) {
         Product product = createProduct(item);
-         print("________________________________________________");
-        print(product.name);
-
-        print("________________________________________________");
         productList.add(product);
       }
 
@@ -399,6 +404,65 @@ class ShoppingAuthService extends AuthService {
       };
 
       debugPrint('CALLING OTHER check ---> ${result}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // List superstores
+  Future<Map<String, dynamic>?> listOfSuperStores() async {
+    var url = AppConfig.baseUrl + "/api/v1/products/super-store/";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {"store": []};
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      List storeList = [];
+      var jsonData = json.decode(response.body);
+      List<Product> productList = [];
+
+      for (var data in jsonData) {
+        
+       storeList.add(data);
+      }
+      // for (var item in storeList) {
+        
+      //   for(var data in item['results'] ){
+      //     Product product = createProduct(data);
+      //     productList.add(product);
+      //   }
+      // }
+      print("_____________________________________________");
+      print("_____________________________________________");
+      print("_____________________________________________");
+      print("_____________________________________________");
+      print("_____________________________________________");
+      print("_____________________________________________");
+      print("_____________________________________________");
+       
+
+      Map<String, dynamic> result = {
+        "store": storeList,
+        "product": productList
+
+      };
+
+      
+      debugPrint('CALLING OTHER check ---> ${storeList}');
 
       return result;
     } else if (response.statusCode == 500) {
@@ -1938,10 +2002,6 @@ class ShoppingAuthService extends AuthService {
 
       for (var item in jsonData["results"]) {
         DiscountModel discount = DiscountModel.fromJson(item);
-         print("________________________________________________");
-        print(discount.name);
-
-        print("________________________________________________");
         discountList.add(discount);
       }
 
@@ -1961,6 +2021,8 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
   }
+
+  
 
   //add update  discount
   Future<DiscountModel?> addUpdateDiscount(DiscountModel itemModel,

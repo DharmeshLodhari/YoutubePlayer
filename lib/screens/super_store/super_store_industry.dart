@@ -18,15 +18,16 @@ import '../more_apps/shopping/models/store.dart';
 import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
 import '../more_apps/yarn/yarn_setting_screen.dart';
 
-class SuperStore extends StatefulWidget {
-  var arguments;
-  SuperStore({Key? key, this.arguments}) : super(key: key);
+class SuperStoreIndustry extends StatefulWidget {
+  final String next;
+  final String appTitle;
+  SuperStoreIndustry({Key? key, required this.next, required this.appTitle}) : super(key: key);
 
   @override
-  State<SuperStore> createState() => _SuperStoreState();
+  State<SuperStoreIndustry> createState() => _SuperStoreState();
 }
 
-class _SuperStoreState extends State<SuperStore> {
+class _SuperStoreState extends State<SuperStoreIndustry> {
   int? productCount = 0;
   late BasketBloc basketBloc;
   late PageController _pageViewController;
@@ -41,7 +42,7 @@ class _SuperStoreState extends State<SuperStore> {
   @override
   void initState() {
     _pageViewController = PageController(initialPage: 0);
-    updateAppSetup(widget.arguments['industry']);
+    // updateAppSetup(widget.arguments['industry']);
     super.initState();
   }
 
@@ -52,62 +53,12 @@ class _SuperStoreState extends State<SuperStore> {
       });
     }
   }
-  getIndustryCategories(String industry){
-  String url  = "/api/v1/products/categories/?industry=$industry";
 
+  getIndustryCategories(String industry) {
+    String url = "/api/v1/products/categories/?industry=$industry";
   }
-  updateAppSetup(String industry) {
-    switch (industry) {
-      case 'Restaurant':
-        setState(() {
-          secondTabName = 'Find Restaurants';
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Drinks':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Groceries':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Retail':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Pharmacy':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Electronics':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      case 'Home & Office':
-        setState(() {
-          appTitle = industry;
-          categoryList = [];
-        });
-        return;
-      default:
-        setState(() {
-          appTitle = "";
-        });
-        return;
-    }
-  }
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +75,7 @@ class _SuperStoreState extends State<SuperStore> {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        appTitle!,
+        widget.appTitle,
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,
@@ -250,7 +201,7 @@ class _SuperStoreState extends State<SuperStore> {
           SizedBox(
             height: 16,
           ),
-          _buildCategoryAndTabs(),
+          // _buildCategoryAndTabs(),
           _buildPageView(),
         ],
       ),
@@ -304,23 +255,23 @@ class _SuperStoreState extends State<SuperStore> {
         controller: _pageViewController,
         children: [
           ShopListScreen(
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-            category: categoryName,
-            industry: appTitle!
-          ),
-          FindBusinessListScreen(
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-            category: categoryName,
-            industry: appTitle
-          )
+              onPageRefresh: (bool data) {
+                if (data == true) {
+                  _showTabs(true);
+                }
+              },
+              category: categoryName,
+              industry: widget.appTitle,
+              nextUrl: widget.next
+            ),
+          // FindBusinessListScreen(
+          //     onPageRefresh: (bool data) {
+          //       if (data == true) {
+          //         _showTabs(true);
+          //       }
+          //     },
+          //     category: categoryName,
+          //     industry: appTitle)
         ],
       ),
     );

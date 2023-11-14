@@ -19,8 +19,9 @@ class ShopListScreen extends StatefulWidget {
   Function(bool)? onPageRefresh;
   String? category;
   final String industry;
+  final String? nextUrl;
 
-  ShopListScreen({Key? key, this.onPageRefresh, this.category, required this.industry}) : super(key: key);
+  ShopListScreen({Key? key, this.onPageRefresh, this.category, required this.industry, this.nextUrl}) : super(key: key);
 
   @override
   State<ShopListScreen> createState() => ShopListScreenState();
@@ -111,6 +112,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
 
   void getProductList(String category) async {
+    productNext = widget.nextUrl != null ? widget.nextUrl : "";
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
         isProductLoading = true;

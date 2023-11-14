@@ -1,5 +1,8 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/super_store/super_store_home.dart';
+import 'package:Slydo/screens/super_store/super_store_industry.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -34,6 +37,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   List<ShoppingProduct> todaysDealList = [];
 
   List<Product> productList = [];
+  List<Product> productListz = [];
   bool isProductLoading = false;
   bool noProductInList = false;
   int? productCount = 0;
@@ -42,8 +46,8 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   String? todayDealPrevious = "";
   String? productPrevious = "";
   late BasketBloc basketBloc;
-  List<String> rowHeaders = [];
-  List<String> banner = ["meal", "meal"];
+  List rowHeaders = [];
+  List<Product> storeProducts = [];
   bool noItemInList = false;
   String? next = "1";
   String? previous = "";
@@ -88,7 +92,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   void initState() {
     super.initState();
     _currentCategory = widget.category!;
-    getRowHeader();
+    listOfSuperStores();
     getProductList(_currentCategory);
     getList();
     getTodaysDealProducts();
@@ -108,13 +112,11 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     });
   }
 
-  getRowHeader() {
-    //TODO  make an async call
-    Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        rowHeaders = ["Nearby You", "Now on Slydo", "Highest Visit"];
-      });
-    });
+  listOfSuperStores() async {
+    Map<String, dynamic>? result =
+        await ShoppingAuthService().listOfSuperStores();
+    // setState(() {
+    rowHeaders = result!['store'];
   }
 
   @override
@@ -173,7 +175,8 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     }
   }
 
-  getProductList(String category, {String tag = ""}) async {
+  getProductList(String category,
+      {String tag = "", String nearby = "", bool otherDeals: true}) async {
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
         isProductLoading = true;
@@ -182,7 +185,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(
                 productNext, productPrevious, _currentCategory, false,
-                otherDeals: true, page_size: 5, tag: tag);
+                otherDeals: otherDeals, page_size: 5, tag: tag, nearby: nearby);
 
         if (result == null) {
           noProductInList = true;
@@ -221,6 +224,26 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
       }
       return productList;
     }
+  }
+
+  getProductTags(String category,
+      {String tag = "", String nearby = "", bool otherDeals: false}) async {
+    Map<String, dynamic>? result = await ShoppingAuthService().listOfProduct(
+        "", "", "", false,
+        otherDeals: otherDeals, page_size: 5, tag: tag, nearby: nearby);
+
+    if (result == null) {
+      return productListz;
+    }
+
+    var tempList = result['results'];
+    if (mounted) {
+      setState(() {
+        productListz.addAll(tempList);
+      });
+    }
+
+    return productListz;
   }
 
   void getTodaysDealProducts() async {
@@ -358,68 +381,13 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                                         width: 343,
                                         margin: EdgeInsets.only(right: 10),
                                         decoration: BoxDecoration(
-                                            color: starYellow,
                                             borderRadius:
-                                                BorderRadius.circular(10)),
-                                        padding:
-                                            EdgeInsets.only(left: 20, top: 23),
-                                        child: Stack(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.bottomRight,
-                                              child: Image.network(
-                                                e.poster!,
-                                                height: 87,
-                                                width: 157,
-                                              ),
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                SizedBox(
-                                                    width: 194,
-                                                    child: Text(
-                                                        "Save 10% or more on happy hour restaurant",
-                                                        style: const TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            fontFamily:
-                                                                "Inter"))),
-                                                SizedBox(height: 16),
-                                                Text("Everyday from 2pm -5pm",
-                                                    style: const TextStyle(
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontFamily: "Inter")),
-                                                MaterialButton(
-                                                  height: 25,
-                                                  minWidth: 100,
-                                                  color: black,
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20)),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 12.0),
-                                                    child: Text("Browse now",
-                                                        style: TextStyle(
-                                                            fontSize: 10,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color: white,
-                                                            fontFamily:
-                                                                "Inter")),
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                BorderRadius.circular(10),
+                                            image: DecorationImage(
+                                                image: NetworkImage(e.poster!,
+                                                    scale: 1),
+                                                fit: BoxFit.contain,
+                                                alignment: Alignment.center),
                                         ),
                                       ),
                               )
@@ -434,7 +402,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                   todaysDealsEmpty
                       ? const SizedBox.shrink()
                       : const SizedBox(height: 20),
-                  
                   superStoreProducts(),
                   const SizedBox(height: 16),
                   isProductLoading
@@ -507,50 +474,69 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               noProductInList
                   ? const SizedBox.shrink()
                   : const SizedBox(height: 16),
-              ...rowHeaders.map((e) => rowTitle(e)).toList(),
+              ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
             ],
           );
   }
 
-  Widget rowTitle(title) {
+  getRowTitle(headers) async {
+    List<Product> result = [];
+    for (var item in headers['results']) {
+      Product product = await ShoppingAuthService().createProduct(item);
+      result.add(product);
+    }
+    return result;
+  }
+
+  Widget rowTitle(headers) {
     return FutureBuilder(
-        future: getProductList(_currentCategory, tag: "cars"),
+        future: getRowTitle(headers),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            List<Product> prod = snapshot.data as List<Product>;
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(title,
+                    Text(headers["name"],
                         style: TextStyle(
                           color: black,
                           fontSize: 14,
                           height: 1,
                           fontWeight: FontWeight.w600,
                         )),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "View more",
-                          style: TextStyle(
-                            color: navyBlue,
-                            fontSize: 12,
-                            height: 1,
-                            fontWeight: FontWeight.w600,
+                    InkWell(
+                      onTap: () {
+                        // print(headers["next_url"]);
+                        NavigationUtil.push(context,
+                            screen:
+                                SuperStoreIndustry(next: headers["next_url"], appTitle: headers["name"]));
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "View more",
+                            style: TextStyle(
+                              color: navyBlue,
+                              fontSize: 12,
+                              height: 1,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios_sharp,
-                          color: navyBlue,
-                          size: 12,
-                        ),
-                      ],
+                          SizedBox(
+                            width: 4,
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios_sharp,
+                            color: navyBlue,
+                            size: 12,
+                          ),
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -564,10 +550,11 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                     shrinkWrap: true,
                     physics: const ScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    itemCount: productList.length,
+                    itemCount: prod.length,
                     itemBuilder: (context, index) {
                       return SuperStoreSingleCard(
-                        product: productList[index],
+                        product: prod[index],
+                        // next: headers['next_url']
                       );
                     },
                   ),
@@ -856,6 +843,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
 
 class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
+  // final String? next;
   const SuperStoreSingleCard({Key? key, required this.product})
       : super(key: key);
 
