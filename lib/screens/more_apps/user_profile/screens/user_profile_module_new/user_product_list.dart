@@ -1,20 +1,19 @@
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:text_scroll/text_scroll.dart';
 
-import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/item_display_card.dart';
 import '../../../../../widget/noItemInList.dart';
 
@@ -24,7 +23,12 @@ class UserProductList extends StatefulWidget {
   bool isOwner;
   bool? channel;
 
-  UserProductList({required this.user, this.isOwner = false, this.channel = false});
+  UserProductList({
+    required this.user,
+    this.isOwner = false,
+    this.channel = false,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _UserProductListState createState() => _UserProductListState();
@@ -46,11 +50,23 @@ class _UserProductListState extends State<UserProductList> {
   bool isProductLoading = false;
   bool noProductInList = false;
 
-  Product? product;
+  String? flashTagString;
+  List<FlashTagAlertModel> flashTagAlerts = [];
+  String? flashTagNext = "";
+  String? flashTagPrevious = "";
+  int? flashTagCount = 0;
+  bool isFlashTagLoading = false;
+
+  FlashTagAlertModel? flashTagAlertModel;
 
   @override
   void initState() {
     this.getProductList();
+
+    // if (widget.isOwner == false) {
+    getAlertTagData();
+    // }
+
     _productScrollController.addListener(() {
       if (_productScrollController.position.pixels ==
               _productScrollController.position.maxScrollExtent &&
@@ -60,6 +76,123 @@ class _UserProductListState extends State<UserProductList> {
     });
 
     super.initState();
+  }
+
+  Future<void> getAlertTagData() async {
+    print("============================>");
+    if (flashTagNext != null && !isFlashTagLoading) {
+      isFlashTagLoading = true;
+      if (mounted) setState(() {});
+
+      Map<String, dynamic>? result = await ShoppingAuthService()
+          .listOfFlashTags(
+              flashTagNext, flashTagPrevious, widget.user?.userName);
+
+      if (result == null) {
+        isFlashTagLoading = false;
+
+        if (mounted) {
+          setState(() {});
+        }
+        return;
+      }
+
+      flashTagCount = result['count'];
+      flashTagNext = result['next'];
+      flashTagPrevious = result['previous'];
+      var tempList = result['results'];
+
+      isFlashTagLoading = false;
+      flashTagAlerts.addAll(tempList);
+      if (flashTagNext != null) {
+        await getAlertTagData();
+        return;
+      }
+    }
+
+    if (flashTagAlerts.isNotEmpty) {
+      flashTagString = flashTagAlerts
+          .map((e) => e.message)
+          .toList()
+          .join(".                         ");
+      try {
+        flashTagAlertModel = flashTagAlerts
+            .where((element) =>
+                element.type?.toValue() == FlashTagCategory("Pop-up").toValue())
+            .toList()
+            .first;
+        showFlashTagAlertPopUp();
+      } catch (error) {
+        debugPrint("No Pop-up Element");
+      }
+      if (mounted) setState(() {});
+    }
+  }
+
+  void showFlashTagAlertPopUp() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          insetPadding: EdgeInsets.symmetric(horizontal: 16),
+          contentPadding: EdgeInsets.zero,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          content: Card(
+            margin: EdgeInsets.zero,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(
+                      Icons.close,
+                      size: 24,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        flashTagAlertModel?.title?.trim() ?? "Important Info",
+                        style: TextStyle(
+                          color: blackFont,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 24,
+                      ),
+                      Text(
+                        flashTagAlertModel?.message?.trim() ?? "description",
+                        style: TextStyle(
+                          color: blackFont,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 48,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _onProductRefresh() async {
@@ -93,7 +226,9 @@ class _UserProductListState extends State<UserProductList> {
 
         Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(productNext, productPrevious, "", widget.channel!,
-                userName: widget.channel == false ? widget.user!.userName : widget.user!.nickName);
+                userName: widget.channel == false
+                    ? widget.user!.userName
+                    : widget.user!.nickName);
 
         if (result == null) {
           isProductLoading = false;
@@ -103,7 +238,7 @@ class _UserProductListState extends State<UserProductList> {
           }
           return;
         }
-
+        
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
@@ -140,7 +275,7 @@ class _UserProductListState extends State<UserProductList> {
         key: _productScaffoldKey,
         body: Container(
           color: lightGrey,
-          padding: EdgeInsets.symmetric(horizontal: 4),
+          // padding: EdgeInsets.symmetric(horizontal: 4),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -151,6 +286,7 @@ class _UserProductListState extends State<UserProductList> {
             onRefresh: _onProductRefresh,
             child: Column(
               children: [
+                _buildCrawlingAlert(),
                 noProductInList
                     ? Expanded(
                         child: NoItemInList(
@@ -159,38 +295,32 @@ class _UserProductListState extends State<UserProductList> {
                             ),
                       )
                     : Expanded(
-                        child: ListView(
-                          children: [
-                            _buildProductList(),
-                            isProductLoading
-                                ? Shimmer.fromColors(
-                                    baseColor: Colors.white,
-                                    highlightColor: greyBorderColor,
-                                    child: GridView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      gridDelegate:
-                                          SliverGridDelegateWithMaxCrossAxisExtent(
-                                        mainAxisExtent: 180,
-                                        mainAxisSpacing: 16,
-                                        crossAxisSpacing: 15,
-                                        maxCrossAxisExtent: 200,
+                        child: isProductLoading
+                            ? Shimmer.fromColors(
+                                baseColor: Colors.white,
+                                highlightColor: greyBorderColor,
+                                child: GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithMaxCrossAxisExtent(
+                                    mainAxisExtent: 180,
+                                    mainAxisSpacing: 16,
+                                    crossAxisSpacing: 15,
+                                    maxCrossAxisExtent: 200,
+                                  ),
+                                  itemCount: 2,
+                                  itemBuilder: (context, index) {
+                                    return Card(
+                                      color: Colors.grey,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                      itemCount: 2,
-                                      itemBuilder: (context, index) {
-                                        return Card(
-                                          color: Colors.grey,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  )
-                                : SizedBox.shrink(),
-                          ],
-                        ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : _buildProductList(),
                       ),
               ],
             ),
@@ -200,14 +330,33 @@ class _UserProductListState extends State<UserProductList> {
     );
   }
 
+  Widget _buildCrawlingAlert() {
+    if (flashTagString != null && flashTagString != "") {
+      return Container(
+        color: Colors.black,
+        padding: EdgeInsets.symmetric(vertical: 14),
+        child: TextScroll(
+          flashTagString!,
+          style: TextStyle(color: white, fontWeight: FontWeight.w600),
+        ),
+      );
+    }
+    return SizedBox.shrink();
+  }
+
   Widget _buildProductList() {
     return productNext == "" && isProductLoading
         ? SizedBox.shrink()
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
+            padding: const EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+              top: 8.0,
+              bottom: 16,
+            ),
             child: GridView.builder(
               shrinkWrap: true,
-              padding: EdgeInsets.zero,
+              padding: EdgeInsets.symmetric(horizontal: 4),
               controller: _productScrollController,
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
