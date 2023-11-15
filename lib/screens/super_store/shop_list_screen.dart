@@ -121,6 +121,7 @@ listOfSuperStores() async {
 
 
   void getProductList(String category) async {
+    productNext = widget.nextUrl != null ? widget.nextUrl : "";
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
         isProductLoading = true;

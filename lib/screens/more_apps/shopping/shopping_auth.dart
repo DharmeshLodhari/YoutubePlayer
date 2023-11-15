@@ -477,16 +477,7 @@ class ShoppingAuthService extends AuthService {
       }
       var jsonData = json.decode(response.body);
   List<ProductIndustryResults>? results = (jsonData["results"] as List).map((e) => ProductIndustryResults.fromJson(e)).toList();
-      
-      print(results);
-      print("_____________________________________________");
-      print("_____________________________________________");
-      print("_____________________________________________");
-      print("_____________________________________________");
-      print("_____________________________________________");
-      print("_____________________________________________");
        
-
       Map<String, dynamic> result = {
         "product": results
 

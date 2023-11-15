@@ -1491,7 +1491,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          moneyDisplayNormalizer(int.parse(((checkDiscount(
+                          moneyDisplayNormalizer(
+                              int.parse(((checkDiscount(
                                   product!.discountIsActive!,
                                   product!.discountedPrice!,
                                   num.parse(product!.price!)))
@@ -1532,12 +1533,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             ],
                           ),
                         SizedBox(width: 10),
-                        if (checkDiscount(
-                            product!.discountIsActive!,
-                            product!.discountedPrice!,
-                            num.parse(product!.price!)))
-                          showDiscountValue(product!.discountType!,
-                              product!.discountValue!, product!.currency)
+                        if(checkDiscount(product!.discountIsActive!, product!.discountedPrice!, num.parse(product!.price!)))
+                        showDiscountValue(
+                              product!.discountType!,
+                              product!.discountValue!,
+                              product!.currency)
+
                       ],
                     ),
                   ),
