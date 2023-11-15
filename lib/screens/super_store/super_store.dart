@@ -1,5 +1,7 @@
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -37,11 +39,13 @@ class _SuperStoreState extends State<SuperStore> {
   String secondTabName = 'Find Stores';
   String? appTitle;
   List<String> categoryList = [];
+   String url = "";
 
   @override
   void initState() {
     _pageViewController = PageController(initialPage: 0);
     updateAppSetup(widget.arguments['industry']);
+    getIndustryCategories(widget.arguments['industry']);
     super.initState();
   }
 
@@ -52,52 +56,55 @@ class _SuperStoreState extends State<SuperStore> {
       });
     }
   }
-  getIndustryCategories(String industry){
-  String url  = "/api/v1/products/categories/?industry=$industry";
+  getIndustryCategories(ProductIndustryResults industry){
+    setState(() {
+        url = AppConfig.baseUrl +
+          "/api/v1/products/categories/?industry=${industry.id}";
 
+    });
   }
-  updateAppSetup(String industry) {
-    switch (industry) {
-      case 'Restaurant':
+  updateAppSetup(ProductIndustryResults industry) {
+    switch (industry.name) {
+      case 'Restaurant/Cafe':
         setState(() {
           secondTabName = 'Find Restaurants';
-          appTitle = industry;
+          appTitle = industry.name;
           categoryList = [];
         });
         return;
-      case 'Drinks':
+      case 'Liquor Store':
         setState(() {
-          appTitle = industry;
+          appTitle = industry.name;
           categoryList = [];
         });
         return;
-      case 'Groceries':
+      case 'Grocery Store':
         setState(() {
-          appTitle = industry;
+          appTitle = industry.name;
           categoryList = [];
         });
         return;
       case 'Retail':
         setState(() {
-          appTitle = industry;
+          appTitle = industry.name;
           categoryList = [];
         });
         return;
-      case 'Pharmacy':
+      case 'Pharmaceutical':
         setState(() {
-          appTitle = industry;
+          appTitle = industry.name;
           categoryList = [];
         });
         return;
-      case 'Electronics':
+      case 'Electronics Store':
         setState(() {
-          appTitle = industry;
+          appTitle = industry.name;
           categoryList = [];
         });
         return;
-      case 'Home & Office':
+      case 'Furniture':
         setState(() {
-          appTitle = industry;
+          appTitle = industry.name;
           categoryList = [];
         });
         return;
@@ -277,11 +284,16 @@ class _SuperStoreState extends State<SuperStore> {
           ),
         ],
         if (_tabsVisible) ...[
-          ProductCategorySelection(
-            callback: (category, val) {
-              categoryName = category;
-              if (mounted) setState(() {});
-            },
+          Container(
+            alignment: Alignment.centerLeft,
+            child: ProductCategorySelection(
+              callback: (category, val) {
+                categoryName = category;
+                if (mounted) setState(() {});
+              },
+              next_url:  url
+          
+            ),
           ),
           SizedBox(height: 14),
           Divider(
@@ -296,6 +308,7 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildPageView() {
+    ProductIndustryResults productUrl= widget.arguments['industry'];
     return Expanded(
       child: PageView(
         onPageChanged: (currentPage) {
@@ -310,7 +323,9 @@ class _SuperStoreState extends State<SuperStore> {
               }
             },
             category: categoryName,
-            industry: appTitle!
+            industry: appTitle!,
+            nextUrl:  AppConfig.baseUrl + "/api/v1/products/super-store-industry/?industry=${productUrl.id}",
+            type: "sessions"
           ),
           FindBusinessListScreen(
             onPageRefresh: (bool data) {

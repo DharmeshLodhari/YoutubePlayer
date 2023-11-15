@@ -105,10 +105,8 @@ class YarnAuth extends AuthService {
       List<ProductCategory> productCategories = [];
       var jsonData = json.decode(response.body);
 
-      // debugPrint("JSON CATEGORIES::- $jsonData");
-
       for (var item in jsonData["results"]) {
-        ProductCategory categories = createProductCategories(item);
+        ProductCategory categories = createProductCategories(item['name']);
         productCategories.add(categories);
       }
 
