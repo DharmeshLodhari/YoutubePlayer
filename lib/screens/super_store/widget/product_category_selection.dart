@@ -13,8 +13,9 @@ import '../shop_category_screen.dart';
 
 class ProductCategorySelection extends StatefulWidget {
   final Function(String, bool)? callback;
+  final String? next_url;
 
-   ProductCategorySelection({Key? key, this.callback}) : super(key: key);
+   ProductCategorySelection({Key? key, this.callback, this.next_url}) : super(key: key);
 
   @override
   State<ProductCategorySelection> createState() => _ProductCategorySelectionState();
@@ -32,6 +33,9 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
 
   @override
   void initState() {
+    setState(() {
+      next = widget.next_url;
+    });
     getProductCategoriesList();
     super.initState();
   }
@@ -51,42 +55,44 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          const SizedBox(
-            width: 16,
-          ),
-          ...List.generate(
-            yarnDashboardBloc.productCategories.length,
-            (i) {
-              return Row(
-                children: [
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  CategoryChip(
-                    onTap: () {
-                        // Call the callback function and pass the values
-                        widget.callback!(yarnDashboardBloc.productCategories[i].name, true);
-                        selectedCategory = yarnDashboardBloc.productCategories[i].name;
-
-                        if(mounted)setState(() {});
-
-                    },
-                    title: yarnDashboardBloc.productCategories[i].name,
-                    categoryColor:
-                    selectedCategory == yarnDashboardBloc.productCategories[i].name
-                            ? darkGreyYarn
-                            : greyBackground,
-                    selectedCategoryTextColor: HexColor("#000000"),
-                    borderColor: greySecondaryYarn,
-                    selected: selectedCategory == yarnDashboardBloc.productCategories[i].name,
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
+      child: Container(
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 16,
+            ),
+            ...List.generate(
+              yarnDashboardBloc.productCategories.length,
+              (i) {
+                return Row(
+                  children: [
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    CategoryChip(
+                      onTap: () {
+                          // Call the callback function and pass the values
+                          widget.callback!(yarnDashboardBloc.productCategories[i].name, true);
+                          selectedCategory = yarnDashboardBloc.productCategories[i].name;
+      
+                          if(mounted)setState(() {});
+      
+                      },
+                      title: yarnDashboardBloc.productCategories[i].name,
+                      categoryColor:
+                      selectedCategory == yarnDashboardBloc.productCategories[i].name
+                              ? darkGreyYarn
+                              : greyBackground,
+                      selectedCategoryTextColor: HexColor("#000000"),
+                      borderColor: greySecondaryYarn,
+                      selected: selectedCategory == yarnDashboardBloc.productCategories[i].name,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
