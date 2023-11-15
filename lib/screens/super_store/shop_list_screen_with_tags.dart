@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../data/currency.dart';
+import '../../data/environment.dart';
 import '../../data/state_notifier.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
@@ -376,20 +377,31 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                               .map(
                                 (e) => e.poster == null
                                     ? SizedBox()
-                                    : Container(
-                                        height: 150,
-                                        width: 343,
-                                        margin: EdgeInsets.only(right: 10),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            image: DecorationImage(
-                                                image: NetworkImage(e.poster!,
-                                                    scale: 1),
-                                                fit: BoxFit.contain,
-                                                alignment: Alignment.center),
+                                    : InkWell(
+                                      onTap: (){
+                                        String url = AppConfig.baseUrl +
+                                              "/api/v1/products/products-by-discount/${e.id}";
+                                          NavigationUtil.push(context,
+                                              screen: SuperStoreIndustry(
+                                                  next: url,
+                                                  appTitle: e.name!));
+                                      },
+                                      child: Container(
+                                          height: 150,
+                                          width: 343,
+                                          margin: EdgeInsets.only(right: 10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[50],
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              image: DecorationImage(
+                                                  image: NetworkImage(e.poster!,
+                                                      scale: 1),
+                                                  fit: BoxFit.contain,
+                                                  alignment: Alignment.center),
+                                          ),
                                         ),
-                                      ),
+                                    ),
                               )
                               .toList()
                         ],
@@ -509,10 +521,10 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                         )),
                     InkWell(
                       onTap: () {
-                        // print(headers["next_url"]);
+                        String url = AppConfig.baseUrl + headers["next_url"];
                         NavigationUtil.push(context,
                             screen:
-                                SuperStoreIndustry(next: headers["next_url"], appTitle: headers["name"]));
+                                SuperStoreIndustry(next: url, appTitle: headers["name"]));
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -576,22 +588,22 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Row(
-                    children: [
-                      Text(
-                        "Today's deal",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                          color: blackFont,
-                        ),
-                      ),
-                      Icon(
-                        Icons.bolt_rounded,
-                        color: mateRed,
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Text(
+                  //       "Today's deal",
+                  //       style: TextStyle(
+                  //         fontWeight: FontWeight.w700,
+                  //         fontSize: 18,
+                  //         color: blackFont,
+                  //       ),
+                  //     ),
+                  //     Icon(
+                  //       Icons.bolt_rounded,
+                  //       color: mateRed,
+                  //     ),
+                  //   ],
+                  // ),
                   // GestureDetector(
                   //   child: Row(
                   //     children: [

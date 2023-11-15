@@ -85,6 +85,12 @@ class YarnAuth extends AuthService {
       String? next, String previous) async {
     debugPrint("CALLING PRODUCT CATEGORIES");
     String url = "";
+    print(next);
+    print("______________________________________");
+    print("______________________________________");
+    print("______________________________________");
+    print("______________________________________");
+    print("______________________________________");
     if (next == null) {
       return null;
     }
@@ -106,9 +112,14 @@ class YarnAuth extends AuthService {
       var jsonData = json.decode(response.body);
 
       // debugPrint("JSON CATEGORIES::- $jsonData");
-
+print(jsonData["results"]);
+      print("______________________________________");
+      print("______________________________________");
+      print("______________________________________");
+      print("______________________________________");
+      print("______________________________________");
       for (var item in jsonData["results"]) {
-        ProductCategory categories = createProductCategories(item);
+        ProductCategory categories = createProductCategories(item['name']);
         productCategories.add(categories);
       }
 

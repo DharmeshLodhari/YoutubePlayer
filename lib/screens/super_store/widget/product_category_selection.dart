@@ -13,8 +13,9 @@ import '../shop_category_screen.dart';
 
 class ProductCategorySelection extends StatefulWidget {
   final Function(String, bool)? callback;
+  final String? next_url;
 
-   ProductCategorySelection({Key? key, this.callback}) : super(key: key);
+   ProductCategorySelection({Key? key, this.callback, this.next_url}) : super(key: key);
 
   @override
   State<ProductCategorySelection> createState() => _ProductCategorySelectionState();
@@ -32,6 +33,9 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
 
   @override
   void initState() {
+    setState(() {
+      next = widget.next_url;
+    });
     getProductCategoriesList();
     super.initState();
   }

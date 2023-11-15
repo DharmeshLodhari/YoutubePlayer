@@ -1,5 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen_with_tags.dart';
 import 'package:Slydo/screens/super_store/super_store.dart';
@@ -11,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:shimmer/shimmer.dart';
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
@@ -34,11 +37,24 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
   int currentAskTapOnHome = 0;
   bool _tabsVisible = true;
   String categoryName = '';
+  List<ProductIndustryResults> industries = [];
+  bool isLoading = false;
 
   @override
   void initState() {
     _pageViewController = PageController(initialPage: 0);
+    getProductIndustries();
     super.initState();
+  }
+
+  getProductIndustries() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+    var result = await ShoppingAuthService().listOfIndustries();
+    setState(() {
+      industries = result!["product"];
+      isLoading = false;
+    });
   }
 
   void _showTabs(bool visible) {
@@ -191,17 +207,37 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
             height: 16,
           ),
           // _buildCategoryAndTabs(),
-          Container(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: _displayShortcutButtons(),
-          ),
+          if (industries.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              child: isLoading
+                  ? Container(
+                          height: 100.0,
+                          child: Shimmer.fromColors(
+                          baseColor: Colors.white,
+                          highlightColor: greyBorderColor,
+                          child:  ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: EdgeInsets.zero,
+                            itemCount: 6,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                color: Colors.grey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              );
+                            },
+                          )),
+                    )
+                  : _displayShortcutButtons(industries),
+            ),
           specialDeals(),
           _buildPageView(),
         ],
       ),
     );
   }
-
 
   Widget specialDeals() {
     return Container(
@@ -224,66 +260,80 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     );
   }
 
-  Widget _displayShortcutButtons() {
-    final List<Map<String, String>> shortcuts = [
-      {
-        'imagePath': 'store/restaurant',
-        'title': 'Restaurant',
-      },
-      {
-        'imagePath': 'store/drinks',
-        'title': 'Drinks',
-      },
-      {
-        'imagePath': 'store/groceries',
-        'title': 'Groceries',
-      },
-      {
-        'imagePath': 'store/retail',
-        'title': 'Retail',
-      },
-      {
-        'imagePath': 'store/pharmacy',
-        'title': 'Pharmacy',
-      },
-      {
-        'imagePath': 'store/electronics',
-        'title': 'Electronics',
-      },
-      {
-        'imagePath': 'store/homeandoffice',
-        'title': 'Home & Office',
-      },
-    ];
+  String getImagePath(String imgKey) {
+    Map<String, String> imagePathData = {
+      'Restaurant': 'store/restaurant',
+      'Drinks': 'store/drinks',
+      'Groceries': 'store/groceries',
+      'Retail': 'store/retail',
+      'Pharmacy': 'store/pharmacy',
+      'Electronics': 'store/electronics',
+      'Home & Office': 'store/homeandoffice',
+    };
+    return imagePathData[imgKey]!;
+  }
 
+  Widget _displayShortcutButtons(List<ProductIndustryResults> industries) {
     return Container(
       height: 100.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
         children: <Widget>[
-          for (final shortcut in shortcuts)
+          for (final shortcut in industries)
             Padding(
               padding: const EdgeInsets.all(10.0), // Add padding between items
               child: GestureDetector(
                   // key: showTutorial(shortcut['title']),
                   onTap: () {
-                    NavigationUtil.push(context, screen: SuperStore(arguments: {"industry": shortcut['title']},), );
+                    NavigationUtil.push(
+                      context,
+                      screen: SuperStore(
+                        arguments: {"industry": shortcut},
+                      ),
+                    );
                   },
-                  child: shortcutView(shortcut['imagePath']!, shortcut['title']!)),
+                  child: shortcutView(shortcut)),
             ),
         ],
       ),
     );
   }
 
-  Widget shortcutView(String imagePath, String title) {
+  Widget shortcutView(ProductIndustryResults data) {
+    switch (data.name) {
+      case 'Electronics Store':
+        return industryView(getImagePath(data.alias), data.alias!);
+      case 'Furniture':
+        return industryView(getImagePath(data.alias), data.alias!);
+      case 'Grocery Store':
+        return industryView(getImagePath(data.alias), data.alias!);
+      case 'Liquor Store':
+        return industryView(getImagePath(data.alias), data.alias!);
+
+      case 'Pharmaceutical':
+        return industryView(getImagePath(data.alias), data.alias!);
+
+      case 'Restaurant/Cafe':
+        return industryView(getImagePath(data.alias), data.alias!);
+
+      case 'Retail':
+        return industryView(getImagePath(data.alias), data.alias!);
+
+      default:
+        return industryView(getImagePath(data.alias), data.alias!);
+    }
+  }
+
+  Widget industryView(String imagePath, String title) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         SvgPicture.asset(
-          imagePath.toSVG(), height: 32, width: 32,
+          imagePath.toSVG(),
+          height: 32,
+          width: 32,
         ),
         const SizedBox(height: 10),
         Text(
@@ -295,121 +345,15 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     );
   }
 
-  // void onClickShortcut(String? shortcut) {
-  //   switch (shortcut) {
-  //     case 'Send':
-  //       hideBalance();
-  //       Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-  //           arguments: <String, bool>{'isFromProfile': true});
-  //       break;
-  //     case 'Transaction':
-  //       hideBalance();
-  //       BottomSheetPassCode(
-  //           context: context,
-  //           isValidCallback: () {
-  //             Navigator.of(context)
-  //                 .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
-  //           },
-  //           cancelCallBack: () {
-  //             Navigator.pop(context);
-  //           });
-  //       break;
-  //     case 'Request':
-  //       hideBalance();
-  //       Navigator.pushNamed(context, Routes.ACCOUNTS);
-  //       break;
-  //     case 'Yarn':
-  //       hideBalance();
-  //       NavigationUtil.push(context, screen: YarnDashboard());
-  //       break;
-  //     case 'Moment':
-  //       hideBalance();
-  //       NavigationUtil.push(context, screen: MomentsScreen());
-  //       break;
-  //     case 'Services':
-  //       hideBalance();
-  //       Navigator.pushNamed(context, Routes.SUPER_HUB);
-  //       break;
-  //     case 'Blog':
-  //       hideBalance();
-  //       if (appConfigurationModel?.enableSuperBlog == true) {
-  //         NavigationUtil.push(
-  //           context,
-  //           screen: const SuperBlog(),
-  //         );
-  //       } else {
-  //         showToast(message: 'Feature not available at the moment');
-  //       }
-  //       break;
-  //     default:
-  //       // Handle the default case (if any)
-  //       print('Tapped on an unknown shortcut');
-  //   }
-  // }
-
-  Widget _buildCategoryAndTabs() {
-    return Column(
-      children: [
-        if (_tabsVisible) ...[
-          YarnTabSelection(
-            onTap: (index) {
-              currentAskTapOnHome = index;
-              _pageViewController.jumpToPage(currentAskTapOnHome);
-              _showTabs(true);
-              if (mounted) setState(() {});
-            },
-            currentIndex: currentAskTapOnHome,
-            firstTab: 'Shop',
-            secondTab: 'Find Businesses',
-          ),
-          SizedBox(
-            height: 16,
-          ),
-        ],
-        if (_tabsVisible) ...[
-          ProductCategorySelection(
-            callback: (category, val) {
-              categoryName = category;
-              if (mounted) setState(() {});
-            },
-          ),
-          SizedBox(height: 14),
-          Divider(
-            height: 0,
-            thickness: 0.5,
-            color: greySecondaryYarn,
-          ),
-          SizedBox(height: 8),
-        ],
-      ],
-    );
-  }
-
   Widget _buildPageView() {
     return Expanded(
-      child: PageView(
-        onPageChanged: (currentPage) {
-          updateCurrentAskTapOnHome(index: currentPage);
+      child: ShopListScreenWithTags(
+        onPageRefresh: (bool data) {
+          if (data == true) {
+            _showTabs(true);
+          }
         },
-        controller: _pageViewController,
-        children: [
-          ShopListScreenWithTags(
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-            category: categoryName,
-          ),
-          FindBusinessListScreen(
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-            category: categoryName,
-          )
-        ],
+        category: categoryName,
       ),
     );
   }

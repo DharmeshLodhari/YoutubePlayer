@@ -9,6 +9,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_mo
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -438,22 +439,7 @@ class ShoppingAuthService extends AuthService {
       for (var data in jsonData) {
         
        storeList.add(data);
-      }
-      // for (var item in storeList) {
-        
-      //   for(var data in item['results'] ){
-      //     Product product = createProduct(data);
-      //     productList.add(product);
-      //   }
-      // }
-      print("_____________________________________________");
-      print("_____________________________________________");
-      print("_____________________________________________");
-      print("_____________________________________________");
-      print("_____________________________________________");
-      print("_____________________________________________");
-      print("_____________________________________________");
-       
+      }    
 
       Map<String, dynamic> result = {
         "store": storeList,
@@ -463,6 +449,50 @@ class ShoppingAuthService extends AuthService {
 
       
       debugPrint('CALLING OTHER check ---> ${storeList}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+  // List superstores
+  Future<Map<String, dynamic>?> listOfIndustries() async {
+    var url = AppConfig.baseUrl + "/api/v1/products/industries/?home=true";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {"product": []};
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      var jsonData = json.decode(response.body);
+  List<ProductIndustryResults>? results = (jsonData["results"] as List).map((e) => ProductIndustryResults.fromJson(e)).toList();
+      
+      print(results);
+      print("_____________________________________________");
+      print("_____________________________________________");
+      print("_____________________________________________");
+      print("_____________________________________________");
+      print("_____________________________________________");
+      print("_____________________________________________");
+       
+
+      Map<String, dynamic> result = {
+        "product": results
+
+      };
+
+      
 
       return result;
     } else if (response.statusCode == 500) {
