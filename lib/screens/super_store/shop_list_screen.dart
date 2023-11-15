@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -20,8 +21,9 @@ class ShopListScreen extends StatefulWidget {
   String? category;
   final String industry;
   final String? nextUrl;
+  final String? type;
 
-  ShopListScreen({Key? key, this.onPageRefresh, this.category, required this.industry, this.nextUrl}) : super(key: key);
+  ShopListScreen({Key? key, this.onPageRefresh, this.category, required this.industry, this.nextUrl, this.type}) : super(key: key);
 
   @override
   State<ShopListScreen> createState() => ShopListScreenState();
@@ -42,6 +44,8 @@ class ShopListScreenState extends State<ShopListScreen> {
   String? todayDealPrevious = "";
   String? productPrevious = "";
   late BasketBloc basketBloc;
+  List rowHeaders = [];
+
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
   GlobalKey<ScaffoldMessengerState>();
@@ -75,13 +79,18 @@ class ShopListScreenState extends State<ShopListScreen> {
       ],
     );
   }
-
+listOfSuperStores() async {
+    Map<String, dynamic>? result =
+        await ShoppingAuthService().listOfSuperStores(sectionUrl:  widget.nextUrl);
+    // setState(() {
+    rowHeaders = result!['store'];
+  }
   @override
   void initState() {
     super.initState();
     _currentCategory = widget.category!;
 
-    getProductList(_currentCategory);
+    widget.type != null ? listOfSuperStores() :  getProductList(_currentCategory);
 
     getTodaysDealProducts();
     _productScrollController.addListener(() {
@@ -112,7 +121,6 @@ class ShopListScreenState extends State<ShopListScreen> {
 
 
   void getProductList(String category) async {
-    productNext = widget.nextUrl != null ? widget.nextUrl : "";
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
         isProductLoading = true;
@@ -283,6 +291,9 @@ class ShopListScreenState extends State<ShopListScreen> {
                   SizedBox(height: todaysDealsSizeBox),
                   todaysDealsEmpty ? const SizedBox.shrink() : getTodaysDealList(),
                   todaysDealsEmpty ? const SizedBox.shrink() : const SizedBox(height: 20),
+                  if(widget.type != null)  
+                  ...rowHeaders.map((headers) => rowTitle(headers)).toList() ,
+                  if(widget.type == null)
                   superStoreProducts(),
                   const SizedBox(height: 16),
                   isProductLoading
@@ -329,6 +340,10 @@ class ShopListScreenState extends State<ShopListScreen> {
         ),
       ),
     );
+  }
+
+    Widget rowTitle(headers) {
+    return SectionProducts(headers: headers);
   }
 
   Widget superStoreProducts() {

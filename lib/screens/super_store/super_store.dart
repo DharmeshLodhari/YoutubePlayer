@@ -284,13 +284,16 @@ class _SuperStoreState extends State<SuperStore> {
           ),
         ],
         if (_tabsVisible) ...[
-          ProductCategorySelection(
-            callback: (category, val) {
-              categoryName = category;
-              if (mounted) setState(() {});
-            },
-            next_url:  url
-
+          Container(
+            alignment: Alignment.centerLeft,
+            child: ProductCategorySelection(
+              callback: (category, val) {
+                categoryName = category;
+                if (mounted) setState(() {});
+              },
+              next_url:  url
+          
+            ),
           ),
           SizedBox(height: 14),
           Divider(
@@ -321,7 +324,8 @@ class _SuperStoreState extends State<SuperStore> {
             },
             category: categoryName,
             industry: appTitle!,
-            nextUrl:  AppConfig.baseUrl + "/api/v1/products/categories/?industry=${productUrl.id}",
+            nextUrl:  AppConfig.baseUrl + "/api/v1/products/super-store-industry/?industry=${productUrl.id}",
+            type: "sessions"
           ),
           FindBusinessListScreen(
             onPageRefresh: (bool data) {

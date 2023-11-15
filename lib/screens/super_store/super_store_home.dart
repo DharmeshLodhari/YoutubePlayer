@@ -232,33 +232,13 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
                     )
                   : _displayShortcutButtons(industries),
             ),
-          specialDeals(),
           _buildPageView(),
         ],
       ),
     );
   }
 
-  Widget specialDeals() {
-    return Container(
-      alignment: Alignment.bottomLeft,
-      padding: const EdgeInsets.only(left: 18.0, right: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Special Deal",
-            style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w600, fontFamily: "Inter"),
-            textAlign: TextAlign.left,
-          ),
-          SizedBox(
-            height: 8,
-          )
-        ],
-      ),
-    );
-  }
+  
 
   String getImagePath(String imgKey) {
     Map<String, String> imagePathData = {

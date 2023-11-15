@@ -2,6 +2,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
+import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -365,6 +366,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               child: ListView(
                 controller: _productScrollController,
                 children: [
+                    specialDeals(),
                   if (itemList.isNotEmpty)
                     SizedBox(
                       height: 151,
@@ -408,12 +410,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                       ),
                     ),
                   SizedBox(height: todaysDealsSizeBox),
-                  todaysDealsEmpty
-                      ? const SizedBox.shrink()
-                      : getTodaysDealList(),
-                  todaysDealsEmpty
-                      ? const SizedBox.shrink()
-                      : const SizedBox(height: 20),
                   superStoreProducts(),
                   const SizedBox(height: 16),
                   isProductLoading
@@ -462,6 +458,27 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
+  Widget specialDeals() {
+    return Container(
+      alignment: Alignment.bottomLeft,
+      padding: const EdgeInsets.only(left: 1.0, right: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Special Deal",
+            style: const TextStyle(
+                fontSize: 14, fontWeight: FontWeight.w600, fontFamily: "Inter"),
+            textAlign: TextAlign.left,
+          ),
+          SizedBox(
+            height: 8,
+          )
+        ],
+      ),
+    );
+  }
+
   Widget superStoreProducts() {
     if (productList.isEmpty) {
       return const SizedBox.shrink();
@@ -501,83 +518,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   Widget rowTitle(headers) {
-    return FutureBuilder(
-        future: getRowTitle(headers),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<Product> prod = snapshot.data as List<Product>;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(headers["name"],
-                        style: TextStyle(
-                          color: black,
-                          fontSize: 14,
-                          height: 1,
-                          fontWeight: FontWeight.w600,
-                        )),
-                    InkWell(
-                      onTap: () {
-                        String url = AppConfig.baseUrl + headers["next_url"];
-                        NavigationUtil.push(context,
-                            screen:
-                                SuperStoreIndustry(next: url, appTitle: headers["name"]));
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "View more",
-                            style: TextStyle(
-                              color: navyBlue,
-                              fontSize: 12,
-                              height: 1,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios_sharp,
-                            color: navyBlue,
-                            size: 12,
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 11),
-                SizedBox(
-                  height: 274,
-                  child: ListView.separated(
-                    separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(width: 16);
-                    },
-                    shrinkWrap: true,
-                    physics: const ScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: prod.length,
-                    itemBuilder: (context, index) {
-                      return SuperStoreSingleCard(
-                        product: prod[index],
-                        // next: headers['next_url']
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(height: 24),
-              ],
-            );
-          } else {
-            return SizedBox();
-          }
-        });
+    return SectionProducts(headers: headers);
   }
 
   Widget getTodaysDealList() {

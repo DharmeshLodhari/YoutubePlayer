@@ -415,8 +415,8 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List superstores
-  Future<Map<String, dynamic>?> listOfSuperStores() async {
-    var url = AppConfig.baseUrl + "/api/v1/products/super-store/";
+  Future<Map<String, dynamic>?> listOfSuperStores({String? sectionUrl}) async {
+    var url = sectionUrl != null ? sectionUrl : AppConfig.baseUrl + "/api/v1/products/super-store/";
 
     debugPrint(url);
     var headers = await getAuthHeaders();

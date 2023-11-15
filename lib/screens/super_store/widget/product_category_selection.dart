@@ -55,42 +55,44 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          const SizedBox(
-            width: 16,
-          ),
-          ...List.generate(
-            yarnDashboardBloc.productCategories.length,
-            (i) {
-              return Row(
-                children: [
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  CategoryChip(
-                    onTap: () {
-                        // Call the callback function and pass the values
-                        widget.callback!(yarnDashboardBloc.productCategories[i].name, true);
-                        selectedCategory = yarnDashboardBloc.productCategories[i].name;
-
-                        if(mounted)setState(() {});
-
-                    },
-                    title: yarnDashboardBloc.productCategories[i].name,
-                    categoryColor:
-                    selectedCategory == yarnDashboardBloc.productCategories[i].name
-                            ? darkGreyYarn
-                            : greyBackground,
-                    selectedCategoryTextColor: HexColor("#000000"),
-                    borderColor: greySecondaryYarn,
-                    selected: selectedCategory == yarnDashboardBloc.productCategories[i].name,
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
+      child: Container(
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 16,
+            ),
+            ...List.generate(
+              yarnDashboardBloc.productCategories.length,
+              (i) {
+                return Row(
+                  children: [
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    CategoryChip(
+                      onTap: () {
+                          // Call the callback function and pass the values
+                          widget.callback!(yarnDashboardBloc.productCategories[i].name, true);
+                          selectedCategory = yarnDashboardBloc.productCategories[i].name;
+      
+                          if(mounted)setState(() {});
+      
+                      },
+                      title: yarnDashboardBloc.productCategories[i].name,
+                      categoryColor:
+                      selectedCategory == yarnDashboardBloc.productCategories[i].name
+                              ? darkGreyYarn
+                              : greyBackground,
+                      selectedCategoryTextColor: HexColor("#000000"),
+                      borderColor: greySecondaryYarn,
+                      selected: selectedCategory == yarnDashboardBloc.productCategories[i].name,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
