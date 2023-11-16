@@ -243,10 +243,15 @@ class _SuperStoreState extends State<SuperStore> {
         if (scrollNotification is ScrollUpdateNotification) {
           if (scrollNotification.scrollDelta! > 0 && _tabsVisible) {
             // Scrolling down
-            _showTabs(false);
+            Future.delayed(Duration(seconds: 1), (){
+               _showTabs(false);
+            });
+           
           } else if (scrollNotification.scrollDelta! < 0 && !_tabsVisible) {
             // Scrolling up
-            _showTabs(true);
+            Future.delayed(Duration(seconds: 1), () {
+              _showTabs(true);
+            });
           }
         }
 
