@@ -492,17 +492,11 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                   ? const SizedBox.shrink()
                   : todaysDealsEmpty
                       ? const SizedBox.shrink()
-                      : Text(
-                          "Other deals",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: blackFont,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      : SizedBox.shrink(),
               noProductInList
                   ? const SizedBox.shrink()
                   : const SizedBox(height: 16),
+                  SizedBox(height: 20),
               ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
             ],
           );

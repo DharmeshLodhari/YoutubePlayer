@@ -37,8 +37,9 @@ getRowTitle(headers) async {
                     Text(headers["name"],
                         style: TextStyle(
                           color: black,
-                          fontSize: 14,
+                          fontSize: 18,
                           height: 1,
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600,
                         )),
                     InkWell(
@@ -57,13 +58,11 @@ getRowTitle(headers) async {
                             style: TextStyle(
                               color: navyBlue,
                               fontSize: 12,
-                              height: 1,
+                              fontFamily: "Open Sans",
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(
-                            width: 4,
-                          ),
+                            SizedBox(width: 8),
                           Icon(
                             Icons.arrow_forward_ios_sharp,
                             color: navyBlue,
