@@ -82,7 +82,7 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController inventoryCountController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
-  List productAddOnsList = [];
+  List? productAddOnsList = [];
   bool inventoryIsAvailable = false;
   var weightSi = ['Grams', 'Kilograms'];
   var widthSi = ['Centimetres', 'Metres'];
@@ -183,7 +183,7 @@ class _EditProductState extends State<EditProduct> {
 
           //convert list to variant
           productVariantList = Variant.convertToVariantList(currentProduct.variant!);
-          productAddOnsList = AddOns.convertToAddOnList(currentProduct.addOns!);
+          productAddOnsList = currentProduct.addOns != null ? AddOns.convertToAddOnList(currentProduct.addOns!) : [];
 
           // assigning the dropdown from currentProduct
           productCategories?.forEach((catagory) {
@@ -401,7 +401,7 @@ class _EditProductState extends State<EditProduct> {
                       ],
 
                       const SizedBox(height: 25),
-                      if(productAddOnsList == null || productAddOnsList.isEmpty)...[
+                      if(productAddOnsList == null || productAddOnsList!.isEmpty)...[
                         productAddOns(),
                       ]else...[
                         displaySelectedAddOn(),
@@ -2016,7 +2016,7 @@ class _EditProductState extends State<EditProduct> {
   Widget productVariation(){
     return GestureDetector(
       onTap: () async {
-        if(productAddOnsList.isNotEmpty){
+        if(productAddOnsList!.isNotEmpty){
           return;
         }
         final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
@@ -2038,7 +2038,7 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: productAddOnsList.isEmpty ? navyBlue : blackFont.withOpacity(.5),
+                  color: productAddOnsList!.isEmpty ? navyBlue : blackFont.withOpacity(.5),
                   fontWeight: FontWeight.w600,
                   fontSize: 14),
             ),
@@ -2122,7 +2122,7 @@ class _EditProductState extends State<EditProduct> {
                 // Handle the result (map) received from PRODUCT_ADD_ON_LIST
                 if (data != null && data is AddOns) {
                   //save the add-on details
-                  productAddOnsList.add(data);
+                  productAddOnsList!.add(data);
                   if(mounted)setState(() {});
                 }
               },
@@ -2147,18 +2147,18 @@ class _EditProductState extends State<EditProduct> {
   Widget _buildAddOnList() {
     return Container(
       // height: 200,
-      height: 80 * productAddOnsList.length.toDouble(),
+      height: 80 * productAddOnsList!.length.toDouble(),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 10),
         //+1 for progressbar
-        itemCount: productAddOnsList.length + 1,
+        itemCount: productAddOnsList!.length + 1,
         controller: scrollControllerVariant,
         itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnsList.length) {
+          if (index == productAddOnsList!.length) {
             return buildLoadingIndicator(isLoading: isLoading);
           } else {
             return addOnTile(
-              addOns: productAddOnsList[index],
+              addOns: productAddOnsList![index],
             );
           }
         },
