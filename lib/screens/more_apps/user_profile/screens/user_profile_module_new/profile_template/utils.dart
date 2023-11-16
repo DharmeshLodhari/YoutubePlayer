@@ -20,6 +20,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../../utils/util.dart';
 import '../event_list.dart';
 
 double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
@@ -264,7 +265,7 @@ Widget showDiscountValue(String discountType, num discountValue, currency) {
       "-" +
           (discountType == "percentage"
               ? discountValue.toString() + "%"
-              : worldCurrencies[currency!]! + discountValue.toString()),
+              : worldCurrencies[currency!]! +  moneyDisplayNormalizer(discountValue.toInt()).toString()),
       style: TextStyle(
         color: white,
         fontSize: 8,
