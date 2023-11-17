@@ -7,13 +7,11 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:flutter/material.dart';
 
-
 class SectionProducts extends StatelessWidget {
   final dynamic headers;
-  const SectionProducts({Key? key, this.headers})  : super(key: key);
+  const SectionProducts({Key? key, this.headers}) : super(key: key);
 
-
-getRowTitle(headers) async {
+  getRowTitle(headers) async {
     List<Product> result = [];
     for (var item in headers['results']) {
       Product product = await ShoppingAuthService().createProduct(item);
@@ -21,6 +19,7 @@ getRowTitle(headers) async {
     }
     return result;
   }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -46,8 +45,10 @@ getRowTitle(headers) async {
                       onTap: () {
                         String url = AppConfig.baseUrl + headers["next_url"];
                         NavigationUtil.push(context,
-                            screen:
-                                SuperStoreIndustry(next: url, appTitle: headers["name"]));
+                            screen: SuperStoreIndustry(
+                                next: url,
+                                appTitle: headers["name"],
+                                searchQuery: {"tags": headers["id"]}));
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +63,7 @@ getRowTitle(headers) async {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                            SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Icon(
                             Icons.arrow_forward_ios_sharp,
                             color: navyBlue,

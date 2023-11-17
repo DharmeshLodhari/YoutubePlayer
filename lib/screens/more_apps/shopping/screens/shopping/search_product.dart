@@ -15,6 +15,9 @@ import '../../../user_profile/models/search_user_item_with_filter.dart';
 import '../../models/store.dart';
 
 class SearchProduct extends StatefulWidget {
+  dynamic arguments;
+  SearchProduct({Key? key, this.arguments}) : super(key: key);
+
   @override
   _SearchProductState createState() => _SearchProductState();
 }
@@ -115,7 +118,7 @@ class _SearchProductState extends State<SearchProduct> {
           isLoading = true;
           setState(() {});
         }
-
+        String url = widget.arguments != null ? "&${widget.arguments!.keys.first}=${widget.arguments!.values.first}" : "";
         Map<String, dynamic>? result =
             await ShoppingAuthService().searchUsersProductsInSuperStore(
           next,
@@ -130,6 +133,8 @@ class _SearchProductState extends State<SearchProduct> {
                 : null,
             categories: pickedCategoryList,
           ),
+          query: url,
+
         );
 
         // Map<String, dynamic>? result =

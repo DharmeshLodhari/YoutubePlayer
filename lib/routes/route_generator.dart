@@ -1491,7 +1491,9 @@ class RouteGenerator {
 
       case Routes.SEARCH_PRODUCT:
         return PageTransition(
-          child: SearchProduct(),
+          child: SearchProduct(
+            arguments: settings.arguments 
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

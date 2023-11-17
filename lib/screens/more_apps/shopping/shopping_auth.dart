@@ -1526,8 +1526,8 @@ class ShoppingAuthService extends AuthService {
   }
 
   Future<Map<String, dynamic>?> searchUsersProductsInSuperStore(
-      String? next, String? previous,
-      {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
+      String? next, String? previous, 
+      {required SearchItemWithFilterModelForSuperStore filterOptions, String? query }) async {
     var url = "";
     if (next == null) {
       return null;
@@ -1538,6 +1538,9 @@ class ShoppingAuthService extends AuthService {
       url = AppConfig.baseUrl +
           "/api/v1/products/?search=${filterOptions.searchedText}";
 
+      if (query != null && query.isNotEmpty) {
+        url = url + query;
+      }
       if (filterOptions.minPrice != null) {
         url = url + "&min_price=${filterOptions.minPrice}";
       }

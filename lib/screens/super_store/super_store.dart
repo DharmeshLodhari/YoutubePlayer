@@ -39,7 +39,7 @@ class _SuperStoreState extends State<SuperStore> {
   String secondTabName = 'Find Stores';
   String? appTitle;
   List<String> categoryList = [];
-   String url = "";
+  String url = "";
 
   @override
   void initState() {
@@ -56,13 +56,14 @@ class _SuperStoreState extends State<SuperStore> {
       });
     }
   }
-  getIndustryCategories(ProductIndustryResults industry){
-    setState(() {
-        url = AppConfig.baseUrl +
-          "/api/v1/products/categories/?industry=${industry.id}";
 
+  getIndustryCategories(ProductIndustryResults industry) {
+    setState(() {
+      url = AppConfig.baseUrl +
+          "/api/v1/products/categories/?industry=${industry.id}";
     });
   }
+
   updateAppSetup(ProductIndustryResults industry) {
     switch (industry.name) {
       case 'Restaurant/Cafe':
@@ -164,7 +165,9 @@ class _SuperStoreState extends State<SuperStore> {
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
-            Navigator.of(context).pushNamed("/search-product");
+            ProductIndustryResults industryQuery = widget.arguments['industry'];
+            Navigator.of(context).pushNamed("/search-product",
+                arguments: {"industry": industryQuery.id});
           },
           height: 15,
           width: 15,
@@ -243,10 +246,9 @@ class _SuperStoreState extends State<SuperStore> {
         if (scrollNotification is ScrollUpdateNotification) {
           if (scrollNotification.scrollDelta! > 0 && _tabsVisible) {
             // Scrolling down
-            Future.delayed(Duration(seconds: 1), (){
-               _showTabs(false);
+            Future.delayed(Duration(seconds: 1), () {
+              _showTabs(false);
             });
-           
           } else if (scrollNotification.scrollDelta! < 0 && !_tabsVisible) {
             // Scrolling up
             Future.delayed(Duration(seconds: 1), () {
@@ -292,13 +294,11 @@ class _SuperStoreState extends State<SuperStore> {
           Container(
             alignment: Alignment.centerLeft,
             child: ProductCategorySelection(
-              callback: (category, val) {
-                categoryName = category;
-                if (mounted) setState(() {});
-              },
-              next_url:  url
-          
-            ),
+                callback: (category, val) {
+                  categoryName = category;
+                  if (mounted) setState(() {});
+                },
+                next_url: url),
           ),
           SizedBox(height: 14),
           Divider(
@@ -313,7 +313,7 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildPageView() {
-    ProductIndustryResults productUrl= widget.arguments['industry'];
+    ProductIndustryResults productUrl = widget.arguments['industry'];
     return Expanded(
       child: PageView(
         onPageChanged: (currentPage) {
@@ -322,25 +322,24 @@ class _SuperStoreState extends State<SuperStore> {
         controller: _pageViewController,
         children: [
           ShopListScreen(
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-            category: categoryName,
-            industry: appTitle!,
-            nextUrl:  AppConfig.baseUrl + "/api/v1/products/super-store-industry/?industry=${productUrl.id}",
-            type: "sessions"
-          ),
+              onPageRefresh: (bool data) {
+                if (data == true) {
+                  _showTabs(true);
+                }
+              },
+              category: categoryName,
+              industry: appTitle!,
+              nextUrl: AppConfig.baseUrl +
+                  "/api/v1/products/super-store-industry/?industry=${productUrl.id}",
+              type: "sessions"),
           FindBusinessListScreen(
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-            category: categoryName,
-            industry: appTitle
-          )
+              onPageRefresh: (bool data) {
+                if (data == true) {
+                  _showTabs(true);
+                }
+              },
+              category: categoryName,
+              industry: appTitle)
         ],
       ),
     );

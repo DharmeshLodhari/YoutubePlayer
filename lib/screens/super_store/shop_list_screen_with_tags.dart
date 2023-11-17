@@ -366,7 +366,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               child: ListView(
                 controller: _productScrollController,
                 children: [
-                    specialDeals(),
+                  specialDeals(),
                   if (itemList.isNotEmpty)
                     SizedBox(
                       height: 151,
@@ -380,30 +380,38 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                                 (e) => e.poster == null
                                     ? SizedBox()
                                     : InkWell(
-                                      onTap: (){
-                                        String url = AppConfig.baseUrl +
+                                        onTap: () {
+                                          String url = AppConfig.baseUrl +
                                               "/api/v1/products/products-by-discount/${e.id}";
                                           NavigationUtil.push(context,
                                               screen: SuperStoreIndustry(
                                                   next: url,
-                                                  appTitle: e.name!));
-                                      },
-                                      child: Container(
-                                          height: 150,
-                                          width: 343,
-                                          margin: EdgeInsets.only(right: 10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[50],
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              image: DecorationImage(
-                                                  image: NetworkImage(e.poster!,
-                                                      scale: 1),
-                                                  fit: BoxFit.contain,
-                                                  alignment: Alignment.center),
+                                                  appTitle: e.name!,
+                                                  searchQuery:  {"discount": e.id!}));
+                                        },
+                                        child: Container(
+                                         
+                                          margin:
+                                              EdgeInsets.only(right: 10),
+                                         
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: Image.network(
+                                              e.poster!,
+                                              fit: BoxFit.fill,
+                                              errorBuilder: (context, error,
+                                                      stackTrace) =>
+                                                  Image.asset(
+                                                defaultProductAndServiceImage,
+                                                fit: BoxFit.fill,
+                                                width: double.infinity,
+                                                height: 100,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                    ),
+                                      ),
                               )
                               .toList()
                         ],
@@ -496,7 +504,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               noProductInList
                   ? const SizedBox.shrink()
                   : const SizedBox(height: 16),
-                  SizedBox(height: 20),
+              SizedBox(height: 20),
               ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
             ],
           );
