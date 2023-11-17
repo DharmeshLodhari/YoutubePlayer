@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
@@ -21,7 +22,10 @@ import '../more_apps/yarn/yarn_setting_screen.dart';
 class SuperStoreIndustry extends StatefulWidget {
   final String next;
   final String appTitle;
-  SuperStoreIndustry({Key? key, required this.next, required this.appTitle}) : super(key: key);
+  final Map<String, dynamic>? searchQuery;
+  SuperStoreIndustry(
+      {Key? key, required this.next, required this.appTitle, this.searchQuery})
+      : super(key: key);
 
   @override
   State<SuperStoreIndustry> createState() => _SuperStoreState();
@@ -57,8 +61,6 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
   getIndustryCategories(String industry) {
     String url = "/api/v1/products/categories/?industry=$industry";
   }
-
- 
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +110,14 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
-            Navigator.of(context).pushNamed("/search-product");
+            if (widget.searchQuery != null) {
+              Navigator.of(context)
+                  .pushNamed("/search-product", arguments: widget.searchQuery);
+            } else {
+              Navigator.of(context).pushNamed(
+                "/search-product",
+              );
+            }
           },
           height: 15,
           width: 15,
@@ -262,8 +271,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
               },
               category: categoryName,
               industry: widget.appTitle,
-              nextUrl: widget.next
-            ),
+              nextUrl: widget.next),
           // FindBusinessListScreen(
           //     onPageRefresh: (bool data) {
           //       if (data == true) {

@@ -90,16 +90,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       ),
       centerTitle: false,
       titleSpacing: 16,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context, "back pressed");
-        },
-      ),
+      
       shadowColor: greySecondaryYarn,
       actions: currentAskTapOnHome == 0
           ? _buildAppBarActionsShopList()

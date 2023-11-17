@@ -612,6 +612,21 @@ class _HomeState extends State<Home> {
         ),
       ),
       actions: <Widget>[
+         RoundedBackgroundIcon(
+            backgroundColor: Colors.transparent,
+            onTap: () {
+              Navigator.of(context).pushNamed(
+                Routes.SEARCH_MODULE,
+              );
+              // arguments: {"industry": {"discount": widget.discount!.id}
+            },
+            height: 15,
+            width: 15,
+            icon: SvgPicture.asset(
+              "yarn/search".toSVG(),
+              height: 12,
+              width: 12,
+            )),
         // _searchBtn(),
         // const SizedBox(width: 4.0),
         _cartBtn(),
