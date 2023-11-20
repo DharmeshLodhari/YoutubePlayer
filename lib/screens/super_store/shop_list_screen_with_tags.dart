@@ -429,56 +429,10 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               child: ListView(
                 controller: _productScrollController,
                 children: [
-                  specialDeals(),
                   if (itemList.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: SizedBox(
-                        height: 151,
-                        child: ListView(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          physics: ScrollPhysics(),
-                          children: [
-                            ...itemList
-                                .map(
-                                  (e) => e.poster == null
-                                      ? SizedBox()
-                                      : InkWell(
-                                          onTap: () {
-                                            String url = AppConfig.baseUrl +
-                                                "/api/v1/products/products-by-discount/${e.id}";
-                                            NavigationUtil.push(context,
-                                                screen: SuperStoreIndustry(
-                                                    next: url,
-                                                    appTitle: e.name!,
-                                                    searchQuery: {
-                                                      "discount": e.id!
-                                                    }));
-                                          },
-                                          child: Container(
-                                            margin: EdgeInsets.only(right: 8),
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            height: 150,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              image: DecorationImage(
-                                                fit: BoxFit.fill,
-                                                image: NetworkImage(e.poster!),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                )
-                                .toList()
-                          ],
-                        ),
-                      ),
-                    ),
+                  specialDeals(),
                   SizedBox(height: todaysDealsSizeBox),
+                  if(customerProfileListNearBy.isNotEmpty)
                   nearByBuildView(),
                   superStoreProducts(),
                   const SizedBox(height: 16),
@@ -529,19 +483,65 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   Widget specialDeals() {
-    return Container(
-      margin: EdgeInsets.only(top: 35, bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      alignment: Alignment.bottomLeft,
-      child: Text(
-        "Special Deal",
-        style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            fontFamily: "Inter",
-            color: black),
-        textAlign: TextAlign.left,
-      ),
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: 35, bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          alignment: Alignment.bottomLeft,
+          child: Text(
+            "Special Deal",
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+                color: black),
+            textAlign: TextAlign.left,
+          ),
+        ),
+         Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: SizedBox(
+            height: 151,
+            child: ListView(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              physics: ScrollPhysics(),
+              children: [
+                ...itemList
+                    .map(
+                      (e) => e.poster == null
+                          ? SizedBox()
+                          : InkWell(
+                              onTap: () {
+                                String url = AppConfig.baseUrl +
+                                    "/api/v1/products/products-by-discount/${e.id}";
+                                NavigationUtil.push(context,
+                                    screen: SuperStoreIndustry(
+                                        next: url,
+                                        appTitle: e.name!,
+                                        searchQuery: {"discount": e.id!}));
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(right: 8),
+                                width: MediaQuery.of(context).size.width,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    fit: BoxFit.fill,
+                                    image: NetworkImage(e.poster!),
+                                  ),
+                                ),
+                              ),
+                            ),
+                    )
+                    .toList()
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -563,6 +563,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                   ? const SizedBox.shrink()
                   : const SizedBox(height: 16),
               SizedBox(height: 8),
+              if(rowHeaders.isNotEmpty)
               ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
             ],
           );
