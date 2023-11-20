@@ -300,87 +300,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     if (isFindBusinessLoading && isNearbyLoading) {
       return _buildLoadingIndicator();
     } else {
-      return NestedScrollView(
-        controller: scrollController,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverOverlapAbsorber(
-              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-              sliver: SliverAppBar(
-                floating: true,
-                elevation: 0,
-                stretch: true,
-                automaticallyImplyLeading: false,
-                titleSpacing: 0,
-                title:
-                Column(
-                  children: [
-                    const SizedBox(height: 30.0,),
-                    Container(
-                      margin: const EdgeInsets.only(left: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            "Nearby Businesses",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18,
-                              color: blackFont,
-                            ),
-                          ),
-                          GestureDetector(
-                            child: Row(
-                              children: [
-                                Text(
-                                  "View more",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                      color: blackFont),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(Icons.arrow_forward_ios_sharp,
-                                    size: 14, color: blackFont),
-                              ],
-                            ),
-                            onTap: () {
-                              Navigator.of(context).pushNamed(Routes.NEAR_BY_LIST_SCREEN,
-                                  arguments: {"customerProfile": customerProfileListNearBy,
-                                    "count": nearByCount,
-                                    "next": nearByNext
-                                  });
-
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 50.0,),
-                  ],
-                ),
-                // Text(_isAppBarExpanded ? '' : 'check', style: TextStyle(
-                //   fontWeight: FontWeight.w700,
-                //   fontSize: 18,
-                //   color: blackFont,
-                // ),),
-                expandedHeight: 250, // Set the desired expanded height of the app bar
-                backgroundColor: Colors.transparent,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Column(
-                    children: [
-                      if(customerProfileListNearBy.isNotEmpty)...[
-                        const SizedBox(height: 30.0,),
-                        nearByBuildView(),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ];
-        },
-        body: Column(
+      return  Column(
           children: [
             if (customerProfileList.isNotEmpty) ...[
               // const SizedBox(height: 10.0,),
@@ -413,9 +333,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
               ),
             ),
           ],
-        ),
-
-      );
+        );
     }
   }
 
