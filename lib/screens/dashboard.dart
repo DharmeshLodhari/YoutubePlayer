@@ -112,7 +112,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
 
     getAllCategories();
-    getProductCategories();
+    // getProductCategories(); // not in use
 
     PushNotificationService().initialize();
     ListRefresher().initialize();

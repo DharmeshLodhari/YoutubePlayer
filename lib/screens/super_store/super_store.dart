@@ -1,5 +1,6 @@
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:shimmer/shimmer.dart';
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
@@ -40,12 +42,16 @@ class _SuperStoreState extends State<SuperStore> {
   String? appTitle;
   List<String> categoryList = [];
   String url = "";
+  String nextUrl = "";
+  dynamic categoryId = null;
+  List<Product> productList = [];
+  bool isProductLoading = false;
 
   @override
   void initState() {
     _pageViewController = PageController(initialPage: 0);
     updateAppSetup(widget.arguments['industry']);
-    getIndustryCategories(widget.arguments['industry']);
+    getIndustryUrls(widget.arguments['industry']);
     super.initState();
   }
 
@@ -57,10 +63,12 @@ class _SuperStoreState extends State<SuperStore> {
     }
   }
 
-  getIndustryCategories(ProductIndustryResults industry) {
+  getIndustryUrls(ProductIndustryResults industry) {
     setState(() {
       url = AppConfig.baseUrl +
           "/api/v1/products/categories/?industry=${industry.id}";
+      nextUrl = AppConfig.baseUrl +
+          "/api/v1/products/super-store-industry/?industry=${industry.id}";
     });
   }
 
@@ -272,6 +280,7 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildCategoryAndTabs() {
+    ProductIndustryResults productUrl = widget.arguments['industry'];
     return Column(
       children: [
         if (_tabsVisible) ...[
@@ -294,8 +303,16 @@ class _SuperStoreState extends State<SuperStore> {
           Container(
             alignment: Alignment.centerLeft,
             child: ProductCategorySelection(
-                callback: (category, val) {
+                callback: (category, id, val) {
                   categoryName = category;
+                  categoryId = id;
+                  if (id == "") {
+                    nextUrl = AppConfig.baseUrl +
+                        "/api/v1/products/super-store-industry/?industry=${productUrl.id}";
+                  } else {
+                    nextUrl = AppConfig.baseUrl +
+                        "/api/v1/products/?industry=${productUrl.id}&category=$id";
+                  }
                   if (mounted) setState(() {});
                 },
                 next_url: url),
@@ -313,7 +330,6 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildPageView() {
-    ProductIndustryResults productUrl = widget.arguments['industry'];
     return Expanded(
       child: PageView(
         onPageChanged: (currentPage) {
@@ -321,17 +337,63 @@ class _SuperStoreState extends State<SuperStore> {
         },
         controller: _pageViewController,
         children: [
-          ShopListScreen(
-              onPageRefresh: (bool data) {
-                if (data == true) {
-                  _showTabs(true);
-                }
-              },
-              category: categoryName,
-              industry: appTitle!,
-              nextUrl: AppConfig.baseUrl +
-                  "/api/v1/products/super-store-industry/?industry=${productUrl.id}",
-              type: "sessions"),
+          categoryId == null || categoryId == ""
+              ? ShopListScreen(
+                  onPageRefresh: (bool data) {
+                    if (data == true) {
+                      _showTabs(true);
+                    }
+                  },
+                  category: categoryName,
+                  industry: appTitle!,
+                  nextUrl: nextUrl,
+                  type: categoryId == null || categoryId == ""
+                      ? "sessions"
+                      : null)
+              : FutureBuilder(
+                  future: getProducts(),
+                  builder: (context, snapshot) {
+                    print(snapshot.data);
+                    print("_________________________");
+                    if (snapshot.hasData) {
+                      List<Product> result = snapshot.data as List<Product>;
+                      return 
+                      ListView(children: [
+                        superStoreProducts(result)
+                        // Text("data"),
+                        
+                        ]);
+
+                    } else if (snapshot.hasError) {
+                      return SizedBox();
+                    }
+                    else{
+                      return Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                        mainAxisSpacing: 14,
+                        mainAxisExtent: 180,
+                        crossAxisSpacing: 15,
+                        maxCrossAxisExtent: 200,
+                      ),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                    }
+                  }),
           FindBusinessListScreen(
               onPageRefresh: (bool data) {
                 if (data == true) {
@@ -343,6 +405,48 @@ class _SuperStoreState extends State<SuperStore> {
         ],
       ),
     );
+  }
+
+   Widget superStoreProducts(List<Product> data) {
+    if (productList.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    // return productNext == "" && isProductLoading
+    //     ? const SizedBox.shrink()
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+             
+              data.isEmpty
+                  ? const SizedBox.shrink()
+                  : const SizedBox(height: 16),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisSpacing: 22,
+                  mainAxisExtent: 274,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  return SuperStoreSingleCard(
+                    product: data[index],
+                  );
+                },
+              ),
+            ],
+          );
+  }
+
+   Future<List<Product>> getProducts() async {
+    Map<String, dynamic>? result = await ShoppingAuthService()
+        .listOfProduct(nextUrl, "", "", false, otherDeals: false);
+   
+    var tempList = result!['results'];
+    productList.addAll(tempList);
+    return productList;
   }
 
   void updateCurrentAskTapOnHome({required int index}) {
