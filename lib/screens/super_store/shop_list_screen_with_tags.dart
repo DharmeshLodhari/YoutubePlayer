@@ -1,5 +1,8 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
@@ -56,6 +59,13 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   List<DiscountModel> itemList = [];
   int? itemCount = 0;
   bool isLoading = false;
+  List<CustomerProfile> customerProfileListNearBy = [];
+  int? nearByCount = 0;
+  String? nearByNext = "";
+  String? nearByPrevious = "";
+  bool isNearbyLoading = false;
+  bool noNearByInList = false;
+
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -97,6 +107,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     listOfSuperStores();
     getProductList(_currentCategory);
     getList();
+    getNearByBusinessList();
     getTodaysDealProducts();
     _productScrollController.addListener(() {
       if (_productScrollController.position.pixels ==
@@ -304,6 +315,59 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     });
   }
 
+  void getNearByBusinessList() async {
+    if (!isNearbyLoading) {
+      if (nearByNext != null && !isNearbyLoading) {
+        isNearbyLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfMerchant(nearByNext, nearByPrevious, _currentCategory,
+                nearBy: true);
+
+        if (result == null) {
+          noNearByInList = true;
+
+          isNearbyLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        nearByCount = result['count'];
+        nearByNext = result['next'];
+        nearByPrevious = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noNearByInList = false;
+            isNearbyLoading = false;
+            customerProfileListNearBy.addAll(tempList);
+          });
+        }
+
+        // for(var item in customerProfileListNearBy){
+        //   debugPrint('Fola near by:::: ${item.toJson()}');
+        // }
+
+      }
+      if (customerProfileListNearBy.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noNearByInList = true;
+          });
+        }
+      } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
+        // _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        //   content:
+        //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        //   duration: const Duration(milliseconds: 500),
+        // ));
+      }
+    }
+  }
+
   _refreshPage() {
     productNext = "";
     productCount = 0;
@@ -350,11 +414,10 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     return ScaffoldMessenger(
       key: _productScaffoldMessengerKey,
       child: Scaffold(
-        backgroundColor: lightGrey,
         // appBar: appBar(),
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 0.0),
             child: SmartRefresher(
               enablePullDown: true,
               header: WaterDropHeader(
@@ -368,56 +431,55 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                 children: [
                   specialDeals(),
                   if (itemList.isNotEmpty)
-                    SizedBox(
-                      height: 151,
-                      child: ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        physics: ScrollPhysics(),
-                        children: [
-                          ...itemList
-                              .map(
-                                (e) => e.poster == null
-                                    ? SizedBox()
-                                    : InkWell(
-                                        onTap: () {
-                                          String url = AppConfig.baseUrl +
-                                              "/api/v1/products/products-by-discount/${e.id}";
-                                          NavigationUtil.push(context,
-                                              screen: SuperStoreIndustry(
-                                                  next: url,
-                                                  appTitle: e.name!,
-                                                  searchQuery:  {"discount": e.id!}));
-                                        },
-                                        child: Container(
-                                         
-                                          margin:
-                                              EdgeInsets.only(right: 10),
-                                         
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            child: Image.network(
-                                              e.poster!,
-                                              fit: BoxFit.fill,
-                                              errorBuilder: (context, error,
-                                                      stackTrace) =>
-                                                  Image.asset(
-                                                defaultProductAndServiceImage,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: SizedBox(
+                        height: 151,
+                        child: ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          physics: ScrollPhysics(),
+                          children: [
+                            ...itemList
+                                .map(
+                                  (e) => e.poster == null
+                                      ? SizedBox()
+                                      : InkWell(
+                                          onTap: () {
+                                            String url = AppConfig.baseUrl +
+                                                "/api/v1/products/products-by-discount/${e.id}";
+                                            NavigationUtil.push(context,
+                                                screen: SuperStoreIndustry(
+                                                    next: url,
+                                                    appTitle: e.name!,
+                                                    searchQuery: {
+                                                      "discount": e.id!
+                                                    }));
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(right: 8),
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 150,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              image: DecorationImage(
                                                 fit: BoxFit.fill,
-                                                width: double.infinity,
-                                                height: 100,
+                                                image: NetworkImage(e.poster!),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                              )
-                              .toList()
-                        ],
+                                )
+                                .toList()
+                          ],
+                        ),
                       ),
                     ),
                   SizedBox(height: todaysDealsSizeBox),
+                  nearByBuildView(),
                   superStoreProducts(),
                   const SizedBox(height: 16),
                   isProductLoading
@@ -468,21 +530,17 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
 
   Widget specialDeals() {
     return Container(
+      margin: EdgeInsets.only(top: 35, bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       alignment: Alignment.bottomLeft,
-      padding: const EdgeInsets.only(left: 1.0, right: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Special Deal",
-            style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w600, fontFamily: "Inter"),
-            textAlign: TextAlign.left,
-          ),
-          SizedBox(
-            height: 8,
-          )
-        ],
+      child: Text(
+        "Special Deal",
+        style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+            color: black),
+        textAlign: TextAlign.left,
       ),
     );
   }
@@ -504,7 +562,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               noProductInList
                   ? const SizedBox.shrink()
                   : const SizedBox(height: 16),
-              SizedBox(height: 20),
+              SizedBox(height: 8),
               ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
             ],
           );
@@ -517,6 +575,103 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
       result.add(product);
     }
     return result;
+  }
+
+  Widget nearByBuildView() {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+      margin: EdgeInsets.only(top: 24),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Nearby Businesses",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: black,
+                ),
+              ),
+              GestureDetector(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "View more",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                          fontFamily: "Open Sans",
+                          color: navyBlue),
+                    ),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_forward_ios_sharp,
+                        size: 12, color: navyBlue),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.of(context)
+                      .pushNamed(Routes.NEAR_BY_LIST_SCREEN, arguments: {
+                    "customerProfile": customerProfileListNearBy,
+                    "count": nearByCount,
+                    "next": nearByNext
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 11.0,
+          ),
+           SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (var item in customerProfileListNearBy)
+                  Container(
+                    width: 200,
+                    // height: 200,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, Routes.USER_PROFILE,
+                            arguments: {"searchedUserName": item.userName});
+                      },
+                      child: FindBusiness(
+                        customerProfile: item,
+                        tileRenderPlace: TileRenderPlace.Thiny,
+                        callback: (username, value) {
+                          //create a list to edit
+                          List<CustomerProfile> customerProfileListEdit =
+                              customerProfileListNearBy;
+
+                          // modify customerProfileList for the username and refresh the list
+                          // set the isFollowing for that particular user
+                          for (var customer in customerProfileListEdit) {
+                            if (customer.userName == username) {
+                              customer.isFollowing =
+                                  value; // Modify the isFollowing property
+                            }
+                          }
+
+                          customerProfileListNearBy = [];
+                          customerProfileListNearBy = customerProfileListEdit;
+
+                          if (mounted) setState(() {});
+                        },
+                      ),
+                    ),
+                  )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget rowTitle(headers) {

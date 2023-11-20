@@ -27,9 +27,9 @@ class YarnAuth extends AuthService {
     return categories;
   }
 
-  ProductCategory createProductCategories(String item) {
+  ProductCategory createProductCategories(dynamic item) {
     ProductCategory categories =
-        ProductCategory(messageDecoderWithEmoji(item)!);
+        ProductCategory(messageDecoderWithEmoji(item["name"])!, id: item["id"]);
     return categories;
   }
 
@@ -106,7 +106,8 @@ class YarnAuth extends AuthService {
       var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        ProductCategory categories = createProductCategories(item['name']);
+        // ProductCategory categories = createProductCategories(item['name']);
+        ProductCategory categories = createProductCategories(item);
         productCategories.add(categories);
       }
 

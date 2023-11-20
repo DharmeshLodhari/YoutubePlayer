@@ -966,9 +966,10 @@ class PaymentCategory {
 }
 
 class ProductCategory {
-  const ProductCategory(this.name);
+  const ProductCategory(this.name, {this.id = ""});
 
   final String name;
+  final dynamic id;
 }
 
 class ProductCondition {

@@ -210,50 +210,13 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
           SizedBox(
             height: 16,
           ),
-          // _buildCategoryAndTabs(),
           _buildPageView(),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryAndTabs() {
-    return Column(
-      children: [
-        if (_tabsVisible) ...[
-          YarnTabSelection(
-            onTap: (index) {
-              currentAskTapOnHome = index;
-              _pageViewController.jumpToPage(currentAskTapOnHome);
-              _showTabs(true);
-              if (mounted) setState(() {});
-            },
-            currentIndex: currentAskTapOnHome,
-            firstTab: firstTabName,
-            secondTab: secondTabName,
-          ),
-          SizedBox(
-            height: 16,
-          ),
-        ],
-        if (_tabsVisible) ...[
-          ProductCategorySelection(
-            callback: (category, val) {
-              categoryName = category;
-              if (mounted) setState(() {});
-            },
-          ),
-          SizedBox(height: 14),
-          Divider(
-            height: 0,
-            thickness: 0.5,
-            color: greySecondaryYarn,
-          ),
-          SizedBox(height: 8),
-        ],
-      ],
-    );
-  }
+
 
   Widget _buildPageView() {
     return Expanded(

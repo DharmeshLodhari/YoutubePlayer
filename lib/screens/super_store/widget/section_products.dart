@@ -30,69 +30,79 @@ class SectionProducts extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(headers["name"],
-                        style: TextStyle(
-                          color: black,
-                          fontSize: 18,
-                          height: 1,
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w600,
-                        )),
-                    InkWell(
-                      onTap: () {
-                        String url = AppConfig.baseUrl + headers["next_url"];
-                        NavigationUtil.push(context,
-                            screen: SuperStoreIndustry(
-                                next: url,
-                                appTitle: headers["name"],
-                                searchQuery: {"tags": headers["id"]}));
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "View more",
-                            style: TextStyle(
-                              color: navyBlue,
-                              fontSize: 12,
-                              fontFamily: "Open Sans",
-                              fontWeight: FontWeight.w600,
+                          Text(headers["name"],
+                              style: TextStyle(
+                                color: black,
+                                fontSize: 14,
+                                height: 1,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w600,
+                              )),
+                          InkWell(
+                            onTap: () {
+                              String url =
+                                  AppConfig.baseUrl + headers["next_url"];
+                              NavigationUtil.push(context,
+                                  screen: SuperStoreIndustry(
+                                      next: url,
+                                      appTitle: headers["name"],
+                                      searchQuery: {"tags": headers["id"]}));
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "View more",
+                                  style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 12,
+                                    fontFamily: "Open Sans",
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Icon(
+                                  Icons.arrow_forward_ios_sharp,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                              ],
                             ),
-                          ),
-                          SizedBox(width: 8),
-                          Icon(
-                            Icons.arrow_forward_ios_sharp,
-                            color: navyBlue,
-                            size: 12,
-                          ),
+                          )
                         ],
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 11),
-                SizedBox(
-                  height: 274,
-                  child: ListView.separated(
-                    separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(width: 16);
-                    },
-                    shrinkWrap: true,
-                    physics: const ScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: prod.length,
-                    itemBuilder: (context, index) {
-                      return SuperStoreSingleCard(
-                        product: prod[index],
-                        // next: headers['next_url']
-                      );
-                    },
+                      SizedBox(height: 11),
+                      SizedBox(
+                        height: 274,
+                        child: ListView.separated(
+                          separatorBuilder: (BuildContext context, int index) {
+                            return SizedBox(width: 16);
+                          },
+                          shrinkWrap: true,
+                          physics: const ScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: prod.length,
+                          itemBuilder: (context, index) {
+                            return SuperStoreSingleCard(
+                              product: prod[index],
+                              // next: headers['next_url']
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+               
                 SizedBox(height: 24),
               ],
             );

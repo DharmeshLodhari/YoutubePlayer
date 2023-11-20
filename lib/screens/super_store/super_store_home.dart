@@ -70,7 +70,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     basketBloc = Provider.of<BasketBloc>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: whiteBackground,
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),
     );
@@ -246,14 +246,14 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
 
   Widget _displayShortcutButtons(List<ProductIndustryResults> industries) {
     return Container(
-      height: 100.0,
+      height: 80.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
         children: <Widget>[
           for (final shortcut in industries)
             Padding(
-              padding: const EdgeInsets.all(10.0), // Add padding between items
+              padding: const EdgeInsets.all(4.0), // Add padding between items
               child: GestureDetector(
                   // key: showTutorial(shortcut['title']),
                   onTap: () {
@@ -276,7 +276,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       case 'Electronics Store':
         return industryView(getImagePath(data.alias), data.alias!);
       case 'Furniture':
-        return industryView(getImagePath(data.alias), data.alias!);
+        return industryView(getImagePath(data.alias), data.name!);
       case 'Grocery Store':
         return industryView(getImagePath(data.alias), data.alias!);
       case 'Liquor Store':
@@ -297,22 +297,31 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
   }
 
   Widget industryView(String imagePath, String title) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        SvgPicture.asset(
-          imagePath.toSVG(),
-          height: 32,
-          width: 32,
-        ),
-        const SizedBox(height: 10),
-        Text(
-          title,
-          style: const TextStyle(
-              fontSize: 13, fontWeight: FontWeight.w600, fontFamily: "Inter"),
-        ),
-      ],
+    return Container(
+      width: 75,
+      height: 75,
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5)
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          SvgPicture.asset(
+            imagePath.toSVG(),
+            height: 32,
+            width: 32,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 12, fontWeight: FontWeight.w600, fontFamily: "Inter", color: black),
+          ),
+        ],
+      ),
     );
   }
 

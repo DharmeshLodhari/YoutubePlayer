@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import '../shop_category_screen.dart';
 
 class ProductCategorySelection extends StatefulWidget {
-  final Function(String, bool)? callback;
+  final Function(String, dynamic ,bool)? callback;
   final String? next_url;
 
    ProductCategorySelection({Key? key, this.callback, this.next_url}) : super(key: key);
@@ -72,9 +72,8 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
                     CategoryChip(
                       onTap: () {
                           // Call the callback function and pass the values
-                          widget.callback!(yarnDashboardBloc.productCategories[i].name, true);
+                          widget.callback!(yarnDashboardBloc.productCategories[i].name, yarnDashboardBloc.productCategories[i].id, true);
                           selectedCategory = yarnDashboardBloc.productCategories[i].name;
-      
                           if(mounted)setState(() {});
       
                       },
