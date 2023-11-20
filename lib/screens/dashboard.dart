@@ -564,6 +564,8 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Stack(
                 children: [
+                  iconList[index] == 'home/super_store' ?
+                  Icon(Icons.shopping_basket, color: color) :
                   SvgPicture.asset(
                     iconList[index].toSVG(),
                     color: color,
