@@ -170,12 +170,14 @@ class DiscountModel {
       {DiscountTagCategory? type,
       int? value,
       String? name,
+      String? id,
       DateTime? startDate,
       DateTime? endDate,
       DateTime? onlyFrom,
       DateTime? onlyTo,
       Consumables? consumables}) {
     return DiscountModel(
+      id: id ?? this.id,
       type: type ?? this.type,
       value: value ?? this.value,
       name: name ?? this.name,
