@@ -308,6 +308,18 @@ TagsStyler textFieldTagStyler = TagsStyler(
   tagCancelIconPadding: const EdgeInsets.only(left: 12),
   tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
 );
+
+TagsStyler productTextFieldTagStyler = TagsStyler(
+  tagDecoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(15),
+    color: HexColor("#D9D9D9"),
+  ),
+  tagTextPadding: EdgeInsets.symmetric(horizontal: 6),
+  tagTextStyle:
+      TextStyle(color: black, fontSize: 14, fontWeight: FontWeight.w500),
+  tagCancelIconPadding: const EdgeInsets.only(left: 10),
+  tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
+);
 TextFieldStyler textFieldStyler = TextFieldStyler(
   helperText: '',
   hintText: '',
