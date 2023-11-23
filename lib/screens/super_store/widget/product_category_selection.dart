@@ -33,9 +33,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
 
   @override
   void initState() {
-    setState(() {
-      next = widget.next_url;
-    });
+    
     getProductCategoriesList();
     super.initState();
   }
@@ -102,8 +100,9 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
         isLoading = true;
         if (mounted) setState(() {});
 
+
         Map<String, dynamic>? result =
-            await YarnAuth().getProductCategories(next, previous!);
+            await YarnAuth().getProductCategories(widget.next_url, previous!);
 
         if (result == null) {
           noCategoriesList = true;

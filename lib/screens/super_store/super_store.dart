@@ -8,6 +8,7 @@ import 'package:Slydo/screens/super_store/widget/product_category_selection.dart
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -254,14 +255,10 @@ class _SuperStoreState extends State<SuperStore> {
         if (scrollNotification is ScrollUpdateNotification) {
           if (scrollNotification.scrollDelta! > 0 && _tabsVisible) {
             // Scrolling down
-            Future.delayed(Duration(seconds: 1), () {
               _showTabs(false);
-            });
           } else if (scrollNotification.scrollDelta! < 0 && !_tabsVisible) {
             // Scrolling up
-            Future.delayed(Duration(seconds: 1), () {
               _showTabs(true);
-            });
           }
         }
 
@@ -272,7 +269,9 @@ class _SuperStoreState extends State<SuperStore> {
           SizedBox(
             height: 16,
           ),
-          _buildCategoryAndTabs(),
+           AnimatedSwitcher(
+            duration: const Duration(milliseconds: 1000),
+            child: _tabsVisible ?  Container(key: Key("1"), child: _buildCategoryAndTabs()) : Container(key: Key("2"),)),
           _buildPageView(),
         ],
       ),
@@ -284,6 +283,8 @@ class _SuperStoreState extends State<SuperStore> {
     return Column(
       children: [
         if (_tabsVisible) ...[
+          Column(
+            children: [
           YarnTabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
@@ -298,8 +299,9 @@ class _SuperStoreState extends State<SuperStore> {
           SizedBox(
             height: 16,
           ),
+            ])
         ],
-        if (_tabsVisible) ...[
+        if (_tabsVisible && currentAskTapOnHome == 0) ...[
           Container(
             alignment: Alignment.centerLeft,
             child: ProductCategorySelection(
@@ -315,7 +317,8 @@ class _SuperStoreState extends State<SuperStore> {
                   }
                   if (mounted) setState(() {});
                 },
-                next_url: url),
+                next_url: AppConfig.baseUrl +
+                    "/api/v1/products/categories/?industry=${productUrl.id}"),
           ),
           SizedBox(height: 14),
           Divider(
@@ -357,41 +360,43 @@ class _SuperStoreState extends State<SuperStore> {
                     print("_________________________");
                     if (snapshot.hasData) {
                       List<Product> result = snapshot.data as List<Product>;
-                      return 
-                      ListView(children: [
-                        superStoreProducts(result)
-                        // Text("data"),
-                        
-                        ]);
-
+                      return result.isEmpty
+                          ? Center(
+                              child: NoItemInList(
+                                msg: AppLocalization.of(context)!.noResultFound,
+                              ),
+                            )
+                          : ListView(children: [
+                              superStoreProducts(result)
+                              // Text("data"),
+                            ]);
                     } else if (snapshot.hasError) {
                       return SizedBox();
-                    }
-                    else{
+                    } else {
                       return Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisSpacing: 14,
-                        mainAxisExtent: 180,
-                        crossAxisSpacing: 15,
-                        maxCrossAxisExtent: 200,
-                      ),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisSpacing: 14,
+                            mainAxisExtent: 180,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
                           ),
-                        );
-                      },
-                    ),
-                  );
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
+                        ),
+                      );
                     }
                   }),
           FindBusinessListScreen(
@@ -407,43 +412,43 @@ class _SuperStoreState extends State<SuperStore> {
     );
   }
 
-   Widget superStoreProducts(List<Product> data) {
+  Widget superStoreProducts(List<Product> data) {
     if (productList.isEmpty) {
       return const SizedBox.shrink();
     }
     // return productNext == "" && isProductLoading
     //     ? const SizedBox.shrink()
-        return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-             
-              data.isEmpty
-                  ? const SizedBox.shrink()
-                  : const SizedBox(height: 16),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 22,
-                  mainAxisExtent: 274,
-                  crossAxisSpacing: 15,
-                  maxCrossAxisExtent: 200,
-                ),
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  return SuperStoreSingleCard(
-                    product: data[index],
-                  );
-                },
-              ),
-            ],
-          );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        data.isEmpty ? const SizedBox.shrink() : const SizedBox(height: 16),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            mainAxisSpacing: 22,
+            mainAxisExtent: 274,
+            crossAxisSpacing: 15,
+            maxCrossAxisExtent: 200,
+          ),
+          itemCount: data.length,
+          itemBuilder: (context, index) {
+            return SuperStoreSingleCard(
+              product: data[index],
+            );
+          },
+        ),
+      ],
+    );
   }
 
-   Future<List<Product>> getProducts() async {
+  Future<List<Product>> getProducts() async {
+    setState(() {
+      productList = [];
+    });
     Map<String, dynamic>? result = await ShoppingAuthService()
         .listOfProduct(nextUrl, "", "", false, otherDeals: false);
-   
+
     var tempList = result!['results'];
     productList.addAll(tempList);
     return productList;
