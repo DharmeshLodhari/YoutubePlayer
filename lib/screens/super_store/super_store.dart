@@ -1,6 +1,7 @@
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
@@ -10,6 +11,7 @@ import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
@@ -47,6 +49,7 @@ class _SuperStoreState extends State<SuperStore> {
   dynamic categoryId = null;
   List<Product> productList = [];
   bool isProductLoading = false;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -54,6 +57,19 @@ class _SuperStoreState extends State<SuperStore> {
     updateAppSetup(widget.arguments['industry']);
     getIndustryUrls(widget.arguments['industry']);
     super.initState();
+  }
+
+ @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
+  }   
+  
+  @override
+  void dispose() {
+    yarnDashboardBloc.refreshProductCategories();
+    super.dispose();
   }
 
   void _showTabs(bool visible) {
@@ -252,11 +268,11 @@ class _SuperStoreState extends State<SuperStore> {
           return true;
         }
 
-        if (scrollNotification is ScrollUpdateNotification) {
-          if (scrollNotification.scrollDelta! > 0 && _tabsVisible) {
+        if (scrollNotification is UserScrollNotification) {
+          if (scrollNotification.direction == ScrollDirection.reverse && _tabsVisible) {
             // Scrolling down
               _showTabs(false);
-          } else if (scrollNotification.scrollDelta! < 0 && !_tabsVisible) {
+          } else if (scrollNotification.direction == ScrollDirection.forward && !_tabsVisible) {
             // Scrolling up
               _showTabs(true);
           }
@@ -317,6 +333,7 @@ class _SuperStoreState extends State<SuperStore> {
                   }
                   if (mounted) setState(() {});
                 },
+                categoryName: categoryName,
                 next_url: AppConfig.baseUrl +
                     "/api/v1/products/categories/?industry=${productUrl.id}"),
           ),
@@ -344,7 +361,7 @@ class _SuperStoreState extends State<SuperStore> {
               ? ShopListScreen(
                   onPageRefresh: (bool data) {
                     if (data == true) {
-                      _showTabs(true);
+                      // _showTabs(true);
                     }
                   },
                   category: categoryName,
@@ -539,4 +556,5 @@ class _SuperStoreState extends State<SuperStore> {
     // }
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
+
 }

@@ -174,26 +174,6 @@ class ShopListScreenState extends State<ShopListScreen> {
             productList.addAll(tempList);
           });
         }
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print("___________________________________");
-        print(productNext);
       }
       if (productList.isEmpty) {
         if (mounted) {
@@ -408,6 +388,20 @@ class ShopListScreenState extends State<ShopListScreen> {
               noProductInList
                   ? const SizedBox.shrink()
                   : const SizedBox(height: 16),
+               Container(
+                margin: const EdgeInsets.only(bottom: 15.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Found ${productCount} store${productCount! > 0 ? "s" : ""}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      color: blackFont,
+                    ),
+                  ),
+                ),
+              ),
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
