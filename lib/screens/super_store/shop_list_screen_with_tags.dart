@@ -41,8 +41,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   double todaysDealsSizeBox = 0;
   List<ShoppingProduct> todaysDealList = [];
 
-  List<Product> productList = [];
-  List<Product> productListz = [];
   bool isProductLoading = false;
   bool noProductInList = false;
   int? productCount = 0;
@@ -65,7 +63,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   String? nearByPrevious = "";
   bool isNearbyLoading = false;
   bool noNearByInList = false;
-
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -105,7 +102,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     super.initState();
     _currentCategory = widget.category!;
     listOfSuperStores();
-    getProductList(_currentCategory);
     getList();
     getNearByBusinessList();
     getTodaysDealProducts();
@@ -113,7 +109,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
       if (_productScrollController.position.pixels ==
               _productScrollController.position.maxScrollExtent &&
           _productScrollController.position.pixels != 0) {
-        getProductList(_currentCategory);
+        // getProductList(_currentCategory);
       }
     });
     _todayDealScrollController.addListener(() {
@@ -126,8 +122,16 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   listOfSuperStores() async {
+    isProductLoading = true;
+    if (mounted) {
+      setState(() {});
+    }
     Map<String, dynamic>? result =
         await ShoppingAuthService().listOfSuperStores();
+    isProductLoading = false;
+    if (mounted) {
+      setState(() {});
+    }
     // setState(() {
     rowHeaders = result!['store'];
   }
@@ -186,77 +190,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         ));
       }
     }
-  }
-
-  getProductList(String category,
-      {String tag = "", String nearby = "", bool otherDeals: true}) async {
-    if (!isProductLoading) {
-      if (productNext != null && !isProductLoading) {
-        isProductLoading = true;
-        if (mounted) setState(() {});
-
-        Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(
-                productNext, productPrevious, _currentCategory, false,
-                otherDeals: otherDeals, page_size: 5, tag: tag, nearby: nearby);
-
-        if (result == null) {
-          noProductInList = true;
-
-          isProductLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
-          return;
-        }
-
-        productCount = result['count'];
-        productNext = result['next'];
-        productPrevious = result['previous'];
-        var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            noProductInList = false;
-            isProductLoading = false;
-            productList.addAll(tempList);
-          });
-        }
-      }
-      if (productList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noProductInList = true;
-          });
-        }
-      } else if (productNext == null && productList.length > 6 && tag.isEmpty) {
-        _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
-        ));
-      }
-      return productList;
-    }
-  }
-
-  getProductTags(String category,
-      {String tag = "", String nearby = "", bool otherDeals: false}) async {
-    Map<String, dynamic>? result = await ShoppingAuthService().listOfProduct(
-        "", "", "", false,
-        otherDeals: otherDeals, page_size: 5, tag: tag, nearby: nearby);
-
-    if (result == null) {
-      return productListz;
-    }
-
-    var tempList = result['results'];
-    if (mounted) {
-      setState(() {
-        productListz.addAll(tempList);
-      });
-    }
-
-    return productListz;
   }
 
   void getTodaysDealProducts() async {
@@ -373,14 +306,13 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     productCount = 0;
     productPrevious = "";
     isProductLoading = false;
-    productList = [];
 
     todayDealNext = "";
     todayDealPrevious = "";
     isTodayDealLoading = false;
     todaysDealList = [];
-
-    getProductList(_currentCategory);
+    listOfSuperStores();
+    getList();
     getTodaysDealProducts();
   }
 
@@ -429,12 +361,11 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               child: ListView(
                 controller: _productScrollController,
                 children: [
-                  if (itemList.isNotEmpty)
-                  specialDeals(),
+                  if (itemList.isNotEmpty) specialDeals(),
                   SizedBox(height: todaysDealsSizeBox),
-                  if(customerProfileListNearBy.isNotEmpty)
-                  nearByBuildView(),
-                  superStoreProducts(),
+                  if (customerProfileListNearBy.isNotEmpty)
+                    nearByBuildView(),
+                    sessionProducts(),
                   const SizedBox(height: 16),
                   isProductLoading
                       ? Shimmer.fromColors(
@@ -462,17 +393,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                           ),
                         )
                       : const SizedBox.shrink(),
-                  Visibility(
-                    visible: !isProductLoading &&
-                        !isTodayDealLoading &&
-                        todaysDealList.isEmpty &&
-                        productList.isEmpty,
-                    child: Center(
-                      child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      ),
-                    ),
-                  ),
+                  
                 ],
               ),
             ),
@@ -499,7 +420,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
             textAlign: TextAlign.left,
           ),
         ),
-         Padding(
+        Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: SizedBox(
             height: 151,
@@ -545,28 +466,15 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  Widget superStoreProducts() {
-    if (productList.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    return productNext == "" && isProductLoading
-        ? const SizedBox.shrink()
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              noProductInList
-                  ? const SizedBox.shrink()
-                  : todaysDealsEmpty
-                      ? const SizedBox.shrink()
-                      : SizedBox.shrink(),
-              noProductInList
-                  ? const SizedBox.shrink()
-                  : const SizedBox(height: 16),
-              SizedBox(height: 8),
-              if(rowHeaders.isNotEmpty)
-              ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
-            ],
-          );
+  Widget sessionProducts() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 8),
+        if (rowHeaders.isNotEmpty)
+          ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
+      ],
+    );
   }
 
   getRowTitle(headers) async {
@@ -628,7 +536,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
           const SizedBox(
             height: 11.0,
           ),
-           SingleChildScrollView(
+          SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [

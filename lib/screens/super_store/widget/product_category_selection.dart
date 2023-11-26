@@ -14,8 +14,9 @@ import '../shop_category_screen.dart';
 class ProductCategorySelection extends StatefulWidget {
   final Function(String, dynamic ,bool)? callback;
   final String? next_url;
+  final String? categoryName;
 
-   ProductCategorySelection({Key? key, this.callback, this.next_url}) : super(key: key);
+   ProductCategorySelection({Key? key, this.callback, this.next_url, this.categoryName}) : super(key: key);
 
   @override
   State<ProductCategorySelection> createState() => _ProductCategorySelectionState();
@@ -33,10 +34,13 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
 
   @override
   void initState() {
-    setState(() {
-      next = widget.next_url;
-    });
+    
     getProductCategoriesList();
+    if(widget.categoryName!.isNotEmpty){
+      setState(() {
+        selectedCategory = widget.categoryName!;
+      });
+    }
     super.initState();
   }
 
@@ -84,7 +88,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
                               : greyBackground,
                       selectedCategoryTextColor: HexColor("#000000"),
                       borderColor: greySecondaryYarn,
-                      selected: selectedCategory == yarnDashboardBloc.productCategories[i].name,
+                      selected:  selectedCategory == yarnDashboardBloc.productCategories[i].name,
                     ),
                   ],
                 );
@@ -103,8 +107,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result =
-            await YarnAuth().getProductCategories(next, previous!);
-
+            await YarnAuth().getProductCategories(widget.next_url, previous!);
         if (result == null) {
           noCategoriesList = true;
 
@@ -114,6 +117,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
           }
           return;
         }
+        
 
         count = result['count'];
         next = result['next'];
@@ -137,4 +141,5 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
       }
     }
   }
+  
 }

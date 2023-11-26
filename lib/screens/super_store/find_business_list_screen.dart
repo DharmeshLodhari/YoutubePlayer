@@ -309,7 +309,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Suggestions",
+                    "Found ${findBusinessCount} store${findBusinessCount! > 0 ? "s" : ""}",
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18,
@@ -399,53 +399,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     );
   }
 
-  Widget nearByBuildView() {
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (var item in customerProfileListNearBy)
-            Container(
-              width: 200,
-              // height: 200,
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              child: GestureDetector(
-                onTap: (){
-                  Navigator.pushNamed(
-                      context, Routes.USER_PROFILE, arguments: {
-                    "searchedUserName": item.userName
-                  });
-                },
-                child: FindBusiness(
-                  customerProfile: item,
-                  tileRenderPlace: TileRenderPlace.Thiny,
-                  callback: (username, value) {
-                    //create a list to edit
-                    List<CustomerProfile> customerProfileListEdit = customerProfileListNearBy;
-
-                    // modify customerProfileList for the username and refresh the list
-                    // set the isFollowing for that particular user
-                    for (var customer in customerProfileListEdit) {
-                      if (customer.userName == username) {
-                        customer.isFollowing = value; // Modify the isFollowing property
-                      }
-                    }
-
-                    customerProfileListNearBy = [];
-                    customerProfileListNearBy = customerProfileListEdit;
-
-                    if(mounted)setState(() {});
-
-                  },
-                ),
-              ),
-            )
-
-        ],
-      ),
-    );
-  }
+ 
 
 }
 

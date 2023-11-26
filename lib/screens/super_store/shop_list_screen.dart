@@ -1,10 +1,12 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/empty_page.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
@@ -23,7 +25,14 @@ class ShopListScreen extends StatefulWidget {
   final String? nextUrl;
   final String? type;
 
-  ShopListScreen({Key? key, this.onPageRefresh, this.category, required this.industry, this.nextUrl, this.type}) : super(key: key);
+  ShopListScreen(
+      {Key? key,
+      this.onPageRefresh,
+      this.category,
+      required this.industry,
+      this.nextUrl,
+      this.type})
+      : super(key: key);
 
   @override
   State<ShopListScreen> createState() => ShopListScreenState();
@@ -46,12 +55,11 @@ class ShopListScreenState extends State<ShopListScreen> {
   late BasketBloc basketBloc;
   List rowHeaders = [];
 
-
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   final RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   final ScrollController _todayDealScrollController = ScrollController();
   final ScrollController _productScrollController = ScrollController();
@@ -79,30 +87,46 @@ class ShopListScreenState extends State<ShopListScreen> {
       ],
     );
   }
-listOfSuperStores() async {
+
+  listOfSuperStores() async {
+    if (mounted) {
+      isProductLoading = true;
+    }
     Map<String, dynamic>? result =
-        await ShoppingAuthService().listOfSuperStores(sectionUrl:  widget.nextUrl);
-    // setState(() {
-    rowHeaders = result!['store'];
+        await ShoppingAuthService().listOfSuperStores(sectionUrl: productNext);
+    setState(() {
+      rowHeaders = result!['store'];
+      isProductLoading = false;
+    });
   }
+
+  loadUrl() {
+    setState(() {
+      productNext = widget.nextUrl;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _currentCategory = widget.category!;
-
-    widget.type != null ? listOfSuperStores() :  getProductList(_currentCategory);
-
+    loadUrl();
+    widget.type != null
+        ? listOfSuperStores()
+        : getProductList(_currentCategory);
     getTodaysDealProducts();
     _productScrollController.addListener(() {
       if (_productScrollController.position.pixels ==
-          _productScrollController.position.maxScrollExtent &&
+              _productScrollController.position.maxScrollExtent &&
           _productScrollController.position.pixels != 0) {
-        getProductList(_currentCategory);
+        if (widget.type == null) {
+          getProductList(_currentCategory);
+        }
       }
     });
     _todayDealScrollController.addListener(() {
       if (_todayDealScrollController.position.pixels ==
-          _todayDealScrollController.position.maxScrollExtent &&
+              _todayDealScrollController.position.maxScrollExtent &&
           _todayDealScrollController.position.pixels != 0) {
         getTodaysDealProducts();
       }
@@ -119,17 +143,16 @@ listOfSuperStores() async {
     }
   }
 
-
   void getProductList(String category) async {
-    productNext = widget.nextUrl != null ? widget.nextUrl : "";
-    
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
         isProductLoading = true;
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious, _currentCategory, false, otherDeals: true);
+            .listOfProduct(
+                productNext, productPrevious, _currentCategory, false,
+                otherDeals: true);
         if (result == null) {
           noProductInList = true;
 
@@ -141,11 +164,11 @@ listOfSuperStores() async {
         }
 
         productCount = result['count'];
-        productNext = result['next'];
         productPrevious = result['previous'];
         var tempList = result['results'];
         if (mounted) {
           setState(() {
+            productNext = result['next'];
             noProductInList = false;
             isProductLoading = false;
             productList.addAll(tempList);
@@ -161,7 +184,7 @@ listOfSuperStores() async {
       } else if (productNext == null && productList.length > 6) {
         _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
-          Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
         ));
       }
@@ -176,7 +199,7 @@ listOfSuperStores() async {
 
         Map<String, dynamic>? result = await ShoppingAuthService()
             .getProductListForSuperStore(todayDealNext, todayDealPrevious,
-            todaysDeal: true);
+                todaysDeal: true);
 
         if (result == null) {
           todaysDealsEmpty = true;
@@ -218,7 +241,7 @@ listOfSuperStores() async {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -236,28 +259,15 @@ listOfSuperStores() async {
     isTodayDealLoading = false;
     todaysDealList = [];
 
-    getProductList(_currentCategory);
+    widget.type != null
+        ? listOfSuperStores()
+        : getProductList(_currentCategory);
     getTodaysDealProducts();
   }
 
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
-
-    /// check if super store bottom navigation is clicked
-    /// scroll back to the top of the page
-    if (_dashboardBloc.topYarn == true) {
-      _dashboardBloc.topYarn = false;
-      if (_productScrollController.hasClients) {
-        final position = _productScrollController.position.minScrollExtent;
-        _productScrollController.animateTo(
-          position,
-          duration: Duration(milliseconds: 1),
-          curve: Curves.easeOut,
-        );
-      }
-    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_productScrollController.position.pixels == 0) {
@@ -265,9 +275,7 @@ listOfSuperStores() async {
         widget.onPageRefresh!(true);
         if (mounted) setState(() {});
       }
-
     });
-
 
     return ScaffoldMessenger(
       key: _productScaffoldMessengerKey,
@@ -288,52 +296,61 @@ listOfSuperStores() async {
               child: ListView(
                 controller: _productScrollController,
                 children: [
-
                   SizedBox(height: todaysDealsSizeBox),
-                  todaysDealsEmpty ? const SizedBox.shrink() : getTodaysDealList(),
-                  todaysDealsEmpty ? const SizedBox.shrink() : const SizedBox(height: 20),
-                  if(widget.type != null)  
-                  ...rowHeaders.map((headers) => rowTitle(headers)).toList() ,
-                  if(widget.type == null)
-                  superStoreProducts(),
+                  todaysDealsEmpty
+                      ? const SizedBox.shrink()
+                      : getTodaysDealList(),
+                  todaysDealsEmpty
+                      ? const SizedBox.shrink()
+                      : const SizedBox(height: 20),
+                  if (widget.type != null && rowHeaders.isNotEmpty)
+                    ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
+                  if (rowHeaders.isEmpty &&
+                      !isProductLoading &&
+                      widget.type != null)
+                    EmptyPage(
+                      msg: AppLocalization.of(context)!.noResultFound,
+                    ),
+                  if (widget.type == null) superStoreProducts(),
                   const SizedBox(height: 16),
                   isProductLoading
                       ? Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisSpacing: 14,
-                        mainAxisExtent: 180,
-                        crossAxisSpacing: 15,
-                        maxCrossAxisExtent: 200,
-                      ),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          baseColor: Colors.white,
+                          highlightColor: greyBorderColor,
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                              mainAxisSpacing: 14,
+                              mainAxisExtent: 180,
+                              crossAxisSpacing: 15,
+                              maxCrossAxisExtent: 200,
+                            ),
+                            itemCount: 2,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                color: Colors.grey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  )
+                        )
                       : const SizedBox.shrink(),
-                  Visibility(
-                    visible: !isProductLoading &&
-                        !isTodayDealLoading &&
-                        todaysDealList.isEmpty &&
-                        productList.isEmpty,
-                    child: Center(
-                      child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      ),
-                    ),
-                  ),
+
+                  // Visibility(
+                  //   visible: widget.type != null ? !isProductLoading &&
+                  //       !isTodayDealLoading &&
+                  //       todaysDealList.isEmpty &&
+                  //      rowHeaders.isEmpty : !isProductLoading &&
+                  //             !isTodayDealLoading &&
+                  //             todaysDealList.isEmpty &&
+                  //             productList.isEmpty ,
+                  //   child:  EmptyPage(msg:   AppLocalization.of(context)!.noResultFound,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -343,7 +360,7 @@ listOfSuperStores() async {
     );
   }
 
-    Widget rowTitle(headers) {
+  Widget rowTitle(headers) {
     return SectionProducts(headers: headers);
   }
 
@@ -354,39 +371,55 @@ listOfSuperStores() async {
     return productNext == "" && isProductLoading
         ? const SizedBox.shrink()
         : Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        noProductInList
-            ? const SizedBox.shrink()
-            : todaysDealsEmpty
-            ? const SizedBox.shrink()
-            : Text(
-          "Other deals",
-          style: TextStyle(
-            fontSize: 18,
-            color: blackFont,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        noProductInList ? const SizedBox.shrink() : const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            mainAxisSpacing: 22,
-            mainAxisExtent: 274,
-            crossAxisSpacing: 15,
-            maxCrossAxisExtent: 200,
-          ),
-          itemCount: productList.length,
-          itemBuilder: (context, index) {
-            return SuperStoreSingleCard(
-              product: productList[index],
-            );
-          },
-        ),
-      ],
-    );
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              noProductInList
+                  ? const SizedBox.shrink()
+                  : todaysDealsEmpty
+                      ? const SizedBox.shrink()
+                      : Text(
+                          "Other deals",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: blackFont,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+              noProductInList
+                  ? const SizedBox.shrink()
+                  : const SizedBox(height: 16),
+               Container(
+                margin: const EdgeInsets.only(bottom: 15.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Found ${productCount} store${productCount! > 0 ? "s" : ""}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      color: blackFont,
+                    ),
+                  ),
+                ),
+              ),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisSpacing: 22,
+                  mainAxisExtent: 274,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
+                itemCount: productList.length,
+                itemBuilder: (context, index) {
+                  return SuperStoreSingleCard(
+                    product: productList[index],
+                  );
+                },
+              ),
+            ],
+          );
   }
 
   Widget getTodaysDealList() {
@@ -395,45 +428,45 @@ listOfSuperStores() async {
         todaysDealsEmpty
             ? const SizedBox.shrink()
             : Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: [
-                Text(
-                  "Today's deal",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      Text(
+                        "Today's deal",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                          color: blackFont,
+                        ),
+                      ),
+                      Icon(
+                        Icons.bolt_rounded,
+                        color: mateRed,
+                      ),
+                    ],
                   ),
-                ),
-                Icon(
-                  Icons.bolt_rounded,
-                  color: mateRed,
-                ),
-              ],
-            ),
-            // GestureDetector(
-            //   child: Row(
-            //     children: [
-            //       Text(
-            //         "See all",
-            //         style: TextStyle(
-            //             fontWeight: FontWeight.w600,
-            //             fontSize: 14,
-            //             color: navyBlue),
-            //       ),
-            //       SizedBox(width: 8),
-            //       Icon(Icons.arrow_forward_ios_sharp,
-            //           size: 14, color: navyBlue),
-            //     ],
-            //   ),
-            //   onTap: () {
-            //     Navigator.of(context).pushNamed("/shopping-category");
-            //   },
-            // ),
-          ],
-        ),
+                  // GestureDetector(
+                  //   child: Row(
+                  //     children: [
+                  //       Text(
+                  //         "See all",
+                  //         style: TextStyle(
+                  //             fontWeight: FontWeight.w600,
+                  //             fontSize: 14,
+                  //             color: navyBlue),
+                  //       ),
+                  //       SizedBox(width: 8),
+                  //       Icon(Icons.arrow_forward_ios_sharp,
+                  //           size: 14, color: navyBlue),
+                  //     ],
+                  //   ),
+                  //   onTap: () {
+                  //     Navigator.of(context).pushNamed("/shopping-category");
+                  //   },
+                  // ),
+                ],
+              ),
         Container(
           height: 280,
           child: ListView.builder(
@@ -445,28 +478,28 @@ listOfSuperStores() async {
               if (index == todaysDealList.length) {
                 return isTodayDealLoading
                     ? Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: greyBorderColor,
-                  child: SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 3,
-                      itemBuilder: (context, index) {
-                        return SizedBox(
-                          width: 160,
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: 3,
+                            itemBuilder: (context, index) {
+                              return SizedBox(
+                                width: 160,
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                )
+                        ),
+                      )
                     : const SizedBox.shrink();
               } else {
                 ShoppingProduct shoppingProduct = todaysDealList[index];
@@ -524,7 +557,7 @@ listOfSuperStores() async {
                       imageUrl: product.cover!,
                       errorWidget: productAndServiceErrorWidget,
                       memCacheHeight:
-                      (MediaQuery.of(context).size.height * 0.6).toInt(),
+                          (MediaQuery.of(context).size.height * 0.6).toInt(),
                     ),
                   ),
                 ),
@@ -655,7 +688,6 @@ listOfSuperStores() async {
       ),
     );
   }
-
 }
 
 class SuperStoreSingleCard extends StatelessWidget {

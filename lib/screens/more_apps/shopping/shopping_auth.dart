@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 
 import '../../../data/state_notifier.dart';
 import 'models/store.dart';
@@ -277,7 +278,12 @@ class ShoppingAuthService extends AuthService {
     product.availableFrom = DateTime.parse(item['available_from']);
     product.description = item['description'];
     product.shortDescription = item["short_description"];
-    product.category = item['category'].toString();
+    product.category = item['category'].isEmpty ? ProductCategory("") : ProductCategory(item['category']["name"], id: item['category']["id"]);
+    product.subCategory = item['sub_category'].isEmpty ? ProductCategory("") : ProductCategory(item['sub_category']["name"], id: item['sub_category']["id"]);
+    product.customCategory = item['custom_category'].isEmpty ? ProductCategory("") : ProductCategory(item['custom_category']["name"], id: item['custom_category']["id"]);
+    product.tags = item['tags'].isEmpty ? [] :  (item['tags'] as List).map((i) => Tags.fromJson(i))
+              .toList();
+    product.preparationTime = item['preparation_time'];
     product.condition = item['condition'];
     product.seller = item['seller'];
     product.sellerFullName = item['seller_fullname'] ?? "";
@@ -311,6 +317,7 @@ class ShoppingAuthService extends AuthService {
       String? next, String? previous, String? category, bool? channel,
       {String? userName, bool otherDeals = false, num page_size = 20, String tag = "", String industry= "", String nearby = ""}) async {
         debugPrint('CALLING PRODUCT');
+
     debugPrint('CALLING PRODUCT channel::: ${channel}');
     var url = "";
     if (next == null) {
@@ -347,24 +354,11 @@ class ShoppingAuthService extends AuthService {
     if (channel == true) {
       url = AppConfig.baseUrl + "/api/v1/channels-merchandise/$userName";
     }
-    
-    // if(tag != ""){
-    //   if(url.contains("?")){
-    //     url = url + "&tag=$tag";
-    //   }
-    //   else{
-    //     url = url + "?tag=$tag";
-    //   }
-    // }
-    // if (industry != "") {
-    //   if (url.contains("?")) {
-    //     url = url + "&industry=$industry";
-    //   } else {
-    //     url = url + "?industry=$industry";
-    //   }
-    // }
     if (page_size != "") {
-      if (url.contains("?")) {
+      if(url.contains("page_size")){
+        url = url;
+      }
+      else if (url.contains("?")) {
         url = url + "&page_size=$page_size";
       } else {
         url = url + "?page_size=$page_size";
@@ -396,6 +390,7 @@ class ShoppingAuthService extends AuthService {
         Product product = createProduct(item);
         productList.add(product);
       }
+
 
       Map<String, dynamic> result = {
         "count": jsonData["count"],
@@ -1714,6 +1709,107 @@ class ShoppingAuthService extends AuthService {
 
       for (int i = 0; i < results.length; i++) {
         categories.add(ProductCategory(messageDecoderWithEmoji(results[i])!));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ProductCategory>[]);
+    }
+  }
+  Future<List<ProductCategory>> obtainProductCategories(id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/categories/?industry=${id}";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ProductCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ProductCategory(results[i]['name']!, id: results[i]['id']));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ProductCategory>[]);
+    }
+  }
+  Future<List<ProductCategory>> obtainCustomCategory(name) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/merchant-custom-categories/merchant/${name}/";
+    print("_________________________________________${url}");
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ProductCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ProductCategory(results[i]['name']!, id: results[i]['id']));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ProductCategory>[]);
+    }
+  }
+  Future<List<ProductCategory>> getProductSubCategories(id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/sub-categories/${id}";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ProductCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ProductCategory(results[i]['name']!, id: results[i]['id']));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ProductCategory>[]);
+    }
+  }
+  Future<List<ProductCategory>> getProductTags(id, val) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/tags/?industries/${id}&search=${val}";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ProductCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ProductCategory(results[i]['name']!, id: results[i]['id']));
       }
 
       return categories;

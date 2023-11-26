@@ -104,6 +104,111 @@ List<ProductCondition> conditions = <ProductCondition>[
     'Original packaging or with tag',
   ),
 ];
+List<ProductCondition> deliverTimeCondition = <ProductCondition>[
+  
+     
+  const ProductCondition(
+    '10',
+    "5-10 mins",
+  ),
+  const ProductCondition(
+    '20',
+    "10-20 mins",
+  ),
+  const ProductCondition(
+    '30',
+    "20-30 mins",
+  ),
+  const ProductCondition(
+    '40',
+    "30-40 mins",
+  ),
+  const ProductCondition(
+    '50',
+    "40-50 mins",
+  ),
+ 
+  const ProductCondition(
+    '60',
+    "50mins - 1hr",
+  ),
+  const ProductCondition(
+    '70',
+    "1hr - 1hr 10 mins",
+  ),
+  const ProductCondition(
+    '80',
+    "1hr 10 mins - 1hr 20 mins",
+  ),
+  const ProductCondition(
+    '90',
+    "1hr 20 mins- 1hr 30 mins",
+  ),
+
+  
+  const ProductCondition(
+    '100',
+    "1hrs 30 mins- 1hr 40 mins",
+  ),
+  const ProductCondition(
+    '110',
+    "1hrs 40 mins - 1hr 50 mins",
+  ),
+  const ProductCondition(
+    '120',
+    "1hrs 50 mins - 2hr",
+  ),
+  const ProductCondition(
+    '130',
+    "2hrs - 2hr 10mins",
+  ),
+  const ProductCondition(
+    '140',
+    "2hrs 10 mins- 2hr 20 mins",
+  ),
+  const ProductCondition(
+    '150',
+    "2hrs 20 mins - 2hr 30 mins",
+  ),
+  const ProductCondition(
+    '160',
+    "2hrs 30 mins - 2hr 40 mins",
+  ),
+  const ProductCondition(
+    '170',
+    "2hrs 40 mins - 2hr 50mins",
+  ),
+  const ProductCondition(
+    '180',
+    "2hrs 50 mins - 3hr",
+  ),
+  const ProductCondition(
+    '190',
+    "3hrs - 3hr 10 mins",
+  ),
+  const ProductCondition(
+    '200',
+    "3hrs 10 mins - 3hr 20 mins",
+  ),
+  const ProductCondition(
+    '210',
+    "3hrs 20 mins - 3hr 30 mins",
+  ),
+  const ProductCondition(
+    '220',
+    "3hrs 30 mins - 3hr 40mins",
+  ),
+  const ProductCondition(
+    '230',
+    "3hrs 40 mins - 3hr 50 mins",
+  ),
+  const ProductCondition(
+    '240',
+    "3hrs 50 mins- 4hr",
+  ),
+ 
+ 
+];
 
 List<PaymentCategory> paymentCategories = <PaymentCategory>[
   PaymentCategory(
@@ -142,7 +247,11 @@ class Product {
   String? sellerFullName;
   String? condition;
   String? qrCode;
-  String? category;
+  ProductCategory? category;
+  ProductCategory? subCategory;
+  ProductCategory? customCategory;
+  List<Tags>? tags;
+  num? preparationTime;
   String? manufacturer;
   bool? isAvailable;
   DateTime? availableFrom;
@@ -188,6 +297,10 @@ class Product {
     this.qrCode,
     this.condition,
     this.category,
+    this.subCategory,
+    this.customCategory,
+    this.tags,
+    this.preparationTime,
     this.manufacturer,
     this.isAvailable,
     this.availableFrom,
@@ -223,7 +336,11 @@ class Product {
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
-      "category": category,
+      "category":  category!.id,
+      "sub_category": subCategory!.id,
+      "custom_category": customCategory!.id,
+      "tags": tags!.map((e) => e.id!).toList(),
+      "preparation_time": preparationTime,
       "cover": cover,
       "manufacturer": manufacturer,
       "is_available": isAvailable,
@@ -260,7 +377,11 @@ class Product {
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
-      "category": category,
+      "category": category!,
+      "sub_category": subCategory!,
+      "custom_category": customCategory!,
+      "tags": tags!.map((v) => v.toJson()).toList(),
+      "preparation_time": preparationTime,
       "manufacturer": manufacturer,
       "is_available": isAvailable,
       "available_from": availableFrom.toString(),
@@ -326,7 +447,19 @@ class Product {
       sellerFullName: object["seller_fullname"] ?? "",
       qrCode: object["qr_code"] ?? "",
       condition: object["condition"] ?? "",
-      category: object["category"] ?? "",
+      category: object['category'] == null ?  null : ProductCategory(object['category']["name"], id: object['category']["id"]) ,
+      subCategory: object['category'] == null
+          ? null
+          : ProductCategory(object['sub_category']["name"], id: object['sub_category']["id"]),
+      customCategory: object['category'] == null
+          ? null
+          : ProductCategory(object['custom_category']["name"], id: object['custom_category']["id"]),
+      tags: object['tags'] != null
+          ? (object['tags'] as List)
+              .map((i) => Tags.fromJson(i))
+              .toList()
+          : [],
+      preparationTime: object["preparation_time"] ?? 0,
       manufacturer: object["manufacturer"] ?? "",
       isAvailable: object["is_available"] ?? true,
       availableFrom: getProductDateTime(object["available_from"]),
@@ -348,11 +481,6 @@ class Product {
       discountType: object['discount_type'],
       discountIsActive: object['discount_is_active'],
       discountedPrice: object['discounted_price'],
-
-      // discountedPrice: object["discounted_price"],
-      // discountIsActive: object["discount_is_active"],
-      // discountType: object["discount_type"],
-      // discountValue: object["discount_value"],
       oldPrice: object["old_price"],
       isShippable: object["is_shippable"],
     );
@@ -433,7 +561,11 @@ class Product {
       sellerFullName: this.sellerFullName ?? "",
       qrCode: this.qrCode ?? "",
       condition: this.condition ?? "",
-      category: this.category ?? "",
+      category: this.category,
+      subCategory: this.subCategory,
+      customCategory: this.customCategory,
+      tags: this.tags ?? [],
+      preparationTime: this.preparationTime ?? 0,
       manufacturer: this.manufacturer ?? "",
       isAvailable: this.isAvailable ?? true,
       availableFrom: this.availableFrom,
@@ -798,6 +930,81 @@ class AddOns {
     return addOnOption;
   }
 
+
+}
+
+class Tags {
+  num? id;
+  String? name;
+
+  Tags({this.id, this.name});
+
+  factory Tags.fromJson(Map<String, dynamic> json) {
+    return Tags(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    return data;
+  }
+}
+class SubCategory {
+  num? id;
+  String? name;
+ 
+
+  SubCategory(
+      {this.id,
+      this.name,
+     });
+
+  Map toMap() {
+    return {
+      "name": name,
+    };
+  }
+  Map toJson() {
+    return {
+      "id": id,
+      "name": name,
+    };
+  }
+  SubCategory.fromJson(object) {
+    id = object["id"];
+    name = object["name"] ?? "";
+  }
+
+}
+class CustomCategory {
+  num? id;
+  String? name;
+ 
+
+  CustomCategory(
+      {this.id,
+      this.name,
+     });
+
+  Map toMap() {
+    return {
+      "name": name,
+    };
+  }
+  Map toJson() {
+    return {
+      "id": id,
+      "name": name,
+    };
+  }
+  CustomCategory.fromJson(object) {
+    id = object["id"];
+    name = object["name"] ?? "";
+  }
 
 }
 
