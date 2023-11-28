@@ -473,6 +473,7 @@ class _AddEditDiscountState extends State<AddEditDiscount> {
                       style: TextStyle(
                           fontSize: 14,
                           color: darkGrey,
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600),
                     ),
                   ),

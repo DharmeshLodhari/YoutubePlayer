@@ -4,6 +4,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/cutomized_alert/alert_style.dart';
 import 'package:Slydo/widget/cutomized_alert/customized_alert.dart';
 import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
+import 'package:Slydo/widget/cutomized_alert/modified_customized_alert.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
@@ -224,6 +225,57 @@ Future<bool?> showDialogBox(
         },
         textColor: actionTwoTextColor,
         text: actionTwoText,
+        backgroundColor: actionTwoBgColor,
+      )
+    ],
+  ).show();
+}
+Future<bool?> showDialogBoxWithInput(
+    {Widget? content,
+    required BuildContext context,
+    String? title,
+    String? description,
+    required String actionOneText,
+    bool firstActionPrimary = true,
+    String? image,
+    Color? actionOneBgColor,
+    Color? actionOneTextColor,
+    Color? actionTwoBgColor,
+    Color? actionTwoTextColor,
+    Function()? leftButtonOnPressed,
+    Function()? rightButtonOnPressed,
+    String? actionTwoText, // DialogButton's text
+    bool isOverlayTapDismiss = true,
+    RoundedBackgroundIcon? roundedBackgroundIcon}) {
+  return ModifiedCustomizedAlert(
+    title: title,
+    content: content,
+    context: context,
+    desc: description,
+    roundedBackgroundIcon: roundedBackgroundIcon,
+    style: AlertStyle(
+      isOverlayTapDismiss: isOverlayTapDismiss,
+      isCloseButton: false,
+    ),
+    buttons: [
+      if(leftButtonOnPressed != null)
+      DialogButton(
+        onPressed: () {
+            leftButtonOnPressed();
+          
+        },
+        textColor: actionOneTextColor,
+        text: actionOneText,
+        backgroundColor: actionOneBgColor,
+      ),
+      if (rightButtonOnPressed != null)
+      DialogButton(
+        onPressed: () {
+            rightButtonOnPressed();
+          
+        },
+        textColor: actionTwoTextColor,
+        text: actionTwoText ?? "",
         backgroundColor: actionTwoBgColor,
       )
     ],
