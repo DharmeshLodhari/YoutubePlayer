@@ -186,6 +186,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           bool result = await ShoppingAuthService()
               .createCustomCategory(_controller.text);
           _onProductRefresh();
+          _controller.clear();
           Navigator.pop(context);
           
            
@@ -239,6 +240,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         leftButtonOnPressed: () async {
           bool result = await ShoppingAuthService().deleteCustomCategory(prod.id);
             _onProductRefresh();
+            _controller.clear();
           Navigator.pop(context);
       
         },
@@ -246,6 +248,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           bool result =
               await ShoppingAuthService().editCustomCategory(_controller.text, prod.id);
             _onProductRefresh();
+            _controller.clear();
           Navigator.pop(context);
         });
   }
