@@ -198,4 +198,5 @@ class Routes {
   static const String UPDATE_ADD_ON = "/update-add-on";
   static const String FLASH_TAG_LIST = "/flash-tag-list";
   static const String DISCOUNT_LIST = "/discount-list";
+  static const String CUSTOM_CATEGORY = "/custom-Category";
 }

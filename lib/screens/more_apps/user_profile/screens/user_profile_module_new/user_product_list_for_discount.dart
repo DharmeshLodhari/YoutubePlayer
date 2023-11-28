@@ -369,32 +369,23 @@ class _UserProductListForDiscountState
   Widget _buildProductList() {
     return productNext == "" && isProductLoading
         ? SizedBox.shrink()
-        : Padding(
-            padding: const EdgeInsets.only(
-              left: 8.0,
-              right: 8.0,
-              top: 8.0,
-              bottom: 16,
-            ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.symmetric(horizontal: 4),
-              controller: _productScrollController,
-              itemCount: productList.length,
-              itemBuilder: (context, index) {
-                return SizedBox(
-                  child: DisplayProductForDiscount(
-                    product: productList[index],
-                    onChange: (bool value) {
-                      productList[index].isSelected = value;
-                      if (mounted) setState(() {});
-                    },
-                    isSelected: productList[index].isSelected,
-                  ),
-                );
-              },
-            ),
-          );
+        : ListView.builder(
+          shrinkWrap: true,
+          controller: _productScrollController,
+          itemCount: productList.length,
+          itemBuilder: (context, index) {
+            return SizedBox(
+              child: DisplayProductForDiscount(
+                product: productList[index],
+                onChange: (bool value) {
+                  productList[index].isSelected = value;
+                  if (mounted) setState(() {});
+                },
+                isSelected: productList[index].isSelected,
+              ),
+            );
+          },
+        );
   }
 
   Widget getOutOfStockTag(int index) {

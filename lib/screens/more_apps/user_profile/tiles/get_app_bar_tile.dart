@@ -1630,6 +1630,16 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       );
       list.add(
         bottomSheetItem(
+          title: "Custom Category",
+          iconData: Icons.local_offer,
+          onTap: () async {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed(Routes.CUSTOM_CATEGORY);
+          },
+        ),
+      );
+      list.add(
+        bottomSheetItem(
           title: "Flash Tag",
           iconData: Icons.add_alert,
           onTap: () async {

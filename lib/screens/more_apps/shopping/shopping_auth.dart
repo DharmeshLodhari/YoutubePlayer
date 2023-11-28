@@ -1769,6 +1769,55 @@ class ShoppingAuthService extends AuthService {
       return Future.value(<ProductCategory>[]);
     }
   }
+  Future<bool> createCustomCategory(name) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/merchant-custom-categories/";
+    Map data = {"name": name};
+        var _data = jsonEncode(data);
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _data);
+
+    if (response.statusCode == 200) {
+      return true;
+      }
+    return false;
+    
+  }
+  Future<bool> editCustomCategory(name, id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/merchant-custom-categories/$id/";
+    Map data = {"name": name};
+        var _data = jsonEncode(data);
+
+    var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers, body: _data);
+print("__________________________________ ${response.statusCode}");
+print("__________________________________ ${data}");
+print("__________________________________ ${response}");
+print("__________________________________ ${id}");
+    if (response.statusCode == 200) {
+      return true;
+      }
+
+    
+    return false;
+    
+  }
+  Future<bool> deleteCustomCategory(id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/merchant-custom-categories/$id/";
+   
+
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      print("_________________________________${response}");
+      throw jsonData;
+    }
+    
+  }
   Future<List<ProductCategory>> getProductSubCategories(id) async {
     var url = AppConfig.baseUrl + "/api/v1/products/sub-categories/${id}";
     var headers = await getAuthHeaders();
