@@ -361,7 +361,7 @@ class _DiscountListState extends State<DiscountList> {
                   ),
                 ),
                 Text(
-                  itemList[index].value.toString(),
+                  itemList[index].type.toString().contains("Percentage") ? "${ itemList[index].value.toString()} % off" : "₦${itemList[index].value.toString()} off",
                   style: TextStyle(
                       fontSize: 14,
                       fontFamily: "Inter",
