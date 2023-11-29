@@ -179,7 +179,6 @@ class Routes {
   static const String PRODUCT_VARIANT_LIST = "/product-variant-list";
   static const String PRODUCT_NEW_OPTION = "/product-new-option";
   static const String PRODUCT_VARIANT_UPDATE = "/product-variant-update";
-
   static const String VIRTUAL_CARD_HOME = "/virtual-card-home";
   static const String SEARCH_MY_JOBS = "/search-my-jobs";
   static const String ADD_VIRTUAL_CARD = "/add-virtual-card";
@@ -191,14 +190,13 @@ class Routes {
   static const String CUSTOMIZE_PROFILE = "/customize-profile";
   static const String HOME_QUICK_VIEW = "/home-quick-view";
   static const String PRE_ACCOUNT_UPGRADE = "/pre-account-upgrade";
-
   static const String PRODUCT_ADD_ON_LIST = "/product-add-on-list";
-  static const String PRODUCT_ADD_ON_OPTION_CREATE =
-      "/product-add-on-option-create";
-  static const String PRODUCT_ADD_ON_OPTION_UPDATE =
-      "/product-add-on-option-update";
+  static const String ADD_ON_OPTION_LIST = "/add-on-option-list";
+  static const String PRODUCT_ADD_ON_OPTION_CREATE = "/product-add-on-option-create";
+  static const String PRODUCT_ADD_ON_OPTION_UPDATE = "/product-add-on-option-update";
   static const String NEW_ADD_ON = "/new-add-on";
-
+  static const String UPDATE_ADD_ON = "/update-add-on";
   static const String FLASH_TAG_LIST = "/flash-tag-list";
   static const String DISCOUNT_LIST = "/discount-list";
+  static const String CUSTOM_CATEGORY = "/custom-Category";
 }

@@ -15,6 +15,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../../data/currency.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/CustomBoxShadow.dart';
+import '../../../../../widget/curved_btn.dart';
 import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
@@ -22,9 +23,8 @@ import '../../shopping_auth.dart';
 class ProductAddOnList extends StatefulWidget {
 
   var arguments;
-  final Function(List<Variant>)? onListRefreshed;
 
-  ProductAddOnList({this.arguments, this.onListRefreshed, Key? key}) : super(key: key);
+  ProductAddOnList({this.arguments, Key? key}) : super(key: key);
 
   @override
   _ProductAddOnListState createState() => _ProductAddOnListState();
@@ -41,13 +41,14 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   String? next = "";
   String? previous = "";
   String? productId = "";
-  List<Variant> productVariantList = [];
+  List productAddOnList = [];
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
   RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
+  bool isAPILoading = false;
 
   //slidable tile
   SlidableController? _slideController;
@@ -57,14 +58,14 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
 
     productId = widget.arguments["productId"];
 
-    getVariantList();
+    getAddOnList();
 
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        getVariantList();
+        getAddOnList();
       }
     });
 
@@ -74,7 +75,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
     );
   }
 
-  void getVariantList() async {
+  void getAddOnList() async {
     if (!isLoading) {
       if (mounted) {
         setState(() {
@@ -82,18 +83,18 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         });
       }
       Map<String, dynamic>? result =
-      await _auth.getVariantList(productId!, next, previous);
+      await _auth.getAddOnsList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
         noItemInList = true;
         return;
       }
-      // count = result['count'];
-      // next = result['next'];
-      // previous = result['previous'];
+      count = result['count'];
+      next = result['next'];
+      previous = result['previous'];
       var tempList = result['results'];
 
-      productVariantList = Variant.convertToVariantList(tempList);
+      productAddOnList.addAll(tempList);
 
       if (mounted) {
         setState(() {
@@ -102,13 +103,13 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         });
       }
 
-      if (productVariantList.isEmpty) {
+      if (productAddOnList.isEmpty) {
         if (mounted) {
           setState(() {
             noItemInList = true;
           });
         }
-      } else if (next == null && productVariantList.length > 6) {
+      } else if (next == null && productAddOnList.length > 6) {
         _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
           Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -128,9 +129,9 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         count = 0;
         next = "";
         previous = "";
-        productVariantList = [];
+        productAddOnList = [];
         if (mounted) setState(() {});
-        getVariantList();
+        getAddOnList();
         setState(() {
           // Call the callback function with the updated list
           //to pass the list back to edit product page
@@ -152,7 +153,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context, productVariantList);
+        Navigator.pop(context, productAddOnList);
         return true;
       },
       child: ScaffoldMessenger(
@@ -169,7 +170,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
               ),
               controller: _refreshController,
               onRefresh: _onRefresh,
-              child: _buildProductVariantList()),
+              child: _buildProductAddOnList()),
         ),
       ),
     );
@@ -187,7 +188,8 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context, productVariantList);
+          List addOnList = productAddOnList.where((addOn) => addOn.isChecked == true).toList();
+          Navigator.pop(context, addOnList);
         },
       ),
       centerTitle: false,
@@ -222,10 +224,10 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
         });
 
         // Handle the result (map) received from Product Add New Option
-        if (result != null && result is Variant) {
+        if (result != null && result is AddOns) {
           //save the variant details for later use
-          _onRefresh();
-          // variantData = result;
+          // _onRefresh();
+          productAddOnList.add(result);
           if(mounted)setState(() {});
         }
       },
@@ -234,35 +236,84 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
     );
   }
 
-  Widget _buildProductVariantList() {
-    return noItemInList
-        ? NoItemInList(
-      title: AppLocalization.of(context)!.noAddOnYet,
-      msg: AppLocalization.of(context)!.noAddOnYetSub,
-    )
-        : ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      //+1 for progressbar
-      itemCount: productVariantList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
+  Widget _buildProductAddOnList() {
+    return Stack(
+      children: [
+        noItemInList
+            ? NoItemInList(
+          title: AppLocalization.of(context)!.noAddOnYet,
+          msg: AppLocalization.of(context)!.noAddOnYetSub,
+        )
+            : ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          //+1 for progressbar
+          itemCount: productAddOnList.length + 1,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == productAddOnList.length) {
+              return buildLoadingIndicator(isLoading: isLoading);
+            } else {
+              return _getSlidableWithLists(
+                context,
+                GestureDetector(
+                  onTap: () {
+                    toggleAddOnCheckedState(index);
+                  },
+                  child: productAddOnTile(
+                    addOns: productAddOnList[index], index: index
+                  ),
+                ),
+                productAddOnList[index],
+              );
+            }
+          },
+          controller: _scrollController,
+        ),
+        Positioned(
+          bottom: 25, // Adjust the distance from the bottom as needed
+          right: 25,
+          left: 25,
 
-        if (index == productVariantList.length) {
-          return buildLoadingIndicator(isLoading: isLoading);
-        } else {
-          return _getSlidableWithLists(
-              context,
-              productVariantTile(
-                variant: productVariantList[index],
-              ),
-              productVariantList[index]);
-        }
-      },
-      controller: _scrollController,
+          child: getSubmitButton(),
+        ),
+      ],
     );
   }
 
 
-  Widget productVariantTile({required Variant variant}) {
+  Widget getSubmitButton() {
+    return CurvedButton(
+      onPressed:
+      isAPILoading
+          ? () {}
+          :
+          () async {
+        FocusScope.of(context).unfocus();
+
+        isAPILoading = true;
+        if (mounted) setState(() {});
+
+        await loadAllCheckedAddOn();
+
+        isAPILoading = false;
+        if (mounted) setState(() {});
+
+      },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Save",
+      isLoading: isAPILoading,
+    );
+  }
+
+  Widget loadAllCheckedAddOn() {
+
+    List addOnList = productAddOnList.where((addOn) => addOn.isChecked == true).toList();
+
+    Navigator.pop(context, addOnList);
+    return Container();
+  }
+
+  Widget productAddOnTile({required AddOns addOns, int? index} ) {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -277,7 +328,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                appendStringDot(variant.title!, 20),
+                appendStringDot(addOns.name!, 20),
                 maxLines: 1,
                 style: TextStyle(
                     color: blackFont,
@@ -285,125 +336,65 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                     fontSize: 18),
               ),
               Text(
-                'Available . ${variant.quantity!}',
+                '${addOns.options!.length} items',
                 maxLines: 1,
                 style: TextStyle(
                     color: blackFont.withOpacity(.5),
                     fontWeight: FontWeight.w400,
                     fontSize: 14),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    worldCurrencies[variant.currency!]!,
-                    style: TextStyle(
-                        fontFamily: "Roboto",
-                        fontSize: 18.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    moneyDisplayNormalizer(
-                        int.parse(variant.price.toString())),
-                    style: TextStyle(
-                        fontSize: 18.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ],
-              )
+
             ],
           ),
-          leading: GestureDetector(
-            onTap: () {
-              String? url = variant.serverImages![0]!;
-              Navigator.of(context)
-                  .pushNamed("/photo-viewer", arguments: url);
+
+          trailing: Checkbox(
+            value: addOns.isChecked ?? false,
+            activeColor: navyBlue,
+            onChanged: (bool? value) {
+              // Handle checkbox state change here
+              toggleAddOnCheckedState(index!);
             },
-            child: checkProductImage(variant),
           ),
+
         ),
       ),
     );
   }
 
-
-  Widget checkProductImage(Variant variant) {
-    // Retrieve the first image from the 'pictures' list
-
-    String? url = "";
-
-    for(var item in variant.serverImages!){
-      url = item;
-    }
-
-    String imageUrl = url!.replaceAll('https//', 'https://');
-    if (url == "") {
-      return CircleAvatar(
-        backgroundColor: navyBlue,
-        radius: 25,
-        child: Text(
-          getInitials(variant.title!).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w700),
-        ),
-      );
-    } else {
-      return SizedBox(
-        height: 100,
-        child: CustomBoxShadow(
-          child: Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: boxShadowTwo,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: NetworkImage(
-                      imageUrl,
-                    ),
-                    fit: BoxFit.cover),
-              ),
-            ),
-          ),
-        ),
-      );
-
+  void toggleAddOnCheckedState(int index) {
+    if (index >= 0 && index < productAddOnList.length) {
+      productAddOnList[index].isChecked = !productAddOnList[index].isChecked;
+      if(mounted)setState(() {});
     }
   }
 
   Widget _getSlidableWithLists(
-      BuildContext context, Widget bankAccountTile, Variant variant) {
+      BuildContext context, Widget bankAccountTile, AddOns addOns) {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(bankAccountTile),
-      actions: listActionSlideActions(variant: variant),
-      secondaryActions: listSecondaryActions(variant: variant),
+      actions: listActionSlideActions(addOns: addOns),
+      secondaryActions: listSecondaryActions(addOns: addOns),
     );
   }
 
-  List<Widget> listSecondaryActions({required Variant variant}) {
+  List<Widget> listSecondaryActions({required AddOns addOns}) {
     return [
       SlideActionButton(
           backgroundColor: starYellow,
           icon: Icons.edit,
           onTap:  () async {
-            final data = await Navigator.of(context).pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
-              'variant': variant,
+            final data = await Navigator.of(context).pushNamed(Routes.UPDATE_ADD_ON,
+                arguments: {
+              'addOns': addOns, 'productId': productId,
             });
 
             // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
-            if (data != null && data is Variant) {
+            if (data != null && data is AddOns) {
               //save the variant details for later use
-              // variantData = data;
               _onRefresh();
               if(mounted)setState(() {});
             }
@@ -415,29 +406,33 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
     ];
   }
 
-  List<Widget> listActionSlideActions({Variant? variant}) {
+  List<Widget> listActionSlideActions({AddOns? addOns}) {
     return [
       SlideActionButton(
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () async {
-            deleteProductVariant(variant);
+            deleteAddOn(addOns);
           },
           title: AppLocalization.of(context)!.delete,
           slideController: _slideController),
     ];
   }
 
-  void deleteProductVariant(Variant? variant) {
-    _auth.deleteVariant(variant!.id!).then((value) {
+  void deleteAddOn(AddOns? addOns) {
+    _auth.deleteAddOn(addOns!.id!).then((value) {
       if (value) {
         showToast(
             message:
-            AppLocalization.of(context)!.variantDeletedSuccessfully);
-        _onRefresh();
+            AppLocalization.of(context)!.addOnDeletedSuccessfully);
+        //remove the selected add-on from the list using it id
+        // _onRefresh();
+        productAddOnList.removeWhere((addOn) => addOn.id == addOns.id);
+        if(mounted)setState(() {});
+
       } else {
         showToast(
-            message: AppLocalization.of(context)!.variantIsNotDeleted);
+            message: AppLocalization.of(context)!.addOnIsNotDeleted);
       }
     }).catchError((error) {
       showToast(message: error.toString());

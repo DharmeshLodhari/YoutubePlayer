@@ -35,17 +35,18 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
 
   UserBloc? userBloc;
 
-  int imageCount = 5;
+  int imageCount = 1;
   final ScrollController _scrollController = ScrollController();
   List<PickedFile> productImages = [];
   List<String> croppedImageList = [];
-  String variantPrice = "";
+  String price = "";
   bool isAvailable = false;
   bool isLoading = false;
   bool isAPILoading = false;
   String name = "";
   String description = "";
   // String optionOnWhatToDo = "";
+  AddOnOption addOnOption = AddOnOption();
 
   @override
   void deactivate() {
@@ -236,8 +237,9 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
             return;
           }
 
-          // productImages.add(PickedFile(croppedImage));
-          croppedImageList.add(croppedImage);
+          productImages.add(PickedFile(croppedImage));
+          // croppedImageList.add(croppedImage);
+          addOnOption.picture = croppedImage;
           if (mounted) setState(() {});
         }
       });
@@ -289,6 +291,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
               onPressed: () {
                 setState(() {
                   productImages.removeAt(index);
+                  addOnOption.picture = "";
                 });
               },
             ),
@@ -333,7 +336,6 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     );
   }
 
-
   Widget getAmountField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.price,
@@ -344,7 +346,7 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            variantPrice = double.parse(val.replaceAll(',', '')).toString();
+            price = double.parse(val.replaceAll(',', '')).toString();
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -364,7 +366,6 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     );
   }
 
-
   Widget getIsAvailableField() {
     return CustomizedCheckBoxField(
       onTap: () {
@@ -376,7 +377,6 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     );
   }
 
-
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: isAPILoading
@@ -386,7 +386,10 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
         isAPILoading = true;
         if (mounted) setState(() {});
 
-        // await addVariant();
+        await createAddOnOption();
+        isAPILoading = false;
+        if (mounted) setState(() {});
+
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -395,27 +398,27 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
     );
   }
 
-  Future<void> addVariant() async {
+  Future<void> createAddOnOption() async {
     if (_formKey.currentState!.validate()) {
-      if (croppedImageList.length >= 1) {
-        // if (productImages.length >= 1) {
-          Variant variant = Variant();
-          // variant.localImages = productImages.map((file) => File(file.path)).toList();
-          variant.localImages = croppedImageList.map((filePath) => File(filePath)).toList();
-          variant.title = name;
-          variant.price = moneyInputNormalizer(variantPrice).toString();
-          variant.isAvailable = isAvailable;
-          variant.currency = 'NGN';
-          // if(optionOnWhatToDo == 'new'){
-          //   //send the variant detail back to the previous page
-          //   debugPrint('file path::: ${variant.localImages}');
-          //
-          //   Navigator.pop(context, variant);
-          // }else if(optionOnWhatToDo == 'edit'){
-          //   String productId = widget.arguments["productId"];
-          //   //make api call to save the variant details
-          //   saveVariant(productId, variant);
-          // }
+      if (productImages.length >= 1) {
+
+        addOnOption.name = name;
+        addOnOption.description = description;
+        addOnOption.price = moneyInputNormalizer(price).toString();
+        addOnOption.isAvailable = isAvailable;
+
+        await _auth.createAddOnOption(addOnOption,
+            widget.arguments["productId"]).then((value) async {
+
+          Navigator.pop(context, value);
+
+        }).catchError((error) {
+          debugPrint("ERROR While createAddOnOption :- $error");
+          isAPILoading = false;
+          if (mounted) setState(() {});
+          showToast(message: "$error");
+        });
+
 
       } else {
         isAPILoading = false;
@@ -427,19 +430,6 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
 
   }
 
-  Future<void> saveVariant(String productId, Variant item) async {
-    await _auth.addVariant(item, productId).then((value) {
-      Navigator.pop(context, item);
-      return true;
-
-    }).catchError((error) {
-      debugPrint(error.toString());
-      isAPILoading = false;
-      if (mounted) setState(() {});
-      showToast(message: error.toString());
-      // backValue = false;
-    });
-  }
 
   @override
   void dispose() {

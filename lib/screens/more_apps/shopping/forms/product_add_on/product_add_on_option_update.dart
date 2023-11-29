@@ -35,25 +35,26 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
   final _formKey = GlobalKey<FormState>();
 
   UserBloc? userBloc;
-  int imageCount = 5;
+  int imageCount = 1;
   final ScrollController _scrollController = ScrollController();
-  List<PickedFile> productLocalImages = [];
+  List<PickedFile> productImages = [];
   List<String?> productImagesFromServer = [];
-  String variantPrice = "";
+  String price = "";
   bool productIsAvailable = false;
   bool isLoading = false;
   bool isAPILoading = false;
-  String title = "";
+  String name = "";
   String value = "";
-  String id = "";
+  int id = 0;
   String description = "";
+  String picture = "";
   Variant? variant;
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController sizeController = TextEditingController();
-  final TextEditingController colorController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController comparePriceController = TextEditingController();
-  final TextEditingController availableFromController = TextEditingController();
+  final TextEditingController isAvailableController = TextEditingController();
+  AddOnOption addOnOption = AddOnOption();
 
 
   @override
@@ -64,23 +65,20 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
 
   @override
   void initState() {
-    // variant = widget.arguments["variant"];
+    addOnOption = widget.arguments["addOnOption"];
 
     // debugPrint('Fola varaint::: ${variant!.toJson()}');
 
-    id = variant!.id.toString();
-    titleController.text = variant!.title!.toString();
-    sizeController.text = variant!.value!.toString();
-    colorController.text = variant!.colour!.toString();
-    priceController.text = moneyNormalizer(int.parse(variant!.price!)).toString();
-    availableFromController.text = variant!.availableFrom!.toString();
-    productIsAvailable = variant!.isAvailable!;
+    id = addOnOption.id!;
+    nameController.text = addOnOption.name!.toString();
+    descriptionController.text = addOnOption.description!.toString();
+    priceController.text = moneyNormalizer(int.parse(addOnOption.price!)).toString();
+    productIsAvailable = addOnOption.isAvailable!;
 
-    productImagesFromServer.addAll(variant!.serverImages!);
-    title = variant!.title!.toString();
-
-    variantPrice = moneyNormalizer(int.parse(variant!.price!)).toString();
-    productIsAvailable = variant!.isAvailable!;
+    picture = addOnOption.picture!;
+    name = addOnOption.name!.toString();
+    description = addOnOption.description!.toString();
+    price = moneyNormalizer(int.parse(addOnOption.price!)).toString();
 
 
     super.initState();
@@ -107,8 +105,9 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.white,
-      titleSpacing: 0,
+      titleSpacing: 20,
       automaticallyImplyLeading: false,
+      centerTitle: false,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
@@ -120,7 +119,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.updateVariant,
+        AppLocalization.of(context)!.option,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -142,15 +141,14 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
 
-                checkImageLimitForServerImage()
-                    ? viewServerImages()
+                picture.isNotEmpty
+                    ? showServerImage()
                     : Container(),
 
-                const SizedBox(height: 10),
-                checkImageLimitForLocalImage()
-                    ? addLocalImages()
-                    : Container(),
-                // addImages(),
+                if(picture.isEmpty)...[
+                  const SizedBox(height: 10),
+                  addImages(),
+                ],
 
                 const SizedBox(height: 10),
                 addTitleField(),
@@ -191,12 +189,12 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: productLocalImages.length + 1,
+        itemCount: productImages.length + 1,
         itemBuilder: (context, index) => Container(
           padding: const EdgeInsets.only(right: 6),
-          child: index != productLocalImages.length
+          child: index != productImages.length
               ? showImage(index)
-              : productLocalImages.length != imageCount
+              : productImages.length != imageCount
               ? addImageButton()
               : null,
         ),
@@ -269,7 +267,8 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
             return;
           }
 
-          productLocalImages.add(PickedFile(croppedImage));
+          productImages.add(PickedFile(croppedImage));
+          addOnOption.picture = croppedImage;
           if (mounted) setState(() {});
         }
       });
@@ -294,7 +293,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
                     image: FileImage(
-                      File(productLocalImages[index].path),
+                      File(productImages[index].path),
                     ),
                     fit: BoxFit.fill),
               ),
@@ -320,7 +319,8 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
               ),
               onPressed: () {
                 setState(() {
-                  productLocalImages.removeAt(index);
+                  productImages.removeAt(index);
+                  addOnOption.picture = "";
                 });
               },
             ),
@@ -330,22 +330,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
     );
   }
 
-  Widget viewServerImages() {
-    return Container(
-      height: 100,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: productImagesFromServer.length,
-        itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
-          child: showServerImage(index),
-        ),
-      ),
-    );
-  }
-
-  Widget showServerImage(int index) {
+  Widget showServerImage() {
     return Container(
       height: 100,
       child: Stack(
@@ -364,7 +349,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
                       image: NetworkImage(
-                        productImagesFromServer[index]!,
+                        picture,
                       ),
                       fit: BoxFit.fill),
                 ),
@@ -390,19 +375,8 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
                 ),
               ),
               onPressed: () {
-                // var imageId = currentProduct.getImageId(productImagesFromServer[index]);
-                // debugPrint("imageId:- $imageId");
-                // _auth.deleteProductOrServiceImage(imageId).then((value) {
-                //   if (value) {
-                //     if (mounted) {
-                //       setState(() {
-                //         productImagesFromServer.removeAt(index);
-                //       });
-                //     }
-                //   }
-                // }).catchError((error) {
-                //   debugPrint("ERROR " + error.toString());
-                // });
+                picture = "";
+                if(mounted)setState(() {});
               },
             ),
           )
@@ -411,102 +385,11 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
     );
   }
 
-  bool checkImageLimitForServerImage() {
-    if (productLocalImages.length + productImagesFromServer.length !=
-        imageCount ||
-        productImagesFromServer.length != 0) {
-      return true;
-    }
-    return false;
-  }
-
-  // decide that localImage List is need to be show or not
-  bool checkImageLimitForLocalImage() {
-    if (productLocalImages.length + productImagesFromServer.length !=
-        imageCount ||
-        productLocalImages.length != 0) {
-      return true;
-    }
-    return false;
-  }
-
-  Widget addLocalImages() {
-    return Container(
-      height: 100,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: productLocalImages.length + 1,
-        itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
-          child: index != productLocalImages.length
-              ? showLocalImage(index)
-              : productLocalImages.length + productImagesFromServer.length !=
-              imageCount
-              ? addImageButton()
-              : null,
-        ),
-      ),
-    );
-  }
-
-  Widget showLocalImage(int index) {
-    return Stack(
-      children: <Widget>[
-        Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          shadowColor: dividerColor,
-          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-          child: Container(
-            width: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                  image: FileImage(
-                    File(productLocalImages[index].path),
-                  ),
-                  fit: BoxFit.fill),
-            ),
-          ),
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          child: IconButton(
-            padding: EdgeInsets.only(right: 6, top: 6),
-            alignment: Alignment.topRight,
-            icon: Container(
-              padding: EdgeInsets.all(2.0),
-              decoration: BoxDecoration(
-                color: iconBtnGrey,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Icon(
-                SlydoAppIcon.remove,
-                color: blackFont,
-                size: 15,
-              ),
-            ),
-            onPressed: () {
-              if (mounted) {
-                setState(() {
-                  productLocalImages.removeAt(index);
-                });
-              }
-            },
-          ),
-        )
-      ],
-    );
-  }
 
   Widget addTitleField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.title,
-      controller: titleController,
+      controller: nameController,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -514,7 +397,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
         return AppLocalization.of(context)!.pleaseEnterTitle;
       },
       onChanged: (val) {
-        title = val;
+        name = val;
       },
     );
   }
@@ -525,7 +408,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
         maxLines: 3,
         labelText: "Description",
         textCapitalization: TextCapitalization.sentences,
-        // controller: groupDescriptionController,
+        controller: descriptionController,
         validator: (val) {
           if (val.isNotEmpty) {
             return null;
@@ -550,7 +433,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            variantPrice = double.parse(val.replaceAll(',', '')).toString();
+            price = double.parse(val.replaceAll(',', '')).toString();
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -570,7 +453,6 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
     );
   }
 
-
   Widget getIsAvailableField() {
     return CustomizedCheckBoxField(
       onTap: () {
@@ -578,10 +460,9 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
         setState(() {});
       },
       isChecked: productIsAvailable,
-      title: "Is product available now?",
+      title: "Available",
     );
   }
-
 
   Widget getSubmitButton() {
     return CurvedButton(
@@ -592,7 +473,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
         isAPILoading = true;
         if (mounted) setState(() {});
 
-        // await updateVariant();
+        await updateAddOnOption();
 
         isAPILoading = false;
         if (mounted) setState(() {});
@@ -604,39 +485,37 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
     );
   }
 
-  Future<void> updateVariant() async {
+  Future<void> updateAddOnOption() async {
     if (_formKey.currentState!.validate()) {
-      if (productLocalImages.length >= 0) {
+      if (productImages.length >= 1 || picture.isNotEmpty) {
 
-          Variant variant = Variant();
-          variant.id = id;
-          variant.localImages =
-              productLocalImages.map((file) => File(file.path)).toList();
-          variant.title = title;
-          // variant.colour = color;
-          // variant.value = value;
-          // variant.quantity = inventoryCount.toString();
-          // variant.type = selectedType;
-          variant.price = moneyInputNormalizer(variantPrice).toString();
-          variant.isAvailable = productIsAvailable;
-          // variant.availableFrom = productAvailableFrom;
-          // variant.trackInventory = trackInventory;
-          variant.currency = 'NGN';
+        addOnOption.name = name;
+        addOnOption.description = description;
+        addOnOption.price = moneyInputNormalizer(price).toString();
+        addOnOption.isAvailable = productIsAvailable;
+        addOnOption.picture = picture.isNotEmpty ? picture : addOnOption.picture;
 
-          await _auth.updateVariant(variant, id).then((value) {
-            Navigator.pop(context, variant);
-            return true;
+        await _auth.updateAddOnOption(addOnOption,
+            widget.arguments["productId"]).then((value) async {
 
-          }).catchError((error) {
-            debugPrint(error.toString());
-            showToast(message: error.toString());
-          });
+          Navigator.pop(context, value);
+
+        }).catchError((error) {
+          debugPrint("ERROR While createAddOnOption :- $error");
+          isAPILoading = false;
+          if (mounted) setState(() {});
+          showToast(message: "$error");
+        });
 
 
       } else {
+        isAPILoading = false;
+        if (mounted) setState(() {});
         showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
+
     }
+
   }
 
   @override

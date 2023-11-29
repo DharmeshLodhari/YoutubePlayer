@@ -1,3 +1,4 @@
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/moments/models/comment_model.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
@@ -15,9 +16,11 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/tiles/moment_tab_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../../utils/util.dart';
 import '../event_list.dart';
 
 double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
@@ -79,7 +82,10 @@ fetchYarnData(String? searchedUserName, String isChannel) async {
   Map<String, dynamic>? data;
   try {
     data = await YarnAuth().getAllYarn("", "",
-        type: "my-topics", isType: false, userName: searchedUserName, isChannel: isChannel);
+        type: "my-topics",
+        isType: false,
+        userName: searchedUserName,
+        isChannel: isChannel);
   } catch (error) {}
   if (data != null) {
     // debugPrint('IS SHOW YARN ---> $data');
@@ -110,8 +116,8 @@ fetchChannelData(String? searchedUserName) async {
 fetchPostData(String? searchedUserName, String? channelUserName) async {
   Map<String, dynamic>? data;
   try {
-    data = await UserPostAuth()
-        .listUserPosts(next: '', userName: searchedUserName, channelUserName: channelUserName);
+    data = await UserPostAuth().listUserPosts(
+        next: '', userName: searchedUserName, channelUserName: channelUserName);
   } catch (error) {
     debugPrint('IS SHOW POST error ---> $error');
   }
@@ -130,8 +136,8 @@ fetchPostData(String? searchedUserName, String? channelUserName) async {
 fetchMomentData(String? searchedUserName, String? channelUsername) async {
   List<MomentsModel> momentsModel = [];
   try {
-    momentsModel = await MomentsService()
-        .getMomentsWithOwnerName(ownerName: searchedUserName!, channelUsername: channelUsername);
+    momentsModel = await MomentsService().getMomentsWithOwnerName(
+        ownerName: searchedUserName!, channelUsername: channelUsername);
   } catch (error) {}
   if (momentsModel.isNotEmpty) {
     // debugPrint('IS SHOW MOMENTS ---> $momentsModel');
@@ -174,10 +180,7 @@ fetchServiceData(String? searchedUserName) async {
 
 Widget yarnTab(String? searchedUserName, String isChannel) {
   return KeepAlivePage(
-      child: MyFeedView(
-    userName: searchedUserName,
-        isChannel: isChannel
-  ));
+      child: MyFeedView(userName: searchedUserName, isChannel: isChannel));
 }
 
 Widget channelTab(String? searchedUserName) {
@@ -196,17 +199,15 @@ Widget postTab(CustomerProfile? searchedUser, String? channelUserName) {
 
 Widget momentTab(CustomerProfile? searchedUser, String channelUsername) {
   return KeepAlivePage(
-    child: MomentsTab(searchedUser: searchedUser, channelUsername: channelUsername),
+    child: MomentsTab(
+        searchedUser: searchedUser, channelUsername: channelUsername),
   );
 }
 
 Widget productTab(CustomerProfile? searchedUser, bool isOwner, bool isChannel) {
   return KeepAlivePage(
     child: UserProductList(
-      user: searchedUser,
-      isOwner: isOwner,
-      channel: isChannel
-    ),
+        user: searchedUser, isOwner: isOwner, channel: isChannel),
   );
 }
 
@@ -241,11 +242,11 @@ String getInitials(String fullName) {
   }
 
   final words = fullName.trim().split(' ');
-  final initials = words.where((word) => word.isNotEmpty).map((word) => word[0]);
+  final initials =
+      words.where((word) => word.isNotEmpty).map((word) => word[0]);
 
   return initials.take(2).join();
 }
-
 
 String getGroupUsername(String channelUsername) {
   if (channelUsername.contains(' ')) {
@@ -253,4 +254,33 @@ String getGroupUsername(String channelUsername) {
   } else {
     return channelUsername;
   }
+}
+
+Widget showDiscountValue(String discountType, num discountValue, currency) {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+    decoration: BoxDecoration(
+        color: verifyGreen, borderRadius: BorderRadius.circular(5)),
+    child: Text(
+      "-" +
+          (discountType == "percentage"
+              ? discountValue.toString() + "%"
+              : worldCurrencies[currency!]! +  moneyDisplayNormalizer(discountValue.toInt()).toString()),
+      style: TextStyle(
+        color: white,
+        fontSize: 8,
+        fontFamily: 'Roboto',
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  );
+}
+
+bool checkDiscount(bool discountIsActive, num discountedPrice, num price) {
+  if (discountIsActive &
+      (discountedPrice != null) &
+      (price != discountedPrice)) {
+    return true;
+  }
+  return false;
 }

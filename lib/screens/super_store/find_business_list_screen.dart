@@ -16,8 +16,8 @@ import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 class FindBusinessListScreen extends StatefulWidget {
   Function(bool)? onPageRefresh;
   String? category;
-
-  FindBusinessListScreen({Key? key, this.onPageRefresh, this.category}) : super(key: key);
+  final String? industry;
+  FindBusinessListScreen({Key? key, this.onPageRefresh, this.category, this.industry}) : super(key: key);
 
   @override
   State<FindBusinessListScreen> createState() => FindBusinessListScreenState();
@@ -300,87 +300,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     if (isFindBusinessLoading && isNearbyLoading) {
       return _buildLoadingIndicator();
     } else {
-      return NestedScrollView(
-        controller: scrollController,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverOverlapAbsorber(
-              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-              sliver: SliverAppBar(
-                floating: true,
-                elevation: 0,
-                stretch: true,
-                automaticallyImplyLeading: false,
-                titleSpacing: 0,
-                title:
-                Column(
-                  children: [
-                    const SizedBox(height: 30.0,),
-                    Container(
-                      margin: const EdgeInsets.only(left: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            "Nearby Businesses",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18,
-                              color: blackFont,
-                            ),
-                          ),
-                          GestureDetector(
-                            child: Row(
-                              children: [
-                                Text(
-                                  "View more",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                      color: blackFont),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(Icons.arrow_forward_ios_sharp,
-                                    size: 14, color: blackFont),
-                              ],
-                            ),
-                            onTap: () {
-                              Navigator.of(context).pushNamed(Routes.NEAR_BY_LIST_SCREEN,
-                                  arguments: {"customerProfile": customerProfileListNearBy,
-                                    "count": nearByCount,
-                                    "next": nearByNext
-                                  });
-
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 50.0,),
-                  ],
-                ),
-                // Text(_isAppBarExpanded ? '' : 'check', style: TextStyle(
-                //   fontWeight: FontWeight.w700,
-                //   fontSize: 18,
-                //   color: blackFont,
-                // ),),
-                expandedHeight: 250, // Set the desired expanded height of the app bar
-                backgroundColor: Colors.transparent,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Column(
-                    children: [
-                      if(customerProfileListNearBy.isNotEmpty)...[
-                        const SizedBox(height: 30.0,),
-                        nearByBuildView(),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ];
-        },
-        body: Column(
+      return  Column(
           children: [
             if (customerProfileList.isNotEmpty) ...[
               // const SizedBox(height: 10.0,),
@@ -389,7 +309,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Suggestions",
+                    "Found ${findBusinessCount} store${findBusinessCount! > 0 ? "s" : ""}",
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18,
@@ -413,9 +333,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
               ),
             ),
           ],
-        ),
-
-      );
+        );
     }
   }
 
@@ -481,53 +399,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     );
   }
 
-  Widget nearByBuildView() {
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (var item in customerProfileListNearBy)
-            Container(
-              width: 200,
-              // height: 200,
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              child: GestureDetector(
-                onTap: (){
-                  Navigator.pushNamed(
-                      context, Routes.USER_PROFILE, arguments: {
-                    "searchedUserName": item.userName
-                  });
-                },
-                child: FindBusiness(
-                  customerProfile: item,
-                  tileRenderPlace: TileRenderPlace.Thiny,
-                  callback: (username, value) {
-                    //create a list to edit
-                    List<CustomerProfile> customerProfileListEdit = customerProfileListNearBy;
-
-                    // modify customerProfileList for the username and refresh the list
-                    // set the isFollowing for that particular user
-                    for (var customer in customerProfileListEdit) {
-                      if (customer.userName == username) {
-                        customer.isFollowing = value; // Modify the isFollowing property
-                      }
-                    }
-
-                    customerProfileListNearBy = [];
-                    customerProfileListNearBy = customerProfileListEdit;
-
-                    if(mounted)setState(() {});
-
-                  },
-                ),
-              ),
-            )
-
-        ],
-      ),
-    );
-  }
+ 
 
 }
 

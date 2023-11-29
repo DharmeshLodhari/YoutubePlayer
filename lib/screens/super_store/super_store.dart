@@ -1,14 +1,21 @@
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:shimmer/shimmer.dart';
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
@@ -19,27 +26,50 @@ import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
 import '../more_apps/yarn/yarn_setting_screen.dart';
 
 class SuperStore extends StatefulWidget {
-  const SuperStore({Key? key}) : super(key: key);
+  var arguments;
+  SuperStore({Key? key, this.arguments}) : super(key: key);
 
   @override
   State<SuperStore> createState() => _SuperStoreState();
 }
 
 class _SuperStoreState extends State<SuperStore> {
-
   int? productCount = 0;
   late BasketBloc basketBloc;
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   bool _tabsVisible = true;
   String categoryName = '';
-
+  String firstTabName = 'Shop';
+  String secondTabName = 'Find Stores';
+  String? appTitle;
+  List<String> categoryList = [];
+  String url = "";
+  String nextUrl = "";
+  dynamic categoryId = null;
+  List<Product> productList = [];
+  bool isProductLoading = false;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
     _pageViewController = PageController(initialPage: 0);
+    updateAppSetup(widget.arguments['industry']);
+    getIndustryUrls(widget.arguments['industry']);
     super.initState();
+  }
 
+ @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
+  }   
+  
+  @override
+  void dispose() {
+    yarnDashboardBloc.refreshProductCategories();
+    super.dispose();
   }
 
   void _showTabs(bool visible) {
@@ -47,6 +77,68 @@ class _SuperStoreState extends State<SuperStore> {
       setState(() {
         _tabsVisible = visible;
       });
+    }
+  }
+
+  getIndustryUrls(ProductIndustryResults industry) {
+    setState(() {
+      url = AppConfig.baseUrl +
+          "/api/v1/products/categories/?industry=${industry.id}";
+      nextUrl = AppConfig.baseUrl +
+          "/api/v1/products/super-store-industry/?industry=${industry.id}";
+    });
+  }
+
+  updateAppSetup(ProductIndustryResults industry) {
+    switch (industry.name) {
+      case 'Restaurant/Cafe':
+        setState(() {
+          secondTabName = 'Find Restaurants';
+          appTitle = industry.name;
+          categoryList = [];
+        });
+        return;
+      case 'Liquor Store':
+        setState(() {
+          appTitle = industry.name;
+          categoryList = [];
+        });
+        return;
+      case 'Grocery Store':
+        setState(() {
+          appTitle = industry.name;
+          categoryList = [];
+        });
+        return;
+      case 'Retail':
+        setState(() {
+          appTitle = industry.name;
+          categoryList = [];
+        });
+        return;
+      case 'Pharmaceutical':
+        setState(() {
+          appTitle = industry.name;
+          categoryList = [];
+        });
+        return;
+      case 'Electronics Store':
+        setState(() {
+          appTitle = industry.name;
+          categoryList = [];
+        });
+        return;
+      case 'Furniture':
+        setState(() {
+          appTitle = industry.name;
+          categoryList = [];
+        });
+        return;
+      default:
+        setState(() {
+          appTitle = "";
+        });
+        return;
     }
   }
 
@@ -59,14 +151,13 @@ class _SuperStoreState extends State<SuperStore> {
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),
     );
-
   }
 
   Widget _buildAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        AppLocalization.of(context)!.superStore,
+        appTitle!,
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,
@@ -87,7 +178,9 @@ class _SuperStoreState extends State<SuperStore> {
         },
       ),
       shadowColor: greySecondaryYarn,
-      actions: currentAskTapOnHome == 0 ? _buildAppBarActionsShopList() : _buildAppBarActionsFindBusiness(),
+      actions: currentAskTapOnHome == 0
+          ? _buildAppBarActionsShopList()
+          : _buildAppBarActionsFindBusiness(),
       elevation: 0.5,
     );
   }
@@ -97,7 +190,9 @@ class _SuperStoreState extends State<SuperStore> {
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
-            Navigator.of(context).pushNamed("/search-product");
+            ProductIndustryResults industryQuery = widget.arguments['industry'];
+            Navigator.of(context).pushNamed("/search-product",
+                arguments: {"industry": industryQuery.id});
           },
           height: 15,
           width: 15,
@@ -109,7 +204,6 @@ class _SuperStoreState extends State<SuperStore> {
       SizedBox(width: 20),
       _cartBtn(),
       SizedBox(width: 20),
-
     ];
   }
 
@@ -174,13 +268,13 @@ class _SuperStoreState extends State<SuperStore> {
           return true;
         }
 
-        if (scrollNotification is ScrollUpdateNotification) {
-          if (scrollNotification.scrollDelta! > 0 && _tabsVisible) {
+        if (scrollNotification is UserScrollNotification) {
+          if (scrollNotification.direction == ScrollDirection.reverse && _tabsVisible) {
             // Scrolling down
-            _showTabs(false);
-          } else if (scrollNotification.scrollDelta! < 0 && !_tabsVisible) {
+              _showTabs(false);
+          } else if (scrollNotification.direction == ScrollDirection.forward && !_tabsVisible) {
             // Scrolling up
-            _showTabs(true);
+              _showTabs(true);
           }
         }
 
@@ -191,7 +285,9 @@ class _SuperStoreState extends State<SuperStore> {
           SizedBox(
             height: 16,
           ),
-          _buildCategoryAndTabs(),
+           AnimatedSwitcher(
+            duration: const Duration(milliseconds: 1000),
+            child: _tabsVisible ?  Container(key: Key("1"), child: _buildCategoryAndTabs()) : Container(key: Key("2"),)),
           _buildPageView(),
         ],
       ),
@@ -199,10 +295,12 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildCategoryAndTabs() {
+    ProductIndustryResults productUrl = widget.arguments['industry'];
     return Column(
       children: [
-
         if (_tabsVisible) ...[
+          Column(
+            children: [
           YarnTabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
@@ -211,19 +309,33 @@ class _SuperStoreState extends State<SuperStore> {
               if (mounted) setState(() {});
             },
             currentIndex: currentAskTapOnHome,
-            firstTab: 'Shop',
-            secondTab: 'Find Businesses',
+            firstTab: firstTabName,
+            secondTab: secondTabName,
           ),
           SizedBox(
             height: 16,
           ),
+            ])
         ],
-        if (_tabsVisible) ...[
-          ProductCategorySelection(
-            callback: (category, val){
-              categoryName = category;
-              if(mounted)setState(() {});
-            },
+        if (_tabsVisible && currentAskTapOnHome == 0) ...[
+          Container(
+            alignment: Alignment.centerLeft,
+            child: ProductCategorySelection(
+                callback: (category, id, val) {
+                  categoryName = category;
+                  categoryId = id;
+                  if (id == "") {
+                    nextUrl = AppConfig.baseUrl +
+                        "/api/v1/products/super-store-industry/?industry=${productUrl.id}";
+                  } else {
+                    nextUrl = AppConfig.baseUrl +
+                        "/api/v1/products/?industry=${productUrl.id}&category=$id";
+                  }
+                  if (mounted) setState(() {});
+                },
+                categoryName: categoryName,
+                next_url: AppConfig.baseUrl +
+                    "/api/v1/products/categories/?industry=${productUrl.id}"),
           ),
           SizedBox(height: 14),
           Divider(
@@ -233,7 +345,6 @@ class _SuperStoreState extends State<SuperStore> {
           ),
           SizedBox(height: 8),
         ],
-
       ],
     );
   }
@@ -246,26 +357,118 @@ class _SuperStoreState extends State<SuperStore> {
         },
         controller: _pageViewController,
         children: [
-          ShopListScreen(
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-            category: categoryName,
-
-          ),
+          categoryId == null || categoryId == ""
+              ? ShopListScreen(
+                  onPageRefresh: (bool data) {
+                    if (data == true) {
+                      // _showTabs(true);
+                    }
+                  },
+                  category: categoryName,
+                  industry: appTitle!,
+                  nextUrl: nextUrl,
+                  type: categoryId == null || categoryId == ""
+                      ? "sessions"
+                      : null)
+              : FutureBuilder(
+                  future: getProducts(),
+                  builder: (context, snapshot) {
+                    print(snapshot.data);
+                    print("_________________________");
+                    if (snapshot.hasData) {
+                      List<Product> result = snapshot.data as List<Product>;
+                      return result.isEmpty
+                          ? Center(
+                              child: NoItemInList(
+                                msg: AppLocalization.of(context)!.noResultFound,
+                              ),
+                            )
+                          : ListView(children: [
+                              superStoreProducts(result)
+                              // Text("data"),
+                            ]);
+                    } else if (snapshot.hasError) {
+                      return SizedBox();
+                    } else {
+                      return Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisSpacing: 14,
+                            mainAxisExtent: 180,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
+                          ),
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }
+                  }),
           FindBusinessListScreen(
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-            category: categoryName,
-          )
+              onPageRefresh: (bool data) {
+                if (data == true) {
+                  _showTabs(true);
+                }
+              },
+              category: categoryName,
+              industry: appTitle)
         ],
       ),
     );
+  }
+
+  Widget superStoreProducts(List<Product> data) {
+    if (productList.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    // return productNext == "" && isProductLoading
+    //     ? const SizedBox.shrink()
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        data.isEmpty ? const SizedBox.shrink() : const SizedBox(height: 16),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            mainAxisSpacing: 22,
+            mainAxisExtent: 274,
+            crossAxisSpacing: 15,
+            maxCrossAxisExtent: 200,
+          ),
+          itemCount: data.length,
+          itemBuilder: (context, index) {
+            return SuperStoreSingleCard(
+              product: data[index],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Future<List<Product>> getProducts() async {
+    setState(() {
+      productList = [];
+    });
+    Map<String, dynamic>? result = await ShoppingAuthService()
+        .listOfProduct(nextUrl, "", "", false, otherDeals: false);
+
+    var tempList = result!['results'];
+    productList.addAll(tempList);
+    return productList;
   }
 
   void updateCurrentAskTapOnHome({required int index}) {
@@ -273,7 +476,6 @@ class _SuperStoreState extends State<SuperStore> {
       currentAskTapOnHome = index;
     });
   }
-
 
   Widget _cartBtn() {
     return RoundedBackgroundIcon(
@@ -330,7 +532,7 @@ class _SuperStoreState extends State<SuperStore> {
   String getBadgeCount() {
     int totalItem = 0;
     basketBloc.items.forEach((element) {
-      totalItem = totalItem +  int.parse(element['qty'].toString());
+      totalItem = totalItem + int.parse(element['qty'].toString());
     });
     // for (var item in basketBloc.items) {
     //
@@ -354,6 +556,5 @@ class _SuperStoreState extends State<SuperStore> {
     // }
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
+
 }
-
-

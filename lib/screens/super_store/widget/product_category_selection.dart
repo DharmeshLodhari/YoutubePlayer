@@ -12,9 +12,11 @@ import 'package:provider/provider.dart';
 import '../shop_category_screen.dart';
 
 class ProductCategorySelection extends StatefulWidget {
-  final Function(String, bool)? callback;
+  final Function(String, dynamic ,bool)? callback;
+  final String? next_url;
+  final String? categoryName;
 
-   ProductCategorySelection({Key? key, this.callback}) : super(key: key);
+   ProductCategorySelection({Key? key, this.callback, this.next_url, this.categoryName}) : super(key: key);
 
   @override
   State<ProductCategorySelection> createState() => _ProductCategorySelectionState();
@@ -32,7 +34,13 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
 
   @override
   void initState() {
+    
     getProductCategoriesList();
+    if(widget.categoryName!.isNotEmpty){
+      setState(() {
+        selectedCategory = widget.categoryName!;
+      });
+    }
     super.initState();
   }
 
@@ -51,42 +59,43 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          const SizedBox(
-            width: 16,
-          ),
-          ...List.generate(
-            yarnDashboardBloc.productCategories.length,
-            (i) {
-              return Row(
-                children: [
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  CategoryChip(
-                    onTap: () {
-                        // Call the callback function and pass the values
-                        widget.callback!(yarnDashboardBloc.productCategories[i].name, true);
-                        selectedCategory = yarnDashboardBloc.productCategories[i].name;
-
-                        if(mounted)setState(() {});
-
-                    },
-                    title: yarnDashboardBloc.productCategories[i].name,
-                    categoryColor:
-                    selectedCategory == yarnDashboardBloc.productCategories[i].name
-                            ? darkGreyYarn
-                            : greyBackground,
-                    selectedCategoryTextColor: HexColor("#000000"),
-                    borderColor: greySecondaryYarn,
-                    selected: selectedCategory == yarnDashboardBloc.productCategories[i].name,
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
+      child: Container(
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 16,
+            ),
+            ...List.generate(
+              yarnDashboardBloc.productCategories.length,
+              (i) {
+                return Row(
+                  children: [
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    CategoryChip(
+                      onTap: () {
+                          // Call the callback function and pass the values
+                          widget.callback!(yarnDashboardBloc.productCategories[i].name, yarnDashboardBloc.productCategories[i].id, true);
+                          selectedCategory = yarnDashboardBloc.productCategories[i].name;
+                          if(mounted)setState(() {});
+      
+                      },
+                      title: yarnDashboardBloc.productCategories[i].name,
+                      categoryColor:
+                      selectedCategory == yarnDashboardBloc.productCategories[i].name
+                              ? darkGreyYarn
+                              : greyBackground,
+                      selectedCategoryTextColor: HexColor("#000000"),
+                      borderColor: greySecondaryYarn,
+                      selected:  selectedCategory == yarnDashboardBloc.productCategories[i].name,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -98,8 +107,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result =
-            await YarnAuth().getProductCategories(next, previous!);
-
+            await YarnAuth().getProductCategories(widget.next_url, previous!);
         if (result == null) {
           noCategoriesList = true;
 
@@ -109,6 +117,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
           }
           return;
         }
+        
 
         count = result['count'];
         next = result['next'];
@@ -132,4 +141,5 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
       }
     }
   }
+  
 }

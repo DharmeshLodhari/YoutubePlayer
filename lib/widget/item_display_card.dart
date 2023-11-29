@@ -58,7 +58,6 @@ class _DisplayProductState extends State<DisplayProduct> {
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-
     return GestureDetector(
       onTap: () {
         if (showAddToCartButton == false) {
@@ -83,12 +82,17 @@ class _DisplayProductState extends State<DisplayProduct> {
         currentProduct.manufacturer = widget.product.manufacturer;
         currentProduct.serverImages = widget.product.serverImages;
         currentProduct.rating = widget.product.rating;
+        currentProduct.discountValue = widget.product.discountValue;
+        currentProduct.discountIsActive = widget.product.discountIsActive;
+        currentProduct.discountType = widget.product.discountType;
+        currentProduct.discountedPrice = widget.product.discountedPrice;
         Navigator.pushNamed(context, '/product',
             arguments: {"product": currentProduct});
       },
       child: SizedBox(
         width: 200,
-        child: Card(
+        child: 
+        Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,
           color: Colors.white,
@@ -126,7 +130,15 @@ class _DisplayProductState extends State<DisplayProduct> {
                         child: getRating(
                             numberOfRating: widget.product.rating?.toInt()),
                       ),
-                      if(widget.product.pricePercentageChange != 0.0)...[
+                       widget.product.discountedPrice != null ?
+                      (checkDiscount(widget.product.discountIsActive!, widget.product.discountedPrice!, num.parse(widget.product.price!))) ?
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: showDiscountValue(widget.product.discountType!, widget.product.discountValue!, widget.product.currency)
+                      ) : SizedBox() : SizedBox(),
+
+                      if((widget.product.pricePercentageChange != null) & (widget.product.pricePercentageChange != 0.0) )...[
                         Positioned(
                           top: 8,
                           right: 8,
@@ -137,7 +149,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                               borderRadius: BorderRadius.all(Radius.circular(8)),
                             ),
                             child: Text(
-                              "${widget.product.pricePercentageChange!.toInt()}% off",
+                              "${widget.product.pricePercentageChange!.toString()}% off",
                               style: TextStyle(
                                 color: Colors.white,
                               ),
@@ -194,23 +206,80 @@ class _DisplayProductState extends State<DisplayProduct> {
                         Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text(
-                                worldCurrencies[widget.product.currency!]!,
-                                style: TextStyle(
-                                  fontFamily: "Roboto",
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.8,
-                                  color: navyBlue,
-                                ),
-                              ),
-                              Text(
-                                moneyDisplayNormalizer(
-                                    int.parse(widget.product.price!)),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: navyBlue,
-                                ),
+                              
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        worldCurrencies[
+                                            widget.product.currency!]!,
+                                        style: TextStyle(
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14.8,
+                                          color: navyBlue,
+                                        ),
+                                      ),
+                                      Text(
+                                        moneyDisplayNormalizer(
+                                            int.parse(
+                                               widget
+                                            .product
+                                            .discountedPrice != null ?
+                                              ((checkDiscount(
+                                                    widget.product
+                                                        .discountIsActive!,
+                                                    widget.product
+                                                        .discountedPrice!,
+                                                    num.parse(
+                                                        widget.product.price!)))
+                                              ? widget.product.discountedPrice.toString() :   widget.product.price!) : widget.product.price!
+                                              )
+                                        ),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: navyBlue,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 5),
+                                  widget.product.discountedPrice != null ?
+                                  (checkDiscount(widget.product.discountIsActive!, widget.product.discountedPrice!, num.parse(widget.product.price!))) ?
+                                   Row(
+                                    children: [
+                                      Text(
+                                        worldCurrencies[
+                                            widget.product.currency!]!,
+                                        style: TextStyle(
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 12.8,
+                                          color: navyBlue,
+                                                    decoration:
+                                              TextDecoration.lineThrough,
+
+                                        ),
+                                      ),
+                                      Text(
+                                        moneyDisplayNormalizer(
+                                            int.parse(widget.product.price!)),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 12,
+                                          color: navyBlue,
+                                                    decoration:
+                                              TextDecoration.lineThrough,
+
+                                        ),
+                                      ),
+                                    ],
+                                  ) : SizedBox() : SizedBox(),
+                                  
+                                ],
                               ),
                               const Expanded(child: SizedBox(width: 40)),
                               displayShoppingAddingToCartControl()
@@ -218,6 +287,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                       ],
                     ),
                   ),
+                
                 ],
               ),
             ),
@@ -226,6 +296,8 @@ class _DisplayProductState extends State<DisplayProduct> {
       ),
     );
   }
+
+
 
   void showProductProfileActionsSheet() {
     showModalBottomSheet<void>(

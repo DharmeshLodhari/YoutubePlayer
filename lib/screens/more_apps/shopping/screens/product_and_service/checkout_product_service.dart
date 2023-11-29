@@ -214,13 +214,30 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     return variant;
   }
 
+  Map? getAddOnAsMap(){
+    Map<dynamic, dynamic>? variant = {};
+
+    for (var product in basketBloc.productOrService) {
+      // Access the 'key' in the outer map
+      if (product.containsKey('results')) {
+        var results = product['add_ons'];
+        variant = results;
+      }
+    }
+    return variant;
+  }
+
   getSubTotalPrice() {
     Map<dynamic, dynamic>? variant = getVariantAsMap();
+    Map<dynamic, dynamic>? addOn = getAddOnAsMap();
 
     if(variant!['id'] != null && variant['id'].isNotEmpty){
 
      return int.parse(variant['current_price'].toString());
-    }else{
+    }else if(addOn!.isNotEmpty){
+      return int.parse(addOn['current_price'].toString());
+    }
+    else{
       return int.tryParse(result!['price']);
     }
 
@@ -448,4 +465,5 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       if (mounted) setState(() {});
     }
   }
+
 }

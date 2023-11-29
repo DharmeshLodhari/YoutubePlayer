@@ -16,6 +16,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:textfield_tags/textfield_tags.dart';
 
 import '../../../../data/currency.dart';
 import '../../../../routes/route_constants.dart';
@@ -37,8 +38,12 @@ class _AddProductState extends State<AddProduct> {
   UserBloc? userBloc;
 
   ProductCategory? pressedCategory;
+  ProductCategory? pressedSubCategory;
   ProductCategory? selectedProductCategory;
+  ProductCategory? selectedSubCategory;
   ProductCondition? selectedProductCondition;
+  ProductCondition? selectedDeliveryTimeCondition;
+  final myController = TextEditingController();
 
   int imageCount = 5;
   final ScrollController _scrollController = ScrollController();
@@ -47,16 +52,30 @@ class _AddProductState extends State<AddProduct> {
   String productDescription = "";
   String productShortDescription = "";
   String productCategory = "";
+  String productSubCategory = "";
   String productCondition = "";
+  String deliveryTimeCondition = "";
   String productPrice = "";
   String productManufacturer = "";
+  String productCustomCategory = "";
   bool productIsAvailable = false;
   bool inventoryIsAvailable = false;
   bool productEnableInSuperStore = false;
   DateTime productAvailableFrom = DateTime.now();
+    List<ProductCategory>? productCustomCategories;
+  ProductCategory? pressedCustomCategory;
+
+  List<ProductCategory>? productCustomCategoriesCopy;
+  ProductCategory? selectedCustomCategory;
+  List<ProductCategory>? customCategories;
+
   List<ProductCategory>? productCategories;
+  List<ProductCategory>? subCategories;
+  List<ProductCategory> tagList = [];
   List<ProductCategory>?
       productCategoriesCopy; //To hold the full product category at all times.
+  List<ProductCategory>?
+      subCategoriesCopy; //To hold the full product category at all times.
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 0;
@@ -76,7 +95,8 @@ class _AddProductState extends State<AddProduct> {
   bool trackInventory = false;
   bool trackInventoryView = false;
   bool measurementView = false;
-
+  List<Map<String, dynamic>> userTags = [];
+  bool show = false;
 
   @override
   void deactivate() {
@@ -86,21 +106,86 @@ class _AddProductState extends State<AddProduct> {
 
   @override
   void initState() {
-    getCategories();
+    isLoading = true;
+    if (mounted) setState(() {});
+    Future.delayed(Duration(seconds: 2), () {
+      getCategories();
+      obtainCustomCategory();
+    });
+    myController.addListener(_printLatestValue);
 
     super.initState();
   }
 
-  void getCategories() async {
-    isLoading = true;
-    if (mounted) setState(() {});
+  _printLatestValue() {
+    if (myController.text.length > 2) {
+      getProductTags(userBloc!.userAbout!.industry!.id!, myController.text);
+      show = true;
+    } else {
+      show = false;
+    }
+    setState(() {});
+  }
 
+  @override
+  void didChangeDependencies() {
+    userBloc = Provider.of<UserBloc>(context);
+    super.didChangeDependencies();
+  }
+
+  void getCategories() async {
     try {
-      productCategories = await ShoppingAuthService().getProductCategories();
+      productCategories = await ShoppingAuthService()
+          .obtainProductCategories(userBloc!.userAbout!.industry!.id!);
+
       productCategoriesCopy = productCategories;
     } catch (e) {
       productCategories = [];
       productCategoriesCopy = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+  getProductTags(id, searchText) async {
+    if (mounted) setState(() {});
+
+    try {
+      List<ProductCategory> result = await ShoppingAuthService().getProductTags(id, searchText);
+
+      tagList = result;
+      show = true;
+    } catch (e) {
+      tagList = [];
+    }
+
+    if (mounted) setState(() {});
+  }
+void obtainCustomCategory() async {
+    try {
+      productCustomCategories = await ShoppingAuthService()
+          .obtainCustomCategory(userBloc!.user.userName!);
+
+      productCustomCategoriesCopy = productCustomCategories;
+    } catch (e) {
+      productCustomCategories = [];
+      productCustomCategoriesCopy = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  void getSubCategories(id) async {
+    if (mounted) setState(() {});
+
+    try {
+      subCategories = await ShoppingAuthService().getProductSubCategories(id);
+
+      subCategoriesCopy = subCategories;
+    } catch (e) {
+      subCategories = [];
+      subCategoriesCopy = [];
     }
 
     isLoading = false;
@@ -176,8 +261,129 @@ class _AddProductState extends State<AddProduct> {
                       const SizedBox(height: 10),
                       getCategoryField(),
                       const SizedBox(height: 10),
+                      getSubCategoryField(),
+                      const SizedBox(height: 10),
+
+                      getCustomCategoryField(),
+                      const SizedBox(height: 10),
+                      Text(
+                        "Tag",
+                        style: TextStyle(
+                            color: darkGrey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      SizedBox(
+                        height: 6,
+                      ),
+                    
+                      TextFieldTags(
+                        tagsStyler: productTextFieldTagStyler,
+                        validator: (value) {
+                          return null;
+                        },
+                        textEditingController: myController,
+                        
+                        textFieldStyler: TextFieldStyler(
+                          helperText: '',
+                          hintText: '',
+                          textFieldEnabled: true,
+                          textFieldFocusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: greyBorderColor,
+                              width: 1.0,
+                            ),
+                          ),
+                          textFieldBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: greyBorderColor,
+                              width: 1.0,
+                            ),
+                          ),
+                          textFieldEnabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: greyBorderColor,
+                              width: 1.0,
+                            ),
+                          ),
+                        ),
+                        onTag: (tag) {
+                          // setState(() {
+                          //   userTags.add(tag);
+                          //   userTags = userTags.toSet().toList();
+                          // });
+                          // userTags.removeWhere((tag) => tag.isEmpty);
+                        },
+                        onDelete: (tag) {
+                          setState(() {
+                            userTags.remove(tag);
+                          });
+                          userTags.removeWhere((tag) => tag.isEmpty);
+                        },
+                      ),
+                      if (show && tagList.isNotEmpty)
+                        Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border:
+                                  Border.all(width: 1, color: greyBorderColor),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: tagList
+                                .length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(
+                                  tagList[index].name,
+                                  softWrap: false,
+                                  overflow: TextOverflow.fade,
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                                dense: true,
+                                onTap: () {
+                                  String text = tagList[index]
+                                      .name
+                                      .replaceFirst(" ", "-");
+                                  setState(() {
+                                    
+                                    myController.text = text + " ";
+
+                                    myController.selection =
+                                        TextSelection.collapsed(
+                                            offset: text.length);
+                                    userTags.add({"id": tagList[index].id!, "name": tagList[index].name});
+                                    userTags = userTags.toSet().toList();
+                                  });
+                                  FocusScope.of(context)
+                                      .requestFocus();  
+                                  
+                                  // print(userTags);print("______________");
+                                  userTags.removeWhere((tag) => tag.isEmpty);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+
+                      const SizedBox(height: 10),
                       getProductConditionField(),
                       const SizedBox(height: 10),
+                      if(userBloc!.userAbout!.industry!.name! == "Restaurant/Cafe" || userBloc!.userAbout!.industry!.name! == "Pharmaceutical" )
+                      Column(
+                        children: [
+                          getProductDeliveryTimeField(),
+                            const SizedBox(height: 10),
+                        ],
+                      ),
                       getProductShortDescription(),
                       const SizedBox(height: 10),
                       getProductDescription(),
@@ -186,20 +392,21 @@ class _AddProductState extends State<AddProduct> {
 
                       getIsAvailableField(),
                       const SizedBox(height: 16),
-                      if(productIsAvailable == true)...[
+                      if (productIsAvailable == true) ...[
                         getAvailableFromField(),
                         const SizedBox(height: 16),
                       ],
 
                       getMeasurementField(),
                       const SizedBox(height: 16),
-                      if(measurementView == true)...[
+                      if (measurementView == true) ...[
                         getCategoryMeasurementField(),
                         const SizedBox(height: 16),
                       ],
 
-                      if(pickedMeasurementList.isNotEmpty && measurementView == true)...[
-                        if(containsWeight())...[
+                      if (pickedMeasurementList.isNotEmpty &&
+                          measurementView == true) ...[
+                        if (containsWeight()) ...[
                           //weight section
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -217,7 +424,7 @@ class _AddProductState extends State<AddProduct> {
                           ),
                           const SizedBox(height: 20),
                         ],
-                        if(containsHeight())...[
+                        if (containsHeight()) ...[
                           //height section
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -235,7 +442,7 @@ class _AddProductState extends State<AddProduct> {
                           ),
                           const SizedBox(height: 20),
                         ],
-                        if(containsWidth())...[
+                        if (containsWidth()) ...[
                           //width section
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -257,14 +464,13 @@ class _AddProductState extends State<AddProduct> {
                       ],
 
                       getTrackInventoryViewField(),
-                      if(trackInventoryView == true)...[
+                      if (trackInventoryView == true) ...[
                         const SizedBox(height: 16),
                         getInventoryFormField(),
                         const SizedBox(height: 16),
                         getTrackInventoryField(),
                         const SizedBox(height: 16),
                       ],
-
 
                       const SizedBox(height: 16),
                       getEnableInSuperStoreField(),
@@ -293,18 +499,17 @@ class _AddProductState extends State<AddProduct> {
           );
   }
 
-  bool containsWeight(){
+  bool containsWeight() {
     return pickedMeasurementList.contains('Weight');
   }
 
-  bool containsHeight(){
+  bool containsHeight() {
     return pickedMeasurementList.contains('Height');
   }
 
-  bool containsWidth(){
+  bool containsWidth() {
     return pickedMeasurementList.contains('Width');
   }
-
 
   Widget showBackArrow() {
     return IconButton(
@@ -521,6 +726,187 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
+  // /api/v1/products/categories/?industry=userBloc!.userAbout!.industry!.id!&search=drink
+
+  String getCustomCategoryLabel() {
+    String industryName = userBloc!.userAbout!.industry!.name!;
+    switch (industryName) {
+      case 'Electronics Store':
+        return "Aisle";
+      case 'Furniture':
+        return "Aisle";
+      case 'Grocery Store':
+        return "Aisle";
+      case 'Liquor Store':
+        return "Aisle";
+      case 'Pharmaceutical':
+        return "Aisle";
+      case 'Restaurant/Cafe':
+        return "Menu";
+      case 'Retail':
+        return "Aisle";
+      default:
+        return "Custom Category";
+    }
+  }
+
+  Widget getCustomCategoryField() {
+    return CustomizedDropDownField(
+      title: getCustomCategoryLabel(),
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedCustomCategory != null ? selectedCustomCategory!.name : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          customCategoryAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  Widget getTags() {
+    return CustomizedTextFormField(
+      labelText: "Tags",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.shortDescription;
+      },
+      onChanged: (val) {
+        productShortDescription = val;
+      },
+    );
+  }
+
+  Widget getSubCategoryField() {
+    return CustomizedDropDownField(
+      title: "Sub-Category",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedSubCategory != null ? selectedSubCategory!.name : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          subCategoryAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+   void customCategoryAndroidSheet() {
+    customCategories = productCustomCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search  custom category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      customCategories = productCustomCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      customCategories = productCustomCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: customCategories!.length,
+                    itemBuilder: (context, index) {
+                      ProductCategory category = customCategories![index];
+                      if (selectedCustomCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.name,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedCustomCategory = category;
+                              Navigator.pop(context);
+                              if (pressedSubCategory != null) {
+                                selectedCustomCategory = pressedCustomCategory;
+                                productCustomCategory =
+                                    selectedCustomCategory!.name;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category.name,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedCustomCategory = category;
+                          Navigator.pop(context);
+                          if (pressedCustomCategory != null) {
+                            selectedCustomCategory = pressedCustomCategory;
+                            productCustomCategory =
+                                selectedCustomCategory!.name;
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   void categoryAndroidSheet() {
     productCategories = productCategoriesCopy;
@@ -602,8 +988,110 @@ class _AddProductState extends State<AddProduct> {
                           pressedCategory = category;
                           Navigator.pop(context);
                           if (pressedCategory != null) {
+                            getSubCategories(category.id);
                             selectedProductCategory = pressedCategory;
                             productCategory = selectedProductCategory!.name;
+                            productSubCategory = "";
+                            selectedSubCategory = null;
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+
+
+  void subCategoryAndroidSheet() {
+    subCategories = subCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search  sub category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      subCategories = subCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      subCategories = subCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                subCategories == null ? SizedBox() : Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: subCategories!.length,
+                    itemBuilder: (context, index) {
+                      ProductCategory category = subCategories![index];
+                      if (selectedSubCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.name,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedSubCategory = category;
+                              Navigator.pop(context);
+                              if (pressedSubCategory != null) {
+                                selectedSubCategory = pressedSubCategory;
+                                productSubCategory = selectedSubCategory!.name;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category.name,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedCategory = category;
+                          Navigator.pop(context);
+                          if (pressedCategory != null) {
+                            selectedSubCategory = pressedCategory;
+                            productCategory = selectedSubCategory!.name;
                             setState(() {});
                           }
                         },
@@ -623,7 +1111,8 @@ class _AddProductState extends State<AddProduct> {
     final pressedCategory = await showDialog<ProductCategory>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -696,6 +1185,15 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
+  showDeliveryTime(){
+    List industry = ['Grocery Store',
+       'Liquor Store', 'Restaurant/Cafe'];
+    if(industry.contains(userBloc!.userAbout!.industry!.name)){
+      return true;
+    }
+    return false;
+  }
+
   Widget getProductConditionField() {
     return CustomizedDropDownField(
       title: "Product condition",
@@ -735,12 +1233,137 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
+  Widget getProductDeliveryTimeField() {
+    return CustomizedDropDownField(
+      title: "Preparation Time",
+      child: ListTile(
+        dense: true,
+        title: Row(
+          children: [
+            Text(
+              selectedDeliveryTimeCondition != null
+                  ? selectedDeliveryTimeCondition!.description
+                  : "",
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            
+          ],
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectDeliveryTimeCondition();
+        },
+      ),
+    );
+  }
 
+  void selectDeliveryTimeCondition() async {
+    final pressedCondition = await showDialog<ProductCondition>(
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: deliverTimeCondition.map<Widget>((condition) {
+                          if (selectedDeliveryTimeCondition == condition) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      condition.name,
+                                      style: TextStyle(
+                                          color: navyBlue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        selectedDeliveryTimeCondition != null
+                                            ? 
+                                                selectedDeliveryTimeCondition!
+                                                    .description 
+                                               
+                                            : "",
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontSize: 16, color: navyBlue),
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, condition);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Row(
+                              children: [
+                               
+                                Expanded(
+                                  child: Text(
+                                    condition.description ,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        fontSize: 16, color: blackFont),
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, condition);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCondition != null) {
+      selectedDeliveryTimeCondition = pressedCondition;
+      deliveryTimeCondition = selectedDeliveryTimeCondition!.name;
+      setState(() {});
+    }
+  }
   void selectItemCondition() async {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1023,7 +1646,6 @@ class _AddProductState extends State<AddProduct> {
         keyboardType: Platform.isIOS
             ? const TextInputType.numberWithOptions(decimal: true)
             : TextInputType.number,
-
         onChanged: (val) {
           if (val.isNotEmpty) {
             try {
@@ -1094,7 +1716,6 @@ class _AddProductState extends State<AddProduct> {
                               selectedWeight = category;
                               Navigator.pop(context);
                               setState(() {});
-
                             },
                           ),
                         );
@@ -1173,7 +1794,6 @@ class _AddProductState extends State<AddProduct> {
                               selectedHeight = height;
                               Navigator.pop(context);
                               setState(() {});
-
                             },
                           ),
                         );
@@ -1252,7 +1872,6 @@ class _AddProductState extends State<AddProduct> {
                               selectedWidth = category;
                               Navigator.pop(context);
                               setState(() {});
-
                             },
                           ),
                         );
@@ -1309,32 +1928,35 @@ class _AddProductState extends State<AddProduct> {
   Future<void> addProduct() async {
     if (_formKey.currentState!.validate()) {
       if (productImages.length >= 1) {
-
-        if(containsWeight() && selectedWeight.isEmpty && weight != 0.0){
-          showToast(message: AppLocalization.of(context)!
-              .pleaseFillWeight);
+        if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
+          showToast(message: AppLocalization.of(context)!.pleaseFillWeight);
           return;
         }
-        if(containsHeight() && selectedHeight.isEmpty && height != 0.0){
-          showToast(message: AppLocalization.of(context)!
-              .pleaseFillHeight);
+        if (containsHeight() && selectedHeight.isEmpty && height != 0.0) {
+          showToast(message: AppLocalization.of(context)!.pleaseFillHeight);
           return;
         }
-        if(containsWidth() && selectedWidth.isEmpty && width != 0.0){
-          showToast(message: AppLocalization.of(context)!
-              .pleaseFillWidth);
+        if (containsWidth() && selectedWidth.isEmpty && width != 0.0) {
+          showToast(message: AppLocalization.of(context)!.pleaseFillWidth);
           return;
         }
 
         if (validateDropdown()) {
-
           Product product = Product();
           product.localImages =
               productImages.map((file) => File(file.path)).toList();
           product.name = productName;
           product.description = messageDecoderWithEmoji(productDescription);
-          product.shortDescription = messageDecoderWithEmoji(productShortDescription);
-          product.category = productCategory;
+          product.shortDescription =
+              messageDecoderWithEmoji(productShortDescription);
+          product.category = selectedProductCategory! ;
+          product.subCategory = selectedSubCategory!;
+          product.customCategory = selectedCustomCategory;
+          product.tags = userTags.map((i) => Tags.fromJson(i)).toList();
+          if(selectedDeliveryTimeCondition != null){
+            product.preparationTime =
+                num.parse(selectedDeliveryTimeCondition!.name);
+          }
           product.condition = productCondition;
           product.price = moneyInputNormalizer(productPrice).toString();
           product.isAvailable = productIsAvailable;
@@ -1342,33 +1964,50 @@ class _AddProductState extends State<AddProduct> {
           product.availableFrom = productAvailableFrom;
           product.enableInSuperStore = productEnableInSuperStore;
 
-            product.weight = weight;
-            product.weightSiUnit = selectedWeight == 'Grams' ? 'g' : selectedWeight == 'Kilograms' ? 'kg' : '';
-            product.height = height;
-            product.heightSiUnit = selectedHeight == 'Centimetres' ? 'cm' : selectedHeight == 'Metres' ? 'm' : '';
-            product.width = width;
-            product.widthSiUnit = selectedWidth == 'Centimetres' ? 'cm' : selectedWidth == 'Metres' ? 'm' : '';
+          product.weight = weight;
+          product.weightSiUnit = selectedWeight == 'Grams'
+              ? 'g'
+              : selectedWeight == 'Kilograms'
+                  ? 'kg'
+                  : '';
+          product.height = height;
+          product.heightSiUnit = selectedHeight == 'Centimetres'
+              ? 'cm'
+              : selectedHeight == 'Metres'
+                  ? 'm'
+                  : '';
+          product.width = width;
+          product.widthSiUnit = selectedWidth == 'Centimetres'
+              ? 'cm'
+              : selectedWidth == 'Metres'
+                  ? 'm'
+                  : '';
 
           product.trackInventory = trackInventory;
           product.quantity = inventoryCount;
 
+
+
+
           // product.variant = [];
 
-          //the api call will first create the product then use the id from the
-          //response to save the variant
+          // the api call will first create the product then use the id from the
+          // response to save the variant
 
-          await _auth.addProduct(product, widget.arguments['channelUsername'] ?? "" ).then((value) async {
-
+          await _auth
+              .addProduct(product, widget.arguments['channelUsername'] ?? "")
+              .then((value) async {
             var productId = value[1];
 
-            if(productVariantList.isEmpty){
+            if (productVariantList.isEmpty) {
               Navigator.pop(context);
               showToast(
-                  message: AppLocalization.of(context)!.productAddedSuccessfully);
+                  message:
+                      AppLocalization.of(context)!.productAddedSuccessfully);
 
               Navigator.pushNamed(context, Routes.PRODUCT,
                   arguments: {"productId": productId});
-            }else{
+            } else {
               //loop and add all variant
               addVariants(productId);
               // for(var variantItem in productVariantList){
@@ -1382,7 +2021,6 @@ class _AddProductState extends State<AddProduct> {
               //   });
               // }
             }
-
           }).catchError((error) {
             debugPrint("Product check::: ${error.toString()}");
             showToast(message: error.toString());
@@ -1403,24 +2041,21 @@ class _AddProductState extends State<AddProduct> {
     // This will be executed after all API calls are completed
     print("All API calls are done!");
     Navigator.pop(context);
-    showToast(
-        message: AppLocalization.of(context)!.productAddedSuccessfully);
+    showToast(message: AppLocalization.of(context)!.productAddedSuccessfully);
 
     Navigator.pushNamed(context, Routes.PRODUCT,
         arguments: {"productId": productId});
   }
 
-  Future<void> makeApiCallAddVariant(Variant variantItem, String productId) async {
-
-      await _auth.addVariant(variantItem, productId).then((value) {
-        // backValue = true;
-
-      }).catchError((error) {
-        debugPrint(error.toString());
-        debugPrint("Product check variant::: ${error.toString()}");
-        // showToast(message: error.toString());
-      });
-
+  Future<void> makeApiCallAddVariant(
+      Variant variantItem, String productId) async {
+    await _auth.addVariant(variantItem, productId).then((value) {
+      // backValue = true;
+    }).catchError((error) {
+      debugPrint(error.toString());
+      debugPrint("Product check variant::: ${error.toString()}");
+      // showToast(message: error.toString());
+    });
   }
 
   bool validateDropdown() {
@@ -1433,7 +2068,6 @@ class _AddProductState extends State<AddProduct> {
       return false;
     }
   }
-
 
   Widget getIsAvailableField() {
     return CustomizedCheckBoxField(
@@ -1453,7 +2087,8 @@ class _AddProductState extends State<AddProduct> {
         setState(() {});
       },
       isChecked: trackInventory,
-      title: "Checking this field will automatically update the quantity when the product is purchased.",
+      title:
+          "Checking this field will automatically update the quantity when the product is purchased.",
       fontSize: 12.0,
       maxLines: 2,
     );
@@ -1538,7 +2173,6 @@ class _AddProductState extends State<AddProduct> {
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: false)
           : TextInputType.number,
-
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -1565,7 +2199,8 @@ class _AddProductState extends State<AddProduct> {
   Widget getAddVariationFormField() {
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+        final result = await Navigator.of(context)
+            .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
           'option': 'new',
           'productId': '',
         });
@@ -1574,7 +2209,7 @@ class _AddProductState extends State<AddProduct> {
         if (result != null && result is Variant) {
           //save the variant details for later use
           productVariantList.add(result);
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         }
       },
       child: CustomizedDropDownField(
@@ -1595,14 +2230,15 @@ class _AddProductState extends State<AddProduct> {
             ),
           ),
           subtitle: Container(
-            padding: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
-            margin: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+            padding: const EdgeInsets.only(
+                left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+            margin: const EdgeInsets.only(
+                left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
             decoration: BoxDecoration(
                 border: Border.all(
                   color: navyBlue,
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(10))
-            ),
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
             child: Center(
               child: Text(
                 'Create Variant',
@@ -1637,7 +2273,8 @@ class _AddProductState extends State<AddProduct> {
               ),
               GestureDetector(
                 onTap: () async {
-                  final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+                  final result = await Navigator.of(context)
+                      .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
                     'option': 'new',
                     'productId': '',
                   });
@@ -1646,7 +2283,7 @@ class _AddProductState extends State<AddProduct> {
                   if (result != null && result is Variant) {
                     //save the variant details for later use
                     productVariantList.add(result);
-                    if(mounted)setState(() {});
+                    if (mounted) setState(() {});
                   }
                 },
                 child: Text(
@@ -1667,7 +2304,6 @@ class _AddProductState extends State<AddProduct> {
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: ListView.builder(
@@ -1677,8 +2313,10 @@ class _AddProductState extends State<AddProduct> {
                       itemCount: productVariantList.length,
                       itemBuilder: (BuildContext context, int index) {
                         return Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          margin:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                           shadowColor: boxShadowTwo,
                           elevation: 0,
                           child: Container(
@@ -1690,7 +2328,8 @@ class _AddProductState extends State<AddProduct> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    appendStringDot(productVariantList[index].title!, 10),
+                                    appendStringDot(
+                                        productVariantList[index].title!, 10),
                                     maxLines: 1,
                                     style: TextStyle(
                                         color: blackFont,
@@ -1713,7 +2352,8 @@ class _AddProductState extends State<AddProduct> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     Text(
-                                      worldCurrencies[productVariantList[index].currency!]!,
+                                      worldCurrencies[
+                                          productVariantList[index].currency!]!,
                                       style: TextStyle(
                                           fontFamily: "Roboto",
                                           fontSize: 18.0,
@@ -1721,7 +2361,11 @@ class _AddProductState extends State<AddProduct> {
                                           fontWeight: FontWeight.w600),
                                     ),
                                     Expanded(
-                                      child: Text(moneyDisplayNormalizer(int.parse(productVariantList[index].price.toString())),
+                                      child: Text(
+                                        moneyDisplayNormalizer(int.parse(
+                                            productVariantList[index]
+                                                .price
+                                                .toString())),
                                         maxLines: 1,
                                         style: TextStyle(
                                             fontSize: 18.0,
@@ -1732,13 +2376,14 @@ class _AddProductState extends State<AddProduct> {
                                   ],
                                 ),
                               ),
-                              leading: getVariantLeading(productVariantList[index]),
-                              trailing: getVariantTrailing(productVariantList[index]),
+                              leading:
+                                  getVariantLeading(productVariantList[index]),
+                              trailing:
+                                  getVariantTrailing(productVariantList[index]),
                             ),
                           ),
                         );
                       },
-
                     ),
                   ),
                 ],
@@ -1765,7 +2410,6 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getVariantTrailing(Variant productVariant) {
-
     return IconButton(
       padding: const EdgeInsets.only(right: 6),
       alignment: Alignment.topRight,
@@ -1782,14 +2426,15 @@ class _AddProductState extends State<AddProduct> {
       ),
       onPressed: () {
         removeSelectedVariant(productVariant.title.toString());
-        if(mounted) setState(() {});
+        if (mounted) setState(() {});
       },
     );
   }
 
   void removeSelectedVariant(String selectedVariantTitle) {
     // Use the removeWhere method to remove the variant with the specified title.
-    productVariantList.removeWhere((variant) => variant.title == selectedVariantTitle);
+    productVariantList
+        .removeWhere((variant) => variant.title == selectedVariantTitle);
   }
 
   Widget getCategoryMeasurementField() {
@@ -1798,7 +2443,9 @@ class _AddProductState extends State<AddProduct> {
       child: ListTile(
         dense: true,
         title: Text(
-          pickedMeasurementList.isNotEmpty ? pickedMeasurementList.join(', ') : '',
+          pickedMeasurementList.isNotEmpty
+              ? pickedMeasurementList.join(', ')
+              : '',
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -1814,7 +2461,6 @@ class _AddProductState extends State<AddProduct> {
   }
 
   void measurementAndroidSheet() {
-
     androidBottomSheet(
       context: context,
       enableDrag: false,
@@ -1826,7 +2472,6 @@ class _AddProductState extends State<AddProduct> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -1845,7 +2490,7 @@ class _AddProductState extends State<AddProduct> {
                           } else {
                             pickedMeasurementList.add(measurement);
                           }
-                          if(mounted)setState(() {});
+                          if (mounted) setState(() {});
                         },
                         title: Text(
                           measurement,
@@ -1857,7 +2502,6 @@ class _AddProductState extends State<AddProduct> {
                               fontWeight: FontWeight.w400),
                         ),
                       );
-
                     },
                   ),
                 ),
@@ -1875,10 +2519,11 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Widget productVariation(){
+  Widget productVariation() {
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+        final result = await Navigator.of(context)
+            .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
           'option': 'new',
           'productId': '',
         });
@@ -1887,7 +2532,7 @@ class _AddProductState extends State<AddProduct> {
         if (result != null && result is Variant) {
           //save the variant details for later use
           productVariantList.add(result);
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         }
       },
       child: Container(
@@ -1898,26 +2543,23 @@ class _AddProductState extends State<AddProduct> {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14),
+                  color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
             ),
             Icon(
               Icons.arrow_forward_ios,
               size: 16,
               color: blackFont,
             ),
-
           ],
         ),
       ),
     );
   }
 
-  Widget productAddOns(){
+  Widget productAddOns() {
     return GestureDetector(
-      onTap: (){
-      //disable click if variant is not empty
+      onTap: () {
+        //disable click if variant is not empty
       },
       child: Container(
         child: Row(
@@ -1927,7 +2569,8 @@ class _AddProductState extends State<AddProduct> {
               'Add Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color: productVariantList.isEmpty ? navyBlue : greyBorderColor,
+                  color:
+                      productVariantList.isEmpty ? navyBlue : greyBorderColor,
                   fontWeight: FontWeight.w600,
                   fontSize: 14),
             ),
@@ -1936,18 +2579,15 @@ class _AddProductState extends State<AddProduct> {
               size: 16,
               color: blackFont,
             ),
-
           ],
         ),
       ),
     );
   }
 
-  Widget dispatchAddress(){
+  Widget dispatchAddress() {
     return GestureDetector(
-      onTap: (){
-
-      },
+      onTap: () {},
       child: Container(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1956,7 +2596,8 @@ class _AddProductState extends State<AddProduct> {
               'Add a dispatch Address',
               maxLines: 1,
               style: TextStyle(
-                  color: productVariantList.isEmpty ? navyBlue : greyBorderColor,
+                  color:
+                      productVariantList.isEmpty ? navyBlue : greyBorderColor,
                   fontWeight: FontWeight.w600,
                   fontSize: 14),
             ),
@@ -1965,7 +2606,6 @@ class _AddProductState extends State<AddProduct> {
               size: 16,
               color: blackFont,
             ),
-
           ],
         ),
       ),
@@ -1975,7 +2615,8 @@ class _AddProductState extends State<AddProduct> {
   @override
   void dispose() {
     _scrollController.dispose();
+    myController.dispose();
+
     super.dispose();
   }
-
 }

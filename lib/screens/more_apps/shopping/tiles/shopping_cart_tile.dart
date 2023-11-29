@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -24,16 +26,26 @@ class ShoppingCartTileForProduct extends StatefulWidget {
   Function? onDecreaseQty;
   Function(int variantIndex)? onIncreaseVariantQty;
   Function(int variantIndex)? onDecreaseVariantQty;
+  Function? onIncreaseAddOnQty;
+  Function? onDecreaseAddOnQty;
+
   Variant? variant;
+  List? addOn;
   List<Map<String, dynamic>?> variantList = [];
 
   ShoppingCartTileForProduct(Map<String, dynamic> item,
-      {this.onIncreaseQty, this.onDecreaseQty, this.index,
-        this.onIncreaseVariantQty, this.onDecreaseVariantQty}) {
+      {this.onIncreaseQty,
+      this.onDecreaseQty,
+      this.index,
+      this.onIncreaseVariantQty,
+      this.onDecreaseVariantQty,
+      this.onIncreaseAddOnQty,
+      this.onDecreaseAddOnQty}) {
     type = item["type"];
     this.item = item["item"];
     qty = int.tryParse(item["qty"].toString());
     variant = item["variant"];
+    addOn = item["addOn"];
     image = item["image"];
   }
 
@@ -46,19 +58,49 @@ class _ShoppingCartTileForProductState
     extends State<ShoppingCartTileForProduct> {
   late BasketBloc basketBloc;
 
+  List<AddOnOption> addOnOptionList = [];
+
+  @override
+  void initState() {
+    if (widget.addOn != null) {
+      // debugPrint('add-on addOnOption:::: ${widget.addOn}');
+
+      for (var item in widget.addOn!) {
+        // debugPrint('add-on addOnOption 2:::: ${item['options']}');
+
+        for (var option in item['options']) {
+          AddOnOption addOnOption = AddOnOption(
+            id: option['id'],
+            picture: option['picture'],
+            name: option['name'],
+            description: option['description'],
+            merchant: option['merchant'],
+            currency: option['currency'],
+            price: option['price'].toString(),
+          );
+          addOnOptionList.add(addOnOption);
+        }
+      }
+
+      // debugPrint('add-on addOnOption 3:::: ${addOnOptionList}');
+
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
-    try {
 
-      if(int.parse(getTotalPrice()) == 0){
+    try {
+      if (int.parse(getTotalPrice()) == 0) {
         return Container();
-      }else{
+      } else {
         return Container(
           color: Colors.white,
           child: Card(
             shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
@@ -85,19 +127,28 @@ class _ShoppingCartTileForProductState
           ),
         );
       }
-
-
     } catch (e) {
       return Container();
     }
   }
 
   Widget getLeading() {
+    String image = "";
+    if (widget.addOn != null) {
+      image = widget.item!.serverImages!.first!;
+      // debugPrint('add-on image:::: ${widget.item!.serverImages}');
+    } else if (widget.variant != null) {
+      image = widget.image!;
+    } else {
+      image = widget.item?.cover ?? "";
+    }
+
     return ClipOval(
       child: CachedNetworkImage(
         height: 48,
         width: 48,
-        imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
+        // imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
+        imageUrl: image != "" ? image : defaultImage,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.contain,
         errorWidget: productAndServiceErrorWidget,
@@ -112,40 +163,32 @@ class _ShoppingCartTileForProductState
   Widget getTitle() {
 
     return Row(
-      // mainAxisSize: MainAxisSize.min,
-      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          appendStringDot("${widget.item!.name}", 15),
-          // "${widget.item!.name}",
+          appendStringDot("${widget.item!.name}", 10),
           maxLines: 1,
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
         ),
-        // Spacer(
-        //   flex: 2, // <-- SEE HERE
-        // ),
-        // getSubTotalPriceWidget(),
+        getSubTotalPriceWidget(),
       ],
     );
   }
 
   Widget getTrailing() {
     // Check if the item has a variant and is not empty
-    // bool hasVariant = widget.variant.isNotEmpty ?? false;
 
     int variantId = 0;
     int variantQuantity = 0;
 
-    if (widget.variant != null ) {
+    if (widget.variant != null) {
       String variant = widget.variant!.id.toString() ?? '';
 
       if (variant.isNotEmpty) {
         variantId = int.parse(widget.variant!.id.toString());
         variantQuantity = int.parse(widget.variant!.quantity.toString());
       }
-
     }
 
     return Container(
@@ -163,7 +206,12 @@ class _ShoppingCartTileForProductState
                 color: blackFont,
                 size: 2, // Adjust the size as needed
               ),
-              onTap: widget.variant == null ? widget.onDecreaseQty : () => widget.onDecreaseVariantQty!(variantId),
+              // onTap: widget.variant == null ? widget.onDecreaseQty : () => widget.onDecreaseVariantQty!(variantId),
+              onTap: widget.variant == null
+                  ? widget.onDecreaseQty
+                  : (widget.addOn != null
+                      ? widget.onDecreaseQty
+                      : () => widget.onDecreaseVariantQty!(variantId)),
             ),
             Expanded(
               child: SizedBox(
@@ -171,7 +219,9 @@ class _ShoppingCartTileForProductState
               ),
             ),
             Text(
-              widget.variant != null ? variantQuantity.toString() : widget.qty.toString(),
+              widget.variant != null
+                  ? variantQuantity.toString()
+                  : widget.qty.toString(),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -190,7 +240,12 @@ class _ShoppingCartTileForProductState
                 color: blackFont,
                 size: 16, // Adjust the size as needed
               ),
-              onTap: widget.variant == null ? widget.onIncreaseQty : () => widget.onIncreaseVariantQty!(variantId),
+              // onTap: widget.variant == null ? widget.onIncreaseQty : () => widget.onIncreaseVariantQty!(variantId),
+              onTap: widget.variant == null
+                  ? widget.onIncreaseQty
+                  : (widget.addOn != null
+                      ? widget.onIncreaseQty
+                      : () => widget.onIncreaseVariantQty!(variantId)),
             ),
           ],
         ),
@@ -198,50 +253,51 @@ class _ShoppingCartTileForProductState
     );
   }
 
-
   String getProductPrice() {
     var totalPrice = int.parse(widget.item!.price!);
 
-    // bool hasVariantId = widget.variant?.any((item) => item!['id'] != null && item['id'].isNotEmpty) ?? false;
-
-    if(widget.variant != null){
-
+    if (widget.variant != null) {
       totalPrice = 0;
-      // widget.variant.forEach((variant) {
-        totalPrice = int.parse(widget.variant!.price.toString());
-      // });
+      totalPrice = int.parse(widget.variant!.price.toString());
     }
 
     return totalPrice.toString();
   }
-
 
   String getTotalPrice() {
     var totalPrice =
         basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
 
     // Check if the item has a variant and is not empty
-    // bool hasVariant = widget.variant.isNotEmpty ?? false;
+    if (widget.variant != null) {
+      totalPrice = 0;
+      totalPrice += int.parse(widget.variant!.quantity.toString()) *
+          int.parse(widget.variant!.price.toString());
+    }
 
-    if(widget.variant != null){
+    if(widget.addOn != null && widget.addOn!.isNotEmpty){
 
       totalPrice = 0;
-      // for (var variant in widget.variant) {
+      totalPrice = basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
 
-        totalPrice += int.parse(widget.variant!.quantity.toString()) * int.parse(widget.variant!.price.toString());
-      // }
+
+      var totalPrices = 0;
+
+      for (var option in addOnOptionList) {
+        totalPrices += int.parse(option.price!);
+      }
+      totalPrice = totalPrice + totalPrices;
     }
 
     return totalPrice.toString();
   }
-
 
   Widget getSubtitle(BuildContext context) {
     String color = '';
     String size = '';
 
     if (widget.variant != null) {
-      String variantColor = widget.variant!.colour?? '';
+      String variantColor = widget.variant!.colour ?? '';
       String variantSize = widget.variant!.value ?? '';
 
       if (variantColor.isNotEmpty) {
@@ -251,8 +307,16 @@ class _ShoppingCartTileForProductState
       if (variantSize.isNotEmpty) {
         size = variantSize;
       }
-
     }
+    List<String> names = [];
+
+    if (widget.addOn != null) {
+      for (var option in addOnOptionList) {
+        names.add(option.name!);
+      }
+    }
+
+    final concatenatedText = names.join(', ');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,26 +328,44 @@ class _ShoppingCartTileForProductState
         SizedBox(
           height: 10,
         ),
-        if(color.isNotEmpty)...[
+        if (color.isNotEmpty) ...[
           SizedBox(
             height: 2,
           ),
           getColor(color),
         ],
-        if(size.isNotEmpty)...[
+        if (size.isNotEmpty) ...[
           SizedBox(
             height: 2,
           ),
           getSize(size)
         ],
+        if (widget.addOn != null && widget.addOn!.isNotEmpty) ...[
+          Text(
+            "Add-ons: $concatenatedText",
+            maxLines: 3,
+            style: TextStyle(
+                fontSize: 12, color: darkGrey, fontWeight: FontWeight.w600),
+          ),
+        ],
         SizedBox(
           height: 10,
         ),
-        getTotalPriceWidget(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Subtotal",
+              style: TextStyle(
+                  fontSize: 16, color: darkGrey, fontWeight: FontWeight.w700),
+            ),
+            getTotalPriceWidget(),
+          ],
+        ),
+        // getTotalPriceWidget(),
       ],
     );
   }
-
 
   Widget getTotalPriceWidget() {
     return Row(
@@ -319,7 +401,9 @@ class _ShoppingCartTileForProductState
               fontSize: 12),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(getProductPrice())),
+          // moneyDisplayNormalizer(int.parse(getProductPrice())),
+          appendStringDot(
+              moneyDisplayNormalizer(int.parse(getProductPrice())), 6),
           style: TextStyle(
               color: darkGrey, fontWeight: FontWeight.w600, fontSize: 12),
         ),
@@ -335,7 +419,6 @@ class _ShoppingCartTileForProductState
   }
 
   Widget getColor(String color) {
-
     return Row(
       children: [
         Text(
@@ -344,7 +427,8 @@ class _ShoppingCartTileForProductState
         ),
         Text(
           color,
-          style: TextStyle(fontSize: 10, color: black, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontSize: 10, color: black, fontWeight: FontWeight.w600),
         ),
       ],
     );
@@ -359,14 +443,13 @@ class _ShoppingCartTileForProductState
         ),
         Text(
           size,
-          style: TextStyle(fontSize: 10, color: black, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontSize: 10, color: black, fontWeight: FontWeight.w600),
         ),
       ],
     );
   }
-
 }
-
 
 // ignore: must_be_immutable
 class ShoppingCartTileForService extends StatefulWidget {

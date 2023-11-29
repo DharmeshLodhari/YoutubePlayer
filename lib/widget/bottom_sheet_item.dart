@@ -24,6 +24,7 @@ Widget bottomSheetItem(
                     icon: Icon(
                       iconData,
                       size: iconSize,
+                      color: blackFont,
                     ),
                     backgroundColor: lightGrey,
                     width: 32,

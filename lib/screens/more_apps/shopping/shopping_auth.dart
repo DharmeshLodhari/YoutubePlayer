@@ -9,12 +9,14 @@ import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_mo
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 
 import '../../../data/state_notifier.dart';
 import 'models/store.dart';
@@ -276,7 +278,12 @@ class ShoppingAuthService extends AuthService {
     product.availableFrom = DateTime.parse(item['available_from']);
     product.description = item['description'];
     product.shortDescription = item["short_description"];
-    product.category = item['category'].toString();
+    product.category = item['category'].isEmpty ? ProductCategory("") : ProductCategory(item['category']["name"], id: item['category']["id"]);
+    product.subCategory = item['sub_category'].isEmpty ? ProductCategory("") : ProductCategory(item['sub_category']["name"], id: item['sub_category']["id"]);
+    product.customCategory = item['custom_category'].isEmpty ? ProductCategory("") : ProductCategory(item['custom_category']["name"], id: item['custom_category']["id"]);
+    product.tags = item['tags'].isEmpty ? [] :  (item['tags'] as List).map((i) => Tags.fromJson(i))
+              .toList();
+    product.preparationTime = item['preparation_time'];
     product.condition = item['condition'];
     product.seller = item['seller'];
     product.sellerFullName = item['seller_fullname'] ?? "";
@@ -297,6 +304,10 @@ class ShoppingAuthService extends AuthService {
     product.trackInventory = item["track_inventory"] ?? false;
     product.quantity = item["quantity"];
     product.pricePercentageChange = item["price_percentage_change"] ?? 0.0;
+    product.discountValue = item['discount_value'];
+    product.discountType = item['discount_type'];
+    product.discountIsActive = item['discount_is_active'];
+    product.discountedPrice = item['discounted_price'];
 
     return product;
   }
@@ -304,17 +315,25 @@ class ShoppingAuthService extends AuthService {
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(
       String? next, String? previous, String? category, bool? channel,
-      {String? userName, bool otherDeals = false}) async {
-    debugPrint('CALLING PRODUCT');
+      {String? userName, bool otherDeals = false, num page_size = 20, String tag = "", String industry= "", String nearby = ""}) async {
+        debugPrint('CALLING PRODUCT');
+
     debugPrint('CALLING PRODUCT channel::: ${channel}');
     var url = "";
     if (next == null) {
       return null;
     }
+    // if(nearby.isNotEmpty){
+    //   url = AppConfig.baseUrl + "/api/v1/products/nearby/";
+    // }
     if (next == "") {
       if (otherDeals == true) {
         url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
-      } else {
+      } 
+      // else if (nearby.isNotEmpty) {
+      //   url = AppConfig.baseUrl + "/api/v1/products/nearby/";
+      // }
+       else {
         url =
             AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName! + "/";
       }
@@ -329,11 +348,23 @@ class ShoppingAuthService extends AuthService {
         url += AppConfig.baseUrl + "/api/v1/products/&categories=$cat/";
       }
     }
+    
+    
 
     if (channel == true) {
       url = AppConfig.baseUrl + "/api/v1/channels-merchandise/$userName";
     }
-    debugPrint(url);
+    if (page_size != "") {
+      if(url.contains("page_size")){
+        url = url;
+      }
+      else if (url.contains("?")) {
+        url = url + "&page_size=$page_size";
+      } else {
+        url = url + "?page_size=$page_size";
+      }
+    }
+    debugPrint("product list url _______________________"+url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -360,6 +391,7 @@ class ShoppingAuthService extends AuthService {
         productList.add(product);
       }
 
+
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
@@ -368,6 +400,85 @@ class ShoppingAuthService extends AuthService {
       };
 
       debugPrint('CALLING OTHER check ---> ${result}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // List superstores
+  Future<Map<String, dynamic>?> listOfSuperStores({String? sectionUrl}) async {
+    var url = sectionUrl != null ? sectionUrl : AppConfig.baseUrl + "/api/v1/products/super-store/";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {"store": []};
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      List storeList = [];
+      var jsonData = json.decode(response.body);
+      List<Product> productList = [];
+
+      for (var data in jsonData) {
+        
+       storeList.add(data);
+      }    
+
+      Map<String, dynamic> result = {
+        "store": storeList,
+        "product": productList
+
+      };
+
+      
+      debugPrint('CALLING OTHER check ---> ${storeList}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+  // List superstores
+  Future<Map<String, dynamic>?> listOfIndustries() async {
+    var url = AppConfig.baseUrl + "/api/v1/products/industries/?home=true";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {"product": []};
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      var jsonData = json.decode(response.body);
+  List<ProductIndustryResults>? results = (jsonData["results"] as List).map((e) => ProductIndustryResults.fromJson(e)).toList();
+       
+      Map<String, dynamic> result = {
+        "product": results
+
+      };
+
+      
 
       return result;
     } else if (response.statusCode == 500) {
@@ -621,7 +732,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Edit Product
-  Future<bool> editProduct(Product product) async {
+  Future<bool> editProduct(Product product, List<dynamic>? productAddOnsList) async {
     var headers = await getAuthHeaders();
     var url =
         AppConfig.baseUrl + "/api/v1/products/" + product.id.toString() + "/";
@@ -644,6 +755,14 @@ class ShoppingAuthService extends AuthService {
     if (_data["width"] == null || _data["width"] == 0.0) {
       _data['width'] = 0.0;
       _data['width_si_unit'] = '';
+    }
+    
+    if (productAddOnsList!.isNotEmpty) {
+      List ids = productAddOnsList
+          .where((addOn) => addOn.id != null)
+          .map((addOn) => addOn.id!)
+          .toList();
+      _data["add_ons"] = ids;
     }
 
     _data.forEach((k, v) {
@@ -1402,8 +1521,8 @@ class ShoppingAuthService extends AuthService {
   }
 
   Future<Map<String, dynamic>?> searchUsersProductsInSuperStore(
-      String? next, String? previous,
-      {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
+      String? next, String? previous, 
+      {required SearchItemWithFilterModelForSuperStore filterOptions, String? query }) async {
     var url = "";
     if (next == null) {
       return null;
@@ -1414,6 +1533,9 @@ class ShoppingAuthService extends AuthService {
       url = AppConfig.baseUrl +
           "/api/v1/products/?search=${filterOptions.searchedText}";
 
+      if (query != null && query.isNotEmpty) {
+        url = url + query;
+      }
       if (filterOptions.minPrice != null) {
         url = url + "&min_price=${filterOptions.minPrice}";
       }
@@ -1587,6 +1709,156 @@ class ShoppingAuthService extends AuthService {
 
       for (int i = 0; i < results.length; i++) {
         categories.add(ProductCategory(messageDecoderWithEmoji(results[i])!));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ProductCategory>[]);
+    }
+  }
+  Future<List<ProductCategory>> obtainProductCategories(id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/categories/?industry=${id}";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ProductCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ProductCategory(results[i]['name']!, id: results[i]['id']));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ProductCategory>[]);
+    }
+  }
+  Future<List<ProductCategory>> obtainCustomCategory(name) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/merchant-custom-categories/merchant/${name}/";
+    print("_________________________________________${url}");
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ProductCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ProductCategory(results[i]['name']!, id: results[i]['id']));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ProductCategory>[]);
+    }
+  }
+  Future<bool> createCustomCategory(name) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/merchant-custom-categories/";
+    Map data = {"name": name};
+        var _data = jsonEncode(data);
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _data);
+
+    if (response.statusCode == 200) {
+      return true;
+      }
+    return false;
+    
+  }
+  Future<bool> editCustomCategory(name, id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/merchant-custom-categories/$id/";
+    Map data = {"name": name};
+        var _data = jsonEncode(data);
+
+    var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers, body: _data);
+print("__________________________________ ${response.statusCode}");
+print("__________________________________ ${data}");
+print("__________________________________ ${response}");
+print("__________________________________ ${id}");
+    if (response.statusCode == 200) {
+      return true;
+      }
+
+    
+    return false;
+    
+  }
+  Future<bool> deleteCustomCategory(id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/merchant-custom-categories/$id/";
+   
+
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      print("_________________________________${response}");
+      throw jsonData;
+    }
+    
+  }
+  Future<List<ProductCategory>> getProductSubCategories(id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/sub-categories/${id}";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ProductCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ProductCategory(results[i]['name']!, id: results[i]['id']));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ProductCategory>[]);
+    }
+  }
+  Future<List<ProductCategory>> getProductTags(id, val) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/tags/?industries/${id}&search=${val}";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ProductCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ProductCategory(results[i]['name']!, id: results[i]['id']));
       }
 
       return categories;
@@ -1869,14 +2141,18 @@ class ShoppingAuthService extends AuthService {
 
   // List Discounts
   Future<Map<String, dynamic>?> listOfDiscounts(
-      String? next, String? previous) async {
+      String? next, String? previous,{ bool? activeDiscount}) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/business/discounts/";
-    } else {
+    } 
+    else if (activeDiscount!) {
+      url = AppConfig.baseUrl + "/api/v1/business/discounts/active-discounts";
+    }
+    else {
       url = getSecureUrl(url: next);
     }
     debugPrint(url);
@@ -1922,6 +2198,8 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
   }
+
+  
 
   //add update  discount
   Future<DiscountModel?> addUpdateDiscount(DiscountModel itemModel,
@@ -1971,6 +2249,364 @@ class ShoppingAuthService extends AuthService {
       throw jsonData;
     }
   }
+
+
+  // List the  add-on with pagination
+  Future<dynamic> getAddOnsList(
+      String productId, String? next, String? previous) async {
+    String url = AppConfig.baseUrl + "/api/v1/products/add-ons/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('Add-Ons BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      List items = [];
+      var data = jsonData["results"];
+
+      for (int i = 0; i < data.length; i++) {
+        var addOn = AddOns.fromJson(data[i]);
+        items.add(addOn);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": items
+      };
+
+      // jsonData["results"] = items;
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // List the  add-on options with pagination
+  Future<dynamic> getAddOnOptionsList(
+      String productId, String? next, String? previous) async {
+    String url = AppConfig.baseUrl + "/api/v1/products/add-on-options/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('Add-On Options BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      List items = [];
+      var data = jsonData["results"];
+
+      for (int i = 0; i < data.length; i++) {
+        var addOnOptions = AddOnOption.fromJson(data[i]);
+        items.add(addOnOptions);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": items
+      };
+
+      // jsonData["results"] = items;
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // Create Addon option
+  Future<dynamic> createAddOnOption(
+      AddOnOption addOnOption, String productId) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-on-options/";
+
+    var headers = await getAuthHeaders();
+
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    request.fields["name"] = addOnOption.name!;
+    request.fields["description"] = addOnOption.description!;
+    request.fields["is_available"] = jsonEncode(addOnOption.isAvailable);
+    request.fields["price"] = addOnOption.price!;
+
+    if (addOnOption.picture != null) {
+      // Create multipart using filepath, string or bytes
+      var multipartFile =
+          await http.MultipartFile.fromPath("picture", addOnOption.picture!);
+
+      // Add multipart to request
+      request.files.add(multipartFile);
+    }
+
+    debugPrint('createAddOnOption FIELDS -> ${request.fields}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      debugPrint("$key :- $value");
+    });
+
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+
+    if (response.statusCode == 201) {
+      debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+      AddOnOption addOnOption = AddOnOption.fromJson(jsonDecode(responseBody));
+
+      return addOnOption;
+    } else {
+      debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  // Create Addon
+  Future<dynamic> createAddOn(AddOns addOns, String productId) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-ons/";
+
+    var headers = await getAuthHeaders();
+
+    var request = http.Request("POST", Uri.parse(url));
+
+    List<int?> idList = addOns.options!.map((option) => option.id).toList();
+    request.body = json.encode({
+      "name": addOns.name!,
+      "description": addOns.description!,
+      "is_required": addOns.isRequired,
+      "select_type": addOns.selectType!.toLowerCase(),
+      "options": idList
+    });
+
+    // debugPrint('DATA from ---> ${request.body}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    var response = await request.send();
+
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+
+    if (response.statusCode == 201) {
+      // debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+      var jsonData = jsonDecode(responseBody);
+
+      AddOns addOns = AddOns();
+      addOns.id = jsonData['id'];
+      addOns.name = jsonData['name'];
+      addOns.description = jsonData['description'];
+      addOns.inputType = jsonData['input_type'];
+      addOns.selectType = jsonData['select_type'];
+      addOns.isRequired = jsonData['is_required'];
+
+      List<AddOnOption> options = [];
+
+      for (var item in jsonData['options']) {
+        AddOnOption addOnOption = AddOnOption();
+        addOnOption.id = item;
+        addOnOption.name = "";
+        addOnOption.description = "";
+        addOnOption.picture = "";
+        addOnOption.merchant = "";
+        addOnOption.price = "";
+        addOnOption.currency = "";
+        options.add(addOnOption);
+      }
+
+      addOns.options = options;
+
+      return addOns;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  // delete Add-on
+  Future<bool> deleteAddOn(int? id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-ons/$id/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(
+      url,
+      headers: headers,
+    );
+
+    debugPrint(
+        "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // delete Add-on option
+  Future<bool> deleteAddOnOption(int? id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-on-option/$id/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(
+      url,
+      headers: headers,
+    );
+
+    debugPrint(
+        "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+  // Update Addon
+  Future<dynamic> updateAddOn(AddOns addOns, String productId) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-ons/${addOns.id}/";
+
+    var headers = await getAuthHeaders();
+
+    var request = http.Request("PATCH", Uri.parse(url));
+
+    List idList = addOns.options!.map((option) => option.id).toList();
+    request.body = json.encode({
+      "name": addOns.name!,
+      "description": addOns.description!,
+      "is_required": addOns.isRequired,
+      "select_type": addOns.selectType!.toLowerCase(),
+      "options": idList.isNotEmpty ? idList : "null"
+    });
+
+    debugPrint('DATA from ---> ${addOns.id}');
+    debugPrint('DATA from ---> ${request.body}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    var response = await request.send();
+
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      // debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+      var jsonData = jsonDecode(responseBody);
+
+      AddOns addOns = AddOns();
+      addOns.id = jsonData['id'];
+      addOns.name = jsonData['name'];
+      addOns.description = jsonData['description'];
+      addOns.inputType = jsonData['input_type'];
+      addOns.selectType = jsonData['select_type'];
+      addOns.isRequired = jsonData['is_required'];
+
+      List<AddOnOption> options = [];
+
+      for (var item in jsonData['options']) {
+        debugPrint("add-on option id:- ${item['id']}");
+
+        AddOnOption addOnOption = AddOnOption.fromJson(item);
+        // addOnOption.id = item['id'];
+        // addOnOption.name = "";
+        // addOnOption.description = "";
+        // addOnOption.picture = "";
+        // addOnOption.merchant = "";
+        // addOnOption.price = "";
+        // addOnOption.currency = "";
+
+        options.add(addOnOption);
+      }
+
+      addOns.options = options;
+
+      return addOns;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  // Update Addon option
+  Future<dynamic> updateAddOnOption(
+      AddOnOption addOnOption, String productId) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/products/add-on-options/${addOnOption.id}/";
+
+    var headers = await getAuthHeaders();
+
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    request.fields["name"] = addOnOption.name!;
+    request.fields["description"] = addOnOption.description!;
+    request.fields["is_available"] = jsonEncode(addOnOption.isAvailable);
+    request.fields["price"] = addOnOption.price!;
+
+    if (addOnOption.picture != null && !addOnOption.picture!.contains("http")) {
+      // Create multipart using filepath, string or bytes
+      var multipartFile =
+          await http.MultipartFile.fromPath("picture", addOnOption.picture!);
+
+      // Add multipart to request
+      request.files.add(multipartFile);
+    }
+
+    debugPrint('createAddOnOption FIELDS -> ${request.fields}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    request.fields.forEach((key, value) {
+      debugPrint("$key :- $value");
+    });
+
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, Your image is too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    debugPrint("$responseBody");
+
+    if (response.statusCode == 201) {
+      debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+
+      AddOnOption addOnOption = AddOnOption.fromJson(jsonDecode(responseBody));
+
+      return addOnOption;
+    } else {
+      debugPrint("DATA:- ${request.fields}");
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
+      return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+
 }
 
 class ShoppingCartModelFromQrCode {

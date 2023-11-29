@@ -16,6 +16,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:textfield_tags/textfield_tags.dart';
 import '../../../../data/currency.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
@@ -27,9 +28,7 @@ import '../shopping_auth.dart';
 class EditProduct extends StatefulWidget {
   var arguments;
 
-
   EditProduct({Key? key, this.arguments}) : super(key: key);
-
 
   @override
   _EditProductState createState() => _EditProductState(arguments: arguments);
@@ -56,17 +55,36 @@ class _EditProductState extends State<EditProduct> {
   String? productDescription = "";
   String? productShortDescription = "";
   String? productCategory = "";
+  String productSubCategory = "";
+  ProductCategory? pressedCustomCategory;
+  List<ProductCategory>? customCategories;
+  ProductCategory? pressedSubCategory;
+  List<ProductCategory>? subCategories;
+  List<ProductCategory>? subCategoriesCopy;
   String? productCondition = "";
+  String? preparationCondition = "";
   String? productPrice = "";
   ProductCategory? selectedProductCategory;
+  ProductCategory? selectedSubCategory;
+  ProductCategory? selectedCustomCategory;
+  ProductCategory? pressedCategory;
+  List<ProductCategory>? productCategoriesCopy;
+  List<ProductCategory>? productCustomCategoriesCopy;
+  String productCustomCategory = "";
+  List<ProductCategory> tagList = [];
+
   ProductCondition? selectedProductCondition;
+  ProductCondition? selectedPreparationCondition;
   String? productManufacturer = "";
   bool? productIsAvailable = false;
   DateTime? productAvailableFrom = DateTime.now();
   List<ProductCategory>? productCategories;
+  List<ProductCategory>? productCustomCategories;
   bool isLoading = false;
   bool isAPILoading = false;
   bool productEnableInSuperStore = false;
+  final myController = TextEditingController();
+  List<Tags> userTags = [];
 
   //text editing controllers for the edit fields
   TextEditingController productTitleController = TextEditingController();
@@ -74,6 +92,7 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController productShortDescriptionController =
       TextEditingController();
   TextEditingController productManufacturerController = TextEditingController();
+  TextEditingController customProductController = TextEditingController();
   TextEditingController productPriceController = TextEditingController();
 
   TextEditingController weightController = TextEditingController();
@@ -82,6 +101,7 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController inventoryCountController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
+  List? productAddOnsList = [];
   bool inventoryIsAvailable = false;
   var weightSi = ['Grams', 'Kilograms'];
   var widthSi = ['Centimetres', 'Metres'];
@@ -98,6 +118,7 @@ class _EditProductState extends State<EditProduct> {
   bool trackInventory = false;
   bool trackInventoryView = false;
   bool measurementView = false;
+  bool show = false;
 
   @override
   void deactivate() {
@@ -109,8 +130,29 @@ class _EditProductState extends State<EditProduct> {
   void initState() {
     productId = arguments['productId'];
     getCategories();
+    Future.delayed(Duration(seconds: 2), () {
+      obtainCategories();
+      obtainCustomCategory();
+    });
+        myController.addListener(_printLatestValue);
 
     super.initState();
+  }
+
+  _printLatestValue() {
+    if (myController.text.length > 2) {
+      getProductTags(userBloc!.userAbout!.industry!.id!, myController.text);
+      show = true;
+    } else {
+      show = false;
+    }
+    setState(() {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    userBloc = Provider.of<UserBloc>(context);
+    super.didChangeDependencies();
   }
 
   void getCategories() async {
@@ -137,7 +179,8 @@ class _EditProductState extends State<EditProduct> {
 
           // assigning to our edit controllers
           productTitleController.text = currentProduct.name!;
-          productDescriptionController.text = messageDecoderWithEmoji(currentProduct.description!)!;
+          productDescriptionController.text =
+              messageDecoderWithEmoji(currentProduct.description!)!;
 
           productPriceController.text =
               moneyNormalizer(int.parse(currentProduct.price!)).toString();
@@ -145,16 +188,21 @@ class _EditProductState extends State<EditProduct> {
           if (currentProduct.manufacturer != null) {
             productManufacturerController.text = currentProduct.manufacturer!;
           }
-          productShortDescriptionController.text = messageDecoderWithEmoji(currentProduct.shortDescription!)!;
+          customProductController.text = currentProduct.customCategory!.name;
+
+          productShortDescriptionController.text =
+              messageDecoderWithEmoji(currentProduct.shortDescription!)!;
 
           productImagesFromServer.addAll(currentProduct.serverImages!);
           productName = currentProduct.name;
-          productCategory = currentProduct.category;
+          productCategory = currentProduct.category!.name;
           productCondition = currentProduct.condition;
           productPrice = moneyNormalizer(int.parse(currentProduct.price!));
-          productDescription = messageDecoderWithEmoji(currentProduct.description);
+          productDescription =
+              messageDecoderWithEmoji(currentProduct.description);
           productManufacturer = currentProduct.manufacturer;
-          productShortDescription = messageDecoderWithEmoji(currentProduct.shortDescription);
+          productShortDescription =
+              messageDecoderWithEmoji(currentProduct.shortDescription);
           productIsAvailable = currentProduct.isAvailable;
           productAvailableFrom = currentProduct.availableFrom;
           productEnableInSuperStore = currentProduct.enableInSuperStore!;
@@ -162,41 +210,62 @@ class _EditProductState extends State<EditProduct> {
           // debugPrint('fola edit::::: ${currentProduct.toJson()}');
 
           weight = currentProduct.weight!;
-          selectedWeight = currentProduct.weightSiUnit == 'g' ? 'Grams' :
-          currentProduct.weightSiUnit == '' ? '' : 'Kilograms';
+          selectedWeight = currentProduct.weightSiUnit == 'g'
+              ? 'Grams'
+              : currentProduct.weightSiUnit == ''
+                  ? ''
+                  : 'Kilograms';
           height = currentProduct.height!;
-          selectedHeight = currentProduct.heightSiUnit == 'cm' ? 'Centimetres' :
-          currentProduct.heightSiUnit == "" ? '' :'Metres';
+          selectedHeight = currentProduct.heightSiUnit == 'cm'
+              ? 'Centimetres'
+              : currentProduct.heightSiUnit == ""
+                  ? ''
+                  : 'Metres';
           width = currentProduct.width!;
-          selectedWidth = currentProduct.widthSiUnit == 'cm' ? 'Centimetres' :
-          currentProduct.widthSiUnit == "" ? '' : 'Metres';
+          selectedWidth = currentProduct.widthSiUnit == 'cm'
+              ? 'Centimetres'
+              : currentProduct.widthSiUnit == ""
+                  ? ''
+                  : 'Metres';
           trackInventory = currentProduct.trackInventory!;
 
           trackInventoryView = trackInventory;
 
-          weightController.text = currentProduct.weight != 0.0 ? currentProduct.weight.toString() : '';
-          heightController.text = currentProduct.height != 0.0 ? currentProduct.height.toString() : '';
-          widthController.text = currentProduct.width != 0.0 ? currentProduct.width.toString() : '';
+          weightController.text = currentProduct.weight != 0.0
+              ? currentProduct.weight.toString()
+              : '';
+          heightController.text = currentProduct.height != 0.0
+              ? currentProduct.height.toString()
+              : '';
+          widthController.text = currentProduct.width != 0.0
+              ? currentProduct.width.toString()
+              : '';
           inventoryCount = currentProduct.quantity! ?? 0;
           inventoryCountController.text = inventoryCount.toString();
 
           //convert list to variant
-          productVariantList = Variant.convertToVariantList(currentProduct.variant!);
+          productVariantList =
+              Variant.convertToVariantList(currentProduct.variant!);
+          productAddOnsList = currentProduct.addOns != null
+              ? AddOns.convertToAddOnList(currentProduct.addOns!)
+              : [];
 
           // assigning the dropdown from currentProduct
-          productCategories?.forEach((catagory) {
-            print('CURRENT CATEGORY :::: ${catagory}');
+          selectedProductCategory = currentProduct.category;
+          selectedSubCategory = currentProduct.subCategory;
+          selectedCustomCategory = currentProduct.customCategory;
+          userTags = currentProduct.tags!;
 
-            if (catagory.name ==
-                messageDecoderWithEmoji(currentProduct.category)) {
-              selectedProductCategory = catagory;
-            }
-          });
           print('CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
           conditions.forEach((condition) {
             if (condition.name == currentProduct.condition) {
               selectedProductCondition = condition;
+            }
+          });
+          deliverTimeCondition.forEach((preparation) {
+            if (preparation.name == currentProduct.preparationTime.toString()) {
+              selectedPreparationCondition = preparation;
             }
           });
 
@@ -212,13 +281,71 @@ class _EditProductState extends State<EditProduct> {
             pickedMeasurementList.add('Width');
           }
           measurementView = pickedMeasurementList.isEmpty ? false : true;
-
         });
       }
     });
-
   }
 
+  void obtainCategories() async {
+    try {
+      productCategories = await ShoppingAuthService()
+          .obtainProductCategories(userBloc!.userAbout!.industry!.id!);
+
+      productCategoriesCopy = productCategories;
+    } catch (e) {
+      productCategories = [];
+      productCategoriesCopy = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+  void obtainCustomCategory() async {
+    try {
+      productCustomCategories = await ShoppingAuthService()
+          .obtainCustomCategory(userBloc!.user.userName!);
+
+      productCustomCategoriesCopy = productCustomCategories;
+    } catch (e) {
+      productCustomCategories = [];
+      productCustomCategoriesCopy = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  getProductTags(id, searchText) async {
+    if (mounted) setState(() {});
+
+    try {
+      List<ProductCategory> result =
+          await ShoppingAuthService().getProductTags(id, searchText);
+
+      tagList = result;
+      show = true;
+    } catch (e) {
+      tagList = [];
+    }
+
+    if (mounted) setState(() {});
+  }
+
+  void getSubCategories(id) async {
+    if (mounted) setState(() {});
+
+    try {
+      subCategories = await ShoppingAuthService().getProductSubCategories(id);
+
+      subCategoriesCopy = subCategories;
+    } catch (e) {
+      subCategories = [];
+      subCategoriesCopy = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +429,120 @@ class _EditProductState extends State<EditProduct> {
                       SizedBox(height: 10),
                       getCategoryField(),
                       SizedBox(height: 10),
+                      getSubCategoryField(),
+                      const SizedBox(height: 10),
+                      getCustomCategoryField(),
+                      const SizedBox(height: 10),
+                      Text(
+                        "Tag",
+                        style: TextStyle(
+                            color: darkGrey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      SizedBox(
+                        height: 6,
+                      ),
+                    
+                      TextFieldTags(
+                        tagsStyler: productTextFieldTagStyler,
+                        validator: (value) {
+                          return null;
+                        },
+                        initialTags: (userTags).map((e) => e.name!).toList(),
+                        textEditingController: myController,
+                        textFieldStyler: TextFieldStyler(
+                          helperText: '',
+                          hintText: '',
+                          textFieldEnabled: true,
+                          textFieldFocusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: greyBorderColor,
+                              width: 1.0,
+                            ),
+                          ),
+                          textFieldBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: greyBorderColor,
+                              width: 1.0,
+                            ),
+                          ),
+                          textFieldEnabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: greyBorderColor,
+                              width: 1.0,
+                            ),
+                          ),
+                        ),
+                        onTag: (tag) {
+                          // setState(() {
+                          //   userTags.add(tag);
+                          //   userTags = userTags.toSet().toList();
+                          // });
+                          // userTags.removeWhere((tag) => tag.isEmpty);
+                        },
+                        onDelete: (tag) {
+                          setState(() {
+                            userTags.remove(tag);
+                          });
+                          userTags.removeWhere((tag) => tag.name!.isEmpty);
+                        },
+                      ),
+                      if (show && tagList.isNotEmpty)
+                        Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border:
+                                  Border.all(width: 1, color: greyBorderColor),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: tagList.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(
+                                  tagList[index].name,
+                                  softWrap: false,
+                                  overflow: TextOverflow.fade,
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                                dense: true,
+                                onTap: () {
+                                  String text = tagList[index]
+                                      .name
+                                      .replaceFirst(" ", "-");
+                                  setState(() {
+                                    myController.text = text + " ";
+
+                                    myController.selection =
+                                        TextSelection.collapsed(
+                                            offset: text.length);
+                                    userTags.add(
+                                       tagList[index] as Tags
+                                    );
+                                    userTags = userTags.toSet().toList();
+                                  });
+                                  FocusScope.of(context).requestFocus();
+
+                                  // print(userTags);print("______________");
+                                  userTags.removeWhere((tag) => tag.name!.isEmpty);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+
                       getProductConditionField(),
+                      const SizedBox(height: 10),
+                      getProductDeliveryTimeField(),
                       SizedBox(height: 16),
                       getProductShortDescription(),
                       SizedBox(height: 10),
@@ -311,19 +551,20 @@ class _EditProductState extends State<EditProduct> {
                       SizedBox(height: 10),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
-                      if(productIsAvailable == true)...[
+                      if (productIsAvailable == true) ...[
                         getAvailableFromField(),
                         const SizedBox(height: 16),
                       ],
                       getMeasurementField(),
                       const SizedBox(height: 16),
-                      if(measurementView == true)...[
+                      if (measurementView == true) ...[
                         getCategoryMeasurementField(),
                         const SizedBox(height: 16),
                       ],
 
-                      if(pickedMeasurementList.isNotEmpty && measurementView == true)...[
-                        if(containsWeight())...[
+                      if (pickedMeasurementList.isNotEmpty &&
+                          measurementView == true) ...[
+                        if (containsWeight()) ...[
                           //weight section
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -341,7 +582,7 @@ class _EditProductState extends State<EditProduct> {
                           ),
                           const SizedBox(height: 20),
                         ],
-                        if(containsHeight())...[
+                        if (containsHeight()) ...[
                           //height section
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -359,7 +600,7 @@ class _EditProductState extends State<EditProduct> {
                           ),
                           const SizedBox(height: 20),
                         ],
-                        if(containsWidth())...[
+                        if (containsWidth()) ...[
                           //width section
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -380,7 +621,7 @@ class _EditProductState extends State<EditProduct> {
                       ],
 
                       getTrackInventoryViewField(),
-                      if(trackInventoryView == true)...[
+                      if (trackInventoryView == true) ...[
                         const SizedBox(height: 16),
                         getInventoryFormField(),
                         const SizedBox(height: 16),
@@ -390,18 +631,24 @@ class _EditProductState extends State<EditProduct> {
 
                       SizedBox(height: 16),
                       getEnableInSuperStoreField(),
-                      const SizedBox(height: 20),
-                      if(productVariantList == null || productVariantList.isEmpty)...[
+                      const SizedBox(height: 25),
+                      if (productVariantList == null ||
+                          productVariantList.isEmpty) ...[
                         // getAddVariationFormField(),
                         productVariation(),
-                      ]else...[
+                      ] else ...[
                         displaySelectedVariant(),
                       ],
 
-                      // const SizedBox(height: 20),
-                      // productAddOns(),
+                      const SizedBox(height: 25),
+                      if (productAddOnsList == null ||
+                          productAddOnsList!.isEmpty) ...[
+                        productAddOns(),
+                      ] else ...[
+                        displaySelectedAddOn(),
+                      ],
 
-                      SizedBox(height: 16),
+                      SizedBox(height: 30),
                       getSubmitButton(),
                       SizedBox(height: 20),
                     ],
@@ -647,15 +894,15 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  bool containsWeight(){
+  bool containsWeight() {
     return pickedMeasurementList.contains('Weight');
   }
 
-  bool containsHeight(){
+  bool containsHeight() {
     return pickedMeasurementList.contains('Height');
   }
 
-  bool containsWidth(){
+  bool containsWidth() {
     return pickedMeasurementList.contains('Width');
   }
 
@@ -878,7 +1125,6 @@ class _EditProductState extends State<EditProduct> {
                               selectedWeight = category;
                               Navigator.pop(context);
                               setState(() {});
-
                             },
                           ),
                         );
@@ -957,7 +1203,6 @@ class _EditProductState extends State<EditProduct> {
                               selectedHeight = height;
                               Navigator.pop(context);
                               setState(() {});
-
                             },
                           ),
                         );
@@ -1036,7 +1281,6 @@ class _EditProductState extends State<EditProduct> {
                               selectedWidth = category;
                               Navigator.pop(context);
                               setState(() {});
-
                             },
                           ),
                         );
@@ -1076,7 +1320,8 @@ class _EditProductState extends State<EditProduct> {
         setState(() {});
       },
       isChecked: trackInventory,
-      title: "Checking this field will automatically update the quantity when the product is purchased.",
+      title:
+          "Checking this field will automatically update the quantity when the product is purchased.",
       fontSize: 12.0,
       maxLines: 2,
     );
@@ -1143,10 +1388,127 @@ class _EditProductState extends State<EditProduct> {
           color: darkGrey,
         ),
         onTap: () {
-          selectItemCategory();
+          // selectItemCategory();
+          categoryAndroidSheet();
         },
       ),
     );
+  }
+
+  Widget getProductDeliveryTimeField() {
+    return CustomizedDropDownField(
+      title: "Preparation Time",
+      child: ListTile(
+        dense: true,
+        title: Row(
+          children: [
+            Text(
+              selectedPreparationCondition != null
+                  ? selectedPreparationCondition!.description
+                  : "",
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectDeliveryTimeCondition();
+        },
+      ),
+    );
+  }
+
+  void selectDeliveryTimeCondition() async {
+    final pressedCondition = await showDialog<ProductCondition>(
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: deliverTimeCondition.map<Widget>((condition) {
+                          if (selectedPreparationCondition == condition) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Row(
+                                  children: [
+                                    
+                                    Expanded(
+                                      child: Text(
+                                        selectedPreparationCondition != null
+                                            ? selectedPreparationCondition!
+                                                .description
+                                            : "",
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontSize: 16, color: navyBlue),
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, condition);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    condition.description,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        fontSize: 16, color: blackFont),
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, condition);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCondition != null) {
+      selectedPreparationCondition = pressedCondition;
+      preparationCondition = selectedPreparationCondition!.name;
+      setState(() {});
+    }
   }
 
   Widget getProductConditionField() {
@@ -1189,80 +1551,367 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  void selectItemCategory() async {
-    final pressedCategory = await showDialog<ProductCategory>(
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: productCategories?.map<Widget>((category) {
-                              if (selectedProductCategory == category) {
-                                return Container(
-                                  color: selectedListItemBackgroundBlue,
-                                  child: ListTile(
-                                    dense: true,
-                                    title: Text(
-                                      category.name,
-                                      overflow: TextOverflow.fade,
-                                      softWrap: false,
-                                      style: TextStyle(
-                                          color: navyBlue,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    trailing: Icon(
-                                      SlydoAppIcon.checked,
-                                      color: navyBlue,
-                                      size: 12,
-                                    ),
-                                    onTap: () {
-                                      Navigator.pop(context, category);
-                                    },
-                                  ),
-                                );
-                              }
-                              return ListTile(
-                                title: Text(
-                                  category.name,
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                dense: true,
-                                onTap: () {
-                                  Navigator.pop(context, category);
-                                },
-                              );
-                            }).toList() ??
-                            [],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-    if (pressedCategory != null) {
-      selectedProductCategory = pressedCategory;
-      productCategory = selectedProductCategory!.name;
-      setState(() {});
+  String getCustomCategoryLabel() {
+    String industryName = userBloc!.userAbout!.industry!.name!;
+    switch (industryName) {
+      case 'Electronics Store':
+        return "Aisle";
+      case 'Furniture':
+        return "Aisle";
+      case 'Grocery Store':
+        return "Aisle";
+      case 'Liquor Store':
+        return "Aisle";
+      case 'Pharmaceutical':
+        return "Aisle";
+      case 'Restaurant/Cafe':
+        return "Menu";
+      case 'Retail':
+        return "Aisle";
+      default:
+        return "Custom Category";
     }
   }
+
+  Widget getCustomCategoryField() {
+    return CustomizedDropDownField(
+      title: getCustomCategoryLabel(),
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedCustomCategory != null ? selectedCustomCategory!.name : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          customCategoryAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  Widget getSubCategoryField() {
+    return CustomizedDropDownField(
+      title: "Sub-Category",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedSubCategory != null ? selectedSubCategory!.name : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          subCategoryAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  void subCategoryAndroidSheet() {
+    subCategories = subCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search  sub category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      subCategories = subCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      subCategories = subCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                subCategories ==
+                    null ? SizedBox() : Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: subCategories!.length,
+                    itemBuilder: (context, index) {
+                      ProductCategory category = subCategories![index];
+                      if (selectedSubCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.name,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedSubCategory = category;
+                              Navigator.pop(context);
+                              if (pressedSubCategory != null) {
+                                selectedSubCategory = pressedSubCategory;
+                                productSubCategory = selectedSubCategory!.name;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category.name,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedCategory = category;
+                          Navigator.pop(context);
+                          if (pressedCategory != null) {
+                            selectedSubCategory = pressedCategory;
+                            productCategory = selectedSubCategory!.name;
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+  void customCategoryAndroidSheet() {
+    customCategories = productCustomCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search  custom category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      customCategories = productCustomCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      customCategories = productCustomCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: customCategories!.length,
+                    itemBuilder: (context, index) {
+                      ProductCategory category = customCategories![index];
+                      if (selectedCustomCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.name,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedCustomCategory = category;
+                              Navigator.pop(context);
+                              if (pressedSubCategory != null) {
+                                selectedCustomCategory = pressedCustomCategory;
+                                productCustomCategory = selectedCustomCategory!.name;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category.name,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedCustomCategory = category;
+                          Navigator.pop(context);
+                          if (pressedCustomCategory != null) {
+                            selectedCustomCategory = pressedCustomCategory;
+                            productCustomCategory = selectedCustomCategory!.name;
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void categoryAndroidSheet() {
+    productCategories = productCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      productCategories = productCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      productCategories = productCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: productCategories!.length,
+                    itemBuilder: (context, index) {
+                      ProductCategory category = productCategories![index];
+                      if (selectedProductCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.name,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedCategory = category;
+                              Navigator.pop(context);
+                              if (pressedCategory != null) {
+                                selectedProductCategory = pressedCategory;
+                                productCategory = selectedProductCategory!.name;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category.name,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedCategory = category;
+                          Navigator.pop(context);
+                          if (pressedCategory != null) {
+                            getSubCategories(category.id);
+                            selectedProductCategory = pressedCategory;
+                            productCategory = selectedProductCategory!.name;
+                            productSubCategory = "";
+                            selectedSubCategory = null;
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+
 
   void selectItemCondition() async {
     final pressedCondition = await showDialog<ProductCondition>(
@@ -1457,27 +2106,29 @@ class _EditProductState extends State<EditProduct> {
   Future<void> editProduct() async {
     if (_formKey.currentState!.validate()) {
       if (productLocalImages.length >= 0) {
-        if(containsWeight() && selectedWeight.isEmpty && weight != 0.0){
-          showToast(message: AppLocalization.of(context)!
-              .pleaseFillWeight);
+        if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
+          showToast(message: AppLocalization.of(context)!.pleaseFillWeight);
           return;
         }
-        if(containsHeight() && selectedHeight.isEmpty && height != 0.0){
-          showToast(message: AppLocalization.of(context)!
-              .pleaseFillHeight);
+        if (containsHeight() && selectedHeight.isEmpty && height != 0.0) {
+          showToast(message: AppLocalization.of(context)!.pleaseFillHeight);
           return;
         }
-        if(containsWidth() && selectedWidth.isEmpty && width != 0.0){
-          showToast(message: AppLocalization.of(context)!
-              .pleaseFillWidth);
+        if (containsWidth() && selectedWidth.isEmpty && width != 0.0) {
+          showToast(message: AppLocalization.of(context)!.pleaseFillWidth);
           return;
         }
 
         if (validateDropdown()) {
           // setting updated value
           currentProduct.name = productName;
-          currentProduct.description = messageDecoderWithEmoji(productDescription);
-          currentProduct.category = messageDecoderWithEmoji(productCategory);
+          currentProduct.description =
+              messageDecoderWithEmoji(productDescription);
+          currentProduct.category = selectedProductCategory;
+          currentProduct.subCategory = selectedSubCategory;
+          currentProduct.customCategory = selectedCustomCategory;
+          currentProduct.tags = userTags;
+          currentProduct.preparationTime = num.parse(selectedPreparationCondition!.name);
           currentProduct.condition = productCondition;
           currentProduct.price = moneyInputNormalizer(productPrice!).toString();
           currentProduct.localImages =
@@ -1485,20 +2136,36 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.serverImages = productImagesFromServer;
           currentProduct.isAvailable = productIsAvailable;
           currentProduct.availableFrom = productAvailableFrom;
-          currentProduct.shortDescription = messageDecoderWithEmoji(productShortDescription);
+          currentProduct.shortDescription =
+              messageDecoderWithEmoji(productShortDescription);
           currentProduct.manufacturer = productManufacturer;
           currentProduct.enableInSuperStore = productEnableInSuperStore;
 
           currentProduct.weight = weight;
-          currentProduct.weightSiUnit = selectedWeight == 'Grams' ? 'g' : selectedWeight == 'Kilograms' ? 'kg' : '';
+          currentProduct.weightSiUnit = selectedWeight == 'Grams'
+              ? 'g'
+              : selectedWeight == 'Kilograms'
+                  ? 'kg'
+                  : '';
           currentProduct.height = height;
-          currentProduct.heightSiUnit = selectedHeight == 'Centimetres' ? 'cm' : selectedHeight == 'Metres' ? 'm' : '';
+          currentProduct.heightSiUnit = selectedHeight == 'Centimetres'
+              ? 'cm'
+              : selectedHeight == 'Metres'
+                  ? 'm'
+                  : '';
           currentProduct.width = width;
-          currentProduct.widthSiUnit = selectedWidth == 'Centimetres' ? 'cm' : selectedWidth == 'Metres' ? 'm' : '';
+          currentProduct.widthSiUnit = selectedWidth == 'Centimetres'
+              ? 'cm'
+              : selectedWidth == 'Metres'
+                  ? 'm'
+                  : '';
           currentProduct.trackInventory = trackInventory;
           currentProduct.quantity = inventoryCount;
 
-          await _auth.editProduct(currentProduct).then((value) {
+       
+          await _auth
+              .editProduct(currentProduct, productAddOnsList)
+              .then((value) {
             showToast(
                 message:
                     AppLocalization.of(context)!.productEditedSuccessfully);
@@ -1634,7 +2301,6 @@ class _EditProductState extends State<EditProduct> {
         return AppLocalization.of(context)!.pleaseEnterValidCount;
       },
     );
-
   }
 
   Widget getMeasurementField() {
@@ -1665,7 +2331,9 @@ class _EditProductState extends State<EditProduct> {
       child: ListTile(
         dense: true,
         title: Text(
-          pickedMeasurementList.isNotEmpty ? pickedMeasurementList.join(', ') : '',
+          pickedMeasurementList.isNotEmpty
+              ? pickedMeasurementList.join(', ')
+              : '',
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -1681,7 +2349,6 @@ class _EditProductState extends State<EditProduct> {
   }
 
   void measurementAndroidSheet() {
-
     measurementCheckMark['Height'] = containsHeight() ? true : false;
     measurementCheckMark['Weight'] = containsWeight() ? true : false;
     measurementCheckMark['Width'] = containsWidth() ? true : false;
@@ -1697,7 +2364,6 @@ class _EditProductState extends State<EditProduct> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -1716,7 +2382,7 @@ class _EditProductState extends State<EditProduct> {
                           } else {
                             pickedMeasurementList.add(measurement);
                           }
-                          if(mounted)setState(() {});
+                          if (mounted) setState(() {});
                         },
                         title: Text(
                           measurement,
@@ -1728,7 +2394,6 @@ class _EditProductState extends State<EditProduct> {
                               fontWeight: FontWeight.w400),
                         ),
                       );
-
                     },
                   ),
                 ),
@@ -1753,7 +2418,8 @@ class _EditProductState extends State<EditProduct> {
         setState(() {});
       },
       isChecked: inventoryIsAvailable,
-      title: "Checking this field will automatically update the quantity when the product is purchased.",
+      title:
+          "Checking this field will automatically update the quantity when the product is purchased.",
       fontSize: 10.0,
       maxLines: 2,
     );
@@ -1762,18 +2428,17 @@ class _EditProductState extends State<EditProduct> {
   Widget getAddVariationFormField() {
     return GestureDetector(
       onTap: () async {
-
         // Navigate to PRODUCT VARIANT LIST and wait for the result
-        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_VARIANT_LIST,
-            arguments: {
-              'productId': productId,
-            });
+        final result = await Navigator.of(context)
+            .pushNamed(Routes.PRODUCT_VARIANT_LIST, arguments: {
+          'productId': productId,
+        });
 
         // // Handle the result (map) received from Product Add New Option
         if (result != null && result is List<Variant>) {
           //save the variant details for later use
           productVariantList = result;
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         }
       },
       child: CustomizedDropDownField(
@@ -1794,14 +2459,15 @@ class _EditProductState extends State<EditProduct> {
             ),
           ),
           subtitle: Container(
-            padding: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
-            margin: const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+            padding: const EdgeInsets.only(
+                left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+            margin: const EdgeInsets.only(
+                left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
             decoration: BoxDecoration(
                 border: Border.all(
                   color: navyBlue,
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(10))
-            ),
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
             child: Center(
               child: Text(
                 'Create Variant',
@@ -1818,8 +2484,7 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  Widget displaySelectedVariant(){
-
+  Widget displaySelectedVariant() {
     return Column(
       children: [
         Row(
@@ -1834,9 +2499,9 @@ class _EditProductState extends State<EditProduct> {
                   fontSize: 14),
             ),
             GestureDetector(
-              onTap: (){
-                final data = Navigator.of(context).pushNamed(Routes.PRODUCT_VARIANT_LIST,
-                  arguments: {
+              onTap: () {
+                final data = Navigator.of(context)
+                    .pushNamed(Routes.PRODUCT_VARIANT_LIST, arguments: {
                   'productId': productId,
                 });
 
@@ -1851,16 +2516,14 @@ class _EditProductState extends State<EditProduct> {
                   // productVariantList = data;
 
                   // variantData = data;
-                  if(mounted)setState(() {});
+                  if (mounted) setState(() {});
                 }
               },
               child: Text(
                 'See all',
                 maxLines: 1,
                 style: TextStyle(
-                    color: navyBlue,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16),
+                    color: navyBlue, fontWeight: FontWeight.w400, fontSize: 16),
               ),
             ),
           ],
@@ -1869,7 +2532,6 @@ class _EditProductState extends State<EditProduct> {
         _buildProductVariantList(),
       ],
     );
-
   }
 
   Widget _buildProductVariantList() {
@@ -1885,17 +2547,15 @@ class _EditProductState extends State<EditProduct> {
             return buildLoadingIndicator(isLoading: isLoading);
           } else {
             return productVariantTile(
-                  variant: productVariantList[index],
-                );
+              variant: productVariantList[index],
+            );
           }
         },
-
       ),
     );
   }
 
   Widget productVariantTile({required Variant variant}) {
-
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -1904,7 +2564,7 @@ class _EditProductState extends State<EditProduct> {
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          dense:  true,
+          dense: true,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1936,8 +2596,7 @@ class _EditProductState extends State<EditProduct> {
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    moneyDisplayNormalizer(
-                        int.parse(variant.price.toString())),
+                    moneyDisplayNormalizer(int.parse(variant.price.toString())),
                     style: TextStyle(
                         fontSize: 18.0,
                         color: blackFont,
@@ -1950,8 +2609,7 @@ class _EditProductState extends State<EditProduct> {
           leading: GestureDetector(
             onTap: () {
               String? url = variant.serverImages![0]!;
-              Navigator.of(context)
-                  .pushNamed("/photo-viewer", arguments: url);
+              Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
             },
             child: checkProductImage(variant),
           ),
@@ -1964,7 +2622,7 @@ class _EditProductState extends State<EditProduct> {
     // Retrieve the first image from the 'pictures' list
     String? url = "";
 
-    for(var item in variant.serverImages!){
+    for (var item in variant.serverImages!) {
       url = item;
     }
 
@@ -2003,22 +2661,24 @@ class _EditProductState extends State<EditProduct> {
           ),
         ),
       );
-
     }
   }
 
-  Widget productVariation(){
+  Widget productVariation() {
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
-          'productId': productId, 'option': 'edit'
-        });
+        if (productAddOnsList!.isNotEmpty) {
+          return;
+        }
+        final result = await Navigator.of(context).pushNamed(
+            Routes.PRODUCT_NEW_OPTION,
+            arguments: {'productId': productId, 'option': 'edit'});
 
         // Handle the result (map) received from Product Add New Option
         if (result != null && result is List<Variant>) {
           //save the variant details for later use
           productVariantList = result;
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         }
       },
       child: Container(
@@ -2029,7 +2689,9 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue,
+                  color: productAddOnsList!.isEmpty
+                      ? navyBlue
+                      : blackFont.withOpacity(.5),
                   fontWeight: FontWeight.w600,
                   fontSize: 14),
             ),
@@ -2038,26 +2700,30 @@ class _EditProductState extends State<EditProduct> {
               size: 16,
               color: blackFont,
             ),
-
           ],
         ),
       ),
     );
   }
 
-  Widget productAddOns(){
+  Widget productAddOns() {
     return GestureDetector(
       onTap: () async {
         //disable click if variant is not empty
-        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+        if (productVariantList.isNotEmpty) {
+          return;
+        }
+
+        final result = await Navigator.of(context)
+            .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
           'productId': productId,
         });
 
-        // Handle the result (map) received from Product Add New Option
-        if (result != null && result is List<Variant>) {
-          //save the add-on details for later use
-          // productVariantList = result;
-          if(mounted)setState(() {});
+        // Handle the result (map) received from PRODUCT_ADD_ON_LIST
+        if (result != null && result is List<dynamic>) {
+          //save the add-on details
+          productAddOnsList = result;
+          if (mounted) setState(() {});
         }
       },
       child: Container(
@@ -2068,7 +2734,9 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color: productVariantList.isEmpty ? navyBlue : greyBorderColor,
+                  color: productVariantList.isEmpty
+                      ? navyBlue
+                      : blackFont.withOpacity(.5),
                   fontWeight: FontWeight.w600,
                   fontSize: 14),
             ),
@@ -2077,8 +2745,112 @@ class _EditProductState extends State<EditProduct> {
               size: 16,
               color: blackFont,
             ),
-
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget displaySelectedAddOn() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Product Add-ons',
+              maxLines: 1,
+              style: TextStyle(
+                  color: blackFont.withOpacity(.5),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
+            ),
+            GestureDetector(
+              onTap: () async {
+                final data = await Navigator.of(context)
+                    .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+                  'productId': productId,
+                });
+
+                // Handle the result (map) received from PRODUCT_ADD_ON_LIST
+                if (data != null && data is AddOns) {
+                  //save the add-on details
+                  productAddOnsList!.add(data);
+                  if (mounted) setState(() {});
+                }
+              },
+              child: Text(
+                'See all',
+                maxLines: 1,
+                style: TextStyle(
+                    color: navyBlue, fontWeight: FontWeight.w400, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 5.0),
+        _buildAddOnList(),
+      ],
+    );
+  }
+
+  Widget _buildAddOnList() {
+    return Container(
+      // height: 200,
+      height: 80 * productAddOnsList!.length.toDouble(),
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        //+1 for progressbar
+        itemCount: productAddOnsList!.length + 1,
+        controller: scrollControllerVariant,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == productAddOnsList!.length) {
+            return buildLoadingIndicator(isLoading: isLoading);
+          } else {
+            return addOnTile(
+              addOns: productAddOnsList![index],
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget addOnTile({required AddOns addOns}) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+        decoration: BoxDecoration(
+          border: Border.all(width: 1, color: greyBorderColor),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: ListTile(
+          dense: true,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                appendStringDot(addOns.name!, 20),
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18),
+              ),
+              Text(
+                '${addOns.options!.length} items',
+                maxLines: 1,
+                style: TextStyle(
+                    color: blackFont.withOpacity(.5),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -2093,6 +2865,8 @@ class _EditProductState extends State<EditProduct> {
     productPriceController.dispose();
     _scrollController.dispose();
     scrollControllerVariant.dispose();
+        myController.dispose();
+
     super.dispose();
   }
 }

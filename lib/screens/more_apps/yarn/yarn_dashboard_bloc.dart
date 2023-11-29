@@ -83,9 +83,15 @@ class YarnDashboardBloc extends ChangeNotifier {
   }
 
   void addProductCategories(List<ProductCategory> cat) {
-    _productCategories = [];
-    _productCategories.add(ProductCategory("All"));
+    refreshProductCategories();
+    _productCategories.add(ProductCategory("All", id: ""));
     _productCategories.addAll(cat);
+  
+    notifyListeners();
+  }
+  void refreshProductCategories() {
+    _productCategories = [];
+    _productCategories.clear();
     notifyListeners();
   }
 
