@@ -27,6 +27,7 @@ import '../more_apps/yarn/yarn_setting_screen.dart';
 
 class SuperStore extends StatefulWidget {
   var arguments;
+
   SuperStore({Key? key, this.arguments}) : super(key: key);
 
   @override
@@ -38,7 +39,6 @@ class _SuperStoreState extends State<SuperStore> {
   late BasketBloc basketBloc;
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
-  bool _tabsVisible = true;
   String categoryName = '';
   String firstTabName = 'Shop';
   String secondTabName = 'Find Stores';
@@ -59,25 +59,16 @@ class _SuperStoreState extends State<SuperStore> {
     super.initState();
   }
 
- @override
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+  }
 
-  }   
-  
   @override
   void dispose() {
     yarnDashboardBloc.refreshProductCategories();
     super.dispose();
-  }
-
-  void _showTabs(bool visible) {
-    if (_tabsVisible != visible) {
-      setState(() {
-        _tabsVisible = visible;
-      });
-    }
   }
 
   getIndustryUrls(ProductIndustryResults industry) {
@@ -259,38 +250,21 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildBody() {
-    return NotificationListener<ScrollNotification>(
-      onNotification: (scrollNotification) {
-        /// Check if the scroll direction is horizontal
-        if (scrollNotification is ScrollNotification &&
-            scrollNotification.metrics.axis == Axis.horizontal) {
-          // Disable horizontal scrolling
-          return true;
-        }
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) => [
+        SliverToBoxAdapter(
+          child: _buildCategoryAndTabs(),
+        ),
+      ],
+      body: _buildPageView(),
+      // Container(
+      //   height: 500,
+      //   color: Colors.blue,
+      //   width: double.infinity,
+      // ),
 
-        if (scrollNotification is UserScrollNotification) {
-          if (scrollNotification.direction == ScrollDirection.reverse && _tabsVisible) {
-            // Scrolling down
-              _showTabs(false);
-          } else if (scrollNotification.direction == ScrollDirection.forward && !_tabsVisible) {
-            // Scrolling up
-              _showTabs(true);
-          }
-        }
-
-        return true;
-      },
-      child: Column(
-        children: [
-          SizedBox(
-            height: 16,
-          ),
-           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 1000),
-            child: _tabsVisible ?  Container(key: Key("1"), child: _buildCategoryAndTabs()) : Container(key: Key("2"),)),
-          _buildPageView(),
-        ],
-      ),
+      // _buildCategoryAndTabs(),
+      // _buildPageView(),
     );
   }
 
@@ -298,26 +272,27 @@ class _SuperStoreState extends State<SuperStore> {
     ProductIndustryResults productUrl = widget.arguments['industry'];
     return Column(
       children: [
-        if (_tabsVisible) ...[
-          Column(
-            children: [
-          YarnTabSelection(
-            onTap: (index) {
-              currentAskTapOnHome = index;
-              _pageViewController.jumpToPage(currentAskTapOnHome);
-              _showTabs(true);
-              if (mounted) setState(() {});
-            },
-            currentIndex: currentAskTapOnHome,
-            firstTab: firstTabName,
-            secondTab: secondTabName,
-          ),
-          SizedBox(
-            height: 16,
-          ),
-            ])
-        ],
-        if (_tabsVisible && currentAskTapOnHome == 0) ...[
+        SizedBox(
+          height: 16,
+        ),
+        Column(
+          children: [
+            YarnTabSelection(
+              onTap: (index) {
+                currentAskTapOnHome = index;
+                _pageViewController.jumpToPage(currentAskTapOnHome);
+                if (mounted) setState(() {});
+              },
+              currentIndex: currentAskTapOnHome,
+              firstTab: firstTabName,
+              secondTab: secondTabName,
+            ),
+            SizedBox(
+              height: 16,
+            ),
+          ],
+        ),
+        if (currentAskTapOnHome == 0) ...[
           Container(
             alignment: Alignment.centerLeft,
             child: ProductCategorySelection(
@@ -350,82 +325,79 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildPageView() {
-    return Expanded(
-      child: PageView(
-        onPageChanged: (currentPage) {
-          updateCurrentAskTapOnHome(index: currentPage);
-        },
-        controller: _pageViewController,
-        children: [
-          categoryId == null || categoryId == ""
-              ? ShopListScreen(
-                  onPageRefresh: (bool data) {
-                    if (data == true) {
-                      // _showTabs(true);
-                    }
-                  },
-                  category: categoryName,
-                  industry: appTitle!,
-                  nextUrl: nextUrl,
-                  type: categoryId == null || categoryId == ""
-                      ? "sessions"
-                      : null)
-              : FutureBuilder(
-                  future: getProducts(),
-                  builder: (context, snapshot) {
-                    print(snapshot.data);
-                    print("_________________________");
-                    if (snapshot.hasData) {
-                      List<Product> result = snapshot.data as List<Product>;
-                      return result.isEmpty
-                          ? Center(
-                              child: NoItemInList(
-                                msg: AppLocalization.of(context)!.noResultFound,
-                              ),
-                            )
-                          : ListView(children: [
-                              superStoreProducts(result)
-                              // Text("data"),
-                            ]);
-                    } else if (snapshot.hasError) {
-                      return SizedBox();
-                    } else {
-                      return Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                            mainAxisSpacing: 14,
-                            mainAxisExtent: 180,
-                            crossAxisSpacing: 15,
-                            maxCrossAxisExtent: 200,
-                          ),
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              color: Colors.grey,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            );
-                          },
+    return PageView(
+      onPageChanged: (currentPage) {
+        updateCurrentAskTapOnHome(index: currentPage);
+      },
+      controller: _pageViewController,
+      children: [
+        categoryId == null || categoryId == ""
+            ? ShopListScreen(
+                onPageRefresh: (bool data) {
+                  if (data == true) {
+                    // _showTabs(true);
+                  }
+                },
+                category: categoryName,
+                industry: appTitle!,
+                nextUrl: nextUrl,
+                type:
+                    categoryId == null || categoryId == "" ? "sessions" : null)
+            : FutureBuilder(
+                future: getProducts(),
+                builder: (context, snapshot) {
+                  print(snapshot.data);
+                  print("_________________________");
+                  if (snapshot.hasData) {
+                    List<Product> result = snapshot.data as List<Product>;
+                    return result.isEmpty
+                        ? Center(
+                            child: NoItemInList(
+                              msg: AppLocalization.of(context)!.noResultFound,
+                            ),
+                          )
+                        : ListView(children: [
+                            superStoreProducts(result)
+                            // Text("data"),
+                          ]);
+                  } else if (snapshot.hasError) {
+                    return SizedBox();
+                  } else {
+                    return Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: 14,
+                          mainAxisExtent: 180,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
                         ),
-                      );
-                    }
-                  }),
-          FindBusinessListScreen(
-              onPageRefresh: (bool data) {
-                if (data == true) {
-                  _showTabs(true);
-                }
-              },
-              category: categoryName,
-              industry: appTitle)
-        ],
-      ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                }),
+        FindBusinessListScreen(
+            onPageRefresh: (bool data) {
+              if (data == true) {
+                // _showTabs(true);
+              }
+            },
+            category: categoryName,
+            industry: appTitle)
+      ],
     );
   }
 
@@ -556,5 +528,4 @@ class _SuperStoreState extends State<SuperStore> {
     // }
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
-
 }

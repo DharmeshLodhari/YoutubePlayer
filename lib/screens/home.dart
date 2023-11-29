@@ -462,13 +462,15 @@ class _HomeState extends State<Home> {
                 imagePath.toSVG(),
               ),
               const SizedBox(width: 10),
-              Text(
-                title,
-                style: TextStyle(
-                    fontSize: 16,
-                    color: white,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: "Inter"),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: white,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: "Inter"),
+                ),
               ),
               if (userBloc.user.type!.toLowerCase() == 'user' &&
                   title == 'Business') ...[
@@ -480,9 +482,11 @@ class _HomeState extends State<Home> {
             ],
           ),
           const SizedBox(height: 10),
-          Text(
-            subTitle,
-            style: TextStyle(fontSize: 14, color: white, fontFamily: "Inter"),
+          Expanded(
+            child: Text(
+              subTitle,
+              style: TextStyle(fontSize: 12, color: white, fontFamily: "Inter"),
+            ),
           ),
           const SizedBox(width: 10),
         ],
@@ -612,7 +616,7 @@ class _HomeState extends State<Home> {
         ),
       ),
       actions: <Widget>[
-         RoundedBackgroundIcon(
+        RoundedBackgroundIcon(
             backgroundColor: Colors.transparent,
             onTap: () {
               Navigator.of(context).pushNamed(
