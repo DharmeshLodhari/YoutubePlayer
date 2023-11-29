@@ -204,10 +204,10 @@ Widget momentTab(CustomerProfile? searchedUser, String channelUsername) {
   );
 }
 
-Widget productTab(CustomerProfile? searchedUser, bool isOwner, bool isChannel) {
+Widget productTab(CustomerProfile? searchedUser, bool isOwner, bool isChannel, {String? next, String? type}) {
   return KeepAlivePage(
     child: UserProductList(
-        user: searchedUser, isOwner: isOwner, channel: isChannel),
+        user: searchedUser, isOwner: isOwner, channel: isChannel, next: next, type: type),
   );
 }
 
