@@ -363,9 +363,8 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                 children: [
                   if (itemList.isNotEmpty) specialDeals(),
                   SizedBox(height: todaysDealsSizeBox),
-                  if (customerProfileListNearBy.isNotEmpty)
-                    nearByBuildView(),
-                    sessionProducts(),
+                  if (customerProfileListNearBy.isNotEmpty) nearByBuildView(),
+                  sessionProducts(),
                   const SizedBox(height: 16),
                   isProductLoading
                       ? Shimmer.fromColors(
@@ -393,7 +392,6 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                           ),
                         )
                       : const SizedBox.shrink(),
-                  
                 ],
               ),
             ),
@@ -471,8 +469,20 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 8),
+        // if (rowHeaders.isNotEmpty)
+        //   ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
+
         if (rowHeaders.isNotEmpty)
-          ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
+          ...rowHeaders
+              .asMap()
+              .map(
+                (i, headers) => MapEntry(
+                  i,
+                  rowTitle(headers, isLast: i == rowHeaders.length - 1),
+                ),
+              )
+              .values
+              .toList(),
       ],
     );
   }
@@ -583,8 +593,8 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     );
   }
 
-  Widget rowTitle(headers) {
-    return SectionProducts(headers: headers);
+  Widget rowTitle(headers, {bool isLast = false}) {
+    return SectionProducts(headers: headers, isLast: isLast);
   }
 
   Widget getTodaysDealList() {

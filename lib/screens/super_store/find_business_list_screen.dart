@@ -17,14 +17,15 @@ class FindBusinessListScreen extends StatefulWidget {
   Function(bool)? onPageRefresh;
   String? category;
   final String? industry;
-  FindBusinessListScreen({Key? key, this.onPageRefresh, this.category, this.industry}) : super(key: key);
+  FindBusinessListScreen(
+      {Key? key, this.onPageRefresh, this.category, this.industry})
+      : super(key: key);
 
   @override
   State<FindBusinessListScreen> createState() => FindBusinessListScreenState();
 }
 
 class FindBusinessListScreenState extends State<FindBusinessListScreen> {
-
   List<CustomerProfile> customerProfileList = [];
   List<CustomerProfile> customerProfileListNearBy = [];
   bool isFindBusinessLoading = false;
@@ -40,16 +41,15 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
   late DashboardBloc _dashboardBloc;
 
   final GlobalKey<ScaffoldMessengerState> _findBusinessScaffoldMessengerKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   final RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
   final ScrollController _scrollController = ScrollController();
   ScrollController scrollController = ScrollController();
   String _currentCategory = '';
   // Define a boolean variable to track if the app bar is expanded or not
   bool _isAppBarExpanded = true;
-
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
         getSuggestionBusinessList();
       }
@@ -79,7 +79,6 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         });
       }
     });
-
   }
 
   @override
@@ -101,7 +100,8 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfMerchant(nearByNext, nearByPrevious, _currentCategory, nearBy: true);
+            .listOfMerchant(nearByNext, nearByPrevious, _currentCategory,
+                nearBy: true);
 
         if (result == null) {
           noNearByInList = true;
@@ -139,7 +139,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
       } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
         _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
-          Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
         ));
       }
@@ -153,7 +153,9 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfMerchant(findBusinessNext, findBusinessPrevious, _currentCategory, nearBy: false);
+            .listOfMerchant(
+                findBusinessNext, findBusinessPrevious, _currentCategory,
+                nearBy: false);
 
         if (result == null) {
           noFindBusinessInList = true;
@@ -191,7 +193,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
       } else if (findBusinessNext == null && customerProfileList.length > 6) {
         _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
-          Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
         ));
       }
@@ -208,7 +210,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -238,7 +240,6 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
     /// check if super store bottom navigation is clicked
@@ -286,7 +287,6 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     );
   }
 
-
   Widget _buildLoadingIndicator() {
     return Opacity(
       opacity: isFindBusinessLoading ? 1.0 : 00,
@@ -294,17 +294,16 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     );
   }
 
-
   Widget bodyList() {
-
     if (isFindBusinessLoading && isNearbyLoading) {
       return _buildLoadingIndicator();
     } else {
-      return  Column(
+      return SingleChildScrollView(
+        child: Column(
           children: [
             if (customerProfileList.isNotEmpty) ...[
               // const SizedBox(height: 10.0,),
-               Container(
+              Container(
                 margin: const EdgeInsets.only(left: 15.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -318,7 +317,9 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20.0,),
+              const SizedBox(
+                height: 20.0,
+              ),
               suggestionBuildView(),
             ],
             Visibility(
@@ -333,73 +334,68 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
               ),
             ),
           ],
-        );
+        ),
+      );
     }
   }
 
   Widget suggestionBuildView() {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      controller: _scrollController,
+      itemCount: customerProfileList.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == customerProfileList.length) {
+          return _buildLoadingIndicator();
+        }
 
-    return Expanded(
-      child: ListView.separated(
-        physics: const ClampingScrollPhysics(),
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-        controller: _scrollController,
-        itemCount: customerProfileList.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == customerProfileList.length) {
-            return _buildLoadingIndicator();
-          }
+        return GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+              "searchedUserName": customerProfileList[index].userName
+            });
+          },
+          child: FindBusiness(
+            customerProfile: customerProfileList[index],
+            tileRenderPlace: TileRenderPlace.YarnProductService,
+            callback: (username, value) {
+              //create a list to edit
+              List<CustomerProfile> customerProfileListEdit =
+                  customerProfileList;
 
-          return GestureDetector(
-            onTap: (){
-              Navigator.pushNamed(
-                  context, Routes.USER_PROFILE, arguments: {
-                "searchedUserName": customerProfileList[index].userName
-              });
-            },
-            child: FindBusiness(
-              customerProfile: customerProfileList[index],
-              tileRenderPlace: TileRenderPlace.YarnProductService,
-              callback: (username, value) {
-                //create a list to edit
-                List<CustomerProfile> customerProfileListEdit = customerProfileList;
-
-                // modify customerProfileList for the username and refresh the list
-                // set the isFollowing for that particular user
-                for (var customer in customerProfileListEdit) {
-                  if (customer.userName == username) {
-                    customer.isFollowing = value; // Modify the isFollowing property
-                  }
+              // modify customerProfileList for the username and refresh the list
+              // set the isFollowing for that particular user
+              for (var customer in customerProfileListEdit) {
+                if (customer.userName == username) {
+                  customer.isFollowing =
+                      value; // Modify the isFollowing property
                 }
+              }
 
-                customerProfileList = [];
-                customerProfileList = customerProfileListEdit;
+              customerProfileList = [];
+              customerProfileList = customerProfileListEdit;
 
-                if(mounted)setState(() {});
-
-              },
+              if (mounted) setState(() {});
+            },
+          ),
+        );
+      },
+      separatorBuilder: (context, int) {
+        return Column(
+          children: [
+            const SizedBox(
+              height: 20,
             ),
-          );
-        },
-        separatorBuilder: (context, int) {
-          return Column(
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              Divider(
-                height: 0,
-                thickness: 0.5,
-                color: greySecondaryYarn,
-              ),
-            ],
-          );
-        },
-      ),
+            Divider(
+              height: 0,
+              thickness: 0.5,
+              color: greySecondaryYarn,
+            ),
+          ],
+        );
+      },
     );
   }
-
- 
-
 }
-

@@ -174,8 +174,8 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				CBC68586272DF09E00E4B4F4 /* Embed App Extensions */,
-				FB6A41007DF1BA3D2B827BDA /* [CP] Embed Pods Frameworks */,
 				2D26C35998004CE64E757910 /* [CP] Copy Pods Resources */,
+				FB6A41007DF1BA3D2B827BDA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
