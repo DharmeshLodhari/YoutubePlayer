@@ -233,9 +233,7 @@ class _HomeState extends State<Home> {
           Container(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: _displayShortcutExtraCard(shortcutExtraBusiness)),
-          const SizedBox(
-            height: 25,
-          ),
+          const SizedBox(height: 60),
           // Container(
           //   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
           //   child: Text(
