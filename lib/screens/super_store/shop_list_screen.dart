@@ -25,14 +25,14 @@ class ShopListScreen extends StatefulWidget {
   final String? nextUrl;
   final String? type;
 
-  ShopListScreen(
-      {Key? key,
-      this.onPageRefresh,
-      this.category,
-      required this.industry,
-      this.nextUrl,
-      this.type})
-      : super(key: key);
+  ShopListScreen({
+    Key? key,
+    this.onPageRefresh,
+    this.category,
+    required this.industry,
+    this.nextUrl,
+    this.type,
+  }) : super(key: key);
 
   @override
   State<ShopListScreen> createState() => ShopListScreenState();

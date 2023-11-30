@@ -298,103 +298,104 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     if (isFindBusinessLoading && isNearbyLoading) {
       return _buildLoadingIndicator();
     } else {
-      return Column(
-        children: [
-          if (customerProfileList.isNotEmpty) ...[
-            // const SizedBox(height: 10.0,),
-            Container(
-              margin: const EdgeInsets.only(left: 15.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Found ${findBusinessCount} store${findBusinessCount! > 0 ? "s" : ""}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: blackFont,
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            if (customerProfileList.isNotEmpty) ...[
+              // const SizedBox(height: 10.0,),
+              Container(
+                margin: const EdgeInsets.only(left: 15.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Found ${findBusinessCount} store${findBusinessCount! > 0 ? "s" : ""}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      color: blackFont,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            suggestionBuildView(),
-          ],
-          Visibility(
-            visible: !isFindBusinessLoading &&
-                !isNearbyLoading &&
-                customerProfileList.isEmpty &&
-                customerProfileListNearBy.isEmpty,
-            child: Center(
-              child: NoItemInList(
-                msg: AppLocalization.of(context)!.noResultFound,
+              const SizedBox(
+                height: 20.0,
+              ),
+              suggestionBuildView(),
+            ],
+            Visibility(
+              visible: !isFindBusinessLoading &&
+                  !isNearbyLoading &&
+                  customerProfileList.isEmpty &&
+                  customerProfileListNearBy.isEmpty,
+              child: Center(
+                child: NoItemInList(
+                  msg: AppLocalization.of(context)!.noResultFound,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     }
   }
 
   Widget suggestionBuildView() {
-    return Expanded(
-      child: ListView.separated(
-        physics: const ClampingScrollPhysics(),
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-        controller: _scrollController,
-        itemCount: customerProfileList.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == customerProfileList.length) {
-            return _buildLoadingIndicator();
-          }
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      controller: _scrollController,
+      itemCount: customerProfileList.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == customerProfileList.length) {
+          return _buildLoadingIndicator();
+        }
 
-          return GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                "searchedUserName": customerProfileList[index].userName
-              });
-            },
-            child: FindBusiness(
-              customerProfile: customerProfileList[index],
-              tileRenderPlace: TileRenderPlace.YarnProductService,
-              callback: (username, value) {
-                //create a list to edit
-                List<CustomerProfile> customerProfileListEdit =
-                    customerProfileList;
+        return GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+              "searchedUserName": customerProfileList[index].userName
+            });
+          },
+          child: FindBusiness(
+            customerProfile: customerProfileList[index],
+            tileRenderPlace: TileRenderPlace.YarnProductService,
+            callback: (username, value) {
+              //create a list to edit
+              List<CustomerProfile> customerProfileListEdit =
+                  customerProfileList;
 
-                // modify customerProfileList for the username and refresh the list
-                // set the isFollowing for that particular user
-                for (var customer in customerProfileListEdit) {
-                  if (customer.userName == username) {
-                    customer.isFollowing =
-                        value; // Modify the isFollowing property
-                  }
+              // modify customerProfileList for the username and refresh the list
+              // set the isFollowing for that particular user
+              for (var customer in customerProfileListEdit) {
+                if (customer.userName == username) {
+                  customer.isFollowing =
+                      value; // Modify the isFollowing property
                 }
+              }
 
-                customerProfileList = [];
-                customerProfileList = customerProfileListEdit;
+              customerProfileList = [];
+              customerProfileList = customerProfileListEdit;
 
-                if (mounted) setState(() {});
-              },
+              if (mounted) setState(() {});
+            },
+          ),
+        );
+      },
+      separatorBuilder: (context, int) {
+        return Column(
+          children: [
+            const SizedBox(
+              height: 20,
             ),
-          );
-        },
-        separatorBuilder: (context, int) {
-          return Column(
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              Divider(
-                height: 0,
-                thickness: 0.5,
-                color: greySecondaryYarn,
-              ),
-            ],
-          );
-        },
-      ),
+            Divider(
+              height: 0,
+              thickness: 0.5,
+              color: greySecondaryYarn,
+            ),
+          ],
+        );
+      },
     );
   }
 }

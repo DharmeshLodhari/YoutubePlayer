@@ -37,7 +37,8 @@ class SuperStore extends StatefulWidget {
 class _SuperStoreState extends State<SuperStore> {
   int? productCount = 0;
   late BasketBloc basketBloc;
-  late PageController _pageViewController;
+
+  // late PageController _pageViewController;
   int currentAskTapOnHome = 0;
   String categoryName = '';
   String firstTabName = 'Shop';
@@ -53,7 +54,7 @@ class _SuperStoreState extends State<SuperStore> {
 
   @override
   void initState() {
-    _pageViewController = PageController(initialPage: 0);
+    // _pageViewController = PageController(initialPage: 0);
     updateAppSetup(widget.arguments['industry']);
     getIndustryUrls(widget.arguments['industry']);
     super.initState();
@@ -280,7 +281,7 @@ class _SuperStoreState extends State<SuperStore> {
             YarnTabSelection(
               onTap: (index) {
                 currentAskTapOnHome = index;
-                _pageViewController.jumpToPage(currentAskTapOnHome);
+                // _pageViewController.jumpToPage(currentAskTapOnHome);
                 if (mounted) setState(() {});
               },
               currentIndex: currentAskTapOnHome,
@@ -325,11 +326,8 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildPageView() {
-    return PageView(
-      onPageChanged: (currentPage) {
-        updateCurrentAskTapOnHome(index: currentPage);
-      },
-      controller: _pageViewController,
+    return IndexedStack(
+      index: currentAskTapOnHome,
       children: [
         categoryId == null || categoryId == ""
             ? ShopListScreen(
@@ -399,6 +397,81 @@ class _SuperStoreState extends State<SuperStore> {
             industry: appTitle)
       ],
     );
+
+    // return PageView(
+    //   onPageChanged: (currentPage) {
+    //     updateCurrentAskTapOnHome(index: currentPage);
+    //   },
+    //   controller: _pageViewController,
+    //   children: [
+    //     categoryId == null || categoryId == ""
+    //         ? ShopListScreen(
+    //             onPageRefresh: (bool data) {
+    //               if (data == true) {
+    //                 // _showTabs(true);
+    //               }
+    //             },
+    //             category: categoryName,
+    //             industry: appTitle!,
+    //             nextUrl: nextUrl,
+    //             type:
+    //                 categoryId == null || categoryId == "" ? "sessions" : null)
+    //         : FutureBuilder(
+    //             future: getProducts(),
+    //             builder: (context, snapshot) {
+    //               print(snapshot.data);
+    //               print("_________________________");
+    //               if (snapshot.hasData) {
+    //                 List<Product> result = snapshot.data as List<Product>;
+    //                 return result.isEmpty
+    //                     ? Center(
+    //                         child: NoItemInList(
+    //                           msg: AppLocalization.of(context)!.noResultFound,
+    //                         ),
+    //                       )
+    //                     : ListView(children: [
+    //                         superStoreProducts(result)
+    //                         // Text("data"),
+    //                       ]);
+    //               } else if (snapshot.hasError) {
+    //                 return SizedBox();
+    //               } else {
+    //                 return Shimmer.fromColors(
+    //                   baseColor: Colors.white,
+    //                   highlightColor: greyBorderColor,
+    //                   child: GridView.builder(
+    //                     shrinkWrap: true,
+    //                     physics: const NeverScrollableScrollPhysics(),
+    //                     gridDelegate:
+    //                         const SliverGridDelegateWithMaxCrossAxisExtent(
+    //                       mainAxisSpacing: 14,
+    //                       mainAxisExtent: 180,
+    //                       crossAxisSpacing: 15,
+    //                       maxCrossAxisExtent: 200,
+    //                     ),
+    //                     itemCount: 2,
+    //                     itemBuilder: (context, index) {
+    //                       return Card(
+    //                         color: Colors.grey,
+    //                         shape: RoundedRectangleBorder(
+    //                           borderRadius: BorderRadius.circular(12),
+    //                         ),
+    //                       );
+    //                     },
+    //                   ),
+    //                 );
+    //               }
+    //             }),
+    //     FindBusinessListScreen(
+    //         onPageRefresh: (bool data) {
+    //           if (data == true) {
+    //             // _showTabs(true);
+    //           }
+    //         },
+    //         category: categoryName,
+    //         industry: appTitle)
+    //   ],
+    // );
   }
 
   Widget superStoreProducts(List<Product> data) {
