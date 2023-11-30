@@ -319,6 +319,7 @@ class ShoppingAuthService extends AuthService {
         debugPrint('CALLING PRODUCT');
 
     debugPrint('CALLING PRODUCT channel::: ${channel}');
+   
     var url = "";
     if (next == null) {
       return null;
@@ -409,6 +410,48 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  // List of users Product
+  Future<Map<String, dynamic>?> listOfUsersProduct({String? sectionUrl, String? name}) async {
+    var url = sectionUrl != null ? sectionUrl : AppConfig.baseUrl + "/api/v1/products/seller-products-by-custom-category/$name/";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {"sectionProducts": []};
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      List sectionProducts = [];
+      var jsonData = json.decode(response.body);
+
+      for (var data in jsonData) {
+        
+       sectionProducts.add(data);
+      }    
+
+      print("_______________________________________$sectionProducts");
+
+      Map<String, dynamic> result = {
+        "sectionProducts": sectionProducts,
+      };
+
+      
+      debugPrint('CALLING OTHER check ---> ${sectionProducts}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
   // List superstores
   Future<Map<String, dynamic>?> listOfSuperStores({String? sectionUrl}) async {
     var url = sectionUrl != null ? sectionUrl : AppConfig.baseUrl + "/api/v1/products/super-store/";

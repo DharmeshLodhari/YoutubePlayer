@@ -1,3 +1,6 @@
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -5,6 +8,7 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/get_app_bar_tile.dart
 import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../utils.dart';
 
 class BusinessProfileScreen extends StatefulWidget {
@@ -46,7 +50,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   List<String> orderingList = [];
   String productLabel = "";
   String serviceLabel = "";
-
+  List<ProductCategory> customCategories = [];
+  dynamic selectedCategory;
 
   @override
   void initState() {
@@ -65,7 +70,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     // Initialize a map to store boolean values
     var boolMap = <String, bool>{};
 
-  // Initialize a list to store the keys in the desired order
+    // Initialize a list to store the keys in the desired order
     var orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
@@ -85,15 +90,16 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       }
     }
 
-
     // Create a list of keys not in 'ordering'
-    var remainingKeys = boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
+    var remainingKeys =
+        boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
 
     // Add the remaining keys to orderedKeys to ensure they are at the end
     orderedKeys.addAll(remainingKeys);
 
     // Create a new map with the ordered keys
-     reorderedBoolMap = Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
+    reorderedBoolMap =
+        Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
 
     // Iterate through the JSON object and add tabs for boolean values that are true
     reorderedBoolMap.forEach((key, value) {
@@ -124,9 +130,30 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     // Add a listener to the tab controller that updates the current index
     _tabController!.addListener(tabController);
 
+    Future.delayed(Duration(seconds: 1), () {
+      obtainCustomCategory(widget.searchedUser!.userName!);
+    });
+
     if (mounted) setState(() {});
 
     super.initState();
+  }
+
+  void obtainCustomCategory(user) async {
+    try {
+      List<ProductCategory> result =
+          await ShoppingAuthService().obtainCustomCategory(user!);
+      List<ProductCategory> initial = [];
+      initial.add(ProductCategory("Main", id: "main"));
+      initial.addAll(result);
+      customCategories = initial;
+      selectedCategory = customCategories.first.id;
+    } catch (e) {
+      customCategories = [];
+    }
+
+    // isLoading = false;
+    if (mounted) setState(() {});
   }
 
   void addTab(String key, String label) {
@@ -134,6 +161,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "product":
         userTabs.add(UserTab(
           label: productLabel,
+          name: key,
           child: productTab(widget.searchedUser, isOwner!, false),
           apiCall: () async => await fetchProductData(searchedUserName, false),
         ));
@@ -141,6 +169,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "service":
         userTabs.add(UserTab(
           label: serviceLabel,
+          name: key,
           child: serviceTab(widget.searchedUser, isOwner!),
           apiCall: () async => await fetchServiceData(searchedUserName),
         ));
@@ -148,6 +177,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "yarn":
         userTabs.add(UserTab(
           label: label,
+          name: key,
           child: yarnTab(searchedUserName, ''),
           apiCall: () async => await fetchYarnData(searchedUserName, ''),
         ));
@@ -156,6 +186,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "moment":
         userTabs.add(UserTab(
           label: label,
+          name: key,
           child: momentTab(widget.searchedUser, ''),
           apiCall: () async => await fetchMomentData(searchedUserName, ''),
         ));
@@ -163,6 +194,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "blog":
         userTabs.add(UserTab(
           label: label,
+          name: key,
           child: postTab(widget.searchedUser, ''),
           apiCall: () async => await fetchPostData(searchedUserName, ''),
         ));
@@ -170,6 +202,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "channels":
         userTabs.add(UserTab(
           label: label,
+          name: key,
           child: channelTab(searchedUserName),
           apiCall: () async => await fetchChannelData(searchedUserName),
         ));
@@ -178,6 +211,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "reviews":
         userTabs.add(UserTab(
           label: label,
+          name: key,
           child: reviewTab(widget.searchedUser),
           apiCall: () async => ['1'],
         ));
@@ -185,6 +219,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       case "opening_hours":
         userTabs.add(UserTab(
           label: label,
+          name: key,
           child: hoursTab(widget.searchedUser),
           apiCall: () async => ['1'],
         ));
@@ -229,12 +264,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
             isLoading: widget.isLoading,
             isShrink: isShrink,
             scrollController: scrollController,
-            callback: (val){
+            callback: (val) {
               refreshTabs(val);
             },
-            callbackProductService: (val){
+            callbackProductService: (val) {
               productServiceTabReload(val);
-
             },
           ),
           SliverPersistentHeader(
@@ -295,26 +329,118 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     );
   }
 
-  getTabViewLayout() {
-    return TabBarView(
-      controller: _tabController,
-      children:
-          _currentUser.tabs.where((tab) => tab.apiCall != null).map((tab) {
-        return PageStorage(
-          key: PageStorageKey(tab.label),
-          bucket: _bucket,
-          child: FutureBuilder(
-            future: tab.apiCall!(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return tab.child!;
-              } else {
-                return Center(child: CircularProgressIndicator());
-              }
-            },
+  Widget customCategoryWidget() {
+    return Container(
+      color: white,
+      child: Column(
+        children: [
+          SizedBox(height: 24),
+          Container(
+            height: 20,
+            margin: EdgeInsets.only(right: 24, left: 10),
+            alignment: Alignment.centerLeft,
+            child: ListView(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              children: [
+                ...customCategories
+                    .map((e) => InkWell(
+                          onTap: () {
+                            setState(() {
+                              selectedCategory = e.id;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 24,
+                            ),
+                            child: Text(
+                              e.name.toTitleCase(),
+                              style: TextStyle(
+                                  fontSize:  14,
+                                  fontFamily: "Inter",
+                                  color: selectedCategory == e.id
+                                      ? blackFont
+                                      : darkGrey,
+                                  fontWeight: selectedCategory == e.id ? FontWeight.w600 : FontWeight.w500),
+                            ),
+                          ),
+                        ))
+                    .toList()
+              ],
+            ),
           ),
-        );
-      }).toList(),
+          Container(
+              margin: EdgeInsets.only(left: 30),
+              child: Divider(
+                color: greySecondaryYarn.withOpacity(.6),
+              )),
+          SizedBox(height: 14),
+        ],
+      ),
+    );
+  }
+  getData() async {
+      Map<String, dynamic>? data;
+    try {
+      data = await ShoppingAuthService()
+          .listOfProduct(selectedCategory == "main" ?
+                        "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/" : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory", "", "", false, userName: searchedUserName);
+    } catch (error) {}
+    if (data != null) {
+      debugPrint('IS SHOW PRODUCT ---> $data');
+      List<dynamic> result = data["results"];
+      if (result.isNotEmpty) return result;
+    }
+    return [];
+  }
+
+  getTabViewLayout() {
+    return Column(
+      children: [
+        if (customCategories.isNotEmpty &&
+            _currentUser.tabs[_currentIndex].name == "product")
+          customCategoryWidget(),
+        Expanded(
+          child: (customCategories.isNotEmpty &&  _currentUser.tabs[_currentIndex].name == "product") ? PageStorage(
+             key: PageStorageKey(selectedCategory),
+                  bucket: _bucket,
+            child: FutureBuilder(
+                    future: getData(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return productTab( widget.searchedUser, isOwner!, false, next: selectedCategory == "main" ?
+                        "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/" :
+                            "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory", type: selectedCategory == "main" ? "section" : null
+                        );
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  ),
+          ) : TabBarView(
+            controller: _tabController,
+            children: _currentUser.tabs
+                .where((tab) => tab.apiCall != null)
+                .map((tab) {
+              return PageStorage(
+                key: PageStorageKey(tab.label),
+                bucket: _bucket,
+                child: FutureBuilder(
+                  future: tab.apiCall!(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return tab.child!;
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  },
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
     );
   }
 
@@ -367,7 +493,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   }
 
   refreshTabs(Map<String, bool> val) {
-
     if (compareMaps(reorderedBoolMap, val)) {
       debugPrint('The maps are equal.');
     } else {
@@ -408,16 +533,13 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
 
       if (mounted) setState(() {});
       _tabController!.animateTo(0);
-
     }
-
   }
 
-  productServiceTabReload(Map<String, dynamic> val){
-
+  productServiceTabReload(Map<String, dynamic> val) {
     productLabel = val['product_label'].toString();
     serviceLabel = val['service_label'].toString();
-    if(mounted)setState(() {});
+    if (mounted) setState(() {});
 
     //reload tab view
     // Step 1: Clear the existing tabs
@@ -452,5 +574,4 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     if (mounted) setState(() {});
     _tabController!.animateTo(0);
   }
-
 }
