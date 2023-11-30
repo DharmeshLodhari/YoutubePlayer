@@ -3,6 +3,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/super_store/widget/section_products.dart';
 
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -11,6 +12,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:text_scroll/text_scroll.dart';
 
@@ -22,11 +24,15 @@ class UserProductList extends StatefulWidget {
   CustomerProfile? user;
   bool isOwner;
   bool? channel;
+  String? next;
+  String? type;
 
   UserProductList({
     required this.user,
     this.isOwner = false,
     this.channel = false,
+    this.next,
+    this.type,
     Key? key,
   }) : super(key: key);
 
@@ -40,6 +46,7 @@ class _UserProductListState extends State<UserProductList> {
   String? productNext = "";
   String? productPrevious = "";
   List<Product> productList = [];
+  List sectionProductList = [];
   ScrollController _productScrollController = new ScrollController();
   final GlobalKey<ScaffoldState> _productScaffoldKey =
       new GlobalKey<ScaffoldState>();
@@ -56,13 +63,18 @@ class _UserProductListState extends State<UserProductList> {
   String? flashTagPrevious = "";
   int? flashTagCount = 0;
   bool isFlashTagLoading = false;
+  late SharedPreferences _sharedPreferences;
 
   FlashTagAlertModel? flashTagAlertModel;
 
   @override
   void initState() {
-    this.getProductList();
+    getNextUrl();
 
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      _sharedPreferences = await SharedPreferences.getInstance();
+    });
+    widget.type != null ? listOfUsersProduct() : this.getProductList();
     // if (widget.isOwner == false) {
     getAlertTagData();
     // }
@@ -71,11 +83,21 @@ class _UserProductListState extends State<UserProductList> {
       if (_productScrollController.position.pixels ==
               _productScrollController.position.maxScrollExtent &&
           _productScrollController.position.pixels != 0) {
-        getProductList();
+        if (widget.type == null) {
+          getProductList();
+        }
       }
     });
 
     super.initState();
+  }
+
+  getNextUrl() {
+    setState(() {
+      if (widget.next != null) {
+        productNext = widget.next;
+      }
+    });
   }
 
   Future<void> getAlertTagData() async {
@@ -121,7 +143,11 @@ class _UserProductListState extends State<UserProductList> {
                 element.type?.toValue() == FlashTagCategory("Pop-up").toValue())
             .toList()
             .first;
-        showFlashTagAlertPopUp();
+        bool check = _sharedPreferences.getBool("showFlash") ?? false;
+        if (!check) {
+          showFlashTagAlertPopUp();
+          _sharedPreferences.setBool("showFlash", true);
+        }
       } catch (error) {
         debugPrint("No Pop-up Element");
       }
@@ -135,59 +161,71 @@ class _UserProductListState extends State<UserProductList> {
       builder: (context) {
         return AlertDialog(
           insetPadding: EdgeInsets.symmetric(horizontal: 16),
-          contentPadding: EdgeInsets.zero,
+          contentPadding: EdgeInsets.symmetric(horizontal: 10),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          content: Card(
-            margin: EdgeInsets.zero,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(
-                      Icons.close,
-                      size: 24,
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Card(
+              elevation: 0.0,
+              margin: EdgeInsets.zero,
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.highlight_off_rounded,
+                        size: 24,
+                        color: darkGrey,
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        flashTagAlertModel?.title?.trim() ?? "Important Info",
-                        style: TextStyle(
-                          color: blackFont,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          flashTagAlertModel?.title?.trim() ?? 
+                          "Important Info",
+                          style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            fontFamily: "Inter"
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 24,
-                      ),
-                      Text(
-                        flashTagAlertModel?.message?.trim() ?? "description",
-                        style: TextStyle(
-                          color: blackFont,
+                        SizedBox(
+                          height: 24,
                         ),
-                      ),
-                      SizedBox(
-                        height: 48,
-                      ),
-                    ],
+                        Text(
+                          flashTagAlertModel?.message?.trim() ?? "description",
+                          style: TextStyle(
+                            color: blackFont,
+                            fontFamily: "Inter",
+                            fontSize: 16,
+                            height: 1.5,
+                            letterSpacing: 0.6
+                          ),
+
+                        ),
+                        SizedBox(
+                          height: 48,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -205,7 +243,7 @@ class _UserProductListState extends State<UserProductList> {
         productPrevious = "";
         productList = [];
         debugPrint("Refresh called on products!!  ");
-        getProductList();
+        widget.type != null ? listOfUsersProduct() : getProductList();
         _productsRefreshController.refreshCompleted();
       } else {
         showToast(
@@ -223,6 +261,8 @@ class _UserProductListState extends State<UserProductList> {
         if (mounted) setState(() {});
 
         debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
+        print("_______________________________________________$productNext");
+        print("++++++++++++++++++++++++++++++++++++++++$productNext");
 
         Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(productNext, productPrevious, "", widget.channel!,
@@ -238,7 +278,7 @@ class _UserProductListState extends State<UserProductList> {
           }
           return;
         }
-        
+
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
@@ -252,6 +292,54 @@ class _UserProductListState extends State<UserProductList> {
         }
       }
       if (productList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noProductInList = true;
+          });
+        }
+      } else if (productNext == null && productList.length > 6) {
+        _productMessengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  void listOfUsersProduct() async {
+    if (!isProductLoading) {
+      if (productNext != null && !isProductLoading) {
+        isProductLoading = true;
+        if (mounted) setState(() {});
+
+        debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
+        print("_______________________________________________$productNext");
+        print("++++++++++++++++++++++++++++++++++++++++$productNext");
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfUsersProduct(
+                sectionUrl: productNext, name: widget.user!.userName);
+
+        if (result == null) {
+          isProductLoading = false;
+          noProductInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        var tempList = result['sectionProducts'];
+        if (mounted) {
+          setState(() {
+            noProductInList = false;
+            isProductLoading = false;
+            sectionProductList = tempList;
+          });
+        }
+      }
+      if (sectionProductList.isEmpty) {
         if (mounted) {
           setState(() {
             noProductInList = true;
@@ -344,6 +432,17 @@ class _UserProductListState extends State<UserProductList> {
     return SizedBox.shrink();
   }
 
+  Widget sectionProducts() {
+    return ListView(
+      physics: NeverScrollableScrollPhysics(),
+      children: [
+        ...sectionProductList
+            .map((headers) => SectionProducts(headers: headers))
+            .toList()
+      ],
+    );
+  }
+
   Widget _buildProductList() {
     return productNext == "" && isProductLoading
         ? SizedBox.shrink()
@@ -354,29 +453,31 @@ class _UserProductListState extends State<UserProductList> {
               top: 8.0,
               bottom: 16,
             ),
-            child: GridView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.symmetric(horizontal: 4),
-              controller: _productScrollController,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                mainAxisSpacing: 8,
-                mainAxisExtent: 274,
-                crossAxisSpacing: 15,
-                maxCrossAxisExtent: 200,
-              ),
-              itemCount: productList.length,
-              itemBuilder: (context, index) {
-                return SizedBox(
-                  child: DisplayProduct(
-                    product: productList[index],
-                    onProductRefresh: () {
-                      _onProductRefresh();
+            child: (widget.type != null)
+                ? sectionProducts()
+                : GridView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.symmetric(horizontal: 4),
+                    controller: _productScrollController,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      mainAxisSpacing: 8,
+                      mainAxisExtent: 274,
+                      crossAxisSpacing: 15,
+                      maxCrossAxisExtent: 200,
+                    ),
+                    itemCount: productList.length,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        child: DisplayProduct(
+                          product: productList[index],
+                          onProductRefresh: () {
+                            _onProductRefresh();
+                          },
+                        ),
+                      );
                     },
                   ),
-                );
-              },
-            ),
           );
   }
 
