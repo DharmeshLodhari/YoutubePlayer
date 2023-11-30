@@ -132,7 +132,6 @@ class _HomeState extends State<Home> {
 
   void getYarnList(
       {String type = "topic", bool isType = true, String? categoryId}) async {
-    print("_____________________________");
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
@@ -158,7 +157,6 @@ class _HomeState extends State<Home> {
           return;
         }
 
-        print("_____________________________${result['results']}");
 
         count = result['count'];
         next = result['next'];
@@ -278,7 +276,7 @@ class _HomeState extends State<Home> {
           }
         }
 
-        debugPrint('______________________EXPLORE MOM :: $exploreMomentsList');
+        debugPrint('EXPLORE MOM :: $exploreMomentsList');
         if (mounted) setState(() {});
 
         if (isFirstTimeExplore &&
@@ -766,7 +764,6 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildListView() {
-    print("_______________________${yarnTopicList.length}");
     return ListView.builder(
       physics: ScrollPhysics(),
       shrinkWrap: true,
