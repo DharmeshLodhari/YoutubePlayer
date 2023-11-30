@@ -3,7 +3,14 @@ import 'dart:io';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -11,12 +18,14 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:shimmer/shimmer.dart';
 import '../data/currency.dart';
 import '../data/database_helper.dart';
 import '../locator.dart';
@@ -71,10 +80,27 @@ class _HomeState extends State<Home> {
   String bankName = "";
   String accountName = "";
   bool isAccountExist = false;
+  String? nextContactMoments = "";
+  String? nextExploreMoments = "";
+  String? previousExploreMoments = "";
+  int? countExploreMoments = 0;
+  bool isFirstTimeExplore = true;
+  bool isExploreMomentsLoading = false;
+  List<ExploreMomentsModel> exploreMomentsList = [];
+  List<MomentsModel> momentsList = [];
+  ScrollController _myConnectionsScrollController = ScrollController();
+
+  List<Yarn> yarnTopicList = [];
+  late YarnDashboardBloc yarnDashboardBloc;
+  String? next = "", previous = "";
+  int count = 0;
+  bool noList = false;
 
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
+    getYarnList(categoryId: null);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       SharedPreferences _sharedPreferences;
@@ -99,8 +125,168 @@ class _HomeState extends State<Home> {
     });
     getSlydoAccount();
     getAccountBalance();
+    getExploreMoments();
 
     super.initState();
+  }
+
+  void getYarnList(
+      {String type = "topic", bool isType = true, String? categoryId}) async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        String latestTrending = 'latest';
+
+        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
+            next, previous ?? '',
+            type: type,
+            isType: isType,
+            categoryId: categoryId,
+            latestTrending: latestTrending,
+            pageSize: 2);
+
+        if (result == null) {
+          noList = true;
+
+          isLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+
+        if (tempList.isNotEmpty) {
+          noList = false;
+          isLoading = false;
+
+          List<Yarn> createYarnTopicList =
+              List.from(yarnDashboardBloc.createYarnTopicList);
+          List<Yarn> deleteYarnTopicList =
+              List.from(yarnDashboardBloc.deleteYarnTopicList);
+          List<Yarn> reYarnTopicList =
+              List.from(yarnDashboardBloc.reYarnTopicList);
+
+          /// Get the common CreateYarnTopicList objects in both lists
+          List<Yarn> commonCreateYarnTopicList = tempList
+              .where((o1) => createYarnTopicList.any((o2) => o2.id == o1.id))
+              .toList();
+
+          /// Remove the common reYarnTopicList objects from the main list
+          yarnDashboardBloc.createYarnTopicList.removeWhere(
+              (o1) => commonCreateYarnTopicList.any((o2) => o2.id == o1.id));
+
+          /// Get the common reYarnTopicList objects in both lists
+          List<Yarn> commonReYarnTopicList = tempList
+              .where((o1) => reYarnTopicList.any((o2) => o2.id == o1.id))
+              .toList();
+
+          /// Remove the common reYarnTopicList objects from the main list
+          yarnDashboardBloc.reYarnTopicList.removeWhere(
+              (o1) => commonReYarnTopicList.any((o2) => o2.id == o1.id));
+
+          if (yarnDashboardBloc.createYarnTopicList.isNotEmpty) {
+            ///add createYarnTopicList to tempList if any
+
+            yarnDashboardBloc.createYarnTopicList.forEach((item) {
+              tempList.insert(0, item);
+            });
+          }
+
+          if (yarnDashboardBloc.reYarnTopicList.isNotEmpty) {
+            ///add reYarnTopicList to tempList if any
+
+            yarnDashboardBloc.reYarnTopicList.forEach((item) {
+              tempList.insert(0, item);
+            });
+          }
+
+          if (deleteYarnTopicList.isNotEmpty) {
+            for (Yarn obj1 in tempList) {
+              bool found = false;
+              for (Yarn obj2 in deleteYarnTopicList) {
+                if (obj1.id == obj2.id) {
+                  found = true;
+                  break;
+                }
+              }
+
+              if (!found) {
+                yarnTopicList.add(obj1);
+                // debugPrint('Check category delete batch :::: ${obj1.id}');
+                if (mounted) setState(() {});
+              }
+            }
+          } else if (deleteYarnTopicList.isEmpty) {
+            yarnTopicList.addAll(tempList);
+          }
+
+          if (mounted) setState(() {});
+        }
+      }
+    }
+    if (yarnTopicList.isEmpty) {
+      if (mounted) {
+        setState(() {
+          noList = true;
+        });
+      }
+    } else if (next == null && yarnTopicList.length > 6) {
+      // _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+      //   content:
+      //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+      //   duration: Duration(milliseconds: 500),
+      // ));
+    }
+  }
+
+  getExploreMoments() async {
+    if (!isExploreMomentsLoading) {
+      if (nextExploreMoments != null && !isExploreMomentsLoading) {
+        if (mounted) {
+          setState(() {
+            isExploreMomentsLoading = true;
+          });
+        }
+        Map<String, dynamic>? result = await MomentsService().getExploreMoments(
+          nextExploreMoments,
+          previousExploreMoments,
+        );
+        if (result == null) {
+          isExploreMomentsLoading = false;
+          return;
+        }
+        nextExploreMoments = result['next'];
+        countExploreMoments = result['count'];
+        previousExploreMoments = result['previous'];
+        var tempList = result['results'];
+
+        isExploreMomentsLoading = false;
+
+        if (tempList != null && tempList is List && tempList.isNotEmpty) {
+          for (ExploreMomentsModel e in tempList) {
+            momentsList = e.moments!;
+          }
+        }
+
+        debugPrint('EXPLORE MOM :: $exploreMomentsList');
+        if (mounted) setState(() {});
+
+        if (isFirstTimeExplore &&
+            nextExploreMoments != null &&
+            nextExploreMoments != "") {
+          isFirstTimeExplore = false;
+          getExploreMoments();
+        }
+      }
+    }
   }
 
   void getSlydoAccount() async {
@@ -139,6 +325,7 @@ class _HomeState extends State<Home> {
     appLocalization = AppLocalization.of(context)!;
     socketProvider = Provider.of<MainSocketProvider>(context);
     dashboardBloc = Provider.of<DashboardBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
 
     if (userBloc.user.type != "User") {
       storeLocked = false;
@@ -234,25 +421,161 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: _displayShortcutExtraCard(shortcutExtraBusiness)),
           const SizedBox(
-            height: 25,
+            height: 15,
           ),
-          // Container(
-          //   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-          //   child: Text(
-          //     appLocalization.explore,
-          //     style: TextStyle(
-          //         fontSize: 14,
-          //         fontWeight: FontWeight.w700,
-          //         color: HexColor("#151515")),
-          //   ),
-          // ),
-          // Container(
-          //   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-          //   child: checkUser(),
-          // ),
-          // const SizedBox(
-          //   height: 20,
-          // ),
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () =>         NavigationUtil.push(context, screen: MomentsScreen()),
+                  child: sectionHeader("Join others to share your moment", "View Moment",
+                      ),
+                ),
+                SizedBox(height: 24),
+                (nextContactMoments == '' && isExploreMomentsLoading)
+                    ? Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: SizedBox(
+                          height: 180,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: 4,
+                            itemBuilder: (context, index) {
+                              return SizedBox(
+                                width: 120,
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    : SizedBox(
+                        height: 180,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          controller: _myConnectionsScrollController,
+                          scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          itemCount: momentsList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index == momentsList.length) {
+                              return Container();
+                              // buildIndicator(
+                              //     isLoading: isContactMomentsLoading);
+                            } else {
+                              return ContactMomentsCard(
+                                index: index,
+                                nextPageUrl: nextContactMoments,
+                                userMomentModel: momentsList[index],
+                                listOfConnectionsNames:
+                                    momentsList.map((e) => e.owner!).toList(),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+              ],
+            ),
+          ),
+          SizedBox(height: 25),
+          InkWell(
+            onTap: () {
+              showSnackbar(context, message: "Coming soon");
+            },
+            child: Container(
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.only(right: 16),
+                    height: 150,
+                    decoration: BoxDecoration(
+                        color: deepBlue,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Become a slydo dispatcher",
+                          style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              fontFamily: 'Inter'),
+                        ),
+                        SizedBox(height: 12),
+                        SizedBox(
+                          width: 194,
+                          child: Text(
+                            "Help slydo merchant deliver their product easier & faster.",
+                            style: TextStyle(
+                                color: white,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                                height: 1.2,
+                                fontFamily: 'Inter'),
+                            textAlign: TextAlign.end,
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                        CurvedButton(
+                            textColor: Colors.white,
+                            fontSize: 10,
+                            width: 100,
+                            text: "Register Now",
+                            borderRadius: 10,
+                            backgroundColor: black,
+                            height: 20,
+                            onPressed: () async {
+                              // FocusScope.of(context).unfocus();
+                              // deleteProduct();
+                            })
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 20,
+                    left: 20,
+                    child: Image.asset(
+                      "assets/images/bike_home.png",
+                      height: 131,
+                      width: 141,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 32),
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            child: Column(
+              children: [
+                GestureDetector(
+                    onTap: () =>
+                        NavigationUtil.push(context, screen: YarnDashboard()),
+                    child: sectionHeader("Join the conversation", "View Yarn")),
+                SizedBox(height: 24),
+                _buildListView()
+              ],
+            ),
+          ),
+
+          const SizedBox(
+            height: 60,
+          ),
         ],
       ),
     );
@@ -440,6 +763,75 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget _buildListView() {
+    return ListView.builder(
+      physics: ScrollPhysics(),
+      shrinkWrap: true,
+      padding: EdgeInsets.only(bottom: 16),
+      // scrollDirection: Axis.horizontal,
+      // controller: _scrollController,
+      itemCount: yarnTopicList.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == yarnTopicList.length) {
+          return Container();
+          // _buildLoadingIndicator();
+        }
+
+        return InkWell(
+          onTap: () async {
+            if (yarnTopicList[index].enableCommenting ?? false) {
+              await NavigationUtil.push(
+                context,
+                screen: YarnDetailScreen(
+                  yarn: yarnTopicList[index],
+                ),
+              );
+            }
+            if (mounted) setState(() {});
+          },
+          child: YarnTile(
+            yarn: yarnTopicList[index],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget sectionHeader(title, more) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title,
+            style: TextStyle(
+              color: black,
+              fontSize: 13,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
+            )),
+        InkWell(
+          // onTap: () {
+          //    NavigationUtil.push(context, screen: widgetRoute);
+          // },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                more,
+                style: TextStyle(
+                  color: navyBlue,
+                  fontSize: 12,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
   Widget shortcutViewExtra(String imagePath, String title, String subTitle,
       String color, double dynamicHeight) {
     double opacity = 0.8;
@@ -612,7 +1004,7 @@ class _HomeState extends State<Home> {
         ),
       ),
       actions: <Widget>[
-         RoundedBackgroundIcon(
+        RoundedBackgroundIcon(
             backgroundColor: Colors.transparent,
             onTap: () {
               Navigator.of(context).pushNamed(
