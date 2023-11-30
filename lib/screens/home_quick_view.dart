@@ -261,7 +261,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           // searchBox(),
           // SizedBox(height: 16),
           Expanded(
-            child: _displayShortcutCard(filteredList.isNotEmpty ? filteredList : selectedList),
+            child: _displayShortcutCard(
+                filteredList.isNotEmpty ? filteredList : selectedList),
           ),
         ],
       ),
@@ -452,7 +453,6 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     );
   }
 
-
   Widget shortcutView(String imagePath, String title) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
@@ -471,16 +471,20 @@ class _HomeQuickViewState extends State<HomeQuickView> {
                 imagePath.toSVG(),
               ),
               const SizedBox(width: 10),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: black,
+              Expanded(
+                child: Text(
+                  title,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: black,
+                  ),
                 ),
               ),
               if (userBloc.user.type!.toLowerCase() == 'user' &&
                       title == 'Product' ||
-                  userBloc.user.type!.toLowerCase() == 'user' && title == 'Services') ...[
+                  userBloc.user.type!.toLowerCase() == 'user' &&
+                      title == 'Services') ...[
                 const SizedBox(width: 10),
                 SvgPicture.asset(
                   'home/padlock'.toSVG(),
@@ -577,10 +581,10 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       case 'Blog':
         // if (appConfigurationModel?.enableSuperBlog == true) {
-          NavigationUtil.push(
-            context,
-            screen: const SuperBlog(),
-          );
+        NavigationUtil.push(
+          context,
+          screen: const SuperBlog(),
+        );
         // } else {
         //   showToast(message: 'Feature not available at the moment');
         // }
@@ -588,14 +592,14 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       case 'Channel':
         NavigationUtil.push(
           context,
-          screen:  ChannelsList(),
+          screen: ChannelsList(),
         );
         break;
       case 'Order':
         Navigator.pushNamed(context, Routes.ORDERS_LIST);
         break;
       case 'Super store':
-        NavigationUtil.push(context, screen: SuperStoreHome()); 
+        NavigationUtil.push(context, screen: SuperStoreHome());
         break;
       case 'Services Hub':
         Navigator.pushNamed(context, Routes.SUPER_HUB);
@@ -624,8 +628,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         if (userBloc.user.type!.toLowerCase() == 'user') {
           showUpgradeDialog(context);
         } else {
-          Navigator.pushNamed(context, Routes.ADD_PRODUCT, arguments: {"channelUsername": ""});
-
+          Navigator.pushNamed(context, Routes.ADD_PRODUCT,
+              arguments: {"channelUsername": ""});
         }
 
         break;
@@ -664,15 +668,15 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       case 'Channel':
         // if (appConfigurationModel != null &&
         //     appConfigurationModel!.enableGroupChat == true) {
-          Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
-              arguments: {"create": "channel"});
+        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+            arguments: {"create": "channel"});
         // }
         break;
       case 'Group':
         // if (appConfigurationModel != null &&
         //     appConfigurationModel!.enableGroupChat == true) {
-          Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
-              arguments: {"create": "group"});
+        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+            arguments: {"create": "group"});
         // }
         break;
       default:
@@ -714,7 +718,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     setState(() {
       filteredList = selectedList
           .where((item) =>
-          item['title']!.toLowerCase().contains(searchText.toLowerCase()))
+              item['title']!.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     });
   }

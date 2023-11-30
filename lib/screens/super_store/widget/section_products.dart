@@ -9,7 +9,10 @@ import 'package:flutter/material.dart';
 
 class SectionProducts extends StatelessWidget {
   final dynamic headers;
-  const SectionProducts({Key? key, this.headers}) : super(key: key);
+
+  const SectionProducts({Key? key, this.headers, this.isLast = false})
+      : super(key: key);
+  final bool isLast;
 
   getRowTitle(headers) async {
     List<Product> result = [];
@@ -102,8 +105,7 @@ class SectionProducts extends StatelessWidget {
                     ],
                   ),
                 ),
-               
-                SizedBox(height: 24),
+                SizedBox(height: isLast ? 56 : 16),
               ],
             );
           } else {

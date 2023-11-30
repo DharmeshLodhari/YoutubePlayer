@@ -25,14 +25,14 @@ class ShopListScreen extends StatefulWidget {
   final String? nextUrl;
   final String? type;
 
-  ShopListScreen(
-      {Key? key,
-      this.onPageRefresh,
-      this.category,
-      required this.industry,
-      this.nextUrl,
-      this.type})
-      : super(key: key);
+  ShopListScreen({
+    Key? key,
+    this.onPageRefresh,
+    this.category,
+    required this.industry,
+    this.nextUrl,
+    this.type,
+  }) : super(key: key);
 
   @override
   State<ShopListScreen> createState() => ShopListScreenState();
@@ -294,15 +294,16 @@ class ShopListScreenState extends State<ShopListScreen> {
               controller: _refreshController,
               onRefresh: _onRefresh,
               child: ListView(
-                controller: _productScrollController,
+                // controller: _productScrollController,
                 children: [
                   SizedBox(height: todaysDealsSizeBox),
                   todaysDealsEmpty
                       ? const SizedBox.shrink()
                       : getTodaysDealList(),
-                  todaysDealsEmpty
-                      ? const SizedBox.shrink()
-                      : const SizedBox(height: 20),
+                  const SizedBox(
+                    height: 20,
+                  ),
+
                   if (widget.type != null && rowHeaders.isNotEmpty)
                     ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
                   if (rowHeaders.isEmpty &&
@@ -388,7 +389,7 @@ class ShopListScreenState extends State<ShopListScreen> {
               noProductInList
                   ? const SizedBox.shrink()
                   : const SizedBox(height: 16),
-               Container(
+              Container(
                 margin: const EdgeInsets.only(bottom: 15.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -692,6 +693,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
 class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
+
   const SuperStoreSingleCard({Key? key, required this.product})
       : super(key: key);
 
