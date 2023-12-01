@@ -1414,7 +1414,40 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           },
         ),
       );
+      list.add(
+        bottomSheetItem(
+          title: "Customize Profile",
+          iconData: Icons.dashboard_customize_sharp,
+          onTap: () async {
+            var business = '';
+            if (searchedUser!.type!.toLowerCase() == "user") {
+              business = 'no';
+            } else if (widget.userType == 'channel') {
+              business = 'no';
+            } else {
+              business = 'yes';
+            }
+            Navigator.pop(context);
+            final data = await Navigator.of(context)
+                .pushNamed(Routes.CUSTOMIZE_PROFILE, arguments: {
+              "business": business,
+              "callbackProductService": (Map<String, dynamic> updatedData) {
+                // This callback will be invoked when the profile menu for product/service label is saved in CustomizeProfileScreen
+                if (widget.callbackProductService != null) {
+                  widget.callbackProductService!(updatedData);
+                  if (mounted) setState(() {});
+                }
+              },
+            });
 
+            if (data != null && data is Map<String, bool>) {
+              widget.callback!(data);
+              if (mounted) setState(() {});
+            }
+          },
+        ),
+      );
+      if((searchedUser != null && searchedUser!.type!.toLowerCase() != 'user'))
       list.add(
         bottomSheetItem(
           title: "Manage Business",
@@ -1650,39 +1683,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         ),
       );
 
-      list.add(
-        bottomSheetItem(
-          title: "Customize Profile",
-          iconData: Icons.dashboard_customize_sharp,
-          onTap: () async {
-            var business = '';
-            if (searchedUser!.type!.toLowerCase() == "user") {
-              business = 'no';
-            } else if (widget.userType == 'channel') {
-              business = 'no';
-            } else {
-              business = 'yes';
-            }
-            Navigator.pop(context);
-            final data = await Navigator.of(context)
-                .pushNamed(Routes.CUSTOMIZE_PROFILE, arguments: {
-              "business": business,
-              "callbackProductService": (Map<String, dynamic> updatedData) {
-                // This callback will be invoked when the profile menu for product/service label is saved in CustomizeProfileScreen
-                if (widget.callbackProductService != null) {
-                  widget.callbackProductService!(updatedData);
-                  if (mounted) setState(() {});
-                }
-              },
-            });
-
-            if (data != null && data is Map<String, bool>) {
-              widget.callback!(data);
-              if (mounted) setState(() {});
-            }
-          },
-        ),
-      );
+      
 
       if (searchedUser?.type?.toLowerCase() != "user") {
         list.add(
