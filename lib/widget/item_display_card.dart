@@ -91,8 +91,7 @@ class _DisplayProductState extends State<DisplayProduct> {
       },
       child: SizedBox(
         width: 200,
-        child: 
-        Card(
+        child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,
           color: Colors.white,
@@ -130,23 +129,33 @@ class _DisplayProductState extends State<DisplayProduct> {
                         child: getRating(
                             numberOfRating: widget.product.rating?.toInt()),
                       ),
-                       widget.product.discountedPrice != null ?
-                      (checkDiscount(widget.product.discountIsActive!, widget.product.discountedPrice!, num.parse(widget.product.price!))) ?
-                      Positioned(
-                        top: 10,
-                        right: 10,
-                        child: showDiscountValue(widget.product.discountType!, widget.product.discountValue!, widget.product.currency)
-                      ) : SizedBox() : SizedBox(),
+                      widget.product.discountedPrice != null
+                          ? (checkDiscount(
+                                  widget.product.discountIsActive!,
+                                  widget.product.discountedPrice!,
+                                  num.parse(widget.product.price!)))
+                              ? Positioned(
+                                  top: 10,
+                                  right: 10,
+                                  child: showDiscountValue(
+                                      widget.product.discountType!,
+                                      widget.product.discountValue!,
+                                      widget.product.currency))
+                              : SizedBox()
+                          : SizedBox(),
 
-                      if((widget.product.pricePercentageChange != null) & (widget.product.pricePercentageChange != 0.0) )...[
+                      if ((widget.product.pricePercentageChange != null) &
+                          (widget.product.pricePercentageChange != 0.0)) ...[
                         Positioned(
                           top: 8,
                           right: 8,
                           child: Container(
-                            padding: EdgeInsets.only(left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+                            padding: EdgeInsets.only(
+                                left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
                             decoration: BoxDecoration(
                               color: naturalGreen,
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
                             ),
                             child: Text(
                               "${widget.product.pricePercentageChange!.toString()}% off",
@@ -206,7 +215,6 @@ class _DisplayProductState extends State<DisplayProduct> {
                         Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -223,21 +231,20 @@ class _DisplayProductState extends State<DisplayProduct> {
                                         ),
                                       ),
                                       Text(
-                                        moneyDisplayNormalizer(
-                                            int.parse(
-                                               widget
-                                            .product
-                                            .discountedPrice != null ?
-                                              ((checkDiscount(
+                                        moneyDisplayNormalizer(int.parse(widget
+                                                    .product.discountedPrice !=
+                                                null
+                                            ? ((checkDiscount(
                                                     widget.product
                                                         .discountIsActive!,
                                                     widget.product
                                                         .discountedPrice!,
                                                     num.parse(
                                                         widget.product.price!)))
-                                              ? widget.product.discountedPrice.toString() :   widget.product.price!) : widget.product.price!
-                                              )
-                                        ),
+                                                ? widget.product.discountedPrice
+                                                    .toString()
+                                                : widget.product.price!)
+                                            : widget.product.price!)),
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
@@ -247,38 +254,41 @@ class _DisplayProductState extends State<DisplayProduct> {
                                     ],
                                   ),
                                   SizedBox(height: 5),
-                                  widget.product.discountedPrice != null ?
-                                  (checkDiscount(widget.product.discountIsActive!, widget.product.discountedPrice!, num.parse(widget.product.price!))) ?
-                                   Row(
-                                    children: [
-                                      Text(
-                                        worldCurrencies[
-                                            widget.product.currency!]!,
-                                        style: TextStyle(
-                                          fontFamily: "Roboto",
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 12.8,
-                                          color: navyBlue,
-                                                    decoration:
-                                              TextDecoration.lineThrough,
-
-                                        ),
-                                      ),
-                                      Text(
-                                        moneyDisplayNormalizer(
-                                            int.parse(widget.product.price!)),
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 12,
-                                          color: navyBlue,
-                                                    decoration:
-                                              TextDecoration.lineThrough,
-
-                                        ),
-                                      ),
-                                    ],
-                                  ) : SizedBox() : SizedBox(),
-                                  
+                                  widget.product.discountedPrice != null
+                                      ? (checkDiscount(
+                                              widget.product.discountIsActive!,
+                                              widget.product.discountedPrice!,
+                                              num.parse(widget.product.price!)))
+                                          ? Row(
+                                              children: [
+                                                Text(
+                                                  worldCurrencies[widget
+                                                      .product.currency!]!,
+                                                  style: TextStyle(
+                                                    fontFamily: "Roboto",
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 12.8,
+                                                    color: navyBlue,
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  moneyDisplayNormalizer(
+                                                      int.parse(widget
+                                                          .product.price!)),
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 12,
+                                                    color: navyBlue,
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : SizedBox()
+                                      : SizedBox(),
                                 ],
                               ),
                               const Expanded(child: SizedBox(width: 40)),
@@ -287,7 +297,6 @@ class _DisplayProductState extends State<DisplayProduct> {
                       ],
                     ),
                   ),
-                
                 ],
               ),
             ),
@@ -296,8 +305,6 @@ class _DisplayProductState extends State<DisplayProduct> {
       ),
     );
   }
-
-
 
   void showProductProfileActionsSheet() {
     showModalBottomSheet<void>(
@@ -722,7 +729,6 @@ class _DisplayServiceState extends State<DisplayService> {
                         ),
                       ),
                       Row(
-                        
                         children: [
                           Text(
                             worldCurrencies[widget.service.currency!]!,
@@ -1108,7 +1114,8 @@ class _FindBusinessState extends State<FindBusiness> {
           Container(
             padding: widget.tileRenderPlace == TileRenderPlace.Thiny
                 ? const EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
-                : const EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
+                : const EdgeInsets.only(
+                    left: 15, top: 30, bottom: 10, right: 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -1116,64 +1123,67 @@ class _FindBusinessState extends State<FindBusiness> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, Routes.USER_PROFILE, arguments: {
-                          "searchedUserName": widget.customerProfile.userName
-                        });
-                      },
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Align(
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, Routes.USER_PROFILE, arguments: {
+                            "searchedUserName": widget.customerProfile.userName
+                          });
+                        },
+                        child: Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    appendStringDot(
+                                        messageDecoderWithEmoji(widget
+                                                    .customerProfile.fullName ??
+                                                "") ??
+                                            "",
+                                        widget.tileRenderPlace ==
+                                                TileRenderPlace.Thiny
+                                            ? 13
+                                            : 20),
+                                    style: TextStyle(
+                                        fontSize: widget.tileRenderPlace ==
+                                                TileRenderPlace.Thiny
+                                            ? 12
+                                            : 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: yarnBlack),
+                                  )),
+                              Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(
-                                  appendStringDot(
-                                      messageDecoderWithEmoji(
-                                              widget.customerProfile.fullName ??
-                                                  "") ??
-                                          "",
-                                      widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 13
-                                          : 20),
-                                  style: TextStyle(
+                                child: userNameWithVerifiedIcon(
+                                    name: appendStringDot(
+                                        messageDecoderWithEmoji(
+                                                '@${widget.customerProfile.userName}') ??
+                                            "",
+                                        widget.tileRenderPlace ==
+                                                TileRenderPlace.Thiny
+                                            ? 13
+                                            : 20),
+                                    isVerified:
+                                        widget.customerProfile.isVerified,
+                                    textStyle: TextStyle(
                                       fontSize: widget.tileRenderPlace ==
                                               TileRenderPlace.Thiny
-                                          ? 12
-                                          : 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: yarnBlack),
-                                )),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: userNameWithVerifiedIcon(
-                                  name: appendStringDot(
-                                      messageDecoderWithEmoji(
-                                              '@${widget.customerProfile.userName}') ??
-                                          "",
-                                      widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
-                                          ? 13
-                                          : 20),
-                                  isVerified: widget.customerProfile.isVerified,
-                                  textStyle: TextStyle(
-                                    fontSize: widget.tileRenderPlace ==
+                                          ? 11
+                                          : 14,
+                                      color: HexColor("#151515"),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    verifiedIconColor: verifyGreen,
+                                    verifiedIconSize: widget.tileRenderPlace ==
                                             TileRenderPlace.Thiny
-                                        ? 11
-                                        : 14,
-                                    color: HexColor("#151515"),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  verifiedIconColor: verifyGreen,
-                                  verifiedIconSize: widget.tileRenderPlace ==
-                                          TileRenderPlace.Thiny
-                                      ? 12
-                                      : 15),
-                            ),
-                          ],
+                                        ? 12
+                                        : 15),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
