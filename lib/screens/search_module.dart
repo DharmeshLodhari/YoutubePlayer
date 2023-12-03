@@ -174,6 +174,7 @@ class _SearchModuleState extends State<SearchModule> {
       titleSpacing: 20,
       centerTitle: false,
       automaticallyImplyLeading: true,
+      iconTheme: IconThemeData(color: blackFont),
       title: Text(
         getTabTitle(),
         style: TextStyle(
