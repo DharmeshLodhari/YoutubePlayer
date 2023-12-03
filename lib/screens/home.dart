@@ -427,10 +427,11 @@ class _HomeState extends State<Home> {
             color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 GestureDetector(
                   onTap: () =>         NavigationUtil.push(context, screen: MomentsScreen()),
-                  child: sectionHeader("Join others to share your moment", "View Moment",
+                  child: sectionHeader("Share your moment", "View Moment",
                       ),
                 ),
                 SizedBox(height: 24),
@@ -518,7 +519,7 @@ class _HomeState extends State<Home> {
                         SizedBox(
                           width: 194,
                           child: Text(
-                            "Help slydo merchant deliver their product easier & faster.",
+                            "Help slydo merchant deliver their products easier.",
                             style: TextStyle(
                                 color: white,
                                 fontWeight: FontWeight.w400,
@@ -545,8 +546,8 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   Positioned(
-                    top: 20,
-                    left: 20,
+                    top: 25,
+                    left: 12,
                     child: Image.asset(
                       "assets/images/bike_home.png",
                       height: 131,
@@ -804,7 +805,7 @@ class _HomeState extends State<Home> {
         Text(title,
             style: TextStyle(
               color: black,
-              fontSize: 13,
+              fontSize: 15,
               fontFamily: "Inter",
               fontWeight: FontWeight.w600,
             )),
@@ -820,7 +821,7 @@ class _HomeState extends State<Home> {
                 more,
                 style: TextStyle(
                   color: navyBlue,
-                  fontSize: 12,
+                  fontSize: 14,
                   fontFamily: "Inter",
                   fontWeight: FontWeight.w600,
                 ),
