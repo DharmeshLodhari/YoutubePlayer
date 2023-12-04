@@ -269,7 +269,7 @@ Widget showDiscountValue(String discountType, num discountValue, currency) {
       style: TextStyle(
         color: white,
         fontSize: 8,
-        fontFamily: 'Roboto',
+        fontFamily: 'Inter',
         fontWeight: FontWeight.w700,
       ),
     ),

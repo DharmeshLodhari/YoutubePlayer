@@ -2594,7 +2594,7 @@ class _EditProductState extends State<EditProduct> {
                   Text(
                     worldCurrencies[variant.currency!]!,
                     style: TextStyle(
-                        fontFamily: "Roboto",
+                        fontFamily: "Inter",
                         fontSize: 18.0,
                         color: blackFont,
                         fontWeight: FontWeight.w600),

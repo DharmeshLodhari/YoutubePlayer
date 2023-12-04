@@ -79,7 +79,7 @@ class _SearchProductTileState extends State<SearchProductTile> {
                             TextSpan(
                                 text: worldCurrencies[widget.product.currency!],
                                 style: TextStyle(
-                                    fontFamily: "Roboto",
+                                    fontFamily: "Inter",
                                     color: navyBlue,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14)),
@@ -179,7 +179,7 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
                             TextSpan(
                                 text: worldCurrencies[widget.service.currency!],
                                 style: TextStyle(
-                                    fontFamily: "Roboto",
+                                    fontFamily: "Inter",
                                     color: navyBlue,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14)),

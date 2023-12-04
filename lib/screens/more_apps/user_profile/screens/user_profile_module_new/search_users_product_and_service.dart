@@ -904,7 +904,7 @@ class _SearchUsersProductAndServiceState
         Text(
           worldCurrencies[product.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
@@ -1065,7 +1065,7 @@ class _SearchUsersProductAndServiceState
         Text(
           worldCurrencies[service.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),

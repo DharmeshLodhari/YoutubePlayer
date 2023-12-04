@@ -300,7 +300,7 @@ class _MixCartItemState extends State<MixCartItem> {
                 Text(
                   worldCurrencies[userBloc.user.currency!]!,
                   style: TextStyle(
-                      fontFamily: "Roboto",
+                      fontFamily: "Inter",
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
@@ -570,7 +570,7 @@ class _MixCartItemState extends State<MixCartItem> {
               style: TextStyle(
                 fontSize: 16,
                 color: blackFont,
-                fontFamily: "Roboto",
+                fontFamily: "Inter",
               ),
             ),
           ),

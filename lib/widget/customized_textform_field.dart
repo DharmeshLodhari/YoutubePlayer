@@ -205,7 +205,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                               color: blackFont,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              fontFamily: "Roboto",
+                              fontFamily: "Inter",
                             ),
                           ),
                         ),

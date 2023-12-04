@@ -219,7 +219,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: selectedTip == 1 ? Colors.white : blackFont,
-                            fontFamily: "roberto"),
+                            fontFamily: "Inter"),
                       ),
                       Text(
                         "50",
@@ -256,7 +256,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: selectedTip == 2 ? Colors.white : blackFont,
-                            fontFamily: "roberto"),
+                            fontFamily: "Inter"),
                       ),
                       Text(
                         "100",
@@ -293,7 +293,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: selectedTip == 3 ? Colors.white : blackFont,
-                            fontFamily: "roberto"),
+                            fontFamily: "Inter"),
                       ),
                       Text(
                         "150",
@@ -330,7 +330,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: selectedTip == 4 ? Colors.white : blackFont,
-                            fontFamily: "roberto"),
+                            fontFamily: "Inter"),
                       ),
                       Text(
                         "200",

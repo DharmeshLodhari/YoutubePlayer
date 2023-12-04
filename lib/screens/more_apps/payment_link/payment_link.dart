@@ -200,7 +200,7 @@ class _PaymentLinkState extends State<PaymentLink> {
                           style: TextStyle(
                             color: colorStats(status!),
                             fontSize: 10.80,
-                            fontFamily: "Open Sans",
+                            fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
                           ),
                         ),

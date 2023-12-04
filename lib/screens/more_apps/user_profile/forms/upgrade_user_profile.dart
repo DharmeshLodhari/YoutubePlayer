@@ -444,7 +444,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                         Text(
                           worldCurrencies[userBloc.user.currency!]!,
                           style: TextStyle(
-                              fontFamily: "Roboto",
+                              fontFamily: "Inter",
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: blackFont),

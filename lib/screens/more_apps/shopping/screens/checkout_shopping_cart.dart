@@ -183,7 +183,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 Text(
                   worldCurrencies[userBloc.user.currency!]!,
                   style: const TextStyle(
-                      fontFamily: "Roboto",
+                      fontFamily: "Inter",
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
@@ -793,7 +793,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
               style: TextStyle(
                 fontSize: 16,
                 color: blackFont,
-                fontFamily: "Roboto",
+                fontFamily: "Inter",
               ),
             ),
           ),

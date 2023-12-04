@@ -417,7 +417,8 @@ class _DashboardState extends State<Dashboard> {
     return Text(
       getBadgeCount().toString(),
       style: const TextStyle(
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Inter',
+      ),
     );
   }
 

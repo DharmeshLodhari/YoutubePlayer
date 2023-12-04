@@ -257,7 +257,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
         Text(
           worldCurrencies[userBloc.user.currency]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: navyBlue,
               fontWeight: FontWeight.bold,
               fontSize: 14),

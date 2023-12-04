@@ -330,7 +330,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                     Text(
                       worldCurrencies[addOnOption.currency!]!,
                       style: TextStyle(
-                          fontFamily: "Roboto",
+                          fontFamily: "Inter",
                           fontSize: 12.0,
                           color: blackFont.withOpacity(.5),
                           fontWeight: FontWeight.w600),

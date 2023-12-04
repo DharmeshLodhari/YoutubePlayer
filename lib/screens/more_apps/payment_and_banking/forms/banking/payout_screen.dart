@@ -187,7 +187,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
                                                       style: TextStyle(
                                                           fontSize: 12,
                                                           color: blackFont,
-                                                          fontFamily: "Roboto",
+                                                          fontFamily: "Inter",
                                                           fontWeight:
                                                               FontWeight.w600),
                                                     )
@@ -404,7 +404,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
               style: TextStyle(
                   fontSize: 12,
                   color: blackFont,
-                  fontFamily: "Roboto",
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600),
             )
           ])),

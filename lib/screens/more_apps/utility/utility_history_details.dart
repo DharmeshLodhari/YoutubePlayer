@@ -238,7 +238,7 @@ class _UtilityHistoryDetailScreenState
             // color: transaction!.isCredit! ? navyBlue : blackFont,
             fontWeight: FontWeight.bold,
             fontSize: 14,
-            fontFamily: "Roboto",
+            fontFamily: "Inter",
           ),
         ),
         Text(
@@ -392,7 +392,7 @@ class _UtilityHistoryDetailScreenState
                         style: TextStyle(
                           color: blackFont,
                           fontSize: 16,
-                          fontFamily: "roberto",
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w500,
                         ),
                       )

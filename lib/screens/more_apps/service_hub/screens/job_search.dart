@@ -141,7 +141,8 @@ class _JobsSearchState extends State<JobsSearch> {
       title: Text(
         "Search",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont, fontSize: 18,
+            fontFamily: "Inter", fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
         GestureDetector(
@@ -293,6 +294,7 @@ class _JobsSearchState extends State<JobsSearch> {
           autofocus: true,
           style: TextStyle(
             fontSize: 16,
+            fontFamily: "Inter",
             color: blackFont,
             fontWeight: FontWeight.w600,
           ),
@@ -301,6 +303,7 @@ class _JobsSearchState extends State<JobsSearch> {
           decoration: InputDecoration(
             hintStyle: TextStyle(
               fontSize: 14,
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               color: darkGrey,
             ),

@@ -57,7 +57,7 @@ class PayoutTile extends StatelessWidget {
                         Text(
                           worldCurrencies[payout!.currency!]!,
                           style: TextStyle(
-                              fontFamily: "Roboto",
+                              fontFamily: "Inter",
                               color: getStatusColor(payout!.status),
                               fontWeight: FontWeight.bold,
                               fontSize: 14),

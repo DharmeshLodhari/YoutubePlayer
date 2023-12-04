@@ -390,7 +390,7 @@ Future<T?> showPickItemDialog<T>({
                               style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 16,
-                                  fontFamily: "Roboto",
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w600),
                             ),
                             trailing: Icon(
@@ -415,7 +415,7 @@ Future<T?> showPickItemDialog<T>({
                           style: TextStyle(
                               fontSize: 16,
                               color: blackFont,
-                              fontFamily: "Roboto",
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                         dense: true,

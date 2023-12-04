@@ -68,7 +68,7 @@ class SectionProducts extends StatelessWidget {
                                   style: TextStyle(
                                     color: navyBlue,
                                     fontSize: 12,
-                                    fontFamily: "Open Sans",
+                                    fontFamily: "Inter",
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),

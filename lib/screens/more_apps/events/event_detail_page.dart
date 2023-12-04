@@ -425,7 +425,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                   style: TextStyle(
                                     color: navyBlue,
                                     fontSize: 16,
-                                    fontFamily: "Roboto",
+                                    fontFamily: "Inter",
                                   ),
                                 ),
                                 Text(

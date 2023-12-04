@@ -97,7 +97,10 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       title: Text(
         getTitle(),
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
         softWrap: false,
         maxLines: 1,
@@ -145,6 +148,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,
+                  fontFamily: "Inter",
                   fontWeight:
                       currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
                 ),
@@ -169,6 +173,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     style: TextStyle(
                       color: currentIndex == 1 ? navyBlue : blackFont,
                       fontSize: 14,
+                      fontFamily: "Inter",
                       fontWeight:
                           currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
                     ),
@@ -185,7 +190,9 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                                 child: Text(
                                   '++',
                                   style: TextStyle(
-                                      fontSize: 12, color: Colors.white),
+                                      fontFamily: "Inter",
+                                      fontSize: 12,
+                                      color: Colors.white),
                                 ),
                               ),
                               position:
@@ -226,6 +233,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                 style: TextStyle(
                   color: currentIndex == 2 ? navyBlue : blackFont,
                   fontSize: 14,
+                  fontFamily: "Inter",
                   fontWeight:
                       currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
                 ),
@@ -280,7 +288,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   List<Widget> generateBottomSheetItem() {
     List<Widget> list = [];
 
-
     list.add(bottomSheetItem(
       title: "Create Group",
       iconData: SlydoAppIcon.add_group,
@@ -291,7 +298,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
           Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
               arguments: {"create": "group"});
         }
-
       },
     ));
 

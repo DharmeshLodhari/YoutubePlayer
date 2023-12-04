@@ -179,7 +179,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                             Text(
                               worldCurrencies[widget.product!.currency!]!,
                               style: TextStyle(
-                                  fontFamily: "Roboto",
+                                  fontFamily: "Inter",
                                   color: navyBlue,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14),
@@ -305,7 +305,7 @@ class _ShoppingTileWithHeartWithProductState
                             Text(
                               worldCurrencies[widget.product!.currency!]!,
                               style: TextStyle(
-                                  fontFamily: "Roboto",
+                                  fontFamily: "Inter",
                                   color: navyBlue,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14),
@@ -542,7 +542,7 @@ class _ShoppingTileWithHeartWithServiceState
                             Text(
                               worldCurrencies[widget.service!.currency!]!,
                               style: TextStyle(
-                                  fontFamily: "Roboto",
+                                  fontFamily: "Inter",
                                   color: navyBlue,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14),

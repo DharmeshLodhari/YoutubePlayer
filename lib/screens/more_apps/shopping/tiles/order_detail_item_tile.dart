@@ -128,7 +128,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
             worldCurrencies[product!.currency!]!,
             style: TextStyle(
                 color: blackFont,
-                fontFamily: "Roboto",
+                fontFamily: "Inter",
                 fontWeight: FontWeight.w600,
                 fontSize: 14),
           ),
@@ -178,7 +178,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
           worldCurrencies[product!.currency!]!,
           style: TextStyle(
               color: blackFont,
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               fontSize: 14),
         ),
@@ -319,7 +319,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
             worldCurrencies[service!.currency!]!,
             style: TextStyle(
                 color: blackFont,
-                fontFamily: "Roboto",
+                fontFamily: "Inter",
                 fontWeight: FontWeight.w600,
                 fontSize: 14),
           ),
@@ -369,7 +369,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
           worldCurrencies[service!.currency!]!,
           style: TextStyle(
               color: blackFont,
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               fontSize: 14),
         ),

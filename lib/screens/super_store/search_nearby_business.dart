@@ -14,22 +14,21 @@ import '../more_apps/user_profile/models/search_user_item_with_filter.dart';
 import '../more_apps/user_profile/models/user.dart';
 import '../more_apps/yarn/utils/yarn_enum.dart';
 
-
 class SearchNearByBusiness extends StatefulWidget {
   @override
   _SearchNearByBusinessState createState() => _SearchNearByBusinessState();
 }
 
 class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
-
   String? selectedRating;
   String? state;
   String? lga;
   List<CustomerProfile> nearByBusiness = [];
 
-  final GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldSearchKey =
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   bool isLoading = false;
 
@@ -65,7 +64,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
     getStatesList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
         if (next != null) {
           getList();
@@ -115,7 +114,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         }
 
         Map<String, dynamic>? result =
-        await ShoppingAuthService().searchMerchant(
+            await ShoppingAuthService().searchMerchant(
           next,
           previous,
           filterOptions: SearchItemWithFilterModelForSuperStore(
@@ -125,7 +124,6 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
             categories: pickedCategoryList,
           ),
         );
-
 
         if (result == null) {
           isLoading = false;
@@ -239,26 +237,29 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       title: Text(
         "Search",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
         nearByBusiness.isNotEmpty
             ? RoundedBackgroundIcon(
-          height: 34,
-          width: 34,
-          icon: Icon(
-            SlydoAppIcon.filter,
-            size: 16,
-            color: blackFont,
-          ),
-          onTap: () {
-            setState(() {
-              showSortByBox = !showSortByBox;
-            });
-          },
-          backgroundColor: iconBtnGrey,
-          enableMargin: true,
-        )
+                height: 34,
+                width: 34,
+                icon: Icon(
+                  SlydoAppIcon.filter,
+                  size: 16,
+                  color: blackFont,
+                ),
+                onTap: () {
+                  setState(() {
+                    showSortByBox = !showSortByBox;
+                  });
+                },
+                backgroundColor: iconBtnGrey,
+                enableMargin: true,
+              )
             : const SizedBox.shrink(),
         const SizedBox(width: 16),
       ],
@@ -269,65 +270,68 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
     return Container(
       child: Column(
         children: [
-
           const SizedBox(height: 6),
           searchBox(),
           const SizedBox(height: 12),
-          isLoading ? const CircularProgressIndicator() : const SizedBox.shrink(),
+          isLoading
+              ? const CircularProgressIndicator()
+              : const SizedBox.shrink(),
           isSearchIsEmpty
               ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!
-                  .pleaseTypeSomethingToGetResult,
-              isResult: false,
-            ),
-          )
-              : noItemInList
-              ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!.noResultFound,
-            ),
-          )
-              : Expanded(
-            child: ListView(
-                children: nearByBusiness
-                    .map(
-                      (product) => Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8, horizontal: 16),
-                    child: Container(
-                      margin: const EdgeInsets.all(8.0),
-                      child: FindBusiness(customerProfile: product,
-                        tileRenderPlace: TileRenderPlace.YarnProductService,
-                        callback: (username, value) {
-                          //create a list to edit
-                          List<CustomerProfile> customerProfileList = nearByBusiness;
-                          // modify customerProfileList for the username and refresh the list
-                          // set the isFollowing for that particular user
-                          customerProfileList.forEach((customer) {
-                            if (customer.userName == username) {
-                              customer.isFollowing = value; // Modify the isFollowing property
-                            }
-                          });
-
-                          nearByBusiness = [];
-                          nearByBusiness = customerProfileList;
-
-                          if(mounted)setState(() {});
-
-                        },
-                      ),
-                    ),
-
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!
+                        .pleaseTypeSomethingToGetResult,
+                    isResult: false,
                   ),
                 )
-                    .toList()),
-          ),
+              : noItemInList
+                  ? Expanded(
+                      child: NoItemInList(
+                        msg: AppLocalization.of(context)!.noResultFound,
+                      ),
+                    )
+                  : Expanded(
+                      child: ListView(
+                          children: nearByBusiness
+                              .map(
+                                (product) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 16),
+                                  child: Container(
+                                    margin: const EdgeInsets.all(8.0),
+                                    child: FindBusiness(
+                                      customerProfile: product,
+                                      tileRenderPlace:
+                                          TileRenderPlace.YarnProductService,
+                                      callback: (username, value) {
+                                        //create a list to edit
+                                        List<CustomerProfile>
+                                            customerProfileList =
+                                            nearByBusiness;
+                                        // modify customerProfileList for the username and refresh the list
+                                        // set the isFollowing for that particular user
+                                        customerProfileList.forEach((customer) {
+                                          if (customer.userName == username) {
+                                            customer.isFollowing =
+                                                value; // Modify the isFollowing property
+                                          }
+                                        });
+
+                                        nearByBusiness = [];
+                                        nearByBusiness = customerProfileList;
+
+                                        if (mounted) setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList()),
+                    ),
         ],
       ),
     );
   }
-
 
   Widget searchBox() {
     return Container(
@@ -355,6 +359,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           autofocus: true,
           style: TextStyle(
             fontSize: 16,
+            fontFamily: "Inter",
             color: blackFont,
             fontWeight: FontWeight.w600,
           ),
@@ -363,6 +368,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           decoration: InputDecoration(
             hintStyle: TextStyle(
               fontSize: 14,
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               color: darkGrey,
             ),
@@ -427,54 +433,55 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20)),
-                  ),
-                  color: Colors.white,
-                  margin: EdgeInsets.zero,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          "Filter",
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: blackFont),
-                        ),
-                        const SizedBox(height: 40),
-                        getCategoryField(bottomSheetSetState),
-                        const SizedBox(height: 8),
-                        getPickedCategoryNames(),
-                        const SizedBox(height: 20),
-                        getStateDropDownField(bottomSheetSetState),
-                        const SizedBox(height: 8),
-                        getPickedStates(),
-                        const SizedBox(height: 24),
-                        if(pickedStateList.isNotEmpty)...[
-                          const SizedBox(height: 20),
-                          getLgaDropDownField(bottomSheetSetState),
-                          const SizedBox(height: 8),
-                          getPickedLga(),
-                        ],
-                        
-                        const SizedBox(height: 50),
-                        Row(
-                          children: [
-                            Expanded(child: getClearAllBtn()),
-                            const SizedBox(width: 20),
-                            Expanded(child: getFilterSubmitBtn()),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Filter",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    ),
+                    const SizedBox(height: 40),
+                    getCategoryField(bottomSheetSetState),
+                    const SizedBox(height: 8),
+                    getPickedCategoryNames(),
+                    const SizedBox(height: 20),
+                    getStateDropDownField(bottomSheetSetState),
+                    const SizedBox(height: 8),
+                    getPickedStates(),
+                    const SizedBox(height: 24),
+                    if (pickedStateList.isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      getLgaDropDownField(bottomSheetSetState),
+                      const SizedBox(height: 8),
+                      getPickedLga(),
+                    ],
+                    const SizedBox(height: 50),
+                    Row(
+                      children: [
+                        Expanded(child: getClearAllBtn()),
+                        const SizedBox(width: 20),
+                        Expanded(child: getFilterSubmitBtn()),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                  ],
                 ),
+              ),
+            ),
           );
         });
   }
@@ -487,7 +494,10 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         title: Text(
           selectedProductCategory != null ? selectedProductCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -508,17 +518,17 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         children: pickedCategoryList
             .map(
               (e) => Container(
-            margin: const EdgeInsets.all(6),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: greyBorderColor,
-                borderRadius: BorderRadius.circular(12)),
-            child: Text(
-              e,
-              style: TextStyle(color: blackFont),
-            ),
-          ),
-        )
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    color: greyBorderColor,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Text(
+                  e,
+                  style: TextStyle(color: blackFont),
+                ),
+              ),
+            )
             .toList(),
       ),
     );
@@ -543,11 +553,11 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                     if (value.toString().isNotEmpty) {
                       productCategories = productCategoriesCopy!
                           .where((element) => element.name
-                          .toLowerCase()
-                          .startsWith(value.toString().toLowerCase()))
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
                           .toList();
                       changeState(
-                              () {}); // To upgrade the product categories in the bottom sheet.
+                          () {}); // To upgrade the product categories in the bottom sheet.
                     } else {
                       productCategories = productCategoriesCopy;
                       changeState(() {});
@@ -588,10 +598,10 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                       );
-
                     },
                   ),
                 ),
@@ -615,9 +625,13 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       title: AppLocalization.of(context)!.state,
       child: ListTile(
         dense: true,
-        title: Text("",
+        title: Text(
+          "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -647,9 +661,10 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                   hintText: 'Search state',
                   onChanged: (value) {
                     if (value.toString().isNotEmpty) {
-                      stateList = stateListCopy.where((element) => element
-                          .toLowerCase()
-                          .startsWith(value.toString().toLowerCase()))
+                      stateList = stateListCopy
+                          .where((element) => element
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
                           .toList();
                       changeState(() {});
                     } else {
@@ -691,6 +706,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                       );
@@ -721,17 +737,17 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         children: pickedStateList
             .map(
               (e) => Container(
-            margin: const EdgeInsets.all(6),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: greyBorderColor,
-                borderRadius: BorderRadius.circular(12)),
-            child: Text(
-              e,
-              style: TextStyle(color: blackFont),
-            ),
-          ),
-        )
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    color: greyBorderColor,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Text(
+                  e,
+                  style: TextStyle(color: blackFont),
+                ),
+              ),
+            )
             .toList(),
       ),
     );
@@ -742,25 +758,28 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
       title: AppLocalization.of(context)!.city,
       child: ListTile(
         dense: true,
-        title: Text("",
+        title: Text(
+          "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
           color: darkGrey,
         ),
         onTap: () {
+          lgaList = [];
+          lgaListCopy = [];
+          lgaList = getLga(states: pickedStateList);
+          lgaListCopy = lgaList;
 
-            lgaList = [];
-            lgaListCopy = [];
-            lgaList = getLga(states: pickedStateList);
-            lgaListCopy = lgaList;
-
-            lgaListCopy.forEach((element) {
-              lgaCheckMark[element] = false;
-            });
-            bottomSheetSetState(() {});
+          lgaListCopy.forEach((element) {
+            lgaCheckMark[element] = false;
+          });
+          bottomSheetSetState(() {});
 
           lgaBottomSheet(bottomSheetSetState);
         },
@@ -785,9 +804,10 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                   hintText: 'Search city',
                   onChanged: (value) {
                     if (value.toString().isNotEmpty) {
-                      lgaList = lgaListCopy.where((element) => element
-                          .toLowerCase()
-                          .startsWith(value.toString().toLowerCase()))
+                      lgaList = lgaListCopy
+                          .where((element) => element
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
                           .toList();
                       changeState(() {});
                     } else {
@@ -829,6 +849,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                       );
@@ -859,22 +880,21 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
         children: pickedLgaList
             .map(
               (e) => Container(
-            margin: const EdgeInsets.all(6),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: greyBorderColor,
-                borderRadius: BorderRadius.circular(12)),
-            child: Text(
-              e,
-              style: TextStyle(color: blackFont),
-            ),
-          ),
-        )
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    color: greyBorderColor,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Text(
+                  e,
+                  style: TextStyle(color: blackFont),
+                ),
+              ),
+            )
             .toList(),
       ),
     );
   }
-
 
   Widget getClearAllBtn() {
     return CurvedButton(

@@ -144,7 +144,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                           style: TextStyle(
                             color: Color(0xff3e61da),
                             fontSize: 14,
-                            fontFamily: "Open Sans",
+                            fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -156,7 +156,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                           style: TextStyle(
                             color: Color(0xff75818f),
                             fontSize: 14,
-                            fontFamily: "Open Sans",
+                            fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -210,7 +210,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                           style: TextStyle(
                             color: Color(0xff46ce7c),
                             fontSize: 10.80,
-                            fontFamily: "Open Sans",
+                            fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -238,7 +238,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                     style: TextStyle(
                       color: Color(0xff75818f),
                       fontSize: 14,
-                      fontFamily: "Open Sans",
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -355,7 +355,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
         style: TextStyle(
           color: Colors.white,
           fontSize: 16,
-          fontFamily: "Open Sans",
+          fontFamily: "Inter",
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -441,7 +441,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         style: TextStyle(
                           color: Color(0xff030e36),
                           fontSize: 16,
-                          fontFamily: "Open Sans",
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -465,7 +465,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         style: TextStyle(
                           color: Color(0xff030e36),
                           fontSize: 16,
-                          fontFamily: "Open Sans",
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -489,7 +489,7 @@ class _JobsJobDetailState extends State<JobsJobDetail> {
                         style: TextStyle(
                           color: Color(0xff030e36),
                           fontSize: 16,
-                          fontFamily: "Open Sans",
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -518,7 +518,7 @@ class CustomText extends StatelessWidget {
       style: const TextStyle(
         color: Color(0xff030e36),
         fontSize: 12,
-        fontFamily: "Open Sans",
+        fontFamily: "Inter",
         fontWeight: FontWeight.w700,
       ),
     );

@@ -177,7 +177,7 @@ class _ContractTileState extends State<ContractTile> {
         Text(
           worldCurrencies[widget.contract.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: getAmountColor(),
               fontWeight: FontWeight.bold,
               fontSize: 14),
@@ -389,7 +389,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
         Text(
           worldCurrencies[widget.invoice.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: getInvoiceCurrencyColor(),
               fontWeight: FontWeight.bold,
               fontSize: 14),

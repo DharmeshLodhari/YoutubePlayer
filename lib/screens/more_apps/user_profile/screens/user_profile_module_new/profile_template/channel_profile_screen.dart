@@ -11,7 +11,6 @@ import 'package:flutter_svg/svg.dart';
 import '../../../../../../widget/rounded_background_icon.dart';
 import '../utils.dart';
 
-
 class ChannelProfileScreen extends StatefulWidget {
   CustomerProfile? searchedUser;
   String? searchedUserName;
@@ -54,15 +53,14 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
   Map<String, dynamic> result = {};
   List<dynamic> orderingList = [];
 
-
-
   @override
   void initState() {
     channelDetail = widget.channelDetail!;
 
     channelOwner = widget.searchedUser!;
 
-    channelUserName = getGroupUsername(channelDetail!['username'] ?? channelDetail!['group_name']);
+    channelUserName = getGroupUsername(
+        channelDetail!['username'] ?? channelDetail!['group_name']);
 
     channelUserName = channelUserName!.replaceAll(' ', '');
 
@@ -95,13 +93,15 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     }
 
     // Create a list of keys not in 'ordering'
-    var remainingKeys = boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
+    var remainingKeys =
+        boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
 
     // Add the remaining keys to orderedKeys to ensure they are at the end
     orderedKeys.addAll(remainingKeys);
 
     // Create a new map with the ordered keys
-    reorderedBoolMap = Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
+    reorderedBoolMap =
+        Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
 
     // Iterate through the JSON object and add tabs for boolean values that are true
     reorderedBoolMap.forEach((key, value) {
@@ -162,14 +162,16 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
         userTabs.add(UserTab(
           label: label,
           child: momentTab(channelOwner, channelUserName!),
-          apiCall: () async => await fetchMomentData(channelUserName, channelUserName),
+          apiCall: () async =>
+              await fetchMomentData(channelUserName, channelUserName),
         ));
         break;
       case "blog":
         userTabs.add(UserTab(
           label: label,
           child: postTab(channelOwner, channelUserName!),
-          apiCall: () async => await fetchPostData(channelUserName, channelUserName),
+          apiCall: () async =>
+              await fetchPostData(channelUserName, channelUserName),
         ));
         break;
 
@@ -224,62 +226,67 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
               scrollController: scrollController,
               userType: userType,
               channelDetail: channelDetail),
-          channelDetail!['is_member'] == true ? SliverPersistentHeader(
-            key: UniqueKey(),
-            floating: true,
-            pinned: true,
-            delegate: SliverAppBarDelegate(
-              TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                indicator: const BoxDecoration(),
-                onTap: (int index) {
-                  changeIndex(index);
-                },
-                tabs: getTabsWidget(),
-              ),
-            ),
-          ) : emptyView(),
+          channelDetail!['is_member'] == true
+              ? SliverPersistentHeader(
+                  key: UniqueKey(),
+                  floating: true,
+                  pinned: true,
+                  delegate: SliverAppBarDelegate(
+                    TabBar(
+                      controller: _tabController,
+                      isScrollable: true,
+                      indicator: const BoxDecoration(),
+                      onTap: (int index) {
+                        changeIndex(index);
+                      },
+                      tabs: getTabsWidget(),
+                    ),
+                  ),
+                )
+              : emptyView(),
         ];
       },
-      body: channelDetail!['is_member'] == true ? getTabViewLayout() : Container(),
+      body: channelDetail!['is_member'] == true
+          ? getTabViewLayout()
+          : Container(),
     );
   }
 
-  Widget emptyView(){
-    return  SliverToBoxAdapter(
-
-        child: Container(
-          width: MediaQuery.of(context).size.width, // Full width of the screen
-          height: MediaQuery.of(context).size.height, // Full height of the screen
-          color: Colors.transparent,
-          child: Column(
-
-            children: [
-              const Divider(
-                height: 1,
-                color: Colors.grey,
-              ),
-              const SizedBox(height: 50,),
-
-              Image.asset('assets/images/lock_channel.png'),
-
-              const SizedBox(height: 20,),
-              Text('This account is private',
-                style: TextStyle(
+  Widget emptyView() {
+    return SliverToBoxAdapter(
+      child: Container(
+        width: MediaQuery.of(context).size.width, // Full width of the screen
+        height: MediaQuery.of(context).size.height, // Full height of the screen
+        color: Colors.transparent,
+        child: Column(
+          children: [
+            const Divider(
+              height: 1,
+              color: Colors.grey,
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            Image.asset('assets/images/lock_channel.png'),
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              'This account is private',
+              style: TextStyle(
                 color: blackFont,
                 fontSize: 14,
+                fontFamily: "Inter",
                 fontWeight: FontWeight.w500,
               ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
     );
   }
 
   List<Widget> getTabsWidget() {
-
     return getTabs();
   }
 
@@ -387,7 +394,6 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
   }
 
   refreshTabs(Map<String, bool> val) {
-
     if (compareMaps(reorderedBoolMap, val)) {
       debugPrint('The maps are equal.');
     } else {
@@ -429,9 +435,6 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
 
       if (mounted) setState(() {});
       _tabController!.animateTo(0);
-
     }
-
   }
-
 }

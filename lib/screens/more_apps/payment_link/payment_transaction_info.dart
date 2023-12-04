@@ -217,7 +217,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                                             ? response['status']
                                             : widget.status!),
                                         fontSize: 10.80,
-                                        fontFamily: "Open Sans",
+                                        fontFamily: "Inter",
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -478,7 +478,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                     style: TextStyle(
                       color: color,
                       fontSize: fontSize,
-                      fontFamily: "Open Sans",
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -538,7 +538,7 @@ class _TransactionPaymentLinkState extends State<TransactionPaymentLink> {
                   style: TextStyle(
                     color: color,
                     fontSize: fontSize,
-                    fontFamily: "Open Sans",
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                   ),
                 ),

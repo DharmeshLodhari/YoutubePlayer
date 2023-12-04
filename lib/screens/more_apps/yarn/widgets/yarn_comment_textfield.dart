@@ -277,7 +277,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                       TextSpan(
                           text: 'Replying to ',
                           style: TextStyle(
-                              fontFamily: "Roboto",
+                              fontFamily: "Inter",
                               color: blackFont,
                               fontWeight: FontWeight.w500,
                               fontSize: 14)),

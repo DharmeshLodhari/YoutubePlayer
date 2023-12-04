@@ -163,6 +163,7 @@ class _YarnCommentListState extends State<YarnCommentList> {
                 "Top Comments",
                 style: TextStyle(
                   fontSize: 10,
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600,
                 ),
               ),

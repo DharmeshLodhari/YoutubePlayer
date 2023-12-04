@@ -312,6 +312,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18,
+                      fontFamily: "Inter",
                       color: blackFont,
                     ),
                   ),

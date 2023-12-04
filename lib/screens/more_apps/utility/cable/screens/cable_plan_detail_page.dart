@@ -58,7 +58,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: navyBlue,
-                      fontFamily: "roberto"),
+                      fontFamily: "Inter"),
                 ),
                 Text(
                   plan!.price!.replaceAll("₦", ""),

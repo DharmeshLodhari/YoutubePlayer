@@ -84,7 +84,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                     style: TextStyle(
                       color: Color(0xff75818f),
                       fontSize: 12,
-                      fontFamily: "Open Sans",
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -163,7 +163,7 @@ class FilterDropdown extends StatelessWidget {
             style: TextStyle(
               color: Color(0xff75818f),
               fontSize: 16,
-              fontFamily: "Open Sans",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
             ),
           ),

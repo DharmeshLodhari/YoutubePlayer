@@ -264,7 +264,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                           Text(
                             "₦ ",
                             style: TextStyle(
-                                fontFamily: "Roberto",
+                                fontFamily: "Inter",
                                 fontSize: 32,
                                 fontWeight: FontWeight.w700,
                                 color: navyBlue),

@@ -403,6 +403,7 @@ class _HomeState extends State<Home> {
               appLocalization.quickActions,
               style: TextStyle(
                   fontSize: 14,
+                  fontFamily: 'Inter',
                   fontWeight: FontWeight.w700,
                   color: HexColor("#151515")),
               textAlign: TextAlign.left,
@@ -990,7 +991,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             Text(
               getGreetingMessage(),
-              style: TextStyle(fontSize: 12, color: HexColor("#151515")),
+              style: TextStyle(fontSize: 12, fontFamily: 'Inter', color: HexColor("#151515",)),
             ),
             userNameWithVerifiedIcon(
               name: userBloc.user.displayName()!,
@@ -1087,7 +1088,7 @@ class _HomeState extends State<Home> {
     }
     return Text(
       getBadgeCount(),
-      style: const TextStyle(
+      style: const TextStyle( fontFamily: 'Inter',
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
@@ -1168,6 +1169,7 @@ class _HomeState extends State<Home> {
             style: TextStyle(
               fontSize: 14,
               color: white,
+              fontFamily: 'Inter',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -1227,7 +1229,7 @@ class _HomeState extends State<Home> {
                           color: white,
                           fontWeight: FontWeight.w700,
                           fontSize: 22,
-                          fontFamily: "Roboto",
+                         fontFamily: 'Inter',
                         ),
                       ),
                     ),
@@ -1241,6 +1243,7 @@ class _HomeState extends State<Home> {
                     color: white,
                     fontWeight: FontWeight.w700,
                     fontSize: 19,
+                    fontFamily: 'Inter',
                   ),
                 ),
               ),
@@ -1280,6 +1283,7 @@ class _HomeState extends State<Home> {
             style: TextStyle(
               fontSize: 14,
               color: white,
+              fontFamily: 'Inter',
               fontWeight: FontWeight.w600,
             ),
           ),

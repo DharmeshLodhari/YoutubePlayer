@@ -86,7 +86,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
           Text(
             worldCurrencies[currency!]!,
             style: TextStyle(
-                fontFamily: "Roboto",
+                fontFamily: "Inter",
                 color: blackFont,
                 fontWeight: FontWeight.bold,
                 fontSize: fontSize),

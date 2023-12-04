@@ -152,6 +152,7 @@ class _SuperStoreState extends State<SuperStore> {
         appTitle!,
         style: TextStyle(
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
           color: yarnBlack,
           height: 1.3,
@@ -570,7 +571,11 @@ class _SuperStoreState extends State<SuperStore> {
     return Text(
       getBadgeCount(),
       style: TextStyle(
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+        fontSize: 10,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontFamily: "Inter",
+      ),
     );
   }
 
