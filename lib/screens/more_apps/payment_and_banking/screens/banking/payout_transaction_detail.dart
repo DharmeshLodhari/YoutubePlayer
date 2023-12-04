@@ -249,7 +249,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
             color: blackFont,
             fontWeight: FontWeight.bold,
             fontSize: 14,
-            fontFamily: "Roboto",
+            fontFamily: "Inter",
           ),
         ),
         Text(

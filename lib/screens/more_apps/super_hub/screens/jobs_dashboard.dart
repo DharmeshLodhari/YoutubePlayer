@@ -112,7 +112,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                 style: TextStyle(
                   color: Color(0xff030e36),
                   fontSize: 16,
-                  fontFamily: "Open Sans",
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -161,7 +161,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         style: TextStyle(
           color: white,
           fontSize: 16,
-          fontFamily: "Open Sans",
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -188,7 +188,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
               style: TextStyle(
                 color: navyBlue,
                 fontSize: 12,
-                fontFamily: "Open Sans",
+                fontFamily: "Inter",
                 fontWeight: FontWeight.w600,
               ),
             ),

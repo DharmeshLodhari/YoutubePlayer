@@ -111,7 +111,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
           worldCurrencies[widget.currency]!,
           style: TextStyle(
               color: blackFont,
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               fontSize: 14),
         ),
@@ -135,7 +135,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
           'Total: ',
           style: TextStyle(
               color: blackFont,
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               fontSize: 14),
         ),
@@ -143,7 +143,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
           worldCurrencies[widget.currency]!,
           style: TextStyle(
               color: blackFont,
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               fontSize: 14),
         ),

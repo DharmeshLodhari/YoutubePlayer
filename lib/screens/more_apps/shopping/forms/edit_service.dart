@@ -169,7 +169,10 @@ class _EditServiceState extends State<EditService> {
       title: Text(
         "Edit service",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -296,7 +299,11 @@ class _EditServiceState extends State<EditService> {
                 ),
                 Text(
                   AppLocalization.of(context)!.addImage,
-                  style: TextStyle(color: darkGrey, fontSize: 14),
+                  style: TextStyle(
+                    color: darkGrey,
+                    fontSize: 14,
+                    fontFamily: "Inter",
+                  ),
                 ),
               ],
             ),
@@ -530,7 +537,10 @@ class _EditServiceState extends State<EditService> {
         title: Text(
           selectedServiceCategory != null ? selectedServiceCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -577,6 +587,7 @@ class _EditServiceState extends State<EditService> {
                                       style: TextStyle(
                                           color: navyBlue,
                                           fontSize: 16,
+                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.w600),
                                     ),
                                     trailing: Icon(
@@ -596,6 +607,7 @@ class _EditServiceState extends State<EditService> {
                                   style: TextStyle(
                                       color: blackFont,
                                       fontSize: 16,
+                                      fontFamily: "Inter",
                                       fontWeight: FontWeight.w400),
                                 ),
                                 dense: true,
@@ -771,6 +783,7 @@ class _EditServiceState extends State<EditService> {
                 color: blackFont,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
+                fontFamily: "Inter",
               ),
             ),
             trailing: Icon(

@@ -193,7 +193,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
             color: transaction!.isCredit! ? navyBlue : blackFont,
             fontWeight: FontWeight.bold,
             fontSize: 14,
-            fontFamily: "Roboto",
+            fontFamily: "Inter",
           ),
         ),
         Text(

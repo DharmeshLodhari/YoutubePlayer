@@ -899,7 +899,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               Text(
                 "₦ ",
                 style: TextStyle(
-                    fontFamily: "Roberto",
+                    fontFamily: "Inter",
                     color: getDescriptionColor(
                         isSend: isSend, isRepliedSend: isRepliedSend),
                     fontSize: 12,
@@ -974,7 +974,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               Text(
                 "₦ ",
                 style: TextStyle(
-                    fontFamily: "Roberto",
+                    fontFamily: "Inter",
                     color: getDescriptionColor(
                         isSend: isSend, isRepliedSend: isRepliedSend),
                     fontSize: 12,
@@ -1060,7 +1060,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                     Text(
                       "₦ ",
                       style: TextStyle(
-                          fontFamily: "Roberto",
+                          fontFamily: "Inter",
                           color: getDescriptionColor(
                               isSend: isSend, isRepliedSend: isRepliedSend),
                           fontSize: 12,
@@ -1218,7 +1218,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                     Text(
                       "₦ ",
                       style: TextStyle(
-                          fontFamily: "Roberto",
+                          fontFamily: "Inter",
                           color: getDescriptionColor(
                               isSend: isSend, isRepliedSend: isRepliedSend),
                           fontSize: 12,
@@ -1305,7 +1305,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                     Text(
                       "₦ ",
                       style: TextStyle(
-                          fontFamily: "Roberto",
+                          fontFamily: "Inter",
                           color: getDescriptionColor(
                               isSend: isSend, isRepliedSend: isRepliedSend),
                           fontSize: 12,

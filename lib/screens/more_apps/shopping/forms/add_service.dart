@@ -115,7 +115,8 @@ class _AddServiceState extends State<AddService> {
       title: Text(
         "Add service",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont, fontSize: 18,
+            fontFamily: "Inter", fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -218,7 +219,9 @@ class _AddServiceState extends State<AddService> {
                 ),
                 Text(
                   AppLocalization.of(context)!.addImage,
-                  style: TextStyle(color: darkGrey, fontSize: 14),
+                  style: TextStyle(color: darkGrey, fontSize: 14,
+                    fontFamily: "Inter",
+                  ),
                 ),
               ],
             ),
@@ -372,7 +375,8 @@ class _AddServiceState extends State<AddService> {
         title: Text(
           selectedServiceCategory != null ? selectedServiceCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont, fontSize: 16,
+              fontFamily: "Inter", fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -432,6 +436,7 @@ class _AddServiceState extends State<AddService> {
                               style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 16,
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w600),
                             ),
                             trailing: Icon(
@@ -459,6 +464,7 @@ class _AddServiceState extends State<AddService> {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                         dense: true,
@@ -517,8 +523,9 @@ class _AddServiceState extends State<AddService> {
                                         style: TextStyle(
                                             color: navyBlue,
                                             fontSize: 16,
+                                            fontFamily: "Inter",
                                             fontWeight: FontWeight.w600,
-                                            fontFamily: "Roberto"),
+                                            ),
                                       ),
                                       trailing: Icon(
                                         SlydoAppIcon.checked,
@@ -538,7 +545,8 @@ class _AddServiceState extends State<AddService> {
                                         color: blackFont,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400,
-                                        fontFamily: "Roberto"),
+                                        fontFamily: "Inter",
+                                    ),
                                   ),
                                   dense: true,
                                   onTap: () {
@@ -690,6 +698,7 @@ class _AddServiceState extends State<AddService> {
                 color: blackFont,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
+                fontFamily: "Inter",
               ),
             ),
             trailing: Icon(

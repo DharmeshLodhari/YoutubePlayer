@@ -1,4 +1,3 @@
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -277,7 +276,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                 style: TextStyle(
                   color: Color(0xff030e36),
                   fontSize: 16,
-                  fontFamily: "Open Sans",
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -339,6 +338,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                     ? blackFont
                     : darkGrey.withOpacity(0.9),
                 fontSize: 16,
+                fontFamily: "Inter",
                 fontWeight: FontWeight.w600),
           ),
         ),
@@ -391,7 +391,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         style: TextStyle(
           color: white,
           fontSize: 16,
-          fontFamily: "Open Sans",
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -406,6 +406,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
           style: TextStyle(
             color: blackFont,
             fontSize: 16,
+            fontFamily: "Inter",
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -429,7 +430,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
             style: TextStyle(
               color: navyBlue,
               fontSize: 12,
-              fontFamily: "Open Sans",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -461,7 +462,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                 _debouncer.run(() {
                   onRefresh();
                 });
-              }else if(searchItemTextController!.text.isEmpty){
+              } else if (searchItemTextController!.text.isEmpty) {
                 _debouncer.run(() {
                   onRefresh();
                 });
@@ -508,6 +509,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
           controller: searchItemTextController,
           style: TextStyle(
             fontSize: 16,
+            fontFamily: "Inter",
             color: blackFont,
             fontWeight: FontWeight.w600,
           ),
@@ -587,7 +589,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
     categoryNext = "";
     categoryPrevious = "";
     if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
-    // bottomSheetStateSetterGlobal!(() {});
+      // bottomSheetStateSetterGlobal!(() {});
     }
     if (mounted) setState(() {});
   }
@@ -629,7 +631,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;
-      }else{
+      } else {
         noSearchedItem = false;
       }
       if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
@@ -681,6 +683,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                   style: TextStyle(
                     color: bottomSheetSearchIndex == 0 ? navyBlue : blackFont,
                     fontSize: 14,
+                    fontFamily: "Inter",
                     fontWeight: bottomSheetSearchIndex == 0
                         ? FontWeight.w600
                         : FontWeight.w400,
@@ -710,6 +713,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                   style: TextStyle(
                     color: bottomSheetSearchIndex == 1 ? navyBlue : blackFont,
                     fontSize: 14,
+                    fontFamily: "Inter",
                     fontWeight: bottomSheetSearchIndex == 1
                         ? FontWeight.w600
                         : FontWeight.w400,
@@ -837,7 +841,11 @@ class _JobsDashboardState extends State<JobsDashboard> {
                   title: Text(
                     category.name!,
                     maxLines: 1,
-                    style: TextStyle(color: blackFont, fontSize: 12),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontSize: 12,
+                      fontFamily: "Inter",
+                    ),
                   ),
                 ),
               ),

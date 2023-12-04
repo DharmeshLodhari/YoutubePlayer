@@ -62,7 +62,7 @@ class _AddProductState extends State<AddProduct> {
   bool inventoryIsAvailable = false;
   bool productEnableInSuperStore = false;
   DateTime productAvailableFrom = DateTime.now();
-    List<ProductCategory>? productCustomCategories;
+  List<ProductCategory>? productCustomCategories;
   ProductCategory? pressedCustomCategory;
 
   List<ProductCategory>? productCustomCategoriesCopy;
@@ -147,11 +147,13 @@ class _AddProductState extends State<AddProduct> {
     isLoading = false;
     if (mounted) setState(() {});
   }
+
   getProductTags(id, searchText) async {
     if (mounted) setState(() {});
 
     try {
-      List<ProductCategory> result = await ShoppingAuthService().getProductTags(id, searchText);
+      List<ProductCategory> result =
+          await ShoppingAuthService().getProductTags(id, searchText);
 
       tagList = result;
       show = true;
@@ -161,7 +163,8 @@ class _AddProductState extends State<AddProduct> {
 
     if (mounted) setState(() {});
   }
-void obtainCustomCategory() async {
+
+  void obtainCustomCategory() async {
     try {
       productCustomCategories = await ShoppingAuthService()
           .obtainCustomCategory(userBloc!.user.userName!);
@@ -276,14 +279,13 @@ void obtainCustomCategory() async {
                       SizedBox(
                         height: 6,
                       ),
-                    
+
                       TextFieldTags(
                         tagsStyler: productTextFieldTagStyler,
                         validator: (value) {
                           return null;
                         },
                         textEditingController: myController,
-                        
                         textFieldStyler: TextFieldStyler(
                           helperText: '',
                           hintText: '',
@@ -335,8 +337,7 @@ void obtainCustomCategory() async {
                               borderRadius: BorderRadius.circular(5)),
                           child: ListView.builder(
                             shrinkWrap: true,
-                            itemCount: tagList
-                                .length,
+                            itemCount: tagList.length,
                             itemBuilder: (context, index) {
                               return ListTile(
                                 title: Text(
@@ -354,18 +355,19 @@ void obtainCustomCategory() async {
                                       .name
                                       .replaceFirst(" ", "-");
                                   setState(() {
-                                    
                                     myController.text = text + " ";
 
                                     myController.selection =
                                         TextSelection.collapsed(
                                             offset: text.length);
-                                    userTags.add({"id": tagList[index].id!, "name": tagList[index].name});
+                                    userTags.add({
+                                      "id": tagList[index].id!,
+                                      "name": tagList[index].name
+                                    });
                                     userTags = userTags.toSet().toList();
                                   });
-                                  FocusScope.of(context)
-                                      .requestFocus();  
-                                  
+                                  FocusScope.of(context).requestFocus();
+
                                   // print(userTags);print("______________");
                                   userTags.removeWhere((tag) => tag.isEmpty);
                                 },
@@ -377,13 +379,16 @@ void obtainCustomCategory() async {
                       const SizedBox(height: 10),
                       getProductConditionField(),
                       const SizedBox(height: 10),
-                      if(userBloc!.userAbout!.industry!.name! == "Restaurant/Cafe" || userBloc!.userAbout!.industry!.name! == "Pharmaceutical" )
-                      Column(
-                        children: [
-                          getProductDeliveryTimeField(),
+                      if (userBloc!.userAbout!.industry!.name! ==
+                              "Restaurant/Cafe" ||
+                          userBloc!.userAbout!.industry!.name! ==
+                              "Pharmaceutical")
+                        Column(
+                          children: [
+                            getProductDeliveryTimeField(),
                             const SizedBox(height: 10),
-                        ],
-                      ),
+                          ],
+                        ),
                       getProductShortDescription(),
                       const SizedBox(height: 10),
                       getProductDescription(),
@@ -564,7 +569,8 @@ void obtainCustomCategory() async {
                 ),
                 Text(
                   AppLocalization.of(context)!.addImage,
-                  style: TextStyle(color: darkGrey, fontSize: 14),
+                  style: TextStyle(
+                      color: darkGrey, fontFamily: "Inter", fontSize: 14),
                 ),
               ],
             ),
@@ -713,7 +719,10 @@ void obtainCustomCategory() async {
         title: Text(
           selectedProductCategory != null ? selectedProductCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -758,7 +767,10 @@ void obtainCustomCategory() async {
         title: Text(
           selectedCustomCategory != null ? selectedCustomCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -795,7 +807,10 @@ void obtainCustomCategory() async {
         title: Text(
           selectedSubCategory != null ? selectedSubCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -809,7 +824,7 @@ void obtainCustomCategory() async {
     );
   }
 
-   void customCategoryAndroidSheet() {
+  void customCategoryAndroidSheet() {
     customCategories = productCustomCategoriesCopy;
     androidBottomSheet(
       context: context,
@@ -855,6 +870,7 @@ void obtainCustomCategory() async {
                               style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 16,
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w600),
                             ),
                             trailing: Icon(
@@ -883,6 +899,7 @@ void obtainCustomCategory() async {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                         dense: true,
@@ -954,6 +971,7 @@ void obtainCustomCategory() async {
                               style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 16,
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w600),
                             ),
                             trailing: Icon(
@@ -981,6 +999,7 @@ void obtainCustomCategory() async {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                         dense: true,
@@ -1007,8 +1026,6 @@ void obtainCustomCategory() async {
       ),
     );
   }
-
-
 
   void subCategoryAndroidSheet() {
     subCategories = subCategoriesCopy;
@@ -1038,67 +1055,72 @@ void obtainCustomCategory() async {
                   },
                 ),
                 const SizedBox(height: 20),
-                subCategories == null ? SizedBox() : Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: subCategories!.length,
-                    itemBuilder: (context, index) {
-                      ProductCategory category = subCategories![index];
-                      if (selectedSubCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedSubCategory = category;
-                              Navigator.pop(context);
-                              if (pressedSubCategory != null) {
-                                selectedSubCategory = pressedSubCategory;
-                                productSubCategory = selectedSubCategory!.name;
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
+                subCategories == null
+                    ? SizedBox()
+                    : Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: subCategories!.length,
+                          itemBuilder: (context, index) {
+                            ProductCategory category = subCategories![index];
+                            if (selectedSubCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedSubCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedSubCategory != null) {
+                                      selectedSubCategory = pressedSubCategory;
+                                      productSubCategory =
+                                          selectedSubCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCategory != null) {
+                                  selectedSubCategory = pressedCategory;
+                                  productCategory = selectedSubCategory!.name;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
                         ),
-                        dense: true,
-                        onTap: () {
-                          pressedCategory = category;
-                          Navigator.pop(context);
-                          if (pressedCategory != null) {
-                            selectedSubCategory = pressedCategory;
-                            productCategory = selectedSubCategory!.name;
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
+                      ),
               ],
             ),
           );
@@ -1142,6 +1164,7 @@ void obtainCustomCategory() async {
                                       style: TextStyle(
                                           color: navyBlue,
                                           fontSize: 16,
+                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.w600),
                                     ),
                                     trailing: Icon(
@@ -1163,6 +1186,7 @@ void obtainCustomCategory() async {
                                   style: TextStyle(
                                       color: blackFont,
                                       fontSize: 16,
+                                      fontFamily: "Inter",
                                       fontWeight: FontWeight.w400),
                                 ),
                                 dense: true,
@@ -1185,10 +1209,9 @@ void obtainCustomCategory() async {
     }
   }
 
-  showDeliveryTime(){
-    List industry = ['Grocery Store',
-       'Liquor Store', 'Restaurant/Cafe'];
-    if(industry.contains(userBloc!.userAbout!.industry!.name)){
+  showDeliveryTime() {
+    List industry = ['Grocery Store', 'Liquor Store', 'Restaurant/Cafe'];
+    if (industry.contains(userBloc!.userAbout!.industry!.name)) {
       return true;
     }
     return false;
@@ -1206,7 +1229,10 @@ void obtainCustomCategory() async {
                   ? selectedProductCondition!.name
                   : "",
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                  color: blackFont,
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w600),
             ),
             Expanded(
               child: Text(
@@ -1216,6 +1242,7 @@ void obtainCustomCategory() async {
                 maxLines: 1,
                 style: const TextStyle(
                   fontSize: 16,
+                  fontFamily: "Inter",
                 ),
                 softWrap: false,
                 overflow: TextOverflow.fade,
@@ -1233,6 +1260,7 @@ void obtainCustomCategory() async {
       ),
     );
   }
+
   Widget getProductDeliveryTimeField() {
     return CustomizedDropDownField(
       title: "Preparation Time",
@@ -1245,9 +1273,11 @@ void obtainCustomCategory() async {
                   ? selectedDeliveryTimeCondition!.description
                   : "",
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+                  color: blackFont,
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w600),
             ),
-            
           ],
         ),
         trailing: Icon(
@@ -1294,19 +1324,20 @@ void obtainCustomCategory() async {
                                       style: TextStyle(
                                           color: navyBlue,
                                           fontSize: 16,
+                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.w600),
                                     ),
                                     Expanded(
                                       child: Text(
                                         selectedDeliveryTimeCondition != null
-                                            ? 
-                                                selectedDeliveryTimeCondition!
-                                                    .description 
-                                               
+                                            ? selectedDeliveryTimeCondition!
+                                                .description
                                             : "",
                                         maxLines: 1,
                                         style: TextStyle(
-                                            fontSize: 16, color: navyBlue),
+                                            fontSize: 16,
+                                            fontFamily: "Inter",
+                                            color: navyBlue),
                                         softWrap: false,
                                         overflow: TextOverflow.fade,
                                       ),
@@ -1327,13 +1358,14 @@ void obtainCustomCategory() async {
                           return ListTile(
                             title: Row(
                               children: [
-                               
                                 Expanded(
                                   child: Text(
-                                    condition.description ,
+                                    condition.description,
                                     maxLines: 1,
                                     style: TextStyle(
-                                        fontSize: 16, color: blackFont),
+                                        fontSize: 16,
+                                        fontFamily: "Inter",
+                                        color: blackFont),
                                     softWrap: false,
                                     overflow: TextOverflow.fade,
                                   ),
@@ -1358,6 +1390,7 @@ void obtainCustomCategory() async {
       setState(() {});
     }
   }
+
   void selectItemCondition() async {
     final pressedCondition = await showDialog<ProductCondition>(
         context: context,
@@ -1391,6 +1424,7 @@ void obtainCustomCategory() async {
                                       style: TextStyle(
                                           color: navyBlue,
                                           fontSize: 16,
+                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.w600),
                                     ),
                                     Expanded(
@@ -1403,7 +1437,9 @@ void obtainCustomCategory() async {
                                             : "",
                                         maxLines: 1,
                                         style: TextStyle(
-                                            fontSize: 16, color: navyBlue),
+                                            fontSize: 16,
+                                            fontFamily: "Inter",
+                                            color: navyBlue),
                                         softWrap: false,
                                         overflow: TextOverflow.fade,
                                       ),
@@ -1429,6 +1465,7 @@ void obtainCustomCategory() async {
                                   style: TextStyle(
                                       color: blackFont,
                                       fontSize: 16,
+                                      fontFamily: "Inter",
                                       fontWeight: FontWeight.w400),
                                 ),
                                 Expanded(
@@ -1436,7 +1473,10 @@ void obtainCustomCategory() async {
                                     " (" + condition.description + ")",
                                     maxLines: 1,
                                     style: TextStyle(
-                                        fontSize: 16, color: blackFont),
+                                      fontSize: 16,
+                                      color: blackFont,
+                                      fontFamily: "Inter",
+                                    ),
                                     softWrap: false,
                                     overflow: TextOverflow.fade,
                                   ),
@@ -1515,7 +1555,10 @@ void obtainCustomCategory() async {
         title: Text(
           selectedWeight.isNotEmpty ? selectedWeight : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1570,7 +1613,10 @@ void obtainCustomCategory() async {
         title: Text(
           selectedHeight.isNotEmpty ? selectedHeight : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1625,7 +1671,10 @@ void obtainCustomCategory() async {
         title: Text(
           selectedWidth.isNotEmpty ? selectedWidth : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1684,6 +1733,7 @@ void obtainCustomCategory() async {
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 16,
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.w400),
                 ),
                 const SizedBox(height: 20),
@@ -1705,6 +1755,7 @@ void obtainCustomCategory() async {
                               style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 16,
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w600),
                             ),
                             trailing: Icon(
@@ -1728,6 +1779,7 @@ void obtainCustomCategory() async {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                         dense: true,
@@ -1762,6 +1814,7 @@ void obtainCustomCategory() async {
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 16,
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.w400),
                 ),
                 const SizedBox(height: 20),
@@ -1783,6 +1836,7 @@ void obtainCustomCategory() async {
                               style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 16,
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w600),
                             ),
                             trailing: Icon(
@@ -1806,6 +1860,7 @@ void obtainCustomCategory() async {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                         dense: true,
@@ -1840,6 +1895,7 @@ void obtainCustomCategory() async {
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 16,
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.w400),
                 ),
                 const SizedBox(height: 20),
@@ -1861,6 +1917,7 @@ void obtainCustomCategory() async {
                               style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 16,
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w600),
                             ),
                             trailing: Icon(
@@ -1884,6 +1941,7 @@ void obtainCustomCategory() async {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                         dense: true,
@@ -1949,11 +2007,11 @@ void obtainCustomCategory() async {
           product.description = messageDecoderWithEmoji(productDescription);
           product.shortDescription =
               messageDecoderWithEmoji(productShortDescription);
-          product.category = selectedProductCategory! ;
+          product.category = selectedProductCategory!;
           product.subCategory = selectedSubCategory!;
           product.customCategory = selectedCustomCategory;
           product.tags = userTags.map((i) => Tags.fromJson(i)).toList();
-          if(selectedDeliveryTimeCondition != null){
+          if (selectedDeliveryTimeCondition != null) {
             product.preparationTime =
                 num.parse(selectedDeliveryTimeCondition!.name);
           }
@@ -1985,9 +2043,6 @@ void obtainCustomCategory() async {
 
           product.trackInventory = trackInventory;
           product.quantity = inventoryCount;
-
-
-
 
           // product.variant = [];
 
@@ -2154,6 +2209,7 @@ void obtainCustomCategory() async {
                 color: blackFont,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
+                fontFamily: "Inter",
               ),
             ),
             trailing: Icon(
@@ -2225,6 +2281,7 @@ void obtainCustomCategory() async {
                   color: blackFont,
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
+                  fontFamily: "Inter",
                 ),
               ),
             ),
@@ -2246,6 +2303,7 @@ void obtainCustomCategory() async {
                   color: navyBlue,
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
+                  fontFamily: "Inter",
                 ),
               ),
             ),
@@ -2269,6 +2327,7 @@ void obtainCustomCategory() async {
                 style: TextStyle(
                     color: blackFont.withOpacity(.5),
                     fontWeight: FontWeight.w600,
+                    fontFamily: "Inter",
                     fontSize: 14),
               ),
               GestureDetector(
@@ -2292,6 +2351,7 @@ void obtainCustomCategory() async {
                   style: TextStyle(
                       color: navyBlue,
                       fontWeight: FontWeight.w400,
+                      fontFamily: "Inter",
                       fontSize: 16),
                 ),
               ),
@@ -2334,6 +2394,7 @@ void obtainCustomCategory() async {
                                     style: TextStyle(
                                         color: blackFont,
                                         fontWeight: FontWeight.w600,
+                                        fontFamily: "Inter",
                                         fontSize: 18),
                                   ),
                                   Text(
@@ -2342,6 +2403,7 @@ void obtainCustomCategory() async {
                                     style: TextStyle(
                                         color: blackFont.withOpacity(.5),
                                         fontWeight: FontWeight.w400,
+                                        fontFamily: "Inter",
                                         fontSize: 14),
                                   ),
                                 ],
@@ -2355,9 +2417,9 @@ void obtainCustomCategory() async {
                                       worldCurrencies[
                                           productVariantList[index].currency!]!,
                                       style: TextStyle(
-                                          fontFamily: "Roboto",
                                           fontSize: 18.0,
                                           color: blackFont,
+                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.w600),
                                     ),
                                     Expanded(
@@ -2447,7 +2509,10 @@ void obtainCustomCategory() async {
               ? pickedMeasurementList.join(', ')
               : '',
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -2499,6 +2564,7 @@ void obtainCustomCategory() async {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                       );
@@ -2543,7 +2609,10 @@ void obtainCustomCategory() async {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue, fontWeight: FontWeight.w600, fontSize: 14),
+                  color: navyBlue,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14),
             ),
             Icon(
               Icons.arrow_forward_ios,
@@ -2572,6 +2641,7 @@ void obtainCustomCategory() async {
                   color:
                       productVariantList.isEmpty ? navyBlue : greyBorderColor,
                   fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
                   fontSize: 14),
             ),
             Icon(
@@ -2599,6 +2669,7 @@ void obtainCustomCategory() async {
                   color:
                       productVariantList.isEmpty ? navyBlue : greyBorderColor,
                   fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
                   fontSize: 14),
             ),
             Icon(

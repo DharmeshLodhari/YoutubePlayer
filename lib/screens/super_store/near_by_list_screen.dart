@@ -1,4 +1,3 @@
-
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -12,17 +11,15 @@ import '../more_apps/yarn/utils/yarn_enum.dart';
 import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 
 class NearByListScreen extends StatefulWidget {
-
   var arguments;
 
-   NearByListScreen({this.arguments, Key? key}) : super(key: key);
+  NearByListScreen({this.arguments, Key? key}) : super(key: key);
 
   @override
   State<NearByListScreen> createState() => _NearByListScreenState();
 }
 
 class _NearByListScreenState extends State<NearByListScreen> {
-
   List<CustomerProfile> customerProfileList = [];
   bool isNearbyLoading = false;
   bool noNearByInList = false;
@@ -31,21 +28,20 @@ class _NearByListScreenState extends State<NearByListScreen> {
   String? nearByPrevious = "";
 
   final GlobalKey<ScaffoldMessengerState> _findBusinessScaffoldMessengerKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   final ScrollController _scrollController = ScrollController();
   final RefreshController refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
-
     customerProfileList = widget.arguments["customerProfile"];
     nearByNext = widget.arguments["next"];
     nearByCount = widget.arguments["count"];
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
         getNearByBusinessList();
       }
@@ -56,7 +52,6 @@ class _NearByListScreenState extends State<NearByListScreen> {
   void getNearByBusinessList() async {
     if (!isNearbyLoading) {
       if (nearByNext != null && !isNearbyLoading) {
-
         isNearbyLoading = true;
         if (mounted) setState(() {});
 
@@ -84,8 +79,6 @@ class _NearByListScreenState extends State<NearByListScreen> {
             customerProfileList.addAll(tempList);
           });
         }
-
-
       }
       if (customerProfileList.isEmpty) {
         if (mounted) {
@@ -96,7 +89,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
       } else if (nearByNext == null && customerProfileList.length > 6) {
         _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
-          Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
         ));
       }
@@ -132,6 +125,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
           overflow: TextOverflow.fade,
           style: TextStyle(
             fontSize: 21,
+            fontFamily: "Inter",
             fontWeight: FontWeight.w700,
             color: yarnBlack,
           ),
@@ -152,7 +146,6 @@ class _NearByListScreenState extends State<NearByListScreen> {
   }
 
   Widget _buildListView() {
-
     if (!isNearbyLoading) {
       return nearByBuildView();
     }
@@ -160,12 +153,9 @@ class _NearByListScreenState extends State<NearByListScreen> {
     return NoItemInList(
       msg: AppLocalization.of(context)!.noResultFound,
     );
-
   }
 
-
   Widget nearByBuildView() {
-
     return ListView.separated(
       physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -183,21 +173,22 @@ class _NearByListScreenState extends State<NearByListScreen> {
             tileRenderPlace: TileRenderPlace.YarnTimeLine,
             callback: (username, value) {
               //create a list to edit
-              List<CustomerProfile> customerProfileListEdit = customerProfileList;
+              List<CustomerProfile> customerProfileListEdit =
+                  customerProfileList;
 
               // modify customerProfileList for the username and refresh the list
               // set the isFollowing for that particular user
               customerProfileListEdit.forEach((customer) {
                 if (customer.userName == username) {
-                  customer.isFollowing = value; // Modify the isFollowing property
+                  customer.isFollowing =
+                      value; // Modify the isFollowing property
                 }
               });
 
               customerProfileList = [];
               customerProfileList = customerProfileListEdit;
 
-              if(mounted)setState(() {});
-
+              if (mounted) setState(() {});
             },
           ),
         );
@@ -244,7 +235,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         setState(() {
           refreshController.refreshCompleted();
         });

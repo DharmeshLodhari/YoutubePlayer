@@ -38,7 +38,7 @@ class JobDescriptionCard extends StatelessWidget {
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 14,
-                    fontFamily: "Open Sans",
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -50,7 +50,7 @@ class JobDescriptionCard extends StatelessWidget {
                     style: TextStyle(
                       color: Color(0xff46ce7c),
                       fontSize: 6,
-                      fontFamily: "Open Sans",
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -63,7 +63,7 @@ class JobDescriptionCard extends StatelessWidget {
               style: TextStyle(
                 color: navyBlue,
                 fontSize: 14,
-                fontFamily: "Open Sans",
+                fontFamily: "Inter",
                 fontWeight: FontWeight.w700,
               ),
             )
@@ -89,7 +89,7 @@ class JobDescriptionCard extends StatelessWidget {
               style: TextStyle(
                 color: blackFont,
                 fontSize: 8,
-                fontFamily: "Open Sans",
+                fontFamily: "Inter",
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -99,7 +99,7 @@ class JobDescriptionCard extends StatelessWidget {
               style: TextStyle(
                 color: Color(0xff030e36),
                 fontSize: 8,
-                fontFamily: "Open Sans",
+                fontFamily: "Inter",
                 fontWeight: FontWeight.w600,
               ),
             ),

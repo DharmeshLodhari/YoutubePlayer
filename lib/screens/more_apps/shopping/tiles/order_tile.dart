@@ -111,7 +111,7 @@ class OrderTile extends StatelessWidget {
         Text(
           worldCurrencies[order!.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: order!.customerName == userBloc.user.userName
                   ? blackFont
                   : navyBlue,

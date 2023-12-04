@@ -354,7 +354,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
               style: TextStyle(
                   fontSize: 12,
                   color: blackFont,
-                  fontFamily: "Roboto",
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600),
             )
           ])),

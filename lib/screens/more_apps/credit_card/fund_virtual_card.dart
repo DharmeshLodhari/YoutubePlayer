@@ -202,7 +202,7 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                                     style: TextStyle(
                                         fontSize: 12,
                                         color: blackFont,
-                                        fontFamily: "Roboto",
+                                        fontFamily: "Inter",
                                         fontWeight: FontWeight.w600),
                                   )
                                 ])))),

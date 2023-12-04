@@ -10,17 +10,19 @@ import '../models/jobs.dart';
 import '../tiles/jos_description_card.dart';
 
 class SearchMyJobs extends StatefulWidget {
-   const SearchMyJobs({Key? key, }) : super(key: key);
+  const SearchMyJobs({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _SearchMyJobsState createState() => _SearchMyJobsState();
 }
 
 class _SearchMyJobsState extends State<SearchMyJobs> {
-
-  final GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldSearchKey =
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   bool isLoading = false;
   int? count = 0;
@@ -36,12 +38,11 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
   TextEditingController searchController = TextEditingController();
   late UserBloc userBloc;
 
-
   @override
   void initState() {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
         if (next != null) {
           getList();
@@ -90,7 +91,6 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
   }
 
   void getList() async {
-
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -98,10 +98,11 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
           setState(() {});
         }
 
-        var result =
-            await ServiceHubAuthService().searchMyJobListing(
+        var result = await ServiceHubAuthService().searchMyJobListing(
           next,
-          previous, username, searchController.text,
+          previous,
+          username,
+          searchController.text,
         );
 
         if (result == null) {
@@ -119,7 +120,6 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
 
           searchMyJobListing.addAll(tempList!);
           setState(() {});
-
         }
       }
       if (searchMyJobListing.isEmpty) {
@@ -138,7 +138,6 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +172,10 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
       title: Text(
         "Search",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -187,44 +189,42 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
         isLoading ? const CircularProgressIndicator() : const SizedBox.shrink(),
         isSearchIsEmpty
             ? Expanded(
-          child: NoItemInList(
-            msg: AppLocalization.of(context)!
-                .pleaseTypeSomethingToGetResult,
-            isResult: false,
-          ),
-        )
+                child: NoItemInList(
+                  msg: AppLocalization.of(context)!
+                      .pleaseTypeSomethingToGetResult,
+                  isResult: false,
+                ),
+              )
             : noItemInList
-            ? Expanded(
-          child: NoItemInList(
-            msg: AppLocalization.of(context)!.noResultFound,
-          ),
-        )
-            :
-        Flexible(
-          fit: FlexFit.loose,
-          child: ListView.builder(
-              itemCount: searchMyJobListing.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: GestureDetector(
-                    onTap: () => Navigator.pushNamed(
-                        context, Routes.MY_JOB_DETAILS,
-                        arguments: {
-                          'jobId': searchMyJobListing[index].id,
-                          'listingId': '',
-                          'job': searchMyJobListing[index]
-                        }),
-                    child: JobDescriptionCard(
-                      job: searchMyJobListing[index],
+                ? Expanded(
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noResultFound,
                     ),
-                  ),
-                );
-              }),
-        )
-
+                  )
+                : Flexible(
+                    fit: FlexFit.loose,
+                    child: ListView.builder(
+                        itemCount: searchMyJobListing.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10.0),
+                            child: GestureDetector(
+                              onTap: () => Navigator.pushNamed(
+                                  context, Routes.MY_JOB_DETAILS,
+                                  arguments: {
+                                    'jobId': searchMyJobListing[index].id,
+                                    'listingId': '',
+                                    'job': searchMyJobListing[index]
+                                  }),
+                              child: JobDescriptionCard(
+                                job: searchMyJobListing[index],
+                              ),
+                            ),
+                          );
+                        }),
+                  )
       ],
     );
   }
@@ -256,6 +256,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
           style: TextStyle(
             fontSize: 16,
             color: blackFont,
+            fontFamily: "Inter",
             fontWeight: FontWeight.w600,
           ),
           cursorWidth: 1.5,
@@ -266,7 +267,6 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
               fontWeight: FontWeight.w600,
               color: darkGrey,
             ),
-
             hintText: "Search my jobs",
             fillColor: Colors.white,
             filled: true,
@@ -307,5 +307,4 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
       ),
     );
   }
-
 }

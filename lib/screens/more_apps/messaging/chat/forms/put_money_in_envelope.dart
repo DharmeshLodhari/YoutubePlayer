@@ -400,7 +400,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                 fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey)),
         Text("₦ 4",
             style: TextStyle(
-                fontFamily: "Roberto",
+                fontFamily: "Inter",
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
                 color: darkGrey)),

@@ -147,7 +147,11 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
               : Text(
                   "Insufficient Fund",
                   style: TextStyle(
-                      color: red, fontSize: 18, fontWeight: FontWeight.w600),
+                    color: red,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Inter",
+                  ),
                 ),
         ),
         SizedBox(
@@ -222,8 +226,11 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                   children: [
                     const Text(
                       'Rate this  ',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        fontFamily: "Inter",
+                      ),
                     ),
                     CachedNetworkImage(
                       imageUrl: "${jobmodel!.assigneeAvatar}",
@@ -248,6 +255,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                       textStyle: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
+                          fontFamily: "Inter",
                           color: HexColor("#151515")),
                     ),
                   ],
@@ -481,10 +489,16 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                 ),
           title: Text(jobmodel!.assignee!,
               style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700, color: blackFont)),
+                  fontFamily: "Inter",
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: blackFont)),
           subtitle: Text(jobmodel!.assignee!,
               style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey)),
+                  fontFamily: "Inter",
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: darkGrey)),
         ),
         Divider(
           color: greyBorderColor,
@@ -521,7 +535,10 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       title: Text(
         'Send Payment',
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            fontFamily: "Inter",
+            color: blackFont,
+            fontSize: 18,
+            fontWeight: FontWeight.bold),
       ),
       actions: [
         iconAvatar(),

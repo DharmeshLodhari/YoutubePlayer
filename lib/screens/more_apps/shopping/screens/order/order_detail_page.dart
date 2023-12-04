@@ -1009,7 +1009,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     Text(
                       worldCurrencies[order!.currency!]!,
                       style: TextStyle(
-                          fontFamily: "Roboto",
+                          fontFamily: "Inter",
                           fontSize: 14.2,
                           fontWeight: FontWeight.w600,
                           color: black),
@@ -1041,7 +1041,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     Text(
                       worldCurrencies[order!.currency!]!,
                       style: TextStyle(
-                          fontFamily: "Roboto",
+                          fontFamily: "Inter",
                           fontSize: 14.2,
                           fontWeight: FontWeight.w600,
                           color: black),
@@ -1073,7 +1073,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     Text(
                       worldCurrencies[order!.currency!]!,
                       style: TextStyle(
-                          fontFamily: "Roboto",
+                          fontFamily: "Inter",
                           fontSize: 14.2,
                           fontWeight: FontWeight.w600,
                           color: black),
@@ -1106,7 +1106,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     Text(
                       worldCurrencies[order!.currency!]!,
                       style: TextStyle(
-                          fontFamily: "Roboto",
+                          fontFamily: "Inter",
                           fontSize: 14.2,
                           fontWeight: FontWeight.w600,
                           color: navyBlue),

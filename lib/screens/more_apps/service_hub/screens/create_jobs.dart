@@ -245,7 +245,10 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       title: Text(
         "Create Job",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            fontFamily: "Inter",
+            color: blackFont,
+            fontSize: 18,
+            fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -325,7 +328,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         Text(
           'Timing',
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            fontFamily: "Inter",
+          ),
         ),
         getTimingRadioRow(),
       ],
@@ -339,7 +346,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         Text(
           'Task Fee',
           style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: blackFont,
+            fontFamily: "Inter",
+          ),
         ),
         getTaskFeeRadionRow(),
       ],
@@ -353,7 +364,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         Text(
           'How can this task be done?',
           style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: blackFont,
+            fontFamily: "Inter",
+          ),
         ),
         getTaskMethodRow(),
       ],
@@ -367,7 +382,10 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         Text(
           'List Job Now',
           style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+              color: blackFont),
         ),
         CheckboxListTile(
           contentPadding: EdgeInsets.zero,
@@ -532,7 +550,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 ),
                 Text(
                   AppLocalization.of(context)!.addImage,
-                  style: TextStyle(color: darkGrey, fontSize: 14),
+                  style: TextStyle(
+                      color: darkGrey, fontFamily: "Inter", fontSize: 14),
                 ),
               ],
             ),
@@ -661,6 +680,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           style: TextStyle(
               color: darkGrey.withOpacity(0.9),
               fontSize: 16,
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
@@ -712,6 +732,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           style: TextStyle(
               color: darkGrey.withOpacity(0.9),
               fontSize: 16,
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
@@ -741,6 +762,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 16.8,
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(
@@ -776,6 +798,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                             style: TextStyle(
                                 color: blackFont,
                                 fontSize: 16,
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.w400),
                           ),
                           dense: true,
@@ -1300,6 +1323,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 color: blackFont,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
+                fontFamily: "Inter",
               ),
             ),
             trailing: Icon(
@@ -1340,6 +1364,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 color: blackFont,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
+                fontFamily: "Inter",
               ),
             ),
             trailing: Icon(
@@ -1370,7 +1395,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             Text(
               dateText!,
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+                color: blackFont,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Inter",
+              ),
             ),
             const SizedBox(
               height: 20,
@@ -1433,7 +1462,10 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             Text(
               dateText!,
               style: TextStyle(
-                  color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+                  color: blackFont,
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(
               height: 20,
@@ -1679,6 +1711,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           controller: searchItemTextController,
           style: TextStyle(
             fontSize: 16,
+            fontFamily: "Inter",
             color: blackFont,
             fontWeight: FontWeight.w600,
           ),
@@ -1758,7 +1791,11 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                   title: Text(
                     category.name!,
                     maxLines: 1,
-                    style: TextStyle(color: blackFont, fontSize: 12),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontSize: 12,
+                      fontFamily: "Inter",
+                    ),
                   ),
                 ),
               ),
@@ -1796,6 +1833,7 @@ class CustomRadioTile extends StatelessWidget {
           style: const TextStyle(
             color: Colors.black,
             fontSize: 14,
+            fontFamily: "Inter",
           ),
         ),
         activeColor: navyBlue,
@@ -1859,6 +1897,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 14,
+                          fontFamily: "Inter",
                         ),
                       ),
                     )
@@ -1899,6 +1938,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 14,
+                          fontFamily: "Inter",
                         ),
                       ),
                     )

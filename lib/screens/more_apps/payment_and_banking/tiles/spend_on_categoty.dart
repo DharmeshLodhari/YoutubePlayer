@@ -64,7 +64,7 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      fontFamily: "Roboto",
+                      fontFamily: "Inter",
                       color: blackFont),
                 ),
                 Text(

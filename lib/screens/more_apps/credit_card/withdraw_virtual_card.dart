@@ -188,7 +188,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                                     style: TextStyle(
                                         fontSize: 12,
                                         color: blackFont,
-                                        fontFamily: "Roboto",
+                                        fontFamily: "Inter",
                                         fontWeight: FontWeight.w600),
                                   )
                                 ])))),

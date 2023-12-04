@@ -629,7 +629,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
               Text(
                 worldCurrencies[addOnOption.currency!]!,
                 style: TextStyle(
-                    fontFamily: "Roboto",
+                    fontFamily: "Inter",
                     fontSize: 18.0,
                     color: blackFont,
                     fontWeight: FontWeight.w600),

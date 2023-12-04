@@ -194,7 +194,7 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
               primaryColor: navyBlue,
-              fontFamily: "OpenSans",
+              fontFamily: "Inter",
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
               backgroundColor: navyBlue,

@@ -220,6 +220,7 @@ class _ApplicantListState extends State<ApplicantList> {
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -403,7 +404,7 @@ class VerticalListItem extends StatelessWidget {
                 style: const TextStyle(
                   color: Color(0xff030e36),
                   fontSize: 14,
-                  fontFamily: "Open Sans",
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -227,7 +227,7 @@ class _PaymentOptionsState extends State<PaymentOptions> {
                     color: blackFont,
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
-                    fontFamily: "roberto"),
+                    fontFamily: "Inter"),
               ),
               Text(
                 "1000",

@@ -243,7 +243,7 @@ class _RideOptionState extends State<RideOption> {
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
-                              fontFamily: "roberto"),
+                              fontFamily: "Inter"),
                         ),
                         Text(
                           "1000 - 1200",
@@ -334,7 +334,7 @@ class _RideOptionState extends State<RideOption> {
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: "roberto"),
+                                  fontFamily: "Inter"),
                             ),
                             Text(
                               ride["price"],
@@ -417,7 +417,7 @@ class _RideOptionState extends State<RideOption> {
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
-                                fontFamily: "roberto"),
+                                fontFamily: "Inter"),
                           ),
                           Text(
                             car["price"],

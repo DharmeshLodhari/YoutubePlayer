@@ -443,6 +443,7 @@ class _JobsMyJobsListState extends State<JobsMyJobsList> {
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),

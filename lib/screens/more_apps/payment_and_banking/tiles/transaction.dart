@@ -136,7 +136,7 @@ class PaymentRequestTile extends StatelessWidget {
         Text(
           worldCurrencies[paymentRequest!.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: paymentRequest!.isCredit! ? blackFont : navyBlue,
               fontWeight: FontWeight.bold,
               fontSize: 14),
@@ -370,7 +370,7 @@ class TransactionTile extends StatelessWidget {
         Text(
           worldCurrencies[transaction!.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: transaction!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.w600,
               fontSize: 14),
@@ -508,7 +508,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
         Text(
           worldCurrencies[widget.transaction!.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: widget.transaction!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),

@@ -152,6 +152,7 @@ class _TransactionListState extends State<TransactionList> {
               style: TextStyle(
                 color: blackFont,
                 fontSize: 14,
+                fontFamily: "Inter",
               ),
             ),
           )
@@ -179,7 +180,10 @@ class _TransactionListState extends State<TransactionList> {
       title: Text(
         AppLocalization.of(context)!.transactions,
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
         getSearchBtn(),

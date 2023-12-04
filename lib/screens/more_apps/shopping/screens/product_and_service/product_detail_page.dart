@@ -1019,7 +1019,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               style: TextStyle(
                 color: blackFont,
                 fontSize: 14,
-                fontFamily: "roberto",
+                fontFamily: "Inter",
               ),
             ),
           )
@@ -1485,7 +1485,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                         Text(
                           worldCurrencies[product!.currency!]!,
                           style: TextStyle(
-                              fontFamily: "Roboto",
+                              fontFamily: "Inter",
                               fontSize: 18.0,
                               color: navyBlue,
                               fontWeight: FontWeight.bold),
@@ -1513,7 +1513,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               Text(
                                 worldCurrencies[product!.currency!]!,
                                 style: TextStyle(
-                                  fontFamily: "Roboto",
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w400,
                                   fontSize: 12.8,
                                   color: navyBlue,
@@ -2172,7 +2172,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     Text(
                       '(${worldCurrencies[addOnOption.currency!]!}',
                       style: TextStyle(
-                          fontFamily: "Roboto",
+                          fontFamily: "Inter",
                           fontSize: 14.0,
                           color: blackFont.withOpacity(.5),
                           fontWeight: FontWeight.w600),

@@ -119,7 +119,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                                   style: TextStyle(
                                     color: blackFont,
                                     fontSize: 14,
-                                    fontFamily: "Open Sans",
+                                    fontFamily: "Inter",
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -141,7 +141,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                                         ? Colors.red
                                         : const Color(0xff46ce7c),
                                     fontSize: 10,
-                                    fontFamily: "Open Sans",
+                                    fontFamily: "Inter",
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -172,7 +172,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                                 worldCurrencies[
                                     jobServiceToChatModel?.currency]!,
                                 style: TextStyle(
-                                    fontFamily: "Roboto",
+                                    fontFamily: "Inter",
                                     fontSize: 14.0,
                                     color: navyBlue,
                                     fontWeight: FontWeight.bold),
@@ -211,7 +211,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                                 style: TextStyle(
                                   color: darkGrey,
                                   fontSize: 10,
-                                  fontFamily: "Open Sans",
+                                  fontFamily: "Inter",
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -223,7 +223,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                             style: TextStyle(
                               color: darkGrey,
                               fontSize: 10,
-                              fontFamily: "Open Sans",
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w600,
                             ),
                           ),

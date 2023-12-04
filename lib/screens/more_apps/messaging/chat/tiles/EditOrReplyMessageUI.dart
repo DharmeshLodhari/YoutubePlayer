@@ -357,7 +357,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                     Text(
                       "₦ ",
                       style: TextStyle(
-                          fontFamily: "Roberto",
+                          fontFamily: "Inter",
                           color: darkGrey,
                           fontSize: 12,
                           fontWeight: FontWeight.w400),
@@ -479,7 +479,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                     Text(
                       "₦ ",
                       style: TextStyle(
-                          fontFamily: "Roberto",
+                          fontFamily: "Inter",
                           color: darkGrey,
                           fontSize: 12,
                           fontWeight: FontWeight.w400),
@@ -609,7 +609,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                     Text(
                       "₦ ",
                       style: TextStyle(
-                          fontFamily: "Roberto",
+                          fontFamily: "Inter",
                           color: darkGrey,
                           fontSize: 12,
                           fontWeight: FontWeight.w400),
@@ -687,7 +687,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                     Text(
                       "₦ ",
                       style: TextStyle(
-                          fontFamily: "Roberto",
+                          fontFamily: "Inter",
                           color: darkGrey,
                           fontSize: 12,
                           fontWeight: FontWeight.w400),
@@ -766,7 +766,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                     Text(
                       "₦ ",
                       style: TextStyle(
-                          fontFamily: "Roberto",
+                          fontFamily: "Inter",
                           color: darkGrey,
                           fontSize: 12,
                           fontWeight: FontWeight.w400),

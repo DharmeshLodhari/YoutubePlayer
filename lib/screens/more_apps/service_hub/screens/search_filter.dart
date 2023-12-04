@@ -303,7 +303,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 20,
-                    fontFamily: "Open Sans",
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -339,7 +339,10 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         title: Text(
           displayCategory != null ? displayCategory! : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -409,6 +412,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                             style: TextStyle(
                                 color: blackFont,
                                 fontSize: 16,
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.w400),
                           ),
                           dense: true,
@@ -429,7 +433,6 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                   height: 10,
                 ),
                 isCategoryLoading
-                
                     ? SpinKitRing(
                         size: 30,
                         lineWidth: 3,
@@ -476,7 +479,10 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         title: Text(
           "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -566,6 +572,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                       );
@@ -648,7 +655,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
               print(filterMap);
 
               Navigator.pushNamed(context, Routes.JOBS_SEARCH,
-                  arguments: {'filterMap':filterMap});
+                  arguments: {'filterMap': filterMap});
               // Navigator.pop(context, filterMap);
             },
             text: "Apply",
@@ -682,6 +689,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
         "Filter",
         style: TextStyle(
           color: blackFont,
+          fontFamily: "Inter",
           fontSize: 20,
           fontWeight: FontWeight.w700,
         ),
@@ -792,7 +800,7 @@ class FilterDropdown extends StatelessWidget {
             style: const TextStyle(
               color: Color(0xff75818f),
               fontSize: 16,
-              fontFamily: "Open Sans",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
             ),
           ),

@@ -570,7 +570,7 @@ class _CreateAddOnState extends State<CreateAddOn> {
               Text(
                 worldCurrencies[addOnOption.currency!]!,
                 style: TextStyle(
-                    fontFamily: "Roboto",
+                    fontFamily: "Inter",
                     fontSize: 18.0,
                     color: blackFont,
                     fontWeight: FontWeight.w600),
