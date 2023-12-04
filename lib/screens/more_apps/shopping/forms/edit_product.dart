@@ -542,6 +542,10 @@ class _EditProductState extends State<EditProduct> {
 
                       getProductConditionField(),
                       const SizedBox(height: 10),
+                                            if (userBloc!.userAbout!.industry!.name! ==
+                              "Restaurant/Cafe" ||
+                          userBloc!.userAbout!.industry!.name! ==
+                              "Pharmaceutical")
                       getProductDeliveryTimeField(),
                       SizedBox(height: 16),
                       getProductShortDescription(),
@@ -2128,7 +2132,9 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.subCategory = selectedSubCategory;
           currentProduct.customCategory = selectedCustomCategory;
           currentProduct.tags = userTags;
+          if(selectedPreparationCondition != null){
           currentProduct.preparationTime = num.parse(selectedPreparationCondition!.name);
+          }
           currentProduct.condition = productCondition;
           currentProduct.price = moneyInputNormalizer(productPrice!).toString();
           currentProduct.localImages =
@@ -2161,8 +2167,6 @@ class _EditProductState extends State<EditProduct> {
                   : '';
           currentProduct.trackInventory = trackInventory;
           currentProduct.quantity = inventoryCount;
-
-       
           await _auth
               .editProduct(currentProduct, productAddOnsList)
               .then((value) {
@@ -2799,6 +2803,7 @@ class _EditProductState extends State<EditProduct> {
       // height: 200,
       height: 80 * productAddOnsList!.length.toDouble(),
       child: ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 10),
         //+1 for progressbar
         itemCount: productAddOnsList!.length + 1,

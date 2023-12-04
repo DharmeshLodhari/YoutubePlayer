@@ -329,7 +329,7 @@ class Product {
     });
 
   Map toMap() {
-    return {
+    var data =  {
       "name": name,
       "description": description,
       "short_description":
@@ -340,7 +340,6 @@ class Product {
       "sub_category": subCategory!.id,
       "custom_category": customCategory!.id,
       "tags": tags!.map((e) => e.id!).toList(),
-      "preparation_time": preparationTime,
       "cover": cover,
       "manufacturer": manufacturer,
       "is_available": isAvailable,
@@ -366,6 +365,10 @@ class Product {
       'old_price': oldPrice,
       'is_shippable': isShippable,
     };
+    if(preparationTime != null && preparationTime! != 0){
+      data["preparation_time"] = preparationTime;
+    }
+    return data;
   }
 
   Map toJson() {

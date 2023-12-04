@@ -144,7 +144,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       List<ProductCategory> result =
           await ShoppingAuthService().obtainCustomCategory(user!);
       List<ProductCategory> initial = [];
-      initial.add(ProductCategory("Main", id: "main"));
+      initial.add(ProductCategory("All", id: "all"));
+      initial.add(ProductCategory("Explore", id: "main"));
       initial.addAll(result);
       customCategories = initial;
       selectedCategory = customCategories.first.id;
@@ -357,12 +358,14 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                             child: Text(
                               e.name.toTitleCase(),
                               style: TextStyle(
-                                  fontSize:  14,
+                                  fontSize: 14,
                                   fontFamily: "Inter",
                                   color: selectedCategory == e.id
                                       ? blackFont
                                       : darkGrey,
-                                  fontWeight: selectedCategory == e.id ? FontWeight.w600 : FontWeight.w500),
+                                  fontWeight: selectedCategory == e.id
+                                      ? FontWeight.w600
+                                      : FontWeight.w500),
                             ),
                           ),
                         ))
@@ -380,12 +383,18 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       ),
     );
   }
+
   getData() async {
-      Map<String, dynamic>? data;
+    Map<String, dynamic>? data;
     try {
-      data = await ShoppingAuthService()
-          .listOfProduct(selectedCategory == "main" ?
-                        "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/" : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory", "", "", false, userName: searchedUserName);
+      data = await ShoppingAuthService().listOfProduct(
+          selectedCategory == "main"
+              ? "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/"
+              : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory",
+          "",
+          "",
+          false,
+          userName: searchedUserName);
     } catch (error) {}
     if (data != null) {
       debugPrint('IS SHOW PRODUCT ---> $data');
@@ -402,43 +411,49 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
             _currentUser.tabs[_currentIndex].name == "product")
           customCategoryWidget(),
         Expanded(
-          child: (customCategories.isNotEmpty &&  _currentUser.tabs[_currentIndex].name == "product") ? PageStorage(
-             key: PageStorageKey(selectedCategory),
+          child: (customCategories.isNotEmpty &&
+                  _currentUser.tabs[_currentIndex].name == "product" &&
+                  selectedCategory != "all")
+              ? PageStorage(
+                  key: PageStorageKey(selectedCategory),
                   bucket: _bucket,
-            child: FutureBuilder(
+                  child: FutureBuilder(
                     future: getData(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return productTab( widget.searchedUser, isOwner!, false, next: selectedCategory == "main" ?
-                        "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/" :
-                            "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory", type: selectedCategory == "main" ? "section" : null
-                        );
+                        return productTab(widget.searchedUser, isOwner!, false,
+                            next: selectedCategory == "main"
+                                ? "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/"
+                                : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory",
+                            type:
+                                selectedCategory == "main" ? "section" : null);
                       } else {
                         return Center(child: CircularProgressIndicator());
                       }
                     },
                   ),
-          ) : TabBarView(
-            controller: _tabController,
-            children: _currentUser.tabs
-                .where((tab) => tab.apiCall != null)
-                .map((tab) {
-              return PageStorage(
-                key: PageStorageKey(tab.label),
-                bucket: _bucket,
-                child: FutureBuilder(
-                  future: tab.apiCall!(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return tab.child!;
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  },
+                )
+              : TabBarView(
+                  controller: _tabController,
+                  children: _currentUser.tabs
+                      .where((tab) => tab.apiCall != null)
+                      .map((tab) {
+                    return PageStorage(
+                      key: PageStorageKey(tab.label),
+                      bucket: _bucket,
+                      child: FutureBuilder(
+                        future: tab.apiCall!(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return tab.child!;
+                          } else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                        },
+                      ),
+                    );
+                  }).toList(),
                 ),
-              );
-            }).toList(),
-          ),
         ),
       ],
     );

@@ -308,7 +308,7 @@ class YarnAuth extends AuthService {
       bool isType = false,
       String? categoryId,
       String? userName,
-      String? latestTrending, String? isChannel}) async {
+      String? latestTrending, String? isChannel, int pageSize = 21}) async {
     debugPrint("CALLING ALL YARNS");
     debugPrint("NEXT URL:- $next");
     String url = "";
@@ -338,7 +338,17 @@ class YarnAuth extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    debugPrint('GET DATA Yarn profile::: $url');
+    if (pageSize != "") {
+      if (url.contains("page_size")) {
+        url = url;
+      } else if (url.contains("?")) {
+        url = url + "&page_size=$pageSize";
+      } else {
+        url = url + "?page_size=$pageSize";
+      }
+    }
+
+    debugPrint('_________________________________________________________________________________GET DATA Yarn profile::: $url');
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
