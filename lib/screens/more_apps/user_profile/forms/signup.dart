@@ -1,6 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
+import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -58,6 +60,7 @@ class _SignUpState extends State<SignUp> {
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
   late TextEditingController _accountTypeController;
+  final _auth = AuthService();
 
   DateTime dob = DateTime.now();
   String? gender;
@@ -80,9 +83,11 @@ class _SignUpState extends State<SignUp> {
 
   int maxUsernameLength = 30;
   bool isUserAgree = false;
+  List<ProductIndustryResults> industries = [];
 
   @override
   void initState() {
+    getProductIndustries();
     phoneNumber = arguments['phoneNumber'];
     otpCode = arguments['otpCode'];
     accountType = arguments['accountType'];
@@ -141,6 +146,15 @@ class _SignUpState extends State<SignUp> {
       }
     });
     super.initState();
+  }
+
+
+  getProductIndustries() async {
+    if (mounted) setState(() {});
+    var result = await _auth.listOfIndustries();
+    setState(() {
+      industries = result!["product"];
+    });
   }
 
   @override
@@ -369,10 +383,10 @@ class _SignUpState extends State<SignUp> {
           ),
         ),
       ),
-      items: industryList.map((String item) {
-        return DropdownMenuItem(
-          value: item,
-          child: Text(item),
+      items: industries.map((ProductIndustryResults item) {
+        return DropdownMenuItem<String>(
+          value: item.name,
+          child: Text(item.name!),
         );
       }).toList(),
       onChanged: (String? value) {
