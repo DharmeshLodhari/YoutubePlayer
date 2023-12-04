@@ -157,7 +157,6 @@ class _HomeState extends State<Home> {
           return;
         }
 
-
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -430,9 +429,12 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 GestureDetector(
-                  onTap: () =>         NavigationUtil.push(context, screen: MomentsScreen()),
-                  child: sectionHeader("Share your moment", "View Moment",
-                      ),
+                  onTap: () =>
+                      NavigationUtil.push(context, screen: MomentsScreen()),
+                  child: sectionHeader(
+                    "Share your moment",
+                    "View Moment",
+                  ),
                 ),
                 SizedBox(height: 24),
                 (nextContactMoments == '' && isExploreMomentsLoading)
