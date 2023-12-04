@@ -857,15 +857,13 @@ class _HomeState extends State<Home> {
                 imagePath.toSVG(),
               ),
               const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: white,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: "Inter"),
-                ),
+              Text(
+                title,
+                style: TextStyle(
+                    fontSize: 16,
+                    color: white,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: "Inter"),
               ),
               if (userBloc.user.type!.toLowerCase() == 'user' &&
                   title == 'Business') ...[
@@ -877,11 +875,9 @@ class _HomeState extends State<Home> {
             ],
           ),
           const SizedBox(height: 10),
-          Expanded(
-            child: Text(
-              subTitle,
-              style: TextStyle(fontSize: 12, color: white, fontFamily: "Inter"),
-            ),
+          Text(
+            subTitle,
+            style: TextStyle(fontSize: 14, color: white, fontFamily: "Inter"),
           ),
           const SizedBox(width: 10),
         ],
