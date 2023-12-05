@@ -379,7 +379,7 @@ class AuthService {
   }
 
    Future<Map<String, dynamic>?> listOfIndustries() async {
-    var url = AppConfig.baseUrl + "/api/v1/user/profile-industries/";
+    var url = AppConfig.baseUrl + "/api/v1/user/profile-industries/?page_size=200";
 
     debugPrint(url);
     var headers = await getAuthHeaders();
