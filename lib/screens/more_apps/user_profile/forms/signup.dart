@@ -181,6 +181,7 @@ class _SignUpState extends State<SignUp> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
+        
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
