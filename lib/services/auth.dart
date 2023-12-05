@@ -8,6 +8,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
@@ -375,6 +376,38 @@ class AuthService {
   // Delete JWT from db
   Future<int> deleteJwt() async {
     return await _db.deleteJwt();
+  }
+
+   Future<Map<String, dynamic>?> listOfIndustries() async {
+    var url = AppConfig.baseUrl + "/api/v1/user/profile-industries/?page_size=200";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {"product": []};
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      var jsonData = json.decode(response.body);
+      List<ProductIndustryResults>? results = (jsonData["results"] as List)
+          .map((e) => ProductIndustryResults.fromJson(e))
+          .toList();
+
+      Map<String, dynamic> result = {"product": results};
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
   }
 
   User createUserInstance(Map<String, dynamic> item) {
