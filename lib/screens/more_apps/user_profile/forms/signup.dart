@@ -62,6 +62,8 @@ class _SignUpState extends State<SignUp> {
   late TextEditingController _accountTypeController;
   final _auth = AuthService();
 
+  bool loading = false;
+
   DateTime dob = DateTime.now();
   String? gender;
 
@@ -150,10 +152,12 @@ class _SignUpState extends State<SignUp> {
 
 
   getProductIndustries() async {
+    loading = !loading;
     if (mounted) setState(() {});
     var result = await _auth.listOfIndustries();
     setState(() {
       industries = result!["product"];
+      loading = !loading;
     });
   }
 
@@ -195,7 +199,13 @@ class _SignUpState extends State<SignUp> {
             },
           ),
         ),
-        body: SingleChildScrollView(
+        body: loading ? Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(navyBlue),
+                backgroundColor: Colors.transparent,
+              ),
+            ) : SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Container(
@@ -360,7 +370,7 @@ class _SignUpState extends State<SignUp> {
         fontWeight: FontWeight.w600,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16),
+        contentPadding: EdgeInsets.symmetric(horizontal: 0),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
@@ -385,7 +395,7 @@ class _SignUpState extends State<SignUp> {
       ),
       items: industries.map((ProductIndustryResults item) {
         return DropdownMenuItem<String>(
-          value: item.name,
+          value: item.id,
           child: Text(item.name!),
         );
       }).toList(),
@@ -1228,93 +1238,3 @@ class _SignUpState extends State<SignUp> {
   }
 }
 
-List<String> industryList = [
-  'Restaurant/Cafe',
-  'Grocery Store',
-  'E-commerce',
-  'Aerospace',
-  'Agriculture',
-  'Architect',
-  'Automobiles and Parts',
-  'Automotive',
-  'Banking',
-  'Bar',
-  'Bio-tech',
-  'Book Store',
-  'Care',
-  'Cargo & Freight',
-  'Carpenter',
-  'Cause',
-  'Chemical',
-  'College & University',
-  'Communication',
-  'Community Organization',
-  'Community Services',
-  'Company',
-  'Computer',
-  'Computers/Technology',
-  'Concert Venue',
-  'Construction',
-  'Consulting Agency',
-  'Consulting/Business Services',
-  'Day care',
-  'Dealership',
-  'Education',
-  'Electrician',
-  'Elementary School',
-  'Energy',
-  'Entertainment',
-  'Fashion',
-  'Finance',
-  'Fitness',
-  // 'Food & Beverage',
-  // 'Food/Beverages',
-  'Food Industry',
-  'Government Organization',
-  'Health/Beauty',
-  'High School',
-  'Hospitality',
-  'Hotel',
-  'Insurance',
-  'Insurance Company',
-  'Interior Decoration',
-  'Internet',
-  'Internet/Software',
-  'Investment',
-  'Labor Union',
-  'Legal/Law',
-  'Local Business',
-  'Liquor Store',
-  'Manufacturing',
-  'Miscellaneous',
-  'Marketing',
-  'Mechanic',
-  'Media/News',
-  'Media/News/Publishing',
-  'Mining',
-  'Miscellaneous',
-  'Movie Theatre',
-  'Museum/Art Gallery',
-  'Non-Profit Organization',
-  'Outdoor Gear/Sporting Goods',
-  'Painter',
-  'Pharmaceutical',
-  'Plumbing',
-  'Political Organization',
-  'Real Estate',
-  'Regulation',
-  'Religion',
-  'Research',
-  // 'Retail',
-  'Retail and Consumer Merchandise',
-  'School',
-  // 'Shopping/Retail',
-  'Spas/Beauty/Personal',
-  'Startup',
-  'Technology',
-  'Telecommunication',
-  'Tobacco',
-  'Trade',
-  'Transport',
-  'Travel/Leisure'
-];
