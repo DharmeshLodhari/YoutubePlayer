@@ -62,7 +62,7 @@ class ShopListScreenState extends State<ShopListScreen> {
       RefreshController(initialRefresh: false);
 
   final ScrollController _todayDealScrollController = ScrollController();
-  final ScrollController _productScrollController = ScrollController();
+  // final ScrollController _productScrollController = ScrollController();
   String _currentCategory = '';
   late DashboardBloc _dashboardBloc;
 
@@ -115,15 +115,15 @@ class ShopListScreenState extends State<ShopListScreen> {
         ? listOfSuperStores()
         : getProductList(_currentCategory);
     getTodaysDealProducts();
-    _productScrollController.addListener(() {
-      if (_productScrollController.position.pixels ==
-              _productScrollController.position.maxScrollExtent &&
-          _productScrollController.position.pixels != 0) {
-        if (widget.type == null) {
-          getProductList(_currentCategory);
-        }
-      }
-    });
+    // _productScrollController.addListener(() {
+    //   if (_productScrollController.position.pixels ==
+    //           _productScrollController.position.maxScrollExtent &&
+    //       _productScrollController.position.pixels != 0) {
+    //     if (widget.type == null) {
+    //       getProductList(_currentCategory);
+    //     }
+    //   }
+    // });
     _todayDealScrollController.addListener(() {
       if (_todayDealScrollController.position.pixels ==
               _todayDealScrollController.position.maxScrollExtent &&
@@ -270,11 +270,11 @@ class ShopListScreenState extends State<ShopListScreen> {
     basketBloc = Provider.of<BasketBloc>(context);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_productScrollController.position.pixels == 0) {
-        // Scroll controller is at the top
-        widget.onPageRefresh!(true);
-        if (mounted) setState(() {});
-      }
+      // if (_productScrollController.position.pixels == 0) {
+      //   // Scroll controller is at the top
+      //   widget.onPageRefresh!(true);
+      //   if (mounted) setState(() {});
+      // }
     });
 
     return ScaffoldMessenger(

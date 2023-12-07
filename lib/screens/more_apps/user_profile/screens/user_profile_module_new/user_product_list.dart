@@ -12,6 +12,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:text_scroll/text_scroll.dart';
@@ -169,8 +170,8 @@ class _UserProductListState extends State<UserProductList> {
             child: Card(
               elevation: 0.0,
               margin: EdgeInsets.zero,
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -195,14 +196,12 @@ class _UserProductListState extends State<UserProductList> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          flashTagAlertModel?.title?.trim() ?? 
-                          "Important Info",
+                          flashTagAlertModel?.title?.trim() ?? "Important Info",
                           style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            fontFamily: "Inter"
-                          ),
+                              color: blackFont,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              fontFamily: "Inter"),
                         ),
                         SizedBox(
                           height: 24,
@@ -210,13 +209,11 @@ class _UserProductListState extends State<UserProductList> {
                         Text(
                           flashTagAlertModel?.message?.trim() ?? "description",
                           style: TextStyle(
-                            color: blackFont,
-                            fontFamily: "Inter",
-                            fontSize: 16,
-                            height: 1.5,
-                            letterSpacing: 0.6
-                          ),
-
+                              color: blackFont,
+                              fontFamily: "Inter",
+                              fontSize: 16,
+                              height: 1.5,
+                              letterSpacing: 0.6),
                         ),
                         SizedBox(
                           height: 48,
@@ -372,7 +369,7 @@ class _UserProductListState extends State<UserProductList> {
             ),
             controller: _productsRefreshController,
             onRefresh: _onProductRefresh,
-            child: Column(
+            child: ListView(
               children: [
                 _buildCrawlingAlert(),
                 noProductInList
@@ -415,6 +412,43 @@ class _UserProductListState extends State<UserProductList> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildProductView() {
+    if (productList.isEmpty) {
+      return Expanded(
+        child: NoItemInList(msg: AppLocalization.of(context)!.noResultFound
+            // msg: AppLocalization.of(context)!.noProducts,
+            ),
+      );
+    }
+    return Expanded(
+      child: isProductLoading
+          ? Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: greyBorderColor,
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisExtent: 180,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  );
+                },
+              ),
+            )
+          : _buildProductList(),
     );
   }
 

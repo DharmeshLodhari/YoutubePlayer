@@ -495,68 +495,9 @@ class _HomeState extends State<Home> {
               showSnackbar(context, message: "Coming soon");
             },
             child: Container(
-              child: Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.symmetric(horizontal: 16),
-                    padding: EdgeInsets.only(right: 16),
-                    height: 150,
-                    decoration: BoxDecoration(
-                        color: deepBlue,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Become a slydo dispatcher",
-                          style: TextStyle(
-                              color: white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              fontFamily: 'Inter'),
-                        ),
-                        SizedBox(height: 12),
-                        SizedBox(
-                          width: 194,
-                          child: Text(
-                            "Help slydo merchant deliver their products easier.",
-                            style: TextStyle(
-                                color: white,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12,
-                                height: 1.2,
-                                fontFamily: 'Inter'),
-                            textAlign: TextAlign.end,
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        CurvedButton(
-                            textColor: Colors.white,
-                            fontSize: 10,
-                            width: 100,
-                            text: "Register Now",
-                            borderRadius: 10,
-                            backgroundColor: black,
-                            height: 20,
-                            onPressed: () async {
-                              // FocusScope.of(context).unfocus();
-                              // deleteProduct();
-                            })
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    top: 25,
-                    left: 12,
-                    child: Image.asset(
-                      "assets/images/bike_home.png",
-                      height: 131,
-                      width: 141,
-                    ),
-                  )
-                ],
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              child: Image.asset(
+                "assets/images/bike_home.png",
               ),
             ),
           ),
