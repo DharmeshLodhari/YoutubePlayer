@@ -308,6 +308,7 @@ class ShoppingAuthService extends AuthService {
     product.discountType = item['discount_type'];
     product.discountIsActive = item['discount_is_active'];
     product.discountedPrice = item['discounted_price'];
+    product.addOns = item['add_ons'];
 
     return product;
   }
@@ -1408,7 +1409,6 @@ class ShoppingAuthService extends AuthService {
     if (exclude != null) {
       url += "?exclude=$exclude";
     }
-
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     List items = [];

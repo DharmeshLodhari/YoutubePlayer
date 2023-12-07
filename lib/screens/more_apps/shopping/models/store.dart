@@ -435,6 +435,15 @@ class Product {
       }
       return DateTime.now();
     }
+
+    dynamic getProductCategory(object) {
+      try {
+        return ProductCategory(object["name"],
+            id: object["id"]);
+      } catch (e) {
+        return null;
+      }
+    }
     return Product(
       id: object["id"].toString(),
       name: object["name"] ?? "",
@@ -450,13 +459,13 @@ class Product {
       sellerFullName: object["seller_fullname"] ?? "",
       qrCode: object["qr_code"] ?? "",
       condition: object["condition"] ?? "",
-      category: object['category'] == null ?  null : ProductCategory(object['category']["name"], id: object['category']["id"]) ,
-      subCategory: object['category'] == null
+      category: object['category'] == null ?  null : getProductCategory(object["category"]) ,
+      subCategory: object['sub_category'] == null
           ? null
-          : ProductCategory(object['sub_category']["name"], id: object['sub_category']["id"]),
+          : getProductCategory(object["sub_category"]),
       customCategory: object['category'] == null
           ? null
-          : ProductCategory(object['custom_category']["name"], id: object['custom_category']["id"]),
+          : getProductCategory(object["custom_category"]),
       tags: object['tags'] != null
           ? (object['tags'] as List)
               .map((i) => Tags.fromJson(i))
@@ -494,6 +503,8 @@ class Product {
 
     return short;
   }
+
+  
 
   String? getMerchantUserName() {
     return seller;
