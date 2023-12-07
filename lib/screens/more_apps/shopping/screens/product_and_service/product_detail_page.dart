@@ -902,8 +902,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildProductDetailsPage(BuildContext context) {
-    print(addOnList);
-    print("________________________________________________________________$addOnList");
     return ListView(
       controller: _scrollController,
       children: <Widget>[
@@ -1723,13 +1721,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
           
           String image = getVariantImage(variantsWithSize);
-
-          // for (Variant img in variantsWithSize) {
-          //   if (img.serverImages!.isNotEmpty) {
-          //     image = img.serverImages!.first;
-          //     break;
-          //   }
-          // }
 
           return Padding(
             padding: const EdgeInsets.only(left: 8.0, right: 8.0),
