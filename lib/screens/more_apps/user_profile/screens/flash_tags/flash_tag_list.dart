@@ -142,7 +142,7 @@ class _FlashTagListState extends State<FlashTagList> {
         key: _scaffoldKey,
         appBar: _buildAppBar() as PreferredSizeWidget,
         body: Container(
-          color: lightGrey,
+          color: white,
           padding: EdgeInsets.symmetric(horizontal: 4),
           child: SmartRefresher(
             enablePullDown: true,
@@ -176,8 +176,10 @@ class _FlashTagListState extends State<FlashTagList> {
         itemCount: 5,
         itemBuilder: (context, index) {
           return CustomBoxShadow(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Container(
+                            height: 90,
+
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: CustomBoxShadow(
                 child: Card(
                   elevation: 3,
@@ -321,67 +323,61 @@ class _FlashTagListState extends State<FlashTagList> {
           getList(fetchFresh: true);
         }
       },
-      child: CustomBoxShadow(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: CustomBoxShadow(
-            child: Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: EdgeInsets.zero,
-              shadowColor: boxShadowTwo,
-              color: lightGrey,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-                  child: Row(
+      child: Container(
+        height: 90,
+        margin: const EdgeInsets.symmetric(vertical: 10.0),
+        child: Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              side: BorderSide(color: selectedListItemBackgroundBlue),
+              borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.zero,
+          color: white,
+          child: Container(
+            padding: EdgeInsets.only(top: 23, left: 15, right: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              messageDecoderWithEmoji(itemList[index].title ??
-                                  itemList[index].message)!,
-                              maxLines: 1,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: blackFont),
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(
-                              height: 12,
-                            ),
-                            Text(
-                              "Last Updated: ${itemList[index].updatedAt?.toDateFormatString(dateFormat: "dd/MM/yyyy")}",
-                              maxLines: 1,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                  color: darkGrey),
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
                       Text(
                         messageDecoderWithEmoji(
-                            itemList[index].type.toString())!,
+                            itemList[index].title ?? itemList[index].message)!,
+                        maxLines: 1,
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: navyBlue,
-                        ),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            color: blackFont),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Text(
+                        "Last Updated: ${itemList[index].updatedAt?.toDateFormatString(dateFormat: "dd/MM/yyyy")}",
+                        maxLines: 1,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12,
+                            color: darkGrey),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-              ),
+                Text(
+                  messageDecoderWithEmoji(itemList[index].type.toString())!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: navyBlue,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

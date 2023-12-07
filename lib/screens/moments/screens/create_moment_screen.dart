@@ -237,7 +237,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                               context,
                               screen: PreviewMomentScreen(
                                 filePath: getMediaPathToSendToPreviewScreen(),
-                                  arguments: {"channel": widget.arguments['channel'] ?? ''}
+                                  arguments: {"channel": widget.arguments == null ? "" : widget.arguments['channel']}
                               ),
                             );
                             imagePath = null;

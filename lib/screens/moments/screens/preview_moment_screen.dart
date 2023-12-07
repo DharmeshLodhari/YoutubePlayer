@@ -887,7 +887,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           duration: fileType == 'video'
               ? videoPlayerController?.value.duration.inSeconds.toString()
               : ''),
-      channelUsername: widget.arguments['channel'] ?? "",
+      channelUsername: widget.arguments == "" ? "" : widget.arguments['channel'],
     )
         .then((momentPosted) {
       if (momentPosted == true) {
