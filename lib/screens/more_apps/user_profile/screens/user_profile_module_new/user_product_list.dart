@@ -11,6 +11,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -258,7 +259,7 @@ class _UserProductListState extends State<UserProductList> {
         if (mounted) setState(() {});
 
         debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
-        print("_______________________________________________$productNext");
+        print("_______sa________________________________________$productNext");
         print("++++++++++++++++++++++++++++++++++++++++$productNext");
 
         Map<String, dynamic>? result = await ShoppingAuthService()
@@ -354,33 +355,39 @@ class _UserProductListState extends State<UserProductList> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
-      key: _productMessengerScaffoldKey,
-      child: Scaffold(
-        key: _productScaffoldKey,
-        body: Container(
-          color: lightGrey,
-          // padding: EdgeInsets.symmetric(horizontal: 4),
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _productsRefreshController,
-            onRefresh: _onProductRefresh,
-            child: ListView(
-              children: [
-                _buildCrawlingAlert(),
-                noProductInList
-                    ? Expanded(
-                        child: NoItemInList(
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        final metrices = notification.metrics;
+        if (metrices.pixels >= metrices.maxScrollExtent) {
+          getProductList();
+        }
+        return true;
+      },
+      child: ScaffoldMessenger(
+        key: _productMessengerScaffoldKey,
+        child: Scaffold(
+          key: _productScaffoldKey,
+          body: Container(
+            color: lightGrey,
+            // padding: EdgeInsets.symmetric(horizontal: 4),
+            child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _productsRefreshController,
+              onRefresh: _onProductRefresh,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildCrawlingAlert(),
+                    noProductInList
+                        ? NoItemInList(
                             msg: AppLocalization.of(context)!.noResultFound
                             // msg: AppLocalization.of(context)!.noProducts,
-                            ),
-                      )
-                    : Expanded(
-                        child: isProductLoading
+                            )
+                        : isProductLoading && productList.isEmpty
                             ? Shimmer.fromColors(
                                 baseColor: Colors.white,
                                 highlightColor: greyBorderColor,
@@ -406,8 +413,9 @@ class _UserProductListState extends State<UserProductList> {
                                 ),
                               )
                             : _buildProductList(),
-                      ),
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -415,42 +423,42 @@ class _UserProductListState extends State<UserProductList> {
     );
   }
 
-  Widget _buildProductView() {
-    if (productList.isEmpty) {
-      return Expanded(
-        child: NoItemInList(msg: AppLocalization.of(context)!.noResultFound
-            // msg: AppLocalization.of(context)!.noProducts,
-            ),
-      );
-    }
-    return Expanded(
-      child: isProductLoading
-          ? Shimmer.fromColors(
-              baseColor: Colors.white,
-              highlightColor: greyBorderColor,
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisExtent: 180,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 15,
-                  maxCrossAxisExtent: 200,
-                ),
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  );
-                },
-              ),
-            )
-          : _buildProductList(),
-    );
-  }
+  // Widget _buildProductView() {
+  //   if (productList.isEmpty) {
+  //     return Expanded(
+  //       child: NoItemInList(msg: AppLocalization.of(context)!.noResultFound
+  //           // msg: AppLocalization.of(context)!.noProducts,
+  //           ),
+  //     );
+  //   }
+  //   return Expanded(
+  //     child: isProductLoading
+  //         ? Shimmer.fromColors(
+  //             baseColor: Colors.white,
+  //             highlightColor: greyBorderColor,
+  //             child: GridView.builder(
+  //               shrinkWrap: true,
+  //               physics: NeverScrollableScrollPhysics(),
+  //               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+  //                 mainAxisExtent: 180,
+  //                 mainAxisSpacing: 16,
+  //                 crossAxisSpacing: 15,
+  //                 maxCrossAxisExtent: 200,
+  //               ),
+  //               itemCount: 2,
+  //               itemBuilder: (context, index) {
+  //                 return Card(
+  //                   color: Colors.grey,
+  //                   shape: RoundedRectangleBorder(
+  //                     borderRadius: BorderRadius.circular(12),
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           )
+  //         : _buildProductList(),
+  //   );
+  // }
 
   Widget _buildCrawlingAlert() {
     if (flashTagString != null && flashTagString != "") {
@@ -548,20 +556,5 @@ class _UserProductListState extends State<UserProductList> {
       }
     }
     return SizedBox.shrink();
-  }
-
-  Widget _buildProductIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-            opacity: isProductLoading ? 1.0 : 00,
-            child: isProductLoading ? CircularLoadingIndicator() : Container()),
-      ),
-    );
-  }
-
-  String? getDisplayImage(int index, List<Product> productList) {
-    return productList[index].serverImages![0];
   }
 }

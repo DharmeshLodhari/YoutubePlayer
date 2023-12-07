@@ -422,84 +422,93 @@ class _HomeState extends State<Home> {
           Container(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: _displayShortcutExtraCard(shortcutExtraBusiness)),
-        
-          if(momentsList.isNotEmpty)
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GestureDetector(
-                  onTap: () =>
-                      NavigationUtil.push(context, screen: MomentsScreen()),
-                  child: sectionHeader(
-                    "Share your moment",
-                    "View Moment",
+
+          if (momentsList.isNotEmpty)
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () =>
+                        NavigationUtil.push(context, screen: MomentsScreen()),
+                    child: sectionHeader(
+                      "Share your moment",
+                      "View Moment",
+                    ),
                   ),
-                ),
-                SizedBox(height: 15),
-                (nextContactMoments == '' && isExploreMomentsLoading)
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: SizedBox(
+                  SizedBox(height: 15),
+                  (nextContactMoments == '' && isExploreMomentsLoading)
+                      ? Shimmer.fromColors(
+                          baseColor: Colors.white,
+                          highlightColor: greyBorderColor,
+                          child: SizedBox(
+                            height: 180,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: 4,
+                              itemBuilder: (context, index) {
+                                return SizedBox(
+                                  width: 120,
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        )
+                      : SizedBox(
                           height: 180,
                           child: ListView.builder(
                             shrinkWrap: true,
+                            controller: _myConnectionsScrollController,
                             scrollDirection: Axis.horizontal,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: 4,
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                width: 120,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                ),
-                              );
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            itemCount: momentsList.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              if (index == momentsList.length) {
+                                return Container();
+                                // buildIndicator(
+                                //     isLoading: isContactMomentsLoading);
+                              } else {
+                                return ContactMomentsCard(
+                                  index: index,
+                                  nextPageUrl: nextContactMoments,
+                                  userMomentModel: momentsList[index],
+                                  listOfConnectionsNames:
+                                      momentsList.map((e) => e.owner!).toList(),
+                                );
+                              }
                             },
                           ),
                         ),
-                      )
-                    : SizedBox(
-                        height: 180,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          controller: _myConnectionsScrollController,
-                          scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.symmetric(vertical: 4),
-                          itemCount: momentsList.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index == momentsList.length) {
-                              return Container();
-                              // buildIndicator(
-                              //     isLoading: isContactMomentsLoading);
-                            } else {
-                              return ContactMomentsCard(
-                                index: index,
-                                nextPageUrl: nextContactMoments,
-                                userMomentModel: momentsList[index],
-                                listOfConnectionsNames:
-                                    momentsList.map((e) => e.owner!).toList(),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-              ],
+                ],
+              ),
             ),
-          ),
           SizedBox(height: 25),
+
           InkWell(
             onTap: () {
               showSnackbar(context, message: "Coming soon");
             },
+            // child: Container(
+            //   margin: EdgeInsets.symmetric(horizontal: 16),
+            //   child: Image.asset(
+            //     "assets/images/bike_home.png",
+            //   ),
+            // ),
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 16),
               child: Image.asset(
-                "assets/images/bike_home.png",
+                "assets/images/bike_home.jpg",
+                width: double.infinity,
+                fit: BoxFit.fitWidth,
               ),
             ),
           ),
