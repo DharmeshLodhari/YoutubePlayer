@@ -195,7 +195,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       child: Column(
         children: [
           SizedBox(
-            height: 16,
+            height: 8,
           ),
           // _buildCategoryAndTabs(),
           if (industries.isNotEmpty)

@@ -405,7 +405,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.only(top: 35, bottom: 8),
+          margin: EdgeInsets.only(top: 15, bottom: 8),
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           alignment: Alignment.bottomLeft,
           child: Text(
