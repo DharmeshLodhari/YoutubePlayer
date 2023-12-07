@@ -157,7 +157,6 @@ class _HomeState extends State<Home> {
           return;
         }
 
-
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -256,9 +255,8 @@ class _HomeState extends State<Home> {
           });
         }
         Map<String, dynamic>? result = await MomentsService().getExploreMoments(
-          nextExploreMoments,
-          previousExploreMoments,
-        );
+            nextExploreMoments, previousExploreMoments,
+            page_size: 10);
         if (result == null) {
           isExploreMomentsLoading = false;
           return;
@@ -272,8 +270,11 @@ class _HomeState extends State<Home> {
 
         if (tempList != null && tempList is List && tempList.isNotEmpty) {
           for (ExploreMomentsModel e in tempList) {
-            momentsList = e.moments!;
+            exploreMomentsList.add(e);
           }
+        }
+        for (ExploreMomentsModel data in exploreMomentsList) {
+          momentsList.add(data.moments!.first);
         }
 
         debugPrint('EXPLORE MOM :: $exploreMomentsList');
@@ -421,9 +422,8 @@ class _HomeState extends State<Home> {
           Container(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: _displayShortcutExtraCard(shortcutExtraBusiness)),
-          const SizedBox(
-            height: 15,
-          ),
+        
+          if(momentsList.isNotEmpty)
           Container(
             color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -431,11 +431,14 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 GestureDetector(
-                  onTap: () =>         NavigationUtil.push(context, screen: MomentsScreen()),
-                  child: sectionHeader("Share your moment", "View Moment",
-                      ),
+                  onTap: () =>
+                      NavigationUtil.push(context, screen: MomentsScreen()),
+                  child: sectionHeader(
+                    "Share your moment",
+                    "View Moment",
+                  ),
                 ),
-                SizedBox(height: 24),
+                SizedBox(height: 15),
                 (nextContactMoments == '' && isExploreMomentsLoading)
                     ? Shimmer.fromColors(
                         baseColor: Colors.white,
@@ -991,7 +994,12 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             Text(
               getGreetingMessage(),
-              style: TextStyle(fontSize: 12, fontFamily: 'Inter', color: HexColor("#151515",)),
+              style: TextStyle(
+                  fontSize: 12,
+                  fontFamily: 'Inter',
+                  color: HexColor(
+                    "#151515",
+                  )),
             ),
             userNameWithVerifiedIcon(
               name: userBloc.user.displayName()!,
@@ -1088,8 +1096,11 @@ class _HomeState extends State<Home> {
     }
     return Text(
       getBadgeCount(),
-      style: const TextStyle( fontFamily: 'Inter',
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+      style: const TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 10,
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
     );
   }
 
@@ -1229,7 +1240,7 @@ class _HomeState extends State<Home> {
                           color: white,
                           fontWeight: FontWeight.w700,
                           fontSize: 22,
-                         fontFamily: 'Inter',
+                          fontFamily: 'Inter',
                         ),
                       ),
                     ),
