@@ -155,12 +155,27 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         padding: const EdgeInsets.only(left: 0.0, right: 0, top: 20),
         child: Column(
           children: [
-            Text("Add Custom Category",
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0),
-                textAlign: TextAlign.center),
+            Container(
+              margin: EdgeInsets.only(right: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Spacer(),
+                  Text("Add Custom Category",
+                      style: TextStyle(
+                          color: blackFont,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0),
+                      textAlign: TextAlign.center),
+                  Spacer(),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.highlight_off_rounded))
+                ],
+              ),
+            ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: CustomizedTextFormField(
@@ -188,8 +203,6 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           _onProductRefresh();
           _controller.clear();
           Navigator.pop(context);
-          
-           
         }
       },
     );
@@ -210,12 +223,26 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           padding: const EdgeInsets.only(left: 0.0, right: 0, top: 20),
           child: Column(
             children: [
-              Text("Edit Custom Category",
-                  style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.0),
-                  textAlign: TextAlign.center),
+              Container(
+                margin: EdgeInsets.only(right: 10),
+                child: Row(
+                  children: [
+                    Spacer(),
+                    Text("Edit Custom Category",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0),
+                        textAlign: TextAlign.center),
+                    Spacer(),
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.highlight_off_rounded))
+                  ],
+                ),
+              ),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: CustomizedTextFormField(
@@ -238,17 +265,17 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           ),
         ),
         leftButtonOnPressed: () async {
-          bool result = await ShoppingAuthService().deleteCustomCategory(prod.id);
-            _onProductRefresh();
-            _controller.clear();
+          bool result =
+              await ShoppingAuthService().deleteCustomCategory(prod.id);
+          _onProductRefresh();
+          _controller.clear();
           Navigator.pop(context);
-      
         },
         rightButtonOnPressed: () async {
-          bool result =
-              await ShoppingAuthService().editCustomCategory(_controller.text, prod.id);
-            _onProductRefresh();
-            _controller.clear();
+          bool result = await ShoppingAuthService()
+              .editCustomCategory(_controller.text, prod.id);
+          _onProductRefresh();
+          _controller.clear();
           Navigator.pop(context);
         });
   }
@@ -301,14 +328,13 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
               child: Card(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(color: selectedListItemBackgroundBlue),
+                    side: BorderSide(color: selectedListItemBackgroundBlue),
                     borderRadius: BorderRadius.circular(10)),
                 margin: EdgeInsets.zero,
                 shadowColor: boxShadowTwo,
                 color: white,
                 child: Container(
-                  padding:
-                      EdgeInsets.only(top: 23 , left: 16),
+                  padding: EdgeInsets.only(top: 23, left: 16),
                   child: Row(
                     children: [
                       Expanded(
@@ -399,8 +425,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
     return next == "" && isLoading
         ? SizedBox.shrink()
         : Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
@@ -421,11 +446,11 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       },
       child: Container(
         height: 90,
-        margin: const EdgeInsets.symmetric(vertical: 16.0),
+        margin: const EdgeInsets.symmetric(vertical: 10.0),
         child: Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
-            side: BorderSide(color: selectedListItemBackgroundBlue, width: 1),
+              side: BorderSide(color: selectedListItemBackgroundBlue, width: 1),
               borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.zero,
           color: white,

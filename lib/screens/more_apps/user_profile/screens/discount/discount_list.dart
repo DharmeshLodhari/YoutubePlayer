@@ -170,8 +170,9 @@ class _DiscountListState extends State<DiscountList> {
         itemCount: 5,
         itemBuilder: (context, index) {
           return CustomBoxShadow(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Container(
+              height: 90,
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: CustomBoxShadow(
                 child: Card(
                   elevation: 3,
@@ -313,7 +314,7 @@ class _DiscountListState extends State<DiscountList> {
       },
       child: Container(
         height: 90,
-        margin: const EdgeInsets.symmetric(vertical: 16.0),
+        margin: const EdgeInsets.symmetric(vertical: 10.0),
         child: Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
