@@ -902,6 +902,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildProductDetailsPage(BuildContext context) {
+    print(addOnList);
+    print("________________________________________________________________$addOnList");
     return ListView(
       controller: _scrollController,
       children: <Widget>[
@@ -1307,6 +1309,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       });
     await _auth.getProduct(productId).then((value) {
       product = value;
+      
       displayProductImages = product!.serverImages;
       staticImage = product!.serverImages![0]!;
       productIsLoading = false;
@@ -1316,10 +1319,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       price = product!.price.toString();
       moreInformation = product!.description.toString();
 
-
-      
-      addOnList =  product!.addOns != null ? AddOns.convertToAddOnList(product!.addOns!) : [];
-
+      addOnList = product!.addOns != null
+          ? AddOns.convertToAddOnList(product!.addOns!)
+          : [];
 
       colorGroups = {};
       sizeGroups = {};
@@ -1491,8 +1493,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          moneyDisplayNormalizer(
-                              int.parse(((checkDiscount(
+                          moneyDisplayNormalizer(int.parse(((checkDiscount(
                                   product!.discountIsActive!,
                                   product!.discountedPrice!,
                                   num.parse(product!.price!)))
@@ -1503,44 +1504,48 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               color: navyBlue,
                               fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(width: 10),
-                        if (checkDiscount(
-                            product!.discountIsActive!,
-                            product!.discountedPrice!,
-                            num.parse(product!.price!)))
-                          Row(
-                            children: [
-                              Text(
-                                worldCurrencies[product!.currency!]!,
-                                style: TextStyle(
-                                  fontFamily: "Inter",
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12.8,
-                                  color: navyBlue,
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                              ),
-                              Text(
-                                moneyDisplayNormalizer(
-                                    int.parse(product!.price!)),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                  color: navyBlue,
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                              ),
-                            ],
-                          ),
-                        SizedBox(width: 10),
-                        if(checkDiscount(product!.discountIsActive!, product!.discountedPrice!, num.parse(product!.price!)))
-                        showDiscountValue(
-                              product!.discountType!,
-                              product!.discountValue!,
-                              product!.currency)
-
+                        
                       ],
                     ),
+                  ),
+                  Row(
+                    children: [
+                      if (checkDiscount(
+                          product!.discountIsActive!,
+                          product!.discountedPrice!,
+                          num.parse(product!.price!)))
+                        Row(
+                          children: [
+                            Text(
+                              worldCurrencies[product!.currency!]!,
+                              style: TextStyle(
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12.8,
+                                color: navyBlue,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                            Text(
+                              moneyDisplayNormalizer(
+                                  int.parse(product!.price!)),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                                color: navyBlue,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                          ],
+                        ),
+                      SizedBox(width: 10),
+                      if (checkDiscount(
+                          product!.discountIsActive!,
+                          product!.discountedPrice!,
+                          num.parse(product!.price!)))
+                        showDiscountValue(product!.discountType!,
+                            product!.discountValue!, product!.currency)
+                    ],
                   ),
                   SizedBox(height: 5),
                   getRating(numberOfRating: product?.rating!.toInt())
@@ -1680,6 +1685,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
+  String getVariantImage(List<Variant> variantsWithSize) {
+    String? image;
+
+    for (Variant img in variantsWithSize) {
+      if (img.serverImages!.isNotEmpty) {
+        image = img.serverImages!.first;
+        break;
+      }
+    }
+    return image!;
+  }
+
   Widget showVariantFirstImages() {
     int itemCount = colorGroups.length; // Replace with your actual item count
     int maxItemsPerRow = 5;
@@ -1703,7 +1720,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           List<Variant> variantsWithSize = colorGroups[color]!;
 
           // Get the first variant with this size (assuming at least one variant exists)
-          String? image = variantsWithSize[0].serverImages!.first!;
+
+          
+          String image = getVariantImage(variantsWithSize);
+
+          // for (Variant img in variantsWithSize) {
+          //   if (img.serverImages!.isNotEmpty) {
+          //     image = img.serverImages!.first;
+          //     break;
+          //   }
+          // }
 
           return Padding(
             padding: const EdgeInsets.only(left: 8.0, right: 8.0),
@@ -2058,9 +2084,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
           if (index == addOnList.length) {
-          return buildLoadingIndicator(isLoading: isLoading);
-          }
-          else {
+            return buildLoadingIndicator(isLoading: isLoading);
+          } else {
             return addOnTile(
               addOns: addOnList[index],
             );
@@ -2225,7 +2250,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ],
       ),
     );
-    }
+  }
 
   void updateAddOnOptions(List<AddOnOption> options, int targetId) {
     options.forEach((addOnOption) {
@@ -2432,7 +2457,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   void navigateToSendPayment() {
     basketBloc.productOrService.clear();
-    
+
     List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
     List<Map<String, dynamic>> selectedAddOnsList = [];
     int addOnPrice = 0;
