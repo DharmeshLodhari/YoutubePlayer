@@ -246,7 +246,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
                                   color: navyBlue,
-                                  fontFamily: "roberto"),
+                                  fontFamily: "Inter"),
                             ),
                             Text(
                               plan.price!.replaceAll("₦", ""),

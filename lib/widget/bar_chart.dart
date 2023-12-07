@@ -118,7 +118,7 @@ class _BarChartState extends State<BarChart> {
               Text(
                 ' (${worldCurrencies[userBloc.user.currency!]})',
                 style: TextStyle(
-                    fontFamily: "Roboto",
+                    fontFamily: "Inter",
                     fontSize: 14.0,
                     fontWeight: FontWeight.w600,
                     color: blackFont),

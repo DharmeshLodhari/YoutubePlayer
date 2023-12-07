@@ -75,12 +75,12 @@ class UtilityHistoryTile extends StatelessWidget {
         Text(
           worldCurrencies[utilityHistoryModel.currency]!,
           style: TextStyle(
-              fontFamily: "Roboto", fontWeight: FontWeight.bold, fontSize: 14),
+              fontFamily: "Inter", fontWeight: FontWeight.bold, fontSize: 14),
         ),
         Text(
           moneyDisplayNormalizer(utilityHistoryModel.amount),
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 16),

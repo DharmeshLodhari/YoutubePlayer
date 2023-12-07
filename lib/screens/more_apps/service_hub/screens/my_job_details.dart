@@ -290,6 +290,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                           style: const TextStyle(
                             color: Color(0xff8d92a3),
                             fontSize: 14,
+                            fontFamily: "Inter",
                           ),
                         ),
                       ],
@@ -327,6 +328,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                               style: const TextStyle(
                                 color: Color(0xff030e36),
                                 fontSize: 14,
+                                fontFamily: "Inter",
                               ),
                             ),
                           ],
@@ -363,7 +365,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                               style: TextStyle(
                                 color: blackFont.withOpacity(.6),
                                 fontSize: 14,
-                                fontFamily: "Open Sans",
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -389,7 +391,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                           style: TextStyle(
                             color: blackFont.withOpacity(.8),
                             fontSize: 14,
-                            fontFamily: "Open Sans",
+                            fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -434,6 +436,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                       'Application Submitted',
                                                       style: TextStyle(
                                                           color: black,
+                                                          fontFamily: "Inter",
                                                           fontSize: 12),
                                                     )),
                                                 const SizedBox(
@@ -488,6 +491,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                       'Application viewed',
                                                       style: TextStyle(
                                                           color: black,
+                                                          fontFamily: "Inter",
                                                           fontSize: 12),
                                                     )),
                                                 const SizedBox(
@@ -524,6 +528,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                       'Application Accepted',
                                                       style: TextStyle(
                                                           color: black,
+                                                          fontFamily: "Inter",
                                                           fontSize: 12),
                                                     )),
                                                 const SizedBox(
@@ -579,6 +584,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                       'Application Submitted',
                                                       style: TextStyle(
                                                           color: black,
+                                                          fontFamily: "Inter",
                                                           fontSize: 12),
                                                     )),
                                                 const SizedBox(
@@ -609,7 +615,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                       Container(
                                                           padding:
                                                               const EdgeInsets
-                                                                  .fromLTRB(
+                                                                      .fromLTRB(
                                                                   10, 4, 10, 4),
                                                           decoration: BoxDecoration(
                                                               border: Border.all(
@@ -623,6 +629,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                             'Application Canceled',
                                                             style: TextStyle(
                                                                 color: black,
+                                                                fontFamily:
+                                                                    "Inter",
                                                                 fontSize: 12),
                                                           )),
                                                       const SizedBox(
@@ -652,8 +660,11 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                           Container(
                                                               padding:
                                                                   const EdgeInsets
-                                                                      .fromLTRB(
-                                                                      10, 4, 10, 4),
+                                                                          .fromLTRB(
+                                                                      10,
+                                                                      4,
+                                                                      10,
+                                                                      4),
                                                               decoration: BoxDecoration(
                                                                   border: Border
                                                                       .all(
@@ -668,6 +679,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                                 style: TextStyle(
                                                                     color:
                                                                         black,
+                                                                    fontFamily:
+                                                                        "Inter",
                                                                     fontSize:
                                                                         12),
                                                               )),
@@ -720,8 +733,11 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                           Container(
                                                               padding:
                                                                   const EdgeInsets
-                                                                      .fromLTRB(
-                                                                      10, 4, 10, 4),
+                                                                          .fromLTRB(
+                                                                      10,
+                                                                      4,
+                                                                      10,
+                                                                      4),
                                                               decoration: BoxDecoration(
                                                                   border: Border
                                                                       .all(
@@ -736,6 +752,8 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                                 style: TextStyle(
                                                                     color:
                                                                         black,
+                                                                    fontFamily:
+                                                                        "Inter",
                                                                     fontSize:
                                                                         12),
                                                               )),
@@ -847,6 +865,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                             verifiedIconColor: verifyGreen,
                                             textStyle: TextStyle(
                                                 fontSize: 14,
+                                                fontFamily: "Inter",
                                                 fontWeight: FontWeight.w500,
                                                 color: HexColor("#151515")),
                                           ),
@@ -899,6 +918,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                             verifiedIconColor: verifyGreen,
                                             textStyle: TextStyle(
                                                 fontSize: 14,
+                                                fontFamily: "Inter",
                                                 fontWeight: FontWeight.w500,
                                                 color: HexColor("#151515")),
                                           ),
@@ -978,6 +998,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                           verifyGreen,
                                                       textStyle: TextStyle(
                                                           fontSize: 14,
+                                                          fontFamily: "Inter",
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           color: HexColor(
@@ -1014,6 +1035,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                                                   e.review ?? '',
                                                   style: TextStyle(
                                                       fontSize: 14.4,
+                                                      fontFamily: "Inter",
                                                       fontWeight:
                                                           FontWeight.w500),
                                                 )
@@ -1123,7 +1145,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                   style: TextStyle(
                     color: colorPayStatus(job!.status!),
                     fontSize: 10.80,
-                    fontFamily: "Open Sans",
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1172,7 +1194,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                         style: TextStyle(
                           color: red,
                           fontSize: 10.80,
-                          fontFamily: "Open Sans",
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -1190,7 +1212,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                         style: TextStyle(
                           color: colorStatus(job!.status!),
                           fontSize: 10.80,
-                          fontFamily: "Open Sans",
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -1228,7 +1250,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 style: TextStyle(
                   color: black,
                   fontSize: 14,
-                  fontFamily: "Open Sans",
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1301,6 +1323,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                 style: const TextStyle(
                   color: Color(0xff030e36),
                   fontSize: 14,
+                  fontFamily: "Inter",
                 ),
               ),
             ],
@@ -1331,7 +1354,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                   Text(
                     worldCurrencies[job!.currency!]!,
                     style: TextStyle(
-                        fontFamily: "Roboto",
+                        fontFamily: "Inter",
                         fontSize: 18.0,
                         color: navyBlue,
                         fontWeight: FontWeight.bold),
@@ -1340,6 +1363,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                     moneyDisplayNormalizer(int.parse(job!.pay.toString())),
                     style: TextStyle(
                         fontSize: 18.0,
+                        fontFamily: "Inter",
                         color: navyBlue,
                         fontWeight: FontWeight.bold),
                   ),
@@ -1349,7 +1373,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                       style: TextStyle(
                         color: Color(0xff030e36),
                         fontSize: 12,
-                        fontFamily: "Open Sans",
+                        fontFamily: "Inter",
                         fontWeight: FontWeight.w700,
                       ),
                     )
@@ -1415,7 +1439,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
           style: TextStyle(
             color: navyBlue,
             fontSize: 14.80,
-            fontFamily: "Open Sans",
+            fontFamily: "Inter",
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -1700,6 +1724,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -1779,6 +1804,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                     'Edit Job',
                     style: TextStyle(
                         fontSize: 16,
+                        fontFamily: "Inter",
                         color: black,
                         fontWeight: FontWeight.bold),
                   ),
@@ -1809,7 +1835,10 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
             Text(
               'Share in Chat',
               style: TextStyle(
-                  fontSize: 16, color: black, fontWeight: FontWeight.bold),
+                  fontFamily: "Inter",
+                  fontSize: 16,
+                  color: black,
+                  fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -1838,7 +1867,10 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
             Text(
               'Share in Yarn',
               style: TextStyle(
-                  fontSize: 16, color: black, fontWeight: FontWeight.bold),
+                  fontFamily: "Inter",
+                  fontSize: 16,
+                  color: black,
+                  fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -1871,6 +1903,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                     style: TextStyle(
                         fontSize: 16,
                         color: black,
+                        fontFamily: "Inter",
                         fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -1901,7 +1934,10 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               Text(
                 'Share in Chat',
                 style: TextStyle(
-                    fontSize: 16, color: black, fontWeight: FontWeight.bold),
+                    fontFamily: "Inter",
+                    fontSize: 16,
+                    color: black,
+                    fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -1942,7 +1978,10 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
               Text(
                 'Report',
                 style: TextStyle(
-                    fontSize: 16, color: black, fontWeight: FontWeight.bold),
+                    fontFamily: "Inter",
+                    fontSize: 16,
+                    color: black,
+                    fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -1986,6 +2025,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                     style: TextStyle(
                         fontSize: 16,
                         color: black,
+                        fontFamily: "Inter",
                         fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -2133,7 +2173,7 @@ class CustomText extends StatelessWidget {
       style: TextStyle(
         color: const Color(0xff030e36),
         fontSize: fontSize,
-        fontFamily: "Open Sans",
+        fontFamily: "Inter",
         fontWeight: fontweight,
       ),
     );
@@ -2161,7 +2201,7 @@ class CustomText1 extends StatelessWidget {
         style: TextStyle(
           color: const Color(0xff030e36),
           fontSize: fontSize,
-          fontFamily: "Open Sans",
+          fontFamily: "Inter",
           fontWeight: fontweight,
         ),
       ),

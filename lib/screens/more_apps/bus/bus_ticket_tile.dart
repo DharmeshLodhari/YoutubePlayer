@@ -57,7 +57,7 @@ class BusTicketTile extends StatelessWidget {
                           style: TextStyle(
                             color: navyBlue,
                             fontSize: 16,
-                            fontFamily: "Roboto",
+                            fontFamily: "Inter",
                           ),
                         ),
                         Text(

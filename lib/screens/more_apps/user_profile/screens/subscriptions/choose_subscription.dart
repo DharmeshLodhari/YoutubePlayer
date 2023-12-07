@@ -493,7 +493,7 @@ class SubscriptionTile extends StatelessWidget {
                           Text(
                             worldCurrencies[currency]!,
                             style: TextStyle(
-                              fontFamily: "Roboto",
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                             ),
@@ -520,7 +520,7 @@ class SubscriptionTile extends StatelessWidget {
                           child: Text(
                             worldCurrencies[currency]!,
                             style: TextStyle(
-                                fontFamily: "Roboto",
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
                           ),

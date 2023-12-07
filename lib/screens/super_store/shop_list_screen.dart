@@ -382,6 +382,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                           "Other deals",
                           style: TextStyle(
                             fontSize: 18,
+                            fontFamily: "Inter",
                             color: blackFont,
                             fontWeight: FontWeight.w700,
                           ),
@@ -398,6 +399,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18,
+                      fontFamily: "Inter",
                       color: blackFont,
                     ),
                   ),
@@ -438,6 +440,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 18,
+                          fontFamily: "Inter",
                           color: blackFont,
                         ),
                       ),
@@ -576,6 +579,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: blackFont,
+                        fontFamily: "Inter",
                       ),
                       maxLines: 2,
                     ),
@@ -586,6 +590,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                         text: worldCurrencies[product.currency!]!,
                         style: TextStyle(
                           fontSize: 16.0,
+                          fontFamily: "Inter",
                           color: blackFont,
                           fontWeight: FontWeight.w600,
                         ),
@@ -628,6 +633,7 @@ class ShopListScreenState extends State<ShopListScreen> {
               readOnly: true,
               style: TextStyle(
                 fontSize: 16,
+                fontFamily: "Inter",
                 color: blackFont,
                 fontWeight: FontWeight.w600,
               ),
@@ -636,6 +642,7 @@ class ShopListScreenState extends State<ShopListScreen> {
               decoration: InputDecoration(
                 hintStyle: TextStyle(
                   fontSize: 14,
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600,
                   color: darkGrey,
                 ),

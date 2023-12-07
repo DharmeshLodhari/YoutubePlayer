@@ -83,6 +83,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
         AppLocalization.of(context)!.superStore,
         style: TextStyle(
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
           color: yarnBlack,
           height: 1.3,
@@ -90,7 +91,6 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       ),
       centerTitle: false,
       titleSpacing: 16,
-      
       shadowColor: greySecondaryYarn,
       actions: currentAskTapOnHome == 0
           ? _buildAppBarActionsShopList()
@@ -195,7 +195,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       child: Column(
         children: [
           SizedBox(
-            height: 16,
+            height: 8,
           ),
           // _buildCategoryAndTabs(),
           if (industries.isNotEmpty)
@@ -203,11 +203,11 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: isLoading
                   ? Container(
-                          height: 100.0,
-                          child: Shimmer.fromColors(
+                      height: 100.0,
+                      child: Shimmer.fromColors(
                           baseColor: Colors.white,
                           highlightColor: greyBorderColor,
-                          child:  ListView.builder(
+                          child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             padding: EdgeInsets.zero,
                             itemCount: 6,
@@ -228,8 +228,6 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       ),
     );
   }
-
-  
 
   String getImagePath(String imgKey) {
     Map<String, String> imagePathData = {
@@ -302,9 +300,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
       height: 75,
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5)
-      ),
+          color: Colors.white, borderRadius: BorderRadius.circular(5)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -318,7 +314,10 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
           Text(
             title,
             style: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.w600, fontFamily: "Inter", color: black),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+                color: black),
           ),
         ],
       ),
@@ -392,7 +391,10 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     return Text(
       getBadgeCount(),
       style: TextStyle(
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+          fontSize: 10,
+          fontFamily: "Inter",
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
     );
   }
 

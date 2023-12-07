@@ -329,6 +329,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                           style: const TextStyle(
                             color: Color(0xff8d92a3),
                             fontSize: 14,
+                            fontFamily: "Inter",
                           ),
                         ),
                       ],
@@ -366,6 +367,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                               style: const TextStyle(
                                 color: Color(0xff030e36),
                                 fontSize: 14,
+                                fontFamily: "Inter",
                               ),
                             ),
                           ],
@@ -404,7 +406,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                               style: TextStyle(
                                 color: blackFont.withOpacity(.6),
                                 fontSize: 14,
-                                fontFamily: "Open Sans",
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -431,7 +433,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                           style: TextStyle(
                             color: blackFont.withOpacity(.8),
                             fontSize: 14,
-                            fontFamily: "Open Sans",
+                            fontFamily: "Inter",
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -489,6 +491,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                 verifiedIconColor: verifyGreen,
                                 textStyle: TextStyle(
                                     fontSize: 14,
+                                    fontFamily: "Inter",
                                     fontWeight: FontWeight.w500,
                                     color: HexColor("#151515")),
                               ),
@@ -560,7 +563,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                         style: TextStyle(
                           color: colorPayStatus(job!.status!),
                           fontSize: 10.80,
-                          fontFamily: "Open Sans",
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -598,7 +601,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                 style: TextStyle(
                   color: black,
                   fontSize: 14,
-                  fontFamily: "Open Sans",
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -674,7 +677,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                   style: TextStyle(
                     color: Color(0xff3F61DB),
                     fontSize: 10.80,
-                    fontFamily: "Open Sans",
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -716,7 +719,9 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                           child: Text(
                                             'Application Submitted',
                                             style: TextStyle(
-                                                color: black, fontSize: 12),
+                                                fontFamily: "Inter",
+                                                color: black,
+                                                fontSize: 12),
                                           )),
                                       const SizedBox(
                                         width: 10,
@@ -761,7 +766,9 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                           child: Text(
                                             'Application viewed',
                                             style: TextStyle(
-                                                color: black, fontSize: 12),
+                                                fontFamily: "Inter",
+                                                color: black,
+                                                fontSize: 12),
                                           )),
                                       const SizedBox(
                                         width: 25,
@@ -792,7 +799,9 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                           child: Text(
                                             'Application Accepted',
                                             style: TextStyle(
-                                                color: black, fontSize: 12),
+                                                fontFamily: "Inter",
+                                                color: black,
+                                                fontSize: 12),
                                           )),
                                       const SizedBox(
                                         width: 12,
@@ -841,7 +850,9 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                           child: Text(
                                             'Application Submitted',
                                             style: TextStyle(
-                                                color: black, fontSize: 12),
+                                                fontFamily: "Inter",
+                                                color: black,
+                                                fontSize: 12),
                                           )),
                                       const SizedBox(
                                         width: 10,
@@ -879,6 +890,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                                   'Application Canceled',
                                                   style: TextStyle(
                                                       color: black,
+                                                      fontFamily: "Inter",
                                                       fontSize: 12),
                                                 )),
                                             const SizedBox(
@@ -917,6 +929,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                                       'Application viewed',
                                                       style: TextStyle(
                                                           color: black,
+                                                          fontFamily: "Inter",
                                                           fontSize: 12),
                                                     )),
                                                 const SizedBox(
@@ -977,6 +990,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                                       'Application Accepted',
                                                       style: TextStyle(
                                                           color: black,
+                                                          fontFamily: "Inter",
                                                           fontSize: 12),
                                                     )),
                                                 const SizedBox(
@@ -1053,7 +1067,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                   Text(
                     worldCurrencies[job!.currency!]!,
                     style: TextStyle(
-                        fontFamily: "Roboto",
+                        fontFamily: "Inter",
                         fontSize: 18.0,
                         color: navyBlue,
                         fontWeight: FontWeight.bold),
@@ -1062,6 +1076,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                     moneyDisplayNormalizer(int.parse(job!.pay.toString())),
                     style: TextStyle(
                         fontSize: 18.0,
+                        fontFamily: "Inter",
                         color: navyBlue,
                         fontWeight: FontWeight.bold),
                   ),
@@ -1071,7 +1086,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                       style: TextStyle(
                         color: Color(0xff030e36),
                         fontSize: 12,
-                        fontFamily: "Open Sans",
+                        fontFamily: "Inter",
                         fontWeight: FontWeight.w700,
                       ),
                     )
@@ -1318,6 +1333,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -1369,6 +1385,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                   'Share in Chat',
                                   style: TextStyle(
                                       fontSize: 16,
+                                      fontFamily: "Inter",
                                       color: black,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -1401,6 +1418,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                   'Share in Yarn',
                                   style: TextStyle(
                                       fontSize: 16,
+                                      fontFamily: "Inter",
                                       color: black,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -1443,6 +1461,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                                   'Report',
                                   style: TextStyle(
                                       fontSize: 16,
+                                      fontFamily: "Inter",
                                       color: black,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -1526,7 +1545,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
           style: TextStyle(
             color: navyBlue,
             fontSize: 14.80,
-            fontFamily: "Open Sans",
+            fontFamily: "Inter",
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -1616,7 +1635,7 @@ class CustomText extends StatelessWidget {
       style: TextStyle(
         color: Color(0xff030e36),
         fontSize: fontSize,
-        fontFamily: "Open Sans",
+        fontFamily: "Inter",
         fontWeight: fontweight,
       ),
     );

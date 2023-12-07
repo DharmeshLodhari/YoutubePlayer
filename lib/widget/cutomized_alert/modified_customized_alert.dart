@@ -103,7 +103,7 @@ class ModifiedCustomizedAlert {
                                         style: TextStyle(
                                             color: blackFont,
                                             fontSize: 16.0,
-                                            fontFamily: "roberto"),
+                                            fontFamily: "Inter"),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),

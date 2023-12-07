@@ -68,6 +68,7 @@ class _SuperHubState extends State<SuperHub> {
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -105,6 +106,7 @@ class _SuperHubState extends State<SuperHub> {
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,
+                  fontFamily: "Inter",
                   fontWeight:
                       currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
                 ),
@@ -126,6 +128,7 @@ class _SuperHubState extends State<SuperHub> {
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,
+                  fontFamily: "Inter",
                   fontWeight:
                       currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
                 ),
@@ -197,7 +200,6 @@ class _SuperHubState extends State<SuperHub> {
     }
   }
 
-  
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
@@ -350,6 +352,7 @@ class _SuperHubState extends State<SuperHub> {
               readOnly: true,
               style: TextStyle(
                 fontSize: 16,
+                fontFamily: "Inter",
                 color: blackFont,
                 fontWeight: FontWeight.w600,
               ),
@@ -358,6 +361,7 @@ class _SuperHubState extends State<SuperHub> {
               decoration: InputDecoration(
                 hintStyle: TextStyle(
                   fontSize: 14,
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600,
                   color: darkGrey,
                 ),
@@ -462,7 +466,10 @@ class _SuperHubState extends State<SuperHub> {
     return Text(
       getBadgeCount(),
       style: const TextStyle(
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+          fontSize: 10,
+          fontFamily: "Inter",
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
     );
   }
 
@@ -486,6 +493,5 @@ class SuperStoreSingleCard extends StatelessWidget {
       service: service,
       giveRightPadding: false,
     );
-
   }
 }

@@ -281,6 +281,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -420,6 +421,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
             fontWeight: FontWeight.w400,
             color: blackFont,
             fontSize: 16,
+            fontFamily: "Inter",
           ),
         ),
         SizedBox(height: 12),
@@ -489,6 +491,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
                 fontWeight: FontWeight.w600,
                 color: blackFont,
                 // fontSize: 16,P
+                fontFamily: "Inter",
               ),
             ),
             SizedBox(width: 10),
@@ -543,6 +546,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
                 fontWeight: FontWeight.w600,
                 color: blackFont,
                 fontSize: 16,
+                fontFamily: "Inter",
               ),
             ),
           ],
@@ -586,7 +590,8 @@ class _MomentsScreenState extends State<MomentsScreen> {
     myMomentsLoading = true;
     if (mounted) setState(() {});
     MomentsService()
-        .getMomentsWithOwnerName(ownerName: userBloc.user.userName!, channelUsername: '')
+        .getMomentsWithOwnerName(
+            ownerName: userBloc.user.userName!, channelUsername: '')
         .then((momentsModelList) {
       myMomentsLoading = false;
       if (mounted) setState(() {});
@@ -634,14 +639,14 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
   final List<List<MomentsModel>> listOfMomentsModelList = [];
 
   Future getListOfMomentsModelList(String owner) async {
-    List<MomentsModel> momentsModelList =
-        await MomentsService().getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
+    List<MomentsModel> momentsModelList = await MomentsService()
+        .getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     listOfMomentsModelList.add(momentsModelList);
   }
 
   Future getLengthOfOwnerMoments(String owner) async {
-    List<MomentsModel> momentsModelList =
-        await MomentsService().getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
+    List<MomentsModel> momentsModelList = await MomentsService()
+        .getMomentsWithOwnerName(ownerName: owner, channelUsername: '');
     lengthOfOwnerMoments = momentsModelList.length;
   }
 
@@ -700,6 +705,7 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                         textStyle: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600,
                           shadows: [
                             Shadow(
@@ -716,6 +722,7 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                             noOfViews: widget.userMomentModel.views),
                         style: TextStyle(
                           fontSize: 12,
+                          fontFamily: "Inter",
                           shadows: [
                             Shadow(
                               blurRadius: 4.0,
@@ -877,6 +884,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
                       isVerified: false,
                       textStyle: TextStyle(
                         fontSize: 12,
+                        fontFamily: "Inter",
                         shadows: [
                           Shadow(
                             blurRadius: 4.0,
@@ -896,6 +904,7 @@ class _ExploreMomentsCardState extends State<ExploreMomentsCard> {
                               .views),
                       style: TextStyle(
                         fontSize: 12,
+                        fontFamily: "Inter",
                         shadows: [
                           Shadow(
                             blurRadius: 4.0,
@@ -945,6 +954,7 @@ Widget momentListLengthWidget(int? length, {double? fontSize}) {
               '$length',
               style: TextStyle(
                   fontSize: fontSize,
+                  fontFamily: "Inter",
                   color: Colors.white,
                   fontWeight: FontWeight.w600),
             ),

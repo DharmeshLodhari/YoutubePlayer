@@ -343,7 +343,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                         style: TextStyle(
                             color: blackFont,
                             fontSize: 16.0,
-                            fontFamily: "roberto"),
+                            fontFamily: "Inter"),
                       ),
                       Text(
                         shoppingCartModel.status,
@@ -363,7 +363,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                         style: TextStyle(
                             color: blackFont,
                             fontSize: 16.0,
-                            fontFamily: "roberto"),
+                            fontFamily: "Inter"),
                       ),
                       Row(
                         children: [
@@ -372,7 +372,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                                     shoppingCartModel.merchantCurrency] ??
                                 'NGN',
                             style: TextStyle(
-                                fontFamily: "Roboto",
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14),
                           ),
@@ -397,7 +397,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                         style: TextStyle(
                             color: blackFont,
                             fontSize: 16.0,
-                            fontFamily: "roberto"),
+                            fontFamily: "Inter"),
                       ),
                       Row(
                         children: [
@@ -406,7 +406,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                                     shoppingCartModel.merchantCurrency] ??
                                 'NGN',
                             style: TextStyle(
-                                fontFamily: "Roboto",
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14),
                           ),
@@ -432,7 +432,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                         style: TextStyle(
                             color: blackFont,
                             fontSize: 16.0,
-                            fontFamily: "roberto"),
+                            fontFamily: "Inter"),
                       ),
                       Row(
                         children: [
@@ -441,7 +441,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                                     shoppingCartModel.merchantCurrency] ??
                                 'NGN',
                             style: TextStyle(
-                                fontFamily: "Roboto",
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14),
                           ),

@@ -250,7 +250,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: blackFont,
-                                              fontFamily: "Roboto",
+                                              fontFamily: "Inter",
                                               fontWeight: FontWeight.w600),
                                         )
                                       ])))),
@@ -1125,7 +1125,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
               style: TextStyle(
                   fontSize: 12,
                   color: blackFont,
-                  fontFamily: "Roboto",
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600),
             )
           ])),

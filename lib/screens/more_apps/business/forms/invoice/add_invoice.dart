@@ -332,7 +332,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                         Text(
                           "₦",
                           style: TextStyle(
-                              fontFamily: "Roboto",
+                              fontFamily: "Inter",
                               color: blackFont,
                               fontWeight: FontWeight.bold,
                               fontSize: 12),
@@ -355,7 +355,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                     Text(
                       "₦",
                       style: TextStyle(
-                          fontFamily: "Roboto",
+                          fontFamily: "Inter",
                           color: navyBlue,
                           fontWeight: FontWeight.bold,
                           fontSize: 14),
@@ -398,7 +398,7 @@ class _AddInvoiceState extends State<AddInvoice> {
             Text(
               "₦",
               style: TextStyle(
-                  fontFamily: "Roboto",
+                  fontFamily: "Inter",
                   color: navyBlue,
                   fontWeight: FontWeight.bold,
                   fontSize: 26),

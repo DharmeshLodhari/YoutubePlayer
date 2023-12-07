@@ -887,7 +887,7 @@ class _SearchModuleState extends State<SearchModule> {
         Text(
           worldCurrencies[product.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
@@ -1066,7 +1066,7 @@ class _SearchModuleState extends State<SearchModule> {
         Text(
           worldCurrencies[service.currency!]!,
           style: TextStyle(
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               color: blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),

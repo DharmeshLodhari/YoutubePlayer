@@ -167,7 +167,7 @@ class _PostTileForPaymentContractState
         Text(
           worldCurrencies[contract.currency!]!,
           style: TextStyle(
-            fontFamily: "Roboto",
+            fontFamily: "Inter",
             color: navyBlue,
             fontWeight: FontWeight.bold,
             fontSize: 16,

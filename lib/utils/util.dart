@@ -458,7 +458,7 @@ Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
             TextStyle(
               color: blackFont,
               fontSize: 14,
-              fontFamily: "roberto",
+              fontFamily: "Inter",
             ),
       ),
       trailing: trailingWidget,
@@ -524,7 +524,7 @@ Widget transactionOrPayoutTile(
                   TextStyle(
                     color: checkStatusForColor(status),
                     fontSize: 14,
-                    fontFamily: "roberto",
+                    fontFamily: "Inter",
                   ),
             ),
           ),
@@ -816,7 +816,7 @@ Widget getAmount(amount, currency, {double fontSize = 14}) {
       Text(
         worldCurrencies[currency!]!,
         style: TextStyle(
-            fontFamily: "Roboto",
+            fontFamily: "Inter",
             color: blackFont,
             fontWeight: FontWeight.bold,
             fontSize: fontSize),

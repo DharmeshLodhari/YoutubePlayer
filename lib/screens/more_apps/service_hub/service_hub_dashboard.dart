@@ -60,6 +60,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -132,6 +133,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
                                   'Create Job',
                                   style: TextStyle(
                                       fontSize: 14.8,
+                                      fontFamily: "Inter",
                                       color: black,
                                       fontWeight: FontWeight.w500),
                                 ),
@@ -167,6 +169,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
                                   'My Jobs',
                                   style: TextStyle(
                                       fontSize: 14.8,
+                                      fontFamily: "Inter",
                                       color: black,
                                       fontWeight: FontWeight.w500),
                                 ),
@@ -221,7 +224,11 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
     return Text(
       getBadgeCount(),
       style: const TextStyle(
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+        fontSize: 10,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontFamily: "Inter",
+      ),
     );
   }
 

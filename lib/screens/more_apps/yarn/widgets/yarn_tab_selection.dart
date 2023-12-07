@@ -7,7 +7,12 @@ class YarnTabSelection extends StatefulWidget {
   String firstTab = '';
   String secondTab = '';
 
-   YarnTabSelection({required this.onTap, this.currentIndex = 0, required this.firstTab, required this.secondTab, Key? key})
+  YarnTabSelection(
+      {required this.onTap,
+      this.currentIndex = 0,
+      required this.firstTab,
+      required this.secondTab,
+      Key? key})
       : super(key: key);
   @override
   State<YarnTabSelection> createState() => _YarnTabSelectionState();
@@ -68,6 +73,7 @@ class _YarnTabSelectionState extends State<YarnTabSelection> {
             style: TextStyle(
               color: currentIndex == tabIndex ? white : yarnBlack,
               fontSize: 14,
+              fontFamily: "Inter",
               fontWeight:
                   currentIndex == tabIndex ? FontWeight.w700 : FontWeight.w700,
             ),

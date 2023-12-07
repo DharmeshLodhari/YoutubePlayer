@@ -18,7 +18,9 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import '../../../../widget/debouncer_widget.dart';
 
 class SearchServices extends StatefulWidget {
-   SearchServices({Key? key, }) : super(key: key);
+  SearchServices({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _SearchServicesState createState() => _SearchServicesState();
@@ -121,7 +123,6 @@ class _SearchServicesState extends State<SearchServices> {
   }
 
   void getList() async {
-    
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -133,17 +134,16 @@ class _SearchServicesState extends State<SearchServices> {
             await ShoppingAuthService().searchServiceInServices(
           next,
           previous,
-          filterOptions
-              : SearchItemWithFilterModelForSuperStore(
-                  sortBy: sortBy,
-                  searchedText: searchController.text,
-                  minPrice: minAmount,
-                  maxPrice: maxAmount,
-                  rating: selectedRating != null
-                      ? (int.parse(selectedRating!) + 1).toString()
-                      : null,
-                  categories: pickedCategoryList,
-                ),
+          filterOptions: SearchItemWithFilterModelForSuperStore(
+            sortBy: sortBy,
+            searchedText: searchController.text,
+            minPrice: minAmount,
+            maxPrice: maxAmount,
+            rating: selectedRating != null
+                ? (int.parse(selectedRating!) + 1).toString()
+                : null,
+            categories: pickedCategoryList,
+          ),
         );
 
         if (result == null) {
@@ -192,10 +192,9 @@ class _SearchServicesState extends State<SearchServices> {
   Map<String, bool> stateCheckMark = {"Lagos": false, "Ogun": false};
 
   void getCategories() async {
-   
     isLoading = true;
     if (mounted) setState(() {});
-     print('category in the house.....print $isLoading');
+    print('category in the house.....print $isLoading');
     try {
       servicesCategories = await ShoppingAuthService().getServicesCategories();
       servicesCategoriesCopy = servicesCategories;
@@ -245,7 +244,10 @@ class _SearchServicesState extends State<SearchServices> {
       title: Text(
         "Search",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
         products.isNotEmpty
@@ -399,6 +401,7 @@ class _SearchServicesState extends State<SearchServices> {
           style: TextStyle(
             fontSize: 16,
             color: blackFont,
+            fontFamily: "Inter",
             fontWeight: FontWeight.w600,
           ),
           cursorWidth: 1.5,
@@ -406,6 +409,7 @@ class _SearchServicesState extends State<SearchServices> {
           decoration: InputDecoration(
             hintStyle: TextStyle(
               fontSize: 14,
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               color: darkGrey,
             ),
@@ -488,6 +492,7 @@ class _SearchServicesState extends State<SearchServices> {
                       "Filter",
                       style: TextStyle(
                           fontSize: 16,
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w700,
                           color: blackFont),
                     ),
@@ -531,7 +536,10 @@ class _SearchServicesState extends State<SearchServices> {
               ? selectedServicesCategory!.name
               : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -632,6 +640,7 @@ class _SearchServicesState extends State<SearchServices> {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                       );
@@ -718,7 +727,10 @@ class _SearchServicesState extends State<SearchServices> {
               ? selectedServicesCategory!.name
               : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -789,6 +801,7 @@ class _SearchServicesState extends State<SearchServices> {
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 16,
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.w400),
                         ),
                       );
@@ -818,7 +831,10 @@ class _SearchServicesState extends State<SearchServices> {
         Text(
           "Rating",
           style: TextStyle(
-              color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 14,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         SizedBox(height: 16),
         Row(
@@ -869,6 +885,7 @@ class _SearchServicesState extends State<SearchServices> {
               style: TextStyle(
                   color: isSelected ? navyBlue : blackFont,
                   fontSize: 14,
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600),
             ),
             SizedBox(width: 2),
@@ -894,7 +911,10 @@ class _SearchServicesState extends State<SearchServices> {
         Text(
           "Price Range",
           style: TextStyle(
-              color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 14,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         SizedBox(height: 12),
         Row(

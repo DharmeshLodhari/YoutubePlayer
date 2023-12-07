@@ -232,7 +232,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 worldCurrencies['NGN']!,
                 style: TextStyle(
                     color: blackFont,
-                    fontFamily: "Roboto",
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                     fontSize: 14),
               ),

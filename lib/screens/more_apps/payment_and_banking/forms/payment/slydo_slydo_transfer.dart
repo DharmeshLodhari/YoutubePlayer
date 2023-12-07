@@ -385,7 +385,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       color: blackFont,
-                                                      fontFamily: "Roboto",
+                                                      fontFamily: "Inter",
                                                       fontWeight:
                                                           FontWeight.w600),
                                                 )
@@ -951,7 +951,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                                         color: blackFont,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400,
-                                        fontFamily: "Roberto"),
+                                        fontFamily: "Inter"),
                                     textAlign: TextAlign.justify,
                                   ),
                                 ),

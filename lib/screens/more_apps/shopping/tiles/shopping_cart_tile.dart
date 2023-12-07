@@ -375,7 +375,7 @@ class _ShoppingCartTileForProductState
           worldCurrencies[widget.item!.currency!]!,
           style: TextStyle(
               color: blackFont,
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               fontSize: 14),
         ),
@@ -396,7 +396,7 @@ class _ShoppingCartTileForProductState
           worldCurrencies[widget.item!.currency!]!,
           style: TextStyle(
               color: darkGrey,
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               fontSize: 12),
         ),
@@ -635,7 +635,7 @@ class _ShoppingCartTileForServiceState
           worldCurrencies[widget.item!.currency!]!,
           style: TextStyle(
               color: blackFont,
-              fontFamily: "Roboto",
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600,
               fontSize: 14),
         ),

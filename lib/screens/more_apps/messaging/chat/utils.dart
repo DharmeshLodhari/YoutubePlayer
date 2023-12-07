@@ -96,7 +96,7 @@ Widget getUserCurrencySymbol(BuildContext context,
     style: TextStyle(
       color: color ?? navyBlue,
       fontSize: fontSize ?? 16,
-      fontFamily: "Roboto",
+      fontFamily: "Inter",
       fontWeight: FontWeight.w500,
     ),
   );

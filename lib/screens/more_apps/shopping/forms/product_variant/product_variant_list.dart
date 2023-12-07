@@ -298,7 +298,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
                   Text(
                     worldCurrencies[variant.currency!]!,
                     style: TextStyle(
-                        fontFamily: "Roboto",
+                        fontFamily: "Inter",
                         fontSize: 18.0,
                         color: blackFont,
                         fontWeight: FontWeight.w600),

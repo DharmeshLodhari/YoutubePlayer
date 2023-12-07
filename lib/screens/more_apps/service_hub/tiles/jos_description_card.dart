@@ -117,7 +117,7 @@ class JobDescriptionCard extends StatelessWidget {
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 16,
-                    fontFamily: "Open Sans",
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -139,7 +139,7 @@ class JobDescriptionCard extends StatelessWidget {
                         style: TextStyle(
                           color: red,
                           fontSize: 10.80,
-                          fontFamily: "Open Sans",
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -153,7 +153,7 @@ class JobDescriptionCard extends StatelessWidget {
                     style: TextStyle(
                       color: colorStatus(job!.status!),
                       fontSize: 12,
-                      fontFamily: "Open Sans",
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -181,7 +181,7 @@ class JobDescriptionCard extends StatelessWidget {
                 Text(
                   worldCurrencies[job!.currency]!,
                   style: TextStyle(
-                      fontFamily: "Roboto",
+                      fontFamily: "Inter",
                       fontSize: 14.0,
                       color: navyBlue,
                       fontWeight: FontWeight.bold),
@@ -218,7 +218,7 @@ class JobDescriptionCard extends StatelessWidget {
                   style: TextStyle(
                     color: darkGrey,
                     fontSize: 10,
-                    fontFamily: "Open Sans",
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -237,7 +237,7 @@ class JobDescriptionCard extends StatelessWidget {
                 style: TextStyle(
                   color: darkGrey,
                   fontSize: 10,
-                  fontFamily: "Open Sans",
+                  fontFamily: "Inter",
                   fontWeight: FontWeight.w600,
                 ),
               ),

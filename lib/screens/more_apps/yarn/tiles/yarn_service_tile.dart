@@ -165,7 +165,7 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
                                         text: worldCurrencies[
                                             widget.service!.currency!],
                                         style: TextStyle(
-                                            fontFamily: "Roboto",
+                                            fontFamily: "Inter",
                                             color: navyBlue,
                                             fontWeight: FontWeight.w700,
                                             fontSize: getFontSize(

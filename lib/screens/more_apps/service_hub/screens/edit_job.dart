@@ -394,6 +394,7 @@ class _EditJobState extends State<EditJob> {
           controller: searchItemTextController,
           style: TextStyle(
             fontSize: 16,
+            fontFamily: "Inter",
             color: blackFont,
             fontWeight: FontWeight.w600,
           ),
@@ -473,7 +474,8 @@ class _EditJobState extends State<EditJob> {
                   title: Text(
                     category.name!,
                     maxLines: 1,
-                    style: TextStyle(color: blackFont, fontSize: 12),
+                    style: TextStyle(
+                        color: blackFont, fontFamily: "Inter", fontSize: 12),
                   ),
                 ),
               ),
@@ -506,7 +508,8 @@ class _EditJobState extends State<EditJob> {
             jobAvailableFrom = DateTime.parse(currentJob!.creationDate!);
             jobEndDate = DateTime.parse(currentJob!.dueDate!);
             taskMethod = currentJob?.isOnline == true ? 'Remote' : 'On Site';
-            taskValue = currentJob?.isNegotiable == true ? 'Negotiable' : 'Budget';
+            taskValue =
+                currentJob?.isNegotiable == true ? 'Negotiable' : 'Budget';
           });
         }
       });
@@ -534,7 +537,7 @@ class _EditJobState extends State<EditJob> {
       }
     });
     searchItemTextController = TextEditingController();
-    
+
     super.initState();
   }
 
@@ -577,7 +580,10 @@ class _EditJobState extends State<EditJob> {
       title: Text(
         "Edit Job",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -695,7 +701,10 @@ class _EditJobState extends State<EditJob> {
           Text(
             dateText!,
             style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+                color: blackFont,
+                fontFamily: "Inter",
+                fontSize: 16,
+                fontWeight: FontWeight.bold),
           ),
           const SizedBox(
             height: 20,
@@ -756,7 +765,11 @@ class _EditJobState extends State<EditJob> {
           Text(
             dateText!,
             style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+              color: blackFont,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+            ),
           ),
           const SizedBox(
             height: 20,
@@ -987,7 +1000,11 @@ class _EditJobState extends State<EditJob> {
         Text(
           'List Job Now',
           style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: blackFont,
+            fontFamily: "Inter",
+          ),
         ),
         CheckboxListTile(
           contentPadding: EdgeInsets.zero,
@@ -1012,7 +1029,11 @@ class _EditJobState extends State<EditJob> {
       children: [
         Text('Timing',
             style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold)),
+              color: blackFont,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+            )),
         getTimingRadioRow(),
       ],
     );
@@ -1024,7 +1045,11 @@ class _EditJobState extends State<EditJob> {
       children: [
         Text('Task Fee',
             style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold)),
+              color: blackFont,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+            )),
         getTaskFeeRadionRow(),
       ],
     );
@@ -1036,7 +1061,11 @@ class _EditJobState extends State<EditJob> {
       children: [
         Text('How can this task be done?',
             style: TextStyle(
-                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold)),
+              color: blackFont,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: "Inter",
+            )),
         getTaskMethodRow(),
       ],
     );
@@ -1188,7 +1217,8 @@ class _EditJobState extends State<EditJob> {
                 ),
                 Text(
                   AppLocalization.of(context)!.addImage,
-                  style: TextStyle(color: darkGrey, fontSize: 14),
+                  style: TextStyle(
+                      color: darkGrey, fontFamily: "Inter", fontSize: 14),
                 ),
               ],
             ),
@@ -1317,6 +1347,7 @@ class _EditJobState extends State<EditJob> {
           style: TextStyle(
               color: darkGrey.withOpacity(0.9),
               fontSize: 16,
+              fontFamily: "Inter",
               fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
@@ -1366,7 +1397,10 @@ class _EditJobState extends State<EditJob> {
         title: Text(
           selectedCategoryName != null ? selectedCategoryName! : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -1435,6 +1469,7 @@ class _EditJobState extends State<EditJob> {
                             style: TextStyle(
                                 color: blackFont,
                                 fontSize: 16,
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.w400),
                           ),
                           dense: true,
@@ -1492,6 +1527,7 @@ class _EditJobState extends State<EditJob> {
                                       style: TextStyle(
                                           color: navyBlue,
                                           fontSize: 16,
+                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.w600),
                                     ),
                                     trailing: Icon(
@@ -1513,6 +1549,7 @@ class _EditJobState extends State<EditJob> {
                                   style: TextStyle(
                                       color: blackFont,
                                       fontSize: 16,
+                                      fontFamily: "Inter",
                                       fontWeight: FontWeight.w400),
                                 ),
                                 dense: true,
@@ -1568,6 +1605,7 @@ class _EditJobState extends State<EditJob> {
                                       style: TextStyle(
                                           color: navyBlue,
                                           fontSize: 16,
+                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.w600),
                                     ),
                                     Expanded(
@@ -1580,7 +1618,9 @@ class _EditJobState extends State<EditJob> {
                                             : "",
                                         maxLines: 1,
                                         style: TextStyle(
-                                            fontSize: 16, color: navyBlue),
+                                            fontFamily: "Inter",
+                                            fontSize: 16,
+                                            color: navyBlue),
                                         softWrap: false,
                                         overflow: TextOverflow.fade,
                                       ),
@@ -1606,6 +1646,7 @@ class _EditJobState extends State<EditJob> {
                                   style: TextStyle(
                                       color: blackFont,
                                       fontSize: 16,
+                                      fontFamily: "Inter",
                                       fontWeight: FontWeight.w400),
                                 ),
                                 Expanded(
@@ -1613,7 +1654,9 @@ class _EditJobState extends State<EditJob> {
                                     " (" + condition.description + ")",
                                     maxLines: 1,
                                     style: TextStyle(
-                                        fontSize: 16, color: blackFont),
+                                        fontFamily: "Inter",
+                                        fontSize: 16,
+                                        color: blackFont),
                                     softWrap: false,
                                     overflow: TextOverflow.fade,
                                   ),
@@ -1740,7 +1783,7 @@ class _EditJobState extends State<EditJob> {
             'file': '',
             'list_now': checkedValue,
             'is_online': taskMethod == 'Remote' ? true : false,
-            'is_negotiable': taskValue == 'Negotiable'?true:false,
+            'is_negotiable': taskValue == 'Negotiable' ? true : false,
             'localImages':
                 jobLocalImages.map((file) => File(file.path)).toList(),
           }, jobId: currentJob!.id!).then((value) {
@@ -1890,6 +1933,7 @@ class _EditJobState extends State<EditJob> {
                   "Choose Location",
                   style: TextStyle(
                       color: blackFont,
+                      fontFamily: "Inter",
                       fontSize: 16.8,
                       fontWeight: FontWeight.w500),
                 ),
@@ -1926,6 +1970,7 @@ class _EditJobState extends State<EditJob> {
                             style: TextStyle(
                                 color: blackFont,
                                 fontSize: 16,
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.w400),
                           ),
                           dense: true,
@@ -2032,6 +2077,7 @@ class CustomRadioTile extends StatelessWidget {
           style: const TextStyle(
             color: Colors.black,
             fontSize: 14,
+            fontFamily: "Inter",
           ),
         ),
         activeColor: navyBlue,
@@ -2095,6 +2141,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 14,
+                          fontFamily: "Inter",
                         ),
                       ),
                     )
@@ -2135,6 +2182,7 @@ class CustomizedRadioButtonRow extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 14,
+                          fontFamily: "Inter",
                         ),
                       ),
                     )

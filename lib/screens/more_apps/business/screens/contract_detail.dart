@@ -317,7 +317,7 @@ class _ContractDetailState extends State<ContractDetail> {
             color: navyBlue,
             fontWeight: FontWeight.bold,
             fontSize: 14,
-            fontFamily: "Roboto",
+            fontFamily: "Inter",
           ),
         ),
         Text(

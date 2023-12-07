@@ -115,6 +115,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
             : "",
         style: TextStyle(
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
           color: yarnBlack,
           height: 1.3,

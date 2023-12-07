@@ -114,7 +114,7 @@ class DisplayProductForDiscount extends StatelessWidget {
                           showEllipsis: true,
                         ),
                         style: TextStyle(
-                          fontFamily: "Roboto",
+                          fontFamily: "Inter",
                           fontWeight: FontWeight.w400,
                           fontSize: 10,
                           color: yarnBlack,
@@ -131,7 +131,7 @@ class DisplayProductForDiscount extends StatelessWidget {
                   Text(
                     worldCurrencies[product.currency!]!,
                     style: TextStyle(
-                      fontFamily: "Roboto",
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.bold,
                       fontSize: 14.8,
                       color: navyBlue,

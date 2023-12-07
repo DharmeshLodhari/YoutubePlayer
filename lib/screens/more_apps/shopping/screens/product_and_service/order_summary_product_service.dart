@@ -239,7 +239,7 @@ class _OrderSummaryProductServiceState
                 worldCurrencies['NGN']!,
                 style: TextStyle(
                     color: blackFont,
-                    fontFamily: "Roboto",
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                     fontSize: 14),
               ),

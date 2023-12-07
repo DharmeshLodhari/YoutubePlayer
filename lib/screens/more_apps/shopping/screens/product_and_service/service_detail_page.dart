@@ -757,7 +757,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               style: TextStyle(
                 color: blackFont,
                 fontSize: 14,
-                fontFamily: "roberto",
+                fontFamily: "Inter",
               ),
             ),
           )
@@ -1075,7 +1075,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     Text(
                       worldCurrencies[service!.currency!]!,
                       style: TextStyle(
-                          fontFamily: "Roboto",
+                          fontFamily: "Inter",
                           fontSize: 18.0,
                           color: navyBlue,
                           fontWeight: FontWeight.bold),

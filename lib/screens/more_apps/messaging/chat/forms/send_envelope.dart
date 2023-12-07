@@ -349,7 +349,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                 fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey)),
         Text("₦ $costOfEnvelope",
             style: TextStyle(
-                fontFamily: "Roberto",
+                fontFamily: "Inter",
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
                 color: darkGrey)),

@@ -18,7 +18,6 @@ import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 import '../more_apps/yarn/yarn_dashboard_bloc.dart';
 
-
 class ShopCategoryScreen extends StatefulWidget {
   ProductCategory? productCategories;
   ShopCategoryScreen({this.productCategories});
@@ -66,7 +65,9 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious, widget.productCategories!.name ,false, otherDeals: true);
+            .listOfProduct(productNext, productPrevious,
+                widget.productCategories!.name, false,
+                otherDeals: true);
 
         if (result == null) {
           noProductInList = true;
@@ -136,7 +137,6 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
     );
   }
 
-
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
       preferredSize: Size.fromHeight(50.0),
@@ -151,6 +151,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
               overflow: TextOverflow.fade,
               style: TextStyle(
                 fontSize: 21,
+                fontFamily: "Inter",
                 fontWeight: FontWeight.w700,
                 color: yarnBlack,
               ),
@@ -332,9 +333,9 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
 
   Widget pageViewTabItem(
       {required int pageNum,
-        required String title,
-        int? currentTapIndex,
-        Function? onPageTap}) {
+      required String title,
+      int? currentTapIndex,
+      Function? onPageTap}) {
     return InkWell(
       onTap: () => onPageTap!(),
       child: Container(
@@ -349,8 +350,9 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
           style: TextStyle(
             color: blackFont,
             fontSize: 14,
+            fontFamily: "Inter",
             fontWeight:
-            currentTapIndex == pageNum ? FontWeight.w600 : FontWeight.w400,
+                currentTapIndex == pageNum ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
       ),

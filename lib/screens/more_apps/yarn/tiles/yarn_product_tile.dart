@@ -164,7 +164,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                         text: worldCurrencies[
                                             widget.product!.currency!],
                                         style: TextStyle(
-                                          fontFamily: "Roboto",
+                                          fontFamily: "Inter",
                                           color: navyBlue,
                                           fontWeight: FontWeight.w700,
                                           fontSize: getFontSize(

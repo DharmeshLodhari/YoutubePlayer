@@ -305,6 +305,8 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
             color:
                 _tabController?.index == tabIndex ? white : HexColor("#78797A"),
             fontSize: 14,
+            fontFamily: "Inter",
+
             fontWeight: FontWeight.w400,
           ),
         ),

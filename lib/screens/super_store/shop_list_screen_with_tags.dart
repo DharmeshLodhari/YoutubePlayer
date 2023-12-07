@@ -405,7 +405,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.only(top: 35, bottom: 8),
+          margin: EdgeInsets.only(top: 15, bottom: 8),
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           alignment: Alignment.bottomLeft,
           child: Text(
@@ -511,6 +511,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
+                  fontFamily: "Inter",
                   color: black,
                 ),
               ),
@@ -524,7 +525,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
-                          fontFamily: "Open Sans",
+                          fontFamily: "Inter",
                           color: navyBlue),
                     ),
                     SizedBox(width: 8),
@@ -754,6 +755,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
+                        fontFamily: "Inter",
                         color: blackFont,
                       ),
                       maxLines: 2,
@@ -765,6 +767,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
                         text: worldCurrencies[product.currency!]!,
                         style: TextStyle(
                           fontSize: 16.0,
+                          fontFamily: "Inter",
                           color: blackFont,
                           fontWeight: FontWeight.w600,
                         ),
@@ -807,6 +810,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               readOnly: true,
               style: TextStyle(
                 fontSize: 16,
+                fontFamily: "Inter",
                 color: blackFont,
                 fontWeight: FontWeight.w600,
               ),

@@ -87,7 +87,10 @@ class _YarnDashboardState extends State<YarnDashboard> {
     return Text(
       count.toString(),
       style: TextStyle(
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+          fontFamily: "Inter",
+          fontSize: 10,
+          color: Colors.white,
+          fontWeight: FontWeight.bold),
     );
   }
 
@@ -110,6 +113,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
         'Yarn',
         style: TextStyle(
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
           color: yarnBlack,
           height: 1.3,

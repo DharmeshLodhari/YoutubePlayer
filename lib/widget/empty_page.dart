@@ -31,7 +31,7 @@ class EmptyPage extends StatelessWidget {
             style: TextStyle(
               color: blackFont,
               fontSize: 12,
-              fontFamily: "roberto",
+              fontFamily: "Inter",
             ),
           ),
         ),

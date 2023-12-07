@@ -158,7 +158,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
         Text(
           worldCurrencies[invoiceModel.currency!]!,
           style: TextStyle(
-            fontFamily: "Roboto",
+            fontFamily: "Inter",
             color: navyBlue,
             fontWeight: FontWeight.bold,
             fontSize: 16,

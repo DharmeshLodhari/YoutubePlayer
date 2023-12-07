@@ -211,6 +211,7 @@ class _CategoriesListState extends State<CategoriesList> {
         "Categories",
         style: TextStyle(
           color: blackFont,
+          fontFamily: "Inter",
           fontSize: 20,
           fontWeight: FontWeight.w700,
         ),
@@ -284,8 +285,8 @@ class CategoryCard extends StatelessWidget {
         title!,
         style: TextStyle(
           color: white,
+          fontFamily: "Inter",
           fontSize: 16,
-          fontFamily: "Open Sans",
           fontWeight: FontWeight.w700,
         ),
       ),

@@ -392,7 +392,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             color: navyBlue,
             fontWeight: FontWeight.bold,
             fontSize: 14,
-            fontFamily: "Roboto",
+            fontFamily: "Inter",
           ),
         ),
         Text(
@@ -590,7 +590,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                     style: TextStyle(
                         color: blackFont,
                         fontSize: 14,
-                        fontFamily: "Roboto",
+                        fontFamily: "Inter",
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
@@ -655,7 +655,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                       style: TextStyle(
                         color: blackFont,
                         fontSize: 14,
-                        fontFamily: "Roboto",
+                        fontFamily: "Inter",
                       ),
                     ),
                     Text(
@@ -673,7 +673,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                       style: TextStyle(
                         color: blackFont,
                         fontSize: 14,
-                        fontFamily: "Roboto",
+                        fontFamily: "Inter",
                       ),
                     ),
                     Text(subtotalAmount.length > 8

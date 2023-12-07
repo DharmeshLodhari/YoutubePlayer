@@ -199,7 +199,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                                       text: worldCurrencies[
                                                           product!.currency!],
                                                       style: TextStyle(
-                                                          fontFamily: "Roboto",
+                                                          fontFamily: "Inter",
                                                           color: navyBlue,
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -550,7 +550,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                                       text: worldCurrencies[
                                                           service!.currency!],
                                                       style: TextStyle(
-                                                          fontFamily: "Roboto",
+                                                          fontFamily: "Inter",
                                                           color: navyBlue,
                                                           fontWeight:
                                                               FontWeight.w700,

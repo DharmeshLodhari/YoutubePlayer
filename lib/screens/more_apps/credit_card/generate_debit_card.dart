@@ -232,7 +232,7 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
                                     style: TextStyle(
                                         fontSize: 12,
                                         color: blackFont,
-                                        fontFamily: "Roboto",
+                                        fontFamily: "Inter",
                                         fontWeight: FontWeight.w600),
                                   )
                                 ])))),

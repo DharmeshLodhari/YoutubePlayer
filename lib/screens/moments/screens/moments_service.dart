@@ -13,7 +13,7 @@ import '../../more_apps/yarn/models/Topics/CommentDetails.dart';
 import '../models/comment_model.dart';
 
 class MomentsService extends AuthService {
-  Future getExploreMoments(String? next, String? previous) async {
+  Future getExploreMoments(String? next, String? previous, {num? page_size}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -25,6 +25,16 @@ class MomentsService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
+
+    if (page_size != null) {
+      if (url.contains("page_size")) {
+        url = url;
+      } else if (url.contains("?")) {
+        url = url + "&page_size=$page_size";
+      } else {
+        url = url + "?page_size=$page_size";
+      }
+    }
     final headers = await getAuthHeaders();
 
     Response response = await httpGet(url, headers: headers);

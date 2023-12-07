@@ -203,7 +203,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                             showEllipsis: true,
                           ),
                           style: TextStyle(
-                            fontFamily: "Roboto",
+                            fontFamily: "Inter",
                             fontWeight: FontWeight.w400,
                             fontSize: 10,
                             color: yarnBlack,
@@ -224,7 +224,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                         worldCurrencies[
                                             widget.product.currency!]!,
                                         style: TextStyle(
-                                          fontFamily: "Roboto",
+                                          fontFamily: "Inter",
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14.8,
                                           color: navyBlue,
@@ -265,7 +265,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                                                   worldCurrencies[widget
                                                       .product.currency!]!,
                                                   style: TextStyle(
-                                                    fontFamily: "Roboto",
+                                                    fontFamily: "Inter",
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 12.8,
                                                     color: navyBlue,
@@ -488,7 +488,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                   Text(
                     '${basketBloc.getProductOrServiceQuantityInCart(widget.product.id!)}',
                     style: TextStyle(
-                      fontFamily: "Roboto",
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                       color: yarnBlack,
@@ -721,7 +721,7 @@ class _DisplayServiceState extends State<DisplayService> {
                               : TextOverflow.visible,
                           maxLines: 1,
                           style: TextStyle(
-                            fontFamily: "Roboto",
+                            fontFamily: "Inter",
                             fontWeight: FontWeight.w300,
                             fontSize: 9,
                             color: yarnBlack,
@@ -733,7 +733,7 @@ class _DisplayServiceState extends State<DisplayService> {
                           Text(
                             worldCurrencies[widget.service.currency!]!,
                             style: TextStyle(
-                              fontFamily: "Roboto",
+                              fontFamily: "Inter",
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                               color: navyBlue,
@@ -802,7 +802,7 @@ class _DisplayServiceState extends State<DisplayService> {
                   Text(
                     '${basketBloc.getProductOrServiceQuantityInCart(widget.service.id!)}',
                     style: TextStyle(
-                      fontFamily: "Roboto",
+                      fontFamily: "Inter",
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                       color: yarnBlack,

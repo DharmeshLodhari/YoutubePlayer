@@ -242,6 +242,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
         style: TextStyle(
           color: blackFont,
           fontSize: 20,
+          fontFamily: "Inter",
           fontWeight: FontWeight.w700,
         ),
       ),
