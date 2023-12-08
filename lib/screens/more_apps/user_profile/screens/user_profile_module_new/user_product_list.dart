@@ -259,8 +259,6 @@ class _UserProductListState extends State<UserProductList> {
         if (mounted) setState(() {});
 
         debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
-        print("_______sa________________________________________$productNext");
-        print("++++++++++++++++++++++++++++++++++++++++$productNext");
 
         Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(productNext, productPrevious, "", widget.channel!,

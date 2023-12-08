@@ -28,6 +28,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../routes/route_constants.dart';
@@ -183,6 +184,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   void getOtherItems() {
+    if (mounted) {
+      setState(() {
+        isOtherItemIsEmpty = true;
+      });
+    }
     _auth
         .ownersOrderProductsAndServices(
             type: "products", userId: product!.seller, exclude: product!.id)
@@ -197,7 +203,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       } else {
         if (mounted) {
           setState(() {
-            isOtherItemIsEmpty = true;
+            isOtherItemIsEmpty = false;
           });
         }
       }
@@ -1005,7 +1011,33 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             SizedBox(
               height: 16,
             ),
-            isOtherItemIsEmpty ? Container() : _buildSellersOtherProducts(),
+            isOtherItemIsEmpty
+                ? Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        mainAxisExtent: 180,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 15,
+                        maxCrossAxisExtent: 200,
+                      ),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : sellersOtherItems.isEmpty
+                    ? Container()
+                    : _buildSellersOtherProducts(),
             SizedBox(height: isValidCustomer ? 60.0 : 20),
           ],
         ),
@@ -1771,13 +1803,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   // for (int index = 0;
                   //     index < variantsWithSize.length;
                   //     index++) {
-                    Variant variant = availableVariant;
-                    // Update price or any other state based on the selected variant
-                    price = variant.price!;
-                    selectedVariantId = variant.id!;
-                    selectedVariantImage = variant.serverImages![0]!;
-                    selectedVariantPrice = variant.price!;
-                    stockLeft = int.parse(variant.quantity!);
+                  Variant variant = availableVariant;
+                  // Update price or any other state based on the selected variant
+                  price = variant.price!;
+                  selectedVariantId = variant.id!;
+                  selectedVariantImage = variant.serverImages![0]!;
+                  selectedVariantPrice = variant.price!;
+                  stockLeft = int.parse(variant.quantity!);
                   // }
                 } else {
                   //set the selected size to zero
@@ -1903,7 +1935,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     size,
                     style: TextStyle(
                         fontSize: 14,
-                        color: index == selectedSizeIndex ? white : blackFont.withOpacity(0.5),
+                        color: index == selectedSizeIndex
+                            ? white
+                            : blackFont.withOpacity(0.5),
                         fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -2200,8 +2234,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   Container(
                     height: 48,
                     width: 48,
-                    decoration:
-                        BoxDecoration(border: Border.all(color: dividerColor,),  borderRadius: BorderRadius.all(Radius.circular(10))),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: dividerColor,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       child: CachedNetworkImage(
@@ -2263,7 +2300,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                           visualDensity: const VisualDensity(
                               horizontal: VisualDensity.minimumDensity,
                               vertical: VisualDensity.minimumDensity),
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
                           value: addOnOption.isChecked,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(2)),
@@ -2287,14 +2325,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                           visualDensity: const VisualDensity(
                               horizontal: VisualDensity.minimumDensity,
                               vertical: VisualDensity.minimumDensity),
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
                           value: addOnOption.isChecked!,
                           groupValue:
                               true, // You need to provide a unique group value for the radio buttons
                           activeColor: navyBlue,
                           onChanged: (bool? value) {
                             // Handle radio button selection here
-                            updateAddOnOptions(addOns.options!, addOnOption.id!);
+                            updateAddOnOptions(
+                                addOns.options!, addOnOption.id!);
                           },
                         ),
                       ],
