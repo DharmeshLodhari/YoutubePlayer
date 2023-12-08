@@ -361,7 +361,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               child: ListView(
                 controller: _productScrollController,
                 children: [
-                  if (itemList.isNotEmpty) specialDeals(),
+                  if (itemList.isEmpty) specialDeals(),
                   SizedBox(height: todaysDealsSizeBox),
                   if (customerProfileListNearBy.isNotEmpty) nearByBuildView(),
                   sessionProducts(),
