@@ -36,7 +36,6 @@ class YarnAuth extends AuthService {
   // Get all YARN Categories
   Future<Map<String, dynamic>?> getAllCategories(
       String? next, String previous) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (next == null) {
       return null;
@@ -128,7 +127,6 @@ class YarnAuth extends AuthService {
 
   // Get all User's Selected Categories
   Future<Map<String, dynamic>?> getUsersCategories() async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
@@ -157,7 +155,6 @@ class YarnAuth extends AuthService {
 
   // Get all User's Yarn Setting
   Future<UserYarnSettings?> getUserYarnSettings() async {
-    debugPrint("CALLING YARN SETTINGS");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
@@ -171,10 +168,7 @@ class YarnAuth extends AuthService {
     if (response.statusCode == 200) {
       UserYarnSettings yarnSettings;
       var jsonData = json.decode(response.body);
-      logger.d(jsonData);
       yarnSettings = UserYarnSettings.fromJson(jsonData);
-      logger.d(yarnSettings);
-
       return yarnSettings;
     } else if (response.statusCode == 500) {
       return null;
@@ -185,7 +179,6 @@ class YarnAuth extends AuthService {
 
   // Get all User's Yarn Setting
   Future<UserYarnSettings?> updateUserYarnSettings(Map body) async {
-    debugPrint("CALLING YARN SETTINGS");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
@@ -213,7 +206,6 @@ class YarnAuth extends AuthService {
 
   // Save User's Selected Categories
   Future<Map<String, dynamic>?> saveUsersCategories(String body) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/ask/user-interest/";
     debugPrint(url);
@@ -243,7 +235,6 @@ class YarnAuth extends AuthService {
   // Save User's Selected Single Categories
   Future<Map<String, dynamic>?> saveUsersSingleCategories(
       String categoryId) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url =
         "${AppConfig.baseUrl}/api/v1/social/ask/user-single-interest/$categoryId/";
@@ -274,7 +265,6 @@ class YarnAuth extends AuthService {
   // Delete User's Selected Single Categories
   Future<Map<String, dynamic>?> deleteUsersSingleCategories(
       String categoryId) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url =
         "${AppConfig.baseUrl}/api/v1/social/ask/user-single-interest/$categoryId/";
@@ -308,9 +298,9 @@ class YarnAuth extends AuthService {
       bool isType = false,
       String? categoryId,
       String? userName,
-      String? latestTrending, String? isChannel, int pageSize = 21}) async {
-    debugPrint("CALLING ALL YARNS");
-    debugPrint("NEXT URL:- $next");
+      String? latestTrending,
+      String? isChannel,
+      int pageSize = 21}) async {
     String url = "";
     if (next == null) {
       return null;
@@ -328,11 +318,11 @@ class YarnAuth extends AuthService {
           }
         }
       } else {
-        if(isChannel == 'channel'){
+        if (isChannel == 'channel') {
           url = "${AppConfig.baseUrl}/api/v1/social/ask/channel/$userName/";
-        }
-        else if (isChannel == ''){
-          url = "${AppConfig.baseUrl}/api/v1/social/ask/$type/?username=$userName";
+        } else if (isChannel == '') {
+          url =
+              "${AppConfig.baseUrl}/api/v1/social/ask/$type/?username=$userName";
         }
       }
     } else {
@@ -348,18 +338,12 @@ class YarnAuth extends AuthService {
       }
     }
 
-    debugPrint('_________________________________________________________________________________GET DATA Yarn profile::: $url');
-
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-
-    debugPrint("GET DATA Yarn response:- ${response.statusCode}");
 
     if (response.statusCode == 200) {
       List<Yarn> yarnTopics = [];
       var jsonData = json.decode(response.body);
-
-      debugPrint("GET DATA Yarn jsonData:- ${jsonData["results"]}");
 
       // debugPrint("GET DATA yarn list:- $jsonData");
       for (var item in jsonData["results"]) {
@@ -410,13 +394,9 @@ class YarnAuth extends AuthService {
       List<Yarn> yarnTopics = [];
       var jsonData = json.decode(response.body);
 
-      // debugPrint("GET DATA saved list:- $jsonData");
-
       for (var item in jsonData["results"]) {
         Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
-
-        // debugPrint("GET DATA Yarn:- ${item['viewers_avatars']}");
       }
 
       Map<String, dynamic> result = {
@@ -456,7 +436,6 @@ class YarnAuth extends AuthService {
 
   // Get Single Yarn Question
   Future<Map<String, dynamic>?> getSingleTopics({String? yarnId}) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (yarnId != null) {
       url = "${AppConfig.baseUrl}/api/v1/social/ask/$yarnId";
@@ -481,7 +460,6 @@ class YarnAuth extends AuthService {
 
   // Delete Single Yarn Question
   Future<bool?> deleteSingleTopics({String? yarnId}) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (yarnId != null) {
       url = "${AppConfig.baseUrl}/api/v1/social/ask/$yarnId/";
@@ -763,13 +741,14 @@ class YarnAuth extends AuthService {
   }
 
   // Add Yarn and Question
-  Future<dynamic> addYarnAndQuestion(Yarn addYarnAndQuestion, String s, String channelUsername) async {
+  Future<dynamic> addYarnAndQuestion(
+      Yarn addYarnAndQuestion, String s, String channelUsername) async {
     log('ppppppp${addYarnAndQuestion.toJson().toString()}');
     debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
     var headers = await getAuthHeaders();
     var url = "${AppConfig.baseUrl}/api/v1/social/ask/";
 
-    if(channelUsername.isNotEmpty){
+    if (channelUsername.isNotEmpty) {
       url = "${AppConfig.baseUrl}/api/v1/social/ask/channel/$channelUsername/";
     }
 
@@ -890,7 +869,6 @@ class YarnAuth extends AuthService {
   Future<bool> deleteYarnMedia(String mediaId) async {
     var url =
         "${AppConfig.baseUrl}/api/v1/social/ask/delete-yarn-media/$mediaId/";
-    debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
     debugPrint("response:- ${response.body}");
@@ -905,8 +883,6 @@ class YarnAuth extends AuthService {
   // ADD COMMENT TO YARN
   Future<YarnComment?> addCommentToYarn(
       String yarnId, Map<String, dynamic> body) async {
-    debugPrint("CALLING ALL CATEGORIES");
-
     String url =
         "${AppConfig.baseUrl}/api/v1/social/ask/yarn-comments/$yarnId/";
     debugPrint(url);
@@ -1179,7 +1155,6 @@ class YarnAuth extends AuthService {
   // ADD COMMENT TO YARN
   Future<YarnComment?> addReplyToComment(
       String commentId, Map<String, dynamic> body) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url =
         "${AppConfig.baseUrl}/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
@@ -1324,7 +1299,6 @@ class YarnAuth extends AuthService {
 
   // ADD LIKE TO YARN
   Future<Map<String, dynamic>?> addLike(String postId) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/ask/up-vote/$postId/";
     debugPrint(url);
@@ -1347,7 +1321,6 @@ class YarnAuth extends AuthService {
 
   // ADD DISLIKE TO YARN
   Future<Map<String, dynamic>?> addDisLike(String postId) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/ask/down-vote/$postId/";
     debugPrint(url);
@@ -1370,7 +1343,6 @@ class YarnAuth extends AuthService {
 
   // ADD LIKE TO YARN
   Future<Map<String, dynamic>?> addLikeComment(String commentId) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/comments/like/$commentId/";
     debugPrint(url);
@@ -1393,7 +1365,6 @@ class YarnAuth extends AuthService {
 
   // ADD DISLIKE TO YARN
   Future<Map<String, dynamic>?> addDisLikeComment(String commentId) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/comments/dislike/$commentId/";
     debugPrint(url);

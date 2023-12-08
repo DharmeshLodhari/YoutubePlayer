@@ -214,7 +214,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
           }
         }
 
-        debugPrint('EXPLORE MOM :: $exploreMomentsList');
         // for (int i = 0; i < exploreMomentsList.length; i++) {
         //   for (int j = 0; j <= exploreMomentsList[i].moments!.length; j++) {
         //     setState(() {
@@ -964,8 +963,6 @@ Widget momentListLengthWidget(int? length, {double? fontSize}) {
 
 Widget _getMediaRenderer(
     {required MomentsModel momentModel, required BuildContext context}) {
-  debugPrint('POSTER --> ${momentModel.ownerName}');
-  debugPrint('POSTER --> ${momentModel.mediaPoster}');
   if (momentModel.mediaPoster != null) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),

@@ -277,7 +277,6 @@ class _HomeState extends State<Home> {
           momentsList.add(data.moments!.first);
         }
 
-        debugPrint('EXPLORE MOM :: $exploreMomentsList');
         if (mounted) setState(() {});
 
         if (isFirstTimeExplore &&
@@ -931,7 +930,7 @@ class _HomeState extends State<Home> {
           profileAndroidSheet();
         },
         child: userImageUserInitialsPic(
-            userBloc.user.avatar!, userBloc.user.fullName!, 25, 48),
+            userBloc.user.avatar ?? "", userBloc.user.fullName ?? "", 25, 48),
       ),
       title: InkWell(
         key: tutorialUserProfileDetailKey,
@@ -952,7 +951,7 @@ class _HomeState extends State<Home> {
                   )),
             ),
             userNameWithVerifiedIcon(
-              name: userBloc.user.displayName()!,
+              name: userBloc.user.displayName() ?? "",
               isVerified: userBloc.user.isVerified,
               verifiedIconColor: verifyGreen,
               textStyle: TextStyle(

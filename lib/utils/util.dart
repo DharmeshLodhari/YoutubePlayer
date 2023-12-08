@@ -1041,6 +1041,7 @@ String truncateString(
 }
 
 String slydoNameMsg = 'You can not use slydo in name';
+
 String? checkSlydoName(String name) {
   String? result;
 
@@ -1089,6 +1090,7 @@ class BlogSettingsTitles extends StatefulWidget {
   final bool addElevation;
   final Widget? trailingWidget;
   final Function(bool isSwitched)? onChanged;
+
   BlogSettingsTitles(
       {this.isEnabled = true,
       required this.icon,
@@ -1307,9 +1309,6 @@ Future<bool> checkStoragePermission() async {
 String? toTimeAgoLabel({required DateTime dateTime}) {
   final now = DateTime.now();
   final durationSinceNow = now.difference(dateTime);
-  debugPrint('Now --> $now');
-  debugPrint('DateTime --> $dateTime');
-  debugPrint('DurationSincenow --> $durationSinceNow');
 
   final inSeconds = durationSinceNow.inSeconds;
   final inMinutes = durationSinceNow.inMinutes;
@@ -1395,9 +1394,6 @@ String elapsedTime({required DateTime dateTime}) {
 String toTimeAgoLabelYarn({required DateTime dateTime}) {
   final now = DateTime.now();
   final durationSinceNow = now.difference(dateTime);
-  debugPrint('Now --> $now');
-  debugPrint('DateTime --> $dateTime');
-  debugPrint('DurationSincenow --> $durationSinceNow');
 
   final inDays = durationSinceNow.inDays;
   if (inDays >= 1) {
@@ -1447,6 +1443,7 @@ List<ViolationType> violationType = [
 class ViolationType {
   int? id;
   String? type;
+
   ViolationType({this.id, this.type});
 }
 
@@ -2458,6 +2455,7 @@ List<String> getLga({required List<String>? states}) {
 extension StringCasingExtension on String {
   String toCapitalized() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+
   String toTitleCase() => replaceAll(RegExp(' +'), ' ')
       .split(' ')
       .map((str) => str.toCapitalized())
@@ -2503,7 +2501,8 @@ Widget userImageUserInitialsPic(
   if (image == "" ||
       image ==
           "https://slydo-assets.s3.amazonaws.com/static/notavailable.png" ||
-   image == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      image ==
+          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
     return CircleAvatar(
       backgroundColor: navyBlue,
       radius: initialRadius,

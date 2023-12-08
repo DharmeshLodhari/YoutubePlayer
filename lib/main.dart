@@ -115,11 +115,7 @@ void getAppFeaturesFromServer() async {
 
   await AppFeaturesService().getAppFeatures().then(
     (value) async {
-      debugPrint('APP FEATURES ::: $value');
-
       getIt<AppConfigurationBloc>().appConfigurationModel = value;
-      debugPrint(
-          'GET IT --> ${getIt<AppConfigurationBloc>().appConfigurationModel}');
     },
   );
 

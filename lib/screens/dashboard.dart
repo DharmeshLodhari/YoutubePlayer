@@ -123,7 +123,6 @@ class _DashboardState extends State<Dashboard> {
     // checkNotificationToNavigate();
     MyGlobals.notificationStream?.cancel();
     listenNotificationTap();
-
   }
 
   /// Handles fetching of all categories
@@ -417,7 +416,10 @@ class _DashboardState extends State<Dashboard> {
     return Text(
       getBadgeCount().toString(),
       style: const TextStyle(
-          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Inter',
+        fontSize: 10,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontFamily: 'Inter',
       ),
     );
   }
@@ -477,9 +479,7 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: whiteBackground,
         extendBody: true,
         body: SafeArea(
-            maintainBottomViewPadding: true,
-            child: _pages[_bottomNavIndex]),
-
+            maintainBottomViewPadding: true, child: _pages[_bottomNavIndex]),
         floatingActionButton: SizedBox(
           width: 70,
           height: 70,
@@ -508,7 +508,6 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
           ),
-
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: bottomNavigationBar(),
@@ -565,28 +564,29 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Stack(
                 children: [
-                  iconList[index] == 'home/super_store' ?
-                  Icon(Icons.shopping_basket, color: color) :
-                  SvgPicture.asset(
-                    iconList[index].toSVG(),
-                    color: color,
-                    width: 28,
-                    height: 28,
-                  ),
+                  iconList[index] == 'home/super_store'
+                      ? Icon(Icons.shopping_basket, color: color)
+                      : SvgPicture.asset(
+                          iconList[index].toSVG(),
+                          color: color,
+                          width: 28,
+                          height: 28,
+                        ),
                   if (list[index] == 'Chat') // Only show badge for Chat icon
                     Positioned(
                       top: 0, // Adjust the top value as needed
                       right: 0, // Adjust the right value as needed
                       child: StreamBuilder(
-                        stream: ChatMessageSynchronizer().getChatMessageCountStream,
+                        stream:
+                            ChatMessageSynchronizer().getChatMessageCountStream,
                         builder: (context, snapshot) {
                           return FutureBuilder(
-                            future: ChatUserManager().checkForChatMessagesCount(),
+                            future:
+                                ChatUserManager().checkForChatMessagesCount(),
                             initialData: false,
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 if (snapshot.data == true) {
-
                                   // debugPrint('fola chat:::: ${snapshot.data}');
 
                                   return ClipOval(
@@ -617,7 +617,6 @@ class _DashboardState extends State<Dashboard> {
                     ),
                 ],
               ),
-
               const SizedBox(height: 4),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -625,7 +624,10 @@ class _DashboardState extends State<Dashboard> {
                   list[index],
                   maxLines: 1,
                   style: TextStyle(
-                      color: color, fontWeight: FontWeight.w600, fontSize: 12, fontFamily: "Inter"),
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      fontFamily: "Inter"),
                   // group: autoSizeGroup,
                 ),
               )

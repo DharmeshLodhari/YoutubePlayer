@@ -13,7 +13,8 @@ import '../../more_apps/yarn/models/Topics/CommentDetails.dart';
 import '../models/comment_model.dart';
 
 class MomentsService extends AuthService {
-  Future getExploreMoments(String? next, String? previous, {num? page_size}) async {
+  Future getExploreMoments(String? next, String? previous,
+      {num? page_size}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -24,7 +25,6 @@ class MomentsService extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-
 
     if (page_size != null) {
       if (url.contains("page_size")) {
@@ -38,8 +38,6 @@ class MomentsService extends AuthService {
     final headers = await getAuthHeaders();
 
     Response response = await httpGet(url, headers: headers);
-    debugPrint('EXPLORE MOMENTS ::: ${response.body}');
-    debugPrint('EXPLORE MOMENTS ::: ${response.statusCode}');
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
 
@@ -109,7 +107,8 @@ class MomentsService extends AuthService {
 
   Future<List<MomentsModel>> getMomentsWithOwnerName({
     required String ownerName,
-    bool fromUserProfile = false, // This is true when we click on the moment's button from a user's profile.
+    bool fromUserProfile =
+        false, // This is true when we click on the moment's button from a user's profile.
     required String? channelUsername,
     // bool isChannel = false,
   }) async {
@@ -117,27 +116,23 @@ class MomentsService extends AuthService {
 
     if (fromUserProfile == true) {
       url = "${AppConfig.baseUrl}/api/v1/social/moments/public/$ownerName/";
-    }else if(channelUsername != ''){
-      url = "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/";
-    }
-    else if (channelUsername == ''){
+    } else if (channelUsername != '') {
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/";
+    } else if (channelUsername == '') {
       url = "${AppConfig.baseUrl}/api/v1/social/moments/user/$ownerName/";
     }
-
-    debugPrint("MY MOMENTS URL ::: $url");
 
     final headers = await getAuthHeaders();
 
     Response response = await httpGet(url, headers: headers);
 
-    debugPrint('MY MOMENTS ::: ${response.body}');
     if (response.statusCode == 200) {
       List jsonData = [];
 
-      if(channelUsername != ''){
+      if (channelUsername != '') {
         jsonData = jsonDecode(response.body)['results'][0]['moments'];
-      }
-      else if (channelUsername == ''){
+      } else if (channelUsername == '') {
         jsonData = jsonDecode(response.body)['moments'];
       }
 
@@ -168,7 +163,6 @@ class MomentsService extends AuthService {
       String? nextUrl, String momentID) async {
     String? url =
         "${AppConfig.baseUrl}/api/v1/social/moments/comments/$momentID/?page_size=8";
-    debugPrint("COMMENT URL:- $url");
     if (nextUrl != null) {
       url = getSecureUrl(url: nextUrl);
     }
@@ -219,7 +213,6 @@ class MomentsService extends AuthService {
   // ADD COMMENT TO Moment
   Future<YarnComment?> addCommentToMoment(
       String commentId, Map<String, dynamic> body) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url = "${AppConfig.baseUrl}/api/v1/social/moments/add-comments/$commentId/";
     debugPrint(url);
@@ -318,7 +311,6 @@ class MomentsService extends AuthService {
   // ADD REPLY COMMENT TO Moment
   Future<YarnComment?> addReplyToComment(
       String commentId, Map<String, dynamic> body) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url =
         "${AppConfig.baseUrl}/api/v1/social/moments/reply-comments/$commentId/";
@@ -490,13 +482,15 @@ class MomentsService extends AuthService {
   }
 
   Future<bool> createMoment(
-      {required CreateMomentModel createMomentModel, String? channelUsername}) async {
+      {required CreateMomentModel createMomentModel,
+      String? channelUsername}) async {
     String url = "${AppConfig.baseUrl}/api/v1/social/moments/";
 
     debugPrint("URL FOR CREATE MOMENT test ${channelUsername}");
 
-    if(channelUsername!.isNotEmpty){
-      url = "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/";
+    if (channelUsername!.isNotEmpty) {
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/";
     }
 
     final headers = await getAuthHeaders();
@@ -564,11 +558,14 @@ class MomentsService extends AuthService {
   }
 
   Future<MomentsModel> updateMoment(
-      {required String momentId, required Map<String, dynamic> data, String? channelUsername}) async {
+      {required String momentId,
+      required Map<String, dynamic> data,
+      String? channelUsername}) async {
     var url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
 
-    if(channelUsername!.isNotEmpty){
-      url = "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/$momentId/";
+    if (channelUsername!.isNotEmpty) {
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/$momentId/";
     }
 
     Map<String, String> headers = await getAuthHeaders();
@@ -688,8 +685,9 @@ class MomentsService extends AuthService {
   Future<bool> deleteMoment(String momentId, String? channelUsername) async {
     var url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
 
-    if(channelUsername!.isNotEmpty){
-      url = "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/$momentId/";
+    if (channelUsername!.isNotEmpty) {
+      url =
+          "${AppConfig.baseUrl}/api/v1/social/moments/channel/$channelUsername/$momentId/";
     }
 
     Map<String, String> headers = await getAuthHeaders();

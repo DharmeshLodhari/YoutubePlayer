@@ -37,7 +37,6 @@ class MessageAuth extends AuthService {
 
   Future<bool> sendSocketMessage(Map data, File media, {File? poster}) async {
     var url = AppConfig.chatUrl + "/api/v1/chat/create/";
-    // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -275,7 +274,6 @@ class MessageAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
-    debugPrint("URL:- $url");
 
     // var response = await http
     //     .get(url, headers: headers)
@@ -362,7 +360,6 @@ class MessageAuth extends AuthService {
   Future<ChatConversation> createGroupChat(
       {required AddGroupModel group, required String type}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/group-conversation/";
-    // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -392,14 +389,16 @@ class MessageAuth extends AuthService {
         jsonEncode(group.maxAllowedMembers);
     if (group.groupProfilePhoto != null) {
       // Create multipart using filepath, string or bytes
-      var multipartFile1 = await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
+      var multipartFile1 =
+          await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
 
       // Add multipart to request
       request.files.add(multipartFile1);
     }
     if (group.avatar != null) {
       // Create multipart using filepath, string or bytes
-      var multipartFile2 = await http.MultipartFile.fromPath("avatar", group.avatar!);
+      var multipartFile2 =
+          await http.MultipartFile.fromPath("avatar", group.avatar!);
 
       // Add multipart to request
       request.files.add(multipartFile2);
@@ -442,7 +441,6 @@ class MessageAuth extends AuthService {
       {required AddGroupModel group}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/${group.groupConversationId}/";
-    // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
 
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
@@ -470,7 +468,8 @@ class MessageAuth extends AuthService {
 
     if (group.avatar != null) {
       // Create multipart using filepath, string or bytes
-      var multipartFile2 = await http.MultipartFile.fromPath("avatar", group.avatar!);
+      var multipartFile2 =
+          await http.MultipartFile.fromPath("avatar", group.avatar!);
 
       // Add multipart to request
       request.files.add(multipartFile2);
@@ -807,7 +806,6 @@ class MessageAuth extends AuthService {
     if (query != "") {
       url = url + "?q=$query/";
     }
-    debugPrint("URL:- $url");
     if (next == null) {
       return null;
     }
@@ -860,8 +858,6 @@ class MessageAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    debugPrint("URL:- $url");
-
     var headers = await getAuthHeaders();
 
     var response = await httpGet(url, headers: headers);
@@ -894,7 +890,6 @@ class MessageAuth extends AuthService {
       {List? dataToBeSent}) async {
     var url = AppConfig.chatUrl + "/api/v1/chat/acknowledge-messages/";
 
-    debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
 
     Map<String, dynamic> data = {"data": dataToBeSent};
@@ -941,7 +936,6 @@ class MessageAuth extends AuthService {
     var url = AppConfig.chatUrl +
         "/api/v1/chat/acknowledge-message-read-by-recipient/";
 
-    debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
 
     Map<String, dynamic> data = {"data": dataToBeSent};
@@ -1047,8 +1041,6 @@ class MessageAuth extends AuthService {
       "conversation_id": data["conversation_id"] ?? data["conversation"],
     };
 
-    debugPrint("URL:- $url  DATA sent:- $param}");
-
     var _data = jsonEncode(param);
 
     var response = await httpPatch(url, body: _data, headers: headers);
@@ -1081,7 +1073,6 @@ class MessageAuth extends AuthService {
     }
 
     url = Uri.encodeFull(url);
-    debugPrint("URL:- $url");
 
     var headers = await getAuthHeaders();
 
@@ -1172,8 +1163,6 @@ class MessageAuth extends AuthService {
       url = url + "?owner=$ownerName";
     }
 
-    debugPrint("URL:- $url");
-
     var headers = await getAuthHeaders();
 
     var response = await httpGet(url, headers: headers);
@@ -1204,8 +1193,6 @@ class MessageAuth extends AuthService {
     if (channelId != null && channelId.isNotEmpty) {
       url = url + "$channelId" + "/";
     }
-
-    debugPrint("URL:- $url");
 
     var headers = await getAuthHeaders();
 

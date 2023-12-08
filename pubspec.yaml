@@ -108,7 +108,6 @@ dependencies:
   provider: ^6.0.1
   pull_to_refresh: ^2.0.0
   qr_code_scanner: ^1.0.1
-  quill_delta: ^2.0.0
   quiver: ^3.0.1
   readmore: ^2.2.0
   receive_sharing_intent: ^1.4.5
