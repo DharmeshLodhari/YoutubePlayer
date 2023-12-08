@@ -910,11 +910,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           children: <Widget>[
             _buildProductImagesWidgets(),
             Container(
-              padding: EdgeInsets.only(right: 20, left: 20, top: 24),
+              padding: EdgeInsets.only(top: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildProductTitleAndPriceWidget(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildProductTitleAndPriceWidget(),
+                  ),
                   SizedBox(
                     height: 24,
                   ),
@@ -926,7 +929,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   SizedBox(
                     height: 12,
                   ),
-                  _buildShortInfoWidget(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildShortInfoWidget(),
+                  ),
                   SizedBox(
                     height: 16,
                   ),
@@ -938,7 +944,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   SizedBox(
                     height: 12,
                   ),
-                  _buildAvailableFromAndShareWidgets(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildAvailableFromAndShareWidgets(),
+                  ),
                   SizedBox(
                     height: 16,
                   ),
@@ -950,7 +959,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   SizedBox(
                     height: 12,
                   ),
-                  _buildDescriptionWidget(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildDescriptionWidget(),
+                  ),
                   SizedBox(
                     height: 16,
                   ),
@@ -963,24 +975,28 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     height: 10,
                   ),
                   if (addOnList.isNotEmpty) ...[
-                    _buildAddonWidget(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: _buildAddonWidget(),
+                    ),
                     SizedBox(
                       height: 16,
                     ),
-                    Divider(
-                      height: 0,
-                      color: dividerColor,
-                      thickness: 1,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
                   ],
-                  _buildSellerInfoWidget(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildSellerInfoWidget(),
+                  ),
                   SizedBox(height: 10),
-                  _buildReviewList(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildReviewList(),
+                  ),
                   SizedBox(height: 16),
-                  _buildWriteReview(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _buildWriteReview(),
+                  ),
                 ],
               ),
             ),
@@ -1129,19 +1145,31 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               child: Center(
                                   child: ClipRRect(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
+                                    BorderRadius.all(Radius.circular(0)),
                                 child: Stack(
                                   children: [
                                     CachedNetworkImage(
                                       placeholder: (context, url) => Center(
                                           child: CircularLoadingIndicator()),
                                       imageUrl: displayProductImages?[0] ?? "",
-                                      fit: BoxFit.fitHeight,
+                                      fit: BoxFit.cover,
                                       height: double.infinity,
                                       width: double.infinity,
                                       errorWidget:
                                           productAndServiceBigErrorWidget,
                                     ),
+                                    if (checkDiscount(
+                                        product!.discountIsActive!,
+                                        product!.discountedPrice!,
+                                        num.parse(product!.price!)))
+                                      Positioned(
+                                        top: 20,
+                                        right: 10,
+                                        child: showDiscountValue(
+                                            product!.discountType!,
+                                            product!.discountValue!,
+                                            product!.currency),
+                                      ),
                                     if (product!.pricePercentageChange !=
                                         0.0) ...[
                                       Positioned(
@@ -1307,7 +1335,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       });
     await _auth.getProduct(productId).then((value) {
       product = value;
-      
+
       displayProductImages = product!.serverImages;
       staticImage = product!.serverImages![0]!;
       productIsLoading = false;
@@ -1502,7 +1530,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               color: navyBlue,
                               fontWeight: FontWeight.bold),
                         ),
-                        
                       ],
                     ),
                   ),
@@ -1536,17 +1563,40 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                             ),
                           ],
                         ),
-                      SizedBox(width: 10),
-                      if (checkDiscount(
-                          product!.discountIsActive!,
-                          product!.discountedPrice!,
-                          num.parse(product!.price!)))
-                        showDiscountValue(product!.discountType!,
-                            product!.discountValue!, product!.currency)
                     ],
                   ),
                   SizedBox(height: 5),
-                  getRating(numberOfRating: product?.rating!.toInt())
+                  getRating(numberOfRating: product?.rating!.toInt()),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (stockLeft >= 10) ...[
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Text(
+                          'In Stock',
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: naturalGreen,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ] else if (stockLeft == 0) ...[
+                        SizedBox.shrink()
+                      ] else if (stockLeft <= 9) ...[
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Text(
+                          'Only ${stockLeft.toString()} left in stock',
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: mateRed,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ]
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -1554,31 +1604,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 qrCodeIcon(),
-                if (stockLeft >= 10) ...[
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Text(
-                    'In Stock',
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: naturalGreen,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ] else if (stockLeft == 0) ...[
-                  SizedBox.shrink()
-                ] else if (stockLeft <= 9) ...[
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Text(
-                    'Only ${stockLeft.toString()} left in stock',
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: mateRed,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ]
               ],
             ),
           ],
@@ -1593,6 +1618,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 'Color : ',
                 style: TextStyle(
                     fontSize: 16,
+                    fontFamily: "Inter",
                     color: blackFont.withOpacity(.5),
                     fontWeight: FontWeight.bold),
               ),
@@ -1609,7 +1635,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             ],
           ),
           SizedBox(
-            height: 5.0,
+            height: 10.0,
           ),
           showVariantFirstImages(),
         ],
@@ -1623,6 +1649,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 'Size : ',
                 style: TextStyle(
                     fontSize: 16,
+                    fontFamily: 'Inter',
                     color: blackFont.withOpacity(.5),
                     fontWeight: FontWeight.bold),
               ),
@@ -1639,7 +1666,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             ],
           ),
           SizedBox(
-            height: 5.0,
+            height: 10.0,
           ),
           showVariantSizes(),
         ],
@@ -1719,11 +1746,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
           // Get the first variant with this size (assuming at least one variant exists)
 
-          
           String image = getVariantImage(variantsWithSize);
 
           return Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            padding: const EdgeInsets.only(right: 2.0),
             child: GestureDetector(
               onTap: () {
                 //update the price, more information and list of images
@@ -1778,15 +1804,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 height: 80.0,
                 width: 80.0,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(14)),
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
                   border: Border.all(
                     color:
                         index == selectedImageColorIndex ? black : transparent,
-                    width: 3.0,
+                    width: 1.0,
                   ),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(5),
                   child: FittedBox(
                     fit: BoxFit.cover,
                     child: CachedNetworkImage(
@@ -1821,13 +1847,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
 
     return SizedBox(
-      height: 55.0 * totalColumns,
+      height: 35.0 * totalColumns,
       child: GridView.builder(
         // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           // maxCrossAxisExtent: maxTextLengthWithSpace, // Maximum width for each item
-          crossAxisCount: 3,
+          crossAxisCount: 4,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
           childAspectRatio: 2.5,
@@ -1870,22 +1896,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 // height: 20.0,
                 decoration: BoxDecoration(
                   color: index == selectedSizeIndex ? black : white,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  borderRadius: BorderRadius.all(Radius.circular(3)),
                   border: Border.all(
                     color: black,
                     width: 1.0,
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                  child: Center(
-                    child: Text(
-                      size,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: index == selectedSizeIndex ? white : blackFont,
-                          fontWeight: FontWeight.bold),
-                    ),
+                child: Center(
+                  child: Text(
+                    size,
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: index == selectedSizeIndex ? white : blackFont,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -2058,7 +2081,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         //   color: dividerColor,
         //   thickness: 1,
         // ),
-        _buildAddonList(),
+        // _buildAddonList(),
+        ...addOnList.map((addon) => addOnTile(addOns: addon)).toList()
       ],
     );
   }
@@ -2068,6 +2092,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       // height: 200,
       height: 100 * addOnList.length.toDouble(),
       child: ListView.builder(
+        // physics: NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 10),
         //+1 for progressbar
         itemCount: addOnList.length + 1,
@@ -2094,7 +2119,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       // shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        padding: EdgeInsets.symmetric(vertical: 10),
         // decoration: BoxDecoration(
         //   border: Border.all(width: 1, color: greyBorderColor),
         //   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -2130,23 +2155,26 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 )
               ],
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Divider(
               height: 0,
               color: dividerColor,
               thickness: 1,
             ),
-            Container(
-              child: ListView.builder(
-                itemCount: addOnOption!.length,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) => _displayAddOnOption(
-                  addOnOption[index],
-                  addOns,
-                ),
-              ),
-            )
+            // Container(
+            //   child: ListView.builder(
+            //     itemCount: addOnOption!.length,
+            //     shrinkWrap: true,
+            //     physics: NeverScrollableScrollPhysics(),
+            //     itemBuilder: (context, index) => _displayAddOnOption(
+            //       addOnOption[index],
+            //       addOns,
+            //     ),
+            //   ),
+            // )
+            ...addOnOption!
+                .map((option) => _displayAddOnOption(option, addOns))
+                .toList()
           ],
         ),
       ),
@@ -2155,19 +2183,37 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _displayAddOnOption(AddOnOption addOnOption, AddOns addOns) {
     return Container(
+      padding: EdgeInsets.only(top: 15),
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              if (addOnOption.picture != null)
+                Container(
+                  height: 48,
+                  width: 48,
+                  decoration:
+                      BoxDecoration(border: Border.all(color: dividerColor)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(3)),
+                    child: CachedNetworkImage(
+                      imageUrl: addOnOption.picture!,
+                      fit: BoxFit.fill,
+                      errorWidget: productAndServiceErrorWidget,
+                    ),
+                  ),
+                ),
+              SizedBox(width: 8),
               Text(
                 appendStringDot(addOnOption.name!, 15),
-                maxLines: 1,
+                maxLines: 2,
                 style: TextStyle(
                     color: blackFont,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     fontSize: 14),
               ),
+              Spacer(),
               GestureDetector(
                 onTap: () {
                   if (addOns.inputType == 'checkbox') {
@@ -2191,18 +2237,27 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                           fontFamily: "Inter",
                           fontSize: 14.0,
                           color: blackFont.withOpacity(.5),
-                          fontWeight: FontWeight.w600),
+                          fontWeight: FontWeight.w500),
                     ),
                     Text(
                       '${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))})',
                       style: TextStyle(
                           fontSize: 14.0,
-                          color: blackFont.withOpacity(.5),
-                          fontWeight: FontWeight.w600),
+                          color: darkGrey,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w500),
                     ),
                     if (addOns.inputType == 'checkbox') ...[
+                      SizedBox(width: 10),
                       Checkbox(
+                        visualDensity: const VisualDensity(
+                            horizontal: VisualDensity.minimumDensity,
+                            vertical: VisualDensity.minimumDensity),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         value: addOnOption.isChecked,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(2)),
+                        side: BorderSide(width: 1, color: darkGrey),
                         activeColor: navyBlue,
                         onChanged: (bool? value) {
                           // Handle checkbox state change here
@@ -2217,7 +2272,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       ),
                     ],
                     if (addOns.inputType == 'radio') ...[
+                      SizedBox(width: 10),
                       Radio<bool>(
+                        visualDensity: const VisualDensity(
+                            horizontal: VisualDensity.minimumDensity,
+                            vertical: VisualDensity.minimumDensity),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         value: addOnOption.isChecked!,
                         groupValue:
                             true, // You need to provide a unique group value for the radio buttons
@@ -2233,6 +2293,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ),
             ],
           ),
+          SizedBox(height: 15),
           Divider(
             height: 0,
             color: dividerColor,

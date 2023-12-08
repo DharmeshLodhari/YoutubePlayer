@@ -258,17 +258,17 @@ String getGroupUsername(String channelUsername) {
 
 Widget showDiscountValue(String discountType, num discountValue, currency) {
   return Container(
-    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
         color: verifyGreen, borderRadius: BorderRadius.circular(5)),
     child: Text(
       "-" +
           (discountType == "percentage"
-              ? discountValue.toString() + "%"
+              ? discountValue.toString() + "% off"
               : worldCurrencies[currency!]! +  moneyDisplayNormalizer(discountValue.toInt()).toString()),
       style: TextStyle(
         color: white,
-        fontSize: 8,
+        fontSize: 10,
         fontFamily: 'Inter',
         fontWeight: FontWeight.w700,
       ),
