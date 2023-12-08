@@ -1232,7 +1232,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                                             child:
                                                                 CircularLoadingIndicator()),
                                                     imageUrl: item!,
-                                                    fit: BoxFit.fitHeight,
+                                                    fit: BoxFit.cover,
                                                     height: double.infinity,
                                                     width: double.infinity,
                                                     errorWidget:
@@ -1707,16 +1707,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  String getVariantImage(List<Variant> variantsWithSize) {
-    String? image;
+  Variant getVariantImage(List<Variant> variantsWithSize) {
+    Variant? imageVariant;
 
     for (Variant img in variantsWithSize) {
       if (img.serverImages!.isNotEmpty) {
-        image = img.serverImages!.first;
+        imageVariant = img;
         break;
       }
     }
-    return image!;
+    return imageVariant!;
   }
 
   Widget showVariantFirstImages() {
@@ -1743,7 +1743,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
           // Get the first variant with this size (assuming at least one variant exists)
 
-          String image = getVariantImage(variantsWithSize);
+          Variant availableVariant = getVariantImage(variantsWithSize);
 
           return Padding(
             padding: const EdgeInsets.only(right: 2.0),
@@ -1755,7 +1755,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 selectedImageColorIndex = index;
 
                 // Get the ID of the selected image
-                String? selectedImageId = variantsWithSize[0].id;
+                String? selectedImageId = availableVariant.id;
 
                 // Find the variant in the original list by ID
                 Variant selectedVariant = productVariantList
@@ -1763,23 +1763,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
                 // Retrieve all images associated with the selected variant
                 List<String?>? allImages = selectedVariant.serverImages;
-
                 // Now you have all the images for the selected variant
                 displayProductImages = allImages;
                 bool allKeysAreNullOrEmpty = areAllKeysNullOrEmpty(sizeGroups);
 
                 if (allKeysAreNullOrEmpty) {
-                  for (int index = 0;
-                      index < variantsWithSize.length;
-                      index++) {
-                    Variant variant = variantsWithSize[index];
+                  // for (int index = 0;
+                  //     index < variantsWithSize.length;
+                  //     index++) {
+                    Variant variant = availableVariant;
                     // Update price or any other state based on the selected variant
                     price = variant.price!;
                     selectedVariantId = variant.id!;
                     selectedVariantImage = variant.serverImages![0]!;
                     selectedVariantPrice = variant.price!;
                     stockLeft = int.parse(variant.quantity!);
-                  }
+                  // }
                 } else {
                   //set the selected size to zero
                   selectedSizeIndex = -1;
@@ -1813,7 +1812,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   child: FittedBox(
                     fit: BoxFit.cover,
                     child: CachedNetworkImage(
-                      imageUrl: image,
+                      imageUrl: availableVariant.serverImages!.first!,
                       placeholder: (context, url) => Center(
                           child: Transform.scale(
                         scale: 0.5,
