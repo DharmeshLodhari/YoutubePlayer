@@ -975,10 +975,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     height: 10,
                   ),
                   if (addOnList.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: _buildAddonWidget(),
-                    ),
+                    _buildAddonWidget(),
                     SizedBox(
                       height: 16,
                     ),
@@ -1907,8 +1904,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     size,
                     style: TextStyle(
                         fontSize: 14,
-                        color: index == selectedSizeIndex ? white : blackFont,
-                        fontWeight: FontWeight.bold),
+                        color: index == selectedSizeIndex ? white : blackFont.withOpacity(0.5),
+                        fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -2057,21 +2054,27 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Available Add-ons",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            "Available Add-ons",
+            style: TextStyle(
+                color: blackFont, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
         SizedBox(
           height: 8,
         ),
-        Text(
-          "Spices up your orders with the available aad-ons below.",
-          style: TextStyle(
-            fontSize: 14,
-            color: darkGrey,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            "Spices up your orders with the available aad-ons below.",
+            style: TextStyle(
+              fontSize: 14,
+              color: darkGrey,
+            ),
+            textAlign: TextAlign.justify,
           ),
-          textAlign: TextAlign.justify,
         ),
         SizedBox(
           height: 8,
@@ -2126,34 +2129,37 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         // ),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  appendStringDot(addOns.name!, 15),
-                  maxLines: 1,
-                  style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1, color: navyBlue),
-                    borderRadius: BorderRadius.all(Radius.circular(7)),
-                    color: addOns.isRequired == true ? navyBlue : white,
-                  ),
-                  child: Text(
-                    addOns.isRequired == true ? 'Required' : 'Optional',
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    appendStringDot(addOns.name!, 15),
                     maxLines: 1,
                     style: TextStyle(
-                        color: addOns.isRequired == true ? white : navyBlue,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 10),
+                        color: blackFont,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15),
                   ),
-                )
-              ],
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: navyBlue),
+                      borderRadius: BorderRadius.all(Radius.circular(7)),
+                      color: addOns.isRequired == true ? navyBlue : white,
+                    ),
+                    child: Text(
+                      addOns.isRequired == true ? 'Required' : 'Optional',
+                      maxLines: 1,
+                      style: TextStyle(
+                          color: addOns.isRequired == true ? white : navyBlue,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 10),
+                    ),
+                  )
+                ],
+              ),
             ),
             SizedBox(height: 20),
             Divider(
@@ -2186,112 +2192,118 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       padding: EdgeInsets.only(top: 15),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              if (addOnOption.picture != null)
-                Container(
-                  height: 48,
-                  width: 48,
-                  decoration:
-                      BoxDecoration(border: Border.all(color: dividerColor)),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(3)),
-                    child: CachedNetworkImage(
-                      imageUrl: addOnOption.picture!,
-                      fit: BoxFit.fill,
-                      errorWidget: productAndServiceErrorWidget,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                if (addOnOption.picture != null)
+                  Container(
+                    height: 48,
+                    width: 48,
+                    decoration:
+                        BoxDecoration(border: Border.all(color: dividerColor,),  borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: CachedNetworkImage(
+                        imageUrl: addOnOption.picture!,
+                        fit: BoxFit.fill,
+                        errorWidget: productAndServiceErrorWidget,
+                      ),
                     ),
                   ),
+                SizedBox(width: 8),
+                Expanded(
+                  flex: 4,
+                  child: Text(
+                    appendStringDot(addOnOption.name!, 100),
+                    maxLines: 2,
+                    style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14),
+                  ),
                 ),
-              SizedBox(width: 8),
-              Text(
-                appendStringDot(addOnOption.name!, 15),
-                maxLines: 2,
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14),
-              ),
-              Spacer(),
-              GestureDetector(
-                onTap: () {
-                  if (addOns.inputType == 'checkbox') {
-                    addOns.options!.forEach((data) {
-                      if (data.id == addOnOption.id) {
-                        // Found the option with the target ID, change its isChecked value
-                        addOnOption.isChecked = !addOnOption.isChecked!;
-                      }
-                    });
-                    if (mounted) setState(() {});
-                  } else if (addOns.inputType == 'radio') {
-                    updateAddOnOptions(addOns.options!, addOnOption.id!);
-                  }
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      '(${worldCurrencies[addOnOption.currency!]!}',
-                      style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 14.0,
-                          color: blackFont.withOpacity(.5),
-                          fontWeight: FontWeight.w500),
-                    ),
-                    Text(
-                      '${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))})',
-                      style: TextStyle(
-                          fontSize: 14.0,
-                          color: darkGrey,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500),
-                    ),
-                    if (addOns.inputType == 'checkbox') ...[
-                      SizedBox(width: 10),
-                      Checkbox(
-                        visualDensity: const VisualDensity(
-                            horizontal: VisualDensity.minimumDensity,
-                            vertical: VisualDensity.minimumDensity),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        value: addOnOption.isChecked,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(2)),
-                        side: BorderSide(width: 1, color: darkGrey),
-                        activeColor: navyBlue,
-                        onChanged: (bool? value) {
-                          // Handle checkbox state change here
-                          addOns.options!.forEach((data) {
-                            if (data.id == addOnOption.id) {
-                              // Found the option with the target ID, change its isChecked value
-                              addOnOption.isChecked = !addOnOption.isChecked!;
-                            }
-                          });
-                          if (mounted) setState(() {});
-                        },
+                Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    if (addOns.inputType == 'checkbox') {
+                      addOns.options!.forEach((data) {
+                        if (data.id == addOnOption.id) {
+                          // Found the option with the target ID, change its isChecked value
+                          addOnOption.isChecked = !addOnOption.isChecked!;
+                        }
+                      });
+                      if (mounted) setState(() {});
+                    } else if (addOns.inputType == 'radio') {
+                      updateAddOnOptions(addOns.options!, addOnOption.id!);
+                    }
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        '(${worldCurrencies[addOnOption.currency!]!}',
+                        style: TextStyle(
+                            fontFamily: "Inter",
+                            fontSize: 14.0,
+                            color: blackFont.withOpacity(.5),
+                            fontWeight: FontWeight.w500),
                       ),
-                    ],
-                    if (addOns.inputType == 'radio') ...[
-                      SizedBox(width: 10),
-                      Radio<bool>(
-                        visualDensity: const VisualDensity(
-                            horizontal: VisualDensity.minimumDensity,
-                            vertical: VisualDensity.minimumDensity),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        value: addOnOption.isChecked!,
-                        groupValue:
-                            true, // You need to provide a unique group value for the radio buttons
-                        activeColor: navyBlue,
-                        onChanged: (bool? value) {
-                          // Handle radio button selection here
-                          updateAddOnOptions(addOns.options!, addOnOption.id!);
-                        },
+                      Text(
+                        '${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))})',
+                        style: TextStyle(
+                            fontSize: 14.0,
+                            color: darkGrey,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500),
                       ),
+                      if (addOns.inputType == 'checkbox') ...[
+                        SizedBox(width: 10),
+                        Checkbox(
+                          visualDensity: const VisualDensity(
+                              horizontal: VisualDensity.minimumDensity,
+                              vertical: VisualDensity.minimumDensity),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          value: addOnOption.isChecked,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(2)),
+                          side: BorderSide(width: 1, color: darkGrey),
+                          activeColor: navyBlue,
+                          onChanged: (bool? value) {
+                            // Handle checkbox state change here
+                            addOns.options!.forEach((data) {
+                              if (data.id == addOnOption.id) {
+                                // Found the option with the target ID, change its isChecked value
+                                addOnOption.isChecked = !addOnOption.isChecked!;
+                              }
+                            });
+                            if (mounted) setState(() {});
+                          },
+                        ),
+                      ],
+                      if (addOns.inputType == 'radio') ...[
+                        SizedBox(width: 10),
+                        Radio<bool>(
+                          visualDensity: const VisualDensity(
+                              horizontal: VisualDensity.minimumDensity,
+                              vertical: VisualDensity.minimumDensity),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          value: addOnOption.isChecked!,
+                          groupValue:
+                              true, // You need to provide a unique group value for the radio buttons
+                          activeColor: navyBlue,
+                          onChanged: (bool? value) {
+                            // Handle radio button selection here
+                            updateAddOnOptions(addOns.options!, addOnOption.id!);
+                          },
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           SizedBox(height: 15),
           Divider(
