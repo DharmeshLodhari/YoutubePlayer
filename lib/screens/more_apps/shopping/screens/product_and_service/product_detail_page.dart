@@ -2231,33 +2231,45 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 if (addOnOption.picture != null)
-                  Container(
-                    height: 48,
-                    width: 48,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: dividerColor,
+                  InkWell(
+                    onTap: () {
+                      showDescription(addOnOption);
+                    },
+                    child: Container(
+                      height: 48,
+                      width: 48,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: dividerColor,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        child: CachedNetworkImage(
+                          imageUrl: addOnOption.picture!,
+                          fit: BoxFit.fill,
+                          errorWidget: productAndServiceErrorWidget,
                         ),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      child: CachedNetworkImage(
-                        imageUrl: addOnOption.picture!,
-                        fit: BoxFit.fill,
-                        errorWidget: productAndServiceErrorWidget,
                       ),
                     ),
                   ),
                 SizedBox(width: 8),
                 Expanded(
                   flex: 4,
-                  child: Text(
-                    appendStringDot(addOnOption.name!, 100),
-                    maxLines: 2,
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14),
+                  child: InkWell(
+                    onTap: () {
+                      if (addOnOption.picture == null) {
+                        showDescription(addOnOption);
+                      }
+                    },
+                    child: Text(
+                      appendStringDot(addOnOption.name!, 100),
+                      maxLines: 2,
+                      style: TextStyle(
+                          color: blackFont,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14),
+                    ),
                   ),
                 ),
                 Spacer(),
@@ -2353,6 +2365,137 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ],
       ),
     );
+  }
+
+  void showDescription(AddOnOption addOnOption) {
+    showDialog<String>(
+        barrierDismissible: true,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(21.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              addOnOption.picture != null
+                                  ? Row(
+                                      children: [
+                                        Container(
+                                          height: 100,
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: dividerColor,
+                                              ),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10))),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10)),
+                                            child: CachedNetworkImage(
+                                              imageUrl: addOnOption.picture!,
+                                              fit: BoxFit.fill,
+                                              errorWidget:
+                                                  productAndServiceErrorWidget,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 16),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              addOnOption.name!,
+                                              style: TextStyle(
+                                                  color: blackFont,
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontFamily: 'Inter'),
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Text(
+                                              '${worldCurrencies[addOnOption.currency!]!}${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))}',
+                                              style: TextStyle(
+                                                  color: darkGrey,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontFamily: 'Inter'),
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    )
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          addOnOption.name!,
+                                          style: TextStyle(
+                                              color: blackFont,
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'Inter'),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          '${worldCurrencies[addOnOption.currency!]!}${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))}',
+                                          style: TextStyle(
+                                              color: darkGrey,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'Inter'),
+                                        )
+                                      ],
+                                    ),
+                              SizedBox(height: 16),
+                              Text(
+                                "Description",
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Inter'),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                addOnOption.description!,
+                                style: TextStyle(
+                                    color: darkGrey,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Inter'),
+                              )
+                            ]),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
   }
 
   void updateAddOnOptions(List<AddOnOption> options, int targetId) {
