@@ -1,8 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_discount.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -274,7 +272,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        'Shipping Address',
+        'Dispatch Address',
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,
@@ -356,101 +354,101 @@ class _DispatchAddressState extends State<DispatchAddress> {
           color: white,
           child: Container(
             padding: EdgeInsets.only(top: 23, left: 15, right: 15),
-            child: Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        itemList[index].name!,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      itemList[index].name!,
+                      maxLines: 1,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          fontFamily: "Inter",
+                          color: blackFont),
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Spacer(),
+                    Radio<bool>(
+                        materialTapTargetSize:
+                            MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: const VisualDensity(
+                          horizontal: VisualDensity.minimumDensity,
+                          vertical: VisualDensity.minimumDensity,
+                        ),
+                        value: itemList[index].is_default!,
+                        activeColor: navyBlue,
+                        groupValue: true,
+                        onChanged: (val) {
+                          // itemList.forEach((data) {
+                          //   if (data.id == itemList[index].id) {
+                          //     // Found the option with the target ID, change its isChecked value
+                          //     itemList[index].is_default =
+                          //         !itemList[index].is_default!;
+                          //   }
+                          // });
+                          // if (mounted) setState(() {});
+                        })
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                 "${itemList[index].line_1!}, ${itemList[index].line_2}, ${itemList[index].city}, ${itemList[index].stateName}, ${itemList[index].zip}, ${itemList[index].country}",
+                  maxLines: 2,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 13,
+                      fontFamily: "Inter",
+                      color: darkGrey),
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: itemList[index].is_default! ? null : () {
+                        setDefaultAddress(itemList[index].id);
+                      },
+                      child: Text(
+                        itemList[index].is_default! ? "Default" : "Set as Default",
                         maxLines: 1,
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                             fontFamily: "Inter",
-                            color: blackFont),
+                            color: itemList[index].is_default! ? blackFont : navyBlue),
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Spacer(),
-                      Radio<bool>(
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          visualDensity: const VisualDensity(
-                            horizontal: VisualDensity.minimumDensity,
-                            vertical: VisualDensity.minimumDensity,
+                    ),
+                    Spacer(),
+                    IconButton(
+                      onPressed: () async {
+                        var result = await NavigationUtil.push(
+                          context,
+                          screen: AddEditShippingAddress(
+                            shippingAddress: itemList[index],
                           ),
-                          value: itemList[index].is_default!,
-                          groupValue: true,
-                          onChanged: (val) {
-                            // itemList.forEach((data) {
-                            //   if (data.id == itemList[index].id) {
-                            //     // Found the option with the target ID, change its isChecked value
-                            //     itemList[index].is_default =
-                            //         !itemList[index].is_default!;
-                            //   }
-                            // });
-                            // if (mounted) setState(() {});
-                          })
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    itemList[index].line_1!,
-                    maxLines: 1,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 13,
-                        fontFamily: "Inter",
-                        color: darkGrey),
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          setDefaultAddress(itemList[index].id);
-                        },
-                        child: Text(
-                          "Set as Default",
-                          maxLines: 1,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 13,
-                              fontFamily: "Inter",
-                              color: navyBlue),
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        );
+                        if (result != null && result == true) {
+                          getList(fetchFresh: true);
+                        }
+                      },
+                      icon: Icon(Icons.edit),
+                      visualDensity: const VisualDensity(
+                        horizontal: VisualDensity.minimumDensity,
+                        vertical: VisualDensity.minimumDensity,
                       ),
-                      Spacer(),
-                      IconButton(
-                        onPressed: () async {
-                          var result = await NavigationUtil.push(
-                            context,
-                            screen: AddEditShippingAddress(
-                              shippingAddress: itemList[index],
-                            ),
-                          );
-                          if (result != null && result == true) {
-                            getList(fetchFresh: true);
-                          }
-                        },
-                        icon: Icon(Icons.edit),
-                        visualDensity: const VisualDensity(
-                          horizontal: VisualDensity.minimumDensity,
-                          vertical: VisualDensity.minimumDensity,
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 10),
+              ],
             ),
           ),
         ),

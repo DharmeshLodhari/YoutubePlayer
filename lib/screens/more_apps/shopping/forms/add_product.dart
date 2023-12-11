@@ -98,7 +98,7 @@ class _AddProductState extends State<AddProduct> {
   bool measurementView = false;
   List<Map<String, dynamic>> userTags = [];
   bool show = false;
-ShippingAddress? defaultAddress;
+  ShippingAddress? defaultAddress;
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -118,35 +118,31 @@ ShippingAddress? defaultAddress;
     super.initState();
   }
 
-
   void getList() async {
+    isLoading = true;
+    if (mounted) setState(() {});
 
-        isLoading = true;
-        if (mounted) setState(() {});
+    Map<String, dynamic>? result =
+        await ShoppingAuthService().listOfDispatchAddress("", null);
 
-        Map<String, dynamic>? result =
-            await ShoppingAuthService().listOfDispatchAddress("", null);
+    if (result == null) {
+      isLoading = false;
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
 
-        if (result == null) {
-          isLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
-          return;
-        }
+    List<ShippingAddress> tempList = result['results'];
 
-    
-        List<ShippingAddress> tempList = result['results'];
-     
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-            defaultAddress =  tempList.firstWhere((element) => element.is_default!);
-          });
-        }
-      
-    
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        defaultAddress = tempList.firstWhere((element) => element.is_default!);
+      });
+    }
   }
+
   _printLatestValue() {
     if (myController.text.length > 2) {
       getProductTags(userBloc!.userAbout!.industry!.id!, myController.text);
@@ -522,8 +518,6 @@ ShippingAddress? defaultAddress;
                       //TODO: hide this add-on
                       const SizedBox(height: 22),
                       defaultAddress == null ? SizedBox() : address(),
-                      
-                      
 
                       const SizedBox(height: 35),
                       getSubmitButton(),
@@ -2659,36 +2653,36 @@ ShippingAddress? defaultAddress;
 
   Widget address() {
     // print(defaultAddress!.city);
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
-              },
-      child: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Dispatch Address',
-              maxLines: 1,
-              style: TextStyle(
-                  color: darkGrey,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "Inter",
-                  fontSize: 14),
-            ),
-            SizedBox(height: 6),
-            Row(
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Dispatch Address',
+            maxLines: 1,
+            style: TextStyle(
+                color: darkGrey,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Inter",
+                fontSize: 14),
+          ),
+          SizedBox(height: 6),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
+            },
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Flexible(
                   flex: 2,
                   child: Text(
-                   defaultAddress!.addressLineOne!,
+                    defaultAddress!.addressLineOne!,
                     maxLines: 2,
                     style: TextStyle(
-                        color:
-                            blackFont,
+                        color: blackFont,
                         fontWeight: FontWeight.w500,
                         fontFamily: "Inter",
                         fontSize: 14),
@@ -2702,11 +2696,12 @@ ShippingAddress? defaultAddress;
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+
   Widget productAddOns() {
     return GestureDetector(
       onTap: () {
