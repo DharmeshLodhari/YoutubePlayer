@@ -127,6 +127,7 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/DispatchAddress/dispatch_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/custom_category/custom_category_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/discount/discount_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/flash_tags/flash_tag_list.dart';
@@ -1836,6 +1837,14 @@ class RouteGenerator {
       case Routes.DISCOUNT_LIST:
         return PageTransition(
           child: DiscountList(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      /// Discount
+      case Routes.DISPATCH_ADDRESS:
+        return PageTransition(
+          child: DispatchAddress(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

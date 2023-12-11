@@ -1,0 +1,460 @@
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_discount.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/CustomBoxShadow.dart';
+
+import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
+
+// ignore: must_be_immutable
+class DispatchAddress extends StatefulWidget {
+  DispatchAddress({Key? key}) : super(key: key);
+
+  @override
+  _DispatchAddressState createState() => _DispatchAddressState();
+}
+
+class _DispatchAddressState extends State<DispatchAddress> {
+  // this variable responsible for product pagination
+  int? itemCount = 0;
+  String? next = "";
+  String? previous = "";
+  List<ShippingAddress> itemList = [];
+  ScrollController _scrollController = new ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
+      new GlobalKey<ScaffoldMessengerState>();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  bool isLoading = false;
+  bool noItemInList = false;
+  // final String groupValue;
+
+  @override
+  void initState() {
+    this.getList();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getList();
+      }
+    });
+
+    super.initState();
+  }
+
+  void _onProductRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        itemCount = 0;
+        next = "";
+        previous = "";
+        itemList = [];
+        debugPrint("Refresh called on discount!!  ");
+        getList();
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  void getList({bool fetchFresh = false}) async {
+    if (fetchFresh) {
+      itemCount = 0;
+      next = "";
+      previous = "";
+      itemList = [];
+    }
+
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result =
+            await ShoppingAuthService().listOfDispatchAddress(next, previous);
+
+        if (result == null) {
+          isLoading = false;
+          noItemInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        itemCount = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isLoading = false;
+            itemList.addAll(tempList);
+          });
+        }
+      }
+      if (itemList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (next == null && itemList.length > 6) {
+        _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  void setDefaultAddress(id) async {
+    itemList = [];
+    if (mounted) {
+      setState(() {});
+    }
+
+    Map<String, dynamic>? result =
+        await ShoppingAuthService().setDefaultAddress(id);
+
+    if (result == null) {
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+
+    itemCount = result['count'];
+    next = result['next'];
+    previous = result['previous'];
+    var tempList = result['results'];
+    if (mounted) {
+      setState(() {
+        itemList.addAll(tempList);
+      });
+    }
+
+    if (itemList.isEmpty) {
+      if (mounted) {
+        setState(() {
+          noItemInList = true;
+        });
+      }
+    } else if (next == null && itemList.length > 6) {
+      _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+        content:
+            Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        duration: Duration(milliseconds: 500),
+      ));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaffoldMessenger(
+      key: _messengerScaffoldKey,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: _buildAppBar() as PreferredSizeWidget,
+        body: Container(
+          color: white,
+          padding: EdgeInsets.symmetric(horizontal: 4),
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onProductRefresh,
+            child: noItemInList
+                ? NoItemInList(msg: AppLocalization.of(context)!.noResultFound
+                    // msg: AppLocalization.of(context)!.noProducts,
+                    )
+                : isLoading
+                    ? _buildShimmerEffect()
+                    : _buildItemList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.white,
+      highlightColor: greyBorderColor,
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
+        itemCount: 5,
+        itemBuilder: (context, index) {
+          return CustomBoxShadow(
+            child: Container(
+              height: 90,
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: CustomBoxShadow(
+                child: Card(
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  margin: EdgeInsets.zero,
+                  shadowColor: boxShadowTwo,
+                  color: lightGrey,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 10,
+                                  width: 50,
+                                  color: Colors.blueGrey,
+                                ),
+                                SizedBox(
+                                  height: 12,
+                                ),
+                                Container(
+                                  height: 8,
+                                  width: 50,
+                                  color: Colors.blueGrey,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 10,
+                            width: 50,
+                            color: Colors.blueGrey,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: Text(
+        'Shipping Address',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: yarnBlack,
+          height: 1.3,
+        ),
+      ),
+      centerTitle: false,
+      titleSpacing: 16,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context, "back pressed");
+        },
+      ),
+      shadowColor: greySecondaryYarn,
+      actions: _buildAppBarActions(),
+      elevation: 0.5,
+    );
+  }
+
+  List<Widget> _buildAppBarActions() {
+    return [
+      RoundedBackgroundIcon(
+          backgroundColor: Colors.transparent,
+          onTap: () async {
+            var result = await NavigationUtil.push(
+              context,
+              screen: AddEditShippingAddress(),
+            );
+            if (result != null && result == true) {
+              getList(fetchFresh: true);
+            }
+          },
+          height: 20,
+          width: 20,
+          icon: SvgPicture.asset(
+            "add_payment".toSVG(),
+            height: 12,
+            width: 12,
+          )),
+      SizedBox(width: 30),
+    ];
+  }
+
+  Widget _buildItemList() {
+    return next == "" && isLoading
+        ? SizedBox.shrink()
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              controller: _scrollController,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: itemList.length,
+              itemBuilder: (context, index) {
+                return itemTile(index);
+              },
+            ),
+          );
+  }
+
+  Widget itemTile(int index) {
+    return Container(
+      // height: 120,
+      margin: const EdgeInsets.symmetric(vertical: 10.0),
+      child: CustomBoxShadow(
+        child: Card(
+          elevation: 2.5,
+          shadowColor: boxShadowTwo,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.zero,
+          color: white,
+          child: Container(
+            padding: EdgeInsets.only(top: 23, left: 15, right: 15),
+            child: Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        itemList[index].name!,
+                        maxLines: 1,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontFamily: "Inter",
+                            color: blackFont),
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Spacer(),
+                      Radio<bool>(
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: const VisualDensity(
+                            horizontal: VisualDensity.minimumDensity,
+                            vertical: VisualDensity.minimumDensity,
+                          ),
+                          value: itemList[index].is_default!,
+                          groupValue: true,
+                          onChanged: (val) {
+                            // itemList.forEach((data) {
+                            //   if (data.id == itemList[index].id) {
+                            //     // Found the option with the target ID, change its isChecked value
+                            //     itemList[index].is_default =
+                            //         !itemList[index].is_default!;
+                            //   }
+                            // });
+                            // if (mounted) setState(() {});
+                          })
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    itemList[index].line_1!,
+                    maxLines: 1,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 13,
+                        fontFamily: "Inter",
+                        color: darkGrey),
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          setDefaultAddress(itemList[index].id);
+                        },
+                        child: Text(
+                          "Set as Default",
+                          maxLines: 1,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              fontFamily: "Inter",
+                              color: navyBlue),
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Spacer(),
+                      IconButton(
+                        onPressed: () async {
+                          var result = await NavigationUtil.push(
+                            context,
+                            screen: AddEditShippingAddress(
+                              shippingAddress: itemList[index],
+                            ),
+                          );
+                          if (result != null && result == true) {
+                            getList(fetchFresh: true);
+                          }
+                        },
+                        icon: Icon(Icons.edit),
+                        visualDensity: const VisualDensity(
+                          horizontal: VisualDensity.minimumDensity,
+                          vertical: VisualDensity.minimumDensity,
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

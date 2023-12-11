@@ -199,4 +199,5 @@ class Routes {
   static const String FLASH_TAG_LIST = "/flash-tag-list";
   static const String DISCOUNT_LIST = "/discount-list";
   static const String CUSTOM_CATEGORY = "/custom-Category";
+  static const String DISPATCH_ADDRESS = "/dispatch_address";
 }

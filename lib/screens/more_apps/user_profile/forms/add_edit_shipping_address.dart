@@ -1,0 +1,767 @@
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/states_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list_for_discount.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class AddEditShippingAddress extends StatefulWidget {
+  AddEditShippingAddress({Key? key, this.shippingAddress}) : super(key: key);
+
+  final ShippingAddress? shippingAddress;
+
+  @override
+  _AddEditShippingAddressState createState() => _AddEditShippingAddressState();
+}
+
+class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
+  final _formKey = GlobalKey<FormState>();
+
+  bool isAPILoading = false;
+
+  bool isDeleteLoading = false;
+
+  late ShippingAddress shippingAddress;
+  bool isEdit = false;
+
+  List<Product> selectedProducts = [];
+  bool isSelectAll = false;
+  bool isItemSelected = false;
+  String country = "Nigeria";
+  String? selectedState;
+  String? selectedCity;
+  bool isLoading = false;
+  List<StatesModel> itemList = [];
+  List<Cities> cityList = [];
+  List<String> states = [];
+  late UserBloc userBloc;
+  String? name, phone;
+
+  @override
+  void initState() {
+    if (widget.shippingAddress != null) {
+      isEdit = true;
+    }
+    shippingAddress = widget.shippingAddress?.copyWith() ?? ShippingAddress();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getShippingStates();
+
+      userBloc = Provider.of<UserBloc>(context, listen: false);
+    });
+    super.initState();
+  }
+
+  void getShippingStates() async {
+    selectedState = shippingAddress.stateName;
+    selectedCity = shippingAddress.city;
+    if (mounted) setState(() {});
+
+    if (!isLoading) {
+      isLoading = true;
+      if (mounted) setState(() {});
+
+      Map<String, dynamic>? result =
+          await ShoppingAuthService().getShippingStates();
+
+      if (result == null) {
+        isLoading = false;
+        if (mounted) {
+          setState(() {});
+        }
+        return;
+      }
+
+      List<StatesModel> tempList = result['results'];
+      // tempList.forEach((element) {
+      //   states.add(element.name!);
+      // });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          itemList.addAll(tempList);
+        });
+      }
+      String code = tempList.firstWhere((element) => element.name == shippingAddress.stateName).isoCode!;
+      getShippingCities(code);
+    }
+  }
+
+  void getShippingCities(code) async {
+    if (!isLoading) {
+      isLoading = true;
+      if (mounted) setState(() {});
+
+      Map<String, dynamic>? result =
+          await ShoppingAuthService().getShippingCities(code);
+
+      if (result == null) {
+        isLoading = false;
+        if (mounted) {
+          setState(() {});
+        }
+        return;
+      }
+
+      List<Cities> tempList = result['results'];
+      // tempList.forEach((element) {
+      //   states.add(element.name!);
+      // });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          cityList.addAll(tempList);
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0.5,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Add Shipping  Address",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      centerTitle: false,
+      shadowColor: greySecondaryYarn,
+    );
+  }
+
+  Widget scaffoldBody() {
+    return SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(height: 20),
+                addTitleField(),
+                const SizedBox(
+                  height: 16,
+                ),
+                // addPhoneNumberField(),
+                // const SizedBox(
+                //   height: 16,
+                // ),
+                // addEmailField(),
+                // const SizedBox(
+                //   height: 16,
+                // ),
+                Text(
+                  'Country',
+                  style: TextStyle(color: darkGrey, fontSize: 14),
+                ),
+                SizedBox(height: 6),
+                countryDropdown(),
+                const SizedBox(
+                  height: 16,
+                ),
+                Text(
+                  'State',
+                  style: TextStyle(color: darkGrey, fontSize: 14),
+                ),
+                SizedBox(height: 6),
+                stateDropdown(),
+                const SizedBox(
+                  height: 16,
+                ),
+                Text(
+                  'City',
+                  style: TextStyle(color: darkGrey, fontSize: 14),
+                ),
+                SizedBox(height: 6),
+                cityDropdown(),
+                const SizedBox(
+                  height: 16,
+                ),
+                addAddressField(),
+                const SizedBox(
+                  height: 16,
+                ),
+                addAddressField2(),
+                const SizedBox(
+                  height: 16,
+                ),
+                addPostalField(),
+                const SizedBox(height: 16),
+                toggleActiveTag(),
+                const SizedBox(height: 32),
+                getSubmitButton(),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget showBackArrow() {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget addTitleField() {
+    return CustomizedTextFormField(
+      labelText: "Receiver Name",
+      initialValue: shippingAddress.name ?? "",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "This field should not be empty";
+      },
+      onChanged: (val) {
+        shippingAddress.name = val;
+      },
+    );
+  }
+
+  Widget addPhoneNumberField() {
+    return CustomizedTextFormField(
+      labelText: "Phone Number",
+      initialValue: shippingAddress.phone ?? userBloc.user.phoneNumber,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "This field should not be empty";
+      },
+      onChanged: (val) {
+        shippingAddress.phone = val;
+      },
+    );
+  }
+
+  Widget addEmailField() {
+    return CustomizedTextFormField(
+      labelText: "Email Address",
+      initialValue: shippingAddress.email ?? "",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "This field should not be empty";
+      },
+      onChanged: (val) {
+        shippingAddress.email = val;
+      },
+    );
+  }
+
+  Widget addStateField() {
+    return CustomizedTextFormField(
+      labelText: "State",
+      initialValue: shippingAddress.stateName ?? "",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "This field should not be empty";
+      },
+      onChanged: (val) {
+        shippingAddress.stateName = val;
+      },
+    );
+  }
+
+  Widget addCityField() {
+    return CustomizedTextFormField(
+      labelText: "City",
+      initialValue: shippingAddress.city ?? "",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "This field should not be empty";
+      },
+      onChanged: (val) {
+        shippingAddress.city = val;
+      },
+    );
+  }
+
+  Widget addAddressField() {
+    return CustomizedTextFormField(
+      labelText: "Address Line 1",
+      initialValue: shippingAddress.line_1 ?? "",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "This field should not be empty";
+      },
+      onChanged: (val) {
+        shippingAddress.line_1 = val;
+      },
+    );
+  }
+  Widget addAddressField2() {
+    return CustomizedTextFormField(
+      labelText: "Address Line 2",
+      initialValue: shippingAddress.line_2 ?? "",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "This field should not be empty";
+      },
+      onChanged: (val) {
+        shippingAddress.line_2 = val;
+      },
+    );
+  }
+
+  Widget addPostalField() {
+    return CustomizedTextFormField(
+      labelText: "Postcode",
+      initialValue: shippingAddress.zip ?? "",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "This field should not be empty";
+      },
+      onChanged: (val) {
+        shippingAddress.zip = val;
+      },
+    );
+  }
+
+  Widget countryDropdown() {
+    return DropdownButtonFormField2(
+      buttonHeight: 50,
+      isExpanded: true,
+      value: country,
+      style: TextStyle(
+        fontSize: 16,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+      ),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+      items: ["Nigeria"].map((item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        shippingAddress.country = "NG";
+        setState(() {
+          country = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a country';
+        }
+      },
+    );
+  }
+
+  Widget stateDropdown() {
+    return DropdownButtonFormField2(
+      buttonHeight: 50,
+      isExpanded: true,
+      value: selectedState,
+      style: TextStyle(
+        fontSize: 16,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+      ),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+      items: itemList.map((StatesModel item) {
+        return DropdownMenuItem<String>(
+          value: item.name,
+          child: Text(item.name!),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        StatesModel picked =
+            itemList.firstWhere((element) => element.name == value);
+        getShippingCities(picked.isoCode);
+        shippingAddress.stateName = picked.name;
+        setState(() {
+          selectedState = value!;
+          cityList = [];
+          selectedCity = null;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a state';
+        }
+      },
+    );
+  }
+
+  Widget cityDropdown() {
+    return DropdownButtonFormField2(
+      buttonHeight: 50,
+      isExpanded: true,
+      value: selectedCity,
+      style: TextStyle(
+        fontSize: 16,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+      ),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+      items: cityList.map((Cities item) {
+        return DropdownMenuItem<String>(
+          value: item.name,
+          child: Text(item.name!),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        shippingAddress.city = value;
+        setState(() {
+          selectedCity = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a state';
+        }
+      },
+    );
+  }
+
+  Widget getSubmitButton() {
+    if (isEdit) {
+      return Row(
+        children: [
+          Expanded(
+            child: CurvedButton(
+              onPressed: isDeleteLoading
+                  ? () {}
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      isDeleteLoading = true;
+                      if (mounted) setState(() {});
+
+                      await deleteItem();
+
+                      isDeleteLoading = false;
+                      if (mounted) setState(() {});
+                    },
+              backgroundColor: red,
+              textColor: Colors.white,
+              text: "Delete",
+              isLoading: isDeleteLoading,
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+          Expanded(
+            child: CurvedButton(
+              onPressed: isAPILoading
+                  ? () {}
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      isAPILoading = true;
+                      if (mounted) setState(() {});
+
+                      await addEditItem();
+
+                      isAPILoading = false;
+                      if (mounted) setState(() {});
+                    },
+              backgroundColor: navyBlue,
+              textColor: Colors.white,
+              text: "Update",
+              isLoading: isAPILoading,
+            ),
+          )
+        ],
+      );
+    }
+
+    return CurvedButton(
+      onPressed: isAPILoading
+          ? () {}
+          : () async {
+              FocusScope.of(context).unfocus();
+              isAPILoading = true;
+              if (mounted) setState(() {});
+
+              await addEditItem();
+
+              isAPILoading = false;
+              if (mounted) setState(() {});
+            },
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Save",
+      isLoading: isAPILoading,
+    );
+  }
+
+  Future<void> addEditItem() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      //the api call will first create the product then use the id from the
+      //response to save the variant
+      shippingAddress.email = userBloc.user.userName! + "@slydo.co";
+      shippingAddress.phone = userBloc.user.phoneNumber;
+      shippingAddress.first_name = userBloc.user.fullName!.split(" ").first;
+      shippingAddress.last_name = userBloc.user.fullName!.split(" ").last;
+      shippingAddress.is_residential = shippingAddress.is_residential ?? false;
+      print(shippingAddress.toAddUpdate());
+
+        await ShoppingAuthService()
+            .addUpdateAddress(shippingAddress, isEdit: isEdit)
+            .then((value) async {
+          Navigator.pop(context, true);
+          showToast(
+            message: isEdit
+                ? "Address updated successfully"
+                : "Address added successfully",
+          );
+        }).catchError((error) {
+          debugPrint("Product check::: ${error.toString()}");
+          showToast(message: error.toString());
+        });
+      } else {
+        showToast(message: "Please fill all the details");
+    }
+  }
+
+  Future<void> deleteItem() async {
+    await ShoppingAuthService()
+        .deleteAddress(shippingAddress.id!)
+        .then((value) async {
+      Navigator.pop(context, true);
+      showToast(
+        message: "Address deleted successfully",
+      );
+    }).catchError((error) {
+      debugPrint("Product check::: ${error.toString()}");
+      showToast(message: error.toString());
+    });
+  }
+
+  Widget toggleActiveTag() {
+    return Row(
+      children: [
+        Checkbox(
+          activeColor: navyBlue,
+          value: shippingAddress.is_residential,
+          onChanged: (value) {
+            shippingAddress.is_residential = !shippingAddress.is_residential;
+            setState(() {});
+          },
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        ),
+        // Switch(
+        //   onChanged: (value) {
+        //     discountModel.isActive = !discountModel.isActive;
+        //     setState(() {});
+        //   },
+        //   value: discountModel.isActive,
+        //   activeColor: Theme.of(context).primaryColor,
+        // ),
+        Text(
+          "This is a residential address",
+          style: TextStyle(
+              fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  // Widget productSelection() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       GestureDetector(
+  //         onTap: () async {
+  //           var result = await NavigationUtil.push(
+  //             context,
+  //             screen: UserProductListForDiscount(item: shippingAddress),
+  //           );
+
+  //           if (result != null && result is Map<String, dynamic>) {
+  //             isItemSelected = true;
+  //             if (result["isSelectAll"] as bool == true) {
+  //               discountModel.addProductsToDiscount(["*"]);
+  //               isSelectAll = true;
+  //             } else {
+  //               discountModel.addProductsToDiscount(result["ids"]);
+  //               selectedProducts = result["products"];
+  //             }
+  //             if (mounted) setState(() {});
+  //           }
+  //         },
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               "Product",
+  //               style: TextStyle(
+  //                   fontSize: 16,
+  //                   color: blackFont,
+  //                   fontWeight: FontWeight.w600),
+  //             ),
+  //             SizedBox(
+  //               height: 18,
+  //             ),
+  //             Row(
+  //               children: [
+  //                 Expanded(
+  //                   child: Text(
+  //                     "Attach product to this discount",
+  //                     style: TextStyle(
+  //                         fontSize: 14,
+  //                         color: darkGrey,
+  //                         fontFamily: "Inter",
+  //                         fontWeight: FontWeight.w600),
+  //                   ),
+  //                 ),
+  //                 Icon(
+  //                   Icons.arrow_forward_ios_rounded,
+  //                   size: 18,
+  //                   color: navyBlue,
+  //                 )
+  //               ],
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //       if (isItemSelected || isEdit)
+  //         Column(
+  //           children: [
+  //             SizedBox(
+  //               height: 16,
+  //             ),
+  //             Text(
+  //               "This discount will apply on ${isSelectAll ? "all" : isEdit ? (discountModel.consumables?.product?.length ?? 0) : selectedProducts.length} items",
+  //               style: TextStyle(
+  //                   fontSize: 12, color: navyBlue, fontWeight: FontWeight.w600),
+  //             ),
+  //           ],
+  //         )
+  //     ],
+  //   );
+  // }
+}
