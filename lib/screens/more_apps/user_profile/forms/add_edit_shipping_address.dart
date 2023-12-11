@@ -157,7 +157,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         },
       ),
       title: Text(
-        "Add Shipping  Address",
+       isEdit ?"Edit address" : "Add Address",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -181,14 +181,15 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                 const SizedBox(
                   height: 16,
                 ),
-                // addPhoneNumberField(),
-                // const SizedBox(
-                //   height: 16,
-                // ),
-                // addEmailField(),
-                // const SizedBox(
-                //   height: 16,
-                // ),
+                 addAddressField(),
+                const SizedBox(
+                  height: 16,
+                ),
+                addAddressField2(),
+                const SizedBox(
+                  height: 16,
+                ),
+              
                 Text(
                   'Country',
                   style: TextStyle(color: darkGrey, fontSize: 14),
@@ -216,14 +217,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                 const SizedBox(
                   height: 16,
                 ),
-                addAddressField(),
-                const SizedBox(
-                  height: 16,
-                ),
-                addAddressField2(),
-                const SizedBox(
-                  height: 16,
-                ),
+               
                 addPostalField(),
                 const SizedBox(height: 16),
                 toggleActiveTag(),
@@ -249,8 +243,9 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
 
   Widget addTitleField() {
     return CustomizedTextFormField(
-      labelText: "Receiver Name",
+      labelText: "Address Name",
       initialValue: shippingAddress.name ?? "",
+      hintText: 'My Ikeja dispatch location',
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
