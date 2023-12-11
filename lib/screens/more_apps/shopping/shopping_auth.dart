@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/states_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/services/auth.dart';
@@ -2203,6 +2204,173 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  // List shipping state
+  Future<Map<String, dynamic>?> getShippingStates() async {
+    var url = AppConfig.baseUrl + "/api/v1/shipping/states/?country_code=NG";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<StatesModel> stateList = [];
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData) {
+        StatesModel states = StatesModel.fromJson(item);
+        stateList.add(states);
+      }
+
+      Map<String, dynamic> result = {"results": stateList};
+
+      debugPrint('CALLING OTHER check ---> ${result}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // set default address
+  Future<Map<String, dynamic>?> setDefaultAddress(id) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/shipping/addresses/$id/set-as-default/";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      List<ShippingAddress> shippingAddressList = [];
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        ShippingAddress address = ShippingAddress.fromJson(item);
+        shippingAddressList.add(address);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": shippingAddressList
+      };
+
+      debugPrint('CALLING OTHER check ---> ${result}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // List shipping city
+  Future<Map<String, dynamic>?> getShippingCities(code) async {
+    var url = AppConfig.baseUrl + "/api/v1/shipping/cities/?state_code=$code";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<Cities> cityList = [];
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData) {
+        Cities cities = Cities.fromJson(item);
+        cityList.add(cities);
+      }
+
+      Map<String, dynamic> result = {"results": cityList};
+
+      debugPrint('CALLING OTHER check ---> ${result}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // List address
+  Future<Map<String, dynamic>?> listOfDispatchAddress(
+      String? next, String? previous) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/shipping/addresses/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      if (!response.body.contains('results')) {
+        Map<String, dynamic> result = {
+          "count": '',
+          "next": '',
+          "previous": '',
+          "results": []
+        };
+
+        debugPrint('CALLING OTHER check 2 ---> ${result}');
+
+        return result;
+      }
+      List<ShippingAddress> shippingAddressList = [];
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        ShippingAddress address = ShippingAddress.fromJson(item);
+        shippingAddressList.add(address);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": shippingAddressList
+      };
+
+      debugPrint('CALLING OTHER check ---> ${result}');
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
   // List Discounts
   Future<Map<String, dynamic>?> listOfDiscounts(String? next, String? previous,
       {bool? activeDiscount}) async {
@@ -2259,6 +2427,57 @@ class ShoppingAuthService extends AuthService {
     } else {
       return null;
     }
+  }
+
+  // delete address
+  Future<bool> deleteAddress(String id) async {
+    var url = AppConfig.baseUrl + "/api/v1/shipping/addresses/" + id + "/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
+
+  //add update  address
+  Future<ShippingAddress?> addUpdateAddress(ShippingAddress itemModel,
+      {bool isEdit = false}) async {
+    String url = AppConfig.baseUrl + "/api/v1/shipping/addresses/";
+
+    if (isEdit == false) {
+      url = AppConfig.baseUrl + "/api/v1/shipping/addresses/";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/shipping/addresses/${itemModel.id}/";
+    }
+
+    var _data = jsonEncode(itemModel.toAddUpdate());
+
+    var headers = await getAuthHeaders();
+    Response? response;
+
+    if (isEdit == false) {
+      response = await httpPost(url, headers: headers, body: _data);
+    } else {
+      response = await httpPatch(url, headers: headers, body: _data);
+    }
+
+    if (response.statusCode == 400) {
+      throw jsonDecode(response.body);
+    }
+
+    if (response.statusCode == 201) {
+      ShippingAddress item =
+          ShippingAddress.fromJson(jsonDecode(response.body));
+      return item;
+    }
+    return null;
   }
 
   //add update  discount

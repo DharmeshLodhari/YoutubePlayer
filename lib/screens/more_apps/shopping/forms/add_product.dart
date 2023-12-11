@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -97,7 +98,7 @@ class _AddProductState extends State<AddProduct> {
   bool measurementView = false;
   List<Map<String, dynamic>> userTags = [];
   bool show = false;
-
+ShippingAddress? defaultAddress;
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -111,12 +112,41 @@ class _AddProductState extends State<AddProduct> {
     Future.delayed(Duration(seconds: 2), () {
       getCategories();
       obtainCustomCategory();
+      getList();
     });
     myController.addListener(_printLatestValue);
-
     super.initState();
   }
 
+
+  void getList() async {
+
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result =
+            await ShoppingAuthService().listOfDispatchAddress("", null);
+
+        if (result == null) {
+          isLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+    
+        List<ShippingAddress> tempList = result['results'];
+     
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            defaultAddress =  tempList.firstWhere((element) => element.is_default!);
+          });
+        }
+      
+    
+  }
   _printLatestValue() {
     if (myController.text.length > 2) {
       getProductTags(userBloc!.userAbout!.industry!.id!, myController.text);
@@ -490,10 +520,12 @@ class _AddProductState extends State<AddProduct> {
                       // ],
 
                       //TODO: hide this add-on
-                      // const SizedBox(height: 16),
-                      // productAddOns(),
+                      const SizedBox(height: 22),
+                      defaultAddress == null ? SizedBox() : address(),
+                      
+                      
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 35),
                       getSubmitButton(),
                       const SizedBox(height: 40),
                     ],
@@ -2625,6 +2657,56 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
+  Widget address() {
+    // print(defaultAddress!.city);
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
+              },
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Dispatch Address',
+              maxLines: 1,
+              style: TextStyle(
+                  color: darkGrey,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
+                  fontSize: 14),
+            ),
+            SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: Text(
+                   defaultAddress!.addressLineOne!,
+                    maxLines: 2,
+                    style: TextStyle(
+                        color:
+                            blackFont,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: "Inter",
+                        fontSize: 14),
+                  ),
+                ),
+                SizedBox(width: 20),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: blackFont,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
   Widget productAddOns() {
     return GestureDetector(
       onTap: () {
