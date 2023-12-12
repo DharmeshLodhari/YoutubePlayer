@@ -2659,7 +2659,6 @@ class _AddProductState extends State<AddProduct> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-<<<<<<< HEAD
           if (!isEmpty) ...[
             Text(
               'Dispatch Address',
@@ -2685,22 +2684,6 @@ class _AddProductState extends State<AddProduct> {
                   screen: AddEditShippingAddress(),
                 ).whenComplete(() => getList());
               }
-=======
-          Text(
-            'Dispatch Address',
-            maxLines: 1,
-            style: TextStyle(
-                color: darkGrey,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-                fontSize: 14),
-          ),
-          SizedBox(height: 6),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
->>>>>>> fc4487d9066941fb10220baadb0cb84b2b95308d
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2709,19 +2692,12 @@ class _AddProductState extends State<AddProduct> {
                 Flexible(
                   flex: 2,
                   child: Text(
-<<<<<<< HEAD
                     isEmpty
                         ? "Add  a dispatch Address"
                         : defaultAddress!.addressLineOne!,
                     maxLines: 2,
                     style: TextStyle(
                         color: isEmpty ? navyBlue : blackFont,
-=======
-                    defaultAddress!.addressLineOne!,
-                    maxLines: 2,
-                    style: TextStyle(
-                        color: blackFont,
->>>>>>> fc4487d9066941fb10220baadb0cb84b2b95308d
                         fontWeight: FontWeight.w500,
                         fontFamily: "Inter",
                         fontSize: 14),
