@@ -546,9 +546,10 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     if (isEdit) {
       return Row(
         children: [
+          if(!widget.shippingAddress!.is_default!)...[
           Expanded(
             child: CurvedButton(
-              onPressed: isDeleteLoading
+              onPressed: isDeleteLoading 
                   ? () {}
                   : () async {
                       FocusScope.of(context).unfocus();
@@ -569,6 +570,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           SizedBox(
             width: 20,
           ),
+          ],
           Expanded(
             child: CurvedButton(
               onPressed: isAPILoading
@@ -621,8 +623,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       shippingAddress.phone = userBloc.user.phoneNumber;
       shippingAddress.first_name = userBloc.user.fullName!.split(" ").first;
       shippingAddress.last_name = userBloc.user.fullName!.split(" ").last;
-      shippingAddress.is_residential = shippingAddress.is_residential ?? false;
-      print(shippingAddress.toAddUpdate());
+      shippingAddress.is_residential = shippingAddress.is_residential;
 
         await ShoppingAuthService()
             .addUpdateAddress(shippingAddress, isEdit: isEdit)
