@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -99,6 +101,7 @@ class _AddProductState extends State<AddProduct> {
   List<Map<String, dynamic>> userTags = [];
   bool show = false;
   ShippingAddress? defaultAddress;
+  bool isEmpty = false;
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -119,14 +122,12 @@ class _AddProductState extends State<AddProduct> {
   }
 
   void getList() async {
-    isLoading = true;
     if (mounted) setState(() {});
 
     Map<String, dynamic>? result =
         await ShoppingAuthService().listOfDispatchAddress("", null);
 
     if (result == null) {
-      isLoading = false;
       if (mounted) {
         setState(() {});
       }
@@ -138,6 +139,7 @@ class _AddProductState extends State<AddProduct> {
     if (mounted) {
       setState(() {
         isLoading = false;
+        isEmpty = tempList.isEmpty;
         defaultAddress = tempList.firstWhere((element) => element.is_default!);
       });
     }
@@ -2657,6 +2659,33 @@ class _AddProductState extends State<AddProduct> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+<<<<<<< HEAD
+          if (!isEmpty) ...[
+            Text(
+              'Dispatch Address',
+              maxLines: 1,
+              style: TextStyle(
+                  color: darkGrey,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
+                  fontSize: 14),
+            ),
+            SizedBox(height: 6),
+          ],
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              if (!isEmpty) {
+                Navigator.of(context)
+                    .pushNamed(Routes.DISPATCH_ADDRESS)
+                    .whenComplete(() => getList());
+              } else {
+                NavigationUtil.push(
+                  context,
+                  screen: AddEditShippingAddress(),
+                ).whenComplete(() => getList());
+              }
+=======
           Text(
             'Dispatch Address',
             maxLines: 1,
@@ -2671,6 +2700,7 @@ class _AddProductState extends State<AddProduct> {
             behavior: HitTestBehavior.opaque,
             onTap: () {
               Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
+>>>>>>> fc4487d9066941fb10220baadb0cb84b2b95308d
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2679,10 +2709,19 @@ class _AddProductState extends State<AddProduct> {
                 Flexible(
                   flex: 2,
                   child: Text(
+<<<<<<< HEAD
+                    isEmpty
+                        ? "Add  a dispatch Address"
+                        : defaultAddress!.addressLineOne!,
+                    maxLines: 2,
+                    style: TextStyle(
+                        color: isEmpty ? navyBlue : blackFont,
+=======
                     defaultAddress!.addressLineOne!,
                     maxLines: 2,
                     style: TextStyle(
                         color: blackFont,
+>>>>>>> fc4487d9066941fb10220baadb0cb84b2b95308d
                         fontWeight: FontWeight.w500,
                         fontFamily: "Inter",
                         fontSize: 14),
