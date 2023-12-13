@@ -341,7 +341,10 @@ class _SuperStoreState extends State<SuperStore> {
                 nextUrl: nextUrl,
                 type:
                     categoryId == null || categoryId == "" ? "sessions" : null)
-            : ListCategoryProduct(nextUrl: nextUrl, categoryName: categoryName),
+            : ListCategoryProduct(
+                key: ValueKey("$nextUrl$categoryName"),
+                nextUrl: nextUrl,
+                categoryName: categoryName),
         FindBusinessListScreen(
             onPageRefresh: (bool data) {
               if (data == true) {
