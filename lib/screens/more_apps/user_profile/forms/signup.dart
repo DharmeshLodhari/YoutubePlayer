@@ -1,3 +1,4 @@
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -150,7 +151,6 @@ class _SignUpState extends State<SignUp> {
     super.initState();
   }
 
-
   getProductIndustries() async {
     loading = !loading;
     if (mounted) setState(() {});
@@ -181,7 +181,6 @@ class _SignUpState extends State<SignUp> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -200,83 +199,87 @@ class _SignUpState extends State<SignUp> {
             },
           ),
         ),
-        body: loading ? Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation(navyBlue),
-                backgroundColor: Colors.transparent,
-              ),
-            ) : SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  appIcon(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  registerTitle(),
-                  SizedBox(height: 40),
-                  !basicAccountInfo
-                      ? Form(
-                          key: _personalDetailFormKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              accountTypeField(),
-                              Visibility(
-                                visible: accountTypeChosen,
-                                child: accountType == 'Personal'
-                                    ? personalAccountFields()
-                                    : businessAccountFields(),
-                              ),
-                            ],
-                          ),
-                        )
-                      : Form(
-                          key: _bankDetailsFormKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              nameInstructionNote(),
-                              SizedBox(height: 20),
-                              firstNameField(),
-                              SizedBox(height: 20),
-                              lastNameField(),
-                              SizedBox(height: 20),
-                              getDOBField(),
-                              if (isValidAge != null && !isValidAge!)
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+        body: loading
+            ? Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation(navyBlue),
+                  backgroundColor: Colors.transparent,
+                ),
+              )
+            : SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        appIcon(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        registerTitle(),
+                        SizedBox(height: 40),
+                        !basicAccountInfo
+                            ? Form(
+                                key: _personalDetailFormKey,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
-                                    SizedBox(height: 8),
-                                    Text(
-                                      "You are not eligible to use Slydo",
-                                      style: TextStyle(
-                                          color: mateRed, fontSize: 13),
+                                    accountTypeField(),
+                                    Visibility(
+                                      visible: accountTypeChosen,
+                                      child: accountType == 'Personal'
+                                          ? personalAccountFields()
+                                          : businessAccountFields(),
                                     ),
                                   ],
-                                )
-                              else
-                                Container(),
-                              SizedBox(height: 20),
-                              getGenderField(),
-                              SizedBox(height: 20),
-                              registrationTermsAndCondition(),
-                              // bvnField(),
-                              SizedBox(height: 40),
-                              registerBtn(),
-                              SizedBox(height: 40),
-                            ],
-                          ),
-                        ),
-                ],
+                                ),
+                              )
+                            : Form(
+                                key: _bankDetailsFormKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    nameInstructionNote(),
+                                    SizedBox(height: 20),
+                                    firstNameField(),
+                                    SizedBox(height: 20),
+                                    lastNameField(),
+                                    SizedBox(height: 20),
+                                    getDOBField(),
+                                    if (isValidAge != null && !isValidAge!)
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 8),
+                                          Text(
+                                            "You are not eligible to use Slydo",
+                                            style: TextStyle(
+                                                color: mateRed, fontSize: 13),
+                                          ),
+                                        ],
+                                      )
+                                    else
+                                      Container(),
+                                    SizedBox(height: 20),
+                                    getGenderField(),
+                                    SizedBox(height: 20),
+                                    registrationTermsAndCondition(),
+                                    // bvnField(),
+                                    SizedBox(height: 40),
+                                    registerBtn(),
+                                    SizedBox(height: 40),
+                                  ],
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -579,7 +582,6 @@ class _SignUpState extends State<SignUp> {
       verifyingUsername = true;
     });
     try {
-
       await UserAuth()
           .fetchCustomerProfile(_userNameController.text.trim().toLowerCase());
       verifiedInput = true;
@@ -1074,7 +1076,7 @@ class _SignUpState extends State<SignUp> {
           "business_name": businessOrNickName,
         };
       }
-      debugPrint("DATA SENT:- $data");
+      if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
 
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
@@ -1238,4 +1240,3 @@ class _SignUpState extends State<SignUp> {
     }
   }
 }
-

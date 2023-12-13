@@ -385,8 +385,6 @@ class AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
-
     if (response.statusCode == 200) {
       if (!response.body.contains('results')) {
         Map<String, dynamic> result = {"product": []};

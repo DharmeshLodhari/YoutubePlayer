@@ -1,6 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/custom_pagination.dart';
 import 'package:Slydo/widget/empty_page.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -62,6 +63,7 @@ class ShopListScreenState extends State<ShopListScreen> {
       RefreshController(initialRefresh: false);
 
   final ScrollController _todayDealScrollController = ScrollController();
+
   // final ScrollController _productScrollController = ScrollController();
   String _currentCategory = '';
   late DashboardBloc _dashboardBloc;
@@ -101,9 +103,8 @@ class ShopListScreenState extends State<ShopListScreen> {
   }
 
   loadUrl() {
-    setState(() {
+    if (widget.nextUrl != null && widget.nextUrl != "")
       productNext = widget.nextUrl;
-    });
   }
 
   @override
@@ -259,6 +260,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     isTodayDealLoading = false;
     todaysDealList = [];
 
+    loadUrl();
     widget.type != null
         ? listOfSuperStores()
         : getProductList(_currentCategory);
@@ -277,82 +279,90 @@ class ShopListScreenState extends State<ShopListScreen> {
       // }
     });
 
-    return ScaffoldMessenger(
-      key: _productScaffoldMessengerKey,
-      child: Scaffold(
-        backgroundColor: lightGrey,
-        // appBar: appBar(),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: ListView(
-                // controller: _productScrollController,
-                children: [
-                  SizedBox(height: todaysDealsSizeBox),
-                  todaysDealsEmpty
-                      ? const SizedBox.shrink()
-                      : getTodaysDealList(),
-                  const SizedBox(
-                    height: 20,
-                  ),
+    return CustomPagination(
+      onScrollEnd: () async {
+        if (widget.type == null) {
+          getProductList(_currentCategory);
+        }
+      },
+      child: ScaffoldMessenger(
+        key: _productScaffoldMessengerKey,
+        child: Scaffold(
+          backgroundColor: lightGrey,
+          // appBar: appBar(),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SmartRefresher(
+                enablePullDown: true,
+                header: WaterDropHeader(
+                  complete: Container(),
+                  waterDropColor: navyBlue,
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                child: ListView(
+                  children: [
+                    SizedBox(height: todaysDealsSizeBox),
+                    todaysDealsEmpty
+                        ? const SizedBox.shrink()
+                        : getTodaysDealList(),
+                    // const SizedBox(
+                    //   height: 20,
+                    // ),
 
-                  if (widget.type != null && rowHeaders.isNotEmpty)
-                    ...rowHeaders.map((headers) => rowTitle(headers)).toList(),
-                  if (rowHeaders.isEmpty &&
-                      !isProductLoading &&
-                      widget.type != null)
-                    EmptyPage(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    ),
-                  if (widget.type == null) superStoreProducts(),
-                  const SizedBox(height: 16),
-                  isProductLoading
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                              mainAxisSpacing: 14,
-                              mainAxisExtent: 180,
-                              crossAxisSpacing: 15,
-                              maxCrossAxisExtent: 200,
+                    if (widget.type != null && rowHeaders.isNotEmpty)
+                      ...rowHeaders
+                          .map((headers) => rowTitle(headers))
+                          .toList(),
+                    if (rowHeaders.isEmpty &&
+                        !isProductLoading &&
+                        widget.type != null)
+                      EmptyPage(
+                        msg: AppLocalization.of(context)!.noResultFound,
+                      ),
+                    if (widget.type == null) superStoreProducts(),
+                    const SizedBox(height: 16),
+                    isProductLoading
+                        ? Shimmer.fromColors(
+                            baseColor: Colors.white,
+                            highlightColor: greyBorderColor,
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithMaxCrossAxisExtent(
+                                mainAxisSpacing: 14,
+                                mainAxisExtent: 180,
+                                crossAxisSpacing: 15,
+                                maxCrossAxisExtent: 200,
+                              ),
+                              itemCount: 2,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  color: Colors.grey,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                );
+                              },
                             ),
-                            itemCount: 2,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+                          )
+                        : const SizedBox.shrink(),
 
-                  // Visibility(
-                  //   visible: widget.type != null ? !isProductLoading &&
-                  //       !isTodayDealLoading &&
-                  //       todaysDealList.isEmpty &&
-                  //      rowHeaders.isEmpty : !isProductLoading &&
-                  //             !isTodayDealLoading &&
-                  //             todaysDealList.isEmpty &&
-                  //             productList.isEmpty ,
-                  //   child:  EmptyPage(msg:   AppLocalization.of(context)!.noResultFound,
-                  //   ),
-                  // ),
-                ],
+                    // Visibility(
+                    //   visible: widget.type != null ? !isProductLoading &&
+                    //       !isTodayDealLoading &&
+                    //       todaysDealList.isEmpty &&
+                    //      rowHeaders.isEmpty : !isProductLoading &&
+                    //             !isTodayDealLoading &&
+                    //             todaysDealList.isEmpty &&
+                    //             productList.isEmpty ,
+                    //   child:  EmptyPage(msg:   AppLocalization.of(context)!.noResultFound,
+                    //   ),
+                    // ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -9,6 +10,8 @@ import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_dele
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:text_scroll/text_scroll.dart';
 import '../utils.dart';
 
 class BusinessProfileScreen extends StatefulWidget {
@@ -42,6 +45,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   PageController? _pageController;
   int _currentIndex = 0;
   final PageStorageBucket _bucket = new PageStorageBucket();
+
   // Define a list to store the UserTab objects
   List<UserTab> userTabs = [];
   Map<String, bool> reorderedBoolMap = {};
@@ -52,6 +56,15 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   String serviceLabel = "";
   List<ProductCategory> customCategories = [];
   dynamic selectedCategory;
+
+  String flashTagString = "";
+  List<FlashTagAlertModel> flashTagAlerts = [];
+  String? flashTagNext = "";
+  String? flashTagPrevious = "";
+  int? flashTagCount = 0;
+  bool isFlashTagLoading = false;
+  late SharedPreferences _sharedPreferences;
+  FlashTagAlertModel? flashTagAlertModel;
 
   @override
   void initState() {
@@ -64,6 +77,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       productLabel = searchedUser!.profileMenu!.productLabel!;
       serviceLabel = searchedUser!.profileMenu!.serviceLabel!;
     }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      _sharedPreferences = await SharedPreferences.getInstance();
+    });
+
+    getAlertTagData();
 
     isOwner = widget.isOwner;
 
@@ -74,7 +92,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     var orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
-    if (result != null && result is Map<String, dynamic>) {
+    if (result is Map<String, dynamic>) {
       // Iterate through the JSON object and filter boolean values
       result.forEach((key, value) {
         if (value is bool) {
@@ -137,6 +155,137 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     if (mounted) setState(() {});
 
     super.initState();
+  }
+
+  Future<void> getAlertTagData() async {
+    print("============================>");
+    if (flashTagNext != null && !isFlashTagLoading) {
+      isFlashTagLoading = true;
+      if (mounted) setState(() {});
+
+      Map<String, dynamic>? result = await ShoppingAuthService()
+          .listOfFlashTags(
+              flashTagNext, flashTagPrevious, widget.searchedUser?.userName);
+
+      if (result == null) {
+        isFlashTagLoading = false;
+
+        if (mounted) {
+          setState(() {});
+        }
+        return;
+      }
+
+      flashTagCount = result['count'];
+      flashTagNext = result['next'];
+      flashTagPrevious = result['previous'];
+      var tempList = result['results'];
+
+      isFlashTagLoading = false;
+      flashTagAlerts.addAll(tempList);
+      if (flashTagNext != null) {
+        await getAlertTagData();
+        return;
+      }
+    }
+
+    if (flashTagAlerts.isNotEmpty) {
+      flashTagString = flashTagAlerts
+          .where((element) =>
+              element.type?.toValue() != FlashTagCategory("Pop-up").toValue())
+          .map((e) => e.message)
+          .toList()
+          .join(".                         ");
+      try {
+        flashTagAlertModel = flashTagAlerts
+            .where((element) =>
+                element.type?.toValue() == FlashTagCategory("Pop-up").toValue())
+            .toList()
+            .first;
+        bool check = _sharedPreferences.getBool("showFlash") ?? false;
+        if (!check) {
+          showFlashTagAlertPopUp();
+          _sharedPreferences.setBool("showFlash", true);
+        }
+      } catch (error) {
+        debugPrint("No Pop-up Element");
+      }
+      if (mounted) setState(() {});
+    }
+  }
+
+  void showFlashTagAlertPopUp() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          insetPadding: EdgeInsets.symmetric(horizontal: 16),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Card(
+              elevation: 0.0,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.highlight_off_rounded,
+                        size: 24,
+                        color: darkGrey,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          flashTagAlertModel?.title?.trim() ?? "Important Info",
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              fontFamily: "Inter"),
+                        ),
+                        SizedBox(
+                          height: 24,
+                        ),
+                        Text(
+                          flashTagAlertModel?.message?.trim() ?? "description",
+                          style: TextStyle(
+                              color: blackFont,
+                              fontFamily: "Inter",
+                              fontSize: 16,
+                              height: 1.5,
+                              letterSpacing: 0.6),
+                        ),
+                        SizedBox(
+                          height: 48,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void obtainCustomCategory(user) async {
@@ -271,6 +420,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
             callbackProductService: (val) {
               productServiceTabReload(val);
             },
+          ),
+          SliverToBoxAdapter(
+            child: _buildCrawlingAlert(),
           ),
           SliverPersistentHeader(
             key: UniqueKey(),
@@ -589,5 +741,22 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
 
     if (mounted) setState(() {});
     _tabController!.animateTo(0);
+  }
+
+  Widget _buildCrawlingAlert() {
+    if (flashTagString != "") {
+      return Container(
+        color: Colors.black,
+        padding: EdgeInsets.symmetric(vertical: 14),
+        child: TextScroll(
+          flashTagString.length <= 90
+              ? "$flashTagString".padRight(90, " ")
+              : flashTagString,
+          style: TextStyle(color: white, fontWeight: FontWeight.w600),
+          mode: TextScrollMode.endless,
+        ),
+      );
+    }
+    return SizedBox.shrink();
   }
 }

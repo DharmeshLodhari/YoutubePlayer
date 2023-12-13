@@ -101,10 +101,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   void initState() {
     super.initState();
     _currentCategory = widget.category!;
-    listOfSuperStores();
-    getList();
-    getNearByBusinessList();
-    getTodaysDealProducts();
+    getAllListData();
     _productScrollController.addListener(() {
       if (_productScrollController.position.pixels ==
               _productScrollController.position.maxScrollExtent &&
@@ -121,15 +118,25 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     });
   }
 
-  listOfSuperStores() async {
+  Future<void> getAllListData() async {
+    await Future.wait([
+      listOfSuperStores(withSetState: false),
+      getList(withSetState: false),
+      getNearByBusinessList(withSetState: false),
+      getTodaysDealProducts(withSetState: false)
+    ]);
+    if (mounted) setState(() {});
+  }
+
+  Future<void> listOfSuperStores({bool withSetState = true}) async {
     isProductLoading = true;
-    if (mounted) {
+    if (mounted && withSetState) {
       setState(() {});
     }
     Map<String, dynamic>? result =
         await ShoppingAuthService().listOfSuperStores();
     isProductLoading = false;
-    if (mounted) {
+    if (mounted && withSetState) {
       setState(() {});
     }
     // setState(() {
@@ -146,19 +153,20 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     }
   }
 
-  void getList() async {
+  Future<void> getList({bool withSetState = true}) async {
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
-        if (mounted) setState(() {});
-
+        if (mounted && withSetState) {
+          setState(() {});
+        }
         Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfDiscounts(next, previous, activeDiscount: true);
 
         if (result == null) {
           isLoading = false;
           noItemInList = true;
-          if (mounted) {
+          if (mounted && withSetState) {
             setState(() {});
           }
           return;
@@ -168,19 +176,18 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            noItemInList = false;
-            isLoading = false;
-            itemList.addAll(tempList);
-          });
+
+        noItemInList = false;
+        isLoading = false;
+        itemList.addAll(tempList);
+        if (mounted && withSetState) {
+          setState(() {});
         }
       }
       if (itemList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noItemInList = true;
-          });
+        noItemInList = true;
+        if (mounted && withSetState) {
+          setState(() {});
         }
       } else if (next == null && itemList.length > 6) {
         _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
@@ -192,11 +199,13 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     }
   }
 
-  void getTodaysDealProducts() async {
+  Future<void> getTodaysDealProducts({bool withSetState = true}) async {
     if (!isTodayDealLoading) {
       if (todayDealNext != null && !isTodayDealLoading) {
         isTodayDealLoading = true;
-        if (mounted) setState(() {});
+        if (mounted && withSetState) {
+          setState(() {});
+        }
 
         Map<String, dynamic>? result = await ShoppingAuthService()
             .getProductListForSuperStore(todayDealNext, todayDealPrevious,
@@ -206,7 +215,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
           todaysDealsEmpty = true;
           todaysDealsSizeBox = 22;
           isTodayDealLoading = false;
-          if (mounted) {
+          if (mounted && withSetState) {
             setState(() {});
           }
           return;
@@ -220,13 +229,14 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         isTodayDealLoading = false;
         todaysDealList.addAll(tempList);
 
-        if (mounted) setState(() {});
+        if (mounted && withSetState) {
+          setState(() {});
+        }
       }
       if (todaysDealList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            todaysDealsEmpty = true;
-          });
+        todaysDealsEmpty = true;
+        if (mounted && withSetState) {
+          setState(() {});
         }
       }
     }
@@ -248,11 +258,13 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
     });
   }
 
-  void getNearByBusinessList() async {
+  Future<void> getNearByBusinessList({bool withSetState = true}) async {
     if (!isNearbyLoading) {
       if (nearByNext != null && !isNearbyLoading) {
         isNearbyLoading = true;
-        if (mounted) setState(() {});
+        if (mounted && withSetState) {
+          setState(() {});
+        }
 
         Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfMerchant(nearByNext, nearByPrevious, _currentCategory,
@@ -262,7 +274,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
           noNearByInList = true;
 
           isNearbyLoading = false;
-          if (mounted) {
+          if (mounted && withSetState) {
             setState(() {});
           }
           return;
@@ -272,12 +284,12 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         nearByNext = result['next'];
         nearByPrevious = result['previous'];
         var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            noNearByInList = false;
-            isNearbyLoading = false;
-            customerProfileListNearBy.addAll(tempList);
-          });
+
+        noNearByInList = false;
+        isNearbyLoading = false;
+        customerProfileListNearBy.addAll(tempList);
+        if (mounted && withSetState) {
+          setState(() {});
         }
 
         // for(var item in customerProfileListNearBy){
@@ -286,10 +298,9 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
 
       }
       if (customerProfileListNearBy.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noNearByInList = true;
-          });
+        noNearByInList = true;
+        if (mounted && withSetState) {
+          setState(() {});
         }
       } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
         // _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
@@ -876,6 +887,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
 
 class SuperStoreSingleCard extends StatelessWidget {
   final Product product;
+
   // final String? next;
   const SuperStoreSingleCard({Key? key, required this.product})
       : super(key: key);

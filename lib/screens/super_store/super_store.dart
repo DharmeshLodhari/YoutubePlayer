@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
+import 'package:Slydo/screens/super_store/list_category_product.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
@@ -48,8 +49,6 @@ class _SuperStoreState extends State<SuperStore> {
   String url = "";
   String nextUrl = "";
   dynamic categoryId = null;
-  List<Product> productList = [];
-  bool isProductLoading = false;
   late YarnDashboardBloc yarnDashboardBloc;
 
   @override
@@ -342,52 +341,7 @@ class _SuperStoreState extends State<SuperStore> {
                 nextUrl: nextUrl,
                 type:
                     categoryId == null || categoryId == "" ? "sessions" : null)
-            : FutureBuilder(
-                future: getProducts(),
-                builder: (context, snapshot) {
-                  print(snapshot.data);
-                  print("_________________________");
-                  if (snapshot.hasData) {
-                    List<Product> result = snapshot.data as List<Product>;
-                    return result.isEmpty
-                        ? Center(
-                            child: NoItemInList(
-                              msg: AppLocalization.of(context)!.noResultFound,
-                            ),
-                          )
-                        : ListView(children: [
-                            superStoreProducts(result)
-                            // Text("data"),
-                          ]);
-                  } else if (snapshot.hasError) {
-                    return SizedBox();
-                  } else {
-                    return Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisSpacing: 14,
-                          mainAxisExtent: 180,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
-                        ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
-                }),
+            : ListCategoryProduct(nextUrl: nextUrl, categoryName: categoryName),
         FindBusinessListScreen(
             onPageRefresh: (bool data) {
               if (data == true) {
@@ -473,48 +427,6 @@ class _SuperStoreState extends State<SuperStore> {
     //         industry: appTitle)
     //   ],
     // );
-  }
-
-  Widget superStoreProducts(List<Product> data) {
-    if (productList.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    // return productNext == "" && isProductLoading
-    //     ? const SizedBox.shrink()
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        data.isEmpty ? const SizedBox.shrink() : const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            mainAxisSpacing: 22,
-            mainAxisExtent: 274,
-            crossAxisSpacing: 15,
-            maxCrossAxisExtent: 200,
-          ),
-          itemCount: data.length,
-          itemBuilder: (context, index) {
-            return SuperStoreSingleCard(
-              product: data[index],
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Future<List<Product>> getProducts() async {
-    setState(() {
-      productList = [];
-    });
-    Map<String, dynamic>? result = await ShoppingAuthService()
-        .listOfProduct(nextUrl, "", "", false, otherDeals: false);
-
-    var tempList = result!['results'];
-    productList.addAll(tempList);
-    return productList;
   }
 
   void updateCurrentAskTapOnHome({required int index}) {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/services/route_provider.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -19,10 +20,12 @@ class ListRefresher {
 
     _timerForListRefresher = Timer.periodic(_refreshDurationInterval, (time) {
       if (myGlobals.scaffoldKey.currentContext != null) {
-        debugPrint("<====== Refreshing list ======>");
+        if (AppConfig.enableLogs.value)
+          debugPrint("<====== Refreshing list ======>");
         RouteProvider routeProvider = Provider.of<RouteProvider>(
-            myGlobals.scaffoldKey.currentContext!,
-            listen: false);
+          myGlobals.scaffoldKey.currentContext!,
+          listen: false,
+        );
 
         if (routeProvider.routes.contains("/dashboard")) {
           RefreshBlocForRequestPayment refreshBlocForRequestPayment =

@@ -32,8 +32,7 @@ class UserAuth extends AuthService {
     var transactionId = uuid.v4();
 
     // var headers = await getAuthHeaders();
-    var headers =
-    {
+    var headers = {
       "Content-type": "application/json",
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
@@ -259,7 +258,7 @@ class UserAuth extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
-    debugPrint("DATA SENT:- $data");
+    if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     return Future.error("Error:- ${response.body}");
@@ -284,7 +283,7 @@ class UserAuth extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 205) {
       return true;
     } else {
-      debugPrint("DATA SENT:- $data");
+      if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       var jsonData = json.decode(response.body);
@@ -312,7 +311,7 @@ class UserAuth extends AuthService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      debugPrint("DATA SENT:- $data");
+      if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       var jsonData = json.decode(response.body);
@@ -732,7 +731,7 @@ class UserAuth extends AuthService {
       "created_at": DateTime.parse(createdAt).toUtc().toString()
     };
 
-    debugPrint("DATA SENT:- $data");
+    if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
     var response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
 

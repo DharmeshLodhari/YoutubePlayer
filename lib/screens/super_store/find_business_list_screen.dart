@@ -17,6 +17,7 @@ class FindBusinessListScreen extends StatefulWidget {
   Function(bool)? onPageRefresh;
   String? category;
   final String? industry;
+
   FindBusinessListScreen(
       {Key? key, this.onPageRefresh, this.category, this.industry})
       : super(key: key);
@@ -45,9 +46,11 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
 
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  final ScrollController _scrollController = ScrollController();
+
+  // final ScrollController _scrollController = ScrollController();
   ScrollController scrollController = ScrollController();
   String _currentCategory = '';
+
   // Define a boolean variable to track if the app bar is expanded or not
   bool _isAppBarExpanded = true;
 
@@ -58,13 +61,13 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     getNearByBusinessList();
     getSuggestionBusinessList();
 
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
-        getSuggestionBusinessList();
-      }
-    });
+    // _scrollController.addListener(() {
+    //   if (_scrollController.position.pixels ==
+    //           _scrollController.position.maxScrollExtent &&
+    //       _scrollController.position.pixels != 0) {
+    getSuggestionBusinessList();
+    //   }
+    // });
     // Listen for scroll offset changes
     scrollController.addListener(() {
       if (scrollController.offset > 0 && _isAppBarExpanded) {
@@ -128,7 +131,6 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         // for(var item in customerProfileListNearBy){
         //   debugPrint('Fola near by:::: ${item.toJson()}');
         // }
-
       }
       if (customerProfileListNearBy.isEmpty) {
         if (mounted) {
@@ -182,7 +184,6 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         // for(var item in customerProfileList){
         //   debugPrint('Fola suggest by:::: ${item.toJson()}');
         // }
-
       }
       if (customerProfileList.isEmpty) {
         if (mounted) {
@@ -234,7 +235,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    // _scrollController.dispose();
     super.dispose();
   }
 
@@ -246,22 +247,22 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     /// scroll back to the top of the page
     if (_dashboardBloc.topYarn == true) {
       _dashboardBloc.topYarn = false;
-      if (_scrollController.hasClients) {
-        final position = _scrollController.position.minScrollExtent;
-        _scrollController.animateTo(
-          position,
-          duration: Duration(milliseconds: 1),
-          curve: Curves.easeOut,
-        );
-      }
+      // if (_scrollController.hasClients) {
+      //   final position = _scrollController.position.minScrollExtent;
+      //   _scrollController.animateTo(
+      //     position,
+      //     duration: Duration(milliseconds: 1),
+      //     curve: Curves.easeOut,
+      //   );
+      // }
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.position.pixels == 0) {
-        // Scroll controller is at the top
-        widget.onPageRefresh!(true);
-        if (mounted) setState(() {});
-      }
+      // if (_scrollController.position.pixels == 0) {
+      // Scroll controller is at the top
+      widget.onPageRefresh!(true);
+      if (mounted) setState(() {});
+      // }
     });
 
     return ScaffoldMessenger(
@@ -345,7 +346,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-      controller: _scrollController,
+      // controller: _scrollController,
       itemCount: customerProfileList.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == customerProfileList.length) {

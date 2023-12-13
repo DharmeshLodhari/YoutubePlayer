@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 /// This File is use to set environment SERVER Urls of the app
 /// PRODUCTION & DEVELOPMENT
@@ -19,6 +20,7 @@ class AppConfig {
   static late String chatUrl;
   static String? termsAndCondition;
   static String? privacyPolicy;
+  static RxBool enableLogs = false.obs;
 
   static void initialize() {
     const BUILD_TYPE =
@@ -28,6 +30,7 @@ class AppConfig {
       appType = AppType.PRODUCTION;
     } else if (BUILD_TYPE == "DEVELOPMENT") {
       appType = AppType.DEVELOPMENT;
+      enableLogs.value = true;
     } else {
       appType = AppType.PRODUCTION;
     }

@@ -39,6 +39,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:package_info/package_info.dart';
@@ -68,6 +69,9 @@ void main() async {
   cameras = await availableCameras();
   locatorSetup();
   AppConfig();
+
+  /// ENABLE and DISABLE Logs
+  AppConfig.enableLogs.value = false;
 
   getAppFeaturesFromServer();
   await FlutterDownloader.initialize();
@@ -165,7 +169,7 @@ class _MyAppState extends State<MyApp> {
       child: LayoutBuilder(builder: (context, constraints) {
         return OrientationBuilder(builder: (context, orientation) {
           SizerUtil.setScreenSize(constraints, orientation);
-          return MaterialApp(
+          return GetMaterialApp(
             navigatorKey: MyGlobals().navigationKey,
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,

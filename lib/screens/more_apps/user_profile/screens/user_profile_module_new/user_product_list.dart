@@ -8,6 +8,7 @@ import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/custom_pagination.dart';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -59,26 +60,13 @@ class _UserProductListState extends State<UserProductList> {
   bool isProductLoading = false;
   bool noProductInList = false;
 
-  String? flashTagString;
-  List<FlashTagAlertModel> flashTagAlerts = [];
-  String? flashTagNext = "";
-  String? flashTagPrevious = "";
-  int? flashTagCount = 0;
-  bool isFlashTagLoading = false;
-  late SharedPreferences _sharedPreferences;
-
-  FlashTagAlertModel? flashTagAlertModel;
-
   @override
   void initState() {
     getNextUrl();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      _sharedPreferences = await SharedPreferences.getInstance();
-    });
     widget.type != null ? listOfUsersProduct() : this.getProductList();
     // if (widget.isOwner == false) {
-    getAlertTagData();
+
     // }
 
     _productScrollController.addListener(() {
@@ -102,135 +90,6 @@ class _UserProductListState extends State<UserProductList> {
     });
   }
 
-  Future<void> getAlertTagData() async {
-    print("============================>");
-    if (flashTagNext != null && !isFlashTagLoading) {
-      isFlashTagLoading = true;
-      if (mounted) setState(() {});
-
-      Map<String, dynamic>? result = await ShoppingAuthService()
-          .listOfFlashTags(
-              flashTagNext, flashTagPrevious, widget.user?.userName);
-
-      if (result == null) {
-        isFlashTagLoading = false;
-
-        if (mounted) {
-          setState(() {});
-        }
-        return;
-      }
-
-      flashTagCount = result['count'];
-      flashTagNext = result['next'];
-      flashTagPrevious = result['previous'];
-      var tempList = result['results'];
-
-      isFlashTagLoading = false;
-      flashTagAlerts.addAll(tempList);
-      if (flashTagNext != null) {
-        await getAlertTagData();
-        return;
-      }
-    }
-
-    if (flashTagAlerts.isNotEmpty) {
-      flashTagString = flashTagAlerts
-          .map((e) => e.message)
-          .toList()
-          .join(".                         ");
-      try {
-        flashTagAlertModel = flashTagAlerts
-            .where((element) =>
-                element.type?.toValue() == FlashTagCategory("Pop-up").toValue())
-            .toList()
-            .first;
-        bool check = _sharedPreferences.getBool("showFlash") ?? false;
-        if (!check) {
-          showFlashTagAlertPopUp();
-          _sharedPreferences.setBool("showFlash", true);
-        }
-      } catch (error) {
-        debugPrint("No Pop-up Element");
-      }
-      if (mounted) setState(() {});
-    }
-  }
-
-  void showFlashTagAlertPopUp() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 16),
-          contentPadding: EdgeInsets.symmetric(horizontal: 10),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Card(
-              elevation: 0.0,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.highlight_off_rounded,
-                        size: 24,
-                        color: darkGrey,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          flashTagAlertModel?.title?.trim() ?? "Important Info",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              fontFamily: "Inter"),
-                        ),
-                        SizedBox(
-                          height: 24,
-                        ),
-                        Text(
-                          flashTagAlertModel?.message?.trim() ?? "description",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontFamily: "Inter",
-                              fontSize: 16,
-                              height: 1.5,
-                              letterSpacing: 0.6),
-                        ),
-                        SizedBox(
-                          height: 48,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _onProductRefresh() async {
     Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
@@ -252,7 +111,7 @@ class _UserProductListState extends State<UserProductList> {
     });
   }
 
-  void getProductList() async {
+  Future<void> getProductList() async {
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
         isProductLoading = true;
@@ -353,13 +212,9 @@ class _UserProductListState extends State<UserProductList> {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        final metrices = notification.metrics;
-        if (metrices.pixels >= metrices.maxScrollExtent) {
-          getProductList();
-        }
-        return true;
+    return CustomPagination(
+      onScrollEnd: () async {
+        await getProductList();
       },
       child: ScaffoldMessenger(
         key: _productMessengerScaffoldKey,
@@ -377,42 +232,41 @@ class _UserProductListState extends State<UserProductList> {
               controller: _productsRefreshController,
               onRefresh: _onProductRefresh,
               child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildCrawlingAlert(),
-                    noProductInList
-                        ? NoItemInList(
+                child: noProductInList
+                    ? Container(
+                        constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height / 2),
+                        child: NoItemInList(
                             msg: AppLocalization.of(context)!.noResultFound
                             // msg: AppLocalization.of(context)!.noProducts,
-                            )
-                        : isProductLoading && productList.isEmpty
-                            ? Shimmer.fromColors(
-                                baseColor: Colors.white,
-                                highlightColor: greyBorderColor,
-                                child: GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                      SliverGridDelegateWithMaxCrossAxisExtent(
-                                    mainAxisExtent: 180,
-                                    mainAxisSpacing: 16,
-                                    crossAxisSpacing: 15,
-                                    maxCrossAxisExtent: 200,
+                            ),
+                      )
+                    : isProductLoading && productList.isEmpty
+                        ? Shimmer.fromColors(
+                            baseColor: Colors.white,
+                            highlightColor: greyBorderColor,
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                mainAxisExtent: 180,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 15,
+                                maxCrossAxisExtent: 200,
+                              ),
+                              itemCount: 2,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  color: Colors.grey,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  itemCount: 2,
-                                  itemBuilder: (context, index) {
-                                    return Card(
-                                      color: Colors.grey,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                            : _buildProductList(),
-                  ],
-                ),
+                                );
+                              },
+                            ),
+                          )
+                        : _buildProductList(),
               ),
             ),
           ),
@@ -458,23 +312,8 @@ class _UserProductListState extends State<UserProductList> {
   //   );
   // }
 
-  Widget _buildCrawlingAlert() {
-    if (flashTagString != null && flashTagString != "") {
-      return Container(
-        color: Colors.black,
-        padding: EdgeInsets.symmetric(vertical: 14),
-        child: TextScroll(
-          flashTagString!,
-          style: TextStyle(color: white, fontWeight: FontWeight.w600),
-        ),
-      );
-    }
-    return SizedBox.shrink();
-  }
-
   Widget sectionProducts() {
-    return ListView(
-      physics: NeverScrollableScrollPhysics(),
+    return Column(
       children: [
         ...sectionProductList
             .map((headers) => SectionProducts(headers: headers))
@@ -486,38 +325,56 @@ class _UserProductListState extends State<UserProductList> {
   Widget _buildProductList() {
     return productNext == "" && isProductLoading
         ? SizedBox.shrink()
-        : Padding(
-            padding: const EdgeInsets.only(
-              left: 8.0,
-              right: 8.0,
-              top: 8.0,
-              bottom: 16,
-            ),
-            child: (widget.type != null)
-                ? sectionProducts()
-                : GridView.builder(
-                    shrinkWrap: true,
-                    padding: EdgeInsets.symmetric(horizontal: 4),
-                    controller: _productScrollController,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      mainAxisSpacing: 8,
-                      mainAxisExtent: 274,
-                      crossAxisSpacing: 15,
-                      maxCrossAxisExtent: 200,
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.type == null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    "Found ${productCount} products",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      fontFamily: "Inter",
+                      color: blackFont,
                     ),
-                    itemCount: productList.length,
-                    itemBuilder: (context, index) {
-                      return SizedBox(
-                        child: DisplayProduct(
-                          product: productList[index],
-                          onProductRefresh: () {
-                            _onProductRefresh();
-                          },
-                        ),
-                      );
-                    },
                   ),
+                ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 8.0,
+                  right: 8.0,
+                  top: 8.0,
+                  bottom: 16,
+                ),
+                child: (widget.type != null)
+                    ? sectionProducts()
+                    : GridView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        controller: _productScrollController,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: 8,
+                          mainAxisExtent: 274,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: productList.length,
+                        itemBuilder: (context, index) {
+                          return SizedBox(
+                            child: DisplayProduct(
+                              product: productList[index],
+                              onProductRefresh: () {
+                                _onProductRefresh();
+                              },
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
           );
   }
 

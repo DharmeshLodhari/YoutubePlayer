@@ -894,7 +894,7 @@ class MessageAuth extends AuthService {
 
     Map<String, dynamic> data = {"data": dataToBeSent};
 
-    debugPrint("DATA SENT:- $data");
+    if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
 
     ///{id: 82860938-6308-4bb9-988d-1b2fc9f60f85,
     /// check_id: 3161786e-5fb8-48ce-91fa-8677001e56e0,
@@ -940,7 +940,7 @@ class MessageAuth extends AuthService {
 
     Map<String, dynamic> data = {"data": dataToBeSent};
 
-    debugPrint("DATA SENT:- $data");
+    if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
 
     var _data = jsonEncode(data);
 

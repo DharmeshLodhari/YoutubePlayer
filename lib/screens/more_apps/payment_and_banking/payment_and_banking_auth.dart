@@ -101,7 +101,7 @@ class PaymentAndBankingAuth extends AuthService {
       var resetToken = jsonData['reset-token'];
       return resetToken;
     } else {
-      debugPrint("DATA SENT:- $data");
+      if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       throw jsonData;
@@ -141,7 +141,7 @@ class PaymentAndBankingAuth extends AuthService {
         responseString = jsonDecode(response.body)['errMsg'];
       }
     } else {
-      debugPrint("DATA SENT:- $data");
+      if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return Future.error(response.body);
@@ -636,7 +636,7 @@ class PaymentAndBankingAuth extends AuthService {
 
   // Create Payment request with data from user input  post method  return true / false
   Future<http.Response> createPaymentRequests(Map data) async {
-    debugPrint("Data sent:- $data");
+    if (AppConfig.enableLogs.value) debugPrint("Data sent:- $data");
     var url =
         "${AppConfig.baseUrl}/api/v1/transactions/request-payment/create/";
     var headers = await getAuthHeaders();
@@ -868,7 +868,7 @@ class PaymentAndBankingAuth extends AuthService {
       {String? jobId, String? transactionId}) async {
     var url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/pay-for-job/";
     var headers = await getAuthHeaders();
-    var _data = jsonEncode({"transaction_id":transactionId});
+    var _data = jsonEncode({"transaction_id": transactionId});
     print('message data::::$_data');
     var response = await httpPatch(url, headers: headers, body: _data);
     print('message::::$response');
