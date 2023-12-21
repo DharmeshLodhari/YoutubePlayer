@@ -192,12 +192,15 @@ class Routes {
   static const String PRE_ACCOUNT_UPGRADE = "/pre-account-upgrade";
   static const String PRODUCT_ADD_ON_LIST = "/product-add-on-list";
   static const String ADD_ON_OPTION_LIST = "/add-on-option-list";
-  static const String PRODUCT_ADD_ON_OPTION_CREATE = "/product-add-on-option-create";
-  static const String PRODUCT_ADD_ON_OPTION_UPDATE = "/product-add-on-option-update";
+  static const String PRODUCT_ADD_ON_OPTION_CREATE =
+      "/product-add-on-option-create";
+  static const String PRODUCT_ADD_ON_OPTION_UPDATE =
+      "/product-add-on-option-update";
   static const String NEW_ADD_ON = "/new-add-on";
   static const String UPDATE_ADD_ON = "/update-add-on";
   static const String FLASH_TAG_LIST = "/flash-tag-list";
   static const String DISCOUNT_LIST = "/discount-list";
   static const String CUSTOM_CATEGORY = "/custom-Category";
   static const String DISPATCH_ADDRESS = "/dispatch_address";
+  static const String RIDER_DASHBOARD = "/rider_dashboard";
 }

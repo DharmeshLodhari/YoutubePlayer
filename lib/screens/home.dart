@@ -494,7 +494,8 @@ class _HomeState extends State<Home> {
 
           InkWell(
             onTap: () {
-              showSnackbar(context, message: "Coming soon");
+              // showSnackbar(context, message: "Coming soon");
+              Navigator.of(context).pushNamed(Routes.RIDER_DASHBOARD);
             },
             // child: Container(
             //   margin: EdgeInsets.symmetric(horizontal: 16),
@@ -791,8 +792,8 @@ class _HomeState extends State<Home> {
     double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-      height: 80.0 + dynamicHeight,
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+      height: 90.0 + dynamicHeight,
       // height: 110.0,
       decoration: BoxDecoration(
         color: HexColor(color).withOpacity(opacity),
@@ -807,7 +808,7 @@ class _HomeState extends State<Home> {
               SvgPicture.asset(
                 imagePath.toSVG(),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Text(
                 title,
                 style: TextStyle(

@@ -82,6 +82,7 @@ import 'package:Slydo/screens/more_apps/review/forms/edit_user_review.dart';
 import 'package:Slydo/screens/more_apps/review/main_review.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/rider_dashboard.dart';
 import 'package:Slydo/screens/more_apps/service_hub/screens/contractor_payment_screen.dart';
 import 'package:Slydo/screens/more_apps/settings/general_setting.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
@@ -1475,9 +1476,7 @@ class RouteGenerator {
 
       case Routes.SUPER_STORE:
         return PageTransition(
-          child: SuperStore(
-            arguments: settings.arguments
-          ),
+          child: SuperStore(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1493,9 +1492,7 @@ class RouteGenerator {
 
       case Routes.SEARCH_PRODUCT:
         return PageTransition(
-          child: SearchProduct(
-            arguments: settings.arguments 
-          ),
+          child: SearchProduct(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1841,6 +1838,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
       /// Discount
       case Routes.DISPATCH_ADDRESS:
         return PageTransition(
@@ -1849,6 +1847,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
       /// Custom Category
       case Routes.CUSTOM_CATEGORY:
         return PageTransition(
@@ -1864,6 +1863,14 @@ class RouteGenerator {
           child: FlashTagList(
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.RIDER_DASHBOARD:
+        return PageTransition(
+          child: RiderDashboard(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
