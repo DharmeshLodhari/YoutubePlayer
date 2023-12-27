@@ -6,10 +6,11 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.d
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -52,6 +53,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   bool isForAddingUserInGroup = false;
   GroupDetailModel? groupDetailModel;
 
+  TextEditingController _controller = TextEditingController();
 
   @protected
   void initState() {
@@ -133,7 +135,72 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   void btnPressed() {
     if (isForAddingUserInGroup) {
       Navigator.of(context).pop(selectedConnectionList);
-    } else {
+    } 
+    else if(widget.arguments["create"] == "basket"){
+     showDialogBoxWithInput(
+          context: context,
+          actionOneTextColor: blackFont,
+          actionOneBgColor: greyBorderColor,
+          actionTwoTextColor: white,
+          actionTwoBgColor: navyBlue,
+          actionOneText: "Cancel",
+          actionTwoText: "Create Cart",
+          firstActionPrimary: false,
+          content: Padding(
+            padding: const EdgeInsets.only(left: 0.0, right: 0, top: 20),
+            child: Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(right: 10),
+                  child: Row(
+                    children: [
+                      Spacer(),
+                      Text("Name Cart",
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0),
+                          textAlign: TextAlign.center),
+                      Spacer(),
+                      IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(Icons.highlight_off_rounded))
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: CustomizedTextFormField(
+                    labelText: "Name",
+                    controller: _controller,
+                    validator: (val) {
+                      if (val.isNotEmpty) {
+                        return null;
+                      }
+                      return AppLocalization.of(context)!
+                          .pleaseEnterManufacturerName;
+                    },
+                    onChanged: (val) {
+                      // productManufacturer = val;
+                    },
+                  ),
+                ),
+                SizedBox(height: 5)
+              ],
+            ),
+          ),
+          leftButtonOnPressed: () async {
+            
+            Navigator.pop(context);
+          },
+          rightButtonOnPressed: () async {
+           
+            Navigator.pop(context);
+          });
+    }
+    else {
       Navigator.of(context).pushNamed(Routes.SET_NAME_AND_PROFILE_FOR_GROUP,
           arguments: {"users": selectedConnectionList, "create": widget.arguments["create"]});
     }
