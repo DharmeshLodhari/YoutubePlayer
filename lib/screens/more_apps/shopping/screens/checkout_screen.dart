@@ -1,7 +1,7 @@
-
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -52,6 +52,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     basketBloc.totalShippingCost = 0;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: appBar(),
       body: _scaffoldBody(),
     );
@@ -117,57 +118,80 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             SizedBox(height: 18),
             shippingOptionsLoading
                 ? Center(child: CircularLoadingIndicator())
-                : Visibility(
-                    visible: shippingOptions.isNotEmpty,
-                    child: dropDownPickItemWidget(
-                      label: 'Shipping Options',
-                      onTap: () => pickShippingOptions(),
-                      selectedItem: selectedShippingOptionName,
-                    ),
-                  ),
-            SizedBox(height: 18),
-            Divider(thickness: 0.3, color: blackFont),
+                : Column(
+                  children: [
+                    Visibility(
+                        visible: shippingOptions.isNotEmpty,
+                        child: dropDownPickItemWidget(
+                          label: 'Shipping Options',
+                          onTap: () => pickShippingOptions(),
+                          selectedItem: selectedShippingOptionName,
+                        ),
+                      ),
+                            SizedBox(
+                        height: 15,
+                      )
+
+                  ],
+                ),
+            // Divider(thickness: 0.3, color: blackFont),
             Visibility(
               visible: merchantFullName != null,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Price',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
+              child: CustomBoxShadow(
+                child: Card(
+                  elevation: 0.0,
+                  shadowColor: boxShadowTwo,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Order Summary',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: black,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        priceRow(
+                            title: 'Subtotal',
+                            amount: moneyDisplayNormalizer(
+                              getSubTotalPrice(),
+                            ),
+                            color: darkGrey),
+                        priceRow(
+                            title: 'Shipping Fee',
+                            color: darkGrey,
+                            amount: deliveryOption == 'Pickup' ||
+                                    shippingOptions.isEmpty
+                                ? '0.00'
+                                : shippingOption != null
+                                    ? moneyDisplayNormalizer(
+                                        shippingOption!.price)
+                                    : '0.00'),
+                        priceRow(
+                          title: 'Order total',
+                          color: black,
+                          amount: deliveryOption == 'Pickup' ||
+                                  shippingOptions.isEmpty
+                              ? moneyDisplayNormalizer(getSubTotalPrice())
+                              : shippingOption != null &&
+                                      deliveryOption != 'Pickup'
+                                  ? moneyDisplayNormalizer(getOrderTotalPrice())
+                                  : moneyDisplayNormalizer(getSubTotalPrice()),
+                        ),
+                        SizedBox(height: 20),
+                      ],
                     ),
                   ),
-                  priceRow(
-                    title: 'Subtotal',
-                    amount: moneyDisplayNormalizer(
-                      getSubTotalPrice(),
-                    ),
-                  ),
-                  priceRow(
-                      title: 'Shipping Fee',
-                      amount: deliveryOption == 'Pickup' ||
-                              shippingOptions.isEmpty
-                          ? '0.00'
-                          : shippingOption != null
-                              ? moneyDisplayNormalizer(shippingOption!.price)
-                              : '0.00'),
-                  Divider(thickness: 0.3, color: blackFont),
-                  priceRow(
-                    title: 'Order total',
-                    amount: deliveryOption == 'Pickup' ||
-                            shippingOptions.isEmpty
-                        ? moneyDisplayNormalizer(getSubTotalPrice())
-                        : shippingOption != null && deliveryOption != 'Pickup'
-                            ? moneyDisplayNormalizer(getOrderTotalPrice())
-                            : moneyDisplayNormalizer(getSubTotalPrice()),
-                  ),
-                  SizedBox(height: 20),
-                ],
+                ),
               ),
             ),
+            SizedBox(height: 80),
             renderCurvedButton(),
           ],
         ),
@@ -190,10 +214,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             basketBloc.merchantNameMapCopy[merchantFullName] ?? '');
   }
 
-  Widget priceRow(
-      {required String title,
-      required String amount,
-      TextStyle? amountTextStyle}) {
+  Widget priceRow({
+    required String title,
+    required String amount,
+    required Color color,
+    TextStyle? amountTextStyle,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
@@ -202,8 +228,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           Text(
             title,
             style: TextStyle(
-              fontSize: 16,
-              color: blackFont,
+              fontSize: 14,
+              color: color,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
             ),
           ),
           Row(
@@ -212,7 +240,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Text(
                 worldCurrencies['NGN']!,
                 style: TextStyle(
-                    color: blackFont,
+                    color: color,
                     fontFamily: "Inter",
                     fontWeight: FontWeight.w600,
                     fontSize: 14),
@@ -221,8 +249,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 amount,
                 style: amountTextStyle ??
                     TextStyle(
-                      fontSize: 16,
-                      color: blackFont,
+                      fontSize: 14,
+                      fontFamily: "Inter",
+                      color: color,
                       fontWeight: FontWeight.w600,
                     ),
               ),

@@ -3,7 +3,14 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/share_cart_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
+import 'package:Slydo/screens/more_apps/yarn/trending_list_screen.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_list_screen.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -34,6 +41,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
   List<int?> orders = [];
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _auth = PaymentAndBankingAuth();
+  late PageController _pageViewController;
+  int currentAskTapOnHome = 0;
+  String? selectedCategoryId;
+
+  GlobalKey<YarnListScreenState> topicViewStateKey =
+      GlobalKey<YarnListScreenState>();
+  GlobalKey<TrendingListScreenState> latestViewStateKey =
+      GlobalKey<TrendingListScreenState>();
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -69,6 +84,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   @override
   void initState() {
     super.initState();
+    _pageViewController = PageController(initialPage: 0);
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
   }
 
@@ -82,20 +98,111 @@ class _ShoppingCartState extends State<ShoppingCart> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       appBar: appBar() as PreferredSizeWidget?,
-      body: SmartRefresher(
-        enablePullDown: true,
-        header: WaterDropHeader(
-          complete: Container(),
-          waterDropColor: navyBlue,
-        ),
-        controller: _refreshController,
-        onRefresh: _onRefresh,
-        child: _buildBodyOfCart(),
+      body: // if (_tabsVisible) ...[
+          Column(
+        children: [
+
+          YarnTabSelection(
+            onTap: (index) {
+              currentAskTapOnHome = index;
+              _pageViewController.jumpToPage(currentAskTapOnHome);
+              // _showTabs(true);
+              if (mounted) setState(() {});
+            },
+            currentIndex: currentAskTapOnHome,
+            firstTab: 'My Cart',
+            secondTab: 'Shared Cart',
+          ),
+          _buildPageView()
+        ],
+      ),
+      // SizedBox(
+      //   height: 16,
+      // ),
+      // ],
+      floatingActionButton: int.parse(getTotalPrice().toString()) == 0
+          ? Container()
+          : checkoutWidget(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  void updateCurrentAskTapOnHome({required int index}) {
+    setState(() {
+      currentAskTapOnHome = index;
+    });
+  }
+
+  Widget _buildPageView() {
+    return Expanded(
+      child: PageView(
+        onPageChanged: (currentPage) {
+          updateCurrentAskTapOnHome(index: currentPage);
+        },
+        controller: _pageViewController,
+        children: [
+          SmartRefresher(
+            key: topicViewStateKey,
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildBodyOfCart(),
+          ),
+          ListView(
+            key: latestViewStateKey,
+            children: [
+              InkWell(
+                onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (_)=> SharedCartDetails())),
+                child: Card(
+                  margin: EdgeInsets.all(20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("My Birthday Hangout"),
+                            SizedBox(height: 10),
+                            buildMultipleFollowersWidget()
+                          ],
+                        ),
+                        Spacer(),
+                        Text("N100"),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
       ),
       floatingActionButton: int.parse(getTotalPrice().toString()) == 0
           ? Container()
           : checkoutWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Widget buildMultipleFollowersWidget(
+      {double radiusSize: 32,
+      double radiusShift: 10,
+      double radiusHeight: 32,
+      radiusWidth: 32}) {
+    return Padding(
+      padding: EdgeInsets.only(right: 12),
+      child: StackedWidgets(
+        size: radiusSize,
+        xShift: radiusShift,
+        items: [
+          ...List.generate(4, (index) => CircleAvatar()),
+        ],
+      ),
     );
   }
 
@@ -122,6 +229,22 @@ class _ShoppingCartState extends State<ShoppingCart> {
             color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
       ),
       actions: <Widget>[
+        RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.add,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+                arguments: {"create": "basket"});
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    ),
+    SizedBox(width: 8),
         scanQRCodeBtn(),
         const SizedBox(
           width: 16,
@@ -342,10 +465,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
             data,
             index: index,
             onDecreaseQty: () {
-              index != null ? removeItem(index) : SizedBox.shrink();
+              index != null? removeItem(index): SizedBox.shrink();
             },
             onIncreaseQty: () {
-              index != null ? addItem(index) : SizedBox.shrink();
+              index != null? addItem(index): SizedBox.shrink();
             },
           ),
         );
