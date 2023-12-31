@@ -83,8 +83,15 @@ import 'package:Slydo/screens/more_apps/review/main_review.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/rider_dashboard.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.dart';
 import 'package:Slydo/screens/more_apps/service_hub/screens/contractor_payment_screen.dart';
 import 'package:Slydo/screens/more_apps/settings/general_setting.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/confirm_order.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/delivery_option.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/package_details.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/send_cart_payment.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/shipping_option.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/successful_order.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
@@ -159,8 +166,8 @@ import '../screens/home_quick_view.dart';
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/credit_card/add_virtual_card.dart';
 import '../screens/more_apps/credit_card/design_virtual_card.dart';
-import '../screens/more_apps/credit_card/generate_debit_card.dart';
 import '../screens/more_apps/credit_card/fund_virtual_card.dart';
+import '../screens/more_apps/credit_card/generate_debit_card.dart';
 import '../screens/more_apps/credit_card/search_transaction_card.dart';
 import '../screens/more_apps/credit_card/virtual_card_home.dart';
 import '../screens/more_apps/credit_card/withdraw_virtual_card.dart';
@@ -183,10 +190,10 @@ import '../screens/more_apps/service_hub/screens/search_my_job.dart';
 import '../screens/more_apps/service_hub/screens/search_services.dart';
 import '../screens/more_apps/service_hub/service_hub_dashboard.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/add_on_option_list.dart';
+import '../screens/more_apps/shopping/forms/product_add_on/create_add_on.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_list.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_create.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/product_add_on_option_update.dart';
-import '../screens/more_apps/shopping/forms/product_add_on/create_add_on.dart';
 import '../screens/more_apps/shopping/forms/product_add_on/update_add_on.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_add_new_option.dart';
 import '../screens/more_apps/shopping/forms/product_variant/product_variant_list.dart';
@@ -1065,7 +1072,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.CANCLE_BOOKING:
+      case Routes.CANCEL_BOOKING:
         return PageTransition(
           child: CancelBooking(),
           type: PageTransitionType.bottomToTop,
@@ -1871,6 +1878,64 @@ class RouteGenerator {
       case Routes.RIDER_DASHBOARD:
         return PageTransition(
           child: RiderDashboard(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.RIDER_JOB_DETAILS:
+        return PageTransition(
+          child: DeliveryDetails(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      // case Routes.TAKE_PICTURE:
+      //   return PageTransition(
+      //     child: TakePicture(),
+      //     type: PageTransitionType.bottomToTop,
+      //     curve: Curves.ease,
+      //     settings: settings,
+      //   );
+      case Routes.CONFIRM_ORDER:
+        return PageTransition(
+          child: ConfirmOrder(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.DELIVERY_OPTION:
+        return PageTransition(
+          child: DeliveryOption(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SHIPPING_OPTION:
+        return PageTransition(
+          child: ShippingOption(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SEND_CART_PAYMENT:
+        return PageTransition(
+          child: SendCartPayment(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SUCCESSFUL_ORDER:
+        return PageTransition(
+          child: SuccessfulOrder(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.PACKAGE_DETAILS:
+        return PageTransition(
+          child: PackageDetails(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

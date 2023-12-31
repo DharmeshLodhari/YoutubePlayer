@@ -230,6 +230,7 @@ Future<bool?> showDialogBox(
     ],
   ).show();
 }
+
 Future<bool?> showDialogBoxWithInput(
     {Widget? content,
     required BuildContext context,
@@ -258,26 +259,24 @@ Future<bool?> showDialogBoxWithInput(
       isCloseButton: false,
     ),
     buttons: [
-      if(leftButtonOnPressed != null)
-      DialogButton(
-        onPressed: () {
+      if (leftButtonOnPressed != null)
+        DialogButton(
+          onPressed: () {
             leftButtonOnPressed();
-          
-        },
-        textColor: actionOneTextColor,
-        text: actionOneText,
-        backgroundColor: actionOneBgColor,
-      ),
+          },
+          textColor: actionOneTextColor,
+          text: actionOneText,
+          backgroundColor: actionOneBgColor,
+        ),
       if (rightButtonOnPressed != null)
-      DialogButton(
-        onPressed: () {
+        DialogButton(
+          onPressed: () {
             rightButtonOnPressed();
-          
-        },
-        textColor: actionTwoTextColor,
-        text: actionTwoText ?? "",
-        backgroundColor: actionTwoBgColor,
-      )
+          },
+          textColor: actionTwoTextColor,
+          text: actionTwoText ?? "",
+          backgroundColor: actionTwoBgColor,
+        )
     ],
   ).show();
 }
@@ -312,9 +311,10 @@ Widget dropDownPickItemWidget(
       Text(
         label ?? '',
         style: TextStyle(
-          color: blackFont,
+          color: darkGrey,
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
+          fontFamily: "Inter",
         ),
       ),
       SizedBox(height: 5),

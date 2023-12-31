@@ -106,7 +106,7 @@ class Routes {
   static const String NO_VEHICLE_FOUND = "/no-vehicle-found";
   static const String TERMS_AND_CONDITION = "/terms-and-condition";
   static const String RATE_AND_TIP_DRIVER = "/rate-and-tip-driver";
-  static const String CANCLE_BOOKING = "/cancle-booking";
+  static const String CANCEL_BOOKING = "/cancel-booking";
   static const String CONTACT_DRIVER = "/contact-driver";
   static const String MOVIES = "/movies";
   static const String MOVIE_CATEGORY = "/movie-category";
@@ -203,4 +203,12 @@ class Routes {
   static const String CUSTOM_CATEGORY = "/custom-Category";
   static const String DISPATCH_ADDRESS = "/dispatch_address";
   static const String RIDER_DASHBOARD = "/rider_dashboard";
+  static const String RIDER_JOB_DETAILS = "/job_details";
+  // static const String TAKE_PICTURE = "/take_picture";
+  static const String CONFIRM_ORDER = "/confirm_order";
+  static const String DELIVERY_OPTION = "/delivery_option";
+  static const String SHIPPING_OPTION = "/shipping_option";
+  static const String SEND_CART_PAYMENT = "/send_cart_payment";
+  static const String SUCCESSFUL_ORDER = "/successful_order";
+  static const String PACKAGE_DETAILS = "/package_details";
 }

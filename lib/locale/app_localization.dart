@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../data/currency.dart';
 import '../l10n/messages_all.dart';
 import '../utils/util.dart';
 
@@ -2574,6 +2573,13 @@ class AppLocalization {
     );
   }
 
+  String get jobAcceptedFromListing {
+    return Intl.message(
+      "Accepted Successfully",
+      name: "jobRemovedFromListingSuccessfully",
+    );
+  }
+
   String get endJob {
     return Intl.message(
       "Job ended Successfully",
@@ -2591,6 +2597,13 @@ class AppLocalization {
   String get cancelledApplicactionForJobSuccessfully {
     return Intl.message(
       "Job Cancelled Successfully",
+      name: "jobCancelledSuccessfully",
+    );
+  }
+
+  String get journyStartedSuccessfully {
+    return Intl.message(
+      "Job Started Successfully",
       name: "jobCancelledSuccessfully",
     );
   }

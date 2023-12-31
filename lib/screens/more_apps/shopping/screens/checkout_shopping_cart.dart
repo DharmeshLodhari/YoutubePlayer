@@ -3,9 +3,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
-import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -17,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../locator.dart';
 import '../../../../services/app_config_bloc.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
@@ -71,7 +70,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void initState() {
     super.initState();
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
-
   }
 
   @override
@@ -94,8 +92,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
         onRefresh: _onRefresh,
         child: _buildBodyOfCart(),
       ),
-      floatingActionButton:
-      int.parse(getTotalPrice().toString()) == 0 ? Container() : checkoutWidget(),
+      floatingActionButton: int.parse(getTotalPrice().toString()) == 0
+          ? Container()
+          : checkoutWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -150,7 +149,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   Widget _buildBodyOfCart() {
-
     return int.parse(getTotalPrice().toString()) == 0
         ? Center(
             child: NoItemInList(
@@ -188,9 +186,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  moneyDisplayNormalizer(
-                      int.parse(getTotalPrice().toString())),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  moneyDisplayNormalizer(int.parse(getTotalPrice().toString())),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -216,10 +214,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
               ),
               onPressed: () {
                 if (appConfigurationModel?.enableCheckout == true) {
-                  NavigationUtil.push(
-                    context,
-                    screen: const CheckoutScreen(),
-                  );
+                  // NavigationUtil.push(
+                  //   context,
+                  //   screen: const CheckoutScreen(),
+                  // );
+                  Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
                 } else {
                   showToast(message: 'Checkout not available now');
                 }
@@ -292,8 +291,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
               ),
             );
           }
-        }
-        else if(addOn != null && addOn.isNotEmpty){
+        } else if (addOn != null && addOn.isNotEmpty) {
           debugPrint('fola cart:::: ${addOn}');
 
           itemWidgets.add(
@@ -313,11 +311,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
               onIncreaseQty: () {
                 addItemAddOn(index);
               },
-
             ),
           );
-        }
-        else {
+        } else {
           itemWidgets.add(
             ShoppingCartTileForProduct(
               {
@@ -346,10 +342,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
             data,
             index: index,
             onDecreaseQty: () {
-              index != null? removeItem(index): SizedBox.shrink();
+              index != null ? removeItem(index) : SizedBox.shrink();
             },
             onIncreaseQty: () {
-              index != null? addItem(index): SizedBox.shrink();
+              index != null ? addItem(index) : SizedBox.shrink();
             },
           ),
         );
@@ -384,7 +380,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void addItemAddOn(int index) async {
     late var mapData;
     String type =
-    basketBloc.items[index]["item"] is Product ? "product" : "service";
+        basketBloc.items[index]["item"] is Product ? "product" : "service";
     basketBloc.items.forEach((element) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
         element['qty'] = int.parse(element['qty'].toString()) + 1;
@@ -397,12 +393,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
     var addOn = mapData['add_ons'];
 
     List<dynamic> transformedList = addOn?.map((item) {
-      List<dynamic> options = item['options']?.map((option) {
-        return {"id": option['id'], "quantity": option['quantity']};
-      })?.toList() ?? [];
+          List<dynamic> options = item['options']?.map((option) {
+                return {"id": option['id'], "quantity": option['quantity']};
+              })?.toList() ??
+              [];
 
-      return {"id": item['id'], "options": options};
-    })?.toList() ?? [];
+          return {"id": item['id'], "options": options};
+        })?.toList() ??
+        [];
 
     Map data = {
       "type": type,
@@ -417,7 +415,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   void removeItemAddOn(int index) async {
     late var mapData;
     String type =
-    basketBloc.items[index]["item"] is Product ? "product" : "service";
+        basketBloc.items[index]["item"] is Product ? "product" : "service";
     basketBloc.items.forEach((element) async {
       if (element["item"].id == basketBloc.items[index]["item"].id) {
         element['qty'] = int.parse(element['qty'].toString()) - 1;
@@ -427,7 +425,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     });
     if (mounted) setState(() {});
 
-    if(mapData['qty'] == 0 || mapData['qty'] == -1){
+    if (mapData['qty'] == 0 || mapData['qty'] == -1) {
       //remove item from cart and local
       Map data = {
         "type": type,
@@ -436,21 +434,23 @@ class _ShoppingCartState extends State<ShoppingCart> {
       };
       basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
       await ShoppingAuthService().removeItemFromShoppingCart(data);
-    }else{
+    } else {
       //update to server is qty is not zero
       debugPrint('add-on add mapData qty not 0/-1::: ${mapData['qty']}');
-      if(mapData['qty'] != 0){
+      if (mapData['qty'] != 0) {
         // debugPrint('add-on add three::: ${mapData['add_ons']}');
 
         var addOn = mapData['add_ons'];
 
         List<dynamic> transformedList = addOn?.map((item) {
-          List<dynamic> options = item['options']?.map((option) {
-            return {"id": option['id'], "quantity": option['quantity']};
-          })?.toList() ?? [];
+              List<dynamic> options = item['options']?.map((option) {
+                    return {"id": option['id'], "quantity": option['quantity']};
+                  })?.toList() ??
+                  [];
 
-          return {"id": item['id'], "options": options};
-        })?.toList() ?? [];
+              return {"id": item['id'], "options": options};
+            })?.toList() ??
+            [];
 
         Map data = {
           "type": type,
@@ -462,7 +462,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         await ShoppingAuthService().addItemToShoppingCart(data);
       }
     }
-
   }
 
   void addItem(int index) async {
@@ -488,14 +487,17 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 
   void addVariantItem(int index, int variantId) async {
-    String type = basketBloc.items[index]["item"] is Product ? "product" : "service";
+    String type =
+        basketBloc.items[index]["item"] is Product ? "product" : "service";
 
     // debugPrint('fola cart:::: ${variantId}');
     Product selectedProduct = basketBloc.items[index]["item"];
 
-    basketBloc.increaseVariantQuantity(selectedProduct.id.toString(), variantId);
+    basketBloc.increaseVariantQuantity(
+        selectedProduct.id.toString(), variantId);
 
-    Map<String, dynamic> dataInfo = getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
+    Map<String, dynamic> dataInfo =
+        getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
     await ShoppingAuthService().addItemToShoppingCart(dataInfo);
   }
@@ -529,12 +531,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
     Product selectedProduct = basketBloc.items[index]["item"];
     basketBloc.removeOrReduceVariant(selectedProduct.id.toString(), variantId);
 
-    Map<String, dynamic> dataInfo = getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
+    Map<String, dynamic> dataInfo =
+        getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
     debugPrint('fola chat one fourrrr::: ${dataInfo}');
 
     //close pop up if quantity to reduce is 1 currently
-    if(dataInfo["variants"] == null){
+    if (dataInfo["variants"] == null) {
       basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
 
       Map<String, dynamic> data = {
@@ -543,8 +546,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
         "qty": 0,
       };
       await ShoppingAuthService().removeItemFromShoppingCart(data);
-    }else{
-
+    } else {
       await ShoppingAuthService().addItemToShoppingCart(dataInfo);
     }
   }
@@ -556,7 +558,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
       final item = element["item"];
       int totalVariantQuantity = 0;
 
-      if (element["variants"] != null && element.containsKey("variants") && productId == item.id) {
+      if (element["variants"] != null &&
+          element.containsKey("variants") &&
+          productId == item.id) {
         // List variantsList = element["variants"];
         List variantsList = element['item'].variant;
 
@@ -573,7 +577,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         // Check if variantsList is not empty
         if (variantsList.isNotEmpty) {
           List<Map<String, dynamic>> variantDataList = [];
-
 
           // Iterate through the variants and add each variant to the variantDataList
           for (var variant in variantsList) {
@@ -595,11 +598,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
           // Calculate the totalVariantQuantity based on variantDataList
           totalVariantQuantity = variantDataList.fold<int>(
-              0, (sum, variant) => sum + int.parse(variant['quantity'].toString()));
+              0,
+              (sum, variant) =>
+                  sum + int.parse(variant['quantity'].toString()));
         }
 
         // Set the total quantity in dataInfo
-        dataInfo["qty"] = variantsList.isNotEmpty ? totalVariantQuantity : item.quantity;
+        dataInfo["qty"] =
+            variantsList.isNotEmpty ? totalVariantQuantity : item.quantity;
       } else {
         dataInfo = {
           "id": item.id,
@@ -608,11 +614,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
           "variants": [],
         };
       }
-
     }
     return dataInfo;
   }
-
 
   int getTotalVariantQuantity(List<dynamic>? variantsList, id) {
     int totalQuantity = 0;
@@ -620,37 +624,33 @@ class _ShoppingCartState extends State<ShoppingCart> {
     if (variantsList!.isNotEmpty) {
       // Iterate through the productView and add them to dataInfo
       for (var variant in variantsList) {
-          int variantQuantity = int.parse(variant['quantity'].toString());
-          totalQuantity += variantQuantity;
+        int variantQuantity = int.parse(variant['quantity'].toString());
+        totalQuantity += variantQuantity;
       }
     }
 
-
     return totalQuantity;
   }
-
 
   int getTotalPrice() {
     int totalPrice = 0;
 
     for (var item in basketBloc.items) {
-
       int itemTotal = 0;
       int AddOnTotal = 0;
       var product = item["item"];
 
-      if (product is Product){
-
-        if(product.addOns != null){
-
-          if(product.addOns!.isNotEmpty){
-            for(var itemAddOn in product.addOns!){
-
+      if (product is Product) {
+        if (product.addOns != null) {
+          if (product.addOns!.isNotEmpty) {
+            for (var itemAddOn in product.addOns!) {
               if (itemAddOn.containsKey('options')) {
-                List<Map<String, dynamic>> options = List<Map<String, dynamic>>.from(itemAddOn['options']);
+                List<Map<String, dynamic>> options =
+                    List<Map<String, dynamic>>.from(itemAddOn['options']);
 
                 for (var option in options) {
-                  int AddOnOptionPrice = int.parse(option['price'].toString()) ?? 0;
+                  int AddOnOptionPrice =
+                      int.parse(option['price'].toString()) ?? 0;
                   int quantity = int.parse(option['quantity'].toString()) ?? 0;
                   AddOnTotal += AddOnOptionPrice * quantity;
                 }
@@ -659,45 +659,45 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 int quantity = int.parse(item['qty'].toString()) ?? 0;
                 int priceQuantity = price * quantity;
                 totalPrice += AddOnTotal + priceQuantity;
-
               }
             }
-
           }
-
         }
 
-        if(product.variant != null){
+        if (product.variant != null) {
           // If the variant list is not empty, calculate the total price using variants
-            if(product.variant!.isNotEmpty){
-              for (var variant in product.variant!) {
-                // if(variant['quantity'] != null || variant['price'] != null){
-                int variantPrice = int.parse(variant['price'].toString()) ?? 0;
-                int quantity = int.parse(variant['quantity'].toString()) ?? 0;
-                itemTotal += variantPrice * quantity;
-                // }
+          if (product.variant!.isNotEmpty) {
+            for (var variant in product.variant!) {
+              // if(variant['quantity'] != null || variant['price'] != null){
+              int variantPrice = int.parse(variant['price'].toString()) ?? 0;
+              int quantity = int.parse(variant['quantity'].toString()) ?? 0;
+              itemTotal += variantPrice * quantity;
+              // }
 
-              }
             }
-            totalPrice += itemTotal;
-
+          }
+          totalPrice += itemTotal;
         }
 
-        if(product.addOns != null && product.variant != null){
+        if (product.addOns != null && product.variant != null) {
           int normalTotal = 0;
-          normalTotal = int.parse(product.price.toString()) * int.parse(item['qty'].toString());
+          normalTotal = int.parse(product.price.toString()) *
+              int.parse(item['qty'].toString());
           totalPrice += normalTotal;
         }
-
-      }else{
-        itemTotal = int.parse(product.price.toString()) * int.parse(product.quantity.toString());
+      } else if (product is Service) {
+        itemTotal = int.parse(product.price.toString());
+        totalPrice += itemTotal;
+      } else {
+        itemTotal = int.parse(product.price.toString()) *
+            int.parse(product?.quantity?.toString() ?? "1");
         totalPrice += itemTotal;
       }
 
       // totalPrice += itemTotal;
     }
     basketBloc.orderTotal = totalPrice;
-    if(mounted)setState(() {});
+    if (mounted) setState(() {});
 
     return totalPrice;
   }
@@ -721,7 +721,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
     return resultList;
   }
-
 
   List<Widget> listActionSlideActions(int index) {
     String caption1 = AppLocalization.of(context)!.remove;
@@ -777,8 +776,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
           return false;
         },
         child: AlertDialog(
-          titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          titlePadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           title: Text(
