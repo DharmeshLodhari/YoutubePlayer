@@ -277,8 +277,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 getItemTile(index));
   }
 
-  ShippingAddress? shippingAddress;
-
   Widget checkoutWidget() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -291,10 +289,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (shippingAddress != null)
-              Text(
-                  "${shippingAddress?.addressLineOne} ${shippingAddress?.addressLineTwo} ${shippingAddress?.country}" ??
-                      ""),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
