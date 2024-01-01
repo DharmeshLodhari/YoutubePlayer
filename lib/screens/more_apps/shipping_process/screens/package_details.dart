@@ -1,6 +1,10 @@
 import 'dart:io';
 
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -67,27 +71,23 @@ class _PackageDetailsState extends State<PackageDetails> {
 
   Widget _buildBody() {
     return SafeArea(
-      child: Column(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  _buildDeliveryBy(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildNote(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildItems(),
-                ],
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildDeliveryBy(),
+              SizedBox(
+                height: 10,
               ),
-            ),
+              _buildNote(),
+              SizedBox(
+                height: 10,
+              ),
+              _buildItems(),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -255,15 +255,248 @@ class _PackageDetailsState extends State<PackageDetails> {
         SizedBox(
           height: 8,
         ),
+        ListView.builder(
+          itemCount: 5,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (BuildContext context, int index) {
+            return InkWell(
+              onTap: () {},
+              child: _buildItemList(),
+            );
+          },
+        )
+      ],
+    );
+  }
+
+  Widget _buildItemList() {
+    return Container(
+      color: Colors.white,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.symmetric(vertical: 5),
+        shadowColor: boxShadowTwo,
+        elevation: 0,
+        child: Container(
+          decoration: decorateBox(),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: getLeading(),
+                  title: getTitle(),
+                  subtitle: getSubtitle(context),
+                  onTap: () {
+                    // Navigator.pushNamed(context, Routes.PRODUCT,
+                    //     arguments: {"product": widget.item});
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getLeading() {
+    return ClipOval(
+      child: CachedNetworkImage(
+        height: 48,
+        width: 48,
+        // imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
+        imageUrl: "https://www.helium10.com/app/uploads/2020/04/vit-c.jpg",
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.contain,
+        errorWidget: productAndServiceErrorWidget,
+        filterQuality: FilterQuality.high,
+        // placeholder: (context, url) => widget.item?.cover == null
+        //     ? Icon(Icons.widgets)
+        //     : CircularLoadingIndicator(),
+      ),
+    );
+  }
+
+  Widget getTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
         Text(
-          'I will like it to be well packed and beautiful., I will like it to be well packed and beautiful., I will like it to be well packed and beautiful.,I will like it to be well packed and beautiful.,I will like it to be well packed and beautiful.',
+          appendStringDot("Piano Bone straight wig ", 10),
+          maxLines: 1,
           style: TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: darkGrey,
-            fontWeight: FontWeight.w500,
             fontFamily: "Inter",
           ),
-          textAlign: TextAlign.justify,
+        ),
+      ],
+    );
+  }
+
+  Widget getSubtitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          height: 2,
+        ),
+        getColorSizeName(context),
+        SizedBox(
+          height: 2,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            getSubTotalPriceWidget(),
+            getAddRemoveItems(),
+          ],
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Subtotal",
+              style: TextStyle(
+                fontSize: 12,
+                color: darkGrey,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+              ),
+            ),
+            getTotalPriceWidget(),
+          ],
+        ),
+        // getTotalPriceWidget(),
+      ],
+    );
+  }
+
+  Widget getColorSizeName(BuildContext context) {
+    return Text(
+      "Brown mix, 16”",
+      style: TextStyle(
+        fontSize: 12,
+        color: Colors.black,
+        fontWeight: FontWeight.w500,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget getSubTotalPriceWidget() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          "₦",
+          style: TextStyle(
+              color: black,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w500,
+              fontSize: 14),
+        ),
+        Text(
+          "185,000.00",
+          style: TextStyle(
+            color: black,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getAddRemoveItems() {
+    return Container(
+      width: 100,
+      color: Colors.transparent,
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            RoundedBackgroundIcon(
+              backgroundColor: iconBtnGrey,
+              icon: Icon(
+                SlydoAppIcon.minus,
+                color: blackFont,
+                size: 2,
+              ),
+              // onTap: widget.variant == null ? widget.onDecreaseQty : () => widget.onDecreaseVariantQty!(variantId),
+              // onTap: widget.variant == null
+              //     ? widget.onDecreaseQty
+              //     : (widget.addOn != null
+              //     ? widget.onDecreaseQty
+              //     : () => widget.onDecreaseVariantQty!(variantId)),
+            ),
+            Expanded(
+              child: SizedBox(
+                width: 10,
+              ),
+            ),
+            Text(
+              // widget.variant != null
+              //     ? variantQuantity.toString()
+              //     : widget.qty.toString(),
+              "0",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: blackFont,
+                fontFamily: "Inter",
+              ),
+            ),
+            Expanded(
+              child: SizedBox(
+                width: 10,
+              ),
+            ),
+            RoundedBackgroundIcon(
+              backgroundColor: iconBtnGrey,
+              icon: Icon(
+                SlydoAppIcon.plus,
+                color: blackFont,
+                size: 14, // Adjust the size as needed
+              ),
+              // onTap: widget.variant == null ? widget.onIncreaseQty : () => widget.onIncreaseVariantQty!(variantId),
+              // onTap: widget.variant == null
+              //     ? widget.onIncreaseQty
+              //     : (widget.addOn != null
+              //     ? widget.onIncreaseQty
+              //     : () => widget.onIncreaseVariantQty!(variantId)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getTotalPriceWidget() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          "₦",
+          style: TextStyle(
+              color: blackFont,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600,
+              fontSize: 14),
+        ),
+        Text(
+          "185,000.00",
+          style: TextStyle(
+              color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
         ),
       ],
     );

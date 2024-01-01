@@ -168,7 +168,7 @@ class _ShoppingCartTileForProductState
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.w600,
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: "Inter",
           ),
         ),

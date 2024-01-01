@@ -83,32 +83,35 @@ class _SendCartPaymentState extends State<SendCartPayment> {
                   margin: EdgeInsets.zero,
                   shadowColor: boxShadowTwo,
                   color: white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildUserProfile(),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        _buildRecipient(),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        _buildAmount(),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        _buildCategory(),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        _buildReference(),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                      ],
+                  child: Container(
+                    decoration: decorateBox(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildUserProfile(),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          _buildRecipient(),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          _buildAmount(),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          _buildCategory(),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          _buildReference(),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

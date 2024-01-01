@@ -132,32 +132,35 @@ class _DeliveryOptionState extends State<DeliveryOption> {
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
       color: white,
-      child: ListTile(
-        title: Text(
-          title,
-          style: TextStyle(
-            color: blackFont,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            fontFamily: "Inter",
-          ),
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            subTitle,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            title,
             style: TextStyle(
-              color: darkGrey,
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
+              color: blackFont,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
               fontFamily: "Inter",
             ),
           ),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_right_outlined,
-          color: black,
-          size: 18,
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              subTitle,
+              style: TextStyle(
+                color: darkGrey,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              ),
+            ),
+          ),
+          trailing: Icon(
+            Icons.keyboard_arrow_right_outlined,
+            color: black,
+            size: 18,
+          ),
         ),
       ),
     );

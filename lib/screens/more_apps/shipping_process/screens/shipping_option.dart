@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
@@ -81,86 +82,89 @@ class _ShippingOptionState extends State<ShippingOption> {
                   margin: EdgeInsets.zero,
                   shadowColor: boxShadowTwo,
                   color: white,
-                  child: Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ListTile(
-                          minVerticalPadding: 0,
-                          minLeadingWidth: 10,
-                          contentPadding: EdgeInsets.zero,
-                          visualDensity:
-                              VisualDensity(horizontal: 0, vertical: 0),
-                          leading: SvgPicture.asset(
-                            "assets/images/slydo.svg",
-                            width: 40,
-                            height: 40,
-                            color: navyBlue,
-                          ),
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "SLYDO",
-                                style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: "Inter",
-                                ),
-                              ),
-                              Checkbox(
-                                visualDensity:
-                                    VisualDensity(horizontal: -4, vertical: -4),
-                                checkColor: Colors.white,
-                                activeColor: navyBlue,
-                                value: isChecked,
-                                shape: const CircleBorder(),
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    isChecked = value!;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                          subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Estimated delivery time 2-5 days",
-                                style: TextStyle(
-                                  color: darkGrey,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: "Inter",
-                                ),
-                              ),
-                              Text(
-                                "₦3,000.00",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "No 4, ilewole street, Ogba -➜ No 5, Adetutu street,ikeja, lagos",
-                                style: TextStyle(
-                                  color: black,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: "Inter",
-                                ),
-                              ),
+                  child: Container(
+                    decoration: decorateBox(),
+                    child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ListTile(
+                            minVerticalPadding: 0,
+                            minLeadingWidth: 10,
+                            contentPadding: EdgeInsets.zero,
+                            visualDensity:
+                                VisualDensity(horizontal: 0, vertical: 0),
+                            leading: SvgPicture.asset(
+                              "assets/images/slydo.svg",
+                              width: 40,
+                              height: 40,
+                              color: navyBlue,
                             ),
-                            _buildTrackingTag(),
-                          ],
-                        ),
-                      ],
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "SLYDO",
+                                  style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                                Checkbox(
+                                  visualDensity: VisualDensity(
+                                      horizontal: -4, vertical: -4),
+                                  checkColor: Colors.white,
+                                  activeColor: navyBlue,
+                                  value: isChecked,
+                                  shape: const CircleBorder(),
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      isChecked = value!;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            subtitle: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Estimated delivery time 2-5 days",
+                                  style: TextStyle(
+                                    color: darkGrey,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                                Text(
+                                  "₦3,000.00",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "No 4, ilewole street, Ogba -➜ No 5, Adetutu street,ikeja, lagos",
+                                  style: TextStyle(
+                                    color: black,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                              ),
+                              _buildTrackingTag(),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

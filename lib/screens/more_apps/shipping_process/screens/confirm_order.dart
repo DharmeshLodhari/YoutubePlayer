@@ -245,37 +245,40 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       margin: EdgeInsets.zero,
       shadowColor: boxShadowTwo,
       color: white,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Order Summary",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: black,
-                fontFamily: "Inter",
+      child: Container(
+        decoration: decorateBox(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 25.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Order Summary",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: black,
+                  fontFamily: "Inter",
+                ),
               ),
-            ),
-            SizedBox(
-              height: 15.0,
-            ),
-            _buildTotalItemCost(),
-            SizedBox(
-              height: 10,
-            ),
-            _buildTotalShipping(),
-            SizedBox(
-              height: 10,
-            ),
-            _buildInsurance(),
-            SizedBox(
-              height: 10,
-            ),
-            _buildOrderTotal(),
-          ],
+              SizedBox(
+                height: 15.0,
+              ),
+              _buildTotalItemCost(),
+              SizedBox(
+                height: 10,
+              ),
+              _buildTotalShipping(),
+              SizedBox(
+                height: 10,
+              ),
+              _buildInsurance(),
+              SizedBox(
+                height: 10,
+              ),
+              _buildOrderTotal(),
+            ],
+          ),
         ),
       ),
     );

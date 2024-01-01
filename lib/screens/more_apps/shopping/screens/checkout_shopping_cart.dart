@@ -3,14 +3,12 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/share_cart_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
 import 'package:Slydo/screens/more_apps/yarn/trending_list_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_list_screen.dart';
-import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -101,7 +99,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
       body: // if (_tabsVisible) ...[
           Column(
         children: [
-
           YarnTabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
@@ -156,7 +153,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
             key: latestViewStateKey,
             children: [
               InkWell(
-                onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (_)=> SharedCartDetails())),
+                onTap: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => SharedCartDetails())),
                 child: Card(
                   margin: EdgeInsets.all(20),
                   child: Padding(
@@ -182,10 +180,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
           ),
         ],
       ),
-      floatingActionButton: int.parse(getTotalPrice().toString()) == 0
-          ? Container()
-          : checkoutWidget(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -230,21 +224,21 @@ class _ShoppingCartState extends State<ShoppingCart> {
       ),
       actions: <Widget>[
         RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.add,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+          height: 34,
+          width: 34,
+          icon: Icon(
+            SlydoAppIcon.add,
+            size: 16,
+            color: blackFont,
+          ),
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
                 arguments: {"create": "basket"});
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    ),
-    SizedBox(width: 8),
+          },
+          backgroundColor: iconBtnGrey,
+          enableMargin: true,
+        ),
+        SizedBox(width: 8),
         scanQRCodeBtn(),
         const SizedBox(
           width: 16,
@@ -465,10 +459,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
             data,
             index: index,
             onDecreaseQty: () {
-              index != null? removeItem(index): SizedBox.shrink();
+              index != null ? removeItem(index) : SizedBox.shrink();
             },
             onIncreaseQty: () {
-              index != null? addItem(index): SizedBox.shrink();
+              index != null ? addItem(index) : SizedBox.shrink();
             },
           ),
         );
