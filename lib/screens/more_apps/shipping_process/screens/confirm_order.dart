@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/tiles/package_detail_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ConfirmOrder extends StatefulWidget {
   const ConfirmOrder({Key? key}) : super(key: key);
@@ -17,8 +20,21 @@ class ConfirmOrder extends StatefulWidget {
 class _ConfirmOrderState extends State<ConfirmOrder> {
   ScrollController _confirmOrderScrollController = new ScrollController();
 
+  late BasketBloc basketBloc;
+
+  @override
+  void initState() {
+    BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
+    basketBloc.merchantData.clear();
+    basketBloc.getAllMerchant();
+    super.initState();
+  }
+
+  // Future<void> getAllPackageDetail() {}
+
   @override
   Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -82,9 +98,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        return SingleCartWid(
-                          boarder: false,
-                        );
+                        return PackageDetailTile();
                       },
                     ),
                     _buildOrderSummary(),
@@ -96,143 +110,6 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           _buildPayButton(),
         ],
       ),
-    );
-  }
-
-  Widget SingleCartWid({required bool boarder}) {
-    return Container(
-      margin: EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: boarder == true ? navyBlue : white,
-          width: 1,
-        ),
-      ),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.of(context).pushNamed(Routes.DELIVERY_OPTION);
-        },
-        child: Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              ListTile(
-                leading: _buildImage(),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Prineygladhair",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: black,
-                        fontFamily: "Inter",
-                      ),
-                    ),
-                    Text(
-                      "₦187,000.00",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: black,
-                        fontFamily: "Inter",
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Text(
-                  "Package 1 (1 item)",
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: black,
-                    fontFamily: "Inter",
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 5.0,
-              ),
-              _buildShippingData(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImage() {
-    return Image.network(
-      "https://www.helium10.com/app/uploads/2020/04/vit-c.jpg",
-      height: 48,
-      width: 48,
-      fit: BoxFit.fill,
-      filterQuality: FilterQuality.high,
-      cacheHeight: 48,
-      cacheWidth: 48,
-      frameBuilder: imageFrameBuilder,
-      errorBuilder: (context, error, stackTrace) {
-        return Image.network(
-          defaultImage,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fill,
-          filterQuality: FilterQuality.high,
-        );
-      },
-    );
-  }
-
-  Widget _buildShippingData() {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    "Shipping: ",
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      color: black,
-                      fontFamily: "Inter",
-                    ),
-                  ),
-                  Text(
-                    "₦2,000.00",
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      color: black,
-                      fontFamily: "Inter",
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 3,
-              ),
-              Text(
-                "Estimated delivery time 2-5 days",
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w400,
-                  color: darkGrey,
-                  fontFamily: "Inter",
-                ),
-              ),
-              //
-            ],
-          ),
-        ),
-        Icon(
-          Icons.keyboard_arrow_right_outlined,
-        )
-      ],
     );
   }
 

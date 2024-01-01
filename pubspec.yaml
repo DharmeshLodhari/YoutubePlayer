@@ -3,7 +3,7 @@ description: The slydo application.
 version: 2.1.9+61
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
   animated_fractionally_sized_box: ^2.0.1
