@@ -2,36 +2,45 @@ import 'dart:convert';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/delivery_option_model.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/merchant_address_model.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
 
 class ShippingProcessAuthService extends AuthService {
-  // Get Merchant and addresses in cart
-  Future<MerchantAddressModel?> getMerchantAddress(String? jobId) async {
-    try {
-      var url = "${AppConfig.baseUrl}/api/v1/shopping-cart/item-addresses";
+  // Get all package details in cart
+  Future<List<PackageDetailsModel>> getAllPackageDetail() async {
+    var url = "${AppConfig.baseUrl}/api/v1/shopping-cart/item-addresses";
 
-      var headers = await getAuthHeaders();
-      var response = await httpGet(url, headers: headers);
-      debugPrint('Fetch Delivery Options BODY ---> ${response.body}');
-
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        return MerchantAddressModel.fromJson(json.decode(response.body));
-      } else {
-        showToast(message: response.body.toString());
-        throw response.body;
+    var headers = await getAuthHeaders();
+    // var response = await httpGet(url, headers: headers);
+    // var jsonData = jsonDecode(response.body);
+    // debugPrint('Fetch Package Details BODY ---> ${response.body}');
+    // print("response ${response.body}");
+    // print(response.statusCode);
+    // if (response.statusCode == 500) {
+    List jsonDataResult = [
+      {
+        "merchant": "cameraman",
+        "address_id": "AD-ND3ZNKNGWAONVW0J",
+        "total_items": 6,
+        "total_price": 2000672
+      },
+      {
+        "merchant": "sanxynet",
+        "address_id": "AD-3YHHLBYD9K3P8M1I",
+        "total_items": 1,
+        "total_price": 632304
       }
-    } on Exception catch (e) {
-      showToast(message: e.toString());
-      print(e);
-    } catch (err) {
-      showToast(message: err.toString());
-      print(err);
-    }
-    return null;
+    ];
+
+    // List jsonDataResult = jsonData;
+    return jsonDataResult
+        .map((json) => PackageDetailsModel.fromJson(json))
+        .toList();
+    // } else {
+    //   showToast(message: response.body.toString());
+    //   throw response.body;
+    // }
   }
 
   // List Delivery options

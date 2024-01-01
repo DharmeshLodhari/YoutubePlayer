@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/tiles/package_detail_tile.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -21,16 +22,39 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
   ScrollController _confirmOrderScrollController = new ScrollController();
 
   late BasketBloc basketBloc;
+  List<PackageDetailsModel> packageList = [];
+  bool isLoading = false;
+  bool isSelected = false;
 
   @override
   void initState() {
-    BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
-    basketBloc.merchantData.clear();
-    basketBloc.getAllMerchant();
+    // BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
+    // basketBloc.merchantData.clear();
+    // basketBloc.getAllMerchant();
     super.initState();
+    getAllPackageDetail();
   }
 
-  // Future<void> getAllPackageDetail() {}
+  Future<void> getAllPackageDetail() async {
+    if (!isLoading) {
+      isLoading = true;
+      if (mounted) setState(() {});
+
+      await ShippingProcessAuthService().getAllPackageDetail().then(
+        (value) {
+          value.forEach((element) {
+            packageList.add(element);
+          });
+          isLoading = false;
+          if (mounted) setState(() {});
+        },
+      ).catchError((error) {
+        isLoading = false;
+        if (mounted) setState(() {});
+        showToast(message: error.toString());
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,14 +118,14 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                 child: Column(
                   children: [
                     ListView.builder(
-                      itemCount: 3,
+                      itemCount: packageList.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
-                        return PackageDetailTile();
+                        return _buildPackageDetailTile(index);
                       },
                     ),
-                    _buildOrderSummary(),
+                    Visibility(visible: false, child: _buildOrderSummary()),
                   ],
                 ),
               ),
@@ -110,6 +134,146 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           _buildPayButton(),
         ],
       ),
+    );
+  }
+
+  Widget _buildPackageDetailTile(int index) {
+    return Container(
+      margin: EdgeInsets.all(7.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isSelected == true ? navyBlue : white,
+          width: 1,
+        ),
+      ),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed(Routes.DELIVERY_OPTION);
+        },
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              ListTile(
+                leading: _buildImage(),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      packageList[index].merchant ?? "",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: black,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                    Text(
+                      "₦${packageList[index].totalPrice}",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: black,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                  ],
+                ),
+                subtitle: Text(
+                  "Package 1 (${packageList[index].totalItems} item)",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: black,
+                    fontFamily: "Inter",
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 5.0,
+              ),
+              // _buildShippingData(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Select delivery option",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                      color: navyBlue,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_right_outlined,
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage() {
+    return Image.asset(
+      "assets/images/package.png",
+      fit: BoxFit.fill,
+    );
+  }
+
+  Widget _buildShippingData() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "Shipping: ",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                  Text(
+                    "₦2,000.00",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                      color: black,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 3,
+              ),
+              Text(
+                "Estimated delivery time 2-5 days",
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w400,
+                  color: darkGrey,
+                  fontFamily: "Inter",
+                ),
+              ),
+              //
+            ],
+          ),
+        ),
+        Icon(
+          Icons.keyboard_arrow_right_outlined,
+        )
+      ],
     );
   }
 

@@ -1,11 +1,8 @@
 import 'dart:io';
 
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/delivery_option_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
@@ -21,10 +18,11 @@ class DeliveryOption extends StatefulWidget {
 }
 
 class _DeliveryOptionState extends State<DeliveryOption> {
-  bool deliveryOptionLoading = false;
-  List<DeliveryOptionModel> deliveryOptions = [];
-  List<String?> deliveryOptionName = [];
-  String? selectedValue;
+  // bool deliveryOptionLoading = false;
+  // List<DeliveryOptionModel> deliveryOptions = [];
+  List<String?> deliveryOption = ["Shipping", "Eat in", "Pickup"];
+  String? selectedValue = "Shipping";
+  bool isShipping = true;
   bool isChecked = false;
   bool switchValue = false;
 
@@ -91,22 +89,13 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                     dropDownPickItemWidget(
                       label: 'Delivery Option',
                       selectedItem: selectedValue,
-                      onTap: () => deliveryOptionLoading
-                          ? Center(child: CircularLoadingIndicator())
-                          : pickDeliveryOptions(),
-                    ),
-                    Visibility(
-                      visible: false,
-                      child: _buildNote(),
+                      onTap: () => pickDeliveryOptions(),
                     ),
                     const SizedBox(
                       height: 16,
                     ),
-                    _buildDeliveryAddress(),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    _buildShippingOption(),
+                    _buildNote(),
+                    _buildDeliveryAddressAndOptions(),
                     Visibility(
                       visible: false,
                       child: _buildShippingOptionSelected(),
@@ -119,6 +108,18 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           _buildDoneButton(),
         ],
       ),
+    );
+  }
+
+  Widget _buildDeliveryAddressAndOptions() {
+    return Column(
+      children: [
+        _buildDeliveryAddress(),
+        const SizedBox(
+          height: 16,
+        ),
+        _buildShippingOption(),
+      ],
     );
   }
 
@@ -211,27 +212,27 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   }
 
   pickDeliveryOptions() async {
-    deliveryOptionName.clear();
-    deliveryOptionLoading = true;
-    if (mounted) setState(() {});
-
-    await ShippingProcessAuthService().getDeliveryOption().then(
-      (value) {
-        value.forEach((element) {
-          deliveryOptionName.add(element.name);
-        });
-        deliveryOptionLoading = false;
-        if (mounted) setState(() {});
-      },
-    ).catchError((error) {
-      deliveryOptionLoading = false;
-      if (mounted) setState(() {});
-      showToast(message: error.toString());
-    });
+    // deliveryOptionName.clear();
+    // deliveryOptionLoading = true;
+    // if (mounted) setState(() {});
+    //
+    // await ShippingProcessAuthService().getDeliveryOption().then(
+    //   (value) {
+    //     value.forEach((element) {
+    //       deliveryOptionName.add(element.name);
+    //     });
+    //     deliveryOptionLoading = false;
+    //     if (mounted) setState(() {});
+    //   },
+    // ).catchError((error) {
+    //   deliveryOptionLoading = false;
+    //   if (mounted) setState(() {});
+    //   showToast(message: error.toString());
+    // });
 
     String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
-      items: deliveryOptionName,
+      items: deliveryOption,
       selectedItem: selectedValue,
     );
     if (pickedDeliveryOption != null) {
