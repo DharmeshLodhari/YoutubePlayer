@@ -101,7 +101,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
       body: // if (_tabsVisible) ...[
           Column(
         children: [
-
           YarnTabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
@@ -156,7 +155,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
             key: latestViewStateKey,
             children: [
               InkWell(
-                onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (_)=> SharedCartDetails())),
+                onTap: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => SharedCartDetails())),
                 child: Card(
                   margin: EdgeInsets.all(20),
                   child: Padding(
@@ -182,10 +182,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
           ),
         ],
       ),
-      floatingActionButton: int.parse(getTotalPrice().toString()) == 0
-          ? Container()
-          : checkoutWidget(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -230,21 +226,21 @@ class _ShoppingCartState extends State<ShoppingCart> {
       ),
       actions: <Widget>[
         RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.add,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+          height: 34,
+          width: 34,
+          icon: Icon(
+            SlydoAppIcon.add,
+            size: 16,
+            color: blackFont,
+          ),
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
                 arguments: {"create": "basket"});
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    ),
-    SizedBox(width: 8),
+          },
+          backgroundColor: iconBtnGrey,
+          enableMargin: true,
+        ),
+        SizedBox(width: 8),
         scanQRCodeBtn(),
         const SizedBox(
           width: 16,
@@ -465,10 +461,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
             data,
             index: index,
             onDecreaseQty: () {
-              index != null? removeItem(index): SizedBox.shrink();
+              index != null ? removeItem(index) : SizedBox.shrink();
             },
             onIncreaseQty: () {
-              index != null? addItem(index): SizedBox.shrink();
+              index != null ? addItem(index) : SizedBox.shrink();
             },
           ),
         );

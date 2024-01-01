@@ -57,4 +57,28 @@ class ShippingProcessAuthService extends AuthService {
       return Future.error(response.body);
     }
   }
+
+  // List of packages of order
+  // Future<List<DeliveryOptionModel>> getPackagesList() async {
+  //   var url = AppConfig.baseUrl + "/api/v1/shopping-cart/item-addresses";
+  //   var headers = await getAuthHeaders();
+  //   var response = await httpGet(url, headers: headers);
+  //   var jsonData = jsonDecode(response.body);
+  //
+  //   debugPrint('URL :: $url');
+  //   debugPrint('BODY shipping:: ${response.body}');
+  //   debugPrint('STATUS CO  :: ${response.statusCode}');
+  //
+  //   if (response.statusCode == 200) {
+  //     List jsonDataResult = jsonData['results'];
+  //
+  //     return jsonDataResult
+  //         .map((json) => DeliveryOptionModel.fromJson(json))
+  //         .toList();
+  //   } else {
+  //     debugPrint('BODY shipping 00:: ${response.body}');
+  //
+  //     return Future.error(response.body);
+  //   }
+  // }
 }
