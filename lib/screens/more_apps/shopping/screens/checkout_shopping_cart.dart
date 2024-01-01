@@ -5,6 +5,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/share_cart_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
 import 'package:Slydo/screens/more_apps/yarn/trending_list_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
@@ -117,9 +118,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
       //   height: 16,
       // ),
       // ],
-      floatingActionButton: int.parse(getTotalPrice().toString()) == 0
-          ? Container()
-          : checkoutWidget(),
+      floatingActionButton:
+          int.parse(getTotalPrice().toString()) == 0 ? null : checkoutWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -277,6 +277,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 getItemTile(index));
   }
 
+  ShippingAddress? shippingAddress;
+
   Widget checkoutWidget() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -286,69 +288,89 @@ class _ShoppingCartState extends State<ShoppingCart> {
       child: Container(
         decoration: decorateBox(),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (shippingAddress != null)
+              Text(
+                  "${shippingAddress?.addressLineOne} ${shippingAddress?.addressLineTwo} ${shippingAddress?.country}" ??
+                      ""),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(
-                  AppLocalization.of(context)!.total + " : ",
-                  style: TextStyle(fontSize: 14, color: blackFont),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      AppLocalization.of(context)!.total + " : ",
+                      style: TextStyle(fontSize: 14, color: blackFont),
+                    ),
+                    Text(
+                      worldCurrencies[userBloc.user.currency!]!,
+                      style: const TextStyle(
+                          fontFamily: "Inter",
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          int.parse(getTotalPrice().toString())),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                Text(
-                  worldCurrencies[userBloc.user.currency!]!,
-                  style: const TextStyle(
-                      fontFamily: "Inter",
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
+                const Expanded(
+                  child: SizedBox(
+                    width: 10,
+                  ),
                 ),
-                Text(
-                  moneyDisplayNormalizer(int.parse(getTotalPrice().toString())),
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                MaterialButton(
+                  height: 40,
+                  color: navyBlue,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  child: const SizedBox(
+                    width: 66,
+                    child: Text(
+                      "Checkout",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (appConfigurationModel?.enableCheckout == true) {
+                      // NavigationUtil.push(
+                      //   context,
+                      //   screen: const CheckoutScreen(),
+                      // );
+                      Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
+                      // Navigator.of(context).pushNamed(
+                      //   Routes.DISPATCH_ADDRESS,
+                      //   arguments: {
+                      //     "isForSelection": true,
+                      //     "onShippingAddressChange": (address) {
+                      //       shippingAddress = address;
+                      //       setState(() {});
+                      //     }
+                      //   },
+                      // );
+                    } else {
+                      showToast(message: 'Checkout not available now');
+                    }
+
+                    // if (basketBloc.items.length != 0) {
+                    //   addNoteDialog();
+                    // } else {
+                    //   showToast(
+                    //       message: AppLocalization.of(context)!
+                    //           .pleaseAddSomeItemsFirst);
+                    // }
+                  },
+                )
               ],
             ),
-            const Expanded(
-              child: SizedBox(
-                width: 10,
-              ),
-            ),
-            MaterialButton(
-              height: 40,
-              color: navyBlue,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: const SizedBox(
-                width: 66,
-                child: Text(
-                  "Checkout",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14),
-                ),
-              ),
-              onPressed: () {
-                if (appConfigurationModel?.enableCheckout == true) {
-                  // NavigationUtil.push(
-                  //   context,
-                  //   screen: const CheckoutScreen(),
-                  // );
-                  Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
-                } else {
-                  showToast(message: 'Checkout not available now');
-                }
-
-                // if (basketBloc.items.length != 0) {
-                //   addNoteDialog();
-                // } else {
-                //   showToast(
-                //       message: AppLocalization.of(context)!
-                //           .pleaseAddSomeItemsFirst);
-                // }
-              },
-            )
           ],
         ),
       ),

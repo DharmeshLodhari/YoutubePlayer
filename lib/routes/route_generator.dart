@@ -1849,7 +1849,7 @@ class RouteGenerator {
       /// Discount
       case Routes.DISPATCH_ADDRESS:
         return PageTransition(
-          child: DispatchAddress(),
+          child: DispatchAddress(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
