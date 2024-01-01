@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
@@ -8,11 +10,10 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class ShippingOption extends StatefulWidget {
-  ShippingOption({Key? key, this.arguments}) : super(key: key);
-
-  var arguments;
+  ShippingOption({Key? key}) : super(key: key);
 
   @override
   State<ShippingOption> createState() => _ShippingOptionState();
@@ -21,28 +22,30 @@ class ShippingOption extends StatefulWidget {
 class _ShippingOptionState extends State<ShippingOption> {
   bool isLoading = false;
   List<ShippingOptionModel> shippingList = [];
-  String? shippingType;
-  String? merchantName;
-  // bool isChecked = false;
-  int selectedIndex = -1;
+
+  ShippingOptionModel? shippingOptionModel;
+
+  late ShippingProcessBloc shippingProcessBloc;
 
   @override
   void initState() {
     super.initState();
-    if (widget.arguments != null) {
-      shippingType = widget.arguments?["shippingType"];
-      merchantName = widget.arguments?["merchantName"];
-    }
-    if (shippingType == 'slydo') {
-      getShippingWithSlydo();
-    }
-    if (shippingType == 'merchant') {
-      getShippingWithMerchant();
-    }
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        ShippingProcessBloc shippingProcessBloc =
+            Provider.of<ShippingProcessBloc>(context, listen: false);
+
+        getShippingEstimation(
+            shippingProcessBloc.getPackageDetailModel().shippingType!,
+            merchantName: shippingProcessBloc.getPackageDetailModel().merchant);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -108,12 +111,19 @@ class _ShippingOptionState extends State<ShippingOption> {
                 ),
               ),
             ),
-            CurvedButton(
-              onPressed: () {},
-              backgroundColor: navyBlue,
-              textColor: white,
-              text: 'Save',
-            ),
+            if (shippingOptionModel != null)
+              CurvedButton(
+                onPressed: () {
+                  if (shippingOptionModel != null) {
+                    shippingProcessBloc
+                        .updateShippingOption(shippingOptionModel!);
+                  }
+                  Navigator.of(context).pop();
+                },
+                backgroundColor: navyBlue,
+                textColor: white,
+                text: 'Save',
+              ),
           ],
         ),
       ),
@@ -159,24 +169,31 @@ class _ShippingOptionState extends State<ShippingOption> {
                       fontFamily: "Inter",
                     ),
                   ),
-                  Checkbox(
-                    visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                    checkColor: Colors.white,
-                    activeColor: navyBlue,
-                    // value: isChecked,
-                    shape: const CircleBorder(),
-                    // onChanged: (bool? value) {
-                    //   setState(() {
-                    //     isChecked = value!;
-                    //   });
-                    // },
-                    value: selectedIndex == index,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedIndex = value! ? index : -1;
-                      });
-                    },
-                  ),
+                  Radio<ShippingOptionModel>(
+                      value: shippingList[index],
+                      groupValue: shippingOptionModel,
+                      onChanged: (value) {
+                        shippingOptionModel = value;
+                        if (mounted) setState(() {});
+                      })
+                  // Checkbox(
+                  //   visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                  //   checkColor: Colors.white,
+                  //   activeColor: navyBlue,
+                  //   // value: isChecked,
+                  //   shape: const CircleBorder(),
+                  //   // onChanged: (bool? value) {
+                  //   //   setState(() {
+                  //   //     isChecked = value!;
+                  //   //   });
+                  //   // },
+                  //   value: selectedIndex == index,
+                  //   onChanged: (value) {
+                  //     setState(() {
+                  //       selectedIndex = value! ? index : -1;
+                  //     });
+                  //   },
+                  // ),
                 ],
               ),
               subtitle: Row(
@@ -245,32 +262,15 @@ class _ShippingOptionState extends State<ShippingOption> {
     );
   }
 
-  Future<void> getShippingWithSlydo() async {
+  Future<void> getShippingEstimation(ShippingTypes type,
+      {String? merchantName}) async {
     shippingList.clear();
     isLoading = true;
     if (mounted) setState(() {});
 
-    await ShippingProcessAuthService().getShipWithSlydo().then(
-      (value) {
-        value.forEach((element) {
-          shippingList.add(element);
-        });
-        isLoading = false;
-        if (mounted) setState(() {});
-      },
-    ).catchError((error) {
-      isLoading = false;
-      if (mounted) setState(() {});
-      showToast(message: error.toString());
-    });
-  }
-
-  Future<void> getShippingWithMerchant() async {
-    shippingList.clear();
-    isLoading = true;
-    if (mounted) setState(() {});
-
-    await ShippingProcessAuthService().getShipWithMerchant(merchantName).then(
+    await ShippingProcessAuthService()
+        .getShippingEstimation(type, merchantName: merchantName)
+        .then(
       (value) {
         value.forEach((element) {
           shippingList.add(element);

@@ -1,7 +1,8 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -10,11 +11,12 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class DeliveryOption extends StatefulWidget {
-  DeliveryOption({Key? key, this.arguments}) : super(key: key);
-
-  var arguments;
+  DeliveryOption({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<DeliveryOption> createState() => _DeliveryOptionState();
@@ -22,23 +24,17 @@ class DeliveryOption extends StatefulWidget {
 
 class _DeliveryOptionState extends State<DeliveryOption> {
   List<String?> deliveryOption = ["Shipping", "Eat in", "Pickup"];
-  String? selectedValue = "Shipping";
-  bool isShipping = true;
-  bool isChecked = false;
-  bool switchValue = false;
-  ShippingAddress? shippingAddress;
-  String? merchantName;
+
+  late ShippingProcessBloc shippingProcessBloc;
 
   @override
   void initState() {
     super.initState();
-    if (widget.arguments != null) {
-      merchantName = widget.arguments?["merchantName"];
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -99,19 +95,22 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                   children: [
                     dropDownPickItemWidget(
                       label: 'Delivery Option',
-                      selectedItem: selectedValue,
+                      selectedItem: shippingProcessBloc
+                          .getPackageDetailModel()
+                          .getDeliveryOption(),
                       onTap: () => pickDeliveryOptions(),
                     ),
                     const SizedBox(
                       height: 16,
                     ),
-                    isShipping
-                        ? _buildDeliveryAddressAndOptions()
-                        : _buildNote(),
-                    Visibility(
-                      visible: false,
-                      child: _buildShippingOptionSelected(),
-                    ),
+                    shippingProcessBloc.getPackageDetailModel().requireNote()
+                        ? _buildNote()
+                        : _buildDeliveryAddressAndOptions(),
+                    if (shippingProcessBloc
+                            .getPackageDetailModel()
+                            .shippingOption !=
+                        null)
+                      _buildShippingOptionSelected(),
                   ],
                 ),
               ),
@@ -130,7 +129,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         const SizedBox(
           height: 16,
         ),
-        _buildShippingOption(),
+        if (shippingProcessBloc.getPackageDetailModel().shippingOption == null)
+          _buildShippingOption(),
       ],
     );
   }
@@ -234,16 +234,11 @@ class _DeliveryOptionState extends State<DeliveryOption> {
     String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOption,
-      selectedItem: selectedValue,
+      selectedItem:
+          shippingProcessBloc.getPackageDetailModel().getDeliveryOption(),
     );
     if (pickedDeliveryOption != null) {
-      selectedValue = pickedDeliveryOption;
-      if (selectedValue == "Shipping") {
-        isShipping = true;
-      } else {
-        isShipping = false;
-      }
-      if (mounted) setState(() {});
+      shippingProcessBloc.updateDeliveryOption(pickedDeliveryOption);
     }
   }
 
@@ -254,9 +249,11 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           Routes.DISPATCH_ADDRESS,
           arguments: {
             "isForSelection": true,
-            "shippingAddress": shippingAddress,
+            "shippingAddress":
+                shippingProcessBloc.getPackageDetailModel().deliveryAddress,
             "onShippingAddressChange": (address) {
-              shippingAddress = address;
+              shippingProcessBloc.getPackageDetailModel().deliveryAddress =
+                  address;
               setState(() {});
             }
           },
@@ -281,9 +278,14 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
-              shippingAddress != null
-                  ? "${shippingAddress?.line_1}, ${shippingAddress?.line_2}, ${shippingAddress?.city}, ${shippingAddress?.stateName},  ${shippingAddress?.country}, ${shippingAddress?.zip}"
-                  : "No 5, Adetutu street,ikeja, lagos, Nigeria, 100001",
+              shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+                      null
+                  ? shippingProcessBloc
+                          .getPackageDetailModel()
+                          .deliveryAddress
+                          ?.toAddressString() ??
+                      ""
+                  : "Select delivery address",
               style: TextStyle(
                 color: black,
                 fontSize: 14,
@@ -320,10 +322,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION, arguments: {
-              'shippingType': 'slydo',
-              'merchantName': merchantName
-            });
+            shippingProcessBloc.updateShippingOptionType(ShippingTypes.slydo);
+            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
           },
           child: ShippingOptionalWid(
             title: "Ship with Slydo",
@@ -335,10 +335,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION, arguments: {
-              'shippingType': 'merchant',
-              'merchantName': merchantName
-            });
+            shippingProcessBloc
+                .updateShippingOptionType(ShippingTypes.merchant);
+            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
           },
           child: ShippingOptionalWid(
             title: "Merchant Option",
@@ -350,10 +349,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION, arguments: {
-              'shippingType': 'courier',
-              'merchantName': merchantName
-            });
+            shippingProcessBloc.updateShippingOptionType(ShippingTypes.courier);
+            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
           },
           child: ShippingOptionalWid(
             title: "Ship with Courier",
@@ -365,15 +362,32 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   }
 
   Widget _buildDoneButton() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: CurvedButton(
-        onPressed: () {},
-        backgroundColor: navyBlue,
-        textColor: white,
-        text: 'Done',
-      ),
-    );
+    bool isEnable = false;
+    if (shippingProcessBloc.getPackageDetailModel().deliveryOption ==
+            DeliveryOptions.eatIn ||
+        shippingProcessBloc.getPackageDetailModel().deliveryOption ==
+            DeliveryOptions.pickUp) {
+      isEnable = true;
+    } else {
+      if (shippingProcessBloc.getPackageDetailModel().shippingOption != null) {
+        isEnable = true;
+      }
+    }
+
+    if (isEnable) {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: CurvedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          backgroundColor: navyBlue,
+          textColor: white,
+          text: 'Done',
+        ),
+      );
+    }
+    return Container();
   }
 
   Widget _buildShippingOptionSelected() {
@@ -392,7 +406,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                shippingProcessBloc.updateShippingOption(null);
+              },
               child: Text(
                 "Reset Option",
                 style: TextStyle(
@@ -430,17 +446,10 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           fontFamily: "Inter",
         ),
       ),
-      onTap: () {
-        setState(() {
-          switchValue = !switchValue;
-        });
-      },
       trailing: CupertinoSwitch(
-          value: switchValue,
+          value: shippingProcessBloc.getPackageDetailModel().getInSurePackage(),
           onChanged: (value) {
-            setState(() {
-              switchValue = value;
-            });
+            shippingProcessBloc.getPackageDetailModel().insurePackage = value;
           },
           activeColor: const Color(0xff3F61DB) // Color when switch is ON
           ),
@@ -477,13 +486,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
               Checkbox(
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 checkColor: Colors.white,
-                value: isChecked,
+                value: true,
                 shape: const CircleBorder(),
-                onChanged: (bool? value) {
-                  setState(() {
-                    isChecked = value!;
-                  });
-                },
+                onChanged: (bool? value) {},
               ),
             ],
           ),

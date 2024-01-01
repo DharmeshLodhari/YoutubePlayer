@@ -338,6 +338,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       //   context,
                       //   screen: const CheckoutScreen(),
                       // );
+
+                      ShippingProcessBloc shippingProcessBloc =
+                          Provider.of<ShippingProcessBloc>(context,
+                              listen: false);
+                      shippingProcessBloc.currentSelectedIndex = null;
+
                       Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
                     } else {
                       showToast(message: 'Checkout not available now');

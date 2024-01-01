@@ -1,4 +1,9 @@
+import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+
+enum DeliveryOptions { shipping, eatIn, pickUp }
+
+enum ShippingTypes { slydo, merchant, courier }
 
 class PackageDetailsModel {
   String? addressId;
@@ -7,6 +12,11 @@ class PackageDetailsModel {
   int? totalPrice;
   ShippingAddress? merchantAddress;
   ShippingAddress? deliveryAddress;
+  DeliveryOptions? deliveryOption;
+  ShippingOptionModel? shippingOption;
+  ShippingTypes? shippingType;
+  String? shippingNote;
+  bool insurePackage = false;
 
   PackageDetailsModel({
     this.addressId,
@@ -15,6 +25,11 @@ class PackageDetailsModel {
     this.totalPrice,
     this.merchantAddress,
     this.deliveryAddress,
+    this.deliveryOption,
+    this.shippingOption,
+    this.shippingNote = "",
+    this.insurePackage = false,
+    this.shippingType,
   });
 
   factory PackageDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -35,4 +50,36 @@ class PackageDetailsModel {
         "total_items": totalItems,
         "total_price": totalPrice,
       };
+
+  bool requireNote() {
+    if (deliveryOption == DeliveryOptions.shipping) {
+      return false;
+    }
+    return true;
+  }
+
+  bool getInSurePackage() {
+    return insurePackage;
+  }
+
+  String? getDeliveryOption() {
+    if (deliveryOption == null) {
+      return null;
+    }
+
+    switch (deliveryOption!) {
+      case DeliveryOptions.shipping:
+        return "Shipping";
+
+      case DeliveryOptions.eatIn:
+        return "Eat in";
+
+      case DeliveryOptions.pickUp:
+        return "Pickup";
+    }
+  }
+
+  int getAmount() {
+    return totalPrice ?? 0;
+  }
 }

@@ -51,7 +51,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
       onShippingAddressChange = widget.arguments?["onShippingAddressChange"]
           as Function(ShippingAddress)?;
       selectedShippingAddress =
-          widget.arguments?["shippingAddress"] as ShippingAddress;
+          widget.arguments?["shippingAddress"] as ShippingAddress?;
     }
 
     this.getList();

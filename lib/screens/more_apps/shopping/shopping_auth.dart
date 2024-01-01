@@ -2326,7 +2326,7 @@ class ShoppingAuthService extends AuthService {
       }
       List<ShippingAddress> shippingAddressList = [];
       var jsonData = json.decode(response.body);
-
+      print(jsonData);
       for (var item in jsonData["results"]) {
         ShippingAddress address = ShippingAddress.fromJson(item);
         shippingAddressList.add(address);

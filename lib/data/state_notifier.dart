@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
@@ -745,8 +746,44 @@ class ShippingProcessBloc extends ChangeNotifier {
 
   List<PackageDetailsModel> get packagesList => _packagesList;
 
+  int? _currentSelectedIndex;
+
+  int? get currentSelectedIndex => _currentSelectedIndex;
+
+  set currentSelectedIndex(int? value) {
+    _currentSelectedIndex = value;
+    notifyListeners();
+  }
+
   set packagesList(List<PackageDetailsModel> value) {
     _packagesList = value;
+    notifyListeners();
+  }
+
+  PackageDetailsModel getPackageDetailModel() {
+    return _packagesList[_currentSelectedIndex!];
+  }
+
+  void updateDeliveryOption(String pickedDeliveryOption) {
+    if (pickedDeliveryOption == "Shipping") {
+      getPackageDetailModel().deliveryOption = DeliveryOptions.shipping;
+    } else if (pickedDeliveryOption == "Eat in") {
+      getPackageDetailModel().deliveryOption = DeliveryOptions.eatIn;
+    } else if (pickedDeliveryOption == "Pickup") {
+      getPackageDetailModel().deliveryOption = DeliveryOptions.pickUp;
+    } else {
+      getPackageDetailModel().deliveryOption = DeliveryOptions.shipping;
+    }
+    notifyListeners();
+  }
+
+  void updateShippingOptionType(ShippingTypes type) {
+    getPackageDetailModel().shippingType = type;
+    notifyListeners();
+  }
+
+  void updateShippingOption(ShippingOptionModel? shippingOptionModel) {
+    getPackageDetailModel().shippingOption = shippingOptionModel;
     notifyListeners();
   }
 }

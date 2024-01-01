@@ -1907,14 +1907,14 @@ class RouteGenerator {
         );
       case Routes.DELIVERY_OPTION:
         return PageTransition(
-          child: DeliveryOption(arguments: settings.arguments),
+          child: DeliveryOption(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case Routes.SHIPPING_OPTION:
         return PageTransition(
-          child: ShippingOption(arguments: settings.arguments),
+          child: ShippingOption(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
