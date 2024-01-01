@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/delivery_option_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -43,8 +43,8 @@ class ShippingProcessAuthService extends AuthService {
     // }
   }
 
-  // List Delivery options
-  Future<List<DeliveryOptionModel>> getDeliveryOption() async {
+  // List ship with slydo
+  Future<List<ShippingOptionModel>> getShipWithSlydo() async {
     var url = AppConfig.baseUrl + "/api/v1/shipping-options/system/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -58,7 +58,7 @@ class ShippingProcessAuthService extends AuthService {
       List jsonDataResult = jsonData['results'];
 
       return jsonDataResult
-          .map((json) => DeliveryOptionModel.fromJson(json))
+          .map((json) => ShippingOptionModel.fromJson(json))
           .toList();
     } else {
       debugPrint('BODY shipping 00:: ${response.body}');
@@ -67,27 +67,29 @@ class ShippingProcessAuthService extends AuthService {
     }
   }
 
-  // List of packages of order
-  // Future<List<DeliveryOptionModel>> getPackagesList() async {
-  //   var url = AppConfig.baseUrl + "/api/v1/shopping-cart/item-addresses";
-  //   var headers = await getAuthHeaders();
-  //   var response = await httpGet(url, headers: headers);
-  //   var jsonData = jsonDecode(response.body);
-  //
-  //   debugPrint('URL :: $url');
-  //   debugPrint('BODY shipping:: ${response.body}');
-  //   debugPrint('STATUS CO  :: ${response.statusCode}');
-  //
-  //   if (response.statusCode == 200) {
-  //     List jsonDataResult = jsonData['results'];
-  //
-  //     return jsonDataResult
-  //         .map((json) => DeliveryOptionModel.fromJson(json))
-  //         .toList();
-  //   } else {
-  //     debugPrint('BODY shipping 00:: ${response.body}');
-  //
-  //     return Future.error(response.body);
-  //   }
-  // }
+  // List ship with merchant
+  Future<List<ShippingOptionModel>> getShipWithMerchant(
+      String? merchantName) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/shipping-options/public-list/$merchantName";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    var jsonData = jsonDecode(response.body);
+
+    debugPrint('URL :: $url');
+    debugPrint('BODY shipping:: ${response.body}');
+    debugPrint('STATUS CO  :: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      List jsonDataResult = jsonData['results'];
+
+      return jsonDataResult
+          .map((json) => ShippingOptionModel.fromJson(json))
+          .toList();
+    } else {
+      debugPrint('BODY shipping 00:: ${response.body}');
+
+      return Future.error(response.body);
+    }
+  }
 }

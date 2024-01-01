@@ -5,7 +5,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/share_cart_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
 import 'package:Slydo/screens/more_apps/yarn/trending_list_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
@@ -277,8 +276,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 getItemTile(index));
   }
 
-  ShippingAddress? shippingAddress;
-
   Widget checkoutWidget() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -291,10 +288,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (shippingAddress != null)
-              Text(
-                  "${shippingAddress?.addressLineOne} ${shippingAddress?.addressLineTwo} ${shippingAddress?.country}" ??
-                      ""),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -346,16 +339,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       //   screen: const CheckoutScreen(),
                       // );
                       Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
-                      // Navigator.of(context).pushNamed(
-                      //   Routes.DISPATCH_ADDRESS,
-                      //   arguments: {
-                      //     "isForSelection": true,
-                      //     "onShippingAddressChange": (address) {
-                      //       shippingAddress = address;
-                      //       setState(() {});
-                      //     }
-                      //   },
-                      // );
                     } else {
                       showToast(message: 'Checkout not available now');
                     }

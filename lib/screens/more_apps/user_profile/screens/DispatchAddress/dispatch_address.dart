@@ -4,14 +4,11 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_add
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
-
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -53,6 +50,8 @@ class _DispatchAddressState extends State<DispatchAddress> {
       isForSelection = widget.arguments?["isForSelection"] as bool;
       onShippingAddressChange = widget.arguments?["onShippingAddressChange"]
           as Function(ShippingAddress)?;
+      selectedShippingAddress =
+          widget.arguments?["shippingAddress"] as ShippingAddress;
     }
 
     this.getList();
@@ -124,12 +123,12 @@ class _DispatchAddressState extends State<DispatchAddress> {
         if (mounted) setState(() {});
 
         /// to getDefault selected address
-        for (ShippingAddress address in itemList) {
-          if (address.is_default == true) {
-            selectedShippingAddress = address;
-            break;
-          }
-        }
+        // for (ShippingAddress address in itemList) {
+        //   if (address.is_default == true) {
+        //     selectedShippingAddress = address;
+        //     break;
+        //   }
+        // }
       }
       if (itemList.isEmpty) {
         if (mounted) {
@@ -171,12 +170,12 @@ class _DispatchAddressState extends State<DispatchAddress> {
     itemList.addAll(tempList);
 
     /// to getDefault selected address
-    for (ShippingAddress address in itemList) {
-      if (address.is_default == true) {
-        selectedShippingAddress = address;
-        break;
-      }
-    }
+    // for (ShippingAddress address in itemList) {
+    //   if (address.is_default == true) {
+    //     selectedShippingAddress = address;
+    //     break;
+    //   }
+    // }
 
     if (mounted) setState(() {});
 
@@ -434,7 +433,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                   height: 10,
                 ),
                 Text(
-                  "${itemList[index].line_1!}, ${itemList[index].line_2}, ${itemList[index].city}, ${itemList[index].stateName}, ${itemList[index].zip}, ${itemList[index].country}",
+                  "${itemList[index].line_1!}, ${itemList[index].line_2}, ${itemList[index].city}, ${itemList[index].stateName}, ${itemList[index].country}, ${itemList[index].zip}",
                   maxLines: 2,
                   style: TextStyle(
                       fontWeight: FontWeight.w400,

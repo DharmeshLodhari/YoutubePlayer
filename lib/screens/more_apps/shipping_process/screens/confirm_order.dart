@@ -149,7 +149,9 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       ),
       child: GestureDetector(
         onTap: () {
-          Navigator.of(context).pushNamed(Routes.DELIVERY_OPTION);
+          Navigator.of(context).pushNamed(Routes.DELIVERY_OPTION, arguments: {
+            'merchantName': packageList[index].merchant,
+          });
         },
         child: Padding(
           padding: EdgeInsets.all(10.0),

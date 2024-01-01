@@ -186,9 +186,9 @@ class _PackageDetailsState extends State<PackageDetails> {
 
   Widget _buildTrackingTag() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(7),
         color: greyBorderColor,
       ),
       child: Text(
@@ -196,7 +196,7 @@ class _PackageDetailsState extends State<PackageDetails> {
         style: TextStyle(
           color: darkGrey,
           fontSize: 8,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           fontFamily: "Inter",
         ),
       ),

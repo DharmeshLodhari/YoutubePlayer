@@ -536,7 +536,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${deliveryDetails?.pickupAddress?.addressLine1}, ${deliveryDetails?.pickupAddress?.addressLine2}',
+              '${deliveryDetails?.pickupAddress?.addressLineOne}, ${deliveryDetails?.pickupAddress?.addressLineTwo}',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: darkGrey,
@@ -560,7 +560,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${deliveryDetails?.deliveryAddress?.addressLine1}, ${deliveryDetails?.deliveryAddress?.addressLine2}',
+              '${deliveryDetails?.deliveryAddress?.addressLineOne}, ${deliveryDetails?.deliveryAddress?.addressLineTwo}',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: darkGrey,
@@ -762,7 +762,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${deliveryDetails?.deliveryAddress?.addressLine1}, ${deliveryDetails?.deliveryAddress?.addressLine2}',
+            '${deliveryDetails?.deliveryAddress?.addressLineOne}, ${deliveryDetails?.deliveryAddress?.addressLineTwo}',
             style: TextStyle(
               fontWeight: FontWeight.w500,
               color: isDeliveryStarted ? darkGrey : blackFont,

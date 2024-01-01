@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -11,20 +12,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DeliveryOption extends StatefulWidget {
-  const DeliveryOption({Key? key}) : super(key: key);
+  DeliveryOption({Key? key, this.arguments}) : super(key: key);
+
+  var arguments;
 
   @override
   State<DeliveryOption> createState() => _DeliveryOptionState();
 }
 
 class _DeliveryOptionState extends State<DeliveryOption> {
-  // bool deliveryOptionLoading = false;
-  // List<DeliveryOptionModel> deliveryOptions = [];
   List<String?> deliveryOption = ["Shipping", "Eat in", "Pickup"];
   String? selectedValue = "Shipping";
   bool isShipping = true;
   bool isChecked = false;
   bool switchValue = false;
+  ShippingAddress? shippingAddress;
+  String? merchantName;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.arguments != null) {
+      merchantName = widget.arguments?["merchantName"];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +105,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                     const SizedBox(
                       height: 16,
                     ),
-                    _buildNote(),
-                    _buildDeliveryAddressAndOptions(),
+                    isShipping
+                        ? _buildDeliveryAddressAndOptions()
+                        : _buildNote(),
                     Visibility(
                       visible: false,
                       child: _buildShippingOptionSelected(),
@@ -189,6 +201,13 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           decoration: InputDecoration(
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                color: greyBorderColor, // Border color
+                width: 1.0,
+              ),
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide(
@@ -212,24 +231,6 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   }
 
   pickDeliveryOptions() async {
-    // deliveryOptionName.clear();
-    // deliveryOptionLoading = true;
-    // if (mounted) setState(() {});
-    //
-    // await ShippingProcessAuthService().getDeliveryOption().then(
-    //   (value) {
-    //     value.forEach((element) {
-    //       deliveryOptionName.add(element.name);
-    //     });
-    //     deliveryOptionLoading = false;
-    //     if (mounted) setState(() {});
-    //   },
-    // ).catchError((error) {
-    //   deliveryOptionLoading = false;
-    //   if (mounted) setState(() {});
-    //   showToast(message: error.toString());
-    // });
-
     String? pickedDeliveryOption = await showPickItemDialog<String>(
       context: context,
       items: deliveryOption,
@@ -237,41 +238,67 @@ class _DeliveryOptionState extends State<DeliveryOption> {
     );
     if (pickedDeliveryOption != null) {
       selectedValue = pickedDeliveryOption;
+      if (selectedValue == "Shipping") {
+        isShipping = true;
+      } else {
+        isShipping = false;
+      }
       if (mounted) setState(() {});
     }
   }
 
   Widget _buildDeliveryAddress() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Delivery Address",
-          style: TextStyle(
-            color: darkGrey,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            fontFamily: "Inter",
-          ),
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            "No 5, Adetutu street,ikeja, lagos, Nigeria, 100001",
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed(
+          Routes.DISPATCH_ADDRESS,
+          arguments: {
+            "isForSelection": true,
+            "shippingAddress": shippingAddress,
+            "onShippingAddressChange": (address) {
+              shippingAddress = address;
+              setState(() {});
+            }
+          },
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Delivery Address",
             style: TextStyle(
-              color: black,
+              color: darkGrey,
               fontSize: 14,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
               fontFamily: "Inter",
             ),
           ),
-          trailing: Icon(
-            Icons.keyboard_arrow_right_outlined,
-            color: black,
-            size: 18,
+          // if (shippingAddress != null)
+          //   Text(
+          //       "${shippingAddress?.addressLineOne} ${shippingAddress?.addressLineTwo} ${shippingAddress?.country}" ??
+          //           ""),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              shippingAddress != null
+                  ? "${shippingAddress?.line_1}, ${shippingAddress?.line_2}, ${shippingAddress?.city}, ${shippingAddress?.stateName},  ${shippingAddress?.country}, ${shippingAddress?.zip}"
+                  : "No 5, Adetutu street,ikeja, lagos, Nigeria, 100001",
+              style: TextStyle(
+                color: black,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              ),
+            ),
+            trailing: Icon(
+              Icons.keyboard_arrow_right_outlined,
+              color: black,
+              size: 18,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -293,7 +320,10 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION, arguments: {
+              'shippingType': 'slydo',
+              'merchantName': merchantName
+            });
           },
           child: ShippingOptionalWid(
             title: "Ship with Slydo",
@@ -305,7 +335,10 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ),
         GestureDetector(
           onTap: () {
-            // Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION, arguments: {
+              'shippingType': 'merchant',
+              'merchantName': merchantName
+            });
           },
           child: ShippingOptionalWid(
             title: "Merchant Option",
@@ -317,7 +350,10 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ),
         GestureDetector(
           onTap: () {
-            // Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION, arguments: {
+              'shippingType': 'courier',
+              'merchantName': merchantName
+            });
           },
           child: ShippingOptionalWid(
             title: "Ship with Courier",
@@ -492,9 +528,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
 
   Widget _buildTrackingTag() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(7),
         color: greyBorderColor,
       ),
       child: Text(
@@ -502,7 +538,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         style: TextStyle(
           color: darkGrey,
           fontSize: 8,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           fontFamily: "Inter",
         ),
       ),

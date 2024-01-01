@@ -2,12 +2,11 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:flutter/foundation.dart';
 
 import '../../payment_and_banking/models/FinancialInstitution.dart';
 
 class ShippingAddress {
-  dynamic id;
+  String? id;
   String? addressLineOne;
   String? addressLineTwo;
   String? city;
@@ -31,7 +30,8 @@ class ShippingAddress {
   String? name;
 
   ShippingAddress(
-      {this.addressLineOne,
+      {this.id,
+      this.addressLineOne,
       this.addressLineTwo,
       this.city,
       this.stateName,
@@ -51,21 +51,26 @@ class ShippingAddress {
       this.phone,
       this.zip,
       this.is_default,
-      this.id, this.name});
+      this.name});
 
   ShippingAddress.fromJson(var object) {
+    id:
+    object['id'] ?? "";
     addressLineOne = object['address_line_1'] ?? "";
     addressLineTwo = object['address_line_2'] ?? "";
     city = object['city'] ?? "";
-    userState =
-        object['state'] != null ? object['state'].runtimeType == String ? null: UserState.fromJson(object['state']) : null;
+    userState = object['state'] != null
+        ? object['state'].runtimeType == String
+            ? null
+            : UserState.fromJson(object['state'])
+        : null;
     country = object['country'] ?? "";
     countryIsoCode = object['country_iso_code'] ?? "NG";
     postCode = object['post_code'];
     stateName = object['state'];
     created_at = object['created_at'];
     updated_at = object['updated_at'];
-    email = object['enail'];
+    email = object['email'];
     is_residential = object['is_residential'];
     first_name = object['first_name'];
     last_name = object['last_name'];
@@ -75,7 +80,21 @@ class ShippingAddress {
     zip = object['zip'];
     is_default = object['is_default'];
     id = object['id'];
-    name= object["name"];
+    name = object["name"];
+
+    // location: json["location"],
+    // metadata: json["metadata"] == null
+    // ? null
+    //     : Metadata.fromJson(json["metadata"]),
+    // providerId: json["provider_id"],
+    // providerCreatedAt: json["provider_created_at"] == null
+    // ? null
+    //     : DateTime.parse(json["provider_created_at"]),
+    // providerUpdatedAt: json["provider_updated_at"] == null
+    // ? null
+    //     : DateTime.parse(json["provider_updated_at"]),
+    // anonymous: json["anonymous"],
+    // isDefault: json["is_default"],
   }
 
   Map<String, dynamic> toJson() {
@@ -107,25 +126,24 @@ class ShippingAddress {
     };
   }
 
-   ShippingAddress copyWith({
-    String? addressLineOne,
-    dynamic id,
-    String? addressLineTwo,
-    String? city,
-    String? country,
-    String? postCode,
-    String? stateName,
-    String? email,
-    bool? is_residential,
-    String? first_name,
-    String? last_name,
-    String? line_1,
-    String? line_2,
-    String? phone,
-    String? zip,
-    bool? is_default,
-    String? name
-  }) {
+  ShippingAddress copyWith(
+      {String? addressLineOne,
+      dynamic id,
+      String? addressLineTwo,
+      String? city,
+      String? country,
+      String? postCode,
+      String? stateName,
+      String? email,
+      bool? is_residential,
+      String? first_name,
+      String? last_name,
+      String? line_1,
+      String? line_2,
+      String? phone,
+      String? zip,
+      bool? is_default,
+      String? name}) {
     return ShippingAddress(
         id: id ?? this.id,
         line_1: line_1 ?? this.line_1,

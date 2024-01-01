@@ -1,4 +1,4 @@
-class DeliveryOptionModel {
+class ShippingOptionModel {
   int? id;
   String? currency;
   int? price;
@@ -9,7 +9,7 @@ class DeliveryOptionModel {
   DateTime? createdAt;
   DateTime? updatedAt;
 
-  DeliveryOptionModel({
+  ShippingOptionModel({
     this.id,
     this.currency,
     this.price,
@@ -21,8 +21,8 @@ class DeliveryOptionModel {
     this.updatedAt,
   });
 
-  factory DeliveryOptionModel.fromJson(Map<String, dynamic> json) =>
-      DeliveryOptionModel(
+  factory ShippingOptionModel.fromJson(Map<String, dynamic> json) =>
+      ShippingOptionModel(
         id: json["id"],
         currency: json["currency"],
         price: json["price"],

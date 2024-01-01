@@ -362,7 +362,7 @@ class FindJobsTabState extends State<FindJobsTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${jobListing[index].pickupAddress?.addressLine1}, ${jobListing[index].pickupAddress?.addressLine2}',
+          '${jobListing[index].pickupAddress?.addressLineOne}, ${jobListing[index].pickupAddress?.addressLineTwo}',
           style: TextStyle(
             fontWeight: FontWeight.w500,
             color: darkGrey,
@@ -379,7 +379,7 @@ class FindJobsTabState extends State<FindJobsTab> {
             )),
         SizedBox(height: 20),
         Text(
-          '${jobListing[index].deliveryAddress?.addressLine1}, ${jobListing[index].deliveryAddress?.addressLine2}',
+          '${jobListing[index].deliveryAddress?.addressLineOne}, ${jobListing[index].deliveryAddress?.addressLineTwo}',
           style: TextStyle(
             fontWeight: FontWeight.w500,
             color: darkGrey,
