@@ -22,17 +22,18 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
   ScrollController _confirmOrderScrollController = new ScrollController();
 
   late BasketBloc basketBloc;
-  List<PackageDetailsModel> packageList = [];
   bool isLoading = false;
   bool isSelected = false;
 
+  late ShippingProcessBloc shippingProcessBloc;
+
   @override
   void initState() {
-    // BasketBloc basketBloc = Provider.of<BasketBloc>(context, listen: false);
-    // basketBloc.merchantData.clear();
-    // basketBloc.getAllMerchant();
     super.initState();
-    getAllPackageDetail();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
+      getAllPackageDetail();
+    });
   }
 
   Future<void> getAllPackageDetail() async {
@@ -42,9 +43,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
 
       await ShippingProcessAuthService().getAllPackageDetail().then(
         (value) {
-          value.forEach((element) {
-            packageList.add(element);
-          });
+          shippingProcessBloc.packagesList = value;
           isLoading = false;
           if (mounted) setState(() {});
         },
@@ -118,7 +117,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                 child: Column(
                   children: [
                     ListView.builder(
-                      itemCount: packageList.length,
+                      itemCount: shippingProcessBloc.packagesList.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
@@ -163,7 +162,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      packageList[index].merchant ?? "",
+                      shippingProcessBloc.packagesList[index].merchant ?? "",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -172,7 +171,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                       ),
                     ),
                     Text(
-                      "₦${packageList[index].totalPrice}",
+                      "₦${shippingProcessBloc.packagesList[index].totalPrice}",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -183,7 +182,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                   ],
                 ),
                 subtitle: Text(
-                  "Package 1 (${packageList[index].totalItems} item)",
+                  "Package 1 (${shippingProcessBloc.packagesList[index].totalItems} item)",
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,

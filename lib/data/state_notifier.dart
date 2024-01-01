@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_m
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
@@ -227,24 +228,22 @@ class BasketBloc extends ChangeNotifier {
     return quantity;
   }
 
-
   int getSubTotalPriceByMerchant({required String merchantUserName}) {
     int subTotal = 0;
 
     items.forEach((element) {
-
       var item = element['item'];
 
       if (merchantUserName == item.getMerchantUserName()) {
         List<Map<String, dynamic>> variants = [];
-        if(element['variants'] != null){
-           variants = element['variants'];
-        }else{
-          subTotal += int.parse(element['qty'].toString()) * int.parse(item.price);
+        if (element['variants'] != null) {
+          variants = element['variants'];
+        } else {
+          subTotal +=
+              int.parse(element['qty'].toString()) * int.parse(item.price);
         }
 
         if (variants.isEmpty) {
-
         } else {
           for (var variant in variants) {
             if (variant.containsKey('id') &&
@@ -262,10 +261,11 @@ class BasketBloc extends ChangeNotifier {
     return subTotal;
   }
 
-
   bool isAnyIdEmpty(List<Map<String, dynamic>> mapList) {
     for (var map in mapList) {
-      if (map.containsKey('id') && map['id'] != null && map['id'].toString().isNotEmpty) {
+      if (map.containsKey('id') &&
+          map['id'] != null &&
+          map['id'].toString().isNotEmpty) {
         // Found a map with a non-empty 'id' value, return false
         return false;
       }
@@ -273,7 +273,6 @@ class BasketBloc extends ChangeNotifier {
     // No map with a non-empty 'id' value was found, return true
     return true;
   }
-
 
   int getTotalPriceByMerchant(
       {required String merchantUserName, required int shippingOptionPrice}) {
@@ -284,15 +283,21 @@ class BasketBloc extends ChangeNotifier {
   }
 
   // this will add the product or service in the cart;
-  void addItemToCart({required var item, required String type, Map<String, dynamic>? variant, List<Map<String, dynamic>?>? addOns}) {
-    if(variant != null && variant.isNotEmpty){
+  void addItemToCart(
+      {required var item,
+      required String type,
+      Map<String, dynamic>? variant,
+      List<Map<String, dynamic>?>? addOns}) {
+    if (variant != null && variant.isNotEmpty) {
       addItemInBasketWithQty(item, type, variant);
-    } else if(addOns != null && addOns.isNotEmpty){
+    } else if (addOns != null && addOns.isNotEmpty) {
       addItemInBasketWithAddOns(item, type, addOns);
-    }else if(variant != null && variant.isEmpty && addOns != null && addOns.isEmpty){
+    } else if (variant != null &&
+        variant.isEmpty &&
+        addOns != null &&
+        addOns.isEmpty) {
       addItemInBasketWithQtyService(item, type);
-    }
-    else{
+    } else {
       addItemInBasketWithQtyService(item, type);
     }
 
@@ -303,21 +308,22 @@ class BasketBloc extends ChangeNotifier {
 
   //get the list of merchant username and name without repetition
   void getAllMerchant() {
-
     for (var consumableData in items) {
       if (consumableData['type'] == 'product') {
         Product product = consumableData['item'];
 
         var username = product.seller!;
         if (!merchantData.any((merchant) => merchant['username'] == username)) {
-          merchantData.add({'name': product.sellerFullName!, 'username': username});
+          merchantData
+              .add({'name': product.sellerFullName!, 'username': username});
         }
       } else if (consumableData['type'] == 'service') {
         Service service = consumableData['item'];
 
         var username = service.provider!;
         if (!merchantData.any((merchant) => merchant['username'] == username)) {
-          merchantData.add({'name': service.providerFullName!, 'username': username});
+          merchantData
+              .add({'name': service.providerFullName!, 'username': username});
         }
       }
     }
@@ -348,7 +354,8 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMapCopy.remove(merchantFullName);
   }
 
-  void addItemInBasketWithQty(var item, String type, Map<String, dynamic> variant) {
+  void addItemInBasketWithQty(
+      var item, String type, Map<String, dynamic> variant) {
     bool itemExists = false;
 
     for (var element in _items) {
@@ -358,13 +365,16 @@ class BasketBloc extends ChangeNotifier {
 
         Product product = element["item"];
 
-        if(product.variant!.isNotEmpty && product.variant != null){
+        if (product.variant!.isNotEmpty && product.variant != null) {
           for (var existingVariant in product.variant!) {
             if (existingVariant["id"] == variant["id"]) {
               // Update the existing variant
-              int existingQuantity = int.tryParse(existingVariant["quantity"].toString()) ?? 0;
-              int variantQuantity = int.tryParse(variant["quantity"].toString()) ?? 0;
-              existingVariant["quantity"] = (existingQuantity + variantQuantity).toString();
+              int existingQuantity =
+                  int.tryParse(existingVariant["quantity"].toString()) ?? 0;
+              int variantQuantity =
+                  int.tryParse(variant["quantity"].toString()) ?? 0;
+              existingVariant["quantity"] =
+                  (existingQuantity + variantQuantity).toString();
               existingVariant["image"] = variant["image"];
 
               variantIdExists = true;
@@ -380,7 +390,6 @@ class BasketBloc extends ChangeNotifier {
           notifyListeners();
         }
 
-
         // Increase the total quantity and exit the loop
         element["qty"] = (int.tryParse(element["qty"].toString()) ?? 0) + 1;
 
@@ -388,7 +397,10 @@ class BasketBloc extends ChangeNotifier {
           // The variant has a non-empty "id" key
           String price = variant["price"];
           // Subtract the previous variant price and add the updated variant price
-          _total = _total - (int.tryParse(item.price)! * int.parse(variant["quantity"].toString())) + int.parse(price);
+          _total = _total -
+              (int.tryParse(item.price)! *
+                  int.parse(variant["quantity"].toString())) +
+              int.parse(price);
           itemExists = true;
         } else {
           // The variant does not have a valid "id" key
@@ -416,11 +428,18 @@ class BasketBloc extends ChangeNotifier {
         product.description = item.description;
         product.variant = [variant];
       }
-      var newItem = {"type": type, "item": product, "qty": variant['quantity'], "variants": [variant]};
+      var newItem = {
+        "type": type,
+        "item": product,
+        "qty": variant['quantity'],
+        "variants": [variant]
+      };
 
       _items.add(newItem);
 
-      if (variant.containsKey("id") && variant["id"] != null && variant["id"].isNotEmpty) {
+      if (variant.containsKey("id") &&
+          variant["id"] != null &&
+          variant["id"].isNotEmpty) {
         // The variant has a non-empty "id" key
         String price = variant["price"];
         _total = _total + int.parse(price);
@@ -434,7 +453,8 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addItemInBasketWithAddOns(var item, String type, List<Map<String, dynamic>?>? addOns) {
+  void addItemInBasketWithAddOns(
+      var item, String type, List<Map<String, dynamic>?>? addOns) {
     bool itemExists = false;
 
     _items.forEach((element) {
@@ -464,20 +484,24 @@ class BasketBloc extends ChangeNotifier {
         product.description = item.description;
         product.addOns = addOns;
       }
-      var newItem = {"type": type, "item": product, "qty": item.quantity, "add_ons": addOns};
+      var newItem = {
+        "type": type,
+        "item": product,
+        "qty": item.quantity,
+        "add_ons": addOns
+      };
 
       _items.add(newItem);
 
       // Calculate the total price based on the add-on quantity and options
       // int totalPrice = calculateTotalPrice(item.price, addOn);
-      _total = _total + int.parse(product.price!) * int.parse(item.quantity.toString());
+      _total = _total +
+          int.parse(product.price!) * int.parse(item.quantity.toString());
       // _total += totalPrice;
     }
 
-
     notifyListeners();
   }
-
 
   int calculateTotalPrice(String itemPrice, Map<String, dynamic> addOn) {
     int itemPriceValue = int.tryParse(itemPrice) ?? 0;
@@ -490,7 +514,6 @@ class BasketBloc extends ChangeNotifier {
 
     return itemPriceValue * 1 + optionTotalPrice;
   }
-
 
   void addItemInBasketWithQtyService(var item, String type) {
     bool flag = false;
@@ -506,12 +529,11 @@ class BasketBloc extends ChangeNotifier {
     });
 
     if (!flag) {
-
       if (item is Product) {
         _items.add({"type": type, "item": item, "qty": item.quantity});
-      }else {
+      } else {
         _items.add({"type": type, "item": item, "qty": 1});
-        }
+      }
 
       _total = _total + int.parse(item.price);
       debugPrint("New Item Added");
@@ -523,18 +545,15 @@ class BasketBloc extends ChangeNotifier {
     bool itemExists = false;
 
     for (var i = 0; i < _items.length; i++) {
-
       Product product = _items[i]["item"];
 
       if (product.id == selectedProductId) {
-
         // Check if the variant ID exists in the item's variants list
         for (var j = 0; j < _items[i]["variants"].length; j++) {
-
           if (int.parse(_items[i]["variants"][j]["id"]) == variantId) {
-
             // Add one to the variant quantity
-            var quantity = int.parse(_items[i]["variants"][j]["quantity"].toString()) + 1;
+            var quantity =
+                int.parse(_items[i]["variants"][j]["quantity"].toString()) + 1;
             _items[i]["variants"][j]["quantity"] = quantity.toString();
 
             // Calculate the total price (assuming "price" is a string)
@@ -559,15 +578,14 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeOrReduceVariant(String selectedProductId, int variantId) async {
+  Future<void> removeOrReduceVariant(
+      String selectedProductId, int variantId) async {
     bool itemExists = false;
 
     for (var i = 0; i < _items.length; i++) {
-
       Product product = _items[i]["item"];
 
       if (product.id == selectedProductId) {
-
         List variantList = _items[i]['item'].variant;
 
         for (var j = 0; j < variantList.length; j++) {
@@ -578,7 +596,8 @@ class BasketBloc extends ChangeNotifier {
           if (int.parse(variant['id'].toString()) == variantId) {
             if (int.parse(variant['quantity'].toString()) > 1) {
               // Update the quantity
-              variant['quantity'] = int.parse(variant['quantity'].toString()) - 1;
+              variant['quantity'] =
+                  int.parse(variant['quantity'].toString()) - 1;
             } else {
               // Remove the variant
               variantList.removeAt(j);
@@ -587,7 +606,7 @@ class BasketBloc extends ChangeNotifier {
 
             // debugPrint('fola cart state cart qty 2:::: ${_items[i]['qty']}');
 
-            if(_items[i]['qty'] == 0){
+            if (_items[i]['qty'] == 0) {
               //remove item from cart
               Map<String, dynamic> data = {
                 "id": selectedProductId,
@@ -611,7 +630,6 @@ class BasketBloc extends ChangeNotifier {
 
     notifyListeners();
   }
-
 
   // this will remove the product or service from the cart;
   void removeItemFromCart(item) {
@@ -638,7 +656,7 @@ class BasketBloc extends ChangeNotifier {
           _items.remove(foundItem);
           _total = _total - int.parse(item.price);
           removeMerchantName(item);
-        }else if (foundItem["qty"] == 0) {
+        } else if (foundItem["qty"] == 0) {
           _items.remove(foundItem);
           _total = _total - int.parse(item.price);
           removeMerchantName(item);
@@ -659,8 +677,7 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void resetShoppingCart() async {
-    List itemsCart = await ShoppingAuthService()
-        .getShoppingCart();
+    List itemsCart = await ShoppingAuthService().getShoppingCart();
 
     for (var element in itemsCart) {
       String type = element is Product ? "product" : "service";
@@ -669,7 +686,8 @@ class BasketBloc extends ChangeNotifier {
 
       if (element is Product) {
         List<dynamic>? variantList = element.variant;
-        List<Map<String, dynamic>?>? convertedList = element.addOns?.map((item) {
+        List<Map<String, dynamic>?>? convertedList =
+            element.addOns?.map((item) {
           if (item is Map<String, dynamic>) {
             return item;
           }
@@ -687,8 +705,8 @@ class BasketBloc extends ChangeNotifier {
               String? type2 = variant['type'];
               String? colour = variant['colour'];
 
-              String? variantImage =
-              variant['pictures']?.first['file']; // Get the first image from pictures
+              String? variantImage = variant['pictures']
+                  ?.first['file']; // Get the first image from pictures
 
               Map<String, dynamic> variant1 = {
                 "id": id,
@@ -706,11 +724,10 @@ class BasketBloc extends ChangeNotifier {
               addItemToCart(item: element, type: type, variant: variant1);
             }
           }
-        }
-        else if(convertedList != null && convertedList.isNotEmpty){
-          addItemToCart(item: element, type: type, variant: null, addOns: convertedList);
-        }
-        else {
+        } else if (convertedList != null && convertedList.isNotEmpty) {
+          addItemToCart(
+              item: element, type: type, variant: null, addOns: convertedList);
+        } else {
           // If no variants are present, add the product as a single item to the cart
           addItemToCart(item: element, type: type);
         }
@@ -720,9 +737,18 @@ class BasketBloc extends ChangeNotifier {
     }
 
     notifyListeners();
-
   }
+}
 
+class ShippingProcessBloc extends ChangeNotifier {
+  List<PackageDetailsModel> _packagesList = <PackageDetailsModel>[];
+
+  List<PackageDetailsModel> get packagesList => _packagesList;
+
+  set packagesList(List<PackageDetailsModel> value) {
+    _packagesList = value;
+    notifyListeners();
+  }
 }
 
 class AddressBloc extends ChangeNotifier {

@@ -237,6 +237,9 @@ List<ChangeNotifierProvider> providersList = [
   ChangeNotifierProvider<BasketBloc>.value(
     value: BasketBloc(),
   ),
+  ChangeNotifierProvider<ShippingProcessBloc>.value(
+    value: ShippingProcessBloc(),
+  ),
   ChangeNotifierProvider<AddressBloc>.value(
     value: AddressBloc(),
   ),
