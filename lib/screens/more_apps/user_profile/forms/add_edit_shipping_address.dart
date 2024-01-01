@@ -91,8 +91,21 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           itemList.addAll(tempList);
         });
       }
-      String code = tempList.firstWhere((element) => element.name == shippingAddress.stateName).isoCode!;
-      getShippingCities(code);
+
+      StatesModel? selectedStateModel;
+
+      for (StatesModel statesModel in tempList) {
+        if (statesModel.name == shippingAddress.stateName) {
+          selectedStateModel = statesModel;
+          break;
+        }
+      }
+      if (selectedStateModel != null) {
+        String? code = selectedStateModel.isoCode;
+        if (code != null) {
+          getShippingCities(code);
+        }
+      }
     }
   }
 
@@ -157,7 +170,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         },
       ),
       title: Text(
-       isEdit ?"Edit address" : "Add Address",
+        isEdit ? "Edit address" : "Add Address",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -181,7 +194,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                 const SizedBox(
                   height: 16,
                 ),
-                 addAddressField(),
+                addAddressField(),
                 const SizedBox(
                   height: 16,
                 ),
@@ -189,7 +202,6 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                 const SizedBox(
                   height: 16,
                 ),
-              
                 Text(
                   'Country',
                   style: TextStyle(color: darkGrey, fontSize: 14),
@@ -217,7 +229,6 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                 const SizedBox(
                   height: 16,
                 ),
-               
                 addPostalField(),
                 const SizedBox(height: 16),
                 toggleActiveTag(),
@@ -337,6 +348,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       },
     );
   }
+
   Widget addAddressField2() {
     return CustomizedTextFormField(
       labelText: "Address Line 2",
@@ -546,30 +558,30 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     if (isEdit) {
       return Row(
         children: [
-          if(!widget.shippingAddress!.is_default!)...[
-          Expanded(
-            child: CurvedButton(
-              onPressed: isDeleteLoading 
-                  ? () {}
-                  : () async {
-                      FocusScope.of(context).unfocus();
-                      isDeleteLoading = true;
-                      if (mounted) setState(() {});
+          if (!widget.shippingAddress!.is_default!) ...[
+            Expanded(
+              child: CurvedButton(
+                onPressed: isDeleteLoading
+                    ? () {}
+                    : () async {
+                        FocusScope.of(context).unfocus();
+                        isDeleteLoading = true;
+                        if (mounted) setState(() {});
 
-                      await deleteItem();
+                        await deleteItem();
 
-                      isDeleteLoading = false;
-                      if (mounted) setState(() {});
-                    },
-              backgroundColor: red,
-              textColor: Colors.white,
-              text: "Delete",
-              isLoading: isDeleteLoading,
+                        isDeleteLoading = false;
+                        if (mounted) setState(() {});
+                      },
+                backgroundColor: red,
+                textColor: Colors.white,
+                text: "Delete",
+                isLoading: isDeleteLoading,
+              ),
             ),
-          ),
-          SizedBox(
-            width: 20,
-          ),
+            SizedBox(
+              width: 20,
+            ),
           ],
           Expanded(
             child: CurvedButton(
@@ -625,21 +637,21 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       shippingAddress.last_name = userBloc.user.fullName!.split(" ").last;
       shippingAddress.is_residential = shippingAddress.is_residential;
 
-        await ShoppingAuthService()
-            .addUpdateAddress(shippingAddress, isEdit: isEdit)
-            .then((value) async {
-          Navigator.pop(context, true);
-          showToast(
-            message: isEdit
-                ? "Address updated successfully"
-                : "Address added successfully",
-          );
-        }).catchError((error) {
-          debugPrint("Product check::: ${error.toString()}");
-          showToast(message: error.toString());
-        });
-      } else {
-        showToast(message: "Please fill all the details");
+      await ShoppingAuthService()
+          .addUpdateAddress(shippingAddress, isEdit: isEdit)
+          .then((value) async {
+        Navigator.pop(context, true);
+        showToast(
+          message: isEdit
+              ? "Address updated successfully"
+              : "Address added successfully",
+        );
+      }).catchError((error) {
+        debugPrint("Product check::: ${error.toString()}");
+        showToast(message: error.toString());
+      });
+    } else {
+      showToast(message: "Please fill all the details");
     }
   }
 
@@ -686,78 +698,78 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     );
   }
 
-  // Widget productSelection() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       GestureDetector(
-  //         onTap: () async {
-  //           var result = await NavigationUtil.push(
-  //             context,
-  //             screen: UserProductListForDiscount(item: shippingAddress),
-  //           );
+// Widget productSelection() {
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       GestureDetector(
+//         onTap: () async {
+//           var result = await NavigationUtil.push(
+//             context,
+//             screen: UserProductListForDiscount(item: shippingAddress),
+//           );
 
-  //           if (result != null && result is Map<String, dynamic>) {
-  //             isItemSelected = true;
-  //             if (result["isSelectAll"] as bool == true) {
-  //               discountModel.addProductsToDiscount(["*"]);
-  //               isSelectAll = true;
-  //             } else {
-  //               discountModel.addProductsToDiscount(result["ids"]);
-  //               selectedProducts = result["products"];
-  //             }
-  //             if (mounted) setState(() {});
-  //           }
-  //         },
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Text(
-  //               "Product",
-  //               style: TextStyle(
-  //                   fontSize: 16,
-  //                   color: blackFont,
-  //                   fontWeight: FontWeight.w600),
-  //             ),
-  //             SizedBox(
-  //               height: 18,
-  //             ),
-  //             Row(
-  //               children: [
-  //                 Expanded(
-  //                   child: Text(
-  //                     "Attach product to this discount",
-  //                     style: TextStyle(
-  //                         fontSize: 14,
-  //                         color: darkGrey,
-  //                         fontFamily: "Inter",
-  //                         fontWeight: FontWeight.w600),
-  //                   ),
-  //                 ),
-  //                 Icon(
-  //                   Icons.arrow_forward_ios_rounded,
-  //                   size: 18,
-  //                   color: navyBlue,
-  //                 )
-  //               ],
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       if (isItemSelected || isEdit)
-  //         Column(
-  //           children: [
-  //             SizedBox(
-  //               height: 16,
-  //             ),
-  //             Text(
-  //               "This discount will apply on ${isSelectAll ? "all" : isEdit ? (discountModel.consumables?.product?.length ?? 0) : selectedProducts.length} items",
-  //               style: TextStyle(
-  //                   fontSize: 12, color: navyBlue, fontWeight: FontWeight.w600),
-  //             ),
-  //           ],
-  //         )
-  //     ],
-  //   );
-  // }
+//           if (result != null && result is Map<String, dynamic>) {
+//             isItemSelected = true;
+//             if (result["isSelectAll"] as bool == true) {
+//               discountModel.addProductsToDiscount(["*"]);
+//               isSelectAll = true;
+//             } else {
+//               discountModel.addProductsToDiscount(result["ids"]);
+//               selectedProducts = result["products"];
+//             }
+//             if (mounted) setState(() {});
+//           }
+//         },
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text(
+//               "Product",
+//               style: TextStyle(
+//                   fontSize: 16,
+//                   color: blackFont,
+//                   fontWeight: FontWeight.w600),
+//             ),
+//             SizedBox(
+//               height: 18,
+//             ),
+//             Row(
+//               children: [
+//                 Expanded(
+//                   child: Text(
+//                     "Attach product to this discount",
+//                     style: TextStyle(
+//                         fontSize: 14,
+//                         color: darkGrey,
+//                         fontFamily: "Inter",
+//                         fontWeight: FontWeight.w600),
+//                   ),
+//                 ),
+//                 Icon(
+//                   Icons.arrow_forward_ios_rounded,
+//                   size: 18,
+//                   color: navyBlue,
+//                 )
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//       if (isItemSelected || isEdit)
+//         Column(
+//           children: [
+//             SizedBox(
+//               height: 16,
+//             ),
+//             Text(
+//               "This discount will apply on ${isSelectAll ? "all" : isEdit ? (discountModel.consumables?.product?.length ?? 0) : selectedProducts.length} items",
+//               style: TextStyle(
+//                   fontSize: 12, color: navyBlue, fontWeight: FontWeight.w600),
+//             ),
+//           ],
+//         )
+//     ],
+//   );
+// }
 }
