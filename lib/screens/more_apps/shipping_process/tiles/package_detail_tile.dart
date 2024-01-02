@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +64,7 @@ class PackageDetailTile extends StatelessWidget {
             ),
           ),
           Text(
-            "₦${packageDetailsModel.totalPrice}",
+            "₦${moneyDisplayNormalizer(packageDetailsModel.totalPrice)}",
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -88,7 +89,8 @@ class PackageDetailTile extends StatelessWidget {
   Widget _buildShippingDetail(BuildContext context) {
     Widget child;
 
-    if (packageDetailsModel.deliveryOption == null) {
+    if (shippingProcessBloc.packagesList[index].isShippingProcessCompleted ==
+        false) {
       child = Text(
         "Select delivery option",
         style: TextStyle(

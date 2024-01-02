@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/tiles/package_detail_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
@@ -202,13 +200,27 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       padding: const EdgeInsets.all(16.0),
       child: CurvedButton(
         onPressed: () {
-          Navigator.of(context).pushNamed(Routes.SEND_CART_PAYMENT);
+          placeOrder();
         },
         backgroundColor: navyBlue,
         textColor: white,
         text: 'Pay ₦${shippingProcessBloc.getPackageDetailModel().getAmount()}',
       ),
     );
+  }
+
+  Future<void> placeOrder() async {
+    await ShippingProcessAuthService()
+        .placeOrder(data: shippingProcessBloc.toPlaceOrder())
+        .then((value) {
+      if (value == true) {
+      } else {
+        showToast(message: 'Error');
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
   }
 
   Widget _buildTotalItemCost() {

@@ -746,17 +746,17 @@ class ShippingProcessBloc extends ChangeNotifier {
 
   List<PackageDetailsModel> get packagesList => _packagesList;
 
+  set packagesList(List<PackageDetailsModel> value) {
+    _packagesList = value;
+    notifyListeners();
+  }
+
   int? _currentSelectedIndex;
 
   int? get currentSelectedIndex => _currentSelectedIndex;
 
   set currentSelectedIndex(int? value) {
     _currentSelectedIndex = value;
-    notifyListeners();
-  }
-
-  set packagesList(List<PackageDetailsModel> value) {
-    _packagesList = value;
     notifyListeners();
   }
 
@@ -769,11 +769,20 @@ class ShippingProcessBloc extends ChangeNotifier {
       getPackageDetailModel().deliveryOption = DeliveryOptions.shipping;
     } else if (pickedDeliveryOption == "Eat in") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.eatIn;
+      updateShippingOption(null);
+      getPackageDetailModel().updateDeliveryAddress(null);
     } else if (pickedDeliveryOption == "Pickup") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.pickUp;
+      updateShippingOption(null);
+      getPackageDetailModel().updateDeliveryAddress(null);
     } else {
       getPackageDetailModel().deliveryOption = DeliveryOptions.shipping;
     }
+    notifyListeners();
+  }
+
+  void updateShippingProcessCompleted(bool process) {
+    getPackageDetailModel().isShippingProcessCompleted = process;
     notifyListeners();
   }
 
@@ -785,6 +794,15 @@ class ShippingProcessBloc extends ChangeNotifier {
   void updateShippingOption(ShippingOptionModel? shippingOptionModel) {
     getPackageDetailModel().shippingOption = shippingOptionModel;
     notifyListeners();
+  }
+
+  Map<String, dynamic> toPlaceOrder() {
+    Map<String, dynamic> data = {
+      "payment_type": "Slydo",
+      "shipping_details": packagesList.map((e) => e.toPlaceOrder()).toList()
+    };
+
+    return data;
   }
 }
 

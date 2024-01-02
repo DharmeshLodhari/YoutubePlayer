@@ -19,7 +19,7 @@ class ShippingAddress {
   String? created_at;
   String? updated_at;
   String? email;
-  bool is_residential = false;
+  bool? is_residential;
   String? first_name;
   String? last_name;
   String? line_1;
@@ -43,7 +43,7 @@ class ShippingAddress {
       this.created_at,
       this.updated_at,
       this.email,
-      this.is_residential = false,
+      this.is_residential,
       this.first_name,
       this.last_name,
       this.line_1,
@@ -54,8 +54,7 @@ class ShippingAddress {
       this.name});
 
   ShippingAddress.fromJson(var object) {
-    id:
-    object['id'] ?? "";
+    id = object['id'] ?? "";
     addressLineOne = object['address_line_1'] ?? "";
     addressLineTwo = object['address_line_2'] ?? "";
     city = object['city'] ?? "";

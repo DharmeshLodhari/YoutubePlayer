@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
@@ -36,9 +38,7 @@ class _ShippingOptionState extends State<ShippingOption> {
         ShippingProcessBloc shippingProcessBloc =
             Provider.of<ShippingProcessBloc>(context, listen: false);
 
-        getShippingEstimation(
-            shippingProcessBloc.getPackageDetailModel().shippingType!,
-            merchantName: shippingProcessBloc.getPackageDetailModel().merchant);
+        getShippingEstimation(shippingProcessBloc.getPackageDetailModel());
       },
     );
   }
@@ -94,6 +94,12 @@ class _ShippingOptionState extends State<ShippingOption> {
   }
 
   Widget _buildBody() {
+    if (isLoading) {
+      return Center(
+        child: CircularLoadingIndicator(),
+      );
+    }
+
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.all(16.0),
@@ -209,7 +215,7 @@ class _ShippingOptionState extends State<ShippingOption> {
                     ),
                   ),
                   Text(
-                    "${shippingList[index].currency}${shippingList[index].price}",
+                    "${worldCurrencies[shippingList[index].currency]} ${moneyDisplayNormalizer(shippingList[index].price)}",
                     style: TextStyle(
                       color: blackFont,
                       fontSize: 14,
@@ -220,11 +226,13 @@ class _ShippingOptionState extends State<ShippingOption> {
                 ],
               ),
             ),
+            SizedBox(height: 7),
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    "No 4, ilewole street, Ogba -➜ No 5, Adetutu street,ikeja, lagos",
+                    // "No 4, ilewole street, Ogba -➜ No 5, Adetutu street,ikeja, lagos",
+                    "${shippingProcessBloc.getPackageDetailModel().merchantAddress?.toAddressString()} -➜ ${shippingProcessBloc.getPackageDetailModel().deliveryAddress?.toAddressString()}",
                     style: TextStyle(
                       color: black,
                       fontSize: 10,
@@ -262,14 +270,14 @@ class _ShippingOptionState extends State<ShippingOption> {
     );
   }
 
-  Future<void> getShippingEstimation(ShippingTypes type,
-      {String? merchantName}) async {
+  Future<void> getShippingEstimation(
+      PackageDetailsModel packageDetailModel) async {
     shippingList.clear();
     isLoading = true;
     if (mounted) setState(() {});
 
     await ShippingProcessAuthService()
-        .getShippingEstimation(type, merchantName: merchantName)
+        .getShippingEstimation(packageDetailModel)
         .then(
       (value) {
         value.forEach((element) {

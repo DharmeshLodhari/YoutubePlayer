@@ -17,6 +17,7 @@ class PackageDetailsModel {
   ShippingTypes? shippingType;
   String? shippingNote;
   bool insurePackage = false;
+  bool isShippingProcessCompleted = false;
 
   PackageDetailsModel({
     this.addressId,
@@ -30,6 +31,7 @@ class PackageDetailsModel {
     this.shippingNote = "",
     this.insurePackage = false,
     this.shippingType,
+    this.isShippingProcessCompleted = false,
   });
 
   factory PackageDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -62,6 +64,18 @@ class PackageDetailsModel {
     return insurePackage;
   }
 
+  Map<String, dynamic> toPlaceOrder() {
+    Map<String, dynamic> data = {
+      "merchant": merchant,
+      // "rate_id": shippingOption?.rateId ?? "",
+      "pickup_address_id": merchantAddress?.id ?? "",
+      "delivery_address_id": deliveryAddress?.id ?? "",
+      "shipping_option": shippingOption?.id ?? ""
+    };
+
+    return data;
+  }
+
   String? getDeliveryOption() {
     if (deliveryOption == null) {
       return null;
@@ -77,6 +91,10 @@ class PackageDetailsModel {
       case DeliveryOptions.pickUp:
         return "Pickup";
     }
+  }
+
+  void updateDeliveryAddress(ShippingAddress? shippingAddress) {
+    deliveryAddress = shippingAddress;
   }
 
   int getAmount() {

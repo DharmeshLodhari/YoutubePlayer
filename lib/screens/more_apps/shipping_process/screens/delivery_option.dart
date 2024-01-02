@@ -244,8 +244,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
 
   Widget _buildDeliveryAddress() {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed(
+      onTap: () async {
+        await Navigator.of(context).pushNamed(
           Routes.DISPATCH_ADDRESS,
           arguments: {
             "isForSelection": true,
@@ -258,6 +258,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             }
           },
         );
+        setState(() {});
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,9 +322,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           height: 16,
         ),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             shippingProcessBloc.updateShippingOptionType(ShippingTypes.slydo);
-            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
           },
           child: ShippingOptionalWid(
             title: "Ship with Slydo",
@@ -334,10 +335,10 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           height: 16,
         ),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             shippingProcessBloc
                 .updateShippingOptionType(ShippingTypes.merchant);
-            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
           },
           child: ShippingOptionalWid(
             title: "Merchant Option",
@@ -348,9 +349,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           height: 16,
         ),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             shippingProcessBloc.updateShippingOptionType(ShippingTypes.courier);
-            Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
           },
           child: ShippingOptionalWid(
             title: "Ship with Courier",
@@ -369,7 +370,11 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             DeliveryOptions.pickUp) {
       isEnable = true;
     } else {
-      if (shippingProcessBloc.getPackageDetailModel().shippingOption != null) {
+      if (shippingProcessBloc.getPackageDetailModel().deliveryOption ==
+              DeliveryOptions.shipping &&
+          (shippingProcessBloc.getPackageDetailModel().shippingOption != null &&
+              shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+                  null)) {
         isEnable = true;
       }
     }
@@ -379,6 +384,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         padding: const EdgeInsets.all(16.0),
         child: CurvedButton(
           onPressed: () {
+            shippingProcessBloc.updateShippingProcessCompleted(true);
             Navigator.of(context).pop();
           },
           backgroundColor: navyBlue,
@@ -475,7 +481,11 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "SLYDO",
+                shippingProcessBloc
+                        .getPackageDetailModel()
+                        .shippingOption
+                        ?.name ??
+                    "",
                 style: TextStyle(
                   color: blackFont,
                   fontSize: 14,
@@ -505,7 +515,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                 ),
               ),
               Text(
-                "₦3,000.00",
+                "${shippingProcessBloc.getPackageDetailModel().shippingOption?.currency}${shippingProcessBloc.getPackageDetailModel().shippingOption?.price}",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
@@ -515,7 +525,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           children: [
             Expanded(
               child: Text(
-                "No 4, ilewole street, Ogba -➜ No 5, Adetutu street,ikeja, lagos",
+                // "No 4, ilewole street, Ogba -➜ No 5, Adetutu street,ikeja, lagos",
+                "${shippingProcessBloc.getPackageDetailModel().merchantAddress?.toAddressString()} -➜ ${shippingProcessBloc.getPackageDetailModel().deliveryAddress?.toAddressString()}",
                 style: TextStyle(
                   color: black,
                   fontSize: 10,

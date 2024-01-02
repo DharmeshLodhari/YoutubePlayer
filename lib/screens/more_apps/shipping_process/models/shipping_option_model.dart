@@ -8,6 +8,11 @@ class ShippingOptionModel {
   String? priceType;
   DateTime? createdAt;
   DateTime? updatedAt;
+  String? cartId;
+  String? merchant;
+  String? deliveryAddress;
+  String? pickupAddress;
+  String? rateId;
 
   ShippingOptionModel({
     this.id,
@@ -19,6 +24,11 @@ class ShippingOptionModel {
     this.priceType,
     this.createdAt,
     this.updatedAt,
+    this.cartId,
+    this.merchant,
+    this.deliveryAddress,
+    this.pickupAddress,
+    this.rateId,
   });
 
   factory ShippingOptionModel.fromJson(Map<String, dynamic> json) =>
@@ -36,6 +46,10 @@ class ShippingOptionModel {
         updatedAt: json["updated_at"] == null
             ? null
             : DateTime.parse(json["updated_at"]),
+        cartId: json["cart_id"],
+        merchant: json["merchant"],
+        deliveryAddress: json["delivery_address"],
+        pickupAddress: json["pickup_address"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -48,5 +62,9 @@ class ShippingOptionModel {
         "price_type": priceType,
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt?.toIso8601String(),
+        "cart_id": cartId,
+        "merchant": merchant,
+        "delivery_address": deliveryAddress,
+        "pickup_address": pickupAddress,
       };
 }

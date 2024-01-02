@@ -1,16 +1,12 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/states_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list_for_discount.dart';
-import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -676,7 +672,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           activeColor: navyBlue,
           value: shippingAddress.is_residential,
           onChanged: (value) {
-            shippingAddress.is_residential = !shippingAddress.is_residential;
+            shippingAddress.is_residential = shippingAddress.is_residential;
             setState(() {});
           },
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
