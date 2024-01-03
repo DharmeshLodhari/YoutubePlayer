@@ -86,22 +86,21 @@ class ShippingProcessAuthService extends AuthService {
 
   // Placing An order
   Future<dynamic> placeOrder({Map? data}) async {
-    var url = "${AppConfig.baseUrl}/api/v1/shopping-cart/";
-    var _data = jsonEncode(data);
-    debugPrint('Order details ::: $_data');
+      var url = "${AppConfig.baseUrl}/api/v1/shopping-cart/";
+      var _data = jsonEncode(data);
+      debugPrint('Order details ::: $_data');
 
-    // var headers = await getAuthHeaders();
-    // var response = await httpPost(url, headers: headers, body: _data);
-    // var jsonData = jsonDecode(response.body);
-    //
-    // debugPrint(
-    //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    // if (response.statusCode == 200) {
-    //   return true;
-    // } else {
-    //   debugPrint(
-    //       "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    //   return false;
-    // }
+      var headers = await getAuthHeaders();
+      var response = await httpPost(url, headers: headers, body: _data);
+      var jsonData = jsonDecode(response.body);
+
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      if (response.statusCode == 201) {
+        return jsonData;
+      } else {
+        showToast(message: response.body.toString());
+        throw response.body;
+      }
   }
 }

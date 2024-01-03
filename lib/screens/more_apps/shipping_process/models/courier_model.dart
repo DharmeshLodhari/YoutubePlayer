@@ -82,7 +82,9 @@ class CourierModel {
         price: ((amount ?? 0) * 100).toInt(),
         name: carrierName,
         owner: carrierName,
-        rateId: rateId);
+        rateId: rateId,
+        carrierLogo: carrierLogo,
+        deliveryTime: deliveryTime);
   }
 
   factory CourierModel.fromJson(Map<String, dynamic> json) => CourierModel(

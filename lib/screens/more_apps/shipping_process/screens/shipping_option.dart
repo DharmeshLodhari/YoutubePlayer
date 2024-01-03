@@ -11,7 +11,6 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class ShippingOption extends StatefulWidget {
@@ -137,6 +136,38 @@ class _ShippingOptionState extends State<ShippingOption> {
   }
 
   Widget _buildShippingItem(int index) {
+    Widget logo;
+    String? logoImage =
+        shippingProcessBloc.getPackageDetailModel().getShippingLogo();
+    if ((logoImage?.contains('http') ?? false) ||
+        shippingProcessBloc.getPackageDetailModel().shippingType ==
+            ShippingTypes.courier) {
+      logo = Image.network(
+        shippingList[index].carrierLogo ?? "",
+        width: 40,
+        height: 40,
+        fit: BoxFit.fill,
+        filterQuality: FilterQuality.high,
+        cacheHeight: 40,
+        cacheWidth: 40,
+        frameBuilder: imageFrameBuilder,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.network(
+            defaultImage,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+          );
+        },
+      );
+    } else {
+      logo = Image.asset(
+        logoImage!,
+        width: 40,
+        height: 40,
+        fit: BoxFit.fill,
+      );
+    }
     return Card(
       elevation: 20,
       shape: RoundedRectangleBorder(
@@ -157,12 +188,7 @@ class _ShippingOptionState extends State<ShippingOption> {
               minLeadingWidth: 10,
               contentPadding: EdgeInsets.zero,
               visualDensity: VisualDensity(horizontal: 0, vertical: 0),
-              leading: SvgPicture.asset(
-                "assets/images/slydo.svg",
-                width: 40,
-                height: 40,
-                color: navyBlue,
-              ),
+              leading: logo,
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -175,38 +201,29 @@ class _ShippingOptionState extends State<ShippingOption> {
                       fontFamily: "Inter",
                     ),
                   ),
+                  SizedBox(height: 5.0),
                   Radio<ShippingOptionModel>(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: const VisualDensity(
+                        horizontal: VisualDensity.minimumDensity,
+                        vertical: VisualDensity.minimumDensity,
+                      ),
                       value: shippingList[index],
                       groupValue: shippingOptionModel,
                       onChanged: (value) {
                         shippingOptionModel = value;
                         if (mounted) setState(() {});
                       })
-                  // Checkbox(
-                  //   visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                  //   checkColor: Colors.white,
-                  //   activeColor: navyBlue,
-                  //   // value: isChecked,
-                  //   shape: const CircleBorder(),
-                  //   // onChanged: (bool? value) {
-                  //   //   setState(() {
-                  //   //     isChecked = value!;
-                  //   //   });
-                  //   // },
-                  //   value: selectedIndex == index,
-                  //   onChanged: (value) {
-                  //     setState(() {
-                  //       selectedIndex = value! ? index : -1;
-                  //     });
-                  //   },
-                  // ),
                 ],
               ),
               subtitle: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Estimated delivery time 2-5 days",
+                    shippingProcessBloc
+                            .getPackageDetailModel()
+                            .getDeliveryTime() ??
+                        "",
                     style: TextStyle(
                       color: darkGrey,
                       fontSize: 10,
@@ -215,7 +232,7 @@ class _ShippingOptionState extends State<ShippingOption> {
                     ),
                   ),
                   Text(
-                    "${worldCurrencies[shippingList[index].currency]} ${moneyDisplayNormalizer(shippingList[index].price)}",
+                    "${worldCurrencies[shippingList[index].currency]}${moneyDisplayNormalizer(shippingList[index].price)}",
                     style: TextStyle(
                       color: blackFont,
                       fontSize: 14,
@@ -226,12 +243,10 @@ class _ShippingOptionState extends State<ShippingOption> {
                 ],
               ),
             ),
-            SizedBox(height: 7),
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    // "No 4, ilewole street, Ogba -➜ No 5, Adetutu street,ikeja, lagos",
                     "${shippingProcessBloc.getPackageDetailModel().merchantAddress?.toAddressString()} -➜ ${shippingProcessBloc.getPackageDetailModel().deliveryAddress?.toAddressString()}",
                     style: TextStyle(
                       color: black,
@@ -241,6 +256,7 @@ class _ShippingOptionState extends State<ShippingOption> {
                     ),
                   ),
                 ),
+                SizedBox(width: 5.0),
                 _buildTrackingTag(),
               ],
             ),
@@ -256,10 +272,10 @@ class _ShippingOptionState extends State<ShippingOption> {
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
-        color: greyBorderColor,
+        color: greyTagColor,
       ),
       child: Text(
-        'Live Feed',
+        shippingProcessBloc.getPackageDetailModel().getDeliveryTag() ?? "",
         style: TextStyle(
           color: darkGrey,
           fontSize: 8,

@@ -95,7 +95,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
       padding: const EdgeInsets.all(16.0),
       child: CurvedButton(
         onPressed: () {
-          Navigator.of(context).pushNamed(Routes.PACKAGE_DETAILS);
+          Navigator.of(context).popAndPushNamed(Routes.ORDERS_LIST);
         },
         backgroundColor: navyBlue,
         textColor: white,

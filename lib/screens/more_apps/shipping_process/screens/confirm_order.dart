@@ -1,12 +1,16 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/tiles/package_detail_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +27,9 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
 
   late BasketBloc basketBloc;
   bool isLoading = false;
+  bool isOrderLoading = false;
   bool isSelected = false;
+  List<int?> orders = [];
 
   late ShippingProcessBloc shippingProcessBloc;
 
@@ -41,6 +47,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       await ShippingProcessAuthService().getAllPackageDetail().then(
         (value) {
           shippingProcessBloc.packagesList = value;
+          shippingProcessBloc.isPaymentSuccessfully(false);
           isLoading = false;
           if (mounted) setState(() {});
         },
@@ -131,13 +138,19 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                             index: index);
                       },
                     ),
-                    Visibility(visible: false, child: _buildOrderSummary()),
+                    SizedBox(height: 10.0),
+                    if (shippingProcessBloc.isAllShippingProcessCompleted() ==
+                            true &&
+                        shippingProcessBloc.isPaymentSuccessful == false)
+                      _buildOrderSummary(),
                   ],
                 ),
               ),
             ),
           ),
-          _buildPayButton(),
+          shippingProcessBloc.isPaymentSuccessful == true
+              ? _buildDoneButton()
+              : _buildPayButton(),
         ],
       ),
     );
@@ -192,35 +205,94 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
   }
 
   Widget _buildPayButton() {
-    if (shippingProcessBloc.currentSelectedIndex == null) {
+    if (shippingProcessBloc.isAllShippingProcessCompleted() == false) {
       return Container();
     }
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: CurvedButton(
         onPressed: () {
-          placeOrder();
+          BottomSheetPassCode(
+              context: context,
+              isValidCallback: () async {
+                showDialog(
+                  context: context,
+                  builder: (context) => Center(
+                    child: CircularLoadingIndicator(),
+                  ),
+                );
+
+                // await checkAccountBalance();
+
+                // Create the orders
+                await placeOrder();
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+              });
         },
         backgroundColor: navyBlue,
         textColor: white,
-        text: 'Pay ₦${shippingProcessBloc.getPackageDetailModel().getAmount()}',
+        text: 'Pay ₦${moneyDisplayNormalizer(getTotalOrder())}',
+        isLoading: isOrderLoading,
+      ),
+    );
+  }
+
+  Widget _buildDoneButton() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: CurvedButton(
+        onPressed: () {
+          Navigator.of(context).popAndPushNamed(Routes.SUCCESSFUL_ORDER);
+        },
+        backgroundColor: navyBlue,
+        textColor: white,
+        text: 'Done',
       ),
     );
   }
 
   Future<void> placeOrder() async {
-    await ShippingProcessAuthService()
-        .placeOrder(data: shippingProcessBloc.toPlaceOrder())
-        .then((value) {
-      if (value == true) {
-      } else {
-        showToast(message: 'Error');
-      }
-    }).catchError((error) {
-      debugPrint(error.toString());
-      showToast(message: error.toString());
-    });
+    if (!isOrderLoading) {
+      isOrderLoading = true;
+      await ShippingProcessAuthService()
+          .placeOrder(data: shippingProcessBloc.toPlaceOrder())
+          .then(
+        (value) async {
+          if (value != null) {
+            // Send the list of of orders for payment processing
+            for (int i = 0; i < value.length; i++) {
+              orders.add(value[i]["id"]);
+            }
+            var response = await PaymentAndBankingAuth()
+                .makePaymentForCartOrder({"orders": orders});
+
+            if (response.statusCode == 200) {
+              Navigator.pop(context);
+              shippingProcessBloc.isPaymentSuccessfully(true);
+            } else if (response.statusCode == 500) {
+              showToast(message: AppLocalization.of(context)!.serverError);
+            } else {
+              debugPrint(
+                "MakePaymentForCartOrder Unsuccessful",
+              );
+            }
+          } else {
+            shippingProcessBloc.isPaymentSuccessfully(false);
+            showToast(message: 'Error');
+            debugPrint(
+              "Could Not Place The Order",
+            );
+          }
+          isOrderLoading = false;
+        },
+      ).catchError((error) {
+        isOrderLoading = false;
+        debugPrint(error.toString());
+        showToast(message: error.toString());
+      });
+    }
   }
 
   Widget _buildTotalItemCost() {
@@ -237,7 +309,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           ),
         ),
         Text(
-          "₦285,700.00",
+          "₦${moneyDisplayNormalizer(shippingProcessBloc.getTotalItemCost())}",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -263,7 +335,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           ),
         ),
         Text(
-          "#8,000.00",
+          "₦${moneyDisplayNormalizer(shippingProcessBloc.getTotalShipping())}",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -289,7 +361,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           ),
         ),
         Text(
-          "#500.00",
+          "₦0.00",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -315,7 +387,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           ),
         ),
         Text(
-          "#285,700.00",
+          "₦${moneyDisplayNormalizer(getTotalOrder())}",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
@@ -325,5 +397,11 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
         ),
       ],
     );
+  }
+
+  int? getTotalOrder() {
+    int? totalItemCost = shippingProcessBloc.getTotalItemCost();
+    int? totalShipping = shippingProcessBloc.getTotalShipping();
+    return (totalItemCost ?? 0) + (totalShipping ?? 0);
   }
 }

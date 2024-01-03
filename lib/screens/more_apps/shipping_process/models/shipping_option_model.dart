@@ -13,6 +13,8 @@ class ShippingOptionModel {
   String? deliveryAddress;
   String? pickupAddress;
   String? rateId;
+  String? carrierLogo;
+  String? deliveryTime;
 
   ShippingOptionModel({
     this.id,
@@ -29,6 +31,8 @@ class ShippingOptionModel {
     this.deliveryAddress,
     this.pickupAddress,
     this.rateId,
+    this.carrierLogo,
+    this.deliveryTime,
   });
 
   factory ShippingOptionModel.fromJson(Map<String, dynamic> json) =>

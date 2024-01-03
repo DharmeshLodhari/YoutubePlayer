@@ -3,18 +3,17 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
-import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/screens/super_store/super_store_industry.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
+
 import '../../data/currency.dart';
 import '../../data/environment.dart';
 import '../../data/state_notifier.dart';
@@ -372,7 +371,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
               child: ListView(
                 controller: _productScrollController,
                 children: [
-                  if (itemList.isEmpty) specialDeals(),
+                  if (itemList.isNotEmpty) specialDeals(),
                   SizedBox(height: todaysDealsSizeBox),
                   if (customerProfileListNearBy.isNotEmpty) nearByBuildView(),
                   sessionProducts(),

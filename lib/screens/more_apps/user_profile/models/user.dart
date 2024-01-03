@@ -109,7 +109,7 @@ class ShippingAddress {
   }
 
   String toAddressString() {
-    return "${line_1}, ${line_2}, ${city}, ${stateName},  ${country}, ${zip}";
+    return "${line_1}, ${city}, ${stateName}, ${country}";
   }
 
   Map<String, dynamic> toAddUpdate() {

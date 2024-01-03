@@ -67,12 +67,29 @@ class PackageDetailsModel {
   Map<String, dynamic> toPlaceOrder() {
     Map<String, dynamic> data = {
       "merchant": merchant,
-      // "rate_id": shippingOption?.rateId ?? "",
       "pickup_address_id": merchantAddress?.id ?? "",
-      "delivery_address_id": deliveryAddress?.id ?? "",
-      "shipping_option": shippingOption?.id ?? ""
+      "note": shippingNote,
     };
-
+    int shippingId = 0;
+    if (deliveryOption == DeliveryOptions.shipping) {
+      if (shippingType == ShippingTypes.slydo) {
+        shippingId = 5;
+        data.addAll(
+            {"rate_id": shippingOption?.rateId ?? "", "insurance": false});
+      } else if (shippingType == ShippingTypes.merchant) {
+        shippingId = shippingOption?.id ?? 0;
+      } else if (shippingType == ShippingTypes.courier) {
+        shippingId = 4;
+        data.addAll({"rate_id": shippingOption?.rateId ?? ""});
+      }
+      data.addAll({"delivery_address_id": deliveryAddress?.id ?? ""});
+    } else if (deliveryOption == DeliveryOptions.eatIn ||
+        deliveryOption == DeliveryOptions.pickUp) {
+      shippingId = 1;
+    }
+    data.addAll({
+      "shipping_option_id": shippingId,
+    });
     return data;
   }
 
@@ -80,16 +97,58 @@ class PackageDetailsModel {
     if (deliveryOption == null) {
       return null;
     }
-
     switch (deliveryOption!) {
       case DeliveryOptions.shipping:
         return "Shipping";
 
       case DeliveryOptions.eatIn:
-        return "Eat in";
+        return "Eatin";
 
       case DeliveryOptions.pickUp:
         return "Pickup";
+    }
+  }
+
+  String? getDeliveryTime() {
+    if (shippingType == null) {
+      return null;
+    }
+    switch (shippingType!) {
+      case ShippingTypes.slydo:
+        return "Estimated delivery time unknown";
+
+      case ShippingTypes.merchant:
+        return "Estimated delivery time unknown";
+
+      case ShippingTypes.courier:
+        return shippingOption?.deliveryTime;
+    }
+  }
+
+  String? getDeliveryTag() {
+    if (shippingType == null) {
+      return null;
+    }
+    switch (shippingType!) {
+      case ShippingTypes.slydo:
+        return "Live Feed";
+
+      case ShippingTypes.merchant:
+        return "No Tracking Available";
+
+      case ShippingTypes.courier:
+        return "Tracking Available";
+    }
+  }
+
+  String? getShippingLogo() {
+    switch (shippingType!) {
+      case ShippingTypes.slydo:
+        return "assets/images/slydo.svg";
+      case ShippingTypes.merchant:
+        return "assets/images/merchant_logo.png";
+      case ShippingTypes.courier:
+        return shippingOption?.carrierLogo ?? "";
     }
   }
 
@@ -97,7 +156,7 @@ class PackageDetailsModel {
     deliveryAddress = shippingAddress;
   }
 
-  int getAmount() {
-    return totalPrice ?? 0;
+  void updateShippingNote(String? note) {
+    shippingNote = note;
   }
 }

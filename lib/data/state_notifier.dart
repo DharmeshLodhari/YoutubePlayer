@@ -751,6 +751,8 @@ class ShippingProcessBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool isPaymentSuccessful = false;
+
   int? _currentSelectedIndex;
 
   int? get currentSelectedIndex => _currentSelectedIndex;
@@ -764,10 +766,37 @@ class ShippingProcessBloc extends ChangeNotifier {
     return _packagesList[_currentSelectedIndex!];
   }
 
+  bool? isAllShippingProcessCompleted() {
+    bool result = true;
+    for (int i = 0; i < _packagesList.length; i++) {
+      if (_packagesList[i].isShippingProcessCompleted == false) {
+        result = false;
+        break;
+      }
+    }
+    return result;
+  }
+
+  int? getTotalItemCost() {
+    int sum = 0;
+    for (int i = 0; i < _packagesList.length; i++) {
+      sum += _packagesList[i].totalPrice ?? 0;
+    }
+    return sum;
+  }
+
+  int? getTotalShipping() {
+    int total = 0;
+    for (int i = 0; i < _packagesList.length; i++) {
+      total += _packagesList[i].shippingOption?.price ?? 0;
+    }
+    return total;
+  }
+
   void updateDeliveryOption(String pickedDeliveryOption) {
     if (pickedDeliveryOption == "Shipping") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.shipping;
-    } else if (pickedDeliveryOption == "Eat in") {
+    } else if (pickedDeliveryOption == "Eatin") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.eatIn;
       updateShippingOption(null);
       getPackageDetailModel().updateDeliveryAddress(null);
@@ -796,12 +825,16 @@ class ShippingProcessBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  void isPaymentSuccessfully(bool val) {
+    isPaymentSuccessful = val;
+    notifyListeners();
+  }
+
   Map<String, dynamic> toPlaceOrder() {
     Map<String, dynamic> data = {
       "payment_type": "Slydo",
       "shipping_details": packagesList.map((e) => e.toPlaceOrder()).toList()
     };
-
     return data;
   }
 }

@@ -30,6 +30,7 @@ Color lightGrey = HexColor("#FBFBFF");
 Color chatBackgroundColor = HexColor("#F4F5F6");
 Color iconBtnGrey = HexColor("#F8F9FF");
 Color greyBorderColor = HexColor("#DDE1E7");
+Color greyTagColor = HexColor("#e8ebef");
 Color dividerColor = HexColor("#EBEDFC");
 Color mateRed = HexColor("#F35B46");
 Color mateRedLight = HexColor("#FFECEA");

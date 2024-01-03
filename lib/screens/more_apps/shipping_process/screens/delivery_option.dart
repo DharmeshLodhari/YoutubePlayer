@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
@@ -10,7 +11,6 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class DeliveryOption extends StatefulWidget {
@@ -23,9 +23,10 @@ class DeliveryOption extends StatefulWidget {
 }
 
 class _DeliveryOptionState extends State<DeliveryOption> {
-  List<String?> deliveryOption = ["Shipping", "Eat in", "Pickup"];
+  List<String?> deliveryOption = ["Shipping", "Eatin", "Pickup"];
 
   late ShippingProcessBloc shippingProcessBloc;
+  TextEditingController userNoteController = TextEditingController();
 
   @override
   void initState() {
@@ -196,36 +197,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           ),
         ),
         SizedBox(height: 5),
-        TextField(
-          maxLines: 5,
-          decoration: InputDecoration(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                color: greyBorderColor, // Border color
-                width: 1.0,
-              ),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                color: greyBorderColor, // Border color
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                color: greyBorderColor, // Change the focus color here
-                width: 1.0,
-              ),
-            ),
-            filled: true,
-            fillColor: white, // Background color
-          ),
-        ),
+        _buildNoteTextField(),
       ],
     );
   }
@@ -272,10 +244,6 @@ class _DeliveryOptionState extends State<DeliveryOption> {
               fontFamily: "Inter",
             ),
           ),
-          // if (shippingAddress != null)
-          //   Text(
-          //       "${shippingAddress?.addressLineOne} ${shippingAddress?.addressLineTwo} ${shippingAddress?.country}" ??
-          //           ""),
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
@@ -318,27 +286,37 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             fontFamily: "Inter",
           ),
         ),
+        // const SizedBox(
+        //   height: 16,
+        // ),
+        // GestureDetector(
+        //   onTap: () async {
+        //     if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+        //         null) {
+        //       shippingProcessBloc.updateShippingOptionType(ShippingTypes.slydo);
+        //       await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+        //     } else {
+        //       showToast(message: "Please select delivery address.");
+        //     }
+        //   },
+        //   child: ShippingOptionalWid(
+        //     title: "Ship with Slydo",
+        //     subTitle: "Use slydo dispatch rider to get your orders.",
+        //   ),
+        // ),
         const SizedBox(
           height: 16,
         ),
         GestureDetector(
           onTap: () async {
-            shippingProcessBloc.updateShippingOptionType(ShippingTypes.slydo);
-            await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
-          },
-          child: ShippingOptionalWid(
-            title: "Ship with Slydo",
-            subTitle: "Use slydo dispatch rider to get your orders.",
-          ),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        GestureDetector(
-          onTap: () async {
-            shippingProcessBloc
-                .updateShippingOptionType(ShippingTypes.merchant);
-            await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+                null) {
+              shippingProcessBloc
+                  .updateShippingOptionType(ShippingTypes.merchant);
+              await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            } else {
+              showToast(message: "Please select delivery address.");
+            }
           },
           child: ShippingOptionalWid(
             title: "Merchant Option",
@@ -350,8 +328,14 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         ),
         GestureDetector(
           onTap: () async {
-            shippingProcessBloc.updateShippingOptionType(ShippingTypes.courier);
-            await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+                null) {
+              shippingProcessBloc
+                  .updateShippingOptionType(ShippingTypes.courier);
+              await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            } else {
+              showToast(message: "Please select delivery address.");
+            }
           },
           child: ShippingOptionalWid(
             title: "Ship with Courier",
@@ -384,6 +368,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         padding: const EdgeInsets.all(16.0),
         child: CurvedButton(
           onPressed: () {
+            shippingProcessBloc
+                .getPackageDetailModel()
+                .updateShippingNote(userNoteController.text.trim());
             shippingProcessBloc.updateShippingProcessCompleted(true);
             Navigator.of(context).pop();
           },
@@ -463,6 +450,38 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   }
 
   Widget _buildShipping() {
+    Widget logo;
+    String? logoImage =
+        shippingProcessBloc.getPackageDetailModel().getShippingLogo() ?? "";
+    if ((logoImage.contains('http')) ||
+        shippingProcessBloc.getPackageDetailModel().shippingType ==
+            ShippingTypes.courier) {
+      logo = Image.network(
+        logoImage,
+        width: 40,
+        height: 40,
+        fit: BoxFit.fill,
+        filterQuality: FilterQuality.high,
+        cacheHeight: 40,
+        cacheWidth: 40,
+        frameBuilder: imageFrameBuilder,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.network(
+            defaultImage,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+          );
+        },
+      );
+    } else {
+      logo = Image.asset(
+        logoImage,
+        width: 40,
+        height: 40,
+        fit: BoxFit.fill,
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -471,12 +490,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           minLeadingWidth: 10,
           contentPadding: EdgeInsets.zero,
           visualDensity: VisualDensity(horizontal: 0, vertical: 0),
-          leading: SvgPicture.asset(
-            "assets/images/slydo.svg",
-            width: 40,
-            height: 40,
-            color: navyBlue,
-          ),
+          leading: logo,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -496,6 +510,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
               Checkbox(
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 checkColor: Colors.white,
+                activeColor: navyBlue,
                 value: true,
                 shape: const CircleBorder(),
                 onChanged: (bool? value) {},
@@ -506,7 +521,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Estimated delivery time 2-5 days",
+                shippingProcessBloc.getPackageDetailModel().getDeliveryTime() ??
+                    "",
                 style: TextStyle(
                   color: darkGrey,
                   fontSize: 10,
@@ -515,8 +531,13 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                 ),
               ),
               Text(
-                "${shippingProcessBloc.getPackageDetailModel().shippingOption?.currency}${shippingProcessBloc.getPackageDetailModel().shippingOption?.price}",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                "${worldCurrencies[shippingProcessBloc.getPackageDetailModel().shippingOption?.currency]}${moneyDisplayNormalizer(shippingProcessBloc.getPackageDetailModel().shippingOption?.price)}",
+                style: TextStyle(
+                  color: blackFont,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: "Inter",
+                ),
               ),
             ],
           ),
@@ -525,7 +546,6 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           children: [
             Expanded(
               child: Text(
-                // "No 4, ilewole street, Ogba -➜ No 5, Adetutu street,ikeja, lagos",
                 "${shippingProcessBloc.getPackageDetailModel().merchantAddress?.toAddressString()} -➜ ${shippingProcessBloc.getPackageDetailModel().deliveryAddress?.toAddressString()}",
                 style: TextStyle(
                   color: black,
@@ -535,6 +555,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                 ),
               ),
             ),
+            SizedBox(width: 5.0),
             _buildTrackingTag(),
           ],
         ),
@@ -550,7 +571,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         color: greyBorderColor,
       ),
       child: Text(
-        'Live Feed',
+        shippingProcessBloc.getPackageDetailModel().getDeliveryTag() ?? "",
         style: TextStyle(
           color: darkGrey,
           fontSize: 8,
@@ -577,30 +598,42 @@ class _DeliveryOptionState extends State<DeliveryOption> {
         const SizedBox(
           height: 8,
         ),
-        TextField(
-          maxLines: 5,
-          decoration: InputDecoration(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                color: greyBorderColor, // Border color
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                color: greyBorderColor, // Change the focus color here
-                width: 1.0,
-              ),
-            ),
-            filled: true,
-            fillColor: white, // Background color
+        _buildNoteTextField(),
+      ],
+    );
+  }
+
+  Widget _buildNoteTextField() {
+    return TextField(
+      controller: userNoteController,
+      maxLines: 5,
+      decoration: InputDecoration(
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(
+            color: greyBorderColor, // Border color
+            width: 1.0,
           ),
         ),
-      ],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(
+            color: greyBorderColor, // Border color
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(
+            color: greyBorderColor, // Change the focus color here
+            width: 1.0,
+          ),
+        ),
+        filled: true,
+        fillColor: white, // Background color
+      ),
     );
   }
 }

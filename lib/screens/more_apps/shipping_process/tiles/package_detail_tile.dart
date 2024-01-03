@@ -1,3 +1,4 @@
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
@@ -22,7 +23,8 @@ class PackageDetailTile extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: shippingProcessBloc.currentSelectedIndex == index
+          color: shippingProcessBloc.currentSelectedIndex == index &&
+                  shippingProcessBloc.isPaymentSuccessful == false
               ? navyBlue
               : white,
           width: 1,
@@ -40,7 +42,8 @@ class PackageDetailTile extends StatelessWidget {
               SizedBox(
                 height: 5.0,
               ),
-              _buildShippingDetail(context),
+              if (shippingProcessBloc.isPaymentSuccessful == false)
+                _buildShippingDetail(context),
             ],
           ),
         ),
@@ -50,6 +53,7 @@ class PackageDetailTile extends StatelessWidget {
 
   Widget _buildPackageDetail(BuildContext context) {
     return ListTile(
+      contentPadding: EdgeInsets.zero,
       leading: _buildImage(),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -59,15 +63,6 @@ class PackageDetailTile extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: black,
-              fontFamily: "Inter",
-            ),
-          ),
-          Text(
-            "₦${moneyDisplayNormalizer(packageDetailsModel.totalPrice)}",
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
               color: black,
               fontFamily: "Inter",
             ),
@@ -82,6 +77,31 @@ class PackageDetailTile extends StatelessWidget {
           color: black,
           fontFamily: "Inter",
         ),
+      ),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (shippingProcessBloc
+                  .packagesList[index].isShippingProcessCompleted ==
+              true)
+            Checkbox(
+              visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+              checkColor: Colors.white,
+              activeColor: navyBlue,
+              value: true,
+              shape: const CircleBorder(),
+              onChanged: (bool? value) {},
+            ),
+          Text(
+            "₦${moneyDisplayNormalizer(packageDetailsModel.totalPrice)}",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: black,
+              fontFamily: "Inter",
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -118,7 +138,7 @@ class PackageDetailTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "₦2,000.00",
+                    "${worldCurrencies[shippingProcessBloc.packagesList[index].shippingOption?.currency]}${moneyDisplayNormalizer(shippingProcessBloc.packagesList[index].shippingOption?.price)}",
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
@@ -132,7 +152,7 @@ class PackageDetailTile extends StatelessWidget {
                 height: 3,
               ),
               Text(
-                "Estimated delivery time 2-5 days",
+                shippingProcessBloc.packagesList[index].getDeliveryTime() ?? "",
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w400,
@@ -178,8 +198,11 @@ class PackageDetailTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(child: child),
-          Icon(
-            Icons.keyboard_arrow_right_outlined,
+          Padding(
+            padding: EdgeInsets.only(right: 7.0),
+            child: Icon(
+              Icons.keyboard_arrow_right_outlined,
+            ),
           )
         ],
       ),
@@ -187,9 +210,28 @@ class PackageDetailTile extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    return Image.asset(
-      "assets/images/package.png",
-      fit: BoxFit.fill,
-    );
+    if (packageDetailsModel.deliveryOption == null) {
+      return Image.asset(
+        "assets/images/package.png",
+        width: 48,
+      );
+    }
+    switch (packageDetailsModel.deliveryOption!) {
+      case DeliveryOptions.shipping:
+        return Image.asset(
+          "assets/images/package.png",
+          width: 48,
+        );
+      case DeliveryOptions.eatIn:
+        return Image.asset(
+          "assets/images/eatin_logo.png",
+          fit: BoxFit.fill,
+        );
+      case DeliveryOptions.pickUp:
+        return Image.asset(
+          "assets/images/pickup_logo.png",
+          fit: BoxFit.fill,
+        );
+    }
   }
 }
