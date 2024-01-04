@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_m
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/models/rider_registration_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
@@ -836,6 +837,34 @@ class ShippingProcessBloc extends ChangeNotifier {
       "shipping_details": packagesList.map((e) => e.toPlaceOrder()).toList()
     };
     return data;
+  }
+}
+
+class RiderRegistrationBloc extends ChangeNotifier {
+  RiderRegistrationModel? registrationModel = RiderRegistrationModel();
+
+  void updateRideType(String rideType) {
+    if (rideType == "Car") {
+      registrationModel?.rideTypeOptions = RideTypeOptions.car;
+    } else if (rideType == "Bicycle") {
+      registrationModel?.rideTypeOptions = RideTypeOptions.bicycle;
+    } else if (rideType == "Motorcycle") {
+      registrationModel?.rideTypeOptions = RideTypeOptions.motorcycle;
+    }
+    notifyListeners();
+  }
+
+  void updateKYCType(int kycType) {
+    if (kycType == 0) {
+      registrationModel?.kycTypes = KYCTypes.riderPhoto;
+    } else if (kycType == 1) {
+      registrationModel?.kycTypes = KYCTypes.identityCard;
+    } else if (kycType == 2) {
+      registrationModel?.kycTypes = KYCTypes.vehicleInsurance;
+    } else if (kycType == 3) {
+      registrationModel?.kycTypes = KYCTypes.hackneyPermit;
+    }
+    notifyListeners();
   }
 }
 

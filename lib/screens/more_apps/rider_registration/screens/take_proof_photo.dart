@@ -1,35 +1,48 @@
 import 'dart:io';
 
-import 'package:Slydo/screens/more_apps/rider_delivery/preview_screen.dart';
+import 'package:Slydo/main.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:camera/camera.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class TakePicture extends StatefulWidget {
-  const TakePicture({Key? key, required this.cameras}) : super(key: key);
-
-  final List<CameraDescription>? cameras;
+class TakeProofPhoto extends StatefulWidget {
+  TakeProofPhoto({Key? key}) : super(key: key);
 
   @override
-  State<TakePicture> createState() => _TakePictureState();
+  State<TakeProofPhoto> createState() => _TakeProofPhotoState();
 }
 
-class _TakePictureState extends State<TakePicture> {
-  late CameraController _cameraController;
+class _TakeProofPhotoState extends State<TakeProofPhoto> {
+  CameraController? _cameraController;
   bool _isRearCameraSelected = true;
 
   @override
   void dispose() {
-    _cameraController.dispose();
+    _cameraController?.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    initCamera(widget.cameras![0]);
+    checkCameraAvailable();
+  }
+
+  Future<void> checkCameraAvailable() async {
+    await availableCameras().then((availableCameras) {
+      cameras = availableCameras;
+      if (cameras.length > 0) {
+        initCamera(cameras[0]);
+      } else {
+        print("No camera available");
+      }
+    }).catchError((err) {
+      // 3
+      print('Error: $err.code\nError Message: $err.message');
+    });
   }
 
   @override
@@ -63,9 +76,19 @@ class _TakePictureState extends State<TakePicture> {
             'assets/images/rider/flip_camera.svg',
             fit: BoxFit.cover,
           ),
-          onPressed: () {
+          onPressed: () async {
             setState(() => _isRearCameraSelected = !_isRearCameraSelected);
-            initCamera(widget.cameras![_isRearCameraSelected ? 0 : 1]);
+            await availableCameras().then((availableCameras) {
+              cameras = availableCameras;
+              if (cameras.length > 0) {
+                initCamera(cameras[_isRearCameraSelected ? 0 : 1]);
+              } else {
+                print("No camera available");
+              }
+            }).catchError((err) {
+              // 3
+              print('Error: $err.code\nError Message: $err.message');
+            });
           },
         ),
       ],
@@ -89,8 +112,8 @@ class _TakePictureState extends State<TakePicture> {
     return SafeArea(
       child: Stack(
         children: [
-          (_cameraController.value.isInitialized)
-              ? CameraPreview(_cameraController)
+          (_cameraController?.value.isInitialized ?? false)
+              ? CameraPreview(_cameraController!)
               : Container(
                   color: Colors.black,
                   child: Center(child: CircularProgressIndicator())),
@@ -114,23 +137,18 @@ class _TakePictureState extends State<TakePicture> {
   }
 
   Future takePhoto() async {
-    if (!_cameraController.value.isInitialized) {
+    if (_cameraController?.value.isInitialized == false) {
       return null;
     }
-    if (_cameraController.value.isTakingPicture) {
+    if (_cameraController?.value.isTakingPicture ?? false) {
       return null;
     }
     try {
-      await _cameraController.setFlashMode(FlashMode.off);
-      XFile picture = await _cameraController.takePicture();
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => PreviewPage(
-                    picture: picture,
-                  )));
+      await _cameraController?.setFlashMode(FlashMode.off);
+      XFile? picture = await _cameraController?.takePicture();
+      Navigator.of(context).pushNamed(Routes.PREVIEW_SCREEN);
     } on CameraException catch (e) {
-      debugPrint('Error occured while taking picture: $e');
+      debugPrint('Error occurred while taking picture: $e');
       return null;
     }
   }
@@ -139,7 +157,7 @@ class _TakePictureState extends State<TakePicture> {
     _cameraController =
         CameraController(cameraDescription, ResolutionPreset.high);
     try {
-      await _cameraController.initialize().then((_) {
+      await _cameraController?.initialize().then((_) {
         if (!mounted) return;
         setState(() {});
       });
@@ -148,29 +166,3 @@ class _TakePictureState extends State<TakePicture> {
     }
   }
 }
-// Row(
-// crossAxisAlignment: CrossAxisAlignment.center,
-// children: [
-// Expanded(
-// child: Padding(
-// padding: EdgeInsets.symmetric(horizontal: 16.0),
-// child: CustomElevatedButton(
-// backgroundColor: Colors.white,
-// title: 'Retake',
-// onPressed: takePicture,
-// Textcolor: AppColor().ButtonBlueColor),
-// ),
-// ),
-// Expanded(
-// child: Padding(
-// padding: EdgeInsets.symmetric(horizontal: 16.0),
-// child: CustomElevatedButton(
-// backgroundColor: AppColor().ButtonBlueColor,
-// title: 'Use Photo',
-// onPressed: () {},
-// Textcolor: Colors.white),
-// ),
-// ),
-// // Spacer(),
-// ],
-// )

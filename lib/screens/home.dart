@@ -18,14 +18,14 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/curved_btn.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:badges/badges.dart' as badges;
 import 'package:shimmer/shimmer.dart';
+
 import '../data/currency.dart';
 import '../data/database_helper.dart';
 import '../locator.dart';
@@ -495,7 +495,7 @@ class _HomeState extends State<Home> {
           InkWell(
             onTap: () {
               // showSnackbar(context, message: "Coming soon");
-              Navigator.of(context).pushNamed(Routes.RIDER_DASHBOARD);
+              Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
             },
             // child: Container(
             //   margin: EdgeInsets.symmetric(horizontal: 16),
@@ -964,7 +964,6 @@ class _HomeState extends State<Home> {
         ),
       ),
       actions: <Widget>[
-        
         RoundedBackgroundIcon(
             backgroundColor: Colors.transparent,
             onTap: () {

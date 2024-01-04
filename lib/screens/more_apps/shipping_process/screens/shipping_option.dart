@@ -176,33 +176,33 @@ class _ShippingOptionState extends State<ShippingOption> {
       margin: EdgeInsets.symmetric(vertical: 5),
       shadowColor: boxShadowTwo,
       color: white,
-      // child: Container(
-      //   decoration: decorateBox(),
-      child: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ListTile(
-              minVerticalPadding: 0,
-              minLeadingWidth: 10,
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity(horizontal: 0, vertical: 0),
-              leading: logo,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    shippingList[index].name ?? "",
-                    style: TextStyle(
-                      color: blackFont,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "Inter",
+      child: Container(
+        decoration: decorateBox(),
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ListTile(
+                minVerticalPadding: 0,
+                minLeadingWidth: 10,
+                contentPadding: EdgeInsets.zero,
+                visualDensity: VisualDensity(horizontal: 0, vertical: 0),
+                leading: logo,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      shippingList[index].name ?? "",
+                      style: TextStyle(
+                        color: blackFont,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: "Inter",
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 5.0),
-                  Radio<ShippingOptionModel>(
+                    SizedBox(height: 5.0),
+                    Radio<ShippingOptionModel>(
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity: const VisualDensity(
                         horizontal: VisualDensity.minimumDensity,
@@ -213,57 +213,58 @@ class _ShippingOptionState extends State<ShippingOption> {
                       onChanged: (value) {
                         shippingOptionModel = value;
                         if (mounted) setState(() {});
-                      })
-                ],
-              ),
-              subtitle: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    shippingProcessBloc
-                            .getPackageDetailModel()
-                            .getDeliveryTime() ??
-                        "",
-                    style: TextStyle(
-                      color: darkGrey,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: "Inter",
+                      },
                     ),
-                  ),
-                  Text(
-                    "${worldCurrencies[shippingList[index].currency]}${moneyDisplayNormalizer(shippingList[index].price)}",
-                    style: TextStyle(
-                      color: blackFont,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: "Inter",
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    "${shippingProcessBloc.getPackageDetailModel().merchantAddress?.toAddressString()} -➜ ${shippingProcessBloc.getPackageDetailModel().deliveryAddress?.toAddressString()}",
-                    style: TextStyle(
-                      color: black,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: "Inter",
-                    ),
-                  ),
+                  ],
                 ),
-                SizedBox(width: 5.0),
-                _buildTrackingTag(),
-              ],
-            ),
-          ],
+                subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      shippingProcessBloc
+                              .getPackageDetailModel()
+                              .getDeliveryTime() ??
+                          "",
+                      style: TextStyle(
+                        color: darkGrey,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                    Text(
+                      "${worldCurrencies[shippingList[index].currency]}${moneyDisplayNormalizer(shippingList[index].price)}",
+                      style: TextStyle(
+                        color: blackFont,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "${shippingProcessBloc.getPackageDetailModel().merchantAddress?.toAddressString()} -➜ ${shippingProcessBloc.getPackageDetailModel().deliveryAddress?.toAddressString()}",
+                      style: TextStyle(
+                        color: black,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5.0),
+                  _buildTrackingTag(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-      // ),
     );
   }
 

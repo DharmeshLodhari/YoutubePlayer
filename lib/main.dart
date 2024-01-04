@@ -240,6 +240,9 @@ List<ChangeNotifierProvider> providersList = [
   ChangeNotifierProvider<ShippingProcessBloc>.value(
     value: ShippingProcessBloc(),
   ),
+  ChangeNotifierProvider<RiderRegistrationBloc>.value(
+    value: RiderRegistrationBloc(),
+  ),
   ChangeNotifierProvider<AddressBloc>.value(
     value: AddressBloc(),
   ),

@@ -208,7 +208,10 @@ class Routes {
   static const String CONFIRM_ORDER = "/confirm_order";
   static const String DELIVERY_OPTION = "/delivery_option";
   static const String SHIPPING_OPTION = "/shipping_option";
-  static const String SEND_CART_PAYMENT = "/send_cart_payment";
   static const String SUCCESSFUL_ORDER = "/successful_order";
-  static const String PACKAGE_DETAILS = "/package_details";
+  static const String RIDE_TYPE = "/ride_type";
+  static const String REQUIRE_STEPS = "/require_steps";
+  static const String STEPS_INFO = "/steps_info";
+  static const String TAKE_PROOF_PHOTO = "/take_proof_photo";
+  static const String PREVIEW_SCREEN = "/preview_screen";
 }

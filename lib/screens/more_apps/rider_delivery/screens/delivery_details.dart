@@ -1,13 +1,12 @@
 import 'dart:io';
 
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/take_picture.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:camera/camera.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -1096,9 +1095,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildTakePicture() {
     return GestureDetector(
       onTap: () async {
-        // Navigator.of(context).pushNamed(Routes.TAKE_PICTURE);
-        await availableCameras().then((value) => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => TakePicture(cameras: value))));
+        Navigator.of(context).pushNamed(Routes.TAKE_PROOF_PHOTO);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

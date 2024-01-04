@@ -24,8 +24,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../locator.dart';
 import '../../../../services/app_config_bloc.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
+import '../../shopping/shopping_auth.dart';
 import '../../user_profile/user_auth.dart';
-import '../shopping_auth.dart';
 
 class ShoppingCart extends StatefulWidget {
   @override

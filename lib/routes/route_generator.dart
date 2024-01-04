@@ -82,21 +82,24 @@ import 'package:Slydo/screens/more_apps/review/forms/edit_user_review.dart';
 import 'package:Slydo/screens/more_apps/review/main_review.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/rider_dashboard.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_dashboard.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/screens/preview_screen.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/screens/require_steps.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/screens/ride_type.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/screens/steps_info.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/screens/take_proof_photo.dart';
 import 'package:Slydo/screens/more_apps/service_hub/screens/contractor_payment_screen.dart';
 import 'package:Slydo/screens/more_apps/settings/general_setting.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/confirm_order.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/delivery_option.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/screens/package_details.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/screens/send_cart_payment.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/shipping_option.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/successful_order.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart';
@@ -1875,6 +1878,7 @@ class RouteGenerator {
           settings: settings,
         );
 
+      /// Rider Dileviry
       case Routes.RIDER_DASHBOARD:
         return PageTransition(
           child: RiderDashboard(),
@@ -1898,6 +1902,8 @@ class RouteGenerator {
       //     curve: Curves.ease,
       //     settings: settings,
       //   );
+
+      /// Shipping Process
       case Routes.CONFIRM_ORDER:
         return PageTransition(
           child: ConfirmOrder(),
@@ -1919,13 +1925,6 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.SEND_CART_PAYMENT:
-        return PageTransition(
-          child: SendCartPayment(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
       case Routes.SUCCESSFUL_ORDER:
         return PageTransition(
           child: SuccessfulOrder(),
@@ -1933,14 +1932,43 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.PACKAGE_DETAILS:
+
+      ///Rider Registration
+      case Routes.RIDE_TYPE:
         return PageTransition(
-          child: PackageDetails(),
+          child: RideType(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-
+      case Routes.REQUIRE_STEPS:
+        return PageTransition(
+          child: RequireSteps(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.STEPS_INFO:
+        return PageTransition(
+          child: StepsInfo(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.TAKE_PROOF_PHOTO:
+        return PageTransition(
+          child: TakeProofPhoto(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.PREVIEW_SCREEN:
+        return PageTransition(
+          child: PreviewScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();
