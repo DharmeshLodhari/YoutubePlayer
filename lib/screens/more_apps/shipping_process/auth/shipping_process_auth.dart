@@ -48,14 +48,14 @@ class ShippingProcessAuthService extends AuthService {
     if (packageDetailsModel.shippingType == ShippingTypes.slydo) {
       url +=
           "/api/v1/shipping/get-rates/slydo/?delivery_address_id=${packageDetailsModel.deliveryAddress?.id}&pickup_address_id=${packageDetailsModel.addressId}"
-          "&anonymous=true&cart_id=29be44ec-fa3f-4980-a98e-64c828cca9fc&currency=NGN&merchant=${packageDetailsModel.merchant}";
+          "&anonymous=true&cart_id=29be44ec-fa3f-4980-a98e-64c828cca9fc&currency=NGN&merchant=${packageDetailsModel.merchant}/";
     } else if (packageDetailsModel.shippingType == ShippingTypes.merchant) {
       url +=
-          "/api/v1/shipping-options/public-list/${packageDetailsModel.merchant}";
+          "/api/v1/shipping-options/public-list/${packageDetailsModel.merchant}/";
     } else if (packageDetailsModel.shippingType == ShippingTypes.courier) {
       url +=
           "/api/v1/shipping/get-rates/terminal/?delivery_address_id=${packageDetailsModel.deliveryAddress?.id}&pickup_address_id=${packageDetailsModel.addressId}"
-          "&anonymous=false&cart_id=29be44ec-fa3f-4980-a98e-64c828cca9fc&currency=NGN&merchant=${packageDetailsModel.merchant}";
+          "&anonymous=false&cart_id=29be44ec-fa3f-4980-a98e-64c828cca9fc&currency=NGN&merchant=${packageDetailsModel.merchant}/";
     }
 
     var headers = await getAuthHeaders();
@@ -86,21 +86,21 @@ class ShippingProcessAuthService extends AuthService {
 
   // Placing An order
   Future<dynamic> placeOrder({Map? data}) async {
-      var url = "${AppConfig.baseUrl}/api/v1/shopping-cart/";
-      var _data = jsonEncode(data);
-      debugPrint('Order details ::: $_data');
+    var url = "${AppConfig.baseUrl}/api/v1/shopping-cart/";
+    var _data = jsonEncode(data);
+    debugPrint('Order details ::: $_data');
 
-      var headers = await getAuthHeaders();
-      var response = await httpPost(url, headers: headers, body: _data);
-      var jsonData = jsonDecode(response.body);
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _data);
+    var jsonData = jsonDecode(response.body);
 
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-      if (response.statusCode == 201) {
-        return jsonData;
-      } else {
-        showToast(message: response.body.toString());
-        throw response.body;
-      }
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 201) {
+      return jsonData;
+    } else {
+      showToast(message: response.body.toString());
+      throw response.body;
+    }
   }
 }

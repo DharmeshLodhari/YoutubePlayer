@@ -84,9 +84,11 @@ import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart'
 import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_dashboard.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/screens/completed_upload_photo.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/preview_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/require_steps.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/ride_type.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/screens/riders_update.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/steps_info.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/take_proof_photo.dart';
 import 'package:Slydo/screens/more_apps/service_hub/screens/contractor_payment_screen.dart';
@@ -1965,6 +1967,20 @@ class RouteGenerator {
       case Routes.PREVIEW_SCREEN:
         return PageTransition(
           child: PreviewScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.COMPLETED_UPLOAD_PHOTO:
+        return PageTransition(
+          child: CompletedUploadPhoto(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.RIDERS_UPDATE:
+        return PageTransition(
+          child: RidersUpdate(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

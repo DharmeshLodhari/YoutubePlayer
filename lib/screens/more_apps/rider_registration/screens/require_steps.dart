@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/auth/rider_registration_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/models/rider_registration_model.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/tiles/kyc_proof_tile.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -18,34 +20,29 @@ class RequireSteps extends StatefulWidget {
 }
 
 class _RequireStepsState extends State<RequireSteps> {
-  bool riderType1 = false;
-  bool? selected;
-  String selectedOne = "";
   late RiderRegistrationBloc riderRegistrationBloc;
+  late UserBloc userBloc;
+  bool isLoading = false;
 
   List carSteps = [
     {
-      "id": 0,
-      "value": false,
+      "type": KYCTypes.riderPhoto,
       "title": 'Rider Photo',
       "subtitle": "Take a picture of your face for verification",
     },
     {
-      "id": 1,
-      "value": false,
+      "type": KYCTypes.identityCard,
       "title": 'Rider’s Identity Card',
       "subtitle":
           "Scan or take a picture of your NIN or International Passport.",
     },
     {
-      "id": 2,
-      "value": false,
+      "type": KYCTypes.vehicleInsurance,
       "title": 'Proof of vehicle Insurance',
       "subtitle": "Proof of vehicle Insurance",
     },
     {
-      "id": 1,
-      "value": false,
+      "type": KYCTypes.drivingLicense,
       "title": 'Proof of drivers license',
       "subtitle": "Upload or scan your drivers license",
     },
@@ -53,21 +50,18 @@ class _RequireStepsState extends State<RequireSteps> {
 
   List bicycleSteps = [
     {
-      "id": 0,
-      "value": false,
+      "type": KYCTypes.riderPhoto,
       "title": 'Rider Photo',
       "subtitle": "Take a picture of your face for verification",
     },
     {
-      "id": 1,
-      "value": false,
+      "type": KYCTypes.identityCard,
       "title": 'Rider’s Identity Card',
       "subtitle":
           "Scan or take a picture of your NIN or International Passport.",
     },
     {
-      "id": 3,
-      "value": false,
+      "type": KYCTypes.hackneyPermit,
       "title": 'Hackney Permit : Bicycle',
       "subtitle": "Upload or scan your vehicle insurance",
     },
@@ -75,27 +69,23 @@ class _RequireStepsState extends State<RequireSteps> {
 
   List motorcycleSteps = [
     {
-      "id": 0,
-      "value": false,
+      "type": KYCTypes.riderPhoto,
       "title": 'Rider Photo',
       "subtitle": "Take a picture of your face for verification",
     },
     {
-      "id": 1,
-      "value": false,
+      "type": KYCTypes.identityCard,
       "title": 'Rider’s Identity Card',
       "subtitle":
           "Scan or take a picture of your NIN or International Passport.",
     },
     {
-      "id": 2,
-      "value": false,
+      "type": KYCTypes.vehicleInsurance,
       "title": 'Proof of Motorcycle Insurance',
       "subtitle": "Upload or scan your motorcycle insurance",
     },
     {
-      "id": 3,
-      "value": false,
+      "type": KYCTypes.hackneyPermit,
       "title": 'Hackney Permit : Motorcycle',
       "subtitle": "Upload or scan your vehicle insurance",
     },
@@ -104,6 +94,7 @@ class _RequireStepsState extends State<RequireSteps> {
   @override
   Widget build(BuildContext context) {
     riderRegistrationBloc = Provider.of<RiderRegistrationBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -221,15 +212,39 @@ class _RequireStepsState extends State<RequireSteps> {
   Widget _buildSubmitBtn() {
     return CurvedButton(
       onPressed: () {
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => RequireSteps(),
-        //     ));
+        riderRegistrationBloc.checkAllProofAdded(
+                riderRegistrationBloc.registrationModel?.rideTypeOptions)
+            ? riderRegister()
+            : null;
       },
-      backgroundColor: greyBorderColor,
+      backgroundColor: riderRegistrationBloc.checkAllProofAdded(
+              riderRegistrationBloc.registrationModel?.rideTypeOptions)
+          ? navyBlue
+          : greyBorderColor,
       textColor: white,
       text: 'Submit',
+      isLoading: isLoading,
     );
+  }
+
+  Future<void> riderRegister() async {
+    if (!isLoading) {
+      isLoading = true;
+      await RiderRegistrationAuthService()
+          .riderRegister(
+              registrationModel: riderRegistrationBloc.registrationModel)
+          .then(
+        (value) async {
+          userBloc.updateRider(value);
+
+          isLoading = false;
+          Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
+        },
+      ).catchError((error) {
+        isLoading = false;
+        debugPrint(error.toString());
+        showToast(message: error.toString());
+      });
+    }
   }
 }

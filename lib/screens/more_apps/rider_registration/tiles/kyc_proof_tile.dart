@@ -16,7 +16,7 @@ class KYCProofTile extends StatelessWidget {
     riderRegistrationBloc = Provider.of<RiderRegistrationBloc>(context);
     return GestureDetector(
       onTap: () {
-        riderRegistrationBloc.updateKYCType(item["id"]);
+        riderRegistrationBloc.updateKYCType(item["type"]);
         Navigator.of(context).pushNamed(Routes.STEPS_INFO);
       },
       child: Card(
@@ -53,7 +53,8 @@ class KYCProofTile extends StatelessWidget {
                       focusColor: navyBlue,
                       activeColor: navyBlue,
                       checkColor: Colors.white,
-                      value: item["value"],
+                      value: riderRegistrationBloc.registrationModel
+                          ?.isPhotoAdded(item["type"]),
                       onChanged: (value) {},
                     ),
                   ],

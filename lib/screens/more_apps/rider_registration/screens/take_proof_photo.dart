@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:camera/camera.dart';
@@ -7,6 +8,7 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class TakeProofPhoto extends StatefulWidget {
   TakeProofPhoto({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class TakeProofPhoto extends StatefulWidget {
 class _TakeProofPhotoState extends State<TakeProofPhoto> {
   CameraController? _cameraController;
   bool _isRearCameraSelected = true;
+  late RiderRegistrationBloc riderRegistrationBloc;
 
   @override
   void dispose() {
@@ -47,6 +50,7 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
 
   @override
   Widget build(BuildContext context) {
+    riderRegistrationBloc = Provider.of<RiderRegistrationBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -93,6 +97,19 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
         ),
       ],
     );
+  }
+
+  Future initCamera(CameraDescription cameraDescription) async {
+    _cameraController =
+        CameraController(cameraDescription, ResolutionPreset.high);
+    try {
+      await _cameraController?.initialize().then((_) {
+        if (!mounted) return;
+        setState(() {});
+      });
+    } on CameraException catch (e) {
+      debugPrint("camera error $e");
+    }
   }
 
   Widget _buildIcon() {
@@ -146,23 +163,11 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
     try {
       await _cameraController?.setFlashMode(FlashMode.off);
       XFile? picture = await _cameraController?.takePicture();
-      Navigator.of(context).pushNamed(Routes.PREVIEW_SCREEN);
+      riderRegistrationBloc.tempPicture = picture;
+      Navigator.of(context).popAndPushNamed(Routes.PREVIEW_SCREEN);
     } on CameraException catch (e) {
       debugPrint('Error occurred while taking picture: $e');
       return null;
-    }
-  }
-
-  Future initCamera(CameraDescription cameraDescription) async {
-    _cameraController =
-        CameraController(cameraDescription, ResolutionPreset.high);
-    try {
-      await _cameraController?.initialize().then((_) {
-        if (!mounted) return;
-        setState(() {});
-      });
-    } on CameraException catch (e) {
-      debugPrint("camera error $e");
     }
   }
 }

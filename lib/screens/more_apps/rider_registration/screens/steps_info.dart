@@ -59,6 +59,15 @@ class _StepsInfoState extends State<StepsInfo> {
       // "imageText":
       //     "Upload or take photo of your original Hackney permit document.",
     },
+    {
+      "type": KYCTypes.drivingLicense,
+      "title": 'Take your Driving License Photo',
+      "subtitle":
+          "All four sides of the card should be photographed. Ensure the ID number is clearly visible in the image.",
+      "note": "",
+      "image": "assets/images/take_photo.svg",
+      // "imageText": "Upload or take photo of your original Identity card.",
+    },
   ];
 
   Map<String, dynamic> getListObjectByType() {
@@ -122,25 +131,19 @@ class _StepsInfoState extends State<StepsInfo> {
   Widget _buildBody() {
     return Padding(
       padding: EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          SizedBox(height: 10.0),
-          _buildScreen(getListObjectByType()),
-        ],
-      ),
+      child: _buildScreen(getListObjectByType()),
     );
   }
 
   Widget _buildScreen(Map<String, dynamic> details) {
-    return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildStepsInfo(details),
-          _buildImageAndINfo(details),
-          _buildTakePhotoBtn(),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildStepsInfo(details),
+        Expanded(child: _buildImageAndINfo(details)),
+        SizedBox(height: 30.0),
+        _buildTakePhotoBtn(),
+      ],
     );
   }
 
@@ -186,54 +189,70 @@ class _StepsInfoState extends State<StepsInfo> {
   }
 
   Widget _buildImageAndINfo(Map<String, dynamic> details) {
-    return Column(
-      children: [
-        details["type"] == KYCTypes.riderPhoto
-            ? _buildRiderPhoto(details["image"])
-            : _builderTakePhoto(details["image"]),
-        // SizedBox(height: 10.0),
-        // Text(
-        //   details["imageText"],
-        //   style: TextStyle(
-        //     fontSize: 14,
-        //     fontWeight: FontWeight.w400,
-        //     color: blackFont,
-        //     fontFamily: "Inter",
-        //   ),
-        // ),
-      ],
-    );
+    return details["type"] == KYCTypes.riderPhoto
+        ? _buildRiderPhoto(details["image"])
+        : _builderTakePhoto(details["image"]);
   }
 
   Widget _buildRiderPhoto(String image) {
-    return Image.asset(
-      image,
-      width: 250,
-      height: 250,
-      fit: BoxFit.fill,
-    );
+    return riderRegistrationBloc.registrationModel?.riderPhoto != null
+        ? CircleAvatar(
+            radius: 130,
+            backgroundColor: Colors.white,
+            backgroundImage: FileImage(
+              File(riderRegistrationBloc.registrationModel?.riderPhoto!.path ??
+                  ""),
+            ),
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                image,
+                width: 250,
+                height: 250,
+                fit: BoxFit.fill,
+              ),
+            ],
+          );
   }
 
   Widget _builderTakePhoto(String image) {
-    return SvgPicture.asset(
-      image,
-      fit: BoxFit.fill,
-    );
+    return riderRegistrationBloc.registrationModel?.getCurrentTypePhoto() !=
+            null
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(0),
+            child: Image(
+              image: FileImage(
+                File(riderRegistrationBloc.registrationModel
+                        ?.getCurrentTypePhoto()
+                        ?.path ??
+                    ""),
+              ),
+            ),
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                image,
+                fit: BoxFit.fill,
+              ),
+            ],
+          );
   }
 
   Widget _buildTakePhotoBtn() {
     return CurvedButton(
       onPressed: () async {
         Navigator.of(context).pushNamed(Routes.TAKE_PROOF_PHOTO);
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => RequireSteps(),
-        //     ));
       },
       backgroundColor: navyBlue,
       textColor: white,
-      text: 'Take photo',
+      text:
+          riderRegistrationBloc.registrationModel?.getCurrentTypePhoto() != null
+              ? 'Change Photo'
+              : 'Take photo',
     );
   }
 }

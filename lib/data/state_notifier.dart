@@ -10,9 +10,11 @@ import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/rider_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../screens/more_apps/shopping/models/store.dart';
 import '../screens/more_apps/shopping/shopping_auth.dart';
@@ -20,6 +22,7 @@ import '../screens/more_apps/shopping/shopping_auth.dart';
 class UserBloc extends ChangeNotifier {
   // This block notify the change in user status and pass it round the app.
   User _user = User(
+      rider: null,
       uuid: null,
       url: null,
       phoneNumber: null,
@@ -68,6 +71,11 @@ class UserBloc extends ChangeNotifier {
 
   void updateProfileAvatar(String? url) {
     _user.avatar = url;
+    notifyListeners();
+  }
+
+  void updateRider(RiderModel rider) {
+    _user.rider = rider;
     notifyListeners();
   }
 
@@ -842,6 +850,14 @@ class ShippingProcessBloc extends ChangeNotifier {
 
 class RiderRegistrationBloc extends ChangeNotifier {
   RiderRegistrationModel? registrationModel = RiderRegistrationModel();
+  XFile? _tempPicture;
+
+  XFile? get tempPicture => _tempPicture;
+
+  set tempPicture(XFile? value) {
+    _tempPicture = value;
+    notifyListeners();
+  }
 
   void updateRideType(String rideType) {
     if (rideType == "Car") {
@@ -854,17 +870,80 @@ class RiderRegistrationBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateKYCType(int kycType) {
-    if (kycType == 0) {
-      registrationModel?.kycTypes = KYCTypes.riderPhoto;
-    } else if (kycType == 1) {
-      registrationModel?.kycTypes = KYCTypes.identityCard;
-    } else if (kycType == 2) {
-      registrationModel?.kycTypes = KYCTypes.vehicleInsurance;
-    } else if (kycType == 3) {
-      registrationModel?.kycTypes = KYCTypes.hackneyPermit;
+  void updateKYCType(KYCTypes type) {
+    switch (type) {
+      case KYCTypes.riderPhoto:
+        registrationModel?.kycTypes = KYCTypes.riderPhoto;
+        break;
+      case KYCTypes.identityCard:
+        registrationModel?.kycTypes = KYCTypes.identityCard;
+        break;
+      case KYCTypes.vehicleInsurance:
+        registrationModel?.kycTypes = KYCTypes.vehicleInsurance;
+        break;
+      case KYCTypes.drivingLicense:
+        registrationModel?.kycTypes = KYCTypes.drivingLicense;
+        break;
+      case KYCTypes.hackneyPermit:
+        registrationModel?.kycTypes = KYCTypes.hackneyPermit;
+        break;
+      default:
+        break;
     }
     notifyListeners();
+  }
+
+  void setPhotoInRegistrationModel(XFile image, KYCTypes? type) {
+    switch (type) {
+      case KYCTypes.riderPhoto:
+        registrationModel?.riderPhoto = image;
+        break;
+      case KYCTypes.identityCard:
+        registrationModel?.identityCard = image;
+        break;
+      case KYCTypes.vehicleInsurance:
+        registrationModel?.vehicleInsurance = image;
+        break;
+      case KYCTypes.drivingLicense:
+        registrationModel?.drivingLicense = image;
+        break;
+      case KYCTypes.hackneyPermit:
+        registrationModel?.hackneyPermit = image;
+        break;
+      default:
+        break;
+    }
+    notifyListeners();
+  }
+
+  bool checkAllProofAdded(RideTypeOptions? rideType) {
+    switch (rideType) {
+      case RideTypeOptions.car:
+        if (registrationModel?.riderPhoto != null &&
+            registrationModel?.identityCard != null &&
+            registrationModel?.vehicleInsurance != null &&
+            registrationModel?.drivingLicense != null) {
+          return true;
+        }
+        return false;
+      case RideTypeOptions.bicycle:
+        if (registrationModel?.riderPhoto != null &&
+            registrationModel?.identityCard != null &&
+            registrationModel?.hackneyPermit != null) {
+          return true;
+        }
+        return false;
+      case RideTypeOptions.motorcycle:
+        if (registrationModel?.riderPhoto != null &&
+            registrationModel?.identityCard != null &&
+            registrationModel?.vehicleInsurance != null &&
+            registrationModel?.hackneyPermit != null) {
+          return true;
+        }
+        return false;
+      default:
+        return false;
+    }
   }
 }
 

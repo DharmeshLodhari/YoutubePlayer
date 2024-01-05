@@ -142,10 +142,18 @@ class _RideTypeState extends State<RideType> {
   }
 
   Widget _buildListTile(int index) {
-    return ListTile(
+    return RadioListTile(
       contentPadding: EdgeInsets.zero,
       visualDensity: VisualDensity(horizontal: 0, vertical: -3),
-      leading: Text(
+      value: rideType[index],
+      groupValue: selectType,
+      onChanged: (value) {
+        selectType = value.toString();
+        riderRegistrationBloc.updateRideType(selectType);
+        riderRegistrationBloc.registrationModel?.clearAllProof();
+      },
+      controlAffinity: ListTileControlAffinity.trailing,
+      title: Text(
         rideType[index],
         style: TextStyle(
           fontSize: 16,
@@ -153,19 +161,6 @@ class _RideTypeState extends State<RideType> {
           color: blackFont,
           fontFamily: "Inter",
         ),
-      ),
-      trailing: Radio<String>(
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        visualDensity: const VisualDensity(
-          horizontal: VisualDensity.minimumDensity,
-          vertical: VisualDensity.minimumDensity,
-        ),
-        value: rideType[index],
-        groupValue: selectType,
-        onChanged: (value) {
-          selectType = value.toString();
-          riderRegistrationBloc.updateRideType(selectType);
-        },
       ),
     );
   }

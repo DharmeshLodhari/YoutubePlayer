@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/rider_model.dart';
 import 'package:Slydo/utils/util.dart';
 
 import '../../payment_and_banking/models/FinancialInstitution.dart';
@@ -187,6 +188,7 @@ class User {
   String? wallpaper;
   String? chatWallpaper;
   UserAbout? userAbout;
+  RiderModel? rider;
 
   // Pass in as named parameter in constructor
   User({
@@ -209,11 +211,10 @@ class User {
     this.rating = 0.0,
     this.userAbout,
     this.status = UserStatus.UNKNOWN,
+    this.rider,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    UserAbout userAbout = UserAbout.fromJson(json["profile"]);
-
     // debugPrint('IS-VERIFIED --> ${json['is_verified']}');
     User user = User(
       nickName: json['nickname'] ?? "",
@@ -233,6 +234,9 @@ class User {
       rating: formatRating(json['rating']),
       userName: json['username'],
       uuid: json['uuid'],
+      rider: (json["rider"] != null && (json["rider"] as Map).isNotEmpty)
+          ? RiderModel.fromJson(json["rider"])
+          : null,
     );
     // userAbout.bio = user.bio == null ? '' : user.bio!;
     // user.userAbout = userAbout;
@@ -255,6 +259,7 @@ class User {
     data['rating'] = rating;
     data['username'] = userName;
     data['uuid'] = uuid;
+    data['rider'] = rider;
     return data;
   }
 
