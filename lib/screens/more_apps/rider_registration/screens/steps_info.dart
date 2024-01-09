@@ -4,6 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/models/rider_registration_model.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class StepsInfo extends StatefulWidget {
 
 class _StepsInfoState extends State<StepsInfo> {
   late RiderRegistrationBloc riderRegistrationBloc;
+  late UserBloc userBloc;
   List<Map<String, dynamic>> kycProof = [
     {
       "type": KYCTypes.riderPhoto,
@@ -82,6 +84,7 @@ class _StepsInfoState extends State<StepsInfo> {
   @override
   Widget build(BuildContext context) {
     riderRegistrationBloc = Provider.of<RiderRegistrationBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -195,26 +198,34 @@ class _StepsInfoState extends State<StepsInfo> {
   }
 
   Widget _buildRiderPhoto(String image) {
-    return riderRegistrationBloc.registrationModel?.riderPhoto != null
+    return riderRegistrationBloc.registrationModel?.mRiderPhoto != null
         ? CircleAvatar(
             radius: 130,
             backgroundColor: Colors.white,
             backgroundImage: FileImage(
-              File(riderRegistrationBloc.registrationModel?.riderPhoto!.path ??
+              File(riderRegistrationBloc.registrationModel?.mRiderPhoto!.path ??
                   ""),
             ),
           )
-        : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                image,
-                width: 250,
-                height: 250,
-                fit: BoxFit.fill,
-              ),
-            ],
-          );
+        : userBloc.user.rider?.isStatusApproved() == false
+            ? CircleAvatar(
+                radius: 130,
+                backgroundColor: Colors.white,
+                backgroundImage: NetworkImage(
+                  riderRegistrationBloc.kycDataModel?.selfie ?? "",
+                ),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    image,
+                    width: 250,
+                    height: 250,
+                    fit: BoxFit.fill,
+                  ),
+                ],
+              );
   }
 
   Widget _builderTakePhoto(String image) {
@@ -231,15 +242,24 @@ class _StepsInfoState extends State<StepsInfo> {
               ),
             ),
           )
-        : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                image,
-                fit: BoxFit.fill,
-              ),
-            ],
-          );
+        : userBloc.user.rider?.isStatusApproved() == false
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(0),
+                child: Image(
+                  image: NetworkImage(
+                    riderRegistrationBloc.getUploadKYCTypePhoto() ?? "",
+                  ),
+                ),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    image,
+                    fit: BoxFit.fill,
+                  ),
+                ],
+              );
   }
 
   Widget _buildTakePhotoBtn() {
@@ -249,10 +269,11 @@ class _StepsInfoState extends State<StepsInfo> {
       },
       backgroundColor: navyBlue,
       textColor: white,
-      text:
-          riderRegistrationBloc.registrationModel?.getCurrentTypePhoto() != null
-              ? 'Change Photo'
-              : 'Take photo',
+      text: riderRegistrationBloc.registrationModel?.getCurrentTypePhoto() !=
+                  null ||
+              userBloc.user.rider?.isStatusApproved() == false
+          ? 'Change Photo'
+          : 'Take photo',
     );
   }
 }

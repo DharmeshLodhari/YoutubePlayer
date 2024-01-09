@@ -12,30 +12,24 @@ enum KYCTypes {
   hackneyPermit,
 }
 
-extension SlydoExtensions on int {
-  double divideByTen() {
-    return this / 10;
-  }
-}
-
-extension ReadableNameKycType on KYCTypes {
-  String toName() {
-    switch (this) {
-      case KYCTypes.riderPhoto:
-        return "Rider Photos";
-      case KYCTypes.identityCard:
-        return "Identity Card";
-      case KYCTypes.vehicleInsurance:
-        return "Rider Photos";
-      case KYCTypes.drivingLicense:
-        return "Rider Photos";
-      case KYCTypes.hackneyPermit:
-        return "Rider Photos";
-      default:
-        return "Rider Photos";
-    }
-  }
-}
+// extension ReadableNameKycType on KYCTypes {
+//   String toName() {
+//     switch (this) {
+//       case KYCTypes.riderPhoto:
+//         return "Rider Photos";
+//       case KYCTypes.identityCard:
+//         return "Identity Card";
+//       case KYCTypes.vehicleInsurance:
+//         return "Rider Photos";
+//       case KYCTypes.drivingLicense:
+//         return "Rider Photos";
+//       case KYCTypes.hackneyPermit:
+//         return "Rider Photos";
+//       default:
+//         return "Rider Photos";
+//     }
+//   }
+// }
 
 extension ReadableNameRideType on RideTypeOptions {
   String toName() {
@@ -66,62 +60,45 @@ extension ReadableNameTransportType on RideTypeOptions {
 class RiderRegistrationModel {
   RideTypeOptions? rideTypeOptions;
   KYCTypes? kycTypes;
-  XFile? riderPhoto;
-  XFile? identityCard;
-  XFile? vehicleInsurance;
-  XFile? drivingLicense;
-  XFile? hackneyPermit;
+  XFile? mRiderPhoto;
+  XFile? mIdentityCard;
+  XFile? mVehicleInsurance;
+  XFile? mDrivingLicense;
+  // XFile? mHackneyPermit;
 
   RiderRegistrationModel({
     this.rideTypeOptions,
     this.kycTypes,
-    this.riderPhoto,
-    this.identityCard,
-    this.vehicleInsurance,
-    this.drivingLicense,
-    this.hackneyPermit,
+    this.mRiderPhoto,
+    this.mIdentityCard,
+    this.mVehicleInsurance,
+    this.mDrivingLicense,
+    // this.mHackneyPermit,
   });
 
   XFile? getCurrentTypePhoto() {
     switch (kycTypes) {
       case KYCTypes.riderPhoto:
-        return riderPhoto;
+        return mRiderPhoto;
       case KYCTypes.identityCard:
-        return identityCard;
+        return mIdentityCard;
       case KYCTypes.vehicleInsurance:
-        return vehicleInsurance;
+        return mVehicleInsurance;
       case KYCTypes.drivingLicense:
-        return drivingLicense;
+        return mDrivingLicense;
       case KYCTypes.hackneyPermit:
-        return hackneyPermit;
+        return mDrivingLicense;
       default:
         return null;
     }
   }
 
   clearAllProof() {
-    riderPhoto = null;
-    identityCard = null;
-    vehicleInsurance = null;
-    drivingLicense = null;
-    hackneyPermit = null;
-  }
-
-  bool isPhotoAdded(KYCTypes type) {
-    switch (type) {
-      case KYCTypes.riderPhoto:
-        return riderPhoto != null ? true : false;
-      case KYCTypes.identityCard:
-        return identityCard != null ? true : false;
-      case KYCTypes.vehicleInsurance:
-        return vehicleInsurance != null ? true : false;
-      case KYCTypes.drivingLicense:
-        return drivingLicense != null ? true : false;
-      case KYCTypes.hackneyPermit:
-        return hackneyPermit != null ? true : false;
-      default:
-        return false;
-    }
+    mRiderPhoto = null;
+    mIdentityCard = null;
+    mVehicleInsurance = null;
+    mDrivingLicense = null;
+    // mHackneyPermit = null;
   }
 
   Future<List<MultipartFile>> getMultipartFiles() async {
@@ -131,29 +108,29 @@ class RiderRegistrationModel {
     http.MultipartFile? vehicleInsuranceId;
     http.MultipartFile? vehicleLicense;
 
-    if (riderPhoto != null) {
-      selfie = await http.MultipartFile.fromPath("selfie", riderPhoto!.path);
+    if (mRiderPhoto != null) {
+      selfie = await http.MultipartFile.fromPath("selfie", mRiderPhoto!.path);
     }
 
-    if (identityCard != null) {
+    if (mIdentityCard != null) {
       governmentId = await http.MultipartFile.fromPath(
-          "government_id", identityCard!.path);
+          "government_id", mIdentityCard!.path);
     }
 
-    if (vehicleInsurance != null) {
+    if (mVehicleInsurance != null) {
       vehicleInsuranceId = await http.MultipartFile.fromPath(
-          "vehicle_insurance", vehicleInsurance!.path);
+          "vehicle_insurance", mVehicleInsurance!.path);
     }
 
-    if (drivingLicense != null) {
+    if (mDrivingLicense != null) {
       vehicleLicense = await http.MultipartFile.fromPath(
-          "vehicle_license", drivingLicense!.path);
+          "vehicle_license", mDrivingLicense!.path);
     }
 
-    if (hackneyPermit != null) {
-      vehicleLicense = await http.MultipartFile.fromPath(
-          "vehicle_license", hackneyPermit!.path);
-    }
+    // if (mHackneyPermit != null) {
+    //   vehicleLicense = await http.MultipartFile.fromPath(
+    //       "vehicle_license", mHackneyPermit!.path);
+    // }
 
     switch (rideTypeOptions) {
       case RideTypeOptions.car:

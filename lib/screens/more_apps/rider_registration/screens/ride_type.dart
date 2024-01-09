@@ -18,12 +18,28 @@ class RideType extends StatefulWidget {
 
 class _RideTypeState extends State<RideType> {
   late RiderRegistrationBloc riderRegistrationBloc;
+  late UserBloc userBloc;
   List<String> rideType = ['Car', 'Bicycle', 'Motorcycle'];
   String selectType = "";
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        if (userBloc.user.rider?.isStatusApproved() == false) {
+          selectType = riderRegistrationBloc.kycDataModel?.vehicleType ?? "";
+          riderRegistrationBloc.updateRideType(selectType);
+          setState(() {});
+        }
+      },
+    );
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     riderRegistrationBloc = Provider.of<RiderRegistrationBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -147,11 +163,13 @@ class _RideTypeState extends State<RideType> {
       visualDensity: VisualDensity(horizontal: 0, vertical: -3),
       value: rideType[index],
       groupValue: selectType,
-      onChanged: (value) {
-        selectType = value.toString();
-        riderRegistrationBloc.updateRideType(selectType);
-        riderRegistrationBloc.registrationModel?.clearAllProof();
-      },
+      onChanged: userBloc.user.rider?.isStatusApproved() == false
+          ? null
+          : (value) {
+              selectType = value.toString();
+              riderRegistrationBloc.updateRideType(selectType);
+              // riderRegistrationBloc.registrationModel?.clearAllProof();
+            },
       controlAffinity: ListTileControlAffinity.trailing,
       title: Text(
         rideType[index],

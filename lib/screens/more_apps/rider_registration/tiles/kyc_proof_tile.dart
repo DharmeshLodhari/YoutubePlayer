@@ -53,8 +53,7 @@ class KYCProofTile extends StatelessWidget {
                       focusColor: navyBlue,
                       activeColor: navyBlue,
                       checkColor: Colors.white,
-                      value: riderRegistrationBloc.registrationModel
-                          ?.isPhotoAdded(item["type"]),
+                      value: riderRegistrationBloc.isPhotoAdded(item["type"]),
                       onChanged: (value) {},
                     ),
                   ],

@@ -17,12 +17,10 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +42,6 @@ import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
-import '../checkout_screen.dart';
 
 class ProductDetailPage extends StatefulWidget {
   var arguments;
@@ -68,6 +65,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc? userBloc;
   late BasketBloc basketBloc;
+  late ShippingProcessBloc shippingProcessBloc;
   List<String?>? displayProductImages = [];
 
   late bool isValidCustomer;
@@ -213,6 +211,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     if (productIsLoading) {
       return Scaffold(
         body: Center(
@@ -2687,11 +2686,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> processCartBuyNow(BuildContext context) async {
-    bool result = await showDisclaimerDialogueForGoods(context);
-    if (result) {
-      getRecipient();
-      navigateToSendPayment();
-    }
+    ShippingProcessBloc shippingProcessBloc =
+        Provider.of<ShippingProcessBloc>(context, listen: false);
+    shippingProcessBloc.isUseCartProcess(false);
+    shippingProcessBloc.updateBuyNowProduct(product);
+    Navigator.pushNamed(context, Routes.DELIVERY_OPTION);
+    // bool result = await showDisclaimerDialogueForGoods(context);
+    // if (result) {
+    //   getRecipient();
+    //   navigateToSendPayment();
+    // }
     return;
   }
 

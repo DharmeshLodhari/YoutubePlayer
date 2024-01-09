@@ -218,7 +218,8 @@ class _RequireStepsState extends State<RequireSteps> {
             : null;
       },
       backgroundColor: riderRegistrationBloc.checkAllProofAdded(
-              riderRegistrationBloc.registrationModel?.rideTypeOptions)
+                  riderRegistrationBloc.registrationModel?.rideTypeOptions) ||
+              (userBloc.user.rider?.isStatusApproved() == false)
           ? navyBlue
           : greyBorderColor,
       textColor: white,
@@ -229,22 +230,27 @@ class _RequireStepsState extends State<RequireSteps> {
 
   Future<void> riderRegister() async {
     if (!isLoading) {
+      FocusScope.of(context).unfocus();
       isLoading = true;
+      if (mounted) setState(() {});
+
       await RiderRegistrationAuthService()
           .riderRegister(
               registrationModel: riderRegistrationBloc.registrationModel)
           .then(
         (value) async {
           userBloc.updateRider(value);
-
           isLoading = false;
+          if (mounted) setState(() {});
           Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
         },
       ).catchError((error) {
         isLoading = false;
+        if (mounted) setState(() {});
         debugPrint(error.toString());
         showToast(message: error.toString());
       });
     }
+    ;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 
 enum DeliveryOptions { shipping, eatIn, pickUp }
@@ -18,6 +19,7 @@ class PackageDetailsModel {
   String? shippingNote;
   bool insurePackage = false;
   bool isShippingProcessCompleted = false;
+  Product? buyNow;
 
   PackageDetailsModel({
     this.addressId,
@@ -32,6 +34,7 @@ class PackageDetailsModel {
     this.insurePackage = false,
     this.shippingType,
     this.isShippingProcessCompleted = false,
+    this.buyNow,
   });
 
   factory PackageDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -64,10 +67,10 @@ class PackageDetailsModel {
     return insurePackage;
   }
 
-  Map<String, dynamic> toPlaceOrder() {
+  Map<String, dynamic> toCartPlaceOrder() {
     Map<String, dynamic> data = {
       "merchant": merchant,
-      "pickup_address_id": merchantAddress?.id ?? "",
+      "pickup_address_id": addressId ?? "",
       "note": shippingNote,
     };
     int shippingId = 0;
@@ -90,6 +93,18 @@ class PackageDetailsModel {
     data.addAll({
       "shipping_option_id": shippingId,
     });
+    return data;
+  }
+
+  Map<String, dynamic> toBuyNowPlaceOrder(String? userName) {
+    Map<String, dynamic> data = {
+      "id": buyNow?.id ?? "",
+      "qty": buyNow?.quantity ?? 1,
+      "type": 'product',
+      "add_ons": buyNow?.addOns,
+      "variants": buyNow?.variant,
+      "item_added_by": userName ?? "",
+    };
     return data;
   }
 

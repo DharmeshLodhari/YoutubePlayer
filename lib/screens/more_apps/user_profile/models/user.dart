@@ -1,7 +1,7 @@
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/models/rider_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/rider_model.dart';
 import 'package:Slydo/utils/util.dart';
 
 import '../../payment_and_banking/models/FinancialInstitution.dart';

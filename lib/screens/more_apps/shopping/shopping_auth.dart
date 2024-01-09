@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
@@ -17,9 +16,7 @@ import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
 
-import '../../../data/state_notifier.dart';
 import 'models/store.dart';
 
 class ShoppingAuthService extends AuthService {
@@ -319,7 +316,7 @@ class ShoppingAuthService extends AuthService {
     product.discountIsActive = item['discount_is_active'];
     product.discountedPrice = item['discounted_price'];
     product.addOns = item['add_ons'];
-
+    product.addressId = item['address_id'];
     return product;
   }
 

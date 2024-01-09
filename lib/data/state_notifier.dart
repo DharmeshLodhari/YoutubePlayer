@@ -4,13 +4,14 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_m
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/models/kyc_data_model.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/models/rider_model.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/models/rider_registration_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/rider_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -755,12 +756,15 @@ class ShippingProcessBloc extends ChangeNotifier {
 
   List<PackageDetailsModel> get packagesList => _packagesList;
 
+  PackageDetailsModel buyNowPackageDetailsModel = PackageDetailsModel();
+
   set packagesList(List<PackageDetailsModel> value) {
     _packagesList = value;
     notifyListeners();
   }
 
   bool isPaymentSuccessful = false;
+  bool isUseCart = true;
 
   int? _currentSelectedIndex;
 
@@ -772,7 +776,10 @@ class ShippingProcessBloc extends ChangeNotifier {
   }
 
   PackageDetailsModel getPackageDetailModel() {
-    return _packagesList[_currentSelectedIndex!];
+    if (isUseCart) {
+      return _packagesList[_currentSelectedIndex!];
+    }
+    return buyNowPackageDetailsModel;
   }
 
   bool? isAllShippingProcessCompleted() {
@@ -834,28 +841,59 @@ class ShippingProcessBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateBuyNowProduct(Product? value) {
+    getPackageDetailModel().buyNow = value;
+    getPackageDetailModel().merchant = value?.seller;
+    getPackageDetailModel().addressId = value?.addressId;
+    getPackageDetailModel().totalItems = value?.quantity;
+    getPackageDetailModel().totalPrice = value?.getBuyNowProductPrice();
+    // getPackageDetailModel().merchantAddress = value?.a;
+    notifyListeners();
+  }
+
   void isPaymentSuccessfully(bool val) {
     isPaymentSuccessful = val;
     notifyListeners();
   }
 
-  Map<String, dynamic> toPlaceOrder() {
+  void isUseCartProcess(bool val) {
+    isUseCart = val;
+    notifyListeners();
+  }
+
+  Map<String, dynamic> toPlaceOrder(String? userName) {
     Map<String, dynamic> data = {
       "payment_type": "Slydo",
-      "shipping_details": packagesList.map((e) => e.toPlaceOrder()).toList()
+      "shipping_details": packagesList.map((e) => e.toCartPlaceOrder()).toList()
     };
+    if (isUseCart == false)
+      data.addAll({
+        "shopped_item": [getPackageDetailModel().toBuyNowPlaceOrder(userName)]
+      });
     return data;
+  }
+
+  void setPackageDetailForBuyNow() {
+    packagesList = [];
+    packagesList.add(buyNowPackageDetailsModel);
+    notifyListeners();
   }
 }
 
 class RiderRegistrationBloc extends ChangeNotifier {
   RiderRegistrationModel? registrationModel = RiderRegistrationModel();
+  KYCDataModel? kycDataModel = KYCDataModel();
   XFile? _tempPicture;
 
   XFile? get tempPicture => _tempPicture;
 
   set tempPicture(XFile? value) {
     _tempPicture = value;
+    notifyListeners();
+  }
+
+  void updateKYCDataModel(KYCDataModel data) {
+    kycDataModel = data;
     notifyListeners();
   }
 
@@ -893,22 +931,54 @@ class RiderRegistrationBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool isPhotoAdded(KYCTypes type) {
+    switch (type) {
+      case KYCTypes.riderPhoto:
+        return registrationModel?.mRiderPhoto != null ||
+                kycDataModel?.selfie != null
+            ? true
+            : false;
+      case KYCTypes.identityCard:
+        return registrationModel?.mIdentityCard != null ||
+                kycDataModel?.governmentId != null
+            ? true
+            : false;
+      case KYCTypes.vehicleInsurance:
+        return registrationModel?.mVehicleInsurance != null ||
+                kycDataModel?.vehicleInsurance != null
+            ? true
+            : false;
+      case KYCTypes.drivingLicense:
+        return registrationModel?.mDrivingLicense != null ||
+                kycDataModel?.vehicleLicense != null
+            ? true
+            : false;
+      case KYCTypes.hackneyPermit:
+        return registrationModel?.mDrivingLicense != null ||
+                kycDataModel?.vehicleLicense != null
+            ? true
+            : false;
+      default:
+        return false;
+    }
+  }
+
   void setPhotoInRegistrationModel(XFile image, KYCTypes? type) {
     switch (type) {
       case KYCTypes.riderPhoto:
-        registrationModel?.riderPhoto = image;
+        registrationModel?.mRiderPhoto = image;
         break;
       case KYCTypes.identityCard:
-        registrationModel?.identityCard = image;
+        registrationModel?.mIdentityCard = image;
         break;
       case KYCTypes.vehicleInsurance:
-        registrationModel?.vehicleInsurance = image;
+        registrationModel?.mVehicleInsurance = image;
         break;
       case KYCTypes.drivingLicense:
-        registrationModel?.drivingLicense = image;
+        registrationModel?.mDrivingLicense = image;
         break;
       case KYCTypes.hackneyPermit:
-        registrationModel?.hackneyPermit = image;
+        registrationModel?.mDrivingLicense = image;
         break;
       default:
         break;
@@ -919,30 +989,47 @@ class RiderRegistrationBloc extends ChangeNotifier {
   bool checkAllProofAdded(RideTypeOptions? rideType) {
     switch (rideType) {
       case RideTypeOptions.car:
-        if (registrationModel?.riderPhoto != null &&
-            registrationModel?.identityCard != null &&
-            registrationModel?.vehicleInsurance != null &&
-            registrationModel?.drivingLicense != null) {
+        if (registrationModel?.mRiderPhoto != null &&
+            registrationModel?.mIdentityCard != null &&
+            registrationModel?.mVehicleInsurance != null &&
+            registrationModel?.mDrivingLicense != null) {
           return true;
         }
         return false;
       case RideTypeOptions.bicycle:
-        if (registrationModel?.riderPhoto != null &&
-            registrationModel?.identityCard != null &&
-            registrationModel?.hackneyPermit != null) {
+        if (registrationModel?.mRiderPhoto != null &&
+            registrationModel?.mIdentityCard != null &&
+            registrationModel?.mDrivingLicense != null) {
           return true;
         }
         return false;
       case RideTypeOptions.motorcycle:
-        if (registrationModel?.riderPhoto != null &&
-            registrationModel?.identityCard != null &&
-            registrationModel?.vehicleInsurance != null &&
-            registrationModel?.hackneyPermit != null) {
+        if (registrationModel?.mRiderPhoto != null &&
+            registrationModel?.mIdentityCard != null &&
+            registrationModel?.mVehicleInsurance != null &&
+            registrationModel?.mDrivingLicense != null) {
           return true;
         }
         return false;
       default:
         return false;
+    }
+  }
+
+  String? getUploadKYCTypePhoto() {
+    switch (registrationModel?.kycTypes) {
+      case KYCTypes.riderPhoto:
+        return kycDataModel?.selfie;
+      case KYCTypes.identityCard:
+        return kycDataModel?.governmentId;
+      case KYCTypes.vehicleInsurance:
+        return kycDataModel?.vehicleInsurance;
+      case KYCTypes.drivingLicense:
+        return kycDataModel?.vehicleLicense;
+      case KYCTypes.hackneyPermit:
+        return kycDataModel?.vehicleLicense;
+      default:
+        return null;
     }
   }
 }

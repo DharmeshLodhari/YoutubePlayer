@@ -29,11 +29,6 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   TextEditingController userNoteController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     return ColorfulSafeArea(
@@ -104,9 +99,13 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                     const SizedBox(
                       height: 16,
                     ),
-                    shippingProcessBloc.getPackageDetailModel().requireNote()
-                        ? _buildNote()
-                        : _buildDeliveryAddressAndOptions(),
+                    if (shippingProcessBloc
+                            .getPackageDetailModel()
+                            .deliveryOption !=
+                        null)
+                      shippingProcessBloc.getPackageDetailModel().requireNote()
+                          ? _buildNote()
+                          : _buildDeliveryAddressAndOptions(),
                     if (shippingProcessBloc
                             .getPackageDetailModel()
                             .shippingOption !=
@@ -372,7 +371,9 @@ class _DeliveryOptionState extends State<DeliveryOption> {
                 .getPackageDetailModel()
                 .updateShippingNote(userNoteController.text.trim());
             shippingProcessBloc.updateShippingProcessCompleted(true);
-            Navigator.of(context).pop();
+            shippingProcessBloc.isUseCart == true
+                ? Navigator.of(context).pop()
+                : Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
           },
           backgroundColor: navyBlue,
           textColor: white,

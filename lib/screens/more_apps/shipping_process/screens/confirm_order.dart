@@ -26,6 +26,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
   ScrollController _confirmOrderScrollController = new ScrollController();
 
   late BasketBloc basketBloc;
+  late UserBloc userBloc;
   bool isLoading = false;
   bool isOrderLoading = false;
   bool isSelected = false;
@@ -36,7 +37,15 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
   @override
   void initState() {
     super.initState();
-    getAllPackageDetail();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        if (shippingProcessBloc.isUseCart == true) {
+          getAllPackageDetail();
+        } else {
+          shippingProcessBloc.setPackageDetailForBuyNow();
+        }
+      },
+    );
   }
 
   Future<void> getAllPackageDetail() async {
@@ -62,6 +71,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
@@ -257,7 +267,9 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
     if (!isOrderLoading) {
       isOrderLoading = true;
       await ShippingProcessAuthService()
-          .placeOrder(data: shippingProcessBloc.toPlaceOrder())
+          .placeOrder(
+              data: shippingProcessBloc.toPlaceOrder(userBloc.user.userName),
+              isCartProcess: shippingProcessBloc.isUseCart)
           .then(
         (value) async {
           if (value != null) {

@@ -27,6 +27,7 @@ class _ShippingOptionState extends State<ShippingOption> {
   ShippingOptionModel? shippingOptionModel;
 
   late ShippingProcessBloc shippingProcessBloc;
+  late CustomerProfileBloc customerProfileBloc;
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _ShippingOptionState extends State<ShippingOption> {
   @override
   Widget build(BuildContext context) {
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,

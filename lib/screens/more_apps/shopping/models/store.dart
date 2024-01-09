@@ -105,8 +105,6 @@ List<ProductCondition> conditions = <ProductCondition>[
   ),
 ];
 List<ProductCondition> deliverTimeCondition = <ProductCondition>[
-  
-     
   const ProductCondition(
     '10',
     "5-10 mins",
@@ -127,7 +125,6 @@ List<ProductCondition> deliverTimeCondition = <ProductCondition>[
     '50',
     "40-50 mins",
   ),
- 
   const ProductCondition(
     '60',
     "50mins - 1hr",
@@ -144,8 +141,6 @@ List<ProductCondition> deliverTimeCondition = <ProductCondition>[
     '90',
     "1hr 20 mins- 1hr 30 mins",
   ),
-
-  
   const ProductCondition(
     '100',
     "1hrs 30 mins- 1hr 40 mins",
@@ -206,8 +201,6 @@ List<ProductCondition> deliverTimeCondition = <ProductCondition>[
     '240',
     "3hrs 50 mins- 4hr",
   ),
- 
- 
 ];
 
 List<PaymentCategory> paymentCategories = <PaymentCategory>[
@@ -261,6 +254,7 @@ class Product {
   bool? canRate;
   bool? enableInSuperStore;
   List<dynamic>? variant;
+  // List<VariantModel>? variantModelList;
   List<dynamic>? addOns;
   double? weight;
   String? weightSiUnit;
@@ -278,6 +272,7 @@ class Product {
   num? discountedPrice;
   int? oldPrice;
   bool? isShippable;
+  String? addressId;
 
   Product({
     this.id,
@@ -326,17 +321,18 @@ class Product {
     this.discountedPrice,
     this.oldPrice,
     this.isShippable,
-    });
+    this.addressId,
+  });
 
   Map toMap() {
-    var data =  {
+    var data = {
       "name": name,
       "description": description,
       "short_description":
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
-      "category":  category!.id,
+      "category": category!.id,
       "sub_category": subCategory!.id,
       "custom_category": customCategory!.id,
       "tags": tags!.map((e) => e.id!).toList(),
@@ -364,8 +360,9 @@ class Product {
       "discounted_price": discountedPrice,
       'old_price': oldPrice,
       'is_shippable': isShippable,
+      'address_id': addressId,
     };
-    if(preparationTime != null && preparationTime! != 0){
+    if (preparationTime != null && preparationTime! != 0) {
       data["preparation_time"] = preparationTime;
     }
     return data;
@@ -411,7 +408,14 @@ class Product {
       "discounted_price": discountedPrice,
       'old_price': oldPrice,
       'is_shippable': isShippable,
+      'address_id': addressId,
     };
+  }
+
+  int getBuyNowProductPrice() {
+    int totalPrice = 0;
+    totalPrice = (quantity ?? 1) * int.parse(price!);
+    return totalPrice;
   }
 
   factory Product.fromJson(object) {
@@ -438,12 +442,12 @@ class Product {
 
     dynamic getProductCategory(object) {
       try {
-        return ProductCategory(object["name"],
-            id: object["id"]);
+        return ProductCategory(object["name"], id: object["id"]);
       } catch (e) {
         return null;
       }
     }
+
     return Product(
       id: object["id"].toString(),
       name: object["name"] ?? "",
@@ -459,7 +463,9 @@ class Product {
       sellerFullName: object["seller_fullname"] ?? "",
       qrCode: object["qr_code"] ?? "",
       condition: object["condition"] ?? "",
-      category: object['category'] == null ?  null : getProductCategory(object["category"]) ,
+      category: object['category'] == null
+          ? null
+          : getProductCategory(object["category"]),
       subCategory: object['sub_category'] == null
           ? null
           : getProductCategory(object["sub_category"]),
@@ -467,9 +473,7 @@ class Product {
           ? null
           : getProductCategory(object["custom_category"]),
       tags: object['tags'] != null
-          ? (object['tags'] as List)
-              .map((i) => Tags.fromJson(i))
-              .toList()
+          ? (object['tags'] as List).map((i) => Tags.fromJson(i)).toList()
           : [],
       preparationTime: object["preparation_time"] ?? 0,
       manufacturer: object["manufacturer"] ?? "",
@@ -503,8 +507,6 @@ class Product {
 
     return short;
   }
-
-  
 
   String? getMerchantUserName() {
     return seller;
@@ -569,7 +571,7 @@ class Product {
       enableInSuperStore: this.enableInSuperStore ?? false,
       localImages: this.localImages ?? [],
       serverImages: this.serverImages,
-      cover:this.cover ?? "",
+      cover: this.cover ?? "",
       seller: this.seller ?? "",
       sellerAvatar: this.sellerAvatar ?? "",
       sellerFullName: this.sellerFullName ?? "",
@@ -605,7 +607,6 @@ class Product {
       oldPrice: this.oldPrice,
       isShippable: this.isShippable,
     );
-
   }
 }
 
@@ -798,15 +799,15 @@ class AddOnOption {
 
   AddOnOption(
       {this.id,
-        this.picture,
-        this.name,
-        this.description,
-        this.merchant,
-        this.currency,
-        this.price,
-        this.isAvailable,
-        this.isChecked,
-        this.createdAt});
+      this.picture,
+      this.name,
+      this.description,
+      this.merchant,
+      this.currency,
+      this.price,
+      this.isAvailable,
+      this.isChecked,
+      this.createdAt});
 
   AddOnOption.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -858,15 +859,15 @@ class AddOns {
 
   AddOns(
       {this.id,
-        this.options,
-        this.merchant,
-        this.name,
-        this.description,
-        this.inputType,
-        this.selectType,
-        this.isRequired,
-        this.isChecked,
-        this.createdAt});
+      this.options,
+      this.merchant,
+      this.name,
+      this.description,
+      this.inputType,
+      this.selectType,
+      this.isRequired,
+      this.isChecked,
+      this.createdAt});
 
   AddOns.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -938,13 +939,11 @@ class AddOns {
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
-          addOnOption.add(AddOnOption.fromJson(data[i]));
+        addOnOption.add(AddOnOption.fromJson(data[i]));
       }
     }
     return addOnOption;
   }
-
-
 }
 
 class Tags {
@@ -967,59 +966,61 @@ class Tags {
     return data;
   }
 }
+
 class SubCategory {
   num? id;
   String? name;
- 
 
-  SubCategory(
-      {this.id,
-      this.name,
-     });
+  SubCategory({
+    this.id,
+    this.name,
+  });
 
   Map toMap() {
     return {
       "name": name,
     };
   }
+
   Map toJson() {
     return {
       "id": id,
       "name": name,
     };
   }
+
   SubCategory.fromJson(object) {
     id = object["id"];
     name = object["name"] ?? "";
   }
-
 }
+
 class CustomCategory {
   num? id;
   String? name;
- 
 
-  CustomCategory(
-      {this.id,
-      this.name,
-     });
+  CustomCategory({
+    this.id,
+    this.name,
+  });
 
   Map toMap() {
     return {
       "name": name,
     };
   }
+
   Map toJson() {
     return {
       "id": id,
       "name": name,
     };
   }
+
   CustomCategory.fromJson(object) {
     id = object["id"];
     name = object["name"] ?? "";
   }
-
 }
 
 class Service {

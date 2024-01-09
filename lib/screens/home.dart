@@ -6,6 +6,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/auth/rider_registration_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
@@ -60,6 +61,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldHomeKey = GlobalKey<ScaffoldState>();
   late UserBloc userBloc;
+  late RiderRegistrationBloc riderRegistrationBloc;
 
   late MainSocketProvider socketProvider;
 
@@ -320,6 +322,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    riderRegistrationBloc = Provider.of<RiderRegistrationBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     appLocalization = AppLocalization.of(context)!;
@@ -498,7 +501,11 @@ class _HomeState extends State<Home> {
               if (userBloc.user.rider == null) {
                 Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
               } else {
-                Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
+                if (userBloc.user.rider?.isStatusApproved() == false) {
+                  getKYCStatus();
+                } else {
+                  Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
+                }
               }
             },
             // child: Container(
@@ -538,6 +545,18 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
+  }
+
+  Future<void> getKYCStatus() async {
+    await RiderRegistrationAuthService()
+        .getKYCStatus(userBloc.user.userName)
+        .then((value) {
+      riderRegistrationBloc.updateKYCDataModel(value);
+      Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
   }
 
   Widget _displayShortcutButtons() {

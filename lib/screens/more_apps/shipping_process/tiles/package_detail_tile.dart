@@ -192,6 +192,7 @@ class PackageDetailTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         shippingProcessBloc.currentSelectedIndex = index;
+        shippingProcessBloc.isUseCartProcess(true);
         Navigator.of(context).pushNamed(Routes.DELIVERY_OPTION);
       },
       child: Row(
