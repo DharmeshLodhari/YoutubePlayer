@@ -688,6 +688,7 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void resetShoppingCart() async {
+    _items.clear();
     List itemsCart = await ShoppingAuthService().getShoppingCart();
 
     for (var element in itemsCart) {

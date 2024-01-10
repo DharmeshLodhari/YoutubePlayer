@@ -254,8 +254,9 @@ class Product {
   bool? canRate;
   bool? enableInSuperStore;
   List<dynamic>? variant;
-  // List<VariantModel>? variantModelList;
+  List<Variant>? variantModels;
   List<dynamic>? addOns;
+  List<AddOns>? addOnsModels;
   double? weight;
   String? weightSiUnit;
   double? height;
@@ -303,7 +304,9 @@ class Product {
     this.pictureMap,
     this.rating = 0.0,
     this.variant,
+    this.variantModels,
     this.addOns,
+    this.addOnsModels,
     this.weight = 0.0,
     this.weightSiUnit,
     this.height = 0.0,
@@ -344,7 +347,9 @@ class Product {
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
       "variants": variant,
+      "variants": variantModels,
       "add_ons": addOns,
+      "add_ons": addOnsModels,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -392,7 +397,9 @@ class Product {
       "seller_avatar": sellerAvatar,
       "currency": currency,
       "variants": variant,
+      "variants": variantModels,
       "add_ons": addOns,
+      "add_ons": addOnsModels,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -796,6 +803,7 @@ class AddOnOption {
   bool? isAvailable;
   bool? isChecked;
   DateTime? createdAt;
+  int qty = 0;
 
   AddOnOption(
       {this.id,
@@ -807,7 +815,8 @@ class AddOnOption {
       this.price,
       this.isAvailable,
       this.isChecked,
-      this.createdAt});
+      this.createdAt,
+      this.qty = 0});
 
   AddOnOption.fromJson(Map<String, dynamic> json) {
     id = json['id'];

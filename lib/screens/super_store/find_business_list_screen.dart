@@ -311,7 +311,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     // "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
-                    "Found ${findBusinessCount} ${widget.industry?.toLowerCase()}${findBusinessCount! > 0 ? "s" : ""}",
+                    "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18,

@@ -317,6 +317,9 @@ class ShoppingAuthService extends AuthService {
     product.discountIsActive = item['discount_is_active'];
     product.discountedPrice = item['discounted_price'];
     product.addOns = item['add_ons'];
+    product.addOnsModels = item['add_ons'].isEmpty
+        ? []
+        : (item['add_ons'] as List).map((i) => AddOns.fromJson(i)).toList();
     product.addressId = item['address_id'];
     return product;
   }

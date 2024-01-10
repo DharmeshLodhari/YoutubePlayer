@@ -12,6 +12,7 @@ import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -104,7 +105,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
   String staticImage = "";
-  List addOnList = [];
+  // List addOnList = [];
   ScrollController scrollControllerAddOn = ScrollController();
   bool isLoading = false;
 
@@ -592,7 +593,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       message: AppLocalization.of(context)!.selectVariantColor);
                 }
               }
-            } else if (addOnList.isNotEmpty) {
+            } else if (product?.addOnsModels?.isNotEmpty == true) {
               addToCart();
               return true;
             } else {
@@ -650,7 +651,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         "type": "Size",
       };
     }
-    addOnList.forEach((addOn) {
+    product?.addOnsModels?.forEach((addOn) {
       if (addOn.options != null) {
         // Filter the options to include only those with option.isChecked == true
         List<AddOnOption> selectedOptions =
@@ -689,7 +690,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     // debugPrint("Data From Product Page v-id : $selectedVariantId");
     // debugPrint("Data From Product Page v-id : $variantPayLoad");
     // debugPrint("Data From Product Page v-id one : ${basketBloc.items}");
-    if (selectedAddOnsList.isNotEmpty && addOnList.isNotEmpty) {
+    if (selectedAddOnsList.isNotEmpty &&
+        product?.addOnsModels?.isNotEmpty == true) {
       addOnPayLoad = {
         "id": productId,
         "qty": 1,
@@ -982,7 +984,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   SizedBox(
                     height: 10,
                   ),
-                  if (addOnList.isNotEmpty) ...[
+                  if (product?.addOnsModels?.isNotEmpty == true) ...[
                     _buildAddonWidget(),
                     SizedBox(
                       height: 16,
@@ -1376,9 +1378,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       price = product!.price.toString();
       moreInformation = product!.description.toString();
 
-      addOnList = product!.addOns != null
-          ? AddOns.convertToAddOnList(product!.addOns!)
-          : [];
+      // addOnList = product!.addOns != null
+      //     ? AddOns.convertToAddOnList(product!.addOns!)
+      //     : [];
 
       colorGroups = {};
       sizeGroups = {};
@@ -2120,395 +2122,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         //   thickness: 1,
         // ),
         // _buildAddonList(),
-        ...addOnList.map((addon) => addOnTile(addOns: addon)).toList()
+        ...product?.addOnsModels
+                ?.map((addon) => AddOnTile(addOns: addon))
+                .toList() ??
+            []
       ],
     );
-  }
-
-  Widget _buildAddonList() {
-    return Container(
-      // height: 200,
-      height: 100 * addOnList.length.toDouble(),
-      child: ListView.builder(
-        // physics: NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        //+1 for progressbar
-        itemCount: addOnList.length + 1,
-        controller: scrollControllerAddOn,
-        shrinkWrap: true,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == addOnList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return addOnTile(
-              addOns: addOnList[index],
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  Widget addOnTile({required AddOns addOns}) {
-    List<AddOnOption>? addOnOption = addOns.options;
-
-    return Card(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      // shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
-        // decoration: BoxDecoration(
-        //   border: Border.all(width: 1, color: greyBorderColor),
-        //   borderRadius: BorderRadius.all(Radius.circular(10)),
-        // ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    appendStringDot(addOns.name!, 15),
-                    maxLines: 1,
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: navyBlue),
-                      borderRadius: BorderRadius.all(Radius.circular(7)),
-                      color: addOns.isRequired == true ? navyBlue : white,
-                    ),
-                    child: Text(
-                      addOns.isRequired == true ? 'Required' : 'Optional',
-                      maxLines: 1,
-                      style: TextStyle(
-                          color: addOns.isRequired == true ? white : navyBlue,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 10),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Divider(
-              height: 0,
-              color: dividerColor,
-              thickness: 1,
-            ),
-            // Container(
-            //   child: ListView.builder(
-            //     itemCount: addOnOption!.length,
-            //     shrinkWrap: true,
-            //     physics: NeverScrollableScrollPhysics(),
-            //     itemBuilder: (context, index) => _displayAddOnOption(
-            //       addOnOption[index],
-            //       addOns,
-            //     ),
-            //   ),
-            // )
-            ...addOnOption!
-                .map((option) => _displayAddOnOption(option, addOns))
-                .toList()
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _displayAddOnOption(AddOnOption addOnOption, AddOns addOns) {
-    return Container(
-      padding: EdgeInsets.only(top: 15),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                if (addOnOption.picture != null)
-                  InkWell(
-                    onTap: () {
-                      showDescription(addOnOption);
-                    },
-                    child: Container(
-                      height: 48,
-                      width: 48,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: dividerColor,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        child: CachedNetworkImage(
-                          imageUrl: addOnOption.picture!,
-                          fit: BoxFit.fill,
-                          errorWidget: productAndServiceErrorWidget,
-                        ),
-                      ),
-                    ),
-                  ),
-                SizedBox(width: 8),
-                Expanded(
-                  flex: 4,
-                  child: InkWell(
-                    onTap: () {
-                      if (addOnOption.picture == null) {
-                        showDescription(addOnOption);
-                      }
-                    },
-                    child: Text(
-                      appendStringDot(addOnOption.name!, 100),
-                      maxLines: 2,
-                      style: TextStyle(
-                          color: blackFont,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14),
-                    ),
-                  ),
-                ),
-                Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    if (addOns.inputType == 'checkbox') {
-                      addOns.options!.forEach((data) {
-                        if (data.id == addOnOption.id) {
-                          // Found the option with the target ID, change its isChecked value
-                          addOnOption.isChecked = !addOnOption.isChecked!;
-                        }
-                      });
-                      if (mounted) setState(() {});
-                    } else if (addOns.inputType == 'radio') {
-                      updateAddOnOptions(addOns.options!, addOnOption.id!);
-                    }
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text(
-                        '(${worldCurrencies[addOnOption.currency!]!}',
-                        style: TextStyle(
-                            fontFamily: "Inter",
-                            fontSize: 14.0,
-                            color: blackFont.withOpacity(.5),
-                            fontWeight: FontWeight.w500),
-                      ),
-                      Text(
-                        '${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))})',
-                        style: TextStyle(
-                            fontSize: 14.0,
-                            color: darkGrey,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w500),
-                      ),
-                      if (addOns.inputType == 'checkbox') ...[
-                        SizedBox(width: 10),
-                        Checkbox(
-                          visualDensity: const VisualDensity(
-                              horizontal: VisualDensity.minimumDensity,
-                              vertical: VisualDensity.minimumDensity),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          value: addOnOption.isChecked,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(2)),
-                          side: BorderSide(width: 1, color: darkGrey),
-                          activeColor: navyBlue,
-                          onChanged: (bool? value) {
-                            // Handle checkbox state change here
-                            addOns.options!.forEach((data) {
-                              if (data.id == addOnOption.id) {
-                                // Found the option with the target ID, change its isChecked value
-                                addOnOption.isChecked = !addOnOption.isChecked!;
-                              }
-                            });
-                            if (mounted) setState(() {});
-                          },
-                        ),
-                      ],
-                      if (addOns.inputType == 'radio') ...[
-                        SizedBox(width: 10),
-                        Radio<bool>(
-                          visualDensity: const VisualDensity(
-                              horizontal: VisualDensity.minimumDensity,
-                              vertical: VisualDensity.minimumDensity),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          value: addOnOption.isChecked!,
-                          groupValue:
-                              true, // You need to provide a unique group value for the radio buttons
-                          activeColor: navyBlue,
-                          onChanged: (bool? value) {
-                            // Handle radio button selection here
-                            updateAddOnOptions(
-                                addOns.options!, addOnOption.id!);
-                          },
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 15),
-          Divider(
-            height: 0,
-            color: dividerColor,
-            thickness: 1,
-          ),
-        ],
-      ),
-    );
-  }
-
-  void showDescription(AddOnOption addOnOption) {
-    showDialog<String>(
-        barrierDismissible: true,
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(21.0),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              addOnOption.picture != null
-                                  ? Row(
-                                      children: [
-                                        Container(
-                                          height: 100,
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: dividerColor,
-                                              ),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10))),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
-                                            child: CachedNetworkImage(
-                                              imageUrl: addOnOption.picture!,
-                                              fit: BoxFit.fill,
-                                              errorWidget:
-                                                  productAndServiceErrorWidget,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 16),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              addOnOption.name!,
-                                              style: TextStyle(
-                                                  color: blackFont,
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontFamily: 'Inter'),
-                                            ),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            Text(
-                                              '${worldCurrencies[addOnOption.currency!]!}${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))}',
-                                              style: TextStyle(
-                                                  color: darkGrey,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontFamily: 'Inter'),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          addOnOption.name!,
-                                          style: TextStyle(
-                                              color: blackFont,
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.w600,
-                                              fontFamily: 'Inter'),
-                                        ),
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          '${worldCurrencies[addOnOption.currency!]!}${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))}',
-                                          style: TextStyle(
-                                              color: darkGrey,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              fontFamily: 'Inter'),
-                                        )
-                                      ],
-                                    ),
-                              SizedBox(height: 16),
-                              Text(
-                                "Description",
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Inter'),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                addOnOption.description!,
-                                style: TextStyle(
-                                    color: darkGrey,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Inter'),
-                              )
-                            ]),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-  }
-
-  void updateAddOnOptions(List<AddOnOption> options, int targetId) {
-    options.forEach((addOnOption) {
-      if (addOnOption.id == targetId) {
-        addOnOption.isChecked = true;
-      } else {
-        addOnOption.isChecked = false;
-      }
-      if (mounted) setState(() {});
-    });
   }
 
   Widget _buildSellerInfoWidget() {
@@ -2722,7 +2341,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     List<Map<String, dynamic>> selectedAddOnsList = [];
     int addOnPrice = 0;
 
-    addOnList.forEach((addOn) {
+    product?.addOnsModels?.forEach((addOn) {
       if (addOn.options != null) {
         // Filter the options to include only those with option.isChecked == true
         List<AddOnOption> selectedOptions =
