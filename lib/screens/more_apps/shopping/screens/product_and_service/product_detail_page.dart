@@ -9,8 +9,10 @@ import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -105,6 +107,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   List addOnList = [];
   ScrollController scrollControllerAddOn = ScrollController();
   bool isLoading = false;
+
   @override
   void initState() {
     product = arguments[
@@ -2689,8 +2692,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     ShippingProcessBloc shippingProcessBloc =
         Provider.of<ShippingProcessBloc>(context, listen: false);
     shippingProcessBloc.isUseCartProcess(false);
-    shippingProcessBloc.updateBuyNowProduct(product);
-    Navigator.pushNamed(context, Routes.DELIVERY_OPTION);
+    List<ShippingAddress> addresses =
+        await getAddressListing([product?.addressId]);
+    if (addresses.isNotEmpty) {
+      shippingProcessBloc.updateBuyNowProduct(product, addresses[0]);
+      Navigator.pushNamed(context, Routes.DELIVERY_OPTION);
+    } else {
+      await Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
+      setState(() {});
+    }
     // bool result = await showDisclaimerDialogueForGoods(context);
     // if (result) {
     //   getRecipient();

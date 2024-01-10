@@ -4,6 +4,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/courier_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
@@ -106,6 +107,52 @@ class ShippingProcessAuthService extends AuthService {
     } else {
       showToast(message: response.body.toString());
       throw response.body;
+    }
+  }
+
+  // List of Addresses
+  Future<Map<String, dynamic>?> getAddressListing(
+      String? next, String? previous, Map? data) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url =
+          "${AppConfig.baseUrl}/api/v1/shipping/addresses/list-given-addresses/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    var _data = jsonEncode(data);
+    debugPrint('My Job URL ---> $url');
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _data);
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      List<ShippingAddress> addresses = [];
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        ShippingAddress categories = ShippingAddress.fromJson(item);
+        addresses.add(categories);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": addresses
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
     }
   }
 }

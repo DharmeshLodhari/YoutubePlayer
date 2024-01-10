@@ -11,6 +11,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class ShippingOption extends StatefulWidget {
@@ -104,35 +105,46 @@ class _ShippingOptionState extends State<ShippingOption> {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: ListView.builder(
-                  itemCount: shippingList.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    return _buildShippingItem(index);
-                  },
+        child: shippingList.length != 0 || shippingList.isNotEmpty
+            ? Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: ListView.builder(
+                        itemCount: shippingList.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          return _buildShippingItem(index);
+                        },
+                      ),
+                    ),
+                  ),
+                  if (shippingOptionModel != null)
+                    CurvedButton(
+                      onPressed: () {
+                        if (shippingOptionModel != null) {
+                          shippingProcessBloc
+                              .updateShippingOption(shippingOptionModel!);
+                        }
+                        Navigator.of(context).pop();
+                      },
+                      backgroundColor: navyBlue,
+                      textColor: white,
+                      text: 'Save',
+                    ),
+                ],
+              )
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Lottie.asset('assets/lottie/no_moment_lottie.json'),
+                    const SizedBox(height: 20),
+                    const Text('No shippable items at the moment'),
+                  ],
                 ),
               ),
-            ),
-            if (shippingOptionModel != null)
-              CurvedButton(
-                onPressed: () {
-                  if (shippingOptionModel != null) {
-                    shippingProcessBloc
-                        .updateShippingOption(shippingOptionModel!);
-                  }
-                  Navigator.of(context).pop();
-                },
-                backgroundColor: navyBlue,
-                textColor: white,
-                text: 'Save',
-              ),
-          ],
-        ),
       ),
     );
   }
@@ -291,24 +303,26 @@ class _ShippingOptionState extends State<ShippingOption> {
 
   Future<void> getShippingEstimation(
       PackageDetailsModel packageDetailModel) async {
-    shippingList.clear();
-    isLoading = true;
-    if (mounted) setState(() {});
+    if (!isLoading) {
+      shippingList.clear();
+      isLoading = true;
+      if (mounted) setState(() {});
 
-    await ShippingProcessAuthService()
-        .getShippingEstimation(packageDetailModel)
-        .then(
-      (value) {
-        value.forEach((element) {
-          shippingList.add(element);
-        });
+      await ShippingProcessAuthService()
+          .getShippingEstimation(packageDetailModel)
+          .then(
+        (value) {
+          value.forEach((element) {
+            shippingList.add(element);
+          });
+          isLoading = false;
+          if (mounted) setState(() {});
+        },
+      ).catchError((error) {
         isLoading = false;
         if (mounted) setState(() {});
-      },
-    ).catchError((error) {
-      isLoading = false;
-      if (mounted) setState(() {});
-      showToast(message: error.toString());
-    });
+        showToast(message: error.toString());
+      });
+    }
   }
 }

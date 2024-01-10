@@ -1,6 +1,4 @@
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/list_category_product.dart';
@@ -10,21 +8,18 @@ import 'package:Slydo/screens/super_store/widget/product_category_selection.dart
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:badges/badges.dart' as badges;
-import 'package:shimmer/shimmer.dart';
+
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
 import '../../utils/util.dart';
 import '../../widget/rounded_background_icon.dart';
-import '../more_apps/shopping/models/store.dart';
 import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
-import '../more_apps/yarn/yarn_setting_screen.dart';
 
 class SuperStore extends StatefulWidget {
   var arguments;
@@ -326,6 +321,7 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildPageView() {
+    ProductIndustryResults industry = widget.arguments['industry'];
     return IndexedStack(
       index: currentAskTapOnHome,
       children: [
@@ -352,7 +348,8 @@ class _SuperStoreState extends State<SuperStore> {
               }
             },
             category: categoryName,
-            industry: appTitle)
+            // industry: appTitle)
+            industry: industry.name)
       ],
     );
 

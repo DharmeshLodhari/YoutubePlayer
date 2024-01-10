@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../routes/route_constants.dart';
@@ -856,10 +857,11 @@ class _DisplayServiceState extends State<DisplayService> {
       ),
       backgroundColor: iconBackgroundColor,
       onTap: () async {
-        setState(() {
-          showAddToCartButton = false;
-        });
-        addServiceToCart();
+        // setState(() {
+        //   showAddToCartButton = false;
+        // });
+        // addServiceToCart();
+        showToast(message: 'Coming soon');
       },
     );
   }

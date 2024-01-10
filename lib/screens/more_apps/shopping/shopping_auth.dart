@@ -265,6 +265,7 @@ class ShoppingAuthService extends AuthService {
   Product createProduct(Map<String, dynamic> item) {
     Product product = Product();
     product.id = item['id'];
+    product.type = item['type'];
     product.cover = item['cover'];
     product.localImages = item['localImages'];
     product.serverImages = product.imageDataToList(item['pictures']);

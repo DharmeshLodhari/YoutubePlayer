@@ -37,6 +37,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
       color: white,
       child: WillPopScope(
         onWillPop: () async {
+          shippingProcessBloc.clearBuyNowData();
           return true;
         },
         child: Scaffold(
@@ -71,6 +72,7 @@ class _DeliveryOptionState extends State<DeliveryOption> {
           size: 24,
         ),
         onPressed: () {
+          shippingProcessBloc.clearBuyNowData();
           Navigator.pop(context, "back pressed");
         },
       ),

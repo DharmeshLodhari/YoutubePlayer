@@ -79,7 +79,14 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       color: white,
       child: WillPopScope(
         onWillPop: () async {
-          return true;
+          if (shippingProcessBloc.isPaymentSuccessful) {
+            shippingProcessBloc.clearBuyNowData();
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          } else {
+            Navigator.of(context).pop();
+          }
+          return false;
         },
         child: Scaffold(
           backgroundColor: white,
@@ -113,7 +120,13 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context, "back pressed");
+          if (shippingProcessBloc.isPaymentSuccessful) {
+            shippingProcessBloc.clearBuyNowData();
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          } else {
+            Navigator.of(context).pop();
+          }
         },
       ),
       elevation: 0,
@@ -225,13 +238,6 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           BottomSheetPassCode(
               context: context,
               isValidCallback: () async {
-                showDialog(
-                  context: context,
-                  builder: (context) => Center(
-                    child: CircularLoadingIndicator(),
-                  ),
-                );
-
                 // await checkAccountBalance();
 
                 // Create the orders
@@ -254,7 +260,9 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       padding: const EdgeInsets.all(16.0),
       child: CurvedButton(
         onPressed: () {
-          Navigator.of(context).popAndPushNamed(Routes.SUCCESSFUL_ORDER);
+          shippingProcessBloc.clearBuyNowData();
+          Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+          Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);
         },
         backgroundColor: navyBlue,
         textColor: white,
@@ -266,6 +274,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
   Future<void> placeOrder() async {
     if (!isOrderLoading) {
       isOrderLoading = true;
+      if (mounted) setState(() {});
       await ShippingProcessAuthService()
           .placeOrder(
               data: shippingProcessBloc.toPlaceOrder(userBloc.user.userName),
@@ -281,7 +290,6 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
                 .makePaymentForCartOrder({"orders": orders});
 
             if (response.statusCode == 200) {
-              Navigator.pop(context);
               shippingProcessBloc.isPaymentSuccessfully(true);
             } else if (response.statusCode == 500) {
               showToast(message: AppLocalization.of(context)!.serverError);
@@ -298,9 +306,11 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             );
           }
           isOrderLoading = false;
+          if (mounted) setState(() {});
         },
       ).catchError((error) {
         isOrderLoading = false;
+        if (mounted) setState(() {});
         debugPrint(error.toString());
         showToast(message: error.toString());
       });

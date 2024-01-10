@@ -746,6 +746,9 @@ class BasketBloc extends ChangeNotifier {
         addItemToCart(item: element, type: type, variant: null, addOns: null);
       }
     }
+    if (itemsCart.isEmpty) {
+      _items.clear();
+    }
 
     notifyListeners();
   }
@@ -841,13 +844,13 @@ class ShippingProcessBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateBuyNowProduct(Product? value) {
+  void updateBuyNowProduct(Product? value, ShippingAddress addressListing) {
     getPackageDetailModel().buyNow = value;
     getPackageDetailModel().merchant = value?.seller;
     getPackageDetailModel().addressId = value?.addressId;
-    getPackageDetailModel().totalItems = value?.quantity;
+    getPackageDetailModel().totalItems = 1;
     getPackageDetailModel().totalPrice = value?.getBuyNowProductPrice();
-    // getPackageDetailModel().merchantAddress = value?.a;
+    getPackageDetailModel().merchantAddress = addressListing;
     notifyListeners();
   }
 
@@ -876,6 +879,12 @@ class ShippingProcessBloc extends ChangeNotifier {
   void setPackageDetailForBuyNow() {
     packagesList = [];
     packagesList.add(buyNowPackageDetailsModel);
+    notifyListeners();
+  }
+
+  void clearBuyNowData() {
+    isPaymentSuccessful = false;
+    buyNowPackageDetailsModel = PackageDetailsModel();
     notifyListeners();
   }
 }

@@ -414,7 +414,7 @@ class Product {
 
   int getBuyNowProductPrice() {
     int totalPrice = 0;
-    totalPrice = (quantity ?? 1) * int.parse(price!);
+    totalPrice = int.parse(price!);
     return totalPrice;
   }
 

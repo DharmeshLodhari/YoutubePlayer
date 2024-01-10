@@ -17,9 +17,9 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -27,14 +27,14 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
-import 'package:badges/badges.dart' as badges;
+
+import '../../../../../routes/route_constants.dart';
+import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
+import '../../../user_profile/user_auth.dart';
 import '../../../yarn/models/share_as_yarn_model.dart';
 import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
-import '../../../../../routes/route_constants.dart';
-import '../../../../../utils/navigation_util.dart';
-import '../../../user_profile/user_auth.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
 
@@ -361,7 +361,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       onTap: () async {
         Navigator.pop(context);
 
-        var shareBody = "http://slydo.co/store/${service!.provider}/services/${service!.id}";
+        var shareBody =
+            "http://slydo.co/store/${service!.provider}/services/${service!.id}";
         Share.share(shareBody, subject: "${service!.name}");
       },
     ));
@@ -545,32 +546,33 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        if (service!.isAvailable!) {
-          if (isValidCustomer) {
-            String type = service is Product ? "product" : "service";
-            basketBloc.addItemToCart(item: service, type: type);
-            late var mapData;
-            basketBloc.items.forEach((element) {
-              if (element["item"].id == service!.id) {
-                mapData = element;
-                return;
-              }
-            });
-            Map data = {
-              "type": type,
-              "id": mapData["item"].id,
-              "qty": mapData["qty"],
-            };
-            debugPrint("Data From Service Page : $data");
-            await _auth.addItemToShoppingCart(data);
-          } else {
-            showToast(
-                message:
-                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
-          }
-        } else {
-          showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
-        }
+        showSnackbar(context, message: "Coming soon");
+        // if (service!.isAvailable!) {
+        //   if (isValidCustomer) {
+        //     String type = service is Product ? "product" : "service";
+        //     basketBloc.addItemToCart(item: service, type: type);
+        //     late var mapData;
+        //     basketBloc.items.forEach((element) {
+        //       if (element["item"].id == service!.id) {
+        //         mapData = element;
+        //         return;
+        //       }
+        //     });
+        //     Map data = {
+        //       "type": type,
+        //       "id": mapData["item"].id,
+        //       "qty": mapData["qty"],
+        //     };
+        //     debugPrint("Data From Service Page : $data");
+        //     await _auth.addItemToShoppingCart(data);
+        //   } else {
+        //     showToast(
+        //         message:
+        //             AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+        //   }
+        // } else {
+        //   showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
+        // }
       },
     );
   }
@@ -1279,21 +1281,22 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         textColor: Colors.white,
         text: "PAY NOW",
         onPressed: () async {
-          if (service!.isAvailable!) {
-            if (isValidCustomer) {
-              bool result = await showDisclaimerDialogueForGoods(context);
-              if (result) {
-                getRecipient();
-                navigateToSendPayment();
-              }
-            } else {
-              showToast(
-                  message:
-                      AppLocalization.of(context)!.youCanNotPurchaseThisItem);
-            }
-          } else {
-            showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
-          }
+          showSnackbar(context, message: "Coming soon");
+          // if (service!.isAvailable!) {
+          //   if (isValidCustomer) {
+          //     bool result = await showDisclaimerDialogueForGoods(context);
+          //     if (result) {
+          //       getRecipient();
+          //       navigateToSendPayment();
+          //     }
+          //   } else {
+          //     showToast(
+          //         message:
+          //             AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+          //   }
+          // } else {
+          //   showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
+          // }
         },
       ),
     );

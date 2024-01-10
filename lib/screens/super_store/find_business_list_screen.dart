@@ -3,6 +3,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/util.dart';
@@ -65,7 +66,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     //   if (_scrollController.position.pixels ==
     //           _scrollController.position.maxScrollExtent &&
     //       _scrollController.position.pixels != 0) {
-    getSuggestionBusinessList();
+    // getSuggestionBusinessList();
     //   }
     // });
     // Listen for scroll offset changes
@@ -309,7 +310,8 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Found ${findBusinessCount} store${findBusinessCount! > 0 ? "s" : ""}",
+                    // "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
+                    "Found ${findBusinessCount} ${widget.industry?.toLowerCase()}${findBusinessCount! > 0 ? "s" : ""}",
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18,

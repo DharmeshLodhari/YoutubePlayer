@@ -3,7 +3,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/share_cart_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
 import 'package:Slydo/screens/more_apps/yarn/trending_list_screen.dart';
@@ -33,7 +32,7 @@ class ShoppingCart extends StatefulWidget {
 }
 
 class _ShoppingCartState extends State<ShoppingCart> {
-  late BasketBloc basketBloc = BasketBloc();
+  late BasketBloc basketBloc;
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc userBloc;
   List<int?> orders = [];
@@ -84,6 +83,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
     super.initState();
     _pageViewController = PageController(initialPage: 0);
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      initializeShoppingCart();
+    });
   }
 
   @override
@@ -148,35 +151,51 @@ class _ShoppingCartState extends State<ShoppingCart> {
             onRefresh: _onRefresh,
             child: _buildBodyOfCart(),
           ),
-          ListView(
-            key: latestViewStateKey,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              InkWell(
-                onTap: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => SharedCartDetails())),
-                child: Card(
-                  margin: EdgeInsets.all(20),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("My Birthday Hangout"),
-                            SizedBox(height: 10),
-                            buildMultipleFollowersWidget()
-                          ],
-                        ),
-                        Spacer(),
-                        Text("N100"),
-                      ],
-                    ),
+              Center(
+                child: Text(
+                  'Coming soon',
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Inter",
                   ),
                 ),
-              )
+              ),
             ],
           ),
+          // ListView(
+          //   key: latestViewStateKey,
+          //   children: [
+          //     InkWell(
+          //       onTap: () => Navigator.push(context,
+          //           MaterialPageRoute(builder: (_) => SharedCartDetails())),
+          //       child: Card(
+          //         margin: EdgeInsets.all(20),
+          //         child: Padding(
+          //           padding: const EdgeInsets.all(20.0),
+          //           child: Row(
+          //             children: [
+          //               Column(
+          //                 crossAxisAlignment: CrossAxisAlignment.start,
+          //                 children: [
+          //                   Text("My Birthday Hangout"),
+          //                   SizedBox(height: 10),
+          //                   buildMultipleFollowersWidget()
+          //                 ],
+          //               ),
+          //               Spacer(),
+          //               Text("N100"),
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //     )
+          //   ],
+          // ),
         ],
       ),
     );

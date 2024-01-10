@@ -6,6 +6,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class SuccessfulOrder extends StatefulWidget {
   const SuccessfulOrder({Key? key}) : super(key: key);
@@ -57,24 +58,30 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
     );
   }
 
+  // Widget _buildSuccessImage() {
+  //   return Image.network(
+  //     "https://s3-alpha-sig.figma.com/img/1869/38bf/4d2470e3628037c3f7d1f3b05b8cc8e4?Expires=1704672000&Signature=R88Rds6T09Tu2OGNCC2fnpXMDsyqdrA2-aqFe4VOVrkcSfGh-K-Gl-tVFV~OKH7EMV21yaCsOmC0lFpRFHY69xFDflfaanXlVYtE8NTbgWy3zECWp8yW7OvL-1TjOuwNPo3hmkDW83es7yzQ14oBIE6Y7KfApD8mxGlrvbRLRgo9pegrO2808BRwLNa83~IdISFTDz2P0FNbfmXNL7Y9JoKnKiiYqgLQkU3BsipavWHNxtFwqgOMEO2SAcba9aUKFzeJ6Gpyo3vPaiD9j~pA-iy5TMC756DzmLV9X9cuKXjciM00RNDHuwBWhek0p6HOZQbQCrvtO9UGtJ50t-YRAg__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4",
+  //     height: 150,
+  //     width: 270,
+  //     fit: BoxFit.fill,
+  //     filterQuality: FilterQuality.high,
+  //     cacheHeight: 150,
+  //     cacheWidth: 270,
+  //     frameBuilder: imageFrameBuilder,
+  //     errorBuilder: (context, error, stackTrace) {
+  //       return Image.network(
+  //         defaultImage,
+  //         colorBlendMode: BlendMode.darken,
+  //         fit: BoxFit.fill,
+  //         filterQuality: FilterQuality.high,
+  //       );
+  //     },
+  //   );
+  // }
+
   Widget _buildSuccessImage() {
-    return Image.network(
-      "https://s3-alpha-sig.figma.com/img/1869/38bf/4d2470e3628037c3f7d1f3b05b8cc8e4?Expires=1704672000&Signature=R88Rds6T09Tu2OGNCC2fnpXMDsyqdrA2-aqFe4VOVrkcSfGh-K-Gl-tVFV~OKH7EMV21yaCsOmC0lFpRFHY69xFDflfaanXlVYtE8NTbgWy3zECWp8yW7OvL-1TjOuwNPo3hmkDW83es7yzQ14oBIE6Y7KfApD8mxGlrvbRLRgo9pegrO2808BRwLNa83~IdISFTDz2P0FNbfmXNL7Y9JoKnKiiYqgLQkU3BsipavWHNxtFwqgOMEO2SAcba9aUKFzeJ6Gpyo3vPaiD9j~pA-iy5TMC756DzmLV9X9cuKXjciM00RNDHuwBWhek0p6HOZQbQCrvtO9UGtJ50t-YRAg__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4",
-      height: 150,
-      width: 270,
-      fit: BoxFit.fill,
-      filterQuality: FilterQuality.high,
-      cacheHeight: 150,
-      cacheWidth: 270,
-      frameBuilder: imageFrameBuilder,
-      errorBuilder: (context, error, stackTrace) {
-        return Image.network(
-          defaultImage,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fill,
-          filterQuality: FilterQuality.high,
-        );
-      },
+    return Lottie.asset(
+      'assets/lottie/successful.json',
     );
   }
 

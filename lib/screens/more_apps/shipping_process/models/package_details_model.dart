@@ -100,7 +100,7 @@ class PackageDetailsModel {
     Map<String, dynamic> data = {
       "id": buyNow?.id ?? "",
       "qty": buyNow?.quantity ?? 1,
-      "type": 'product',
+      "type": buyNow?.type ?? 'product',
       "add_ons": buyNow?.addOns,
       "variants": buyNow?.variant,
       "item_added_by": userName ?? "",
