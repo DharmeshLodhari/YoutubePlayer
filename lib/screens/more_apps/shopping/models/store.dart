@@ -798,10 +798,11 @@ class AddOnOption {
   String? name;
   String? description;
   String? merchant;
+  String? selectType;
   String? currency;
   String? price;
   bool? isAvailable;
-  bool? isChecked;
+  bool isChecked = false;
   DateTime? createdAt;
   int qty = 0;
 
@@ -811,10 +812,11 @@ class AddOnOption {
       this.name,
       this.description,
       this.merchant,
+      this.selectType,
       this.currency,
       this.price,
       this.isAvailable,
-      this.isChecked,
+      this.isChecked = false,
       this.createdAt,
       this.qty = 0});
 
@@ -824,6 +826,7 @@ class AddOnOption {
     name = json['name'];
     description = json['description'];
     merchant = json['merchant'];
+    selectType = json['select_type'];
     currency = json['currency'];
     price = json['price'].toString();
     isAvailable = json['is_available'];
@@ -846,6 +849,7 @@ class AddOnOption {
     data['name'] = this.name;
     data['description'] = this.description;
     data['merchant'] = this.merchant;
+    data['select_type'] = this.selectType;
     data['currency'] = this.currency;
     data['price'] = this.price;
     data['is_available'] = this.isAvailable;
@@ -865,6 +869,7 @@ class AddOns {
   bool? isRequired;
   bool? isChecked;
   DateTime? createdAt;
+  String? groupValue;
 
   AddOns(
       {this.id,
@@ -876,7 +881,8 @@ class AddOns {
       this.selectType,
       this.isRequired,
       this.isChecked,
-      this.createdAt});
+      this.createdAt,
+      this.groupValue});
 
   AddOns.fromJson(Map<String, dynamic> json) {
     id = json['id'];

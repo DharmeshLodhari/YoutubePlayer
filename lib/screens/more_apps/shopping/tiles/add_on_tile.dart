@@ -133,6 +133,7 @@ class _AddOnTileState extends State<AddOnTile> {
               Spacer(),
               Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -141,28 +142,14 @@ class _AddOnTileState extends State<AddOnTile> {
                       SizedBox(
                         width: 8,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          if (addOns.inputType == 'checkbox') {
-                            addOns.options!.forEach((data) {
-                              if (data.id == addOnOption.id) {
-                                // Found the option with the target ID, change its isChecked value
-                                addOnOption.isChecked = !addOnOption.isChecked!;
-                                addOnOption.qty = 1;
-                              }
-                            });
-                            if (mounted) setState(() {});
-                          } else if (addOns.inputType == 'radio') {
-                            updateAddOnOptions(
-                                addOns.options!, addOnOption.id!);
-                          }
-                        },
-                        child: _buildAddOnSelection(
-                            addOnOption: addOnOption, addOns: addOns),
-                      ),
+                      _buildAddOnSelection(
+                          addOnOption: addOnOption, addOns: addOns),
                     ],
                   ),
-                  if (addOnOption.isChecked == true)
+                  if (addOns.inputType == "radio" &&
+                          addOns.groupValue == addOnOption.name ||
+                      addOns.inputType == "checkbox" &&
+                          addOnOption.isChecked == true)
                     _buildQtySelection(addOnOption: addOnOption, addOns: addOns)
                 ],
               ),
@@ -181,54 +168,82 @@ class _AddOnTileState extends State<AddOnTile> {
 
   Widget _buildQtySelection(
       {required AddOnOption addOnOption, required AddOns addOns}) {
-    return Container(
-      width: 100,
-      color: Colors.transparent,
-      child: Center(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            RoundedBackgroundIcon(
-              backgroundColor: iconBtnGrey,
-              icon: Icon(
-                SlydoAppIcon.minus,
-                color: blackFont,
-                size: 2,
-              ),
-              onTap: () {},
-            ),
-            Expanded(
-              child: SizedBox(
-                width: 10,
-              ),
-            ),
-            Text(
-              addOnOption.qty.toString(),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: blackFont,
-                fontFamily: "Inter",
-              ),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: 10,
-              ),
-            ),
-            RoundedBackgroundIcon(
-              backgroundColor: iconBtnGrey,
-              icon: Icon(
-                SlydoAppIcon.plus,
-                color: blackFont,
-                size: 14, // Adjust the size as needed
-              ),
-              onTap: () {},
-            ),
-          ],
+    if (addOnOption.selectType == "multiple") return Container();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        SizedBox(
+          height: 8,
         ),
-      ),
+        Container(
+          width: 80,
+          color: Colors.transparent,
+          child: Center(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                RoundedBackgroundIcon(
+                  backgroundColor: iconBtnGrey,
+                  height: 25,
+                  width: 25,
+                  borderRadius: 6,
+                  icon: Icon(
+                    SlydoAppIcon.minus,
+                    color: blackFont,
+                    size: 1.5,
+                  ),
+                  onTap: () {
+                    if (addOnOption.qty > 1) {
+                      addOnOption.qty -= 1;
+                    } else {
+                      addOnOption.isChecked = false;
+                      addOns.groupValue = null;
+                      addOnOption.qty = 0;
+                    }
+                    setState(() {});
+                  },
+                ),
+                Expanded(
+                  child: SizedBox(
+                    width: 10,
+                  ),
+                ),
+                Text(
+                  addOnOption.qty.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                    fontFamily: "Inter",
+                  ),
+                ),
+                Expanded(
+                  child: SizedBox(
+                    width: 10,
+                  ),
+                ),
+                RoundedBackgroundIcon(
+                  backgroundColor: iconBtnGrey,
+                  height: 25,
+                  width: 25,
+                  borderRadius: 6,
+                  icon: Icon(
+                    SlydoAppIcon.plus,
+                    color: blackFont,
+                    size: 10, // Adjust the size as needed
+                  ),
+                  onTap: () {
+                    addOnOption.qty += 1;
+                    setState(() {});
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -271,46 +286,37 @@ class _AddOnTileState extends State<AddOnTile> {
         activeColor: navyBlue,
         onChanged: (bool? value) {
           // Handle checkbox state change here
-          addOns.options!.forEach((data) {
-            if (data.id == addOnOption.id) {
-              // Found the option with the target ID, change its isChecked value
-              addOnOption.isChecked = !addOnOption.isChecked!;
-            }
-          });
+          // addOns.options!.forEach((data) {
+          //   if (data.id == addOnOption.id) {
+          // Found the option with the target ID, change its isChecked value
+          addOnOption.isChecked = !addOnOption.isChecked;
+          addOnOption.qty = 1;
+          //   }
+          // });
           if (mounted) setState(() {});
         },
       );
     }
 
     if (addOns.inputType == 'radio') {
-      return Radio<bool>(
+      return Radio<String>(
         visualDensity: const VisualDensity(
             horizontal: VisualDensity.minimumDensity,
             vertical: VisualDensity.minimumDensity),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        value: addOnOption.isChecked!,
-        groupValue:
-            true, // You need to provide a unique group value for the radio buttons
+        value: addOnOption.name ?? "",
+        groupValue: addOns.groupValue,
+        // You need to provide a unique group value for the radio buttons
         activeColor: navyBlue,
-        onChanged: (bool? value) {
-          // Handle radio button selection here
-          updateAddOnOptions(addOns.options!, addOnOption.id!);
+        onChanged: (String? value) {
+          addOns.groupValue = value;
+          addOnOption.qty = 1;
+          setState(() {});
         },
       );
     }
 
     return Container();
-  }
-
-  void updateAddOnOptions(List<AddOnOption> options, int targetId) {
-    options.forEach((addOnOption) {
-      if (addOnOption.id == targetId) {
-        addOnOption.isChecked = true;
-      } else {
-        addOnOption.isChecked = false;
-      }
-      if (mounted) setState(() {});
-    });
   }
 
   void showDescription(AddOnOption addOnOption) {
