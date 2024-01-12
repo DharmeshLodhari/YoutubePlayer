@@ -20,10 +20,10 @@ class ShoppingProduct {
   String? sellerFullname;
   String? shortDescription;
   String? type;
-  num? discountValue;
+  int? discountValue;
   String? discountType;
   bool? discountIsActive;
-  num? discountedPrice;
+  int? discountedPrice;
 
   ShoppingProduct({
     this.availableFrom,

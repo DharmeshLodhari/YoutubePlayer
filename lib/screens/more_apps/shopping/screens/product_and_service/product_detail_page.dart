@@ -52,16 +52,12 @@ class ProductDetailPage extends StatefulWidget {
   ProductDetailPage({required this.arguments});
 
   @override
-  _ProductDetailPageState createState() =>
-      _ProductDetailPageState(arguments: arguments);
+  _ProductDetailPageState createState() => _ProductDetailPageState();
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage>
     with TickerProviderStateMixin {
-  var arguments;
   bool canRate = false;
-
-  _ProductDetailPageState({this.arguments});
 
   final _auth = ShoppingAuthService();
   Product? product;
@@ -111,12 +107,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   void initState() {
-    product = arguments[
+    product = widget.arguments[
         'product']; // We get this when we are coming from the product list page.
     if (product != null) {
       productId = product!.id;
     } else {
-      productId = arguments[
+      productId = widget.arguments[
           'productId']; // We get this when we are coming from the moment detail page.
     }
 
@@ -561,54 +557,53 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        if (product!.isAvailable!) {
-          if (isValidCustomer) {
-            if (productVariantList.isNotEmpty) {
-              if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                // print("Both color and size lists are showing.");
-                if (selectedColor.isNotEmpty && selectedSize.isNotEmpty) {
-                  addToCart();
-                  return true;
-                } else {
-                  showToast(
-                      message:
-                          AppLocalization.of(context)!.selectVariantColorSize);
-                }
-              } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-                // print("color list is showing.");
-                if (selectedSize.isNotEmpty) {
-                  addToCart();
-                  return true;
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantSize);
-                }
-              } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-                // print("size list is showing.");
-                if (selectedColor.isNotEmpty) {
-                  addToCart();
-                  return true;
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantColor);
-                }
-              }
-            } else if (product?.addOnsModels?.isNotEmpty == true) {
+        // if (product!.isAvailable!) {
+        //   if (isValidCustomer) {
+        if (productVariantList.isNotEmpty) {
+          if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+            // print("Both color and size lists are showing.");
+            if (selectedColor.isNotEmpty && selectedSize.isNotEmpty) {
               addToCart();
               return true;
             } else {
-              //product has no variant or is a service
+              showToast(
+                  message: AppLocalization.of(context)!.selectVariantColorSize);
+            }
+          } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+            // print("color list is showing.");
+            if (selectedSize.isNotEmpty) {
               addToCart();
               return true;
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)!.selectVariantSize);
             }
-          } else {
-            showToast(
-                message:
-                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+          } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+            // print("size list is showing.");
+            if (selectedColor.isNotEmpty) {
+              addToCart();
+              return true;
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)!.selectVariantColor);
+            }
           }
+        } else if (product?.addOnsModels?.isNotEmpty == true) {
+          addToCart();
+          return true;
         } else {
-          showToast(message: AppLocalization.of(context)!.productOutOfStock);
+          //product has no variant or is a service
+          addToCart();
+          return true;
         }
+        //   } else {
+        //     showToast(
+        //         message:
+        //             AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+        //   }
+        // } else {
+        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
+        // }
       },
     );
   }
@@ -618,7 +613,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     Map<String, dynamic> variantPayLoad = {};
     Map<String, dynamic> addOnPayLoad = {};
     List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
-    List<Map<String, dynamic>> selectedAddOnsList = [];
+    List<AddOns> selectedAddOnsList = [];
 
     Product productSend = product!;
     productSend = productSend.copyWith(quantity: 1);
@@ -652,38 +647,39 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       };
     }
     product?.addOnsModels?.forEach((addOn) {
-      if (addOn.options != null) {
+      final options = addOn.options;
+      if (options != null) {
         // Filter the options to include only those with option.isChecked == true
-        List<AddOnOption> selectedOptions =
-            addOn.options!.where((option) => option.isChecked == true).toList();
+        // List<AddOnOption> selectedOptions =
+        //     addOn.options!.where((option) => option.isChecked == true).toList();
+        //
+        // if (selectedOptions.isNotEmpty) {
+        //   Map<String, dynamic> selectedAddOn = {
+        //     "id": addOn.id,
+        //     "options": selectedOptions
+        //         .map((option) => {
+        //               "id": option.id,
+        //               "quantity": 1,
+        //               "name": option.name,
+        //               "price": option.price,
+        //               "currency": option.currency,
+        //             })
+        //         .toList(),
+        //   }; // Todo check this call
 
-        if (selectedOptions.isNotEmpty) {
-          Map<String, dynamic> selectedAddOn = {
-            "id": addOn.id,
-            "options": selectedOptions
-                .map((option) => {
-                      "id": option.id,
-                      "quantity": 1,
-                      "name": option.name,
-                      "price": option.price,
-                      "currency": option.currency,
-                    })
-                .toList(),
-          };
+        Map<String, dynamic> selectedAddOnServer = {
+          "id": addOn.id,
+          "options": options
+              .map((option) => {
+                    "id": option.id,
+                    "quantity": 1,
+                  })
+              .toList(),
+        }; // Todo check this call
 
-          Map<String, dynamic> selectedAddOnServer = {
-            "id": addOn.id,
-            "options": selectedOptions
-                .map((option) => {
-                      "id": option.id,
-                      "quantity": 1,
-                    })
-                .toList(),
-          };
-
-          selectedAddOnsList.add(selectedAddOn);
-          selectedAddOnsCartServerList.add(selectedAddOnServer);
-        }
+        selectedAddOnsList.add(addOn);
+        selectedAddOnsCartServerList.add(selectedAddOnServer);
+        // }
       }
     });
 
@@ -711,18 +707,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
     if (basketBloc.items.isEmpty && variantPayLoad.isNotEmpty) {
       basketBloc.addItemToCart(
-          item: productSend, type: type, variant: variantPayLoad, addOns: null);
+          item: productSend,
+          type: type,
+          variant: product?.variantModels?.first,
+          addOns: null);
     } else {
       for (var item in basketBloc.items) {
         Product productInCart = item['item'];
 
         if (productInCart.id.toString() == productId) {
-          List variantList = item['item'].variant;
+          List<Variant>? variantList = productInCart.variantModels;
 
-          for (var variant in variantList) {
-            if (variant['id'].toString() == selectedVariantId) {
-              int currentQuantity = int.parse(variant['quantity'].toString());
-              variant['quantity'] = currentQuantity + 1;
+          for (var variant in variantList!) {
+            if (variant.id.toString() == selectedVariantId) {
+              int currentQuantity = int.parse(variant.quantity.toString());
+              variant.quantity = currentQuantity + 1;
 
               Map<String, dynamic> dataInfo =
                   getUpdatedCartItem(productId!, type);
@@ -734,7 +733,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           basketBloc.addItemToCart(
               item: productSend,
               type: type,
-              variant: variantPayLoad,
+              variant: product?.variantModels?.first,
               addOns: null);
 
           // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
@@ -756,7 +755,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
       // Product ID doesn't exist in the cart, add it with the variant
       basketBloc.addItemToCart(
-          item: productSend, type: type, variant: variantPayLoad, addOns: null);
+          item: productSend,
+          type: type,
+          variant: product?.variantModels?.first,
+          addOns: null);
     }
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
@@ -1372,7 +1374,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       displayProductImages = product!.serverImages;
       staticImage = product!.serverImages![0]!;
       productIsLoading = false;
-      productVariantList = Variant.convertToVariantList(product!.variant!);
+      productVariantList = product?.variantModels ?? [];
+      //     Variant.convertToVariantList(product!.variantModels!);
 
       //get the price and more information to string
       price = product!.price.toString();
@@ -1813,7 +1816,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   selectedVariantId = variant.id!;
                   selectedVariantImage = variant.serverImages![0]!;
                   selectedVariantPrice = variant.price!;
-                  stockLeft = int.parse(variant.quantity!);
+                  stockLeft = variant.quantity!;
                   // }
                 } else {
                   //set the selected size to zero
@@ -1917,7 +1920,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ? variant.serverImages![0]!
                     : staticImage;
                 selectedVariantPrice = variant.price!;
-                stockLeft = int.parse(variant.quantity!);
+                stockLeft = variant.quantity!;
               }
 
               if (mounted) setState(() {});

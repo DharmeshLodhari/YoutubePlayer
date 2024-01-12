@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -19,9 +20,7 @@ import 'package:provider/provider.dart';
 import '../../../../../widget/rounded_background_icon.dart';
 import '../../shopping_auth.dart';
 
-
 class ProductVariantUpdate extends StatefulWidget {
-
   var arguments;
 
   ProductVariantUpdate({this.arguments, Key? key}) : super(key: key);
@@ -65,7 +64,6 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   final TextEditingController comparePriceController = TextEditingController();
   final TextEditingController availableFromController = TextEditingController();
 
-
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -83,14 +81,14 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     titleController.text = variant!.title!.toString();
     sizeController.text = variant!.value!.toString();
     colorController.text = variant!.colour!.toString();
-    priceController.text = moneyNormalizer(int.parse(variant!.price!)).toString();
+    priceController.text =
+        moneyNormalizer(int.parse(variant!.price!)).toString();
     availableFromController.text = variant!.availableFrom!.toString();
     productIsAvailable = variant!.isAvailable!;
     trackInventory = variant!.trackInventory!;
-    inventoryCount = int.parse(variant!.quantity!);
+    inventoryCount = variant!.quantity!;
     productAvailableFrom = variant!.availableFrom!;
     productImagesFromServer.addAll(variant!.serverImages!);
-
 
     title = variant!.title!.toString();
     size = variant!.value!.toString();
@@ -98,12 +96,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     variantPrice = moneyNormalizer(int.parse(variant!.price!)).toString();
     productIsAvailable = variant!.isAvailable!;
     trackInventory = variant!.trackInventory!;
-    inventoryCount = int.parse(variant!.quantity!);
-
+    inventoryCount = variant!.quantity!;
 
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -148,76 +144,75 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   Widget scaffoldBody() {
     return isLoading
         ? Center(
-      child: CircularLoadingIndicator(),
-    )
+            child: CircularLoadingIndicator(),
+          )
         : SingleChildScrollView(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      checkImageLimitForServerImage()
+                          ? viewServerImages()
+                          : Container(),
 
-                checkImageLimitForServerImage()
-                    ? viewServerImages()
-                    : Container(),
+                      const SizedBox(height: 10),
+                      checkImageLimitForLocalImage()
+                          ? addLocalImages()
+                          : Container(),
+                      // addImages(),
 
-                const SizedBox(height: 10),
-                checkImageLimitForLocalImage()
-                    ? addLocalImages()
-                    : Container(),
-                // addImages(),
+                      const SizedBox(height: 10),
+                      addTitleField(),
+                      const SizedBox(height: 10),
+                      getTypeField(),
 
-                const SizedBox(height: 10),
-                addTitleField(),
-                const SizedBox(height: 10),
-                getTypeField(),
+                      if (selectedType == 'Size') ...[
+                        const SizedBox(height: 10),
+                        addSizeField(),
+                      ],
+                      if (selectedType == 'Color') ...[
+                        const SizedBox(height: 10),
+                        getColorField(),
+                      ],
+                      if (selectedType == 'Color n Size') ...[
+                        const SizedBox(height: 10),
+                        getColorField(),
+                        const SizedBox(height: 10),
+                        addSizeField(),
+                      ],
 
-                if(selectedType == 'Size')...[
-                  const SizedBox(height: 10),
-                  addSizeField(),
-                ],
-                if(selectedType == 'Color')...[
-                  const SizedBox(height: 10),
-                  getColorField(),
-                ],
-                if(selectedType == 'Color n Size')...[
-                  const SizedBox(height: 10),
-                  getColorField(),
-                  const SizedBox(height: 10),
-                  addSizeField(),
-                ],
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      getAmountField(),
+                      // const SizedBox(
+                      //   height: 10,
+                      // ),
+                      // getComparePriceField(),
 
-                const SizedBox(
-                  height: 10,
+                      const SizedBox(height: 16),
+                      getAvailableFromField(),
+                      const SizedBox(height: 40),
+                      getIsAvailableField(),
+
+                      const SizedBox(height: 16),
+                      getInventoryFormField(),
+                      const SizedBox(height: 16),
+                      getIsInventoryAvailableField(),
+
+                      const SizedBox(height: 30),
+                      getSubmitButton(),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
-                getAmountField(),
-                // const SizedBox(
-                //   height: 10,
-                // ),
-                // getComparePriceField(),
-
-                const SizedBox(height: 16),
-                getAvailableFromField(),
-                const SizedBox(height: 40),
-                getIsAvailableField(),
-
-                const SizedBox(height: 16),
-                getInventoryFormField(),
-                const SizedBox(height: 16),
-                getIsInventoryAvailableField(),
-
-                const SizedBox(height: 30),
-                getSubmitButton(),
-                const SizedBox(height: 40),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   Widget showBackArrow() {
@@ -247,7 +242,6 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   //     ),
   //   );
   // }
-
 
   Widget addImageButton() {
     return CustomBoxShadow(
@@ -291,18 +285,18 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(AppLocalization.of(context)!.selectTheImageSource),
-          actions: <Widget>[
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.camera),
-              onPressed: () => Navigator.pop(context, ImageSource.camera),
-            ),
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.gallery),
-              onPressed: () => Navigator.pop(context, ImageSource.gallery),
-            )
-          ],
-        ));
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
 
     if (imageSource != null) {
       ImagePicker().pickImage(source: imageSource).then((value) async {
@@ -464,7 +458,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
 
   bool checkImageLimitForServerImage() {
     if (croppedImageList.length + productImagesFromServer.length !=
-        imageCount ||
+            imageCount ||
         productImagesFromServer.length != 0) {
       return true;
     }
@@ -474,7 +468,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   // decide that localImage List is need to be show or not
   bool checkImageLimitForLocalImage() {
     if (croppedImageList.length + productImagesFromServer.length !=
-        imageCount ||
+            imageCount ||
         croppedImageList.length != 0) {
       return true;
     }
@@ -493,9 +487,9 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           child: index != croppedImageList.length
               ? showLocalImage(index)
               : croppedImageList.length + productImagesFromServer.length !=
-              imageCount
-              ? addImageButton()
-              : null,
+                      imageCount
+                  ? addImageButton()
+                  : null,
         ),
       ),
     );
@@ -665,9 +659,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     if (selectedType != null && selectedType != '') {
       return true;
     } else {
-      showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectCategory);
+      showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
       return false;
     }
   }
@@ -749,10 +741,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                     border: Border.all(
                       color: greyBorderColor,
                     ),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))
-                ),
+                    borderRadius: const BorderRadius.all(Radius.circular(10))),
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
+                  padding: const EdgeInsets.only(
+                      left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
                   child: Text(
                     inventoryCount.toString(),
                     style: TextStyle(
@@ -773,8 +765,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                     color: blackFont,
                     size: 14,
                   ),
-                  onTap: () => addInventory()
-              ),
+                  onTap: () => addInventory()),
             ),
             leading: Padding(
               padding: const EdgeInsets.only(left: 30.0),
@@ -785,8 +776,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                     color: blackFont,
                     size: 2,
                   ),
-                  onTap: () => subtractInventory()
-              ),
+                  onTap: () => subtractInventory()),
             ),
           ),
         ),
@@ -815,7 +805,8 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
         setState(() {});
       },
       isChecked: inventoryIsAvailable,
-      title: "Checking this field will automatically update the quantity when the product is purchased.",
+      title:
+          "Checking this field will automatically update the quantity when the product is purchased.",
       fontSize: 10.0,
       maxLines: 2,
     );
@@ -888,7 +879,6 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                               selectedType = category;
                               Navigator.pop(context);
                               setState(() {});
-
                             },
                           ),
                         );
@@ -926,15 +916,15 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
       onPressed: isAPILoading
           ? () {}
           : () async {
-        FocusScope.of(context).unfocus();
-        isAPILoading = true;
-        if (mounted) setState(() {});
+              FocusScope.of(context).unfocus();
+              isAPILoading = true;
+              if (mounted) setState(() {});
 
-        await updateVariant();
+              await updateVariant();
 
-        isAPILoading = false;
-        if (mounted) setState(() {});
-      },
+              isAPILoading = false;
+              if (mounted) setState(() {});
+            },
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "Update",
@@ -949,11 +939,12 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           Variant variant = Variant();
           variant.id = id;
           // variant.localImages = productLocalImages.map((file) => File(file.path)).toList();
-          variant.localImages = croppedImageList.map((filePath) => File(filePath)).toList();
+          variant.localImages =
+              croppedImageList.map((filePath) => File(filePath)).toList();
           variant.title = title;
           variant.colour = color;
           variant.value = value;
-          variant.quantity = inventoryCount.toString();
+          variant.quantity = inventoryCount;
           variant.type = selectedType;
           variant.price = moneyInputNormalizer(variantPrice).toString();
           variant.isAvailable = productIsAvailable;
@@ -964,12 +955,10 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
           await _auth.updateVariant(variant, id).then((value) {
             Navigator.pop(context, variant);
             return true;
-
           }).catchError((error) {
             debugPrint(error.toString());
             showToast(message: error.toString());
           });
-
         }
       } else {
         showToast(message: AppLocalization.of(context)!.pleaseAddImage);
@@ -982,5 +971,4 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     _scrollController.dispose();
     super.dispose();
   }
-
 }

@@ -12,19 +12,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../../data/currency.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/CustomBoxShadow.dart';
 import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
-
 class ProductVariantList extends StatefulWidget {
-
   var arguments;
   final Function(List<Variant>)? onListRefreshed;
 
-  ProductVariantList({this.arguments, this.onListRefreshed, Key? key}) : super(key: key);
+  ProductVariantList({this.arguments, this.onListRefreshed, Key? key})
+      : super(key: key);
 
   @override
   _ProductVariantListState createState() => _ProductVariantListState();
@@ -33,7 +33,7 @@ class ProductVariantList extends StatefulWidget {
 class _ProductVariantListState extends State<ProductVariantList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   // Get list of users bank account
   late UserBloc userBloc;
@@ -44,7 +44,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
   List<Variant> productVariantList = [];
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
   final _auth = ShoppingAuthService();
@@ -54,7 +54,6 @@ class _ProductVariantListState extends State<ProductVariantList> {
 
   @override
   void initState() {
-
     productId = widget.arguments["productId"];
 
     getVariantList();
@@ -62,7 +61,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
         getVariantList();
       }
@@ -82,7 +81,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
         });
       }
       Map<String, dynamic>? result =
-      await _auth.getVariantList(productId!, next, previous);
+          await _auth.getVariantList(productId!, next, previous);
       if (result == null) {
         isLoading = false;
         noItemInList = true;
@@ -93,7 +92,8 @@ class _ProductVariantListState extends State<ProductVariantList> {
       // previous = result['previous'];
       var tempList = result['results'];
 
-      productVariantList = Variant.convertToVariantList(tempList);
+      // productVariantList = Variant.convertToVariantList(tempList);
+      productVariantList = tempList;
 
       if (mounted) {
         setState(() {
@@ -111,7 +111,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
       } else if (next == null && productVariantList.length > 6) {
         _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
-          Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -140,7 +140,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -215,8 +215,8 @@ class _ProductVariantListState extends State<ProductVariantList> {
         color: blackFont,
       ),
       onTap: () async {
-
-        final result = await Navigator.of(context).pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+        final result = await Navigator.of(context)
+            .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
           'option': 'edit',
           'productId': productId,
         });
@@ -226,7 +226,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
           //save the variant details for later use
           _onRefresh();
           // variantData = result;
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         }
       },
       backgroundColor: iconBtnGrey,
@@ -237,33 +237,30 @@ class _ProductVariantListState extends State<ProductVariantList> {
   Widget _buildProductVariantList() {
     return noItemInList
         ? NoItemInList(
-      title: AppLocalization.of(context)!.noVariantYet,
-      msg: AppLocalization.of(context)!.noVariantDetail,
-    )
+            title: AppLocalization.of(context)!.noVariantYet,
+            msg: AppLocalization.of(context)!.noVariantDetail,
+          )
         : ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      //+1 for progressbar
-      itemCount: productVariantList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-
-        if (index == productVariantList.length) {
-          return buildLoadingIndicator(isLoading: isLoading);
-        } else {
-          return _getSlidableWithLists(
-              context,
-              productVariantTile(
-                variant: productVariantList[index],
-              ),
-              productVariantList[index]);
-        }
-      },
-      controller: _scrollController,
-    );
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            //+1 for progressbar
+            itemCount: productVariantList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == productVariantList.length) {
+                return buildLoadingIndicator(isLoading: isLoading);
+              } else {
+                return _getSlidableWithLists(
+                    context,
+                    productVariantTile(
+                      variant: productVariantList[index],
+                    ),
+                    productVariantList[index]);
+              }
+            },
+            controller: _scrollController,
+          );
   }
 
-
   Widget productVariantTile({required Variant variant}) {
-
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -304,8 +301,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    moneyDisplayNormalizer(
-                        int.parse(variant.price.toString())),
+                    moneyDisplayNormalizer(int.parse(variant.price.toString())),
                     style: TextStyle(
                         fontSize: 18.0,
                         color: blackFont,
@@ -318,8 +314,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
           leading: GestureDetector(
             onTap: () {
               String? url = variant.serverImages![0]!;
-              Navigator.of(context)
-                  .pushNamed("/photo-viewer", arguments: url);
+              Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
             },
             child: checkProductImage(variant),
           ),
@@ -328,13 +323,12 @@ class _ProductVariantListState extends State<ProductVariantList> {
     );
   }
 
-
   Widget checkProductImage(Variant variant) {
     // Retrieve the first image from the 'pictures' list
 
     String? url = "";
 
-    for(var item in variant.serverImages!){
+    for (var item in variant.serverImages!) {
       url = item;
     }
 
@@ -373,7 +367,6 @@ class _ProductVariantListState extends State<ProductVariantList> {
           ),
         ),
       );
-
     }
   }
 
@@ -395,8 +388,9 @@ class _ProductVariantListState extends State<ProductVariantList> {
       SlideActionButton(
           backgroundColor: starYellow,
           icon: Icons.edit,
-          onTap:  () async {
-            final data = await Navigator.of(context).pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
+          onTap: () async {
+            final data = await Navigator.of(context)
+                .pushNamed(Routes.PRODUCT_VARIANT_UPDATE, arguments: {
               'variant': variant,
             });
 
@@ -405,12 +399,10 @@ class _ProductVariantListState extends State<ProductVariantList> {
               //save the variant details for later use
               // variantData = data;
               _onRefresh();
-              if(mounted)setState(() {});
+              if (mounted) setState(() {});
             }
-
           },
           title: AppLocalization.of(context)!.edit,
-
           slideController: _slideController),
     ];
   }
@@ -429,20 +421,17 @@ class _ProductVariantListState extends State<ProductVariantList> {
   }
 
   void deleteProductVariant(Variant? variant) {
-        _auth.deleteVariant(variant!.id!).then((value) {
-          if (value) {
-            showToast(
-                message:
-                AppLocalization.of(context)!.variantDeletedSuccessfully);
-            _onRefresh();
-          } else {
-            showToast(
-                message: AppLocalization.of(context)!.variantIsNotDeleted);
-          }
-        }).catchError((error) {
-          showToast(message: error.toString());
-        });
-
+    _auth.deleteVariant(variant!.id!.toString()).then((value) {
+      if (value) {
+        showToast(
+            message: AppLocalization.of(context)!.variantDeletedSuccessfully);
+        _onRefresh();
+      } else {
+        showToast(message: AppLocalization.of(context)!.variantIsNotDeleted);
+      }
+    }).catchError((error) {
+      showToast(message: error.toString());
+    });
   }
 
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
@@ -456,5 +445,4 @@ class _ProductVariantListState extends State<ProductVariantList> {
     _refreshController.dispose();
     super.dispose();
   }
-
 }

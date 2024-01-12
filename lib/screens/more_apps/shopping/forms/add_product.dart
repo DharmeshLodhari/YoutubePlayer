@@ -2041,7 +2041,7 @@ class _AddProductState extends State<AddProduct> {
           product.tags = userTags.map((i) => Tags.fromJson(i)).toList();
           if (selectedDeliveryTimeCondition != null) {
             product.preparationTime =
-                num.parse(selectedDeliveryTimeCondition!.name);
+                int.parse(selectedDeliveryTimeCondition!.name);
           }
           product.condition = productCondition;
           product.price = moneyInputNormalizer(productPrice).toString();

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:Slydo/screens/more_apps/service_hub/models/create_job_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -104,6 +106,7 @@ List<ProductCondition> conditions = <ProductCondition>[
     'Original packaging or with tag',
   ),
 ];
+
 List<ProductCondition> deliverTimeCondition = <ProductCondition>[
   const ProductCondition(
     '10',
@@ -244,18 +247,18 @@ class Product {
   ProductCategory? subCategory;
   ProductCategory? customCategory;
   List<Tags>? tags;
-  num? preparationTime;
+  int? preparationTime;
   String? manufacturer;
   bool? isAvailable;
   DateTime? availableFrom;
   String? currency;
-  List<dynamic>? pictureMap;
+  List<Picture>? pictureMap;
   double? rating;
   bool? canRate;
   bool? enableInSuperStore;
-  List<dynamic>? variant;
+  // List<dynamic>? variant;
   List<Variant>? variantModels;
-  List<dynamic>? addOns;
+  // List<dynamic>? addOns;
   List<AddOns>? addOnsModels;
   double? weight;
   String? weightSiUnit;
@@ -267,13 +270,25 @@ class Product {
   int? quantity;
   double? pricePercentageChange;
   bool isSelected;
-  num? discountValue;
+  int? discountValue;
   String? discountType;
   bool? discountIsActive;
-  num? discountedPrice;
+  int? discountedPrice;
   int? oldPrice;
   bool? isShippable;
   String? addressId;
+
+  // DateTime? createdAt;
+  // bool? enableInSuperstore;
+  // String? createdBy;
+  // String? createdByFullname;
+  // String? createdByAvatar;
+  // String? updatedBy;
+  // String? updatedByFullname;
+  // String? updatedByAvatar;
+  // ItemEdBy? itemAddedBy;
+  // ItemEdBy? itemUpdatedBy;
+  int? qty;
 
   Product({
     this.id,
@@ -303,9 +318,9 @@ class Product {
     this.currency,
     this.pictureMap,
     this.rating = 0.0,
-    this.variant,
+    // this.variant,
     this.variantModels,
-    this.addOns,
+    // this.addOns,
     this.addOnsModels,
     this.weight = 0.0,
     this.weightSiUnit,
@@ -325,6 +340,7 @@ class Product {
     this.oldPrice,
     this.isShippable,
     this.addressId,
+    this.qty,
   });
 
   Map toMap() {
@@ -346,9 +362,9 @@ class Product {
       "enable_in_superstore": enableInSuperStore,
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
-      "variants": variant,
+      // "variants": variant,
       "variants": variantModels,
-      "add_ons": addOns,
+      // "add_ons": addOns,
       "add_ons": addOnsModels,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
@@ -366,6 +382,7 @@ class Product {
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
+      'qty': qty,
     };
     if (preparationTime != null && preparationTime! != 0) {
       data["preparation_time"] = preparationTime;
@@ -396,9 +413,9 @@ class Product {
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
       "currency": currency,
-      "variants": variant,
+      // "variants": variant,
       "variants": variantModels,
-      "add_ons": addOns,
+      // "add_ons": addOns,
       "add_ons": addOnsModels,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
@@ -416,6 +433,7 @@ class Product {
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
+      'qty': qty,
     };
   }
 
@@ -490,8 +508,16 @@ class Product {
       pictureMap: object["pictureMap"] ?? [],
       rating: formatRating(double.parse(object['rating']?.toString() ?? "0")),
       canRate: object["can_rate"] ?? false,
-      variant: object["variants"],
-      addOns: object["add_ons"],
+      // variant: object["variants"],
+      variantModels: object["variants"] == null
+          ? []
+          : List<Variant>.from(
+              object["variants"]!.map((x) => Variant.fromJson(x))),
+      // addOns: object["add_ons"],
+      addOnsModels: object["add_ons"] == null
+          ? []
+          : List<AddOns>.from(
+              object["add_ons"]!.map((x) => AddOns.fromJson(x))),
       weight: object["weight"],
       weightSiUnit: object["weight_si_unit"],
       height: object["height"],
@@ -506,6 +532,7 @@ class Product {
       discountedPrice: object['discounted_price'],
       oldPrice: object["old_price"],
       isShippable: object["is_shippable"],
+      qty: object["qty"],
     );
   }
 
@@ -548,8 +575,8 @@ class Product {
   String getImageId(String? imageUrl) {
     debugPrint("${serverImages}");
     for (var data in pictureMap!) {
-      if (data['file'] == imageUrl) {
-        return data['id'].toString();
+      if (data.path == imageUrl) {
+        return data.id.toString();
       }
     }
     return "";
@@ -596,8 +623,10 @@ class Product {
       pictureMap: this.pictureMap ?? [],
       rating: this.rating,
       canRate: this.canRate ?? false,
-      variant: this.variant,
-      addOns: this.addOns,
+      // variant: this.variant,
+      variantModels: this.variantModels,
+      // addOns: this.addOns,
+      addOnsModels: this.addOnsModels,
       weight: this.weight,
       weightSiUnit: this.widthSiUnit,
       height: this.height,
@@ -606,7 +635,6 @@ class Product {
       trackInventory: this.trackInventory,
       quantity: quantity ?? this.quantity,
       pricePercentageChange: this.pricePercentageChange ?? 0.0,
-
       // discountedPrice: object["discounted_price"],
       // discountIsActive: object["discount_is_active"],
       // discountType: object["discount_type"],
@@ -627,11 +655,20 @@ class Variant {
   String? value;
   List<File>? localImages;
   List<String?>? serverImages;
-  String? quantity;
+  int? quantity;
   bool? isAvailable;
   DateTime? availableFrom;
   String? currency;
   bool? trackInventory;
+
+  List<Pictures>? pictures;
+  DateTime? createdAt;
+  String? merchant;
+  int? oldPrice;
+  int? discountValue;
+  String? discountType;
+  bool? discountIsActive;
+  int? discountedPrice;
 
   Variant(
       {this.id,
@@ -690,7 +727,7 @@ class Variant {
       Variant variant = Variant(
         id: data['id'].toString(),
         title: data['title'],
-        quantity: data['quantity'].toString(),
+        quantity: data['quantity'],
         colour: data["colour"] ?? "",
         value: data["value"] ?? "",
         type: data["type"] ?? "",
@@ -804,21 +841,22 @@ class AddOnOption {
   bool? isAvailable;
   bool isChecked = false;
   DateTime? createdAt;
-  int qty = 0;
+  int quantity = 0;
 
-  AddOnOption(
-      {this.id,
-      this.picture,
-      this.name,
-      this.description,
-      this.merchant,
-      this.selectType,
-      this.currency,
-      this.price,
-      this.isAvailable,
-      this.isChecked = false,
-      this.createdAt,
-      this.qty = 0});
+  AddOnOption({
+    this.id,
+    this.picture,
+    this.name,
+    this.description,
+    this.merchant,
+    this.selectType,
+    this.currency,
+    this.price,
+    this.isAvailable,
+    this.isChecked = false,
+    this.createdAt,
+    this.quantity = 0,
+  });
 
   AddOnOption.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -832,6 +870,7 @@ class AddOnOption {
     isAvailable = json['is_available'];
     isChecked = json['is_checked'] ?? false;
     createdAt = getProductDateTime(json['created_at']);
+    quantity = json['quantity'] ?? 0;
   }
 
   static DateTime getProductDateTime(var date) {
@@ -854,6 +893,7 @@ class AddOnOption {
     data['price'] = this.price;
     data['is_available'] = this.isAvailable;
     data['created_at'] = this.createdAt;
+    data['quantity'] = this.quantity;
     return data;
   }
 }

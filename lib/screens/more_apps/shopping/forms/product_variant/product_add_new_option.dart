@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -18,7 +19,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../../widget/rounded_background_icon.dart';
 import '../../shopping_auth.dart';
-
 
 class ProductAddNewOption extends StatefulWidget {
   var arguments;
@@ -69,7 +69,6 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -104,7 +103,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
         },
       ),
       title: Text(
-          AppLocalization.of(context)!.newOption,
+        AppLocalization.of(context)!.newOption,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -114,64 +113,58 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   Widget scaffoldBody() {
     return isLoading
         ? Center(
-      child: CircularLoadingIndicator(),
-    )
+            child: CircularLoadingIndicator(),
+          )
         : SingleChildScrollView(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 10),
-                addImages(),
-
-                const SizedBox(height: 10),
-                addTitleField(),
-                const SizedBox(height: 10),
-                getTypeField(),
-
-                if(selectedType == 'Size')...[
-                  const SizedBox(height: 10),
-                  addSizeField(),
-                ],
-                if(selectedType == 'Color')...[
-                  const SizedBox(height: 10),
-                  getColorField(),
-                ],
-                if(selectedType == 'Color n Size')...[
-                  const SizedBox(height: 10),
-                  getColorField(),
-                  const SizedBox(height: 10),
-                  addSizeField(),
-                ],
-
-                const SizedBox(
-                  height: 10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(height: 10),
+                      addImages(),
+                      const SizedBox(height: 10),
+                      addTitleField(),
+                      const SizedBox(height: 10),
+                      getTypeField(),
+                      if (selectedType == 'Size') ...[
+                        const SizedBox(height: 10),
+                        addSizeField(),
+                      ],
+                      if (selectedType == 'Color') ...[
+                        const SizedBox(height: 10),
+                        getColorField(),
+                      ],
+                      if (selectedType == 'Color n Size') ...[
+                        const SizedBox(height: 10),
+                        getColorField(),
+                        const SizedBox(height: 10),
+                        addSizeField(),
+                      ],
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      getAmountField(),
+                      const SizedBox(height: 16),
+                      getAvailableFromField(),
+                      const SizedBox(height: 40),
+                      getIsAvailableField(),
+                      const SizedBox(height: 16),
+                      getInventoryFormField(),
+                      const SizedBox(height: 16),
+                      getIsInventoryAvailableField(),
+                      const SizedBox(height: 30),
+                      getSubmitButton(),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
-                getAmountField(),
-
-                const SizedBox(height: 16),
-                getAvailableFromField(),
-                const SizedBox(height: 40),
-                getIsAvailableField(),
-
-                const SizedBox(height: 16),
-                getInventoryFormField(),
-                const SizedBox(height: 16),
-                getIsInventoryAvailableField(),
-
-                const SizedBox(height: 30),
-                getSubmitButton(),
-                const SizedBox(height: 40),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   Widget showBackArrow() {
@@ -195,13 +188,12 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
           child: index != croppedImageList.length
               ? showImage(index)
               : croppedImageList.length != imageCount
-              ? addImageButton()
-              : null,
+                  ? addImageButton()
+                  : null,
         ),
       ),
     );
   }
-
 
   Widget addImageButton() {
     return CustomBoxShadow(
@@ -245,18 +237,18 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(AppLocalization.of(context)!.selectTheImageSource),
-          actions: <Widget>[
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.camera),
-              onPressed: () => Navigator.pop(context, ImageSource.camera),
-            ),
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.gallery),
-              onPressed: () => Navigator.pop(context, ImageSource.gallery),
-            )
-          ],
-        ));
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
 
     if (imageSource != null) {
       ImagePicker().pickImage(source: imageSource).then((value) async {
@@ -276,7 +268,6 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   }
 
   Widget showImage(int index) {
-
     return SizedBox(
       height: 100,
       child: Stack(
@@ -342,7 +333,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
       },
     );
   }
-  
+
   Widget addSizeField() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.size,
@@ -437,9 +428,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
     if (selectedType != null && selectedType != '') {
       return true;
     } else {
-      showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectCategory);
+      showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
       return false;
     }
   }
@@ -521,10 +510,10 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                     border: Border.all(
                       color: greyBorderColor,
                     ),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))
-                ),
+                    borderRadius: const BorderRadius.all(Radius.circular(10))),
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
+                  padding: const EdgeInsets.only(
+                      left: 10.0, top: 5.0, bottom: 5.0, right: 10.0),
                   child: Text(
                     inventoryCount.toString(),
                     style: TextStyle(
@@ -545,8 +534,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                     color: blackFont,
                     size: 14,
                   ),
-                  onTap: () => addInventory()
-              ),
+                  onTap: () => addInventory()),
             ),
             leading: Padding(
               padding: const EdgeInsets.only(left: 30.0),
@@ -557,8 +545,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                     color: blackFont,
                     size: 2,
                   ),
-                  onTap: () => subtractInventory()
-              ),
+                  onTap: () => subtractInventory()),
             ),
           ),
         ),
@@ -587,7 +574,8 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
         setState(() {});
       },
       isChecked: inventoryIsAvailable,
-      title: "Checking this field will automatically update the quantity when the product is purchased.",
+      title:
+          "Checking this field will automatically update the quantity when the product is purchased.",
       fontSize: 10.0,
       maxLines: 2,
     );
@@ -660,7 +648,6 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                               selectedType = category;
                               Navigator.pop(context);
                               setState(() {});
-
                             },
                           ),
                         );
@@ -698,12 +685,12 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
       onPressed: isAPILoading
           ? () {}
           : () async {
-        FocusScope.of(context).unfocus();
-        isAPILoading = true;
-        if (mounted) setState(() {});
+              FocusScope.of(context).unfocus();
+              isAPILoading = true;
+              if (mounted) setState(() {});
 
-        await addVariant();
-      },
+              await addVariant();
+            },
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "Save",
@@ -714,48 +701,45 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   Future<void> addVariant() async {
     if (_formKey.currentState!.validate()) {
       if (croppedImageList.length >= 1) {
-      // if (productImages.length >= 1) {
+        // if (productImages.length >= 1) {
         if (validateDropdown()) {
           Variant variant = Variant();
           // variant.localImages = productImages.map((file) => File(file.path)).toList();
-          variant.localImages = croppedImageList.map((filePath) => File(filePath)).toList();
+          variant.localImages =
+              croppedImageList.map((filePath) => File(filePath)).toList();
           variant.title = title;
           variant.colour = color;
           variant.value = value;
-          variant.quantity = inventoryCount.toString();
+          variant.quantity = inventoryCount;
           variant.type = selectedType;
           variant.price = moneyInputNormalizer(variantPrice).toString();
           variant.isAvailable = productIsAvailable;
           variant.availableFrom = productAvailableFrom;
           variant.trackInventory = trackInventory;
           variant.currency = 'NGN';
-          if(optionOnWhatToDo == 'new'){
+          if (optionOnWhatToDo == 'new') {
             //send the variant detail back to the previous page
             debugPrint('file path::: ${variant.localImages}');
 
             Navigator.pop(context, variant);
-          }else if(optionOnWhatToDo == 'edit'){
+          } else if (optionOnWhatToDo == 'edit') {
             String productId = widget.arguments["productId"];
             //make api call to save the variant details
             saveVariant(productId, variant);
           }
-
         }
       } else {
         isAPILoading = false;
         if (mounted) setState(() {});
         showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
-
     }
-
   }
 
   Future<void> saveVariant(String productId, Variant item) async {
     await _auth.addVariant(item, productId).then((value) {
       Navigator.pop(context, item);
       return true;
-
     }).catchError((error) {
       debugPrint(error.toString());
       isAPILoading = false;
@@ -770,5 +754,4 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
     _scrollController.dispose();
     super.dispose();
   }
-
 }

@@ -136,7 +136,8 @@ class _ShoppingCartTileForProductState
       image = widget.item!.serverImages!.first!;
       // debugPrint('add-on image:::: ${widget.item!.serverImages}');
     } else if (widget.variant != null) {
-      image = widget.image!;
+      // image = widget.image!;
+      image = widget.item!.serverImages!.first!;
     } else {
       image = widget.item?.cover ?? "";
     }

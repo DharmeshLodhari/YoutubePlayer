@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -17,10 +18,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+
 import '../../../../data/currency.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/navigation_util.dart';
-import '../../../../widget/rounded_background_icon.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../shopping_auth.dart';
 
@@ -134,7 +134,7 @@ class _EditProductState extends State<EditProduct> {
       obtainCategories();
       obtainCustomCategory();
     });
-        myController.addListener(_printLatestValue);
+    myController.addListener(_printLatestValue);
 
     super.initState();
   }
@@ -244,11 +244,15 @@ class _EditProductState extends State<EditProduct> {
           inventoryCountController.text = inventoryCount.toString();
 
           //convert list to variant
-          productVariantList =
-              Variant.convertToVariantList(currentProduct.variant!);
-          productAddOnsList = currentProduct.addOns != null
-              ? AddOns.convertToAddOnList(currentProduct.addOns!)
-              : [];
+          productVariantList = currentProduct.variantModels ?? [];
+          // productVariantList = currentProduct.variantModels != null
+          //     ? Variant.convertToVariantList(currentProduct.variantModels!)
+          //     : [];
+          //convert list to addOns
+          productAddOnsList = currentProduct.addOnsModels ?? [];
+          // productAddOnsList = currentProduct.addOnsModels != null
+          //     ? AddOns.convertToAddOnList(currentProduct.addOnsModels!)
+          //     : [];
 
           // assigning the dropdown from currentProduct
           selectedProductCategory = currentProduct.category;
@@ -300,6 +304,7 @@ class _EditProductState extends State<EditProduct> {
     isLoading = false;
     if (mounted) setState(() {});
   }
+
   void obtainCustomCategory() async {
     try {
       productCustomCategories = await ShoppingAuthService()
@@ -443,7 +448,7 @@ class _EditProductState extends State<EditProduct> {
                       SizedBox(
                         height: 6,
                       ),
-                    
+
                       TextFieldTags(
                         tagsStyler: productTextFieldTagStyler,
                         validator: (value) {
@@ -525,15 +530,14 @@ class _EditProductState extends State<EditProduct> {
                                     myController.selection =
                                         TextSelection.collapsed(
                                             offset: text.length);
-                                    userTags.add(
-                                       tagList[index] as Tags
-                                    );
+                                    userTags.add(tagList[index] as Tags);
                                     userTags = userTags.toSet().toList();
                                   });
                                   FocusScope.of(context).requestFocus();
 
                                   // print(userTags);print("______________");
-                                  userTags.removeWhere((tag) => tag.name!.isEmpty);
+                                  userTags
+                                      .removeWhere((tag) => tag.name!.isEmpty);
                                 },
                               );
                             },
@@ -542,11 +546,11 @@ class _EditProductState extends State<EditProduct> {
 
                       getProductConditionField(),
                       const SizedBox(height: 10),
-                                            if (userBloc!.userAbout!.industry!.name! ==
+                      if (userBloc!.userAbout!.industry!.name! ==
                               "Restaurant/Cafe" ||
                           userBloc!.userAbout!.industry!.name! ==
                               "Pharmaceutical")
-                      getProductDeliveryTimeField(),
+                        getProductDeliveryTimeField(),
                       SizedBox(height: 16),
                       getProductShortDescription(),
                       SizedBox(height: 10),
@@ -1454,7 +1458,6 @@ class _EditProductState extends State<EditProduct> {
                                 dense: true,
                                 title: Row(
                                   children: [
-                                    
                                     Expanded(
                                       child: Text(
                                         selectedPreparationCondition != null
@@ -1649,68 +1652,70 @@ class _EditProductState extends State<EditProduct> {
                   },
                 ),
                 const SizedBox(height: 20),
-                subCategories ==
-                    null ? SizedBox() : Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: subCategories!.length,
-                    itemBuilder: (context, index) {
-                      ProductCategory category = subCategories![index];
-                      if (selectedSubCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedSubCategory = category;
-                              Navigator.pop(context);
-                              if (pressedSubCategory != null) {
-                                selectedSubCategory = pressedSubCategory;
-                                productSubCategory = selectedSubCategory!.name;
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
+                subCategories == null
+                    ? SizedBox()
+                    : Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: subCategories!.length,
+                          itemBuilder: (context, index) {
+                            ProductCategory category = subCategories![index];
+                            if (selectedSubCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedSubCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedSubCategory != null) {
+                                      selectedSubCategory = pressedSubCategory;
+                                      productSubCategory =
+                                          selectedSubCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCategory != null) {
+                                  selectedSubCategory = pressedCategory;
+                                  productCategory = selectedSubCategory!.name;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
                         ),
-                        dense: true,
-                        onTap: () {
-                          pressedCategory = category;
-                          Navigator.pop(context);
-                          if (pressedCategory != null) {
-                            selectedSubCategory = pressedCategory;
-                            productCategory = selectedSubCategory!.name;
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
+                      ),
               ],
             ),
           );
@@ -1718,6 +1723,7 @@ class _EditProductState extends State<EditProduct> {
       ),
     );
   }
+
   void customCategoryAndroidSheet() {
     customCategories = productCustomCategoriesCopy;
     androidBottomSheet(
@@ -1776,7 +1782,8 @@ class _EditProductState extends State<EditProduct> {
                               Navigator.pop(context);
                               if (pressedSubCategory != null) {
                                 selectedCustomCategory = pressedCustomCategory;
-                                productCustomCategory = selectedCustomCategory!.name;
+                                productCustomCategory =
+                                    selectedCustomCategory!.name;
                                 setState(() {});
                               }
                             },
@@ -1799,7 +1806,8 @@ class _EditProductState extends State<EditProduct> {
                           Navigator.pop(context);
                           if (pressedCustomCategory != null) {
                             selectedCustomCategory = pressedCustomCategory;
-                            productCustomCategory = selectedCustomCategory!.name;
+                            productCustomCategory =
+                                selectedCustomCategory!.name;
                             setState(() {});
                           }
                         },
@@ -1914,8 +1922,6 @@ class _EditProductState extends State<EditProduct> {
       ),
     );
   }
-
-
 
   void selectItemCondition() async {
     final pressedCondition = await showDialog<ProductCondition>(
@@ -2132,8 +2138,9 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.subCategory = selectedSubCategory;
           currentProduct.customCategory = selectedCustomCategory;
           currentProduct.tags = userTags;
-          if(selectedPreparationCondition != null){
-          currentProduct.preparationTime = num.parse(selectedPreparationCondition!.name);
+          if (selectedPreparationCondition != null) {
+            currentProduct.preparationTime =
+                int.parse(selectedPreparationCondition!.name);
           }
           currentProduct.condition = productCondition;
           currentProduct.price = moneyInputNormalizer(productPrice!).toString();
@@ -2870,7 +2877,7 @@ class _EditProductState extends State<EditProduct> {
     productPriceController.dispose();
     _scrollController.dispose();
     scrollControllerVariant.dispose();
-        myController.dispose();
+    myController.dispose();
 
     super.dispose();
   }

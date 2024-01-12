@@ -106,7 +106,7 @@ class _EditServiceState extends State<EditService> {
     //fetchProductFrom id to edit
     await _auth.getService(serviceId!).then((value) {
       currentService = value;
-      // asssigning to our edit controllers
+      // assigning to our edit controllers
 
       serviceTitleController.text = currentService.name!;
       serviceDescriptionController.text = currentService.description!;

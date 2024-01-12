@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
@@ -269,7 +270,9 @@ class ShoppingAuthService extends AuthService {
     product.cover = item['cover'];
     product.localImages = item['localImages'];
     product.serverImages = product.imageDataToList(item['pictures']);
-    product.pictureMap = item['pictures'];
+    product.pictureMap = item['pictures'].isEmpty
+        ? []
+        : (item['pictures'] as List).map((i) => Picture.fromJson(i)).toList();
     product.name = item['name'];
     product.qrCode = item['qr_code'];
     product.manufacturer = item['manufacturer'];
@@ -301,8 +304,10 @@ class ShoppingAuthService extends AuthService {
     product.rating = formatRating(item['rating'] ?? 0.0);
     product.canRate = item["can_rate"] ?? false;
     product.enableInSuperStore = item["enable_in_superstore"] ?? false;
-    product.variant = item["variants"] ?? null;
-
+    // product.variant = item["variants"] ?? null;
+    product.variantModels = item['variants'].isEmpty
+        ? []
+        : (item['variants'] as List).map((i) => Variant.fromJson(i)).toList();
     product.weight = item['weight'] ?? 0.0;
     product.weightSiUnit = item['weight_si_unit'] ?? '';
     product.height = item['height'] ?? 0.0;
@@ -316,7 +321,7 @@ class ShoppingAuthService extends AuthService {
     product.discountType = item['discount_type'];
     product.discountIsActive = item['discount_is_active'];
     product.discountedPrice = item['discounted_price'];
-    product.addOns = item['add_ons'];
+    // product.addOns = item['add_ons'];
     product.addOnsModels = item['add_ons'].isEmpty
         ? []
         : (item['add_ons'] as List).map((i) => AddOns.fromJson(i)).toList();

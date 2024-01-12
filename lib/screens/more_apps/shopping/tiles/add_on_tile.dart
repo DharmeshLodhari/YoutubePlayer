@@ -195,12 +195,12 @@ class _AddOnTileState extends State<AddOnTile> {
                     size: 1.5,
                   ),
                   onTap: () {
-                    if (addOnOption.qty > 1) {
-                      addOnOption.qty -= 1;
+                    if (addOnOption.quantity > 1) {
+                      addOnOption.quantity -= 1;
                     } else {
                       addOnOption.isChecked = false;
                       addOns.groupValue = null;
-                      addOnOption.qty = 0;
+                      addOnOption.quantity = 0;
                     }
                     setState(() {});
                   },
@@ -211,7 +211,7 @@ class _AddOnTileState extends State<AddOnTile> {
                   ),
                 ),
                 Text(
-                  addOnOption.qty.toString(),
+                  addOnOption.quantity.toString(),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -235,7 +235,7 @@ class _AddOnTileState extends State<AddOnTile> {
                     size: 10, // Adjust the size as needed
                   ),
                   onTap: () {
-                    addOnOption.qty += 1;
+                    addOnOption.quantity += 1;
                     setState(() {});
                   },
                 ),
@@ -290,7 +290,7 @@ class _AddOnTileState extends State<AddOnTile> {
           //   if (data.id == addOnOption.id) {
           // Found the option with the target ID, change its isChecked value
           addOnOption.isChecked = !addOnOption.isChecked;
-          addOnOption.qty = 1;
+          addOnOption.quantity = 1;
           //   }
           // });
           if (mounted) setState(() {});
@@ -310,7 +310,7 @@ class _AddOnTileState extends State<AddOnTile> {
         activeColor: navyBlue,
         onChanged: (String? value) {
           addOns.groupValue = value;
-          addOnOption.qty = 1;
+          addOnOption.quantity = 1;
           setState(() {});
         },
       );

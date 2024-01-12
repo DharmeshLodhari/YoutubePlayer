@@ -101,8 +101,8 @@ class PackageDetailsModel {
       "id": buyNow?.id ?? "",
       "qty": buyNow?.quantity ?? 1,
       "type": buyNow?.type ?? 'product',
-      "add_ons": buyNow?.addOns,
-      "variants": buyNow?.variant,
+      "add_ons": buyNow?.addOnsModels,
+      "variants": buyNow?.variantModels,
       "item_added_by": userName ?? "",
     };
     return data;

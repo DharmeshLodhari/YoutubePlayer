@@ -397,23 +397,23 @@ class _ShoppingCartState extends State<ShoppingCart> {
       final item = data["item"];
 
       if (item is Product) {
-        final product = item as Product;
+        Product product = item;
 
-        List? variants = data['item'].variant;
-        List? addOn = item.addOns;
+        List<Variant>? variants = product.variantModels;
+        List<AddOns>? addOn = product.addOnsModels;
 
         if (variants != null && variants.isNotEmpty) {
           for (var variant in variants) {
             Map<String, dynamic> variant1 = {
-              "id": variant!["id"],
-              "quantity": variant['quantity'].toString(),
-              "price": variant['price'],
-              "colour": variant['colour'],
-              "value": variant['value'],
-              "type": variant['type']
+              "id": variant.id,
+              "quantity": variant.quantity,
+              "price": variant.price,
+              "colour": variant.colour,
+              "value": variant.value,
+              "type": variant.type,
             };
 
-            String image = variant!["image"].toString();
+            String image = variant.localImages.toString();
             Variant single = Variant.fromJson(variant1);
 
             itemWidgets.add(
@@ -708,8 +708,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       if (element["variants"] != null &&
           element.containsKey("variants") &&
           productId == item.id) {
-        // List variantsList = element["variants"];
-        List variantsList = element['item'].variant;
+        List variantsList = element["variants"];
 
         // debugPrint("Data From Product Page v-id 5 : ${variantsList}");
         // debugPrint("Data From Product Page v-id 6 : ${element["item"].variant}");
@@ -788,36 +787,35 @@ class _ShoppingCartState extends State<ShoppingCart> {
       var product = item["item"];
 
       if (product is Product) {
-        if (product.addOns != null) {
-          if (product.addOns!.isNotEmpty) {
-            for (var itemAddOn in product.addOns!) {
-              if (itemAddOn.containsKey('options')) {
-                List<Map<String, dynamic>> options =
-                    List<Map<String, dynamic>>.from(itemAddOn['options']);
+        if (product.addOnsModels != null) {
+          if (product.addOnsModels!.isNotEmpty) {
+            for (var itemAddOn in product.addOnsModels!) {
+              // if (itemAddOn.containsKey('options')) {
+              //   List<Map<String, dynamic>> options =
+              //       List<Map<String, dynamic>>.from(itemAddOn.options);
 
-                for (var option in options) {
-                  int AddOnOptionPrice =
-                      int.parse(option['price'].toString()) ?? 0;
-                  int quantity = int.parse(option['quantity'].toString()) ?? 0;
-                  AddOnTotal += AddOnOptionPrice * quantity;
-                }
-
-                int price = int.parse(product.price.toString()) ?? 0;
-                int quantity = int.parse(item['qty'].toString()) ?? 0;
-                int priceQuantity = price * quantity;
-                totalPrice += AddOnTotal + priceQuantity;
+              for (var option in itemAddOn.options!) {
+                int AddOnOptionPrice = int.parse(option.price.toString()) ?? 0;
+                int quantity = option.quantity ?? 0;
+                AddOnTotal += AddOnOptionPrice * quantity;
               }
+
+              int price = int.parse(product.price.toString()) ?? 0;
+              int quantity = item['qty'] ?? 0;
+              int priceQuantity = price * quantity;
+              totalPrice += AddOnTotal + priceQuantity;
+              // }
             }
           }
         }
 
-        if (product.variant != null) {
+        if (product.variantModels != null) {
           // If the variant list is not empty, calculate the total price using variants
-          if (product.variant!.isNotEmpty) {
-            for (var variant in product.variant!) {
+          if (product.variantModels!.isNotEmpty) {
+            for (var variant in product.variantModels!) {
               // if(variant['quantity'] != null || variant['price'] != null){
-              int variantPrice = int.parse(variant['price'].toString()) ?? 0;
-              int quantity = int.parse(variant['quantity'].toString()) ?? 0;
+              int variantPrice = int.parse(variant.price.toString()) ?? 0;
+              int quantity = variant.quantity ?? 0;
               itemTotal += variantPrice * quantity;
               // }
 
@@ -826,7 +824,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
           totalPrice += itemTotal;
         }
 
-        if (product.addOns != null && product.variant != null) {
+        if (product.addOnsModels != null && product.variantModels != null) {
           int normalTotal = 0;
           normalTotal = int.parse(product.price.toString()) *
               int.parse(item['qty'].toString());
@@ -844,7 +842,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       // totalPrice += itemTotal;
     }
     basketBloc.orderTotal = totalPrice;
-    if (mounted) setState(() {});
+    // if (mounted) setState(() {});
 
     return totalPrice;
   }
