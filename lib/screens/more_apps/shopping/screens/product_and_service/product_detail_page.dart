@@ -609,11 +609,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> addToCart() async {
+    // Todo check this call
     String type = product is Product ? "product" : "service";
     Map<String, dynamic> variantPayLoad = {};
     Map<String, dynamic> addOnPayLoad = {};
     List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
     List<AddOns> selectedAddOnsList = [];
+    Variant variantModel = Variant();
 
     Product productSend = product!;
     productSend = productSend.copyWith(quantity: 1);
@@ -646,6 +648,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         "type": "Size",
       };
     }
+    variantModel = Variant.fromJson(variantPayLoad);
+
     product?.addOnsModels?.forEach((addOn) {
       final options = addOn.options;
       if (options != null) {
@@ -707,10 +711,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
     if (basketBloc.items.isEmpty && variantPayLoad.isNotEmpty) {
       basketBloc.addItemToCart(
-          item: productSend,
-          type: type,
-          variant: product?.variantModels?.first,
-          addOns: null);
+          item: productSend, type: type, variant: variantModel, addOns: null);
     } else {
       for (var item in basketBloc.items) {
         Product productInCart = item['item'];
@@ -733,7 +734,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           basketBloc.addItemToCart(
               item: productSend,
               type: type,
-              variant: product?.variantModels?.first,
+              variant: variantModel,
               addOns: null);
 
           // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
@@ -755,10 +756,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
       // Product ID doesn't exist in the cart, add it with the variant
       basketBloc.addItemToCart(
-          item: productSend,
-          type: type,
-          variant: product?.variantModels?.first,
-          addOns: null);
+          item: productSend, type: type, variant: variantModel, addOns: null);
     }
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
@@ -777,7 +775,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (element["variants"] != null &&
           element.containsKey("variants") &&
           productId == item.id) {
-        List variantsList = element['item'].variant;
+        List<Variant> variantsList =
+            (element['item'] as Product).variantModels ?? [];
 
         // debugPrint('fola chat one fourrrr::: ${variantsList.length}');
 
@@ -793,9 +792,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
           // Iterate through the variants and add each variant to the variantDataList
           for (var variant in variantsList) {
-            if (variant.containsKey("id") && variant["id"] != null) {
-              int variantId = int.parse(variant["id"].toString());
-              int variantQuantity = int.parse(variant["quantity"].toString());
+            if (variant.id != null) {
+              int variantId = int.parse(variant.id.toString());
+              int? variantQuantity = variant.quantity;
 
               // debugPrint("Data From Product Page v-id 5 : ${variant}");
 

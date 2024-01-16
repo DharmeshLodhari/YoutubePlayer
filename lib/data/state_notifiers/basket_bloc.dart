@@ -36,7 +36,7 @@ class BasketBloc extends ChangeNotifier {
 
     items.forEach((element) {
       if (element["item"].id == id) {
-        quantity = element['qty'];
+        quantity = int.parse(element['qty'].toString());
       }
     });
     return quantity;
@@ -337,7 +337,7 @@ class BasketBloc extends ChangeNotifier {
 
     if (!flag) {
       if (item is Product) {
-        _items.add({"type": type, "item": item, "qty": item.quantity});
+        _items.add({"type": type, "item": item, "qty": 1});
       } else {
         _items.add({"type": type, "item": item, "qty": 1});
       }
@@ -393,17 +393,18 @@ class BasketBloc extends ChangeNotifier {
       Product product = _items[i]["item"];
 
       if (product.id == selectedProductId) {
-        List variantList = _items[i]['item'].variant;
+        List<Variant> variantList =
+            (_items[i]['item'] as Product).variantModels ?? [];
 
         for (var j = 0; j < variantList.length; j++) {
           var variant = variantList[j];
           // debugPrint('fola cart state cart variant id:::: ${variant['id']}');
           // debugPrint('fola cart state cart variantid:::: ${variantId}');
 
-          if (int.parse(variant['id'].toString()) == variantId) {
-            if (variant['quantity'] > 1) {
+          if (int.parse(variant.id.toString()) == variantId) {
+            if (variant.quantity! > 1) {
               // Update the quantity
-              variant['quantity'] = variant['quantity'] - 1;
+              variant.quantity = variant.quantity! - 1;
             } else {
               // Remove the variant
               variantList.removeAt(j);

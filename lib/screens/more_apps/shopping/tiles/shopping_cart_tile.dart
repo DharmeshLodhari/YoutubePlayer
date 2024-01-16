@@ -40,7 +40,7 @@ class ShoppingCartTileForProduct extends StatefulWidget {
       this.onDecreaseAddOnQty}) {
     type = item["type"];
     this.item = item["item"];
-    qty = int.tryParse(item["qty"].toString());
+    qty = item["qty"];
     variant = item["variant"];
     addOn = item["addOn"];
     image = item["image"];

@@ -702,13 +702,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
     Map<String, dynamic> dataInfo = {};
 
     for (var element in basketBloc.items) {
-      final item = element["item"];
+      Product item = element["item"];
       int totalVariantQuantity = 0;
 
-      if (element["variants"] != null &&
-          element.containsKey("variants") &&
-          productId == item.id) {
-        List variantsList = element["variants"];
+      if (item.variantModels != null && productId == item.id) {
+        List<Variant> variantsList = item.variantModels ?? [];
 
         // debugPrint("Data From Product Page v-id 5 : ${variantsList}");
         // debugPrint("Data From Product Page v-id 6 : ${element["item"].variant}");
@@ -726,9 +724,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
           // Iterate through the variants and add each variant to the variantDataList
           for (var variant in variantsList) {
-            if (variant.containsKey("id") && variant["id"] != null) {
-              int variantId = int.parse(variant["id"].toString());
-              int variantQuantity = int.parse(variant["quantity"].toString());
+            if (variant.id != null) {
+              int variantId = int.parse(variant.id.toString());
+              int? variantQuantity = variant.quantity;
 
               variantDataList.add({
                 "id": variantId,

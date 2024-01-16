@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:Slydo/screens/more_apps/service_hub/models/create_job_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -661,14 +660,14 @@ class Variant {
   String? currency;
   bool? trackInventory;
 
-  List<Pictures>? pictures;
-  DateTime? createdAt;
-  String? merchant;
-  int? oldPrice;
-  int? discountValue;
-  String? discountType;
-  bool? discountIsActive;
-  int? discountedPrice;
+  // List<Pictures>? pictures;
+  // DateTime? createdAt;
+  // String? merchant;
+  // int? oldPrice;
+  // int? discountValue;
+  // String? discountType;
+  // bool? discountIsActive;
+  // int? discountedPrice;
 
   Variant(
       {this.id,
@@ -685,6 +684,25 @@ class Variant {
       this.isAvailable,
       this.availableFrom,
       this.currency});
+
+  // factory Variant.fromMap(Map<String, dynamic> map) {
+  //   return Variant(
+  //     id: map["id"],
+  //     title: map["title"],
+  //     size: map["size"],
+  //     colour: map["colour"], // or map["color"] based on your naming convention
+  //     trackInventory: map["trackInventory"],
+  //     type: map["type"],
+  //     price: map["price"],
+  //     value: map["value"],
+  //     quantity: map["quantity"],
+  //     localImages: map["localImages"],
+  //     serverImages: map["serverImages"],
+  //     isAvailable: map["isAvailable"],
+  //     availableFrom: map["availableFrom"],
+  //     currency: map["currency"],
+  //   );
+  // }
 
   Map toMap() {
     return {
@@ -771,7 +789,7 @@ class Variant {
       id: object["id"].toString(),
       title: object["title"].toString(),
       colour: object["colour"] ?? "",
-      quantity: object["quantity"] ?? "",
+      quantity: object["quantity"] ?? 0,
       value: object["value"] ?? "",
       price: object["price"].toString(),
       trackInventory: object["track_inventory"] ?? false,
