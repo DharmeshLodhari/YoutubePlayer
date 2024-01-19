@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/blog/quill/custom_quill_embed.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
@@ -15,13 +16,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:textfield_tags/textfield_tags.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../locale/app_localization.dart';
 import '../../utils/video_player_controller/chewie_player.dart';
 import '../../utils/video_player_controller/chewie_progress_colors.dart';
-import '../../widget/LoadingIndicator.dart';
+import '../../widget/loading_indicator.dart';
 import '../more_apps/user_post/models/user_post.dart';
 import '../more_apps/yarn/utils/utils.dart';
 import '../more_apps/yarn/widgets/ask_mention_view.dart';
@@ -30,7 +30,8 @@ class CreateorEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
   String? channel;
 
-  CreateorEditPostScreen({Key? key, this.userPost, this.channel}) : super(key: key);
+  CreateorEditPostScreen({Key? key, this.userPost, this.channel})
+      : super(key: key);
 
   @override
   State<CreateorEditPostScreen> createState() => _CreateOrEditPostScreenState();
@@ -136,10 +137,12 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     publishedDateTime = widget.userPost!.publishedDate;
     userTags = List<String>.from(widget.userPost!.tags!);
     // enableCommenting = widget.userPost!.enableCommenting!;
-    blogTitleCtrl = TextEditingController(text: messageDecoderWithEmoji(widget.userPost!.title));
+    blogTitleCtrl = TextEditingController(
+        text: messageDecoderWithEmoji(widget.userPost!.title));
 
     try {
-      blogBodyTextJson = jsonDecode(messageDecoderWithEmoji(widget.userPost!.text!)!);
+      blogBodyTextJson =
+          jsonDecode(messageDecoderWithEmoji(widget.userPost!.text!)!);
       _quillBodyTextController = flutterQuill.QuillController(
           document: flutterQuill.Document.fromJson(blogBodyTextJson),
           selection: TextSelection.collapsed(offset: 0));
@@ -480,8 +483,9 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
         title: AppLocalization.of(context)!.post,
         actionTwoText: AppLocalization.of(context)!.post,
         actionOneText: AppLocalization.of(context)!.notNow,
-        description: _userUpdatingPost ? 'Are you sure you want to update post'
-            :'Are you sure you want to post\nyour content now?',
+        description: _userUpdatingPost
+            ? 'Are you sure you want to update post'
+            : 'Are you sure you want to post\nyour content now?',
         roundedBackgroundIcon: RoundedBackgroundIcon(
           enableMargin: false,
           width: 90,
@@ -537,23 +541,22 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     var userBloc = Provider.of<UserBloc>(context, listen: false);
     UserPostAuth()
         .createOrUpdateBlogPost(
-      blogId: blogId,
-      tags: newUserTags,
-      isPublic: isPublic,
-      isPublished: isPublished,
-      enableLikes: enableLikes,
-      title: blogTitleCtrl.text,
-      isUpdating: _userUpdatingPost,
-      blogImage: getImageFileToUpload(),
-      blogVideo: getVideoFileToUpload(),
-      enableCommenting: enableCommenting,
-      inLineMediaIds: blogPostInlineMediaIds,
-      authorUserName: userBloc.user.userName!,
-      publishedDate: publishedDateTime.toString(),
-      blogPostBody:
-          jsonEncode(_quillBodyTextController.document.toDelta().toJson()),
-      channelUsername: widget.channel ?? ""
-    )
+            blogId: blogId,
+            tags: newUserTags,
+            isPublic: isPublic,
+            isPublished: isPublished,
+            enableLikes: enableLikes,
+            title: blogTitleCtrl.text,
+            isUpdating: _userUpdatingPost,
+            blogImage: getImageFileToUpload(),
+            blogVideo: getVideoFileToUpload(),
+            enableCommenting: enableCommenting,
+            inLineMediaIds: blogPostInlineMediaIds,
+            authorUserName: userBloc.user.userName!,
+            publishedDate: publishedDateTime.toString(),
+            blogPostBody: jsonEncode(
+                _quillBodyTextController.document.toDelta().toJson()),
+            channelUsername: widget.channel ?? "")
         .then(
       (posted) {
         Navigator.pop(context); // To dismiss loading indicator.
@@ -957,27 +960,30 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Focus(
                 focusNode: textFieldTagFocusNode,
-                child: TextFieldTags(
-                  initialTags: userTags,
-                  tagsStyler: textFieldTagStyler,
-                  validator: (value) {
-                    return null;
-                  },
-                  textFieldStyler: textFieldStyler,
-                  onTag: (tag) {
-                    setState(() {
-                      userTags.add(tag);
-                      userTags = userTags.toSet().toList();
-                    });
-                    userTags.removeWhere((tag) => tag.isEmpty);
-                  },
-                  onDelete: (tag) {
-                    setState(() {
-                      userTags.remove(tag);
-                    });
-                    userTags.removeWhere((tag) => tag.isEmpty);
-                  },
-                ),
+                child: Container(),
+
+                ///ToDo TextFieldTags check
+                // child: TextFieldTags(
+                //   initialTags: userTags,
+                //   tagsStyler: textFieldTagStyler,
+                //   validator: (value) {
+                //     return null;
+                //   },
+                //   textFieldStyler: textFieldStyler,
+                //   onTag: (tag) {
+                //     setState(() {
+                //       userTags.add(tag);
+                //       userTags = userTags.toSet().toList();
+                //     });
+                //     userTags.removeWhere((tag) => tag.isEmpty);
+                //   },
+                //   onDelete: (tag) {
+                //     setState(() {
+                //       userTags.remove(tag);
+                //     });
+                //     userTags.removeWhere((tag) => tag.isEmpty);
+                //   },
+                // ),
               ),
             ),
           ],

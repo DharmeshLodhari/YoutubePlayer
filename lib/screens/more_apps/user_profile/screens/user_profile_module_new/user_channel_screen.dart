@@ -6,7 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
-import '../../../../../widget/noItemInList.dart';
+import '../../../../../widget/no_item_in_list.dart';
 import '../../../../moments/models/comment_model.dart';
 import '../../../messaging/chat/models/channel_model.dart';
 

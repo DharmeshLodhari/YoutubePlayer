@@ -5,9 +5,9 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -120,15 +120,16 @@ class _DispatchAddressState extends State<DispatchAddress> {
         noItemInList = false;
         isLoading = false;
         itemList.addAll(tempList);
+
         if (mounted) setState(() {});
 
         /// to getDefault selected address
-        // for (ShippingAddress address in itemList) {
-        //   if (address.is_default == true) {
-        //     selectedShippingAddress = address;
-        //     break;
-        //   }
-        // }
+        for (ShippingAddress address in itemList) {
+          if (address.is_default == true) {
+            selectedShippingAddress = address;
+            break;
+          }
+        }
       }
       if (itemList.isEmpty) {
         if (mounted) {
@@ -170,12 +171,12 @@ class _DispatchAddressState extends State<DispatchAddress> {
     itemList.addAll(tempList);
 
     /// to getDefault selected address
-    // for (ShippingAddress address in itemList) {
-    //   if (address.is_default == true) {
-    //     selectedShippingAddress = address;
-    //     break;
-    //   }
-    // }
+    for (ShippingAddress address in itemList) {
+      if (address.is_default == true) {
+        selectedShippingAddress = address;
+        break;
+      }
+    }
 
     if (mounted) setState(() {});
 
@@ -382,6 +383,9 @@ class _DispatchAddressState extends State<DispatchAddress> {
   }
 
   Widget itemTile(int index) {
+    // if (itemList[index].is_default == true) {
+    //   selectedShippingAddress = itemList[index];
+    // }
     return Container(
       // height: 120,
       margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -446,7 +450,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                 SizedBox(height: 10),
                 Row(
                   children: [
-                    if (isForSelection == false)
+                    if (isForSelection == true)
                       InkWell(
                         onTap: itemList[index].is_default!
                             ? null

@@ -1,15 +1,16 @@
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/user_address_product_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../../data/currency.dart';
 import '../../../../../data/state_notifier.dart';
 import '../../../../../utils/colors.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../utils/util.dart';
-import '../../../../../widget/LoadingIndicator.dart';
 import '../../../../../widget/curved_btn.dart';
 import '../../../../../widget/dialog.dart';
+import '../../../../../widget/loading_indicator.dart';
 import '../../models/store.dart';
 import '../../shopping_auth.dart';
 import '../checkout_screen.dart';
@@ -191,17 +192,23 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     Map<dynamic, dynamic>? variant = getVariantAsMap();
 
     if (deliveryOption == 'Pickup') {
-      totalPrice = variant!['id'].isNotEmpty ? int.parse(variant['current_price'].toString()): int.tryParse(result!['price'])!;
+      totalPrice = variant!['id'].isNotEmpty
+          ? int.parse(variant['current_price'].toString())
+          : int.tryParse(result!['price'])!;
     } else if (shippingOption != null) {
-      totalPrice = variant!['id'].isNotEmpty ? int.parse(variant['current_price'].toString())+ shippingOption!.price
+      totalPrice = variant!['id'].isNotEmpty
+          ? int.parse(variant['current_price'].toString()) +
+              shippingOption!.price
           : int.tryParse(result!['price'])! + shippingOption!.price;
     } else {
-      totalPrice = variant!['id'].isNotEmpty ? int.parse(variant['current_price'].toString()) : int.tryParse(result!['price'])!;
+      totalPrice = variant!['id'].isNotEmpty
+          ? int.parse(variant['current_price'].toString())
+          : int.tryParse(result!['price'])!;
     }
     return totalPrice;
   }
 
-  Map? getVariantAsMap(){
+  Map? getVariantAsMap() {
     Map<dynamic, dynamic>? variant = {};
 
     for (var product in basketBloc.productOrService) {
@@ -214,7 +221,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     return variant;
   }
 
-  Map? getAddOnAsMap(){
+  Map? getAddOnAsMap() {
     Map<dynamic, dynamic>? variant = {};
 
     for (var product in basketBloc.productOrService) {
@@ -231,16 +238,13 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
     Map<dynamic, dynamic>? variant = getVariantAsMap();
     Map<dynamic, dynamic>? addOn = getAddOnAsMap();
 
-    if(variant!['id'] != null && variant['id'].isNotEmpty){
-
-     return int.parse(variant['current_price'].toString());
-    }else if(addOn!.isNotEmpty){
+    if (variant!['id'] != null && variant['id'].isNotEmpty) {
+      return int.parse(variant['current_price'].toString());
+    } else if (addOn!.isNotEmpty) {
       return int.parse(addOn['current_price'].toString());
-    }
-    else{
+    } else {
       return int.tryParse(result!['price']);
     }
-
   }
 
   Widget priceRow(
@@ -465,5 +469,4 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       if (mounted) setState(() {});
     }
   }
-
 }

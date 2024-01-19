@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -12,7 +13,6 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
@@ -21,16 +21,17 @@ import 'package:Slydo/services/share_manager.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:badges/badges.dart' as badges;
+
 import '../services/logout_helper.dart';
 import '../utils/navigation_util.dart';
 import '../widget/rounded_background_icon.dart';

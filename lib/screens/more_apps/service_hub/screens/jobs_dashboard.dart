@@ -17,7 +17,7 @@ import '../../../../data/environment.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../widget/customized_dropdown_field.dart';
 import '../../../../widget/debouncer_widget.dart';
-import '../../../../widget/noItemInList.dart';
+import '../../../../widget/no_item_in_list.dart';
 import '../tiles/jos_description_card.dart';
 
 class JobsDashboard extends StatefulWidget {

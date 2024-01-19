@@ -8,8 +8,8 @@ import '../../../locale/app_localization.dart';
 import '../../../routes/route_constants.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
-import '../../../widget/LoadingIndicator.dart';
-import '../../../widget/noItemInList.dart';
+import '../../../widget/loading_indicator.dart';
+import '../../../widget/no_item_in_list.dart';
 import '../user_post/models/user_post.dart';
 import '../user_post/tile/user_post_tile.dart';
 import '../user_post/user_post_auth.dart';
@@ -322,9 +322,7 @@ class _SuperBlogState extends State<SuperBlog> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,
-          color: _slydoBlogsMenu == slydoBlogsMenu
-              ? navyBlue
-              : Colors.white,
+          color: _slydoBlogsMenu == slydoBlogsMenu ? navyBlue : Colors.white,
         ),
         child: Text(
           title,

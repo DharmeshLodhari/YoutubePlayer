@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../locale/app_localization.dart';
-import '../../../widget/LoadingIndicator.dart';
-import '../../../widget/noItemInList.dart';
+import '../../../widget/loading_indicator.dart';
+import '../../../widget/no_item_in_list.dart';
 
 class UtilityHistory extends StatefulWidget {
   @override

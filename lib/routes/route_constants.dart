@@ -216,4 +216,5 @@ class Routes {
   static const String PREVIEW_SCREEN = "/preview-screen";
   static const String COMPLETED_UPLOAD_PHOTO = "/completed-upload-photo";
   static const String RIDERS_UPDATE = "/riders-update";
+  static const String ADD_TAGS = "/add-tags";
 }

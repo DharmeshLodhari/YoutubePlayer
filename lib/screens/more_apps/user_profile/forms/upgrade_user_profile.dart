@@ -4,11 +4,11 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

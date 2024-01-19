@@ -3,10 +3,10 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_card.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -146,7 +146,8 @@ class _UserServiceListState extends State<UserServiceList> {
     return serviceNext == "" && isServiceLoading
         ? SizedBox.shrink()
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
             child: GridView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
@@ -169,7 +170,6 @@ class _UserServiceListState extends State<UserServiceList> {
               },
             ),
           );
-
   }
 
   Widget _buildServiceIndicator() {

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/credit_card/auth/debit_card_auth.dart';
@@ -8,13 +9,14 @@ import 'package:Slydo/screens/more_apps/credit_card/utils/utils.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+
 import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 
@@ -63,7 +65,6 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -110,111 +111,109 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
     return isLoading
         ? Center(
-      child: CircularLoadingIndicator(),
-    )
+            child: CircularLoadingIndicator(),
+          )
         : SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-        child: Column(
-          children: [
-
-            mainCreditCardContent(allCards),
-            const SizedBox(
-              height: 20,
-            ),
-
-            Card(
-              elevation: 2,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              shadowColor: iconBtnGrey,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: iconBtnGrey, width: 1)),
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(height: 10),
-                        addCardLabelField(),
-                        const SizedBox(height: 10),
-                        addReasonField(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        getDollarAmountField(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        getAmountField(),
-
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Container(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
               child: Column(
                 children: [
+                  mainCreditCardContent(allCards),
                   const SizedBox(
                     height: 20,
                   ),
-
-                  canWithdraw(usdCheck!, allCards.availableBalance!)
-                      ? getSubmitButton() : Container(
-                    child: Center(
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 16.0),
-                            child: Text.rich(TextSpan(
-                                text: AppLocalization.of(context)!
-                                    .availableFund,
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w600),
-                                children: <InlineSpan>[
-                                  TextSpan(
-                                    text: formatAsDollar(allCards.availableBalance!),
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: blackFont,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w600),
-                                  )
-                                ])))),
+                  Card(
+                    elevation: 2,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    shadowColor: iconBtnGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: iconBtnGrey, width: 1)),
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: isScreenIsSmall ? 8 : 16),
+                          child: Column(
+                            children: <Widget>[
+                              const SizedBox(height: 10),
+                              addCardLabelField(),
+                              const SizedBox(height: 10),
+                              addReasonField(),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              getDollarAmountField(),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              getAmountField(),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  const SizedBox(
-                    height: 20,
+                  Container(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        canWithdraw(usdCheck!, allCards.availableBalance!)
+                            ? getSubmitButton()
+                            : Container(
+                                child: Center(
+                                    child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16.0),
+                                        child: Text.rich(TextSpan(
+                                            text: AppLocalization.of(context)!
+                                                .availableFund,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: blackFont,
+                                                fontWeight: FontWeight.w600),
+                                            children: <InlineSpan>[
+                                              TextSpan(
+                                                text: formatAsDollar(
+                                                    allCards.availableBalance!),
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: blackFont,
+                                                    fontFamily: "Inter",
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              )
+                                            ])))),
+                              ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-
+          );
   }
 
-  Widget mainCreditCardContent(AllCards cardData){
-
+  Widget mainCreditCardContent(AllCards cardData) {
     var cardColors = [];
     var cardColor;
 
-    if(cardData.color == null){
+    if (cardData.color == null) {
       cardColors = [navyBlue, richPink, black, orange];
       cardColor = navyBlue;
-    }else{
+    } else {
       String? color = cardData.color;
       switch (color) {
         case 'Slydo Blue':
@@ -230,11 +229,10 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
           cardColor = orange;
           break;
         default:
-        // Handle default case (when color doesn't match any specific case)
+          // Handle default case (when color doesn't match any specific case)
           cardColor = navyBlue;
           break;
       }
-
     }
 
     return Container(
@@ -273,14 +271,17 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                               fontSize: 14,
                             ),
                           ),
-
                           const SizedBox(height: 10.0),
                           Row(
                             children: [
                               Text(
                                 cardData.isBalanceHidden!
                                     ? '****'
-                                    : cardData.currencyCode == 'USD' ? formatAsDollar(cardData.availableBalance!) : formatAsNaira(cardData.availableBalance!),
+                                    : cardData.currencyCode == 'USD'
+                                        ? formatAsDollar(
+                                            cardData.availableBalance!)
+                                        : formatAsNaira(
+                                            cardData.availableBalance!),
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -292,7 +293,10 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                           ),
                           const SizedBox(height: 20.0),
                           Text(
-                            cardData.isBalanceHidden! ? '****************' : insertSpacesInCardNumber(cardData.cardNumber!),
+                            cardData.isBalanceHidden!
+                                ? '****************'
+                                : insertSpacesInCardNumber(
+                                    cardData.cardNumber!),
                             style: TextStyle(
                               color: white,
                               fontWeight: FontWeight.bold,
@@ -303,7 +307,11 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                           Row(
                             children: [
                               Text(
-                                cardData.isBalanceHidden! ? '**********' : appendStringDot('${cardData.nameLine1} ${cardData.nameLine2}', 15),
+                                cardData.isBalanceHidden!
+                                    ? '**********'
+                                    : appendStringDot(
+                                        '${cardData.nameLine1} ${cardData.nameLine2}',
+                                        15),
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -312,8 +320,9 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                               ),
                               const SizedBox(width: 10.0),
                               Text(
-                                cardData.isBalanceHidden! ? '****' :
-                                "${cardData.expiration!.substring(0, 2)}/${cardData.expiration!.substring(2)}",
+                                cardData.isBalanceHidden!
+                                    ? '****'
+                                    : "${cardData.expiration!.substring(0, 2)}/${cardData.expiration!.substring(2)}",
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -322,7 +331,9 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                               ),
                               const SizedBox(width: 10.0),
                               Text(
-                                cardData.isBalanceHidden! ? '***' : cardData.securityCode!,
+                                cardData.isBalanceHidden!
+                                    ? '***'
+                                    : cardData.securityCode!,
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -334,7 +345,6 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                         ],
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -362,7 +372,6 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                               "slydo".toSVG(),
                               fit: BoxFit.cover,
                             ),
-
                           ],
                         ),
                       ),
@@ -373,29 +382,29 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                           children: [
                             cardData.cardBrand == 'Visa'
                                 ? SvgPicture.asset(
-                              "visa".toSVG(),
-                              fit: BoxFit.cover,
-                            )
+                                    "visa".toSVG(),
+                                    fit: BoxFit.cover,
+                                  )
                                 : SvgPicture.asset(
-                              "mastercard".toSVG(),
-                              fit: BoxFit.cover,
-                            ),
+                                    "mastercard".toSVG(),
+                                    fit: BoxFit.cover,
+                                  ),
                             const SizedBox(width: 5.0),
                             cardData.cardBrand == 'Visa'
                                 ? SizedBox.shrink()
                                 : Column(
-                              children: [
-                                Text(
-                                  'Mastercard',
-                                  style: TextStyle(
-                                    color: white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
+                                    children: [
+                                      Text(
+                                        'Mastercard',
+                                        style: TextStyle(
+                                          color: white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5.0),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(width: 5.0),
-                              ],
-                            ),
                           ],
                         ),
                       ),
@@ -414,31 +423,31 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
     // Add the parameter here
     return cardData.isBalanceHidden!
         ? IconButton(
-      padding: const EdgeInsets.all(4),
-      alignment: Alignment.center,
-      icon: const Icon(
-        Icons.visibility,
-        color: Colors.white,
-        size: 12,
-      ),
-      onPressed: () {
-        cardData.isBalanceHidden = false; // Set the flag on the cardData
-        setState(() {});
-      },
-    )
+            padding: const EdgeInsets.all(4),
+            alignment: Alignment.center,
+            icon: const Icon(
+              Icons.visibility,
+              color: Colors.white,
+              size: 12,
+            ),
+            onPressed: () {
+              cardData.isBalanceHidden = false; // Set the flag on the cardData
+              setState(() {});
+            },
+          )
         : IconButton(
-      padding: const EdgeInsets.all(4),
-      alignment: Alignment.center,
-      icon: const Icon(
-        Icons.visibility_off,
-        color: Colors.white,
-        size: 12,
-      ),
-      onPressed: () {
-        cardData.isBalanceHidden = true; // Set the flag on the cardData
-        setState(() {});
-      },
-    );
+            padding: const EdgeInsets.all(4),
+            alignment: Alignment.center,
+            icon: const Icon(
+              Icons.visibility_off,
+              color: Colors.white,
+              size: 12,
+            ),
+            onPressed: () {
+              cardData.isBalanceHidden = true; // Set the flag on the cardData
+              setState(() {});
+            },
+          );
   }
 
   Widget addCardLabelField() {
@@ -486,10 +495,12 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
           try {
             nairaAmount = double.parse(val.replaceAll(',', '')).toString();
 
-            dollarController.text = convertCurrency(exchangeRate.slydoNgnToRate!, double.parse(nairaAmount)).toString();
+            dollarController.text = convertCurrency(
+                    exchangeRate.slydoNgnToRate!, double.parse(nairaAmount))
+                .toString();
             usdAmount = dollarController.text;
             usdCheck = double.parse(dollarController.text.split(".")[0]);
-            if(mounted)setState(() {});
+            if (mounted) setState(() {});
           } catch (e) {
             // showToast(message: e.toString());
           }
@@ -511,7 +522,8 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
   Widget getDollarAmountField() {
     return CustomizedTextFormField(
-      labelText: "You send (rate: ${userBloc!.user.currency!}${exchangeRate.slydoRateToNgn})",
+      labelText:
+          "You send (rate: ${userBloc!.user.currency!}${exchangeRate.slydoRateToNgn})",
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
@@ -523,10 +535,12 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
           try {
             usdAmount = double.parse(val.replaceAll(',', '')).toString();
 
-            nairaController.text = convertCurrency(exchangeRate.slydoRateToNgn!, double.parse(usdAmount)).toString();
+            nairaController.text = convertCurrency(
+                    exchangeRate.slydoRateToNgn!, double.parse(usdAmount))
+                .toString();
 
             usdCheck = double.parse(val.replaceAll(",", "").split(".")[0]);
-            if(mounted)setState(() {});
+            if (mounted) setState(() {});
           } catch (e) {
             // showToast(message: e.toString());
           }
@@ -546,13 +560,11 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
     );
   }
 
-
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: () async {
         FocusScope.of(context).unfocus();
         withdrawFromVirtualCard();
-
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -563,7 +575,6 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
   Future<void> withdrawFromVirtualCard() async {
     if (_formKey.currentState!.validate()) {
-
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
@@ -577,15 +588,14 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
             };
 
             await _auth.withdrawCard(result, allCards.cardId!).then((value) {
-              if(value == true){
+              if (value == true) {
                 Navigator.pop(context, value);
                 showToast(message: "Withdrawal Successful");
                 return true;
-              }else{
+              } else {
                 showToast(message: "Withdrawal Failed");
                 return true;
               }
-
             }).catchError((error) {
               debugPrint(error.toString());
               showToast(message: error.toString());
@@ -593,12 +603,10 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
             isAPILoading = false;
             if (mounted) setState(() {});
-
           },
           cancelCallBack: () {
             Navigator.pop(context);
           });
-
     }
   }
 
@@ -616,7 +624,6 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
   Future<void> getExchangeRate() async {
     await _auth.getExchangeRate().then((value) {
-
       exchangeRate = value!;
       isLoading = false;
       if (mounted) {
@@ -639,11 +646,9 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
     return true;
   }
 
-
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
-
 }

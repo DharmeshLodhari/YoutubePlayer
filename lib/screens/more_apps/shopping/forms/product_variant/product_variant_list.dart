@@ -3,7 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:Slydo/widget/vertical_list_item.dart';
@@ -15,7 +15,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../data/currency.dart';
 import '../../../../../routes/route_constants.dart';
-import '../../../../../widget/CustomBoxShadow.dart';
+import '../../../../../widget/custom_box_shadow.dart';
 import '../../models/store.dart';
 import '../../shopping_auth.dart';
 

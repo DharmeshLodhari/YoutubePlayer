@@ -7,6 +7,8 @@ import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/auth/rider_registration_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
@@ -37,11 +39,11 @@ import '../services/secure_storage.dart';
 import '../utils/country_picker/country.dart';
 import '../utils/country_picker/utils.dart';
 import '../utils/navigation_util.dart';
-import '../widget/CustomBoxShadow.dart';
-import '../widget/LoadingIndicator.dart';
 import '../widget/bottom_sheet_item.dart';
+import '../widget/custom_box_shadow.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../widget/dialog.dart';
+import '../widget/loading_indicator.dart';
 import '../widget/rounded_background_icon.dart';
 import '../widget/user_dashboard_item_tile.dart';
 import 'moments/screens/moments_screen.dart';
@@ -98,10 +100,14 @@ class _HomeState extends State<Home> {
   int count = 0;
   bool noList = false;
 
+  ShippingAddress? defaultAddress;
+  bool isEmpty = false;
+
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
+    getList();
     getYarnList(categoryId: null);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -248,7 +254,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  getExploreMoments() async {
+  void getExploreMoments() async {
     if (!isExploreMomentsLoading) {
       if (nextExploreMoments != null && !isExploreMomentsLoading) {
         if (mounted) {
@@ -896,7 +902,6 @@ class _HomeState extends State<Home> {
         } else {
           showUpgradeDialog(context);
         }
-
         break;
       case 'Socials':
         hideBalance();
@@ -954,37 +959,95 @@ class _HomeState extends State<Home> {
           profileAndroidSheet();
         },
         child: userImageUserInitialsPic(
-            userBloc.user.avatar ?? "", userBloc.user.fullName ?? "", 25, 48),
+            userBloc.user.avatar ?? "", userBloc.user.fullName ?? "", 25, 45),
       ),
-      title: InkWell(
-        key: tutorialUserProfileDetailKey,
-        onTap: () {
-          Navigator.pushNamed(context, Routes.USER_PROFILE,
-              arguments: {"searchedUserName": userBloc.user.userName});
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              getGreetingMessage(),
-              style: TextStyle(
-                  fontSize: 12,
-                  fontFamily: 'Inter',
-                  color: HexColor(
-                    "#151515",
-                  )),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            key: tutorialUserProfileDetailKey,
+            onTap: () {
+              Navigator.pushNamed(context, Routes.USER_PROFILE,
+                  arguments: {"searchedUserName": userBloc.user.userName});
+            },
+            child: Row(
+              children: [
+                Text(
+                  getGreetingMessage(),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Inter',
+                      color: black,
+                      fontWeight: FontWeight.w400),
+                ),
+                SizedBox(
+                  width: 3,
+                ),
+                userNameWithVerifiedIcon(
+                  name: userBloc.user.displayName() ?? "",
+                  isVerified: userBloc.user.isVerified,
+                  verifiedIconColor: verifyGreen,
+                  textStyle: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: black,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+              ],
             ),
-            userNameWithVerifiedIcon(
-              name: userBloc.user.displayName() ?? "",
-              isVerified: userBloc.user.isVerified,
-              verifiedIconColor: verifyGreen,
-              textStyle: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: HexColor("#151515")),
+          ),
+          SizedBox(height: 5.0),
+          InkWell(
+            onTap: () {
+              if (!isEmpty) {
+                showChangeAddressDialog(context);
+              } else {
+                showNoAddressFoundDialog(context);
+              }
+            },
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 2.0, horizontal: 5.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(color: navyBlue)),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.location_pin,
+                        color: Colors.black,
+                        size: 18.0,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text(
+                          isEmpty
+                              ? 'Select Location'
+                              : "${defaultAddress?.city}, ${defaultAddress?.stateName}" ??
+                                  "",
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Inter',
+                              color: black,
+                              fontWeight: FontWeight.w300),
+                        ),
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Colors.black,
+                        size: 15.0,
+                      ),
+                    ],
+                  ),
+                ),
+                Container(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: <Widget>[
         RoundedBackgroundIcon(
@@ -1010,6 +1073,73 @@ class _HomeState extends State<Home> {
         const SizedBox(width: 8.0),
       ],
     );
+  }
+
+  Future<void> showNoAddressFoundDialog(BuildContext context) async {
+    showDialogBoxWithTitle(
+      context: context,
+      actionTextColor: white,
+      actionBgColor: navyBlue,
+      title: AppLocalization.of(context)!.noAddressFound,
+      actionText: AppLocalization.of(context)!.addNewAddress,
+      description: AppLocalization.of(context)!.addressFoundMsg,
+      ButtonOnPressed: () {
+        NavigationUtil.push(context, screen: AddEditShippingAddress())
+            .whenComplete(() => getList());
+      },
+    );
+  }
+
+  Future<void> showChangeAddressDialog(BuildContext context) async {
+    showDialogBoxWithTitle(
+      context: context,
+      actionTextColor: white,
+      actionBgColor: navyBlue,
+      title: AppLocalization.of(context)!.changeAddress,
+      actionText: AppLocalization.of(context)!.selectAddress,
+      description: AppLocalization.of(context)!.changeAddressMsg,
+      ButtonOnPressed: () async {
+        await Navigator.of(context).pushNamed(
+          Routes.DISPATCH_ADDRESS,
+          arguments: {
+            "isForSelection": true,
+            "shippingAddress": defaultAddress,
+            "onShippingAddressChange": (address) {
+              defaultAddress = address;
+              setState(() {});
+            }
+          },
+        );
+        setState(() {});
+      },
+    );
+  }
+
+  void getList() async {
+    if (mounted) setState(() {});
+
+    Map<String, dynamic>? result =
+        await ShoppingAuthService().listOfDispatchAddress("", null);
+
+    if (result == null) {
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+
+    List<ShippingAddress> tempList = result['results'];
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        isEmpty = tempList.isEmpty;
+        if (isEmpty) {
+          showNoAddressFoundDialog(context);
+        }
+        defaultAddress = tempList.firstWhere((element) => element.is_default!);
+      });
+    }
   }
 
   Widget _cartBtn() {

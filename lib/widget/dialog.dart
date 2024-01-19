@@ -56,6 +56,44 @@ import 'cutomized_alert/customized_alert_for_nudge.dart';
 //   ).show();
 // }
 //
+Future<bool?> showDialogBoxWithTitle(
+    {Widget? content,
+    required BuildContext context,
+    String? title,
+    String? description,
+    bool firstActionPrimary = true,
+    Color? actionBgColor,
+    Color? actionTextColor,
+    Function()? ButtonOnPressed,
+    required String actionText, // DialogButton's text
+    bool isOverlayTapDismiss = true,
+    RoundedBackgroundIcon? roundedBackgroundIcon}) {
+  return CustomizedAlert(
+    title: title,
+    content: content,
+    context: context,
+    desc: description,
+    roundedBackgroundIcon: roundedBackgroundIcon,
+    style: AlertStyle(
+      isOverlayTapDismiss: isOverlayTapDismiss,
+      isCloseButton: false,
+    ),
+    buttons: [
+      DialogButton(
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? false : true);
+          if (ButtonOnPressed != null) {
+            ButtonOnPressed();
+          }
+        },
+        textColor: actionTextColor,
+        text: actionText,
+        backgroundColor: actionBgColor,
+      )
+    ],
+  ).show();
+}
+
 Future<bool?> showDialogBoxWithImage({
   required BuildContext context,
   String? title,

@@ -8,10 +8,10 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -135,9 +135,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   void btnPressed() {
     if (isForAddingUserInGroup) {
       Navigator.of(context).pop(selectedConnectionList);
-    } 
-    else if(widget.arguments["create"] == "basket"){
-     showDialogBoxWithInput(
+    } else if (widget.arguments["create"] == "basket") {
+      showDialogBoxWithInput(
           context: context,
           actionOneTextColor: blackFont,
           actionOneBgColor: greyBorderColor,
@@ -192,17 +191,17 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
             ),
           ),
           leftButtonOnPressed: () async {
-            
             Navigator.pop(context);
           },
           rightButtonOnPressed: () async {
-           
             Navigator.pop(context);
           });
-    }
-    else {
+    } else {
       Navigator.of(context).pushNamed(Routes.SET_NAME_AND_PROFILE_FOR_GROUP,
-          arguments: {"users": selectedConnectionList, "create": widget.arguments["create"]});
+          arguments: {
+            "users": selectedConnectionList,
+            "create": widget.arguments["create"]
+          });
     }
   }
 
@@ -280,8 +279,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          showSelectedUser(selectedConnectionList[index].avatar!, selectedConnectionList[index].fullName!),
-
+          showSelectedUser(selectedConnectionList[index].avatar!,
+              selectedConnectionList[index].fullName!),
           Positioned(
             top: 2,
             right: 2,
@@ -302,9 +301,11 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     );
   }
 
-  Widget showSelectedUser(String imageUrl, String fullName){
-    if (imageUrl == null || imageUrl == ""
-        || imageUrl == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+  Widget showSelectedUser(String imageUrl, String fullName) {
+    if (imageUrl == null ||
+        imageUrl == "" ||
+        imageUrl ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return CircleAvatar(
         backgroundColor: navyBlue,
         radius: 32,

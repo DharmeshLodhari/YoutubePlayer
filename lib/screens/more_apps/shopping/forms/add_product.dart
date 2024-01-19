@@ -9,13 +9,14 @@ import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/custom_textfield_tag.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -46,10 +47,10 @@ class _AddProductState extends State<AddProduct> {
   ProductCategory? selectedSubCategory;
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedDeliveryTimeCondition;
-  final myController = TextEditingController();
-
   int imageCount = 5;
-  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController = ScrollController();
+  // TextEditingController _myController = TextEditingController();
+  TextfieldTagsController _myController = TextfieldTagsController();
   List<PickedFile> productImages = [];
   String productName = "";
   String productDescription = "";
@@ -74,7 +75,6 @@ class _AddProductState extends State<AddProduct> {
 
   List<ProductCategory>? productCategories;
   List<ProductCategory>? subCategories;
-  List<ProductCategory> tagList = [];
   List<ProductCategory>?
       productCategoriesCopy; //To hold the full product category at all times.
   List<ProductCategory>?
@@ -98,8 +98,7 @@ class _AddProductState extends State<AddProduct> {
   bool trackInventory = false;
   bool trackInventoryView = false;
   bool measurementView = false;
-  List<Map<String, dynamic>> userTags = [];
-  bool show = false;
+  List<Tags> userTags = [];
   ShippingAddress? defaultAddress;
   bool isEmpty = false;
   @override
@@ -115,13 +114,12 @@ class _AddProductState extends State<AddProduct> {
     Future.delayed(Duration(seconds: 2), () {
       getCategories();
       obtainCustomCategory();
-      getList();
+      getAddressList();
     });
-    myController.addListener(_printLatestValue);
     super.initState();
   }
 
-  void getList() async {
+  void getAddressList() async {
     if (mounted) setState(() {});
 
     Map<String, dynamic>? result =
@@ -145,16 +143,6 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  _printLatestValue() {
-    if (myController.text.length > 2) {
-      getProductTags(userBloc!.userAbout!.industry!.id!, myController.text);
-      show = true;
-    } else {
-      show = false;
-    }
-    setState(() {});
-  }
-
   @override
   void didChangeDependencies() {
     userBloc = Provider.of<UserBloc>(context);
@@ -173,22 +161,6 @@ class _AddProductState extends State<AddProduct> {
     }
 
     isLoading = false;
-    if (mounted) setState(() {});
-  }
-
-  getProductTags(id, searchText) async {
-    if (mounted) setState(() {});
-
-    try {
-      List<ProductCategory> result =
-          await ShoppingAuthService().getProductTags(id, searchText);
-
-      tagList = result;
-      show = true;
-    } catch (e) {
-      tagList = [];
-    }
-
     if (mounted) setState(() {});
   }
 
@@ -294,135 +266,23 @@ class _AddProductState extends State<AddProduct> {
                       const SizedBox(height: 10),
                       getSubCategoryField(),
                       const SizedBox(height: 10),
-
                       getCustomCategoryField(),
                       const SizedBox(height: 10),
-                      Text(
-                        "Tag",
-                        style: TextStyle(
-                            color: darkGrey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      SizedBox(
-                        height: 6,
-                      ),
-
-                      TextFieldTags(
-                        tagsStyler: productTextFieldTagStyler,
-                        validator: (value) {
-                          return null;
-                        },
-                        textEditingController: myController,
-                        textFieldStyler: TextFieldStyler(
-                          helperText: '',
-                          hintText: '',
-                          textFieldEnabled: true,
-                          textFieldFocusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: greyBorderColor,
-                              width: 1.0,
-                            ),
-                          ),
-                          textFieldBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: greyBorderColor,
-                              width: 1.0,
-                            ),
-                          ),
-                          textFieldEnabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: greyBorderColor,
-                              width: 1.0,
-                            ),
-                          ),
-                        ),
-                        onTag: (tag) {
-                          // setState(() {
-                          //   userTags.add(tag);
-                          //   userTags = userTags.toSet().toList();
-                          // });
-                          // userTags.removeWhere((tag) => tag.isEmpty);
-                        },
-                        onDelete: (tag) {
-                          setState(() {
-                            userTags.remove(tag);
-                          });
-                          userTags.removeWhere((tag) => tag.isEmpty);
-                        },
-                      ),
-                      if (show && tagList.isNotEmpty)
-                        Container(
-                          width: double.infinity,
-                          height: 200,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border:
-                                  Border.all(width: 1, color: greyBorderColor),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: tagList.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(
-                                  tagList[index].name,
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                dense: true,
-                                onTap: () {
-                                  String text = tagList[index]
-                                      .name
-                                      .replaceFirst(" ", "-");
-                                  setState(() {
-                                    myController.text = text + " ";
-
-                                    myController.selection =
-                                        TextSelection.collapsed(
-                                            offset: text.length);
-                                    userTags.add({
-                                      "id": tagList[index].id!,
-                                      "name": tagList[index].name
-                                    });
-                                    userTags = userTags.toSet().toList();
-                                  });
-                                  FocusScope.of(context).requestFocus();
-
-                                  // print(userTags);print("______________");
-                                  userTags.removeWhere((tag) => tag.isEmpty);
-                                },
-                              );
-                            },
-                          ),
-                        ),
-
-                      const SizedBox(height: 10),
+                      getAddTagsField(),
                       getProductConditionField(),
                       const SizedBox(height: 10),
                       if (userBloc!.userAbout!.industry!.name! ==
                               "Restaurant/Cafe" ||
                           userBloc!.userAbout!.industry!.name! ==
-                              "Pharmaceutical")
-                        Column(
-                          children: [
-                            getProductDeliveryTimeField(),
-                            const SizedBox(height: 10),
-                          ],
-                        ),
+                              "Pharmaceutical") ...[
+                        getProductDeliveryTimeField(),
+                        const SizedBox(height: 10),
+                      ],
                       getProductShortDescription(),
                       const SizedBox(height: 10),
                       getProductDescription(),
 
                       const SizedBox(height: 20),
-
                       getIsAvailableField(),
                       const SizedBox(height: 16),
                       if (productIsAvailable == true) ...[
@@ -436,7 +296,6 @@ class _AddProductState extends State<AddProduct> {
                         getCategoryMeasurementField(),
                         const SizedBox(height: 16),
                       ],
-
                       if (pickedMeasurementList.isNotEmpty &&
                           measurementView == true) ...[
                         if (containsWeight()) ...[
@@ -491,7 +350,6 @@ class _AddProductState extends State<AddProduct> {
                               ),
                             ],
                           ),
-
                           const SizedBox(height: 40),
                         ]
                       ],
@@ -504,26 +362,34 @@ class _AddProductState extends State<AddProduct> {
                         getTrackInventoryField(),
                         const SizedBox(height: 16),
                       ],
-
                       const SizedBox(height: 16),
+
                       getEnableInSuperStoreField(),
+                      const SizedBox(height: 16),
 
                       //TODO: hide this variant option
-                      // const SizedBox(height: 16),
-                      // if(productVariantList.isEmpty)...[
-                      //   // getAddVariationFormField(),
+                      // if (productVariantList.isEmpty) ...[
+                      //   getAddVariationFormField(),
                       //   productVariation(),
-                      // ]else...[
+                      // ] else ...[
                       //   displaySelectedVariant(),
                       // ],
+                      // const SizedBox(height: 16),
 
                       //TODO: hide this add-on
-                      const SizedBox(height: 22),
-                      defaultAddress == null ? SizedBox() : address(),
+                      // if (productAddOnsList == null ||
+                      //     productAddOnsList!.isEmpty) ...[
+                      // productAddOns(),
+                      // ] else ...[
+                      //   displaySelectedAddOn(),
+                      // ],
+                      // const SizedBox(height: 16),
 
-                      const SizedBox(height: 35),
+                      defaultAddress == null ? SizedBox() : address(),
+                      const SizedBox(height: 30),
+
                       getSubmitButton(),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -1246,6 +1112,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget getProductConditionField() {
+    print("my controller :- ${_myController}");
     return CustomizedDropDownField(
       title: "Product condition",
       child: ListTile(
@@ -1286,6 +1153,66 @@ class _AddProductState extends State<AddProduct> {
           selectItemCondition();
         },
       ),
+    );
+  }
+
+  Widget getAddTagsField() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Tag",
+              style: TextStyle(
+                  color: darkGrey, fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            GestureDetector(
+              onTap: () async {
+                var result = await Navigator.of(context).pushNamed(
+                    Routes.ADD_TAGS,
+                    arguments: {"tagList": userTags});
+                if (result != null && result is List<Tags>) {
+                  userTags = [];
+                  _myController.clearTags();
+
+                  for (var tags in result) {
+                    if (tags.isSelected == true) {
+                      // _myController.addTag = tags.name
+                      //         ?.replaceAll(" ", "-")
+                      //         .toLowerCase() ??
+                      _myController.addTag = tags.name ?? "";
+                      Tags tagData = Tags(id: tags.id, name: tags.name);
+                      userTags.add(tagData);
+                    }
+                  }
+                }
+                setState(() {});
+              },
+              child: Text(
+                "Add Tags",
+                style: TextStyle(
+                  color: navyBlue,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
+          ],
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        CustomTextFieldTag(
+          textfieldTagsController: _myController,
+          onTap: (String tag) {
+            setState(() {
+              userTags.removeWhere((e) => e.name == tag);
+            });
+            userTags.removeWhere((tag) => tag.name!.isEmpty);
+          },
+        ),
+      ],
     );
   }
 
@@ -2038,7 +1965,8 @@ class _AddProductState extends State<AddProduct> {
           product.category = selectedProductCategory!;
           product.subCategory = selectedSubCategory!;
           product.customCategory = selectedCustomCategory;
-          product.tags = userTags.map((i) => Tags.fromJson(i)).toList();
+          // product.tags = userTags.map((i) => Tags.fromJson(i)).toList();
+          product.tags = userTags;
           if (selectedDeliveryTimeCondition != null) {
             product.preparationTime =
                 int.parse(selectedDeliveryTimeCondition!.name);
@@ -2677,12 +2605,12 @@ class _AddProductState extends State<AddProduct> {
               if (!isEmpty) {
                 Navigator.of(context)
                     .pushNamed(Routes.DISPATCH_ADDRESS)
-                    .whenComplete(() => getList());
+                    .whenComplete(() => getAddressList());
               } else {
                 NavigationUtil.push(
                   context,
                   screen: AddEditShippingAddress(),
-                ).whenComplete(() => getList());
+                ).whenComplete(() => getAddressList());
               }
             },
             child: Row(
@@ -2778,8 +2706,7 @@ class _AddProductState extends State<AddProduct> {
   @override
   void dispose() {
     _scrollController.dispose();
-    myController.dispose();
-
+    _myController.dispose();
     super.dispose();
   }
 }

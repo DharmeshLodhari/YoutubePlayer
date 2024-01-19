@@ -19,8 +19,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
-import '../../../../widget/LoadingIndicator.dart';
 import '../../../../widget/dialog.dart';
+import '../../../../widget/loading_indicator.dart';
 import '../../../search_user.dart';
 
 // ignore: must_be_immutable

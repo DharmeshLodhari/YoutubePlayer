@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:Slydo/screens/blog/quill/custom_quill_embed.dart';
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
@@ -12,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
+
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../routes/route_constants.dart';
@@ -22,9 +24,9 @@ import '../utils/slydo_app_icon_new_icons.dart';
 import '../utils/util.dart';
 import '../utils/video_player_controller/chewie_player.dart';
 import '../utils/video_player_controller/chewie_progress_colors.dart';
-import '../widget/LoadingIndicator.dart';
 import '../widget/bottom_sheet_item.dart';
 import '../widget/dialog.dart';
+import '../widget/loading_indicator.dart';
 import '../widget/rounded_background_icon.dart';
 import 'more_apps/messaging/chat/models/ChatConversation.dart';
 import 'more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
@@ -976,7 +978,7 @@ class _PostDetailPageScaffoldBodyState
                       ),
                     ),
                     Text(
-                      " • " ,
+                      " • ",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,

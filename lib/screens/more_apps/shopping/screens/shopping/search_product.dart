@@ -4,7 +4,7 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
@@ -118,7 +118,9 @@ class _SearchProductState extends State<SearchProduct> {
           isLoading = true;
           setState(() {});
         }
-        String url = widget.arguments != null ? "&${widget.arguments!.keys.first}=${widget.arguments!.values.first}" : "";
+        String url = widget.arguments != null
+            ? "&${widget.arguments!.keys.first}=${widget.arguments!.values.first}"
+            : "";
         Map<String, dynamic>? result =
             await ShoppingAuthService().searchUsersProductsInSuperStore(
           next,
@@ -134,7 +136,6 @@ class _SearchProductState extends State<SearchProduct> {
             categories: pickedCategoryList,
           ),
           query: url,
-
         );
 
         // Map<String, dynamic>? result =

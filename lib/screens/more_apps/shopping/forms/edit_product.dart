@@ -6,14 +6,15 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/custom_textfield_tag.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -71,7 +72,6 @@ class _EditProductState extends State<EditProduct> {
   List<ProductCategory>? productCategoriesCopy;
   List<ProductCategory>? productCustomCategoriesCopy;
   String productCustomCategory = "";
-  List<ProductCategory> tagList = [];
 
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedPreparationCondition;
@@ -83,8 +83,9 @@ class _EditProductState extends State<EditProduct> {
   bool isLoading = false;
   bool isAPILoading = false;
   bool productEnableInSuperStore = false;
-  final myController = TextEditingController();
+  TextfieldTagsController _myController = TextfieldTagsController();
   List<Tags> userTags = [];
+  // List<Tags> allTags = [];
 
   //text editing controllers for the edit fields
   TextEditingController productTitleController = TextEditingController();
@@ -134,19 +135,7 @@ class _EditProductState extends State<EditProduct> {
       obtainCategories();
       obtainCustomCategory();
     });
-    myController.addListener(_printLatestValue);
-
     super.initState();
-  }
-
-  _printLatestValue() {
-    if (myController.text.length > 2) {
-      getProductTags(userBloc!.userAbout!.industry!.id!, myController.text);
-      show = true;
-    } else {
-      show = false;
-    }
-    setState(() {});
   }
 
   @override
@@ -320,22 +309,6 @@ class _EditProductState extends State<EditProduct> {
     if (mounted) setState(() {});
   }
 
-  getProductTags(id, searchText) async {
-    if (mounted) setState(() {});
-
-    try {
-      List<ProductCategory> result =
-          await ShoppingAuthService().getProductTags(id, searchText);
-
-      tagList = result;
-      show = true;
-    } catch (e) {
-      tagList = [];
-    }
-
-    if (mounted) setState(() {});
-  }
-
   void getSubCategories(id) async {
     if (mounted) setState(() {});
 
@@ -438,131 +411,28 @@ class _EditProductState extends State<EditProduct> {
                       const SizedBox(height: 10),
                       getCustomCategoryField(),
                       const SizedBox(height: 10),
-                      Text(
-                        "Tag",
-                        style: TextStyle(
-                            color: darkGrey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      SizedBox(
-                        height: 6,
-                      ),
-
-                      TextFieldTags(
-                        tagsStyler: productTextFieldTagStyler,
-                        validator: (value) {
-                          return null;
-                        },
-                        initialTags: (userTags).map((e) => e.name!).toList(),
-                        textEditingController: myController,
-                        textFieldStyler: TextFieldStyler(
-                          helperText: '',
-                          hintText: '',
-                          textFieldEnabled: true,
-                          textFieldFocusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: greyBorderColor,
-                              width: 1.0,
-                            ),
-                          ),
-                          textFieldBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: greyBorderColor,
-                              width: 1.0,
-                            ),
-                          ),
-                          textFieldEnabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: greyBorderColor,
-                              width: 1.0,
-                            ),
-                          ),
-                        ),
-                        onTag: (tag) {
-                          // setState(() {
-                          //   userTags.add(tag);
-                          //   userTags = userTags.toSet().toList();
-                          // });
-                          // userTags.removeWhere((tag) => tag.isEmpty);
-                        },
-                        onDelete: (tag) {
-                          setState(() {
-                            userTags.remove(tag);
-                          });
-                          userTags.removeWhere((tag) => tag.name!.isEmpty);
-                        },
-                      ),
-                      if (show && tagList.isNotEmpty)
-                        Container(
-                          width: double.infinity,
-                          height: 200,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border:
-                                  Border.all(width: 1, color: greyBorderColor),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: tagList.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(
-                                  tagList[index].name,
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                dense: true,
-                                onTap: () {
-                                  String text = tagList[index]
-                                      .name
-                                      .replaceFirst(" ", "-");
-                                  setState(() {
-                                    myController.text = text + " ";
-
-                                    myController.selection =
-                                        TextSelection.collapsed(
-                                            offset: text.length);
-                                    userTags.add(tagList[index] as Tags);
-                                    userTags = userTags.toSet().toList();
-                                  });
-                                  FocusScope.of(context).requestFocus();
-
-                                  // print(userTags);print("______________");
-                                  userTags
-                                      .removeWhere((tag) => tag.name!.isEmpty);
-                                },
-                              );
-                            },
-                          ),
-                        ),
-
+                      getAddTagsField(),
                       getProductConditionField(),
                       const SizedBox(height: 10),
                       if (userBloc!.userAbout!.industry!.name! ==
                               "Restaurant/Cafe" ||
                           userBloc!.userAbout!.industry!.name! ==
-                              "Pharmaceutical")
+                              "Pharmaceutical") ...[
                         getProductDeliveryTimeField(),
-                      SizedBox(height: 16),
+                        SizedBox(height: 10),
+                      ],
                       getProductShortDescription(),
                       SizedBox(height: 10),
                       getProductDescription(),
 
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
                       if (productIsAvailable == true) ...[
                         getAvailableFromField(),
                         const SizedBox(height: 16),
                       ],
+
                       getMeasurementField(),
                       const SizedBox(height: 16),
                       if (measurementView == true) ...[
@@ -637,9 +507,9 @@ class _EditProductState extends State<EditProduct> {
                         const SizedBox(height: 16),
                       ],
 
-                      SizedBox(height: 16),
                       getEnableInSuperStoreField(),
-                      const SizedBox(height: 25),
+                      const SizedBox(height: 16),
+
                       if (productVariantList == null ||
                           productVariantList.isEmpty) ...[
                         // getAddVariationFormField(),
@@ -647,16 +517,16 @@ class _EditProductState extends State<EditProduct> {
                       ] else ...[
                         displaySelectedVariant(),
                       ],
+                      const SizedBox(height: 16),
 
-                      const SizedBox(height: 25),
                       if (productAddOnsList == null ||
                           productAddOnsList!.isEmpty) ...[
                         productAddOns(),
                       ] else ...[
                         displaySelectedAddOn(),
                       ],
-
                       SizedBox(height: 30),
+
                       getSubmitButton(),
                       SizedBox(height: 20),
                     ],
@@ -1516,6 +1386,70 @@ class _EditProductState extends State<EditProduct> {
       preparationCondition = selectedPreparationCondition!.name;
       setState(() {});
     }
+  }
+
+  Widget getAddTagsField() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Tag",
+              style: TextStyle(
+                  color: darkGrey, fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            GestureDetector(
+              onTap: () async {
+                var result = await Navigator.of(context).pushNamed(
+                    Routes.ADD_TAGS,
+                    arguments: {"tagList": userTags});
+                if (result != null && result is List<Tags>) {
+                  userTags = [];
+                  _myController.clearTags();
+
+                  for (var tags in result) {
+                    if (tags.isSelected == true) {
+                      // _myController.addTag = tags.name
+                      //         ?.replaceAll(" ", "-")
+                      //         .toLowerCase() ??
+
+                      _myController.addTag = tags.name ?? "";
+
+                      Tags tagData = Tags(id: tags.id, name: tags.name);
+                      userTags.add(tagData);
+                    }
+                  }
+                  // userTags.addAll(allTags);
+                }
+                setState(() {});
+              },
+              child: Text(
+                "Add Tags",
+                style: TextStyle(
+                  color: navyBlue,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
+          ],
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        CustomTextFieldTag(
+          initialTags: (userTags).map((e) => e.name!).toList(),
+          textfieldTagsController: _myController,
+          onTap: (String tag) {
+            setState(() {
+              userTags.removeWhere((e) => e.name == tag);
+            });
+            userTags.removeWhere((tag) => tag.name!.isEmpty);
+          },
+        ),
+      ],
+    );
   }
 
   Widget getProductConditionField() {
@@ -2877,7 +2811,7 @@ class _EditProductState extends State<EditProduct> {
     productPriceController.dispose();
     _scrollController.dispose();
     scrollControllerVariant.dispose();
-    myController.dispose();
+    _myController.dispose();
 
     super.dispose();
   }

@@ -19,9 +19,9 @@ import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../../utils/navigation_util.dart';
-import '../../../../widget/LoadingIndicator.dart';
 import '../../../../widget/bottom_sheet_item.dart';
 import '../../../../widget/dialog.dart';
+import '../../../../widget/loading_indicator.dart';
 import '../../../../widget/read_more_widget.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../../../more_apps/messaging/chat/models/ChatConversation.dart';
@@ -212,7 +212,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
                                             builder: (dialogLoadingContext) =>
                                                 LoadingIndicator());
                                         MomentsService()
-                                            .deleteMoment(currentMoment!.id!, "")
+                                            .deleteMoment(
+                                                currentMoment!.id!, "")
                                             .then(
                                           (value) {
                                             Navigator.pop(

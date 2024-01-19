@@ -1,12 +1,12 @@
-import '../../../utils/colors.dart';
-import '../../../utils/util.dart';
-import 'models/provider_model.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_payment_screen.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../../widget/LoadingIndicator.dart';
+import '../../../utils/colors.dart';
+import '../../../utils/util.dart';
+import '../../../widget/loading_indicator.dart';
+import 'models/provider_model.dart';
 
 class UtilityProviderTile extends StatelessWidget {
   final ProviderModel providerModel;

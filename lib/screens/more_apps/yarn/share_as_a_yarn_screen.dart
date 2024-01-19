@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
@@ -19,16 +20,17 @@ import 'package:flutter_svg/svg.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/CustomBoxShadow.dart';
 import '../../../../widget/curved_btn.dart';
+import '../../../../widget/custom_box_shadow.dart';
 import '../../../../widget/customized_dropdown_field.dart';
 import '../../../../widget/customized_textform_field.dart';
-import '../../../widget/LoadingIndicator.dart';
+import '../../../widget/loading_indicator.dart';
 import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/models/gif_model/GIFModel.dart';
 import '../messaging/chat/utils.dart';

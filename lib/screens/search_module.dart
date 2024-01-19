@@ -1,4 +1,5 @@
-/**/import 'package:Slydo/data/currency.dart';
+/**/
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -9,9 +10,9 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -139,7 +140,6 @@ class _SearchModuleState extends State<SearchModule> {
         getListOfSuggestions();
       }
     });
-
 
     super.initState();
   }
@@ -281,7 +281,6 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget searchBox() {
-
     try {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -325,7 +324,7 @@ class _SearchModuleState extends State<SearchModule> {
                       isSuggestion = false;
                     });
                   }
-                } else{
+                } else {
                   if (mounted) {
                     setState(() {
                       isSearchIsEmpty = true;
@@ -333,8 +332,7 @@ class _SearchModuleState extends State<SearchModule> {
                     });
                   }
                 }
-              }else if(value.length == 0){
-
+              } else if (value.length == 0) {
                 setState(() {
                   autoCompleteSearchText = value;
                   isSuggestion = true;
@@ -460,8 +458,7 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget _buildResultList() {
-
-    if(isSuggestion && results.isEmpty && autoCompleteSearchText.length == 0){
+    if (isSuggestion && results.isEmpty && autoCompleteSearchText.length == 0) {
       return SmartRefresher(
         enablePullDown: true,
         header: WaterDropHeader(
@@ -473,52 +470,51 @@ class _SearchModuleState extends State<SearchModule> {
         child: noItemInSuggestionList
             ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
             : ListView.builder(
-          physics: ClampingScrollPhysics(),
-          controller: _scrollCtrl,
-          itemCount: suggestionsList.length + 1,
-          itemBuilder: (BuildContext context, int index) {
-            if (index == suggestionsList.length) {
-              return buildLoadingIndicator(isLoading: isSuggestionLoading);
-            } else {
-              return CustomSlydoUserCard(user: suggestionsList[index]);
-            }
-          },
-        ),
+                physics: ClampingScrollPhysics(),
+                controller: _scrollCtrl,
+                itemCount: suggestionsList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == suggestionsList.length) {
+                    return buildLoadingIndicator(
+                        isLoading: isSuggestionLoading);
+                  } else {
+                    return CustomSlydoUserCard(user: suggestionsList[index]);
+                  }
+                },
+              ),
       );
-    }
-    else{
+    } else {
       return isSearchIsEmpty
           ? NoItemInList(
-        msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
-        isResult: false,
-      )
+              msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+              isResult: false,
+            )
           : noItemInList
-          ? NoItemInList(
-        msg: AppLocalization.of(context)!.noResultFound,
-      )
-          : Container(
-        child: ListView.builder(
-          //+1 for progressbar
-          itemCount: results.length + 1,
-          itemBuilder: (BuildContext context, int index) {
-            if (index == results.length) {
-              return _buildIndicator();
-            } else {
-              try {
-                debugPrint(' SHOW RESULT ->');
+              ? NoItemInList(
+                  msg: AppLocalization.of(context)!.noResultFound,
+                )
+              : Container(
+                  child: ListView.builder(
+                    //+1 for progressbar
+                    itemCount: results.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == results.length) {
+                        return _buildIndicator();
+                      } else {
+                        try {
+                          debugPrint(' SHOW RESULT ->');
 
-                return results[index];
-              } catch (error) {
-                debugPrint('ERROR RESULT -> ${error.toString()}');
-              }
-            }
-            return _buildIndicator();
-          },
-          controller: _scrollController,
-        ),
-      );
+                          return results[index];
+                        } catch (error) {
+                          debugPrint('ERROR RESULT -> ${error.toString()}');
+                        }
+                      }
+                      return _buildIndicator();
+                    },
+                    controller: _scrollController,
+                  ),
+                );
     }
-
   }
 
   Widget _buildIndicator() {
@@ -623,8 +619,7 @@ class _SearchModuleState extends State<SearchModule> {
           noItemInList = true;
           setState(() {});
         }
-      }
-      else if (next == null && results.length > 6) {
+      } else if (next == null && results.length > 6) {
         _scaffoldMessengerSearchKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),

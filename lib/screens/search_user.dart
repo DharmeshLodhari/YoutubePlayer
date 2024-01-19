@@ -1,14 +1,15 @@
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../data/environment.dart';
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../routes/route_constants.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
-import '../widget/LoadingIndicator.dart';
-import '../widget/noItemInList.dart';
+import '../widget/loading_indicator.dart';
+import '../widget/no_item_in_list.dart';
 import 'more_apps/user_profile/models/user.dart';
 import 'more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 

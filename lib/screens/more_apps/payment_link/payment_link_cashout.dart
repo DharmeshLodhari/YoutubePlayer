@@ -3,11 +3,11 @@
 import 'dart:developer';
 
 import 'package:Slydo/screens/more_apps/payment_link/payment_link_model.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:http/http.dart' as http;
-import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -20,7 +20,7 @@ import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_textform_field.dart';
 import '../../../widget/dialog.dart';
-import '../../../widget/noItemInList.dart';
+import '../../../widget/no_item_in_list.dart';
 import '../../../widget/rounded_background_icon.dart';
 import '../payment_and_banking/models/bank_list.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';

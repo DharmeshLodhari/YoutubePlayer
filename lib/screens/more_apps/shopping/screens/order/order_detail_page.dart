@@ -10,9 +10,9 @@ import 'package:Slydo/screens/more_apps/shopping/screens/order/tracker_stepper.d
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:flutter/material.dart';

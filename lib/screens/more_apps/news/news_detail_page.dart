@@ -7,7 +7,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';

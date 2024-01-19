@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
@@ -52,11 +51,11 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/sticky_grouped_list/src/item_positions_listener.dart';
 import 'package:Slydo/widget/sticky_grouped_list/sticky_grouped_list.dart';
@@ -89,7 +88,6 @@ import '../../../../../services/app_config_bloc.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../blog/create_or_edit_post.dart';
 import '../../../../moments/screens/create_moment_screen.dart';
-import '../../../service_hub/tiles/jos_description_card.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../../yarn/add_or_edit_yarn_screen.dart';
 import '../../../yarn/models/share_as_yarn_model.dart';
@@ -1325,30 +1323,29 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       left: false,
       right: false,
       child: WillPopScope(
-        onWillPop: () async {
-          if (showMoreAction) {
-            setState(() {
-              showMoreAction = false;
-            });
-            return Future.value(false);
-          } else {
-            disposeAudioPlayers();
-            mainSocketProvider!.removeStreamSubscription(streamSubscription);
-            mainSocketProvider!.currentConversationId = null;
-            mainSocketProvider!.isChatOnScreen = false;
+          onWillPop: () async {
+            if (showMoreAction) {
+              setState(() {
+                showMoreAction = false;
+              });
+              return Future.value(false);
+            } else {
+              disposeAudioPlayers();
+              mainSocketProvider!.removeStreamSubscription(streamSubscription);
+              mainSocketProvider!.currentConversationId = null;
+              mainSocketProvider!.isChatOnScreen = false;
 
-            return Future.value(true);
-          }
-        },
-        child: Platform.isAndroid
-            ? mainStack()
-            // : Banner(
-            //     message: 'BETA',
-            //     child: mainStack(),
-            //     location: BannerLocation.topEnd,
-            //   ),
-            : mainStack()
-      ),
+              return Future.value(true);
+            }
+          },
+          child: Platform.isAndroid
+              ? mainStack()
+              // : Banner(
+              //     message: 'BETA',
+              //     child: mainStack(),
+              //     location: BannerLocation.topEnd,
+              //   ),
+              : mainStack()),
     );
   }
 
@@ -1378,9 +1375,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         title: GestureDetector(
           onTap: () async {
             stopShakeDetector();
-            if(chatConversation!.conversationType == 'group'){
-
-            }else{
+            if (chatConversation!.conversationType == 'group') {
+            } else {
               if (chatConversation!.isGroupConversation!) {
                 Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
                   "searchedUserName": chatConversation!.conversationId,
@@ -1388,7 +1384,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 });
               } else {
                 await Navigator.pushNamed(context, Routes.USER_PROFILE,
-                    arguments: {"searchedUserName": chatConversation!.userName});
+                    arguments: {
+                      "searchedUserName": chatConversation!.userName
+                    });
               }
             }
 
@@ -1428,9 +1426,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                                     : userStatus
                             : "", //"Online",
                         style: TextStyle(
-                            color: isRecipientTyping || isOtherUserRecordingAudio
-                                ? naturalGreen
-                                : darkGrey,
+                            color:
+                                isRecipientTyping || isOtherUserRecordingAudio
+                                    ? naturalGreen
+                                    : darkGrey,
                             fontSize: 10,
                             fontWeight: FontWeight.w400),
                         overflow: TextOverflow.fade,
@@ -1451,10 +1450,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               onTap: () async {
                 stopShakeDetector();
                 if (chatConversation!.isGroupConversation!) {
-
-                  chatConversation!.conversationType == 'group' ?
-                  navigateToGroupDetailScreen() : showChannelMenuList();
-
+                  chatConversation!.conversationType == 'group'
+                      ? navigateToGroupDetailScreen()
+                      : showChannelMenuList();
                 } else {
                   await Navigator.pushNamed(context, Routes.USER_PROFILE,
                       arguments: {
@@ -1463,27 +1461,28 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 }
                 setupShakeDetector();
               },
-              child: chatConversation!.conversationType == 'group' ? Container(
-                color: white,
-                width: 100.0,
-                padding: EdgeInsets.only(left: 40.0, right: 10.0),
-                child: Icon(
-                    Icons.settings,
-                    color: blackFont,
-                    size: 22,
-                  ),
-              )
+              child: chatConversation!.conversationType == 'group'
+                  ? Container(
+                      color: white,
+                      width: 100.0,
+                      padding: EdgeInsets.only(left: 40.0, right: 10.0),
+                      child: Icon(
+                        Icons.settings,
+                        color: blackFont,
+                        size: 22,
+                      ),
+                    )
                   : Container(
-                    width: 100.0,
-                    padding: EdgeInsets.only(left: 40.0, right: 10.0),
-                    color: white,
-                    child: Center(
-                      child: SvgPicture.asset(
-                'assets/images/menu.svg',
-                        width: 22.0,
-              ),
+                      width: 100.0,
+                      padding: EdgeInsets.only(left: 40.0, right: 10.0),
+                      color: white,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          'assets/images/menu.svg',
+                          width: 22.0,
+                        ),
+                      ),
                     ),
-                  ),
             ),
           ]
         ],
@@ -1536,10 +1535,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         iconData: SlydoAppIconNew.add_product,
         onTap: () async {
           Navigator.pop(context);
-          Navigator.pushNamed(context, Routes.ADD_PRODUCT,
+          Navigator.pushNamed(
+            context,
+            Routes.ADD_PRODUCT,
             arguments: {
-            'channelUsername': chatConversation!.userName,
-          },);
+              'channelUsername': chatConversation!.userName,
+            },
+          );
         },
       ),
     );
@@ -1555,13 +1557,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
           NavigationUtil.push(context,
               screen: AddOrEditYarn(
-                askCategories: yarnDashboardBloc.yarnCategories,
-                shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-                isYarn: true,
-                passedCategory: '',
-                channel: chatConversation!.userName!
-              ));
-
+                  askCategories: yarnDashboardBloc.yarnCategories,
+                  shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                  isYarn: true,
+                  passedCategory: '',
+                  channel: chatConversation!.userName!));
         },
       ),
     );
@@ -1573,11 +1573,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         onTap: () async {
           Navigator.pop(context);
 
-          NavigationUtil.push(context, screen: CreateorEditPostScreen(
-              // arguments: {"channel": chatConversation!.userName}
-              channel: chatConversation!.userName!
-          ));
-
+          NavigationUtil.push(context,
+              screen: CreateorEditPostScreen(
+                  // arguments: {"channel": chatConversation!.userName}
+                  channel: chatConversation!.userName!));
         },
       ),
     );
@@ -1588,16 +1587,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         iconData: SlydoAppIconNew.moment,
         onTap: () async {
           Navigator.pop(context);
-          debugPrint("URL FOR CREATE MOMENT moment ${chatConversation!.fullName!.replaceAll(" ", "")}");
+          debugPrint(
+              "URL FOR CREATE MOMENT moment ${chatConversation!.fullName!.replaceAll(" ", "")}");
 
-          NavigationUtil.push(context, screen: CreateMediaMomentScreen(
-              arguments: {"channel": chatConversation!.userName!}
-          ));
-
+          NavigationUtil.push(context,
+              screen: CreateMediaMomentScreen(
+                  arguments: {"channel": chatConversation!.userName!}));
         },
       ),
     );
-
 
     return list;
   }
@@ -4997,7 +4995,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       showToast(message: "Failed to cancel Envelope");
     }
   }
-
 }
 
 void broadcastUserAvatarUpdate(

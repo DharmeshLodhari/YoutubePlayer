@@ -9,7 +9,7 @@ import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:story_view/controller/story_controller.dart';
+
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../locator.dart';

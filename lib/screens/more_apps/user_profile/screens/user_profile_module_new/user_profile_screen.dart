@@ -5,10 +5,11 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/default_user_profile_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+
 import '../../models/custom_profile_model.dart';
 import 'profile_template/business_profile_screen.dart';
 
@@ -88,7 +89,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           return;
         } else if (data != null && data.isNotEmpty) {
           channelDetail.addAll(data['results']);
-
         } else {
           showToast(message: 'Something went wrong');
         }
@@ -225,10 +225,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         isOwner: isOwner,
         isLoading: isLoading,
       );
-    }
-    else if (searchedUser != null) {
-      return 
-      BusinessProfileScreen(
+    } else if (searchedUser != null) {
+      return BusinessProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
         isOwner: isOwner,

@@ -3,9 +3,9 @@ import 'package:Slydo/screens/more_apps/events/event_tile.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 

@@ -5,7 +5,7 @@ import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dar
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

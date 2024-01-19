@@ -1,9 +1,9 @@
 import 'package:Slydo/screens/more_apps/utility/cable/model/CablePlan.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable

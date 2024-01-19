@@ -3,11 +3,12 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
-import '../../../widget/noItemInList.dart';
+import '../../../widget/no_item_in_list.dart';
 import 'models/Topics/yarn_model.dart';
 import 'tiles/yarn_list_tile.dart';
 import 'widgets/yarn_shimmer.dart';
@@ -323,8 +324,8 @@ class YarnListScreenState extends State<YarnListScreen> {
                 );
               },
               checkIfReyarned: yarnDashboardBloc.reYarnTopicList,
-              reloadView: (bool val){
-                if(val == true){
+              reloadView: (bool val) {
+                if (val == true) {
                   onRefresh();
                 }
               },
@@ -399,5 +400,4 @@ class YarnListScreenState extends State<YarnListScreen> {
     _scrollController.dispose();
     super.dispose();
   }
-
 }

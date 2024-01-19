@@ -2,13 +2,13 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/connection_module/widget/custom_slydo_channel_card.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../locale/app_localization.dart';
 import '../../utils/slydo_app_icon_icons.dart';
-import '../../widget/noItemInList.dart';
+import '../../widget/no_item_in_list.dart';
 import '../moments/models/comment_model.dart';
 import '../more_apps/messaging/chat/models/channel_model.dart';
 import '../more_apps/yarn/utils/yarn_enum.dart';
@@ -125,20 +125,20 @@ class _ChatChannelsState extends State<ChatChannels> {
                         if (index == channelModelList.length) {
                           return buildLoadingIndicator(isLoading: _isLoading);
                         } else {
-
                           return GestureDetector(
                             onTap: () {
-
                               Navigator.pushNamed(context, Routes.USER_PROFILE,
                                   arguments: {
                                     "searchedUserName":
                                         channelModelList[index].id,
-                                    "channel": channelModelList[index].groupName,
+                                    "channel":
+                                        channelModelList[index].groupName,
                                   });
                             },
                             child: CustomSlydoChannelCard(
-                                channelModel: channelModelList[index],
-                              tileRenderPlace: TileRenderPlace.Thiny,),
+                              channelModel: channelModelList[index],
+                              tileRenderPlace: TileRenderPlace.Thiny,
+                            ),
                           );
                         }
                       },
@@ -174,9 +174,7 @@ class _ChatChannelsState extends State<ChatChannels> {
             onChanged: (value) {
               if (value.length >= 3) {
                 _onRefresh();
-
-              }else if(value.length == 0){
-
+              } else if (value.length == 0) {
                 setState(() {
                   _onRefresh();
                 });

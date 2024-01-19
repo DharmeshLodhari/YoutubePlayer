@@ -2,11 +2,12 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/payout_tile.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../payment_and_banking_auth.dart';
 
 class PayoutTransactions extends StatefulWidget {

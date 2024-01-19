@@ -11,9 +11,9 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../../../routes/route_constants.dart';
 import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class UpdateGroupNameAndProfile extends StatefulWidget {
@@ -148,7 +147,9 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         },
       ),
       title: Text(
-        groupDetail!.conversationType == "channel" ? "Edit Channel" : "Edit Group",
+        groupDetail!.conversationType == "channel"
+            ? "Edit Channel"
+            : "Edit Group",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
@@ -189,65 +190,61 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   }
 
   Widget getProfileCover() {
-
     return GestureDetector(
-        onTap: (){
+        onTap: () {
           pickWallpaper();
         },
         child: Container(height: 150, child: getProfileWallpaper()));
   }
 
   Widget getProfileWallpaper() {
-
-    return isBanner == true ?
-    Container(
-      child: Image.file(
-        File(groupModel.groupProfilePhoto!),
-        fit: BoxFit.fill,
-      ),
-    )
-    : CachedNetworkImage(
-      imageUrl:
-      groupDetail!.banner == null || groupDetail!.banner == ""
-          ? defaultWallPaper
-          : groupDetail!.banner!,
-      fit: BoxFit.fill,
-      errorWidget: imageErrorWidget,
-    );
-
+    return isBanner == true
+        ? Container(
+            child: Image.file(
+              File(groupModel.groupProfilePhoto!),
+              fit: BoxFit.fill,
+            ),
+          )
+        : CachedNetworkImage(
+            imageUrl: groupDetail!.banner == null || groupDetail!.banner == ""
+                ? defaultWallPaper
+                : groupDetail!.banner!,
+            fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
+          );
   }
 
   void pickWallpaper() async {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)),
-          title: Text(
-            AppLocalization.of(context)!.selectTheImageSource,
-            style: TextStyle(fontSize: 18, color: blackFont),
-          ),
-          actions: <Widget>[
-            MaterialButton(
-              child: Text(
-                AppLocalization.of(context)!.camera,
-                style: TextStyle(fontSize: 16, color: blackFont),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              title: Text(
+                AppLocalization.of(context)!.selectTheImageSource,
+                style: TextStyle(fontSize: 18, color: blackFont),
               ),
-              onPressed: () => Navigator.pop(context, ImageSource.camera),
-            ),
-            MaterialButton(
-              child: Text(
-                "Gallery",
-                style: TextStyle(fontSize: 16, color: blackFont),
-              ),
-              onPressed: () => Navigator.pop(context, ImageSource.gallery),
-            )
-          ],
-        ));
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(
+                    AppLocalization.of(context)!.camera,
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(
+                    "Gallery",
+                    style: TextStyle(fontSize: 16, color: blackFont),
+                  ),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
 
     if (imageSource != null) {
       final file =
-      await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
+          await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
         String? croppedImage = await ImageCrop().cropImage(file.path);
@@ -401,7 +398,9 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    groupDetail!.conversationType == "channel" ? 'Limit channel members' : 'Limit group members',
+                    groupDetail!.conversationType == "channel"
+                        ? 'Limit channel members'
+                        : 'Limit group members',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                   Text(
@@ -556,13 +555,17 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
               cursorColor: blackFont,
               validator: (value) {
                 if (value!.isNotEmpty) return null;
-                return groupDetail!.conversationType == "channel" ?  "Please Enter channel name" : "Please Enter group name";
+                return groupDetail!.conversationType == "channel"
+                    ? "Please Enter channel name"
+                    : "Please Enter group name";
               },
               style: TextStyle(
                   color: blackFont, fontWeight: FontWeight.w700, fontSize: 16),
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.zero,
-                  hintText: groupDetail!.conversationType == "channel" ? "Type channel name here" : "Type group name here",
+                  hintText: groupDetail!.conversationType == "channel"
+                      ? "Type channel name here"
+                      : "Type group name here",
                   helperStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -582,43 +585,43 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         pickGroupAvatar();
       },
       child: ClipOval(
-          child: isAvatar == true ?
-          Container(
-            height: 64,
-            width: 64,
-            child: Image.file(
-              File(groupModel.avatar!),
-              fit: BoxFit.fill,
-            ),
-          )
-          : groupModel.avatar != null || groupDetail!.avatar != ""
+          child: isAvatar == true
               ? Container(
                   height: 64,
                   width: 64,
-                  color: chatBackgroundColor,
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        groupDetail!.avatar == null || groupDetail!.avatar == ""
-                            ? defaultImage
-                            : groupDetail!.avatar!,
+                  child: Image.file(
+                    File(groupModel.avatar!),
                     fit: BoxFit.fill,
-                    errorWidget: imageErrorWidget,
                   ),
                 )
-              : GestureDetector(
-                  onTap: () {
-                    pickGroupAvatar();
-                  },
-                  child: CircleAvatar(
-                    backgroundColor: navyBlue,
-                    radius: 30,
-                    child: Text(
-                      getInitials(groupDetail!.fullName!).toUpperCase(),
-                      style:
-                          TextStyle(color: white, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                )),
+              : groupModel.avatar != null || groupDetail!.avatar != ""
+                  ? Container(
+                      height: 64,
+                      width: 64,
+                      color: chatBackgroundColor,
+                      child: CachedNetworkImage(
+                        imageUrl: groupDetail!.avatar == null ||
+                                groupDetail!.avatar == ""
+                            ? defaultImage
+                            : groupDetail!.avatar!,
+                        fit: BoxFit.fill,
+                        errorWidget: imageErrorWidget,
+                      ),
+                    )
+                  : GestureDetector(
+                      onTap: () {
+                        pickGroupAvatar();
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: navyBlue,
+                        radius: 30,
+                        child: Text(
+                          getInitials(groupDetail!.fullName!).toUpperCase(),
+                          style: TextStyle(
+                              color: white, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    )),
     );
   }
 
@@ -711,7 +714,9 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
         return;
       } else if (int.parse(_maxNoOfUsersCtrl.text) < 3) {
         showToast(
-            message: groupDetail!.conversationType == "channel" ? 'You can not create channel with less than 3 members' : 'You can not create group with less than 3 members');
+            message: groupDetail!.conversationType == "channel"
+                ? 'You can not create channel with less than 3 members'
+                : 'You can not create group with less than 3 members');
         return;
       }
     }

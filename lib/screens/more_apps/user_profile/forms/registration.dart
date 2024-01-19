@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
@@ -8,8 +9,9 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../routes/route_constants.dart';
-import '../../../../widget/LoadingIndicator.dart';
+import '../../../../widget/loading_indicator.dart';
 
 class Registration extends StatefulWidget {
   @override
@@ -29,10 +31,8 @@ class _RegistrationState extends State<Registration> {
   bool showButton = false;
   bool isUserAgree = false;
 
-
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
       onWillPop: () {
         if (FocusScope.of(context).hasFocus) {
@@ -86,7 +86,6 @@ class _RegistrationState extends State<Registration> {
                         alignment: Alignment.centerRight,
                         child: alreadyHaveOtp()),
                     SizedBox(height: 12),
-
                     continueBtn(),
                     SizedBox(
                       height: 20,
@@ -292,10 +291,9 @@ class _RegistrationState extends State<Registration> {
         : Container(height: 42);
   }
 
-  Widget alreadyHaveOtp(){
+  Widget alreadyHaveOtp() {
     return GestureDetector(
-        onTap: (){
-
+        onTap: () {
           Navigator.of(context).popAndPushNamed(
             Routes.VERIFY_REGISTRATION_OTP,
             arguments: {
@@ -307,8 +305,7 @@ class _RegistrationState extends State<Registration> {
           AppLocalization.of(context)!.alreadyHaveOtp,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w600, color: navyBlue),
-        )
-    );
+        ));
   }
 
   void submit() {
@@ -421,6 +418,4 @@ class _RegistrationState extends State<Registration> {
       ],
     );
   }
-
 }
-

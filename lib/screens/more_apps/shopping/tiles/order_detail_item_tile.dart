@@ -2,11 +2,12 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../utils/colors.dart';
-import 'package:badges/badges.dart' as badges;
 
 // ignore: must_be_immutable
 class OrderTileForProduct extends StatefulWidget {

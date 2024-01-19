@@ -1,7 +1,8 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../../../utils/util.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
