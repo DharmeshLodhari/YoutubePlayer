@@ -50,9 +50,14 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 0;
+
   // var typeList = ['Size', 'Color'];
-  var typeList = ['Size', 'Color', 'Color n Size'];
-  String selectedType = "";
+  List<VariantTypes> typeList = [
+    VariantTypes.Size,
+    VariantTypes.Color,
+    VariantTypes.ColorAndSize
+  ];
+  VariantTypes? selectedType;
   String title = "";
   String value = "";
   String id = "";
@@ -77,7 +82,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
     // debugPrint('Fola varaint::: ${variant!.toJson()}');
 
     id = variant!.id.toString();
-    selectedType = variant!.type.toString();
+    selectedType = variant?.type;
     titleController.text = variant!.title!.toString();
     sizeController.text = variant!.value!.toString();
     colorController.text = variant!.colour!.toString();
@@ -818,7 +823,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedType != null ? selectedType : "",
+          selectedType != null ? selectedType?.toName() ?? "" : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -862,7 +867,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                           child: ListTile(
                             dense: true,
                             title: Text(
-                              category,
+                              category.toName() ?? "",
                               overflow: TextOverflow.fade,
                               softWrap: false,
                               style: TextStyle(
@@ -885,7 +890,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                       }
                       return ListTile(
                         title: Text(
-                          category,
+                          category.toName() ?? "",
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(

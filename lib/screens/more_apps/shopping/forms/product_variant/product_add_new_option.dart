@@ -50,8 +50,12 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
   bool isLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 0;
-  var typeList = ['Size', 'Color', 'Color n Size'];
-  String selectedType = "";
+  List<VariantTypes> typeList = [
+    VariantTypes.Size,
+    VariantTypes.Color,
+    VariantTypes.ColorAndSize
+  ];
+  VariantTypes? selectedType;
   String title = "";
   String value = "";
   String optionOnWhatToDo = "";
@@ -587,7 +591,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedType != null ? selectedType : "",
+          selectedType != null ? selectedType?.toName() ?? "" : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -631,7 +635,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                           child: ListTile(
                             dense: true,
                             title: Text(
-                              category,
+                              category.toName(),
                               overflow: TextOverflow.fade,
                               softWrap: false,
                               style: TextStyle(
@@ -654,7 +658,7 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                       }
                       return ListTile(
                         title: Text(
-                          category,
+                          category.toName(),
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(

@@ -255,8 +255,10 @@ class Product {
   double? rating;
   bool? canRate;
   bool? enableInSuperStore;
+
   // List<dynamic>? variant;
   List<Variant>? variantModels;
+
   // List<dynamic>? addOns;
   List<AddOns>? addOnsModels;
   double? weight;
@@ -642,6 +644,107 @@ class Product {
       isShippable: this.isShippable,
     );
   }
+
+  Map<String, List<Variant>> getVariants(
+      {required VariantTypes variantType, String? selectedColor}) {
+    switch (variantType) {
+      case VariantTypes.Color:
+        return groupVariantsByColor();
+
+      case VariantTypes.Size:
+        return groupVariantsBySize();
+
+      case VariantTypes.ColorAndSize:
+        return groupVariantsBySizeForSelectedColor(selectedColor);
+    }
+  }
+
+  // Group variants by color
+  Map<String, List<Variant>> groupVariantsByColor() {
+    Map<String, List<Variant>> groupedVariants = {};
+
+    for (var variant in variantModels ?? []) {
+      if (variant.colour != null && variant.colour!.isNotEmpty) {
+        if (!groupedVariants.containsKey(variant.colour!)) {
+          groupedVariants[variant.colour!] = [];
+        }
+        groupedVariants[variant.colour]!.add(variant);
+      }
+    }
+
+    return groupedVariants;
+  }
+
+  // Group variants by size
+  Map<String, List<Variant>> groupVariantsBySize() {
+    Map<String, List<Variant>> groupedVariants = {};
+
+    for (var variant in variantModels ?? []) {
+      if (variant.value != null && variant.value!.isNotEmpty) {
+        if (!groupedVariants.containsKey(variant.value)) {
+          groupedVariants[variant.value!] = [];
+        }
+        groupedVariants[variant.value]!.add(variant);
+      }
+    }
+
+    return groupedVariants;
+  }
+
+  // Define a function to group variants by size for the selected color/image
+  Map<String, List<Variant>> groupVariantsBySizeForSelectedColor(
+      String? selectedColor) {
+    Map<String, List<Variant>> sizeGroups = {};
+
+    // Filter variants that match the selected color
+    List<Variant> selectedColorVariants = (variantModels ?? [])
+        .where((variant) => variant.colour == selectedColor)
+        .toList();
+
+    // Group the selected color variants by size, only if variant.value is not empty or null
+    for (var variant in selectedColorVariants) {
+      if (variant.value != null && variant.value!.isNotEmpty) {
+        if (!sizeGroups.containsKey(variant.value)) {
+          sizeGroups[variant.value!] = [];
+        }
+        sizeGroups[variant.value]!.add(variant);
+      }
+    }
+
+    return sizeGroups;
+  }
+}
+
+enum VariantTypes { Color, Size, ColorAndSize }
+
+extension StringOperations on VariantTypes {
+  // 'Size', 'Color', 'Color n Size'
+  VariantTypes fromString(String type) {
+    if (type == 'Size') {
+      return VariantTypes.Size;
+    } else if (type == "Color") {
+      return VariantTypes.Color;
+    } else if (type == "Color n Size") {
+      return VariantTypes.ColorAndSize;
+    }
+    return VariantTypes.Size;
+  }
+
+  String toName() {
+    switch (this) {
+      case VariantTypes.Color:
+        return "Color";
+
+      case VariantTypes.Size:
+        return "Size";
+
+      case VariantTypes.ColorAndSize:
+        return "Color n Size";
+
+      default:
+        return "Size";
+    }
+  }
 }
 
 class Variant {
@@ -649,7 +752,7 @@ class Variant {
   String? title;
   String? size;
   String? colour;
-  String? type;
+  VariantTypes? type;
   String? price;
   String? value;
   List<File>? localImages;
@@ -684,25 +787,6 @@ class Variant {
       this.isAvailable,
       this.availableFrom,
       this.currency});
-
-  // factory Variant.fromMap(Map<String, dynamic> map) {
-  //   return Variant(
-  //     id: map["id"],
-  //     title: map["title"],
-  //     size: map["size"],
-  //     colour: map["colour"], // or map["color"] based on your naming convention
-  //     trackInventory: map["trackInventory"],
-  //     type: map["type"],
-  //     price: map["price"],
-  //     value: map["value"],
-  //     quantity: map["quantity"],
-  //     localImages: map["localImages"],
-  //     serverImages: map["serverImages"],
-  //     isAvailable: map["isAvailable"],
-  //     availableFrom: map["availableFrom"],
-  //     currency: map["currency"],
-  //   );
-  // }
 
   Map toMap() {
     return {
@@ -798,6 +882,7 @@ class Variant {
       isAvailable: object["is_available"] ?? true,
       availableFrom: getProductDateTime(object["available_from"]),
       currency: object["currency"] ?? "NGN",
+      type: getVariantType(object),
     );
   }
 
@@ -845,6 +930,43 @@ class Variant {
     }
     return imageLinks;
   }
+
+  int getQuantity() {
+    if (quantity != null) {
+      return quantity ?? 0;
+    }
+    return 0;
+  }
+
+  String getSize() {
+    if (value != null && value != "") {
+      return value ?? "";
+    }
+    return "";
+  }
+
+  String getColor() {
+    if (colour != null && colour != "") {
+      return colour ?? "";
+    }
+    return "";
+  }
+
+  static VariantTypes? getVariantType(Map<String, dynamic> object) {
+    String? color = object['colour'];
+    String? size = object['value'];
+
+    if (color != null && color != "" && size != null && size != "") {
+      return VariantTypes.ColorAndSize;
+    } else if (color != null && color != "") {
+      return VariantTypes.Color;
+    } else if (size != null && size != "") {
+      return VariantTypes.Size;
+    }
+    return null;
+  }
+
+  copyWith() {}
 }
 
 class AddOnOption {

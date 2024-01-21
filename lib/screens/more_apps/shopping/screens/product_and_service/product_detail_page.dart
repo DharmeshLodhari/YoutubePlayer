@@ -86,21 +86,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   String? productId;
   bool productIsLoading = false;
   late YarnDashboardBloc yarnDashboardBloc;
-  List<Variant> productVariantList = [];
   List<String> oneImageEach = [];
-  String selectedColor = "";
-  String selectedSize = "";
-  String selectedVariantId = "";
-  String selectedVariantImage = "";
-  String selectedVariantPrice = "";
-  int selectedImageColorIndex = -1;
-  int selectedSizeIndex = -1;
+
+  Variant? selectedVariant;
+
   String price = "";
   String moreInformation = "";
   int stockLeft = 0;
+
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
-  String staticImage = "";
+
   // List addOnList = [];
   ScrollController scrollControllerAddOn = ScrollController();
   bool isLoading = false;
@@ -557,53 +553,54 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        // if (product!.isAvailable!) {
-        //   if (isValidCustomer) {
-        if (productVariantList.isNotEmpty) {
-          if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-            // print("Both color and size lists are showing.");
-            if (selectedColor.isNotEmpty && selectedSize.isNotEmpty) {
+        if (product?.isAvailable ?? false) {
+          if (isValidCustomer) {
+            if (product?.variantModels?.isNotEmpty ?? false) {
+              if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+                // print("Both color and size lists are showing.");
+                if (selectedVariant != null) {
+                  addToCart();
+                  return true;
+                } else {
+                  showToast(
+                      message:
+                          AppLocalization.of(context)!.selectVariantColorSize);
+                }
+              } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+                // print("color list is showing.");
+                if (selectedVariant != null) {
+                  addToCart();
+                  return true;
+                } else {
+                  showToast(
+                      message: AppLocalization.of(context)!.selectVariantSize);
+                }
+              } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+                // print("size list is showing.");
+                if (selectedVariant != null) {
+                  addToCart();
+                  return true;
+                } else {
+                  showToast(
+                      message: AppLocalization.of(context)!.selectVariantColor);
+                }
+              }
+            } else if (product?.addOnsModels?.isNotEmpty == true) {
               addToCart();
               return true;
             } else {
-              showToast(
-                  message: AppLocalization.of(context)!.selectVariantColorSize);
-            }
-          } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-            // print("color list is showing.");
-            if (selectedSize.isNotEmpty) {
+              //product has no variant or is a service
               addToCart();
               return true;
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!.selectVariantSize);
             }
-          } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-            // print("size list is showing.");
-            if (selectedColor.isNotEmpty) {
-              addToCart();
-              return true;
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!.selectVariantColor);
-            }
+          } else {
+            showToast(
+                message:
+                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
           }
-        } else if (product?.addOnsModels?.isNotEmpty == true) {
-          addToCart();
-          return true;
         } else {
-          //product has no variant or is a service
-          addToCart();
-          return true;
+          showToast(message: AppLocalization.of(context)!.productOutOfStock);
         }
-        //   } else {
-        //     showToast(
-        //         message:
-        //             AppLocalization.of(context)!.youCanNotPurchaseThisItem);
-        //   }
-        // } else {
-        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
-        // }
       },
     );
   }
@@ -611,85 +608,52 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future<void> addToCart() async {
     // Todo check this call
     String type = product is Product ? "product" : "service";
-    Map<String, dynamic> variantPayLoad = {};
     Map<String, dynamic> addOnPayLoad = {};
     List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
     List<AddOns> selectedAddOnsList = [];
-    Variant variantModel = Variant();
 
     Product productSend = product!;
     productSend = productSend.copyWith(quantity: 1);
-    if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-      variantPayLoad = {
-        "id": selectedVariantId,
-        "quantity": 1,
-        "image": selectedVariantImage,
-        "price": selectedVariantPrice,
-        "colour": selectedColor,
-        "value": selectedSize,
-        "type": "Color n Size",
-      };
-    } else if (colorGroups.isNotEmpty) {
-      variantPayLoad = {
-        "id": selectedVariantId,
-        "quantity": 1,
-        "image": selectedVariantImage,
-        "price": selectedVariantPrice,
-        "colour": selectedColor,
-        "type": "Color",
-      };
-    } else if (sizeGroups.isNotEmpty) {
-      variantPayLoad = {
-        "id": selectedVariantId,
-        "quantity": 1,
-        "image": selectedVariantImage,
-        "price": selectedVariantPrice,
-        "value": selectedSize,
-        "type": "Size",
-      };
-    }
-    variantModel = Variant.fromJson(variantPayLoad);
 
-    product?.addOnsModels?.forEach((addOn) {
-      final options = addOn.options;
-      if (options != null) {
-        // Filter the options to include only those with option.isChecked == true
-        // List<AddOnOption> selectedOptions =
-        //     addOn.options!.where((option) => option.isChecked == true).toList();
-        //
-        // if (selectedOptions.isNotEmpty) {
-        //   Map<String, dynamic> selectedAddOn = {
-        //     "id": addOn.id,
-        //     "options": selectedOptions
-        //         .map((option) => {
-        //               "id": option.id,
-        //               "quantity": 1,
-        //               "name": option.name,
-        //               "price": option.price,
-        //               "currency": option.currency,
-        //             })
-        //         .toList(),
-        //   }; // Todo check this call
+    /// TODO:BRIJESH CHECK ADDON
+    // product?.addOnsModels?.forEach((addOn) {
+    //   final options = addOn.options;
+    //   if (options != null) {
+    //     // Filter the options to include only those with option.isChecked == true
+    //     // List<AddOnOption> selectedOptions =
+    //     //     addOn.options!.where((option) => option.isChecked == true).toList();
+    //     //
+    //     // if (selectedOptions.isNotEmpty) {
+    //     //   Map<String, dynamic> selectedAddOn = {
+    //     //     "id": addOn.id,
+    //     //     "options": selectedOptions
+    //     //         .map((option) => {
+    //     //               "id": option.id,
+    //     //               "quantity": 1,
+    //     //               "name": option.name,
+    //     //               "price": option.price,
+    //     //               "currency": option.currency,
+    //     //             })
+    //     //         .toList(),
+    //     //   }; // Todo check this call
+    //
+    //     Map<String, dynamic> selectedAddOnServer = {
+    //       "id": addOn.id,
+    //       "options": options
+    //           .map((option) => {
+    //                 "id": option.id,
+    //                 "quantity": 1,
+    //               })
+    //           .toList(),
+    //     }; // Todo check this call
+    //
+    //     selectedAddOnsList.add(addOn);
+    //     selectedAddOnsCartServerList.add(selectedAddOnServer);
+    //     // }
+    //   }
+    // });
+    selectedVariant?.quantity = 1;
 
-        Map<String, dynamic> selectedAddOnServer = {
-          "id": addOn.id,
-          "options": options
-              .map((option) => {
-                    "id": option.id,
-                    "quantity": 1,
-                  })
-              .toList(),
-        }; // Todo check this call
-
-        selectedAddOnsList.add(addOn);
-        selectedAddOnsCartServerList.add(selectedAddOnServer);
-        // }
-      }
-    });
-
-    // debugPrint("Data From Product Page v-id : $selectedVariantId");
-    // debugPrint("Data From Product Page v-id : $variantPayLoad");
-    // debugPrint("Data From Product Page v-id one : ${basketBloc.items}");
     if (selectedAddOnsList.isNotEmpty &&
         product?.addOnsModels?.isNotEmpty == true) {
       addOnPayLoad = {
@@ -706,12 +670,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           variant: null,
           addOns: selectedAddOnsList);
 
-      await _auth.addItemToShoppingCart(addOnPayLoad);
+      //TODO:BRIJESH CHECK API TO ADD ITEM IN CART MOVE THIS TO BASKET BLOC
+      // await _auth.addItemToShoppingCart(addOnPayLoad);
       return;
     }
-    if (basketBloc.items.isEmpty && variantPayLoad.isNotEmpty) {
+    if (basketBloc.items.isEmpty) {
       basketBloc.addItemToCart(
-          item: productSend, type: type, variant: variantModel, addOns: null);
+          item: productSend,
+          type: type,
+          variant: selectedVariant,
+          addOns: null);
     } else {
       for (var item in basketBloc.items) {
         Product productInCart = item['item'];
@@ -720,13 +688,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           List<Variant>? variantList = productInCart.variantModels;
 
           for (var variant in variantList!) {
-            if (variant.id.toString() == selectedVariantId) {
+            if (variant.id.toString() == selectedVariant?.id) {
               int currentQuantity = int.parse(variant.quantity.toString());
               variant.quantity = currentQuantity + 1;
 
               Map<String, dynamic> dataInfo =
                   getUpdatedCartItem(productId!, type);
-              await _auth.addItemToShoppingCart(dataInfo);
+              //TODO:BRIJESH CHECK API TO ADD ITEM IN CART MOVE THIS TO BASKET BLOC
+              // await _auth.addItemToShoppingCart(addOnPayLoad);
               return;
             }
           }
@@ -734,7 +703,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           basketBloc.addItemToCart(
               item: productSend,
               type: type,
-              variant: variantModel,
+              variant: selectedVariant,
               addOns: null);
 
           // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
@@ -743,7 +712,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
           debugPrint("Data From Product Page exist : $dataInfo");
 
-          await _auth.addItemToShoppingCart(dataInfo);
+          //TODO:BRIJESH CHECK API TO ADD ITEM IN CART MOVE THIS TO BASKET BLOC
+          // await _auth.addItemToShoppingCart(addOnPayLoad);
+
           // for(var item in basketBloc.items){
           //   // Product productInCart = item['item'];
           //   List variantList = item['item'].variant;
@@ -756,7 +727,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
       // Product ID doesn't exist in the cart, add it with the variant
       basketBloc.addItemToCart(
-          item: productSend, type: type, variant: variantModel, addOns: null);
+          item: productSend,
+          type: type,
+          variant: selectedVariant,
+          addOns: null);
     }
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
@@ -1371,9 +1345,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       product = value;
 
       displayProductImages = product!.serverImages;
-      staticImage = product!.serverImages![0]!;
       productIsLoading = false;
-      productVariantList = product?.variantModels ?? [];
+
       //     Variant.convertToVariantList(product!.variantModels!);
 
       //get the price and more information to string
@@ -1386,8 +1359,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
       colorGroups = {};
       sizeGroups = {};
-      colorGroups = groupVariantsByColor(productVariantList);
-      sizeGroups = groupVariantsBySize(productVariantList);
+      colorGroups = product?.getVariants(variantType: VariantTypes.Color) ?? {};
+      sizeGroups = product?.getVariants(variantType: VariantTypes.Size) ?? {};
 
       if (mounted) setState(() {});
     }).catchError((e) {
@@ -1398,61 +1371,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       Navigator.pop(context);
       showToast(message: e.toString());
     });
-  }
-
-  // Group variants by color
-  Map<String, List<Variant>> groupVariantsByColor(List<Variant> variants) {
-    Map<String, List<Variant>> groupedVariants = {};
-
-    for (var variant in variants) {
-      if (variant.colour != null && variant.colour!.isNotEmpty) {
-        if (!groupedVariants.containsKey(variant.colour!)) {
-          groupedVariants[variant.colour!] = [];
-        }
-        groupedVariants[variant.colour]!.add(variant);
-      }
-    }
-
-    return groupedVariants;
-  }
-
-  // Group variants by size
-  Map<String, List<Variant>> groupVariantsBySize(List<Variant> variants) {
-    Map<String, List<Variant>> groupedVariants = {};
-
-    for (var variant in variants) {
-      if (variant.value != null && variant.value!.isNotEmpty) {
-        if (!groupedVariants.containsKey(variant.value)) {
-          groupedVariants[variant.value!] = [];
-        }
-        groupedVariants[variant.value]!.add(variant);
-      }
-    }
-
-    return groupedVariants;
-  }
-
-  // Define a function to group variants by size for the selected color/image
-  Map<String, List<Variant>> groupVariantsBySizeForSelectedColor(
-      String selectedColor, List<Variant> allVariants) {
-    Map<String, List<Variant>> sizeGroups = {};
-
-    // Filter variants that match the selected color
-    List<Variant> selectedColorVariants = allVariants
-        .where((variant) => variant.colour == selectedColor)
-        .toList();
-
-    // Group the selected color variants by size, only if variant.value is not empty or null
-    for (var variant in selectedColorVariants) {
-      if (variant.value != null && variant.value!.isNotEmpty) {
-        if (!sizeGroups.containsKey(variant.value)) {
-          sizeGroups[variant.value!] = [];
-        }
-        sizeGroups[variant.value]!.add(variant);
-      }
-    }
-
-    return sizeGroups;
   }
 
   // Define a function to group variants by color for the selected color/image
@@ -1479,39 +1397,39 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   //   return colorGroups;
   // }
 
-  bool hasVariantsWithoutColor(
-      List<Variant> productVariantList, String variantId) {
-    // Iterate through the productVariantList
-    for (var variant in productVariantList) {
-      // Check if the variant has the specified variantId
-      if (variant.id == variantId) {
-        // Check if the variant has a color
-        if (variant.colour == null || variant.colour!.isEmpty) {
-          // Variant has no color
-          return true;
-        }
-      }
-    }
-    // No variants without color found for the specified variantId
-    return false;
-  }
-
-  bool hasVariantsWithoutSize(
-      List<Variant> productVariantList, String variantId) {
-    // Iterate through the productVariantList
-    for (var variant in productVariantList) {
-      // Check if the variant has the specified variantId
-      if (variant.id == variantId) {
-        // Check if the variant has a color
-        if (variant.value == null || variant.value!.isEmpty) {
-          // Variant has no color
-          return true;
-        }
-      }
-    }
-    // No variants without color found for the specified variantId
-    return false;
-  }
+  // bool hasVariantsWithoutColor(
+  //     List<Variant> productVariantList, String variantId) {
+  //   // Iterate through the productVariantList
+  //   for (var variant in productVariantList) {
+  //     // Check if the variant has the specified variantId
+  //     if (variant.id == variantId) {
+  //       // Check if the variant has a color
+  //       if (variant.colour == null || variant.colour!.isEmpty) {
+  //         // Variant has no color
+  //         return true;
+  //       }
+  //     }
+  //   }
+  //   // No variants without color found for the specified variantId
+  //   return false;
+  // }
+  //
+  // bool hasVariantsWithoutSize(
+  //     List<Variant> productVariantList, String variantId) {
+  //   // Iterate through the productVariantList
+  //   for (var variant in productVariantList) {
+  //     // Check if the variant has the specified variantId
+  //     if (variant.id == variantId) {
+  //       // Check if the variant has a color
+  //       if (variant.value == null || variant.value!.isEmpty) {
+  //         // Variant has no color
+  //         return true;
+  //       }
+  //     }
+  //   }
+  //   // No variants without color found for the specified variantId
+  //   return false;
+  // }
 
   bool areAllKeysNullOrEmpty(Map<String, List<Variant>> sizeViewGroups) {
     return sizeViewGroups.keys.every((key) => key == null || key.isEmpty);
@@ -1661,7 +1579,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 width: 5.0,
               ),
               Text(
-                selectedColor,
+                selectedVariant?.getColor() ?? "",
                 style: TextStyle(
                     fontSize: 14,
                     color: blackFont,
@@ -1672,7 +1590,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           SizedBox(
             height: 10.0,
           ),
-          showVariantFirstImages(),
+          showVariantColorSelection(),
         ],
         if (!allKeysAreNullOrEmpty) ...[
           SizedBox(
@@ -1692,7 +1610,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 width: 5.0,
               ),
               Text(
-                selectedSize,
+                selectedVariant?.getSize() ?? "",
                 style: TextStyle(
                     fontSize: 14,
                     color: blackFont,
@@ -1757,7 +1675,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return imageVariant!;
   }
 
-  Widget showVariantFirstImages() {
+  Widget showVariantColorSelection() {
     int itemCount = colorGroups.length; // Replace with your actual item count
     int maxItemsPerRow = 5;
     int totalColumns = calculateColumnCount(itemCount, maxItemsPerRow);
@@ -1789,15 +1707,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               onTap: () {
                 //update the price, more information and list of images
                 displayProductImages = [];
-                selectedColor = color;
-                selectedImageColorIndex = index;
 
                 // Get the ID of the selected image
                 String? selectedImageId = availableVariant.id;
 
                 // Find the variant in the original list by ID
-                Variant selectedVariant = productVariantList
+                Variant selectedVariant = (product?.variantModels ?? [])
                     .firstWhere((variant) => variant.id == selectedImageId);
+
+                this.selectedVariant = variantsWithSize.first;
 
                 // Retrieve all images associated with the selected variant
                 List<String?>? allImages = selectedVariant.serverImages;
@@ -1812,23 +1730,23 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   Variant variant = availableVariant;
                   // Update price or any other state based on the selected variant
                   price = variant.price!;
-                  selectedVariantId = variant.id!;
-                  selectedVariantImage = variant.serverImages![0]!;
-                  selectedVariantPrice = variant.price!;
-                  stockLeft = variant.quantity!;
+                  stockLeft = variant.getQuantity();
                   // }
                 } else {
                   //set the selected size to zero
-                  selectedSizeIndex = -1;
+                  // selectedSizeIndex = -1;
+                  // this.selectedVariant = null;
                 }
 
                 sizeGroups = {};
-                selectedSize = "";
-                sizeGroups = groupVariantsBySizeForSelectedColor(
-                    selectedColor, productVariantList);
+
+                sizeGroups = product?.getVariants(
+                        variantType: VariantTypes.ColorAndSize,
+                        selectedColor: selectedVariant.getColor()) ??
+                    {};
 
                 //check if size is not empty, set stock to zero
-                if (sizeGroups.isNotEmpty && selectedSizeIndex == -1) {
+                if (sizeGroups.isNotEmpty && this.selectedVariant == null) {
                   stockLeft = 0;
                 }
 
@@ -1840,8 +1758,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(5)),
                   border: Border.all(
-                    color:
-                        index == selectedImageColorIndex ? black : transparent,
+                    color: selectedVariant?.colour == availableVariant.colour
+                        ? black
+                        : transparent,
                     width: 1.0,
                   ),
                 ),
@@ -1907,20 +1826,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
           return GestureDetector(
             onTap: () {
-              selectedSize = sizeGroups.keys.elementAt(index);
-              selectedSizeIndex = index;
-
               for (int index = 0; index < variantsWithSize.length; index++) {
                 Variant variant = variantsWithSize[index];
+
                 // Update price or any other state based on the selected variant
                 price = variant.price!;
-                selectedVariantId = variant.id!;
-                selectedVariantImage = variant.serverImages!.isNotEmpty
-                    ? variant.serverImages![0]!
-                    : staticImage;
-                selectedVariantPrice = variant.price!;
-                stockLeft = variant.quantity!;
+
+                stockLeft = variant.getQuantity();
               }
+              selectedVariant = variantsWithSize.first;
 
               if (mounted) setState(() {});
             },
@@ -1929,7 +1843,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               child: Container(
                 // height: 20.0,
                 decoration: BoxDecoration(
-                  color: index == selectedSizeIndex ? black : white,
+                  color: selectedVariant?.value == size ? black : white,
                   borderRadius: BorderRadius.all(Radius.circular(3)),
                   border: Border.all(
                     color: black,
@@ -1941,7 +1855,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     size,
                     style: TextStyle(
                         fontSize: 14,
-                        color: index == selectedSizeIndex
+                        color: selectedVariant?.value == size
                             ? white
                             : blackFont.withOpacity(0.5),
                         fontWeight: FontWeight.w600),
@@ -2262,10 +2176,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           if (product!.isAvailable!) {
             if (isValidCustomer) {
               //check if product has variant
-              if (productVariantList.isNotEmpty) {
+              if (product?.variantModels?.isNotEmpty ?? false) {
                 if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
                   // print("Both color and size lists are showing.");
-                  if (selectedColor.isNotEmpty && selectedSize.isNotEmpty) {
+                  if (selectedVariant != null) {
                     processCartBuyNow(context);
                   } else {
                     showToast(
@@ -2274,7 +2188,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   }
                 } else if (colorGroups.isNotEmpty && sizeGroups.isEmpty) {
                   // print("color list is showing.");
-                  if (selectedColor.isNotEmpty) {
+                  if (selectedVariant != null) {
                     // print("Color list is showing.");
                     processCartBuyNow(context);
                   } else {
@@ -2284,7 +2198,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   }
                 } else if (colorGroups.isEmpty && sizeGroups.isNotEmpty) {
                   // print("size list is showing.");
-                  if (selectedSize.isNotEmpty) {
+                  if (selectedVariant != null) {
                     // print("Size list is showing.");
                     processCartBuyNow(context);
                   } else {
@@ -2330,101 +2244,101 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return;
   }
 
-  // Pull the user from the server
-  void getRecipient() async {
-    customerProfileBloc.customer =
-        await UserAuth().fetchCustomerProfile(product!.seller);
-  }
-
-  void navigateToSendPayment() {
-    basketBloc.productOrService.clear();
-
-    List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
-    List<Map<String, dynamic>> selectedAddOnsList = [];
-    int addOnPrice = 0;
-
-    product?.addOnsModels?.forEach((addOn) {
-      if (addOn.options != null) {
-        // Filter the options to include only those with option.isChecked == true
-        List<AddOnOption> selectedOptions =
-            addOn.options!.where((option) => option.isChecked == true).toList();
-
-        if (selectedOptions.isNotEmpty) {
-          for (var item in selectedOptions) {
-            debugPrint("Data From Product addOnPrice : ${item.price}");
-            addOnPrice += int.parse(item.price.toString());
-          }
-
-          debugPrint("Data From Product addOnPrice Total : ${addOnPrice}");
-
-          Map<String, dynamic> selectedAddOn = {
-            "id": addOn.id,
-            "options": selectedOptions
-                .map((option) => {
-                      "id": option.id,
-                      "quantity": 1,
-                      "name": option.name,
-                      "price": option.price,
-                      "currency": option.currency,
-                    })
-                .toList(),
-          };
-
-          Map<String, dynamic> selectedAddOnServer = {
-            "id": addOn.id,
-            "options": selectedOptions
-                .map((option) => {
-                      "id": option.id,
-                      "quantity": 1,
-                    })
-                .toList(),
-          };
-
-          selectedAddOnsList.add(selectedAddOn);
-          selectedAddOnsCartServerList.add(selectedAddOnServer);
-        }
-      }
-    });
-
-    debugPrint("Data From Product option : $selectedAddOnsList");
-    debugPrint(
-        "Data From Product selectedAddOnsCartServerList : $selectedAddOnsCartServerList");
-
-    Map<String, dynamic> variants = {
-      "id": selectedVariantId,
-      "quantity": 1,
-      "current_price": selectedVariantPrice
-    };
-
-    Map<String, dynamic> addOn = {
-      "id": productId,
-      "quantity": 1,
-      "current_price": addOnPrice
-    };
-
-    Map<dynamic, dynamic> result = {};
-
-    if (selectedAddOnsCartServerList.isNotEmpty) {
-      result = {
-        "type": 'product',
-        "results": product!.toJson(),
-        "add_ons": addOn,
-        "add_ons_list": selectedAddOnsCartServerList,
-      };
-    } else {
-      result = {
-        "type": 'product',
-        "results": product!.toJson(),
-        "variant": variants
-      };
-    }
-
-    debugPrint('Product check result:::: ${result}');
-    debugPrint('Product check:::: ${variants}');
-
-    basketBloc.buyProductOrServiceNow('product', result);
-    NavigationUtil.push(context, screen: CheckoutProductService());
-  }
+  // // Pull the user from the server
+  // void getRecipient() async {
+  //   customerProfileBloc.customer =
+  //       await UserAuth().fetchCustomerProfile(product!.seller);
+  // }
+  //
+  // void navigateToSendPayment() {
+  //   basketBloc.productOrService.clear();
+  //
+  //   List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
+  //   List<Map<String, dynamic>> selectedAddOnsList = [];
+  //   int addOnPrice = 0;
+  //
+  //   product?.addOnsModels?.forEach((addOn) {
+  //     if (addOn.options != null) {
+  //       // Filter the options to include only those with option.isChecked == true
+  //       List<AddOnOption> selectedOptions =
+  //           addOn.options!.where((option) => option.isChecked == true).toList();
+  //
+  //       if (selectedOptions.isNotEmpty) {
+  //         for (var item in selectedOptions) {
+  //           debugPrint("Data From Product addOnPrice : ${item.price}");
+  //           addOnPrice += int.parse(item.price.toString());
+  //         }
+  //
+  //         debugPrint("Data From Product addOnPrice Total : ${addOnPrice}");
+  //
+  //         Map<String, dynamic> selectedAddOn = {
+  //           "id": addOn.id,
+  //           "options": selectedOptions
+  //               .map((option) => {
+  //                     "id": option.id,
+  //                     "quantity": 1,
+  //                     "name": option.name,
+  //                     "price": option.price,
+  //                     "currency": option.currency,
+  //                   })
+  //               .toList(),
+  //         };
+  //
+  //         Map<String, dynamic> selectedAddOnServer = {
+  //           "id": addOn.id,
+  //           "options": selectedOptions
+  //               .map((option) => {
+  //                     "id": option.id,
+  //                     "quantity": 1,
+  //                   })
+  //               .toList(),
+  //         };
+  //
+  //         selectedAddOnsList.add(selectedAddOn);
+  //         selectedAddOnsCartServerList.add(selectedAddOnServer);
+  //       }
+  //     }
+  //   });
+  //
+  //   debugPrint("Data From Product option : $selectedAddOnsList");
+  //   debugPrint(
+  //       "Data From Product selectedAddOnsCartServerList : $selectedAddOnsCartServerList");
+  //
+  //   Map<String, dynamic> variants = {
+  //     "id": selectedVariantId,
+  //     "quantity": 1,
+  //     "current_price": selectedVariantPrice
+  //   };
+  //
+  //   Map<String, dynamic> addOn = {
+  //     "id": productId,
+  //     "quantity": 1,
+  //     "current_price": addOnPrice
+  //   };
+  //
+  //   Map<dynamic, dynamic> result = {};
+  //
+  //   if (selectedAddOnsCartServerList.isNotEmpty) {
+  //     result = {
+  //       "type": 'product',
+  //       "results": product!.toJson(),
+  //       "add_ons": addOn,
+  //       "add_ons_list": selectedAddOnsCartServerList,
+  //     };
+  //   } else {
+  //     result = {
+  //       "type": 'product',
+  //       "results": product!.toJson(),
+  //       "variant": variants
+  //     };
+  //   }
+  //
+  //   debugPrint('Product check result:::: ${result}');
+  //   debugPrint('Product check:::: ${variants}');
+  //
+  //   basketBloc.buyProductOrServiceNow('product', result);
+  //   NavigationUtil.push(context, screen: CheckoutProductService());
+  // }
 
   @override
   void dispose() {

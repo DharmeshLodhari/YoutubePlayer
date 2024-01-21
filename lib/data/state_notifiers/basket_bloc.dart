@@ -241,7 +241,7 @@ class BasketBloc extends ChangeNotifier {
       var newItem = {
         "type": type,
         "item": product,
-        "qty": variant.quantity,
+        "qty": 1,
         "variants": [variant]
       };
 
