@@ -5,7 +5,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shake/shake.dart';

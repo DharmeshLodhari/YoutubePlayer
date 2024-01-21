@@ -7,9 +7,9 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
@@ -125,7 +125,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             msg: noConnectionRequestMsg,
           )
         : ListView.builder(
-          padding: EdgeInsets.only(bottom: 80.0),
+            padding: EdgeInsets.only(bottom: 80.0),
             //+1 for progressbar
             itemCount: connectionRequestList.length + 1,
             itemBuilder: (BuildContext context, int index) {

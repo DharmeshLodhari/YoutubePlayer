@@ -2,29 +2,8 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
-import '../data/state_notifier.dart';
-import '../locale/app_localization.dart';
-import '../routes/route_constants.dart';
-import '../screens/more_apps/shopping/shopping_auth.dart';
-import '../screens/more_apps/user_profile/models/user.dart';
-import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../screens/more_apps/user_profile/user_auth.dart';
-import '../screens/more_apps/yarn/models/share_as_yarn_model.dart';
-import '../screens/more_apps/yarn/share_as_a_yarn_screen.dart';
-import '../screens/more_apps/yarn/utils/utils.dart';
-import '../screens/more_apps/yarn/utils/yarn_enum.dart';
-import '../screens/more_apps/yarn/yarn_auth.dart';
-import '../screens/more_apps/yarn/yarn_dashboard_bloc.dart';
-import '../utils/navigation_util.dart';
-import '../utils/slydo_app_icon_icons.dart';
-import '../utils/slydo_app_icon_new_icons.dart';
-import 'bottom_sheet_item.dart';
 
 class DisplayProductForDiscount extends StatelessWidget {
   final Product product;
@@ -56,8 +35,8 @@ class DisplayProductForDiscount extends StatelessWidget {
           elevation: 0,
           margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            side: BorderSide(color: Color(0xFFDCE0E8)),
-            borderRadius: BorderRadius.circular(8)),
+              side: BorderSide(color: Color(0xFFDCE0E8)),
+              borderRadius: BorderRadius.circular(8)),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 18, vertical: 13),
             child: Row(

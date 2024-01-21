@@ -100,6 +100,7 @@ import 'package:Slydo/screens/more_apps/shipping_process/screens/shipping_option
 import 'package:Slydo/screens/more_apps/shipping_process/screens/successful_order.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/add_tags.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
@@ -1981,6 +1982,15 @@ class RouteGenerator {
       case Routes.RIDERS_UPDATE:
         return PageTransition(
           child: RidersUpdate(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.ADD_TAGS:
+        return PageTransition(
+          child: AddTags(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

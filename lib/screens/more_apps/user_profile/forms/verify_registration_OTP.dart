@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
@@ -6,12 +7,13 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinput/pin_put/pin_put.dart';
+
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/country_picker/country.dart';
 import '../../../../utils/country_picker/country_picker_dialog.dart';
 import '../../../../utils/country_picker/utils.dart';
-import '../../../../widget/LoadingIndicator.dart';
 import '../../../../widget/customized_textform_field.dart';
+import '../../../../widget/loading_indicator.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
@@ -27,7 +29,6 @@ class VerifyRegistrationOTPScreen extends StatefulWidget {
 
 class _VerifyRegistrationOTPScreenState
     extends State<VerifyRegistrationOTPScreen> {
-
   String? phoneNumber = '';
   FocusNode? _pinPutFocusNode;
   TextEditingController? otpController;
@@ -42,7 +43,6 @@ class _VerifyRegistrationOTPScreenState
   TextEditingController phoneNumberController = TextEditingController();
   bool showButton = false;
   String phoneNumberWithCountryCode = "";
-
 
   @override
   void initState() {
@@ -150,8 +150,7 @@ class _VerifyRegistrationOTPScreenState
                                 flexibleSpace(flex: 1),
                                 expirationNote(),
                                 flexibleSpace(flex: 3),
-
-                                if(phoneNumber!.isEmpty)...[
+                                if (phoneNumber!.isEmpty) ...[
                                   selectCountryField(),
                                   SizedBox(height: 12),
                                   phoneNumberField(),
@@ -159,15 +158,12 @@ class _VerifyRegistrationOTPScreenState
                                 ],
                                 otpFillUpField(),
                                 flexibleSpace(flex: 1),
-
-                                if(phoneNumber!.isNotEmpty)...[
+                                if (phoneNumber!.isNotEmpty) ...[
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: resendOtp(),
-
                                   ),
                                 ],
-
                                 flexibleSpace(flex: 2),
                                 verifyBtn(),
                                 flexibleSpace(flex: 1),
@@ -196,7 +192,6 @@ class _VerifyRegistrationOTPScreenState
   }
 
   Widget expirationNote() {
-
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +200,7 @@ class _VerifyRegistrationOTPScreenState
             "Please enter the code sent to your phone number.",
             style: TextStyle(fontSize: 14, color: darkGrey),
           ),
-          if(phoneNumber!.isNotEmpty)...[
+          if (phoneNumber!.isNotEmpty) ...[
             Row(
               children: <Widget>[
                 Text(
@@ -216,7 +211,6 @@ class _VerifyRegistrationOTPScreenState
                   getTimerText(),
                   style: TextStyle(fontSize: 14, color: Colors.red),
                 ),
-
                 Text(
                   "minutes.",
                   style: TextStyle(fontSize: 14, color: darkGrey),
@@ -224,28 +218,26 @@ class _VerifyRegistrationOTPScreenState
               ],
             ),
           ]
-
         ],
       ),
     );
   }
 
-  Widget resendOtp(){
-    return  GestureDetector(
-      onTap: (){
+  Widget resendOtp() {
+    return GestureDetector(
+      onTap: () {
         showResend == false ? null : reSendOtpCode();
       },
       child: Container(
         padding: EdgeInsets.all(10.0),
         decoration: BoxDecoration(
             color: showResend == true ? navyBlue : greySecondaryYarn,
-            borderRadius: BorderRadius.all(Radius.circular(10))
-        ),
-        child: Text('Resend OTP', style: TextStyle(fontSize: 14, color: Colors.white)),
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        child: Text('Resend OTP',
+            style: TextStyle(fontSize: 14, color: Colors.white)),
       ),
     );
   }
-
 
   Widget otpFillUpField() {
     BoxDecoration navyBlueBorder = BoxDecoration(
@@ -312,17 +304,17 @@ class _VerifyRegistrationOTPScreenState
   }
 
   void verifyOTP() {
-
-    if(phoneNumber!.isEmpty){
+    if (phoneNumber!.isEmpty) {
       var phoneNumberFromTextField = phoneNumberController.text.trim();
 
-      if(phoneNumberController.text.trim().length <= 9){
+      if (phoneNumberController.text.trim().length <= 9) {
         showToast(message: AppLocalization.of(context)!.invalidPhoneNumber);
         return;
       }
 
       if (phoneNumberFromTextField.substring(0, 1) == "0") {
-        phoneNumberFromTextField = phoneNumberFromTextField.replaceFirst("0", "");
+        phoneNumberFromTextField =
+            phoneNumberFromTextField.replaceFirst("0", "");
       }
 
       //adding country code and '+' sign to phoneNumber
@@ -331,7 +323,6 @@ class _VerifyRegistrationOTPScreenState
     }
 
     debugPrint('Phone number fola -> $phoneNumberWithCountryCode');
-
 
     if (_verifyOtpFormKey.currentState!.validate()) {
       String enteredOTP = otpController!.text.trim();
@@ -415,7 +406,6 @@ class _VerifyRegistrationOTPScreenState
   }
 
   void reSendOtpCode() {
-
     UserAuth().registerPhoneNumber(phoneNumber!).then((value) {
       // Navigator.of(context).pop();
       Future.delayed(Duration(seconds: 2), () {
@@ -523,22 +513,22 @@ class _VerifyRegistrationOTPScreenState
 
   //showing select country dialog
   void _openCountryPickerDialog() => showDialog(
-    context: context,
-    builder: (context) => Theme(
-      data: Theme.of(context).copyWith(primaryColor: Colors.pink),
-      child: CountryPickerDialog(
-        titlePadding: EdgeInsets.all(8.0),
-        searchCursorColor: Colors.pinkAccent,
-        searchInputDecoration:
-        InputDecoration(hintText: AppLocalization.of(context)!.search),
-        isSearchable: true,
-        title: Text(AppLocalization.of(context)!.selectYourPhoneCode),
-        onValuePicked: (Country country) =>
-            setState(() => _selectedDialogCountry = country),
-        itemBuilder: _buildDialogItem,
-      ),
-    ),
-  );
+        context: context,
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(primaryColor: Colors.pink),
+          child: CountryPickerDialog(
+            titlePadding: EdgeInsets.all(8.0),
+            searchCursorColor: Colors.pinkAccent,
+            searchInputDecoration:
+                InputDecoration(hintText: AppLocalization.of(context)!.search),
+            isSearchable: true,
+            title: Text(AppLocalization.of(context)!.selectYourPhoneCode),
+            onValuePicked: (Country country) =>
+                setState(() => _selectedDialogCountry = country),
+            itemBuilder: _buildDialogItem,
+          ),
+        ),
+      );
 
   Widget _buildDialogItem(Country country) {
     return Row(
@@ -553,12 +543,11 @@ class _VerifyRegistrationOTPScreenState
         SizedBox(width: 8.0),
         Flexible(
             child: Text(
-              country.name!,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
-            ))
+          country.name!,
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
+        ))
       ],
     );
   }
-
 }

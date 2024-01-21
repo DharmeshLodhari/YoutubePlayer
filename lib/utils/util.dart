@@ -21,7 +21,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:textfield_tags/textfield_tags.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -33,9 +32,9 @@ import '../screens/more_apps/payment_and_banking/models/transactions.dart';
 import '../screens/more_apps/user_profile/models/user.dart';
 import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../screens/more_apps/user_profile/user_auth.dart';
-import '../widget/LoadingIndicator.dart';
 import '../widget/dialog.dart';
 import '../widget/image_crop.dart';
+import '../widget/loading_indicator.dart';
 import 'colors.dart';
 import 'common.dart';
 
@@ -298,33 +297,33 @@ Future<File?> generateThumbnailFromVideo({required String videoPath}) async {
   return null;
 }
 
-TagsStyler textFieldTagStyler = TagsStyler(
-  tagDecoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(4),
-    color: HexColor("#F7F7F9"),
-  ),
-  tagTextStyle:
-      TextStyle(color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
-  tagCancelIconPadding: const EdgeInsets.only(left: 12),
-  tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
-);
-
-TagsStyler productTextFieldTagStyler = TagsStyler(
-  tagDecoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(15),
-    color: HexColor("#D9D9D9"),
-  ),
-  tagTextPadding: EdgeInsets.symmetric(horizontal: 6),
-  tagTextStyle:
-      TextStyle(color: black, fontSize: 14, fontWeight: FontWeight.w500),
-  tagCancelIconPadding: const EdgeInsets.only(left: 10),
-  tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
-);
-TextFieldStyler textFieldStyler = TextFieldStyler(
-  helperText: '',
-  hintText: '',
-  textFieldBorder: InputBorder.none,
-);
+// TagsStyler textFieldTagStyler = TagsStyler(
+//   tagDecoration: BoxDecoration(
+//     borderRadius: BorderRadius.circular(4),
+//     color: HexColor("#F7F7F9"),
+//   ),
+//   tagTextStyle:
+//       TextStyle(color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
+//   tagCancelIconPadding: const EdgeInsets.only(left: 12),
+//   tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
+// );
+//
+// TagsStyler productTextFieldTagStyler = TagsStyler(
+//   tagDecoration: BoxDecoration(
+//     borderRadius: BorderRadius.circular(15),
+//     color: HexColor("#D9D9D9"),
+//   ),
+//   tagTextPadding: EdgeInsets.symmetric(horizontal: 6),
+//   tagTextStyle:
+//       TextStyle(color: black, fontSize: 14, fontWeight: FontWeight.w500),
+//   tagCancelIconPadding: const EdgeInsets.only(left: 10),
+//   tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
+// );
+// TextFieldStyler textFieldStyler = TextFieldStyler(
+//   helperText: '',
+//   hintText: '',
+//   textFieldBorder: InputBorder.none,
+// );
 
 Widget productAndServiceErrorWidget(
         BuildContext context, String url, dynamic error) =>

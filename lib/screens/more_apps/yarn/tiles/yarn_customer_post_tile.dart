@@ -10,7 +10,7 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

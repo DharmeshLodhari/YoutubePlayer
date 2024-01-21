@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
 
 import '../business_auth.dart';

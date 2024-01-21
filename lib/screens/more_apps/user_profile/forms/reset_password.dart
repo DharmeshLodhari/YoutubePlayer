@@ -7,7 +7,7 @@ import 'package:pinput/pin_put/pin_put.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/LoadingIndicator.dart';
+import '../../../../widget/loading_indicator.dart';
 import '../user_auth.dart';
 
 // ignore: must_be_immutable

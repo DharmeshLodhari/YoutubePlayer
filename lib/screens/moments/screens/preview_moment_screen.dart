@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/screens/pick_attachment_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
@@ -10,17 +11,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:textfield_tags/textfield_tags.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
+
 import '../../../locale/app_localization.dart';
 import '../../../locator.dart';
 import '../../../services/app_config_bloc.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../../utils/video_player_controller/chewie_player.dart';
-import '../../../widget/LoadingIndicator.dart';
 import '../../../widget/dialog.dart';
+import '../../../widget/loading_indicator.dart';
 import '../../../widget/rounded_background_icon.dart';
 import '../models/attachment_item_model.dart';
 import '../models/create_moment_model.dart';
@@ -543,27 +544,29 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                         const SizedBox(
                           height: 30,
                         ),
-                        TextFieldTags(
-                          initialTags: userTags,
-                          tagsStyler: textFieldTagStyler,
-                          validator: (value) {
-                            return null;
-                          },
-                          textFieldStyler: textFieldStyler,
-                          onTag: (tag) {
-                            setState(() {
-                              userTags.add(tag);
-                              userTags = userTags.toSet().toList();
-                            });
-                            userTags.removeWhere((tag) => tag.isEmpty);
-                          },
-                          onDelete: (tag) {
-                            setState(() {
-                              userTags.remove(tag);
-                            });
-                            userTags.removeWhere((tag) => tag.isEmpty);
-                          },
-                        ),
+
+                        ///ToDo TextFieldTags check
+                        // TextFieldTags(
+                        //   initialTags: userTags,
+                        //   tagsStyler: textFieldTagStyler,
+                        //   validator: (value) {
+                        //     return null;
+                        //   },
+                        //   textFieldStyler: textFieldStyler,
+                        //   onTag: (tag) {
+                        //     setState(() {
+                        //       userTags.add(tag);
+                        //       userTags = userTags.toSet().toList();
+                        //     });
+                        //     userTags.removeWhere((tag) => tag.isEmpty);
+                        //   },
+                        //   onDelete: (tag) {
+                        //     setState(() {
+                        //       userTags.remove(tag);
+                        //     });
+                        //     userTags.removeWhere((tag) => tag.isEmpty);
+                        //   },
+                        // ),
                       ],
                     ),
                   ),
@@ -887,7 +890,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           duration: fileType == 'video'
               ? videoPlayerController?.value.duration.inSeconds.toString()
               : ''),
-      channelUsername: widget.arguments == "" ? "" : widget.arguments['channel'],
+      channelUsername:
+          widget.arguments == "" ? "" : widget.arguments['channel'],
     )
         .then((momentPosted) {
       if (momentPosted == true) {

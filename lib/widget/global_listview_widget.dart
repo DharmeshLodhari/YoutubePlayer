@@ -4,7 +4,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../locale/app_localization.dart';
 import '../screens/moments/models/comment_model.dart';
 import '../utils/util.dart';
-import 'noItemInList.dart';
+import 'no_item_in_list.dart';
 
 class GlobalListViewWidget extends StatefulWidget {
   final Widget Function(dynamic) customWidget;

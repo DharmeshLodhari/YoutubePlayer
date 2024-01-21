@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../utils/slydo_app_icon_icons.dart';
-import '../../../widget/LoadingIndicator.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_textform_field.dart';
+import '../../../widget/loading_indicator.dart';
 import 'models/provider_model.dart';
 
 class UtilityPaymentScreen extends StatefulWidget {

@@ -355,6 +355,48 @@ class AppLocalization {
     );
   }
 
+  String get noAddressFound {
+    return Intl.message(
+      "No Address Found",
+      name: "noAddressFound",
+    );
+  }
+
+  String get addNewAddress {
+    return Intl.message(
+      "Add New Address",
+      name: "addNewAddress",
+    );
+  }
+
+  String get addressFoundMsg {
+    return Intl.message(
+      "Kindly add an address to your list to continue using this App. This will help us give you recommendation that are relevant & closer to you.",
+      name: "addressFoundMsg",
+    );
+  }
+
+  String get changeAddress {
+    return Intl.message(
+      "Change Address",
+      name: "changeAddress",
+    );
+  }
+
+  String get selectAddress {
+    return Intl.message(
+      "Select Address",
+      name: "selectAddress",
+    );
+  }
+
+  String get changeAddressMsg {
+    return Intl.message(
+      "Kindly add a current address to your list to continue using this App. This will help us give you recommendation that are relevant & closer to you.",
+      name: "addressFoundMsg",
+    );
+  }
+
   String get freeze {
     return Intl.message(
       "Freeze",

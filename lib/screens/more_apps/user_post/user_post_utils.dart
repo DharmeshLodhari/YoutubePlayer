@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../data/state_notifier.dart';
 import '../../../utils/util.dart';
-import '../../../widget/LoadingIndicator.dart';
+import '../../../widget/loading_indicator.dart';
 import '../messaging/chat/models/ChatConversation.dart';
 import '../messaging/chat/share_in_chat/ShareInChat.dart';
 import 'models/user_post.dart';

@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../data/state_notifier.dart';
 import '../utils/util.dart';
-import 'LoadingIndicator.dart';
+import 'loading_indicator.dart';
 
 typedef Widget? BuildCounterWidget(
     int? currentLength, int? maxLength, bool? isFocused);

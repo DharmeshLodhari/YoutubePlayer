@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/credit_card/auth/debit_card_auth.dart';
@@ -8,13 +9,14 @@ import 'package:Slydo/screens/more_apps/credit_card/utils/utils.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+
 import '../../../data/currency.dart';
 import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
@@ -29,7 +31,6 @@ class FundVirtualCard extends StatefulWidget {
 }
 
 class FundVirtualCardState extends State<FundVirtualCard> {
-
   final _formKey = GlobalKey<FormState>();
   UserBloc? userBloc;
 
@@ -57,7 +58,6 @@ class FundVirtualCardState extends State<FundVirtualCard> {
 
   @override
   void initState() {
-
     allCards = widget.arguments["data"];
     labelController.text = allCards.label!;
     nairaController.text = '';
@@ -68,7 +68,6 @@ class FundVirtualCardState extends State<FundVirtualCard> {
     getExchangeRate();
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -116,119 +115,116 @@ class FundVirtualCardState extends State<FundVirtualCard> {
 
     return isLoading
         ? Center(
-      child: CircularLoadingIndicator(),
-    )
+            child: CircularLoadingIndicator(),
+          )
         : SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-        child: Column(
-          children: [
-
-            mainCreditCardContent(allCards),
-            const SizedBox(
-              height: 20,
-            ),
-
-            Card(
-              elevation: 2,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              shadowColor: iconBtnGrey,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: iconBtnGrey, width: 1)),
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(height: 10),
-                        addCardLabelField(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        getAmountField(),
-
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        getDollarAmountField(),
-
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Container(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
               child: Column(
                 children: [
+                  mainCreditCardContent(allCards),
                   const SizedBox(
                     height: 20,
                   ),
-                  canCashOut(nairaCheck, balance)
-                  ?
-                  getSubmitButton()
-                  : Container(
-                    child: Center(
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 16.0),
-                            child: Text.rich(TextSpan(
-                                text: AppLocalization.of(context)!
-                                    .availableFund,
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w600),
-                                children: <InlineSpan>[
-                                  TextSpan(
-                                    text: double.parse(moneyDisplayNormalizer(
-                                        displayPossibleCashOutAmount(
-                                            balance))) >= 35.00 ? worldCurrencies[
-                                    userBloc!.user.currency!]! +
-                                        moneyDisplayNormalizer(
-                                            displayPossibleCashOutAmount(
-                                                balance)) :
-                                    '${worldCurrencies[
-                                    userBloc!.user.currency!]!}0.00',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: blackFont,
-                                        fontFamily: "Inter",
-                                        fontWeight: FontWeight.w600),
-                                  )
-                                ])))),
+                  Card(
+                    elevation: 2,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    shadowColor: iconBtnGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: iconBtnGrey, width: 1)),
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: isScreenIsSmall ? 8 : 16),
+                          child: Column(
+                            children: <Widget>[
+                              const SizedBox(height: 10),
+                              addCardLabelField(),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              getAmountField(),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              getDollarAmountField(),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  const SizedBox(
-                    height: 20,
+                  Container(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        canCashOut(nairaCheck, balance)
+                            ? getSubmitButton()
+                            : Container(
+                                child: Center(
+                                    child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16.0),
+                                        child: Text.rich(TextSpan(
+                                            text: AppLocalization.of(context)!
+                                                .availableFund,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: blackFont,
+                                                fontWeight: FontWeight.w600),
+                                            children: <InlineSpan>[
+                                              TextSpan(
+                                                text: double.parse(
+                                                            moneyDisplayNormalizer(
+                                                                displayPossibleCashOutAmount(
+                                                                    balance))) >=
+                                                        35.00
+                                                    ? worldCurrencies[userBloc!
+                                                            .user.currency!]! +
+                                                        moneyDisplayNormalizer(
+                                                            displayPossibleCashOutAmount(
+                                                                balance))
+                                                    : '${worldCurrencies[userBloc!.user.currency!]!}0.00',
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: blackFont,
+                                                    fontFamily: "Inter",
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              )
+                                            ])))),
+                              ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-
+          );
   }
 
-  Widget mainCreditCardContent(AllCards cardData){
-
+  Widget mainCreditCardContent(AllCards cardData) {
     var cardColors = [];
     var cardColor;
 
-    if(cardData.color == null){
+    if (cardData.color == null) {
       cardColors = [navyBlue, richPink, black, orange];
       cardColor = navyBlue;
-    }else{
+    } else {
       String? color = cardData.color;
       switch (color) {
         case 'Slydo Blue':
@@ -244,11 +240,10 @@ class FundVirtualCardState extends State<FundVirtualCard> {
           cardColor = orange;
           break;
         default:
-        // Handle default case (when color doesn't match any specific case)
+          // Handle default case (when color doesn't match any specific case)
           cardColor = navyBlue;
           break;
       }
-
     }
 
     return Container(
@@ -287,14 +282,17 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                               fontSize: 14,
                             ),
                           ),
-
                           const SizedBox(height: 10.0),
                           Row(
                             children: [
                               Text(
                                 cardData.isBalanceHidden!
                                     ? '****'
-                                    : cardData.currencyCode == 'USD' ? formatAsDollar(cardData.availableBalance!) : formatAsNaira(cardData.availableBalance!),
+                                    : cardData.currencyCode == 'USD'
+                                        ? formatAsDollar(
+                                            cardData.availableBalance!)
+                                        : formatAsNaira(
+                                            cardData.availableBalance!),
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -306,7 +304,10 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                           ),
                           const SizedBox(height: 20.0),
                           Text(
-                            cardData.isBalanceHidden! ? '****************' : insertSpacesInCardNumber(cardData.cardNumber!),
+                            cardData.isBalanceHidden!
+                                ? '****************'
+                                : insertSpacesInCardNumber(
+                                    cardData.cardNumber!),
                             style: TextStyle(
                               color: white,
                               fontWeight: FontWeight.bold,
@@ -317,7 +318,11 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                           Row(
                             children: [
                               Text(
-                                cardData.isBalanceHidden! ? '**********' : appendStringDot('${cardData.nameLine1} ${cardData.nameLine2}', 15),
+                                cardData.isBalanceHidden!
+                                    ? '**********'
+                                    : appendStringDot(
+                                        '${cardData.nameLine1} ${cardData.nameLine2}',
+                                        15),
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -326,8 +331,9 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                               ),
                               const SizedBox(width: 10.0),
                               Text(
-                                cardData.isBalanceHidden! ? '****' :
-                                "${cardData.expiration!.substring(0, 2)}/${cardData.expiration!.substring(2)}",
+                                cardData.isBalanceHidden!
+                                    ? '****'
+                                    : "${cardData.expiration!.substring(0, 2)}/${cardData.expiration!.substring(2)}",
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -336,7 +342,9 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                               ),
                               const SizedBox(width: 10.0),
                               Text(
-                                cardData.isBalanceHidden! ? '***' : cardData.securityCode!,
+                                cardData.isBalanceHidden!
+                                    ? '***'
+                                    : cardData.securityCode!,
                                 style: TextStyle(
                                   color: white,
                                   fontWeight: FontWeight.bold,
@@ -348,7 +356,6 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                         ],
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -376,7 +383,6 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                               "slydo".toSVG(),
                               fit: BoxFit.cover,
                             ),
-
                           ],
                         ),
                       ),
@@ -387,29 +393,29 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                           children: [
                             cardData.cardBrand == 'Visa'
                                 ? SvgPicture.asset(
-                              "visa".toSVG(),
-                              fit: BoxFit.cover,
-                            )
+                                    "visa".toSVG(),
+                                    fit: BoxFit.cover,
+                                  )
                                 : SvgPicture.asset(
-                              "mastercard".toSVG(),
-                              fit: BoxFit.cover,
-                            ),
+                                    "mastercard".toSVG(),
+                                    fit: BoxFit.cover,
+                                  ),
                             const SizedBox(width: 5.0),
                             cardData.cardBrand == 'Visa'
                                 ? SizedBox.shrink()
                                 : Column(
-                              children: [
-                                Text(
-                                  'Mastercard',
-                                  style: TextStyle(
-                                    color: white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
+                                    children: [
+                                      Text(
+                                        'Mastercard',
+                                        style: TextStyle(
+                                          color: white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5.0),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(width: 5.0),
-                              ],
-                            ),
                           ],
                         ),
                       ),
@@ -428,31 +434,31 @@ class FundVirtualCardState extends State<FundVirtualCard> {
     // Add the parameter here
     return cardData.isBalanceHidden!
         ? IconButton(
-      padding: const EdgeInsets.all(4),
-      alignment: Alignment.center,
-      icon: const Icon(
-        Icons.visibility,
-        color: Colors.white,
-        size: 12,
-      ),
-      onPressed: () {
-        cardData.isBalanceHidden = false; // Set the flag on the cardData
-        setState(() {});
-      },
-    )
+            padding: const EdgeInsets.all(4),
+            alignment: Alignment.center,
+            icon: const Icon(
+              Icons.visibility,
+              color: Colors.white,
+              size: 12,
+            ),
+            onPressed: () {
+              cardData.isBalanceHidden = false; // Set the flag on the cardData
+              setState(() {});
+            },
+          )
         : IconButton(
-      padding: const EdgeInsets.all(4),
-      alignment: Alignment.center,
-      icon: const Icon(
-        Icons.visibility_off,
-        color: Colors.white,
-        size: 12,
-      ),
-      onPressed: () {
-        cardData.isBalanceHidden = true; // Set the flag on the cardData
-        setState(() {});
-      },
-    );
+            padding: const EdgeInsets.all(4),
+            alignment: Alignment.center,
+            icon: const Icon(
+              Icons.visibility_off,
+              color: Colors.white,
+              size: 12,
+            ),
+            onPressed: () {
+              cardData.isBalanceHidden = true; // Set the flag on the cardData
+              setState(() {});
+            },
+          );
   }
 
   Widget addCardLabelField() {
@@ -485,11 +491,13 @@ class FundVirtualCardState extends State<FundVirtualCard> {
           try {
             nairaAmount = double.parse(val.replaceAll(',', '')).toString();
 
-            dollarController.text = convertCurrency(exchangeRate.slydoNgnToRate!, double.parse(nairaAmount)).toString();
+            dollarController.text = convertCurrency(
+                    exchangeRate.slydoNgnToRate!, double.parse(nairaAmount))
+                .toString();
             usdAmount = dollarController.text;
 
             nairaCheck = int.parse(val.replaceAll(",", "").split(".")[0]);
-            if(mounted)setState(() {});
+            if (mounted) setState(() {});
           } catch (e) {
             // showToast(message: e.toString());
           }
@@ -511,7 +519,8 @@ class FundVirtualCardState extends State<FundVirtualCard> {
 
   Widget getDollarAmountField() {
     return CustomizedTextFormField(
-      labelText: "In dollars (rate: ${userBloc!.user.currency!}${exchangeRate.slydoRateToNgn})",
+      labelText:
+          "In dollars (rate: ${userBloc!.user.currency!}${exchangeRate.slydoRateToNgn})",
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
@@ -523,10 +532,12 @@ class FundVirtualCardState extends State<FundVirtualCard> {
           try {
             usdAmount = double.parse(val.replaceAll(',', '')).toString();
 
-            nairaController.text = convertCurrency(exchangeRate.slydoRateToNgn!, double.parse(usdAmount)).toString();
+            nairaController.text = convertCurrency(
+                    exchangeRate.slydoRateToNgn!, double.parse(usdAmount))
+                .toString();
 
             nairaCheck = int.parse(nairaController.text.split(".")[0]);
-            if(mounted)setState(() {});
+            if (mounted) setState(() {});
           } catch (e) {
             // showToast(message: e.toString());
           }
@@ -551,8 +562,7 @@ class FundVirtualCardState extends State<FundVirtualCard> {
       onPressed: () async {
         FocusScope.of(context).unfocus();
 
-       fundVirtualCard();
-
+        fundVirtualCard();
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -563,7 +573,6 @@ class FundVirtualCardState extends State<FundVirtualCard> {
 
   Future<void> fundVirtualCard() async {
     if (_formKey.currentState!.validate()) {
-
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
@@ -576,15 +585,14 @@ class FundVirtualCardState extends State<FundVirtualCard> {
             };
 
             await _auth.fundCard(result, allCards.cardId!).then((value) {
-              if(value == true){
+              if (value == true) {
                 Navigator.pop(context, value);
                 showToast(message: "Debit Card Funded");
                 return true;
-              }else{
+              } else {
                 showToast(message: "Funding Debit Card Failed");
                 return true;
               }
-
             }).catchError((error) {
               debugPrint(error.toString());
               showToast(message: error.toString());
@@ -592,12 +600,10 @@ class FundVirtualCardState extends State<FundVirtualCard> {
 
             isAPILoading = false;
             if (mounted) setState(() {});
-
           },
           cancelCallBack: () {
             Navigator.pop(context);
           });
-
     }
   }
 
@@ -615,7 +621,6 @@ class FundVirtualCardState extends State<FundVirtualCard> {
 
   Future<void> getExchangeRate() async {
     await _auth.getExchangeRate().then((value) {
-
       exchangeRate = value!;
       isLoading = false;
       if (mounted) {
@@ -629,5 +634,4 @@ class FundVirtualCardState extends State<FundVirtualCard> {
     _scrollController.dispose();
     super.dispose();
   }
-
 }

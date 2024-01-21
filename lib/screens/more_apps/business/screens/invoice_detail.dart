@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
@@ -8,24 +7,21 @@ import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:Slydo/services/auth.dart';
 
 import '../../../../data/environment.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/curved_btn.dart';
-
 import '../bloc/invoice_bloc.dart';
 import '../business_auth.dart';
 import '../forms/invoice/add_or_update_invoice_item.dart';
@@ -84,8 +80,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   @pragma(
       'vm:entry-point') // To avoid tree shaking in release mode for Android.
-  static void downloadCallback(
-      String id, int status, int progress) {
+  static void downloadCallback(String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('invoice_downloader_send_port')!;
     send.send([id, status, progress]);

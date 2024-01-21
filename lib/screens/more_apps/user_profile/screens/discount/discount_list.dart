@@ -4,13 +4,10 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_discount.dar
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
-
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -284,8 +281,7 @@ class _DiscountListState extends State<DiscountList> {
     return next == "" && isLoading
         ? SizedBox.shrink()
         : Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
@@ -318,7 +314,7 @@ class _DiscountListState extends State<DiscountList> {
         child: Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
-            side: BorderSide(color: selectedListItemBackgroundBlue),
+              side: BorderSide(color: selectedListItemBackgroundBlue),
               borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.zero,
           color: white,
@@ -362,7 +358,9 @@ class _DiscountListState extends State<DiscountList> {
                   ),
                 ),
                 Text(
-                  itemList[index].type.toString().contains("Percentage") ? "${ itemList[index].value.toString()} % off" : "₦${itemList[index].value.toString()} off",
+                  itemList[index].type.toString().contains("Percentage")
+                      ? "${itemList[index].value.toString()} % off"
+                      : "₦${itemList[index].value.toString()} off",
                   style: TextStyle(
                       fontSize: 14,
                       fontFamily: "Inter",

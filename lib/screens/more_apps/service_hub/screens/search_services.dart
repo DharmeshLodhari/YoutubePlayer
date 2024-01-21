@@ -1,20 +1,19 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../utils/util.dart';
 import '../../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../../widget/rounded_background_icon.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-
 import '../../../../widget/debouncer_widget.dart';
 
 class SearchServices extends StatefulWidget {

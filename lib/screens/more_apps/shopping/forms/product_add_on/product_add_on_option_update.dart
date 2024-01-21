@@ -1,33 +1,31 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
-import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../widget/rounded_background_icon.dart';
 import '../../shopping_auth.dart';
 
-
 class ProductAddOnOptionUpdate extends StatefulWidget {
-
   var arguments;
 
   ProductAddOnOptionUpdate({this.arguments, Key? key}) : super(key: key);
 
   @override
-  _ProductAddOnOptionUpdateState createState() => _ProductAddOnOptionUpdateState();
+  _ProductAddOnOptionUpdateState createState() =>
+      _ProductAddOnOptionUpdateState();
 }
 
 class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
@@ -56,7 +54,6 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
   final TextEditingController isAvailableController = TextEditingController();
   AddOnOption addOnOption = AddOnOption();
 
-
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -72,7 +69,8 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
     id = addOnOption.id!;
     nameController.text = addOnOption.name!.toString();
     descriptionController.text = addOnOption.description!.toString();
-    priceController.text = moneyNormalizer(int.parse(addOnOption.price!)).toString();
+    priceController.text =
+        moneyNormalizer(int.parse(addOnOption.price!)).toString();
     productIsAvailable = addOnOption.isAvailable!;
 
     picture = addOnOption.picture!;
@@ -80,10 +78,8 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
     description = addOnOption.description!.toString();
     price = moneyNormalizer(int.parse(addOnOption.price!)).toString();
 
-
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -129,49 +125,41 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
   Widget scaffoldBody() {
     return isLoading
         ? Center(
-      child: CircularLoadingIndicator(),
-    )
+            child: CircularLoadingIndicator(),
+          )
         : SingleChildScrollView(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-
-                picture.isNotEmpty
-                    ? showServerImage()
-                    : Container(),
-
-                if(picture.isEmpty)...[
-                  const SizedBox(height: 10),
-                  addImages(),
-                ],
-
-                const SizedBox(height: 10),
-                addTitleField(),
-                const SizedBox(height: 10),
-                getDescription(),
-
-                const SizedBox(
-                  height: 10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      picture.isNotEmpty ? showServerImage() : Container(),
+                      if (picture.isEmpty) ...[
+                        const SizedBox(height: 10),
+                        addImages(),
+                      ],
+                      const SizedBox(height: 10),
+                      addTitleField(),
+                      const SizedBox(height: 10),
+                      getDescription(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      getAmountField(),
+                      const SizedBox(height: 40),
+                      getIsAvailableField(),
+                      const SizedBox(height: 30),
+                      getSubmitButton(),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
-                getAmountField(),
-
-                const SizedBox(height: 40),
-                getIsAvailableField(),
-
-                const SizedBox(height: 30),
-                getSubmitButton(),
-                const SizedBox(height: 40),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   Widget showBackArrow() {
@@ -195,13 +183,12 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
           child: index != productImages.length
               ? showImage(index)
               : productImages.length != imageCount
-              ? addImageButton()
-              : null,
+                  ? addImageButton()
+                  : null,
         ),
       ),
     );
   }
-
 
   Widget addImageButton() {
     return CustomBoxShadow(
@@ -245,18 +232,18 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(AppLocalization.of(context)!.selectTheImageSource),
-          actions: <Widget>[
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.camera),
-              onPressed: () => Navigator.pop(context, ImageSource.camera),
-            ),
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.gallery),
-              onPressed: () => Navigator.pop(context, ImageSource.gallery),
-            )
-          ],
-        ));
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
 
     if (imageSource != null) {
       ImagePicker().pickImage(source: imageSource).then((value) async {
@@ -376,7 +363,7 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
               ),
               onPressed: () {
                 picture = "";
-                if(mounted)setState(() {});
+                if (mounted) setState(() {});
               },
             ),
           )
@@ -384,7 +371,6 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
       ),
     );
   }
-
 
   Widget addTitleField() {
     return CustomizedTextFormField(
@@ -469,15 +455,15 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
       onPressed: isAPILoading
           ? () {}
           : () async {
-        FocusScope.of(context).unfocus();
-        isAPILoading = true;
-        if (mounted) setState(() {});
+              FocusScope.of(context).unfocus();
+              isAPILoading = true;
+              if (mounted) setState(() {});
 
-        await updateAddOnOption();
+              await updateAddOnOption();
 
-        isAPILoading = false;
-        if (mounted) setState(() {});
-      },
+              isAPILoading = false;
+              if (mounted) setState(() {});
+            },
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "Update",
@@ -488,34 +474,29 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
   Future<void> updateAddOnOption() async {
     if (_formKey.currentState!.validate()) {
       if (productImages.length >= 1 || picture.isNotEmpty) {
-
         addOnOption.name = name;
         addOnOption.description = description;
         addOnOption.price = moneyInputNormalizer(price).toString();
         addOnOption.isAvailable = productIsAvailable;
-        addOnOption.picture = picture.isNotEmpty ? picture : addOnOption.picture;
+        addOnOption.picture =
+            picture.isNotEmpty ? picture : addOnOption.picture;
 
-        await _auth.updateAddOnOption(addOnOption,
-            widget.arguments["productId"]).then((value) async {
-
+        await _auth
+            .updateAddOnOption(addOnOption, widget.arguments["productId"])
+            .then((value) async {
           Navigator.pop(context, value);
-
         }).catchError((error) {
           debugPrint("ERROR While createAddOnOption :- $error");
           isAPILoading = false;
           if (mounted) setState(() {});
           showToast(message: "$error");
         });
-
-
       } else {
         isAPILoading = false;
         if (mounted) setState(() {});
         showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
-
     }
-
   }
 
   @override
@@ -523,5 +504,4 @@ class _ProductAddOnOptionUpdateState extends State<ProductAddOnOptionUpdate> {
     _scrollController.dispose();
     super.dispose();
   }
-
 }

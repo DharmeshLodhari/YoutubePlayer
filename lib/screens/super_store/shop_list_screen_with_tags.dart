@@ -1,3 +1,4 @@
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
@@ -8,6 +9,7 @@ import 'package:Slydo/screens/super_store/widget/section_products.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +17,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../data/currency.dart';
-import '../../data/environment.dart';
 import '../../data/state_notifier.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
@@ -71,8 +72,12 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
 
   final ScrollController _todayDealScrollController = ScrollController();
   final ScrollController _productScrollController = ScrollController();
+  // final CarouselController _controller = CarouselController();
   String _currentCategory = '';
   late DashboardBloc _dashboardBloc;
+
+  CarouselController _controller = CarouselController();
+  int currentIndex = 0;
 
   AppBar appBar() {
     return AppBar(
@@ -412,66 +417,115 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   }
 
   Widget specialDeals() {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 15, bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          alignment: Alignment.bottomLeft,
-          child: Text(
-            "Special Deal",
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-                color: black),
-            textAlign: TextAlign.left,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 15, bottom: 8),
+            alignment: Alignment.bottomLeft,
+            child: Text(
+              "Special Deal",
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
+                  color: black),
+              textAlign: TextAlign.left,
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SizedBox(
+          SizedBox(
             height: 151,
-            child: ListView(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              physics: ScrollPhysics(),
+            child: Column(
               children: [
-                ...itemList
-                    .map(
-                      (e) => e.poster == null
-                          ? SizedBox()
-                          : InkWell(
-                              onTap: () {
-                                String url = AppConfig.baseUrl +
-                                    "/api/v1/products/products-by-discount/${e.id}";
-                                NavigationUtil.push(context,
-                                    screen: SuperStoreIndustry(
-                                        next: url,
-                                        appTitle: e.name!,
-                                        searchQuery: {"discount": e.id!}));
-                              },
-                              child: Container(
-                                margin: EdgeInsets.only(right: 8),
-                                width: MediaQuery.of(context).size.width,
-                                height: 150,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                    fit: BoxFit.fill,
-                                    image: NetworkImage(e.poster!),
-                                  ),
-                                ),
+                Expanded(
+                  child: CarouselSlider(
+                    carouselController: _controller,
+                    options: CarouselOptions(
+                        height: 150,
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                        viewportFraction: 1,
+                        aspectRatio: 16 / 9,
+                        // onPageChanged: (index, reason) {
+                        //   setState(() {
+                        //     _current = index;
+                        //   });
+                        // }),
+                        // enableInfiniteScroll: false,
+                        // viewportFraction: 1.0,
+                        // enlargeCenterPage: true,
+                        // autoPlay: true,
+                        // aspectRatio: 1.7,
+                        onPageChanged: onPageFunction),
+                    items: itemList
+                        .map(
+                          (e) => InkWell(
+                            onTap: () {
+                              String url = AppConfig.baseUrl +
+                                  "/api/v1/products/products-by-discount/${e.id}";
+                              NavigationUtil.push(context,
+                                  screen: SuperStoreIndustry(
+                                      next: url,
+                                      appTitle: e.name!,
+                                      searchQuery: {"discount": e.id!}));
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(right: 8),
+                              width: MediaQuery.of(context).size.width,
+                              height: 150,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10.0),
+                                child: getImage(e),
                               ),
+                              // decoration: BoxDecoration(
+                              //   borderRadius: BorderRadius.circular(10),
+                              //   image: DecorationImage(
+                              //     fit: BoxFit.fill,
+                              //     image: getImage(e),
+                              //   ),
+                              // ),
                             ),
-                    )
-                    .toList()
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: itemList.map((url) {
+                    int index = itemList.indexOf(url);
+                    return Container(
+                      width: 5.0,
+                      height: 5.0,
+                      margin:
+                          EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: currentIndex == index ? navyBlue : navyBlueLight,
+                      ),
+                    );
+                  }).toList(),
+                )
               ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  Widget getImage(DiscountModel item) {
+    if (item.poster != null) {
+      return CachedNetworkImage(
+        imageUrl: item.poster!,
+        errorWidget: imageErrorWidget,
+        fit: BoxFit.fill,
+      );
+    } else {
+      return Image.asset(defaultProductAndServiceImage);
+    }
   }
 
   Widget sessionProducts() {
@@ -881,6 +935,11 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         ),
       ),
     );
+  }
+
+  onPageFunction(int index, CarouselPageChangedReason reason) {
+    currentIndex = index;
+    setState(() {});
   }
 }
 

@@ -1,14 +1,14 @@
 import 'dart:async';
+
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
-import 'package:Slydo/screens/moments/utils.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../routes/route_constants.dart';
+
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
 import '../../../widget/customized_textform_field.dart';
@@ -335,19 +335,16 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                               widget.searchMomentModel.text!)!,
                           lengthToTruncateAt: 74,
                         ),
-                      
                         style: TextStyle(
-                          
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 4.0,
-                              color: blackFont,
-                              offset: Offset(0.0, 0),
-                            ),
-                          ],
-                          overflow: TextOverflow.ellipsis
-                        ),
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 4.0,
+                                color: blackFont,
+                                offset: Offset(0.0, 0),
+                              ),
+                            ],
+                            overflow: TextOverflow.ellipsis),
                       ),
                     )
                     // Text(

@@ -86,7 +86,8 @@ class CustomizedAlert {
                                 title ?? "",
                                 style: TextStyle(
                                     color: blackFont,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: "Inter",
                                     fontSize: 16.0),
                                 textAlign: TextAlign.center,
                               ),
@@ -101,8 +102,9 @@ class CustomizedAlert {
                                       child: Text(
                                         desc ?? "",
                                         style: TextStyle(
-                                            color: blackFont,
-                                            fontSize: 16.0,
+                                            color: darkGrey,
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.w400,
                                             fontFamily: "Inter"),
                                         textAlign: TextAlign.center,
                                       ),

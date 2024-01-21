@@ -10,8 +10,8 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -27,7 +27,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../../data/environment.dart';
 import '../../../../widget/debouncer_widget.dart';
-import '../../../../widget/noItemInList.dart';
+import '../../../../widget/no_item_in_list.dart';
 import '../models/job_location_model.dart';
 
 class EditJob extends StatefulWidget {

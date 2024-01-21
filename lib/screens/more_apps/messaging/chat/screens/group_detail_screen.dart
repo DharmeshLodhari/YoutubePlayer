@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
@@ -11,13 +12,14 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/dialog.dart';
@@ -200,7 +202,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                 child: Text(
                   messageDecoderWithEmoji(groupDetail?.fullName ?? "") ?? "",
                   style: TextStyle(
-                      color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+                      color: blackFont,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                   softWrap: false,
                   maxLines: 1,
@@ -217,12 +221,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   Widget getUserIcon() {
     Color borderColor = getUserTypeColorByType(type: groupDetail!.type!);
 
-    if (groupDetail!.avatar == null || groupDetail!.avatar == ""
-        || groupDetail!.avatar == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+    if (groupDetail!.avatar == null ||
+        groupDetail!.avatar == "" ||
+        groupDetail!.avatar ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return GestureDetector(
-        onTap: (){
-          Navigator.of(context)
-              .pushNamed(Routes.PHOTO_VIEWER, arguments: getInitials(groupDetail!.fullName!).toUpperCase());
+        onTap: () {
+          Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+              arguments: getInitials(groupDetail!.fullName!).toUpperCase());
         },
         child: CircleAvatar(
           backgroundColor: navyBlue,
@@ -475,7 +481,6 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           SizedBox(
             height: 16,
           ),
-
           _buildExitingGroup(),
         ],
       ),
@@ -560,7 +565,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         decoration: decorateBox(),
         child: ListTile(
           title: Text(
-            groupDetail!.conversationType == 'channel' ? "Delete Channel" : "Delete Group",
+            groupDetail!.conversationType == 'channel'
+                ? "Delete Channel"
+                : "Delete Group",
             maxLines: 1,
             style: TextStyle(
               color: mateRed,
@@ -575,15 +582,18 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             color: mateRed,
           ),
           onTap: () async {
-
             bool? result = await showDialogBox(
               context: context,
               actionOneBgColor: mateRed,
               actionOneTextColor: white,
               actionTwoBgColor: naturalGreen,
               actionTwoTextColor: Colors.white,
-              title: groupDetail!.conversationType == 'channel' ? "Delete Channel" : "Delete Group",
-              description: groupDetail!.conversationType == 'channel' ? "Are you sure you want to delete channel?" : "Are you sure you want to delete group?",
+              title: groupDetail!.conversationType == 'channel'
+                  ? "Delete Channel"
+                  : "Delete Group",
+              description: groupDetail!.conversationType == 'channel'
+                  ? "Are you sure you want to delete channel?"
+                  : "Are you sure you want to delete group?",
               actionOneText: AppLocalization.of(context)!.delete,
               actionTwoText: AppLocalization.of(context)!.noContinue,
             );
@@ -591,8 +601,6 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             if (result != null && result) {
               deleteGroup();
             }
-
-
           },
         ),
       ),
@@ -609,7 +617,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         decoration: decorateBox(),
         child: ListTile(
           title: Text(
-            groupDetail!.conversationType == 'channel' ? "Exit Channel" : "Exit Group",
+            groupDetail!.conversationType == 'channel'
+                ? "Exit Channel"
+                : "Exit Group",
             maxLines: 1,
             style: TextStyle(
               color: mateRed,
@@ -1031,7 +1041,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           dashboardBloc.index = 3;
           showToast(message: "You deleted the ${groupDetail?.fullName}!!");
           if (mounted)
-            Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
+            Navigator.of(context)
+                .popUntil(ModalRoute.withName(Routes.DASHBOARD));
         }
       }).catchError((error) {
         isExitingGroup = false;

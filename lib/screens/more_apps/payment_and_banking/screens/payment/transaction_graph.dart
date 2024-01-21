@@ -5,8 +5,8 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/spend_on_categ
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bar_chart.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flip_card/flip_card.dart';

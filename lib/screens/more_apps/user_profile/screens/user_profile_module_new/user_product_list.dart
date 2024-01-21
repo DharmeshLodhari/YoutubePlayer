@@ -1,26 +1,18 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/super_store/widget/section_products.dart';
-
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:text_scroll/text_scroll.dart';
 
 import '../../../../../widget/item_display_card.dart';
-import '../../../../../widget/noItemInList.dart';
+import '../../../../../widget/no_item_in_list.dart';
 
 // ignore: must_be_immutable
 class UserProductList extends StatefulWidget {

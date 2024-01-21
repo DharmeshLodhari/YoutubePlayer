@@ -6,13 +6,13 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -115,8 +115,10 @@ class _AddServiceState extends State<AddService> {
       title: Text(
         "Add service",
         style: TextStyle(
-            color: blackFont, fontSize: 18,
-            fontFamily: "Inter", fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -219,7 +221,9 @@ class _AddServiceState extends State<AddService> {
                 ),
                 Text(
                   AppLocalization.of(context)!.addImage,
-                  style: TextStyle(color: darkGrey, fontSize: 14,
+                  style: TextStyle(
+                    color: darkGrey,
+                    fontSize: 14,
                     fontFamily: "Inter",
                   ),
                 ),
@@ -375,8 +379,10 @@ class _AddServiceState extends State<AddService> {
         title: Text(
           selectedServiceCategory != null ? selectedServiceCategory!.name : "",
           style: TextStyle(
-              color: blackFont, fontSize: 16,
-              fontFamily: "Inter", fontWeight: FontWeight.w600),
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
         ),
         trailing: Icon(
           Icons.keyboard_arrow_down,
@@ -521,11 +527,11 @@ class _AddServiceState extends State<AddService> {
                                         overflow: TextOverflow.fade,
                                         softWrap: false,
                                         style: TextStyle(
-                                            color: navyBlue,
-                                            fontSize: 16,
-                                            fontFamily: "Inter",
-                                            fontWeight: FontWeight.w600,
-                                            ),
+                                          color: navyBlue,
+                                          fontSize: 16,
+                                          fontFamily: "Inter",
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                       trailing: Icon(
                                         SlydoAppIcon.checked,
@@ -542,10 +548,10 @@ class _AddServiceState extends State<AddService> {
                                   title: Text(
                                     category.name,
                                     style: TextStyle(
-                                        color: blackFont,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: "Inter",
+                                      color: blackFont,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: "Inter",
                                     ),
                                   ),
                                   dense: true,

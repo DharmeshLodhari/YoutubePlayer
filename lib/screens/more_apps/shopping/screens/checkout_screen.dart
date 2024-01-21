@@ -1,12 +1,13 @@
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/currency.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../utils/colors.dart';
@@ -119,8 +120,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             shippingOptionsLoading
                 ? Center(child: CircularLoadingIndicator())
                 : Column(
-                  children: [
-                    Visibility(
+                    children: [
+                      Visibility(
                         visible: shippingOptions.isNotEmpty,
                         child: dropDownPickItemWidget(
                           label: 'Shipping Options',
@@ -128,12 +129,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           selectedItem: selectedShippingOptionName,
                         ),
                       ),
-                            SizedBox(
+                      SizedBox(
                         height: 15,
                       )
-
-                  ],
-                ),
+                    ],
+                  ),
             // Divider(thickness: 0.3, color: blackFont),
             Visibility(
               visible: merchantFullName != null,

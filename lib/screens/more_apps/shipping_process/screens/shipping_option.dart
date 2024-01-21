@@ -7,8 +7,8 @@ import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';

@@ -13,10 +13,10 @@ import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -93,14 +93,15 @@ class _SearchUsersProductAndServiceState
     searchedUser = widget.arguments["searchedUser"];
     filterModel.searchedUser = searchedUser;
 
-    if(widget.arguments["filter"] != null){
+    if (widget.arguments["filter"] != null) {
       filterValue = widget.arguments["filter"];
-      filterValue == "Services" ? selectedMenuItemIndex = 1 : selectedMenuItemIndex = 0;
+      filterValue == "Services"
+          ? selectedMenuItemIndex = 1
+          : selectedMenuItemIndex = 0;
       getSearchTypeIcon();
 
-      if(mounted)setState(() {});
+      if (mounted) setState(() {});
     }
-
 
     updateCategoryList();
 
@@ -480,8 +481,10 @@ class _SearchUsersProductAndServiceState
                   fillColor: Colors.white,
                   filled: true,
                   contentPadding: EdgeInsets.symmetric(vertical: 10),
-                  prefixIcon: widget.arguments["hidePreIcon"] == true ? null : searchTypeSelection(),
-                  prefix:  Padding(
+                  prefixIcon: widget.arguments["hidePreIcon"] == true
+                      ? null
+                      : searchTypeSelection(),
+                  prefix: Padding(
                     padding: EdgeInsets.only(left: 12),
                   ),
                   suffix: Padding(

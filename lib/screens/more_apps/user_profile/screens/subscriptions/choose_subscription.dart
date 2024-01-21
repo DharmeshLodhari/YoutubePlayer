@@ -15,7 +15,7 @@ import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
 import '../../../../../services/app_config_bloc.dart';
 import '../../../../../services/auth.dart';
-import '../../../../../widget/LoadingIndicator.dart';
+import '../../../../../widget/loading_indicator.dart';
 import '../../../../../widget/curved_btn.dart';
 import '../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../widget/dialog.dart';

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -11,14 +12,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+
 import '../data/currency.dart';
 import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
 import '../utils/util.dart';
-import '../widget/LoadingIndicator.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../widget/dialog.dart';
+import '../widget/loading_indicator.dart';
 import 'more_apps/shopping/shopping_auth.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
@@ -204,8 +206,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    }
-    else if (scanDataList[qrCodeIndex] == "products") {
+    } else if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
 
@@ -218,8 +219,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    }
-    else if (scanDataList[qrCodeIndex] == "services") {
+    } else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
       // _dashboardBloc.index = 0;
@@ -233,8 +233,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           if (mounted) setState(() {});
         }
       }
-    }
-    else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
+    } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         ShoppingCartModelFromQrCode? shoppingCartModel =
             await ShoppingAuthService()
@@ -468,12 +467,10 @@ class _QRCodeViewState extends State<QRCodeView> {
         canShowDialogBox = true;
         if (mounted) setState(() {});
       }
-    }
-    else {
+    } else {
       if (cleanScanDataLink[2] == 'store' || cleanScanDataLink[2] == 'user') {
         recipient = cleanScanDataLink[3];
-      }
-      else{
+      } else {
         recipient = scanDataList.last;
       }
 

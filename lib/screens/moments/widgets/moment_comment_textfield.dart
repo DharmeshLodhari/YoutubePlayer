@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -17,9 +18,9 @@ import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +29,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/CustomBoxShadow.dart';
+import '../../../../widget/custom_box_shadow.dart';
 import '../../../../widget/customized_textform_field.dart';
 import '../../more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import '../../more_apps/messaging/chat/utils.dart';

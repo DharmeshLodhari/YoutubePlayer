@@ -2,7 +2,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

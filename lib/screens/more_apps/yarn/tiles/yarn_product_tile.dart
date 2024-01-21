@@ -10,8 +10,8 @@ import '../../../../locator.dart';
 import '../../../../services/app_config_bloc.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/CustomBoxShadow.dart';
 import '../../../../widget/curved_btn.dart';
+import '../../../../widget/custom_box_shadow.dart';
 import '../../../../widget/disclaimer_dialogue_for_goods.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../../shopping/models/store.dart';
@@ -232,29 +232,27 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                                   // if (appConfigurationModel
                                                   //         ?.enablePayment ==
                                                   //     true) {
-                                                    bool result =
-                                                        await showDisclaimerDialogueForGoods(
-                                                            context);
-                                                    if (result) {
-                                                      customerProfileBloc
-                                                              .customer =
-                                                          await UserAuth()
-                                                              .fetchCustomerProfile(
-                                                                  widget
-                                                                      .product!
-                                                                      .seller);
+                                                  bool result =
+                                                      await showDisclaimerDialogueForGoods(
+                                                          context);
+                                                  if (result) {
+                                                    customerProfileBloc
+                                                            .customer =
+                                                        await UserAuth()
+                                                            .fetchCustomerProfile(
+                                                                widget.product!
+                                                                    .seller);
 
-                                                      Navigator.of(context)
-                                                          .pushNamed(
-                                                        '/send-payment',
-                                                        arguments: {
-                                                          'isFromProfile':
-                                                              false,
-                                                          'product':
-                                                              widget.product
-                                                        },
-                                                      );
-                                                    }
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                      '/send-payment',
+                                                      arguments: {
+                                                        'isFromProfile': false,
+                                                        'product':
+                                                            widget.product
+                                                      },
+                                                    );
+                                                  }
                                                   // }
                                                 },
                                               ),

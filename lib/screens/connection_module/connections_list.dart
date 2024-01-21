@@ -15,9 +15,9 @@ import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -286,32 +286,28 @@ class _ConnectionListState extends State<ConnectionList> {
     try {
       return _connectionListBloc.connectionUsers.length == 0
           ? NoItemInList(msg: noContactMsg, isResult: true)
-          
-      : ListView.builder(
-          shrinkWrap: true,
-          // padding: EdgeInsets.symmetric(vertical: 4),
-        padding: EdgeInsets.only(bottom: 80.0),
-          //+1 for progressbar
-          itemCount: getConnectionListItemCount(),
-          physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics()),
-          itemBuilder: (BuildContext context, int index) {
+          : ListView.builder(
+              shrinkWrap: true,
+              // padding: EdgeInsets.symmetric(vertical: 4),
+              padding: EdgeInsets.only(bottom: 80.0),
+              //+1 for progressbar
+              itemCount: getConnectionListItemCount(),
+              physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              itemBuilder: (BuildContext context, int index) {
+                ChatConversation chatConversation =
+                    _connectionListBloc.connectionUsers[index];
 
-              ChatConversation chatConversation =
-              _connectionListBloc.connectionUsers[index];
-
-              if (appConfigurationModel?.enableGroupChat == false) {
-                if (chatConversation.isGroupConversation!) {
-                  return SizedBox.shrink();
+                if (appConfigurationModel?.enableGroupChat == false) {
+                  if (chatConversation.isGroupConversation!) {
+                    return SizedBox.shrink();
+                  }
                 }
-              }
-              return _getSlidableWithLists(
-                  context, _connectionListBloc.connectionUsers[index], index);
-
-          },
-          controller: _scrollController,
-
-      );
+                return _getSlidableWithLists(
+                    context, _connectionListBloc.connectionUsers[index], index);
+              },
+              controller: _scrollController,
+            );
     } catch (error) {
       debugPrint("ERROR building list =>:- $error");
       return _connectionListBloc.connectionUsers.length == 0

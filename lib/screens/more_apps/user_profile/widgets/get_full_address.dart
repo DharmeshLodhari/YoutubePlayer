@@ -1,7 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

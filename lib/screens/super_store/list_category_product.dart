@@ -4,7 +4,7 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/custom_pagination.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 

@@ -6,9 +6,9 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -138,10 +138,13 @@ class _OrdersListState extends State<OrdersList> {
         CustomizedPopUpMenuItem(title: "Completed", value: "Complete"),
         CustomizedPopUpMenuItem(title: "On hold", value: "On Hold"),
         CustomizedPopUpMenuItem(title: "Pending", value: "Pending"),
-        CustomizedPopUpMenuItem(title: "Payment Received", value: "Payment Received"),
-        CustomizedPopUpMenuItem(title: "Order Picked Up", value: "Order Picked Up"),
+        CustomizedPopUpMenuItem(
+            title: "Payment Received", value: "Payment Received"),
+        CustomizedPopUpMenuItem(
+            title: "Order Picked Up", value: "Order Picked Up"),
         CustomizedPopUpMenuItem(title: "Processing", value: "Processing"),
-        CustomizedPopUpMenuItem(title: "Out For Delivery", value: "Out For Delivery"),
+        CustomizedPopUpMenuItem(
+            title: "Out For Delivery", value: "Out For Delivery"),
         CustomizedPopUpMenuItem(title: "Clear Date", value: filterValue),
         CustomizedPopUpMenuItem(title: "Clear All", value: 'clear_all'),
       ],

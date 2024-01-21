@@ -6,7 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/noItemInList.dart';
+import '../../../../widget/no_item_in_list.dart';
 import '../models/Topics/yarn_model.dart';
 import '../tiles/yarn_list_tile.dart';
 import '../yarn_auth.dart';
@@ -64,8 +64,7 @@ class MyFeedViewState extends State<MyFeedView> {
             isType: isType,
             categoryId: categoryId,
             userName: widget.userName,
-            isChannel: widget.isChannel
-            );
+            isChannel: widget.isChannel);
 
         if (result == null) {
           noList = true;

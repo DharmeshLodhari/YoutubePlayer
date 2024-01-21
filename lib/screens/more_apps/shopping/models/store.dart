@@ -1141,11 +1141,19 @@ class AddOns {
   }
 }
 
+class ProductCondition {
+  const ProductCondition(this.name, this.description);
+
+  final String name;
+  final String description;
+}
+
 class Tags {
   num? id;
   String? name;
+  bool isSelected;
 
-  Tags({this.id, this.name});
+  Tags({this.id, this.name, this.isSelected = false});
 
   factory Tags.fromJson(Map<String, dynamic> json) {
     return Tags(
@@ -1387,13 +1395,6 @@ class ProductCategory {
 
   final String name;
   final dynamic id;
-}
-
-class ProductCondition {
-  const ProductCondition(this.name, this.description);
-
-  final String name;
-  final String description;
 }
 
 class ServiceCategory {

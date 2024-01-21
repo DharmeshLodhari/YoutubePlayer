@@ -3,10 +3,11 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
-import '../../../widget/noItemInList.dart';
+import '../../../widget/no_item_in_list.dart';
 import 'models/Topics/yarn_model.dart';
 import 'tiles/yarn_list_tile.dart';
 import 'widgets/yarn_shimmer.dart';
@@ -222,8 +223,8 @@ class TrendingListScreenState extends State<TrendingListScreen> {
                   screen: YarnDetailScreen(yarn: yarnTopicList[index].reYarn!),
                 );
               },
-              reloadView: (bool val){
-                if(val == true){
+              reloadView: (bool val) {
+                if (val == true) {
                   onPostRefresh();
                 }
               },

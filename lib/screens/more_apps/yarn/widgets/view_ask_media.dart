@@ -1,7 +1,7 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';

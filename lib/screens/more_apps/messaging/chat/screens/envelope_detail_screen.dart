@@ -5,13 +5,14 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/my_audio_player.dart';

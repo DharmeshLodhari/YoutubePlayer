@@ -6,7 +6,7 @@ import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -15,7 +15,8 @@ import 'package:shimmer/shimmer.dart';
 class MomentsTab extends StatefulWidget {
   CustomerProfile? searchedUser;
   String? channelUsername;
-  MomentsTab({Key? key, required this.searchedUser, this.channelUsername}) : super(key: key);
+  MomentsTab({Key? key, required this.searchedUser, this.channelUsername})
+      : super(key: key);
 
   @override
   _MomentsTabState createState() => _MomentsTabState();
@@ -51,10 +52,10 @@ class _MomentsTabState extends State<MomentsTab> {
         if (widget.searchedUser != null) {
           await MomentsService()
               .getMomentsWithOwnerName(
-                  ownerName: widget.searchedUser!.userName!, channelUsername: widget.channelUsername ?? '')
+                  ownerName: widget.searchedUser!.userName!,
+                  channelUsername: widget.channelUsername ?? '')
               .then(
             (myMomentsModelList) {
-
               isMyMomentsLoading = false;
               myMomentsList.addAll(myMomentsModelList);
 
@@ -213,11 +214,11 @@ class _MomentsTabState extends State<MomentsTab> {
                     exploreMomentsModelList: myMomentsList
                         .map(
                           (e) => ExploreMomentsModel(
-                              owner: e.owner,
-                              avatar: e.avatar,
-                              moments: [myMomentsList[index]],
-                              // ownerName: e.ownerName,
-                              ),
+                            owner: e.owner,
+                            avatar: e.avatar,
+                            moments: [myMomentsList[index]],
+                            // ownerName: e.ownerName,
+                          ),
                         )
                         .toList(),
                   );

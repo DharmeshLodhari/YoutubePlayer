@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/LoadingIndicator.dart';
+import '../../../../widget/loading_indicator.dart';
 import '../../../more_apps/shopping/models/store.dart';
 import '../../models/moments_model.dart';
 import '../../moments_bloc.dart';

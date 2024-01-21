@@ -8,8 +8,8 @@ import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/util.dart';
-import '../../../widget/LoadingIndicator.dart';
-import '../../../widget/noItemInList.dart';
+import '../../../widget/loading_indicator.dart';
+import '../../../widget/no_item_in_list.dart';
 import '../../more_apps/shopping/models/store.dart';
 import '../../more_apps/shopping/shopping_auth.dart';
 import '../../more_apps/user_post/user_post_auth.dart';
@@ -66,8 +66,8 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
   Future<Map<String, dynamic>?> getAttachmentAPI() {
     switch (widget.attachmentType) {
       case AttachmentType.Product:
-        return ShoppingAuthService()
-            .listOfProduct(next, "", "", false, userName: userBloc.user.userName);
+        return ShoppingAuthService().listOfProduct(next, "", "", false,
+            userName: userBloc.user.userName);
 
       case AttachmentType.Service:
         return ShoppingAuthService()

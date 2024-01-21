@@ -8,8 +8,8 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -48,7 +48,8 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
 
   @override
   Widget build(BuildContext context) {
-    print('widget.message!["meta_data"].toString()${widget.message!.toString()}');
+    print(
+        'widget.message!["meta_data"].toString()${widget.message!.toString()}');
     if (widget.message!["meta_data"] is String) {
       product = Product.fromJson(jsonDecode(widget.message!["meta_data"]));
     } else if (widget.message!["meta_data"] is Map) {

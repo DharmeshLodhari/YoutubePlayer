@@ -50,9 +50,9 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     shippingAddress = widget.shippingAddress?.copyWith() ?? ShippingAddress();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getShippingStates();
-
       userBloc = Provider.of<UserBloc>(context, listen: false);
+
+      getShippingStates();
     });
     super.initState();
   }
@@ -105,7 +105,8 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     }
   }
 
-  void getShippingCities(code) async {
+  Future<void> getShippingCities(code) async {
+    if (mounted) setState(() {});
     if (!isLoading) {
       isLoading = true;
       if (mounted) setState(() {});
@@ -473,15 +474,15 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
           child: Text(item.name!),
         );
       }).toList(),
-      onChanged: (String? value) {
+      onChanged: (String? value) async {
         StatesModel picked =
             itemList.firstWhere((element) => element.name == value);
-        getShippingCities(picked.isoCode);
+        await getShippingCities(picked.isoCode);
         shippingAddress.stateName = picked.name;
         setState(() {
           selectedState = value!;
-          cityList = [];
-          selectedCity = null;
+          // cityList = [];
+          // selectedCity = null;
         });
       },
       validator: (String? value) {
@@ -544,7 +545,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
         if (value != null && value.isNotEmpty) {
           return null;
         } else {
-          return 'Pick a state';
+          return 'Pick a city';
         }
       },
     );
@@ -670,7 +671,8 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       children: [
         Checkbox(
           activeColor: navyBlue,
-          value: shippingAddress.is_residential,
+          value: shippingAddress.is_residential ?? false,
+          tristate: false,
           onChanged: (value) {
             shippingAddress.is_residential = shippingAddress.is_residential;
             setState(() {});

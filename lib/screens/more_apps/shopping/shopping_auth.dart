@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/product_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
@@ -1903,9 +1904,9 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
-  Future<List<ProductCategory>> getProductTags(id, val) async {
-    var url = AppConfig.baseUrl +
-        "/api/v1/products/tags/?industries/${id}&search=${val}";
+  Future<List<Tags>> getProductTags(id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/tags";
+    // "/api/v1/products/tags/?industries/${id}&search=${val}";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -1916,18 +1917,17 @@ class ShoppingAuthService extends AuthService {
 
       List<dynamic> results = jsonData["results"];
 
-      List<ProductCategory> categories = [];
+      List<Tags> categories = [];
 
       for (int i = 0; i < results.length; i++) {
-        categories
-            .add(ProductCategory(results[i]['name']!, id: results[i]['id']));
+        categories.add(Tags(name: results[i]['name']!, id: results[i]['id']));
       }
 
       return categories;
     } else {
       debugPrint(
           "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
-      return Future.value(<ProductCategory>[]);
+      return Future.value(<Tags>[]);
     }
   }
 
@@ -2863,6 +2863,20 @@ class ShoppingAuthService extends AuthService {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
       return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  Future<ProductDetails> getProductLink() async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-by-token/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    print('Status of KYC...${response.body} and ${response.statusCode}');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var jsonData = jsonDecode(response.body);
+      return ProductDetails.fromJson(jsonData);
+    } else {
+      showToast(message: response.body.toString());
+      throw response.body;
     }
   }
 }

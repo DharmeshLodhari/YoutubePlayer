@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -21,9 +22,9 @@ import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/read_more_widget.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/cupertino.dart';
@@ -167,7 +168,6 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    
     momentsBloc = Provider.of<MomentsBloc>(context, listen: false);
 
     return Stack(
@@ -1277,6 +1277,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
           )
         : const SizedBox.shrink();
   }
+
   // callback function with a bool parameter for success moment payment
   void onCallback(bool value) {
     // Handle the callback value

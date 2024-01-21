@@ -3,7 +3,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 import '../../../../routes/route_constants.dart';
 import '../../credit_card/models/card_transactions.dart';
 import '../../credit_card/utils/utils.dart';
-import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 // ignore: must_be_immutable
 class PaymentRequestTile extends StatelessWidget {
@@ -197,7 +196,8 @@ class CardTransactionTile extends StatelessWidget {
                 title: getTitle(),
                 subtitle: getSubTitle(context),
                 leading: getLeading(),
-                trailing: transaction!.transactionAmount.toString().length >= amountLimit
+                trailing: transaction!.transactionAmount.toString().length >=
+                        amountLimit
                     ? null
                     : getAmount(),
                 onTap: () {
@@ -226,19 +226,19 @@ class CardTransactionTile extends StatelessWidget {
 
   Widget getLeading() {
     return
-      // transaction!.isAnonymous!
-      //   ? Container(
-      //       padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
-      //       child: Image.asset(
-      //         "assets/images/anonymous.png",
-      //         height: 48,
-      //         width: 48,
-      //         colorBlendMode: BlendMode.darken,
-      //         fit: BoxFit.fitHeight,
-      //       ),
-      //     )
-      //   :
-      userImageUserInitialsPic(
+        // transaction!.isAnonymous!
+        //   ? Container(
+        //       padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+        //       child: Image.asset(
+        //         "assets/images/anonymous.png",
+        //         height: 48,
+        //         width: 48,
+        //         colorBlendMode: BlendMode.darken,
+        //         fit: BoxFit.fitHeight,
+        //       ),
+        //     )
+        //   :
+        userImageUserInitialsPic(
             transaction!.merchantLogoUrl!, transaction!.merchantName!, 20, 40);
   }
 
@@ -247,12 +247,13 @@ class CardTransactionTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          transaction!.currencyCode == 'USD' ? formatAsDollar(double.parse(transaction!.transactionAmount.toString())) :
-          formatAsNaira(double.parse(transaction!.transactionAmount.toString())),
+          transaction!.currencyCode == 'USD'
+              ? formatAsDollar(
+                  double.parse(transaction!.transactionAmount.toString()))
+              : formatAsNaira(
+                  double.parse(transaction!.transactionAmount.toString())),
           style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 14),
+              color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
         ),
       ],
     );

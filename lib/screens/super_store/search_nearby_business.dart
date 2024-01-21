@@ -3,8 +3,9 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../../utils/util.dart';
 import '../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../widget/rounded_background_icon.dart';
