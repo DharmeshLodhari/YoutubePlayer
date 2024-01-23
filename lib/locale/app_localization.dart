@@ -1424,6 +1424,13 @@ class AppLocalization {
     );
   }
 
+  String get discount {
+    return Intl.message(
+      "Discount",
+      name: "discount",
+    );
+  }
+
   String get trackInventoryView {
     return Intl.message(
       "Track Inventory",

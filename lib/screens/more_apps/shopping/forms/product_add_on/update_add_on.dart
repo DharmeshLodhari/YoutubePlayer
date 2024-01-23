@@ -1,11 +1,11 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_option_tile.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -13,9 +13,7 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../data/currency.dart';
 import '../../../../../routes/route_constants.dart';
-import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../shopping_auth.dart';
 
 class UpdateAddOn extends StatefulWidget {
@@ -43,7 +41,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
   String description = "";
   String value = "";
   int id = 0;
-  List productAddOnOptionList = [];
+  List<AddOnOption> productAddOnOptionList = [];
   ScrollController scrollControllerAddOnOption = ScrollController();
   AddOns addOns = AddOns();
   final TextEditingController nameController = TextEditingController();
@@ -387,7 +385,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
         });
 
         // Handle the result (map) received from Product Add-on Option
-        if (result != null && result is List<dynamic>) {
+        if (result != null && result is List<AddOnOption>) {
           //save the add-on option details for later use
           productAddOnOptionList = result;
           if (mounted) setState(() {});
@@ -468,9 +466,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
               'Options',
               maxLines: 1,
               style: TextStyle(
-                  color: blackFont.withOpacity(.5),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14),
+                  color: darkGrey, fontWeight: FontWeight.w500, fontSize: 16),
             ),
             GestureDetector(
               onTap: () async {
@@ -507,9 +503,10 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
             });
 
             // Handle the result (map) received from Product Add-on Option
-            if (result != null && result is AddOnOption) {
+            if (result != null && result is List<AddOnOption>) {
               //save the add-on option details for later use
-              productAddOnOptionList.add(result);
+              // productAddOnOptionList.add(result);
+              productAddOnOptionList = result;
               if (mounted) setState(() {});
             }
           },
@@ -519,7 +516,7 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
               'See all',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue, fontWeight: FontWeight.w400, fontSize: 16),
+                  color: navyBlue, fontWeight: FontWeight.w400, fontSize: 14),
             ),
           ),
         ),
@@ -539,136 +536,13 @@ class _UpdateAddOnState extends State<UpdateAddOn> {
           if (index == productAddOnOptionList.length) {
             return buildLoadingIndicator(isLoading: isLoading);
           } else {
-            return addOnOptionTile(
+            return AddOnOptionTile(
               addOnOption: productAddOnOptionList[index],
             );
           }
         },
       ),
     );
-  }
-
-  Widget addOnOptionTile({required AddOnOption addOnOption}) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
-        child: ListTile(
-          dense: true,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "",
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12),
-              ),
-              Text(
-                appendStringDot(addOnOption.name!, 10),
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14),
-              ),
-              Text(
-                'Created: ${addOnOption.createdAt.toString()}',
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12),
-              ),
-              Text(
-                "",
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12),
-              ),
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                worldCurrencies[addOnOption.currency!]!,
-                style: TextStyle(
-                    fontFamily: "Inter",
-                    fontSize: 18.0,
-                    color: blackFont,
-                    fontWeight: FontWeight.w600),
-              ),
-              Text(
-                moneyDisplayNormalizer(int.parse(addOnOption.price.toString())),
-                style: TextStyle(
-                    fontSize: 18.0,
-                    color: blackFont,
-                    fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          leading: GestureDetector(
-            onTap: () {
-              String? url = addOnOption.picture;
-              Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
-            },
-            child: checkProductImage(addOnOption),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget checkProductImage(AddOnOption addOnOption) {
-    // Retrieve the first image from the 'pictures' list
-    String? url = "";
-
-    url = addOnOption.picture;
-
-    String imageUrl = url!.replaceAll('https//', 'https://');
-    if (url == "") {
-      return CircleAvatar(
-        backgroundColor: navyBlue,
-        radius: 25,
-        child: Text(
-          getInitials(addOnOption.name!).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w700),
-        ),
-      );
-    } else {
-      return SizedBox(
-        height: 100,
-        child: CustomBoxShadow(
-          child: Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: boxShadowTwo,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: NetworkImage(
-                      imageUrl,
-                    ),
-                    fit: BoxFit.cover),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
   }
 
   @override

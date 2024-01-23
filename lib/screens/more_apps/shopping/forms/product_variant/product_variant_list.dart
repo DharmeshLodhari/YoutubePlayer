@@ -93,7 +93,8 @@ class _ProductVariantListState extends State<ProductVariantList> {
       var tempList = result['results'];
 
       // productVariantList = Variant.convertToVariantList(tempList);
-      productVariantList = tempList;
+      // productVariantList = tempList;
+      productVariantList.addAll(tempList);
 
       if (mounted) {
         setState(() {
@@ -285,9 +286,7 @@ class _ProductVariantListState extends State<ProductVariantList> {
                 'Available . ${variant.quantity!}',
                 maxLines: 1,
                 style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14),
+                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 14),
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,

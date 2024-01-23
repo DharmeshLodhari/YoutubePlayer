@@ -255,7 +255,7 @@ class _AddOnTileState extends State<AddOnTile> {
           style: TextStyle(
               fontFamily: "Inter",
               fontSize: 14.0,
-              color: blackFont.withOpacity(.5),
+              color: darkGrey,
               fontWeight: FontWeight.w500),
         ),
         Text(

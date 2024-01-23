@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -20,7 +22,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
-import '../../../../data/currency.dart';
 import '../../../../routes/route_constants.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../shopping_auth.dart';
@@ -102,7 +103,7 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController inventoryCountController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
-  List? productAddOnsList = [];
+  List<AddOns> productAddOnsList = [];
   bool inventoryIsAvailable = false;
   var weightSi = ['Grams', 'Kilograms'];
   var widthSi = ['Centimetres', 'Metres'];
@@ -506,6 +507,7 @@ class _EditProductState extends State<EditProduct> {
                         getTrackInventoryField(),
                         const SizedBox(height: 16),
                       ],
+                      const SizedBox(height: 16),
 
                       getEnableInSuperStoreField(),
                       const SizedBox(height: 16),
@@ -520,7 +522,7 @@ class _EditProductState extends State<EditProduct> {
                       const SizedBox(height: 16),
 
                       if (productAddOnsList == null ||
-                          productAddOnsList!.isEmpty) ...[
+                          productAddOnsList.isEmpty) ...[
                         productAddOns(),
                       ] else ...[
                         displaySelectedAddOn(),
@@ -1428,8 +1430,8 @@ class _EditProductState extends State<EditProduct> {
                 "Add Tags",
                 style: TextStyle(
                   color: navyBlue,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             )
@@ -2397,8 +2399,8 @@ class _EditProductState extends State<EditProduct> {
                 'Add different variation like colour & size',
                 style: TextStyle(
                   color: blackFont,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
                 ),
               ),
             ),
@@ -2436,22 +2438,23 @@ class _EditProductState extends State<EditProduct> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Variant',
+              'Product Variant',
               maxLines: 1,
               style: TextStyle(
-                  color: blackFont.withOpacity(.5),
-                  fontWeight: FontWeight.w600,
+                  color: darkGrey,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
                   fontSize: 14),
             ),
             GestureDetector(
-              onTap: () {
-                final data = Navigator.of(context)
+              onTap: () async {
+                final data = await Navigator.of(context)
                     .pushNamed(Routes.PRODUCT_VARIANT_LIST, arguments: {
                   'productId': productId,
                 });
 
                 // Handle the result (map) received from PRODUCT_VARIANT_LIST
-                if (data != null && data is List<Variant>) {
+                if (data != null && data is Variant) {
                   //clear previous list, update the list
                   // debugPrint('fola data::: ${data}');
                   // debugPrint('fola data 2::: ${data.runtimeType}');
@@ -2461,6 +2464,7 @@ class _EditProductState extends State<EditProduct> {
                   // productVariantList = data;
 
                   // variantData = data;
+                  productVariantList.add(data);
                   if (mounted) setState(() {});
                 }
               },
@@ -2468,7 +2472,11 @@ class _EditProductState extends State<EditProduct> {
                 'See all',
                 maxLines: 1,
                 style: TextStyle(
-                    color: navyBlue, fontWeight: FontWeight.w400, fontSize: 16),
+                  color: navyBlue,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                ),
               ),
             ),
           ],
@@ -2480,86 +2488,21 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget _buildProductVariantList() {
-    return Container(
-      height: 200,
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        //+1 for progressbar
-        itemCount: productVariantList.length + 1,
-        controller: scrollControllerVariant,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == productVariantList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return productVariantTile(
-              variant: productVariantList[index],
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  Widget productVariantTile({required Variant variant}) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
-        child: ListTile(
-          dense: true,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                appendStringDot(variant.title!, 20),
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18),
-              ),
-              Text(
-                'Available . ${variant.quantity!}',
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    worldCurrencies[variant.currency!]!,
-                    style: TextStyle(
-                        fontFamily: "Inter",
-                        fontSize: 18.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    moneyDisplayNormalizer(int.parse(variant.price.toString())),
-                    style: TextStyle(
-                        fontSize: 18.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ],
-              )
-            ],
-          ),
-          leading: GestureDetector(
-            onTap: () {
-              String? url = variant.serverImages![0]!;
-              Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
-            },
-            child: checkProductImage(variant),
-          ),
-        ),
-      ),
+    return ListView.builder(
+      controller: scrollControllerVariant,
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: productVariantList.length,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == productVariantList.length) {
+          return buildLoadingIndicator(isLoading: isLoading);
+        } else {
+          return FormVariantsTile(
+              productVariantList: productVariantList,
+              index: index,
+              type: 'edit');
+        }
+      },
     );
   }
 
@@ -2612,7 +2555,7 @@ class _EditProductState extends State<EditProduct> {
   Widget productVariation() {
     return GestureDetector(
       onTap: () async {
-        if (productAddOnsList!.isNotEmpty) {
+        if (productVariantList.isNotEmpty) {
           return;
         }
         final result = await Navigator.of(context).pushNamed(
@@ -2620,9 +2563,9 @@ class _EditProductState extends State<EditProduct> {
             arguments: {'productId': productId, 'option': 'edit'});
 
         // Handle the result (map) received from Product Add New Option
-        if (result != null && result is List<Variant>) {
+        if (result != null && result is Variant) {
           //save the variant details for later use
-          productVariantList = result;
+          productVariantList.add(result);
           if (mounted) setState(() {});
         }
       },
@@ -2634,10 +2577,9 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: productAddOnsList!.isEmpty
-                      ? navyBlue
-                      : blackFont.withOpacity(.5),
-                  fontWeight: FontWeight.w600,
+                  color: navyBlue,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w500,
                   fontSize: 14),
             ),
             Icon(
@@ -2655,7 +2597,7 @@ class _EditProductState extends State<EditProduct> {
     return GestureDetector(
       onTap: () async {
         //disable click if variant is not empty
-        if (productVariantList.isNotEmpty) {
+        if (productAddOnsList.isNotEmpty) {
           return;
         }
 
@@ -2665,7 +2607,7 @@ class _EditProductState extends State<EditProduct> {
         });
 
         // Handle the result (map) received from PRODUCT_ADD_ON_LIST
-        if (result != null && result is List<dynamic>) {
+        if (result != null && result is List<AddOns>) {
           //save the add-on details
           productAddOnsList = result;
           if (mounted) setState(() {});
@@ -2679,10 +2621,9 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color: productVariantList.isEmpty
-                      ? navyBlue
-                      : blackFont.withOpacity(.5),
-                  fontWeight: FontWeight.w600,
+                  color: navyBlue,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
                   fontSize: 14),
             ),
             Icon(
@@ -2706,9 +2647,7 @@ class _EditProductState extends State<EditProduct> {
               'Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color: blackFont.withOpacity(.5),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14),
+                  color: darkGrey, fontWeight: FontWeight.w600, fontSize: 14),
             ),
             GestureDetector(
               onTap: () async {
@@ -2718,9 +2657,9 @@ class _EditProductState extends State<EditProduct> {
                 });
 
                 // Handle the result (map) received from PRODUCT_ADD_ON_LIST
-                if (data != null && data is AddOns) {
+                if (data != null && data is List<AddOns>) {
                   //save the add-on details
-                  productAddOnsList!.add(data);
+                  productAddOnsList = data;
                   if (mounted) setState(() {});
                 }
               },
@@ -2728,7 +2667,7 @@ class _EditProductState extends State<EditProduct> {
                 'See all',
                 maxLines: 1,
                 style: TextStyle(
-                    color: navyBlue, fontWeight: FontWeight.w400, fontSize: 16),
+                    color: navyBlue, fontWeight: FontWeight.w400, fontSize: 14),
               ),
             ),
           ],
@@ -2742,19 +2681,20 @@ class _EditProductState extends State<EditProduct> {
   Widget _buildAddOnList() {
     return Container(
       // height: 200,
-      height: 80 * productAddOnsList!.length.toDouble(),
+      height: 80 * productAddOnsList.length.toDouble(),
       child: ListView.builder(
         physics: NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 10),
         //+1 for progressbar
-        itemCount: productAddOnsList!.length + 1,
+        itemCount: productAddOnsList.length + 1,
         controller: scrollControllerVariant,
         itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnsList!.length) {
+          if (index == productAddOnsList.length) {
             return buildLoadingIndicator(isLoading: isLoading);
           } else {
-            return addOnTile(
-              addOns: productAddOnsList![index],
+            return FormAddOnTile(
+              productAddOnsList: productAddOnsList,
+              index: index,
             );
           }
         },
@@ -2762,45 +2702,43 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  Widget addOnTile({required AddOns addOns}) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-        decoration: BoxDecoration(
-          border: Border.all(width: 1, color: greyBorderColor),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: ListTile(
-          dense: true,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                appendStringDot(addOns.name!, 20),
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18),
-              ),
-              Text(
-                '${addOns.options!.length} items',
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget addOnTile({required AddOns addOns}) {
+  //   return Card(
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  //     // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+  //     shadowColor: boxShadowTwo,
+  //     elevation: 0,
+  //     child: Container(
+  //       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+  //       decoration: BoxDecoration(
+  //         border: Border.all(width: 1, color: greyBorderColor),
+  //         borderRadius: BorderRadius.all(Radius.circular(10)),
+  //       ),
+  //       child: ListTile(
+  //         dense: true,
+  //         title: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               appendStringDot(addOns.name!, 20),
+  //               maxLines: 1,
+  //               style: TextStyle(
+  //                   color: blackFont,
+  //                   fontWeight: FontWeight.w600,
+  //                   fontSize: 18),
+  //             ),
+  //             Text(
+  //               '${addOns.options!.length} items',
+  //               maxLines: 1,
+  //               style: TextStyle(
+  //                   color: darkGrey, fontWeight: FontWeight.w400, fontSize: 14),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {

@@ -1654,7 +1654,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 style: TextStyle(
                     fontSize: 16,
                     fontFamily: "Inter",
-                    color: blackFont.withOpacity(.5),
+                    color: darkGrey,
                     fontWeight: FontWeight.bold),
               ),
               SizedBox(
@@ -1685,7 +1685,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 style: TextStyle(
                     fontSize: 16,
                     fontFamily: 'Inter',
-                    color: blackFont.withOpacity(.5),
+                    color: darkGrey,
                     fontWeight: FontWeight.bold),
               ),
               SizedBox(

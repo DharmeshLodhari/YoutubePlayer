@@ -40,7 +40,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   String? next = "";
   String? previous = "";
   String? productId = "";
-  List addOnOptionList = [];
+  List<AddOnOption> addOnOptionList = [];
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -186,11 +186,10 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
           size: 24,
         ),
         onPressed: () {
-          List addOnOption = addOnOptionList
+          List<AddOnOption> addOnOption = addOnOptionList
               .where((addOnOption) => addOnOption.isChecked == true)
               .toList();
           Navigator.pop(context, addOnOption);
-          // Navigator.pop(context, addOnOptionList);
         },
       ),
       centerTitle: false,
@@ -282,12 +281,11 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   Widget addOnOptionTile({required AddOnOption addOnOption, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
-        height: 100,
-        // padding: EdgeInsets.symmetric(horizontal: 0, vertical: 15),
+        padding: EdgeInsets.symmetric(vertical: 20),
         decoration: decorateBox(),
         child: ListTile(
           // dense: variant.isDefault! ? true : false,
@@ -296,52 +294,50 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                appendStringDot(addOnOption.name!, 20),
+                appendStringDot(addOnOption.name!, 14),
                 maxLines: 1,
                 style: TextStyle(
                     color: blackFont,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     fontSize: 16),
               ),
+              SizedBox(height: 10.0),
               Text(
                 'Created: ${addOnOption.createdAt} ',
                 maxLines: 1,
                 style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12),
+                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
               ),
             ],
           ),
           leading: checkProductImage(addOnOption),
-          trailing: Container(
-            child: Column(
-              // crossAxisAlignment: CrossAxisAlignment.start,
-              // mainAxisAlignment: MainAxisAlignment.center,
-              // mainAxisSize: MainAxisSize.max,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      worldCurrencies[addOnOption.currency!]!,
-                      style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 12.0,
-                          color: blackFont.withOpacity(.5),
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      moneyDisplayNormalizer(
-                          int.parse(addOnOption.price.toString())),
-                      style: TextStyle(
-                          fontSize: 12.0,
-                          color: blackFont.withOpacity(.5),
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-                Checkbox(
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    worldCurrencies[addOnOption.currency!]!,
+                    style: TextStyle(
+                        fontFamily: "Inter",
+                        fontSize: 14.0,
+                        color: darkGrey,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    moneyDisplayNormalizer(
+                        int.parse(addOnOption.price.toString())),
+                    style: TextStyle(
+                        fontSize: 14.0,
+                        color: darkGrey,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: Checkbox(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   value: addOnOption.isChecked,
                   activeColor: navyBlue,
                   onChanged: (bool? value) {
@@ -349,8 +345,8 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                     toggleAddOnCheckedState(index!);
                   },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -387,7 +383,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
   }
 
   Widget loadAllCheckedAddOn() {
-    List addOnOption = addOnOptionList
+    List<AddOnOption> addOnOption = addOnOptionList
         .where((addOnOption) => addOnOption.isChecked == true)
         .toList();
 
@@ -412,27 +408,16 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         ),
       );
     } else {
-      return SizedBox(
-        height: 100,
-        child: CustomBoxShadow(
-          child: Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: boxShadowTwo,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: NetworkImage(
-                      imageUrl,
-                    ),
-                    fit: BoxFit.cover),
-              ),
-            ),
+      return CustomBoxShadow(
+        child: Container(
+          width: 60,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            image: DecorationImage(
+                image: NetworkImage(
+                  imageUrl,
+                ),
+                fit: BoxFit.cover),
           ),
         ),
       );
@@ -479,7 +464,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
 
   void updateItemById(int id, AddOnOption updatedItem) {
     for (int i = 0; i < addOnOptionList.length; i++) {
-      if (addOnOptionList[i]["id"] == id) {
+      if (addOnOptionList[i].id == id) {
         addOnOptionList[i] = updatedItem;
         break; // Stop iterating once the item is found and updated
       }
