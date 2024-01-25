@@ -218,7 +218,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         buttonKey: _key,
         context: context,
         hasIcon: true,
-        children: [
+        childList: [
           CustomizedPopUpMenuItemWithIcon(
               title: "Blog", value: "Blog", icon: SlydoAppIcon.payout_list),
           CustomizedPopUpMenuItemWithIcon(

@@ -168,7 +168,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
 
         // Make parallel API calls using Future.wait
         List<Future<Map<String, dynamic>?>> apiCalls = [
-          ShoppingAuthService().listOfSuperStores().then((value) => null),
+          ShoppingAuthService().listOfSuperStores(),
           ShoppingAuthService()
               .listOfDiscounts(next, previous, activeDiscount: true),
           ShoppingAuthService().listOfMerchant(

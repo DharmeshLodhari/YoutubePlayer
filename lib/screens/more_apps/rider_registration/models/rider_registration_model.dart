@@ -150,6 +150,78 @@ class RiderRegistrationModel {
     return files;
   }
 
+  Future<List<MultipartFile>> updateMultipartFiles() async {
+    List<http.MultipartFile> files = [];
+    http.MultipartFile? selfie;
+    http.MultipartFile? governmentId;
+    http.MultipartFile? vehicleInsuranceId;
+    http.MultipartFile? vehicleLicense;
+
+    if (mRiderPhoto != null) {
+      selfie = await http.MultipartFile.fromPath("selfie", mRiderPhoto!.path);
+    }
+
+    if (mIdentityCard != null) {
+      governmentId = await http.MultipartFile.fromPath(
+          "government_id", mIdentityCard!.path);
+    }
+
+    if (mVehicleInsurance != null) {
+      vehicleInsuranceId = await http.MultipartFile.fromPath(
+          "vehicle_insurance", mVehicleInsurance!.path);
+    }
+
+    if (mDrivingLicense != null) {
+      vehicleLicense = await http.MultipartFile.fromPath(
+          "vehicle_license", mDrivingLicense!.path);
+    }
+
+    switch (rideTypeOptions) {
+      case RideTypeOptions.car:
+        if (selfie! != null) {
+          files.add(selfie);
+        }
+        if (governmentId != null) {
+          files.add(governmentId);
+        }
+        if (vehicleInsuranceId != null) {
+          files.add(vehicleInsuranceId);
+        }
+        if (vehicleLicense != null) {
+          files.add(vehicleLicense);
+        }
+        break;
+      case RideTypeOptions.bicycle:
+        if (selfie! != null) {
+          files.add(selfie);
+        }
+        if (governmentId != null) {
+          files.add(governmentId);
+        }
+        if (vehicleLicense != null) {
+          files.add(vehicleLicense);
+        }
+        break;
+      case RideTypeOptions.motorcycle:
+        if (selfie != null) {
+          files.add(selfie);
+        }
+        if (governmentId != null) {
+          files.add(governmentId);
+        }
+        if (vehicleInsuranceId != null) {
+          files.add(vehicleInsuranceId);
+        }
+        if (vehicleLicense != null) {
+          files.add(vehicleLicense);
+        }
+        break;
+      default:
+        return [];
+    }
+    return files;
+  }
+
   Map<String, String> toRegisterRider() {
     return {
       "government_id_type": "Passport",

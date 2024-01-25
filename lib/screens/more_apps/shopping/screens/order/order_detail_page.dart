@@ -207,7 +207,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "New order", value: "new order"),
         CustomizedPopUpMenuItem(
             title: "Awaiting payment", value: "awaiting payment"),

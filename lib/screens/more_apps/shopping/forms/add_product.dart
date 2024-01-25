@@ -113,7 +113,7 @@ class _AddProductState extends State<AddProduct> {
   List<DiscountModel> discountListCopy = [];
   bool noItemInList = false;
   DiscountModel? pressedDiscount;
-  DiscountModel? selectedDiscountName;
+  DiscountModel? selectedDiscount;
   String discountName = "";
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
       new GlobalKey<ScaffoldMessengerState>();
@@ -662,6 +662,12 @@ class _AddProductState extends State<AddProduct> {
       maxLines: 5,
       textCapitalization: TextCapitalization.sentences,
       labelText: AppLocalization.of(context)!.description,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.description;
+      },
       onChanged: (val) {
         productDescription = val;
       },
@@ -2061,6 +2067,7 @@ class _AddProductState extends State<AddProduct> {
                   : '';
 
           product.trackInventory = trackInventory;
+          product.discount = selectedDiscount;
           product.quantity = inventoryCount;
 
           // product.variant = [];
@@ -2387,6 +2394,7 @@ class _AddProductState extends State<AddProduct> {
         ),
         SizedBox(height: 5),
         ListView.builder(
+          padding: EdgeInsets.zero,
           // Use `physics` property to prevent nested scrolling
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -2440,7 +2448,11 @@ class _AddProductState extends State<AddProduct> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedDiscountName != null ? selectedDiscountName!.name ?? "" : "",
+          selectedDiscount != null
+              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+                  selectedDiscount?.merchant ??
+                  ""
+              : "",
           style: TextStyle(
               color: blackFont,
               fontSize: 16,
@@ -2471,11 +2483,14 @@ class _AddProductState extends State<AddProduct> {
                 CustomizedTextFormField(
                   hintText: 'Search discount',
                   onChanged: (value) {
-                    if (value.toString().isNotEmpty) {
-                      discountList = discountListCopy!
-                          .where((element) => (element.name ?? "")
-                              .toLowerCase()
-                              .startsWith(value.toString().toLowerCase()))
+                    if (value.isNotEmpty) {
+                      discountList = discountListCopy
+                          .where((element) =>
+                              (messageDecoderWithEmoji(element.name) ??
+                                      element.merchant ??
+                                      "")
+                                  .toLowerCase()
+                                  .startsWith(value.toString().toLowerCase()))
                           .toList();
                       changeState(
                           () {}); // To upgrade the product categories in the bottom sheet.
@@ -2491,14 +2506,16 @@ class _AddProductState extends State<AddProduct> {
                     shrinkWrap: true,
                     itemCount: discountList.length,
                     itemBuilder: (context, index) {
-                      DiscountModel discount = discountList![index];
-                      if (selectedDiscountName == discount) {
+                      DiscountModel discount = discountList[index];
+                      if (selectedDiscount == discount) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
                           child: ListTile(
                             dense: true,
                             title: Text(
-                              discount.name ?? "",
+                              messageDecoderWithEmoji(discount.name) ??
+                                  discount.merchant ??
+                                  "",
                               overflow: TextOverflow.fade,
                               softWrap: false,
                               style: TextStyle(
@@ -2516,9 +2533,11 @@ class _AddProductState extends State<AddProduct> {
                               pressedDiscount = discount;
                               Navigator.pop(context);
                               if (pressedDiscount != null) {
-                                selectedDiscountName = pressedDiscount;
-                                productCategory =
-                                    selectedDiscountName!.name ?? "";
+                                selectedDiscount = pressedDiscount;
+                                discountName = messageDecoderWithEmoji(
+                                        selectedDiscount?.name) ??
+                                    selectedDiscount?.merchant ??
+                                    "";
                                 setState(() {});
                               }
                             },
@@ -2527,7 +2546,9 @@ class _AddProductState extends State<AddProduct> {
                       }
                       return ListTile(
                         title: Text(
-                          discount.name ?? "",
+                          messageDecoderWithEmoji(discount.name) ??
+                              discount.merchant ??
+                              "",
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
@@ -2541,11 +2562,11 @@ class _AddProductState extends State<AddProduct> {
                           pressedDiscount = discount;
                           Navigator.pop(context);
                           if (pressedDiscount != null) {
-                            getSubCategories(discount.id);
-                            selectedDiscountName = pressedDiscount;
-                            productCategory = selectedDiscountName!.name ?? "";
-                            productSubCategory = "";
-                            selectedSubCategory = null;
+                            selectedDiscount = pressedDiscount;
+                            discountName = messageDecoderWithEmoji(
+                                    selectedDiscount?.name) ??
+                                selectedDiscount?.merchant ??
+                                "";
                             setState(() {});
                           }
                         },
@@ -2624,6 +2645,10 @@ class _AddProductState extends State<AddProduct> {
   Widget productVariation() {
     return GestureDetector(
       onTap: () async {
+        //disable click if add-on is not empty
+        if (productAddOnsList.isNotEmpty) {
+          return;
+        }
         final result = await Navigator.of(context)
             .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
           'option': 'new',
@@ -2645,7 +2670,7 @@ class _AddProductState extends State<AddProduct> {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue,
+                  color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
                   fontFamily: "Inter",
                   fontWeight: FontWeight.w500,
                   fontSize: 14),
@@ -2728,6 +2753,11 @@ class _AddProductState extends State<AddProduct> {
   Widget productAddOns() {
     return GestureDetector(
       onTap: () async {
+        //disable click if variant is not empty
+        if (productVariantList.isNotEmpty) {
+          return;
+        }
+
         final result = await Navigator.of(context)
             .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
           'productId': '',
@@ -2748,7 +2778,7 @@ class _AddProductState extends State<AddProduct> {
               'Add Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue,
+                  color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
                   fontWeight: FontWeight.w500,
                   fontFamily: "Inter",
                   fontSize: 14),

@@ -209,7 +209,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "All", value: "All"),
         CustomizedPopUpMenuItem(title: "Paid", value: "Paid"),
         CustomizedPopUpMenuItem(title: "Drafts", value: "Draft"),

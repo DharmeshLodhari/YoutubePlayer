@@ -12,7 +12,7 @@ class CustomizedPopUpMenu {
   bool isMenuOpen = false;
   bool isTitleShow = false;
   BuildContext context;
-  List children = [];
+  List<CustomizedPopUpMenuItem> childList = [];
   bool hasIcon;
   Alignment arrowPosition;
 
@@ -30,7 +30,7 @@ class CustomizedPopUpMenu {
   CustomizedPopUpMenu({
     required this.buttonKey,
     required this.context,
-    required this.children,
+    required this.childList,
     this.right,
     this.left,
     this.arrowPosition = Alignment.topRight,
@@ -165,13 +165,13 @@ class CustomizedPopUpMenu {
   Widget childrenList() {
     return Column(
       children: List.generate(
-        children.length,
+        childList.length,
         (index) {
           bool isSelected = index == selectedIndex;
           return GestureDetector(
             onTap: () {
               selectedIndex = index;
-              onChange(children[index].value, index);
+              onChange(childList[index].value, index);
               closeMenu();
             },
             child: hasIcon
@@ -188,7 +188,7 @@ class CustomizedPopUpMenu {
 
   Widget menuListTile({required bool isSelected, required int index}) {
     // if the menu item is lat then we add the circular shape from bottom to menuListTile
-    bool isLast = index == children.length - 1;
+    bool isLast = index == childList.length - 1;
     return Container(
       decoration: BoxDecoration(
         color: isSelected ? lightGrey : Colors.white,
@@ -208,7 +208,7 @@ class CustomizedPopUpMenu {
         child: ListTile(
           dense: true,
           title: Text(
-            children[index].name,
+            childList[index].title,
             style: TextStyle(
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -229,14 +229,14 @@ class CustomizedPopUpMenu {
   Widget childrenListWithIcon() {
     return Column(
       children: List.generate(
-        children.length,
+        childList.length,
         (index) {
           bool isSelected = index == selectedIndex;
           return GestureDetector(
             onTap: () {
               selectedIndex = index;
 
-              onChange(children[index].value, index);
+              onChange(childList[index].value, index);
               closeMenu();
             },
             child: menuListTileWithIcon(
@@ -251,7 +251,7 @@ class CustomizedPopUpMenu {
 
   Widget menuListTileWithIcon({required bool isSelected, required int index}) {
     // if the menu item is lat then we add the circular shape from bottom to menuListTile
-    bool isLast = index == children.length - 1;
+    bool isLast = index == childList.length - 1;
     return Container(
       decoration: BoxDecoration(
         color: isSelected ? lightGrey : Colors.white,
@@ -273,7 +273,9 @@ class CustomizedPopUpMenu {
           title: Row(
             children: [
               Icon(
-                children[index].icon,
+                (childList[index] is CustomizedPopUpMenuItemWithIcon
+                    ? (childList[index] as CustomizedPopUpMenuItemWithIcon).icon
+                    : Icons.circle),
                 size: 16,
                 color: isSelected ? navyBlue : Colors.black,
               ),
@@ -281,7 +283,7 @@ class CustomizedPopUpMenu {
                 width: 10,
               ),
               Text(
-                children[index].name,
+                childList[index].title,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -313,11 +315,9 @@ class CustomizedPopUpMenuItem {
   CustomizedPopUpMenuItem({required this.title, required this.value});
 }
 
-class CustomizedPopUpMenuItemWithIcon {
-  String title;
-  String value;
+class CustomizedPopUpMenuItemWithIcon extends CustomizedPopUpMenuItem {
   IconData icon;
 
   CustomizedPopUpMenuItemWithIcon(
-      {required this.title, required this.value, required this.icon});
+      {required super.title, required super.value, required this.icon});
 }

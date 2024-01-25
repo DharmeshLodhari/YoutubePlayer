@@ -129,7 +129,7 @@ class _OrdersListState extends State<OrdersList> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "All", value: ""),
         CustomizedPopUpMenuItem(title: "New order", value: "New Order"),
         CustomizedPopUpMenuItem(

@@ -5,6 +5,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -23,7 +24,6 @@ import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
 import '../../../../routes/route_constants.dart';
-import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../shopping_auth.dart';
 
 // ignore: must_be_immutable
@@ -122,6 +122,20 @@ class _EditProductState extends State<EditProduct> {
   bool measurementView = false;
   bool show = false;
 
+  bool isDiscountLoading = false;
+  bool discountView = false;
+  int? discountItemCount = 0;
+  String? discountNext = "";
+  String? discountPrevious = "";
+  List<DiscountModel> discountList = [];
+  List<DiscountModel> discountListCopy = [];
+  bool noItemInList = false;
+  DiscountModel? pressedDiscount;
+  DiscountModel? selectedDiscount;
+  String discountName = "";
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
+      new GlobalKey<ScaffoldMessengerState>();
+
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -133,6 +147,7 @@ class _EditProductState extends State<EditProduct> {
     productId = arguments['productId'];
     getCategories();
     Future.delayed(Duration(seconds: 2), () {
+      getDiscountList();
       obtainCategories();
       obtainCustomCategory();
     });
@@ -217,9 +232,9 @@ class _EditProductState extends State<EditProduct> {
               : currentProduct.widthSiUnit == ""
                   ? ''
                   : 'Metres';
-          trackInventory = currentProduct.trackInventory!;
 
-          trackInventoryView = trackInventory;
+          trackInventoryView = currentProduct.trackInventory!;
+          selectedDiscount = currentProduct.discount;
 
           weightController.text = currentProduct.weight != 0.0
               ? currentProduct.weight.toString()
@@ -278,6 +293,54 @@ class _EditProductState extends State<EditProduct> {
         });
       }
     });
+  }
+
+  void getDiscountList() async {
+    if (!isDiscountLoading) {
+      if (discountNext != null && !isDiscountLoading) {
+        isDiscountLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfDiscounts(discountNext, discountPrevious);
+
+        if (result == null) {
+          isDiscountLoading = false;
+          noItemInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        discountItemCount = result['count'];
+        discountNext = result['next'];
+        discountPrevious = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isDiscountLoading = false;
+            discountList.addAll(tempList);
+
+            discountListCopy = discountList;
+          });
+        }
+      }
+      if (discountList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (discountNext == null && discountList.length > 6) {
+        _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
   void obtainCategories() async {
@@ -499,6 +562,12 @@ class _EditProductState extends State<EditProduct> {
                         ]
                       ],
 
+                      getDiscountField(),
+                      const SizedBox(height: 16),
+                      if (discountView == true) ...[
+                        getDiscountListField(),
+                        const SizedBox(height: 16),
+                      ],
                       getTrackInventoryViewField(),
                       if (trackInventoryView == true) ...[
                         const SizedBox(height: 16),
@@ -2108,6 +2177,7 @@ class _EditProductState extends State<EditProduct> {
               : selectedWidth == 'Metres'
                   ? 'm'
                   : '';
+          currentProduct.discount = selectedDiscount;
           currentProduct.trackInventory = trackInventory;
           currentProduct.quantity = inventoryCount;
           await _auth
@@ -2261,6 +2331,17 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  Widget getDiscountField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        discountView = !discountView;
+        setState(() {});
+      },
+      isChecked: discountView,
+      title: AppLocalization.of(context)!.discount,
+    );
+  }
+
   Widget getTrackInventoryViewField() {
     return CustomizedCheckBoxField(
       onTap: () {
@@ -2369,6 +2450,149 @@ class _EditProductState extends State<EditProduct> {
           "Checking this field will automatically update the quantity when the product is purchased.",
       fontSize: 10.0,
       maxLines: 2,
+    );
+  }
+
+  Widget getDiscountListField() {
+    return CustomizedDropDownField(
+      title: 'Discount',
+      fontSize: 12,
+      titleColor: blackFont,
+      fontWeight: FontWeight.w400,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedDiscount != null
+              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+                  selectedDiscount?.merchant ??
+                  ""
+              : "",
+          style: TextStyle(
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          discountAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void discountAndroidSheet() {
+    discountList = discountListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search discount',
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      discountList = discountListCopy
+                          .where((element) =>
+                              (messageDecoderWithEmoji(element.name) ??
+                                      element.merchant ??
+                                      "")
+                                  .toLowerCase()
+                                  .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      discountList = discountListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: discountList.length,
+                    itemBuilder: (context, index) {
+                      DiscountModel discount = discountList[index];
+                      if (selectedDiscount == discount) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              messageDecoderWithEmoji(discount.name) ??
+                                  discount.merchant ??
+                                  "",
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedDiscount = discount;
+                              Navigator.pop(context);
+                              if (pressedDiscount != null) {
+                                selectedDiscount = pressedDiscount;
+                                discountName = messageDecoderWithEmoji(
+                                        selectedDiscount?.name) ??
+                                    selectedDiscount?.merchant ??
+                                    "";
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          messageDecoderWithEmoji(discount.name) ??
+                              discount.merchant ??
+                              "",
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedDiscount = discount;
+                          Navigator.pop(context);
+                          if (pressedDiscount != null) {
+                            selectedDiscount = pressedDiscount;
+                            discountName = messageDecoderWithEmoji(
+                                    selectedDiscount?.name) ??
+                                selectedDiscount?.merchant ??
+                                "";
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -2489,6 +2713,7 @@ class _EditProductState extends State<EditProduct> {
 
   Widget _buildProductVariantList() {
     return ListView.builder(
+      padding: EdgeInsets.zero,
       controller: scrollControllerVariant,
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -2506,56 +2731,11 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  Widget checkProductImage(Variant variant) {
-    // Retrieve the first image from the 'pictures' list
-    String? url = "";
-
-    for (var item in variant.serverImages!) {
-      url = item;
-    }
-
-    String imageUrl = url!.replaceAll('https//', 'https://');
-    if (url == "") {
-      return CircleAvatar(
-        backgroundColor: navyBlue,
-        radius: 25,
-        child: Text(
-          getInitials(variant.title!).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w700),
-        ),
-      );
-    } else {
-      return SizedBox(
-        height: 100,
-        child: CustomBoxShadow(
-          child: Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: boxShadowTwo,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: NetworkImage(
-                      imageUrl,
-                    ),
-                    fit: BoxFit.cover),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
   Widget productVariation() {
     return GestureDetector(
       onTap: () async {
-        if (productVariantList.isNotEmpty) {
+        //disable click if add-on is not empty
+        if (productAddOnsList.isNotEmpty) {
           return;
         }
         final result = await Navigator.of(context).pushNamed(
@@ -2577,7 +2757,7 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue,
+                  color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
                   fontFamily: "Inter",
                   fontWeight: FontWeight.w500,
                   fontSize: 14),
@@ -2597,7 +2777,7 @@ class _EditProductState extends State<EditProduct> {
     return GestureDetector(
       onTap: () async {
         //disable click if variant is not empty
-        if (productAddOnsList.isNotEmpty) {
+        if (productVariantList.isNotEmpty) {
           return;
         }
 
@@ -2621,7 +2801,7 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue,
+                  color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
                   fontWeight: FontWeight.w500,
                   fontFamily: "Inter",
                   fontSize: 14),

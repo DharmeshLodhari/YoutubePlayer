@@ -9,6 +9,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../search_user.dart';
@@ -103,7 +104,7 @@ class _TransactionListState extends State<TransactionList> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "All", value: "all"),
         CustomizedPopUpMenuItem(title: "Received", value: "received"),
         CustomizedPopUpMenuItem(title: "Sent", value: "sent"),

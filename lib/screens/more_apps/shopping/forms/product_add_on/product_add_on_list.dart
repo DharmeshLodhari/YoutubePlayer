@@ -148,7 +148,8 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context, productAddOnList);
+        // Navigator.pop(context, productAddOnList);
+        Navigator.pop(context);
         return true;
       },
       child: ScaffoldMessenger(
@@ -184,10 +185,11 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           size: 24,
         ),
         onPressed: () {
-          List<AddOns> addOnList = productAddOnList
-              .where((addOn) => addOn.isChecked == true)
-              .toList();
-          Navigator.pop(context, addOnList);
+          // List<AddOns> addOnList = productAddOnList
+          //     .where((addOn) => addOn.isChecked == true)
+          //     .toList();
+          // Navigator.pop(context, addOnList);
+          Navigator.pop(context);
         },
       ),
       centerTitle: false,

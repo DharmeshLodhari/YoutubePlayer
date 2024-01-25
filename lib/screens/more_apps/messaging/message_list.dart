@@ -123,7 +123,7 @@ class _MessageListState extends State<MessageList> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "Inbox", value: "all"),
         CustomizedPopUpMenuItem(
             title: AppLocalization.of(context)!.archived, value: "archived"),

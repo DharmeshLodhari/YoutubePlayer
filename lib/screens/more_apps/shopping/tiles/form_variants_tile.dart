@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -88,21 +89,45 @@ class FormVariantsTile extends StatelessWidget {
   }
 
   Widget getVariantLeading(Variant productVariant) {
-    return Container(
-      width: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        image: DecorationImage(
-            image: type == 'add'
-                ? FileImage(
-                    File(productVariant.localImages?[0].path ?? ""),
-                  )
-                : FileImage(
-                    File(productVariant.serverImages?[0] ?? ""),
-                  ),
-            fit: BoxFit.cover),
-      ),
-    );
+    // Retrieve the first image from the 'pictures' list
+    String? sercerUrl = "";
+    String? localUrl = "";
+
+    if (type != 'add') {
+      for (var item in productVariant.serverImages!) {
+        sercerUrl = item;
+      }
+      sercerUrl = sercerUrl!.replaceAll('https//', 'https://');
+    } else {
+      localUrl = productVariant.localImages?[0].path;
+    }
+
+    if (sercerUrl == "" && localUrl == "") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(productVariant.title!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return Container(
+        width: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(
+              image: type == 'add'
+                  ? FileImage(
+                      File(localUrl ?? ""),
+                    )
+                  : NetworkImage(
+                      sercerUrl,
+                    ) as ImageProvider,
+              fit: BoxFit.cover),
+        ),
+      );
+    }
   }
 
   Widget getVariantTrailing(Variant productVariant) {

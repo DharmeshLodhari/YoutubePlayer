@@ -207,7 +207,7 @@ class _ContractScreenState extends State<ContractScreen> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "All", value: "All"),
         CustomizedPopUpMenuItem(title: "Ended", value: "Ended"),
         CustomizedPopUpMenuItem(title: "Active", value: "Active"),

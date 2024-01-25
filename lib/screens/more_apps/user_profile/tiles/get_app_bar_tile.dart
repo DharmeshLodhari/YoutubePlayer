@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
@@ -20,12 +21,11 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -33,12 +33,10 @@ import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../data/database_helper.dart';
 import '../../../home_tab/qr_code_page.dart';
 import '../../messaging/message_auth.dart';
 import '../../payment_and_banking/models/FinancialInstitution.dart';
 import '../../payment_and_banking/models/VirtualAccount.dart';
-import '../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../yarn/utils/slydo_yarn_links.dart';
 import '../../yarn/yarn_search_screen.dart';
 import '../screens/user_profile_module_new/utils.dart';
@@ -1647,6 +1645,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           iconData: Icons.add_circle_outlined,
           onTap: () {
             Navigator.pop(context);
+            Navigator.of(context)
+                .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+              'productId': '',
+            });
           },
         ),
       );

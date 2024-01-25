@@ -702,9 +702,8 @@ class ShoppingAuthService extends AuthService {
       List<Variant> variantList = [];
       var jsonData = json.decode(response.body);
 
-      for (var item in jsonData["results"]) {
-        Variant variant = Variant.fromJson(item);
-        variantList.add(variant);
+      for (var item in jsonData) {
+        variantList.add(Variant.fromJson(item));
       }
 
       Map<String, dynamic> result = {

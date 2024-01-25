@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -266,6 +267,7 @@ class Product {
   double? width;
   String? widthSiUnit;
   bool? trackInventory;
+  DiscountModel? discount;
   int? quantity;
   double? pricePercentageChange;
   bool isSelected;
@@ -328,6 +330,7 @@ class Product {
     this.width = 0.0,
     this.widthSiUnit,
     this.trackInventory,
+    this.discount,
     this.quantity,
     this.pricePercentageChange,
     this.canRate = false,
