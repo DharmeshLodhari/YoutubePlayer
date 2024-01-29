@@ -703,4 +703,14 @@ class UserFollowers {
     fullName = json['full_name'];
     accountType = json['account_type'];
   }
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['username'] = userName;
+    map['avatar'] = avatar;
+    map['is_verified'] = isVerified;
+    map['full_name'] = fullName;
+    map['account_type'] = accountType;
+    return map;
+  }
 }

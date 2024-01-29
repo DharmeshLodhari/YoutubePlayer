@@ -94,10 +94,10 @@ import 'package:Slydo/screens/more_apps/rider_registration/screens/take_proof_ph
 import 'package:Slydo/screens/more_apps/service_hub/screens/contractor_payment_screen.dart';
 import 'package:Slydo/screens/more_apps/settings/general_setting.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/checkout_shopping_cart.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/screens/confirm_order.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/screens/delivery_option.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/screens/shipping_option.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/screens/successful_order.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/confirm_order.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/delivery_option.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/shipping_option.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/successful_order.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_tags.dart';

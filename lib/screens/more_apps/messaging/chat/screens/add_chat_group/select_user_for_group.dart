@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -49,11 +50,12 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   bool isSearchIsEmpty = false;
   bool noItemInList = false;
 
-  ///For checking if this page is oprn to add user is existingGroup or not
+  ///For checking if this page is open to add user is existingGroup or not
   bool isForAddingUserInGroup = false;
   GroupDetailModel? groupDetailModel;
 
-  TextEditingController _controller = TextEditingController();
+  String cartName = "";
+  final _formKey = GlobalKey<FormState>();
 
   @protected
   void initState() {
@@ -132,11 +134,11 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
           );
   }
 
-  void btnPressed() {
+  void btnPressed() async {
     if (isForAddingUserInGroup) {
       Navigator.of(context).pop(selectedConnectionList);
     } else if (widget.arguments["create"] == "basket") {
-      showDialogBoxWithInput(
+      var result = await showDialogBoxWithInput(
           context: context,
           actionOneTextColor: blackFont,
           actionOneBgColor: greyBorderColor,
@@ -147,55 +149,60 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
           firstActionPrimary: false,
           content: Padding(
             padding: const EdgeInsets.only(left: 0.0, right: 0, top: 20),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(right: 10),
-                  child: Row(
-                    children: [
-                      Spacer(),
-                      Text("Name Cart",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16.0),
-                          textAlign: TextAlign.center),
-                      Spacer(),
-                      IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(Icons.highlight_off_rounded))
-                    ],
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(right: 10),
+                    child: Row(
+                      children: [
+                        Spacer(),
+                        Text("Name Cart",
+                            style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0),
+                            textAlign: TextAlign.center),
+                        Spacer(),
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(Icons.highlight_off_rounded))
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  child: CustomizedTextFormField(
-                    labelText: "Name",
-                    controller: _controller,
-                    validator: (val) {
-                      if (val.isNotEmpty) {
-                        return null;
-                      }
-                      return AppLocalization.of(context)!
-                          .pleaseEnterManufacturerName;
-                    },
-                    onChanged: (val) {
-                      // productManufacturer = val;
-                    },
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    child: CustomizedTextFormField(
+                      labelText: "Name",
+                      validator: (val) {
+                        if (val.isNotEmpty) {
+                          return null;
+                        }
+                        return AppLocalization.of(context)!.pleaseEnterCartName;
+                      },
+                      onChanged: (val) {
+                        cartName = val;
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(height: 5)
-              ],
+                ],
+              ),
             ),
           ),
           leftButtonOnPressed: () async {
             Navigator.pop(context);
           },
           rightButtonOnPressed: () async {
-            Navigator.pop(context);
+            if (_formKey.currentState!.validate()) {
+              await createCartGroup();
+            }
           });
+      if (result != null && result == true) {
+        Navigator.of(context).pop(true);
+      }
     } else {
       Navigator.of(context).pushNamed(Routes.SET_NAME_AND_PROFILE_FOR_GROUP,
           arguments: {
@@ -476,5 +483,28 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         child: UserTile(user: user),
       ),
     );
+  }
+
+  Future<void> createCartGroup() async {
+    Map<String, dynamic> groupData = {
+      "name": cartName,
+      "members": selectedConnectionList.map((e) => e.userName).toList()
+    };
+    await SharedCartAuthService().createCartGroup(data: groupData).then(
+      (value) async {
+        if (value == true) {
+          Navigator.pop(context, true);
+        } else {
+          showToast(message: 'Error');
+          debugPrint(
+            "Could not create group",
+          );
+          Navigator.pop(context);
+        }
+      },
+    ).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
   }
 }
