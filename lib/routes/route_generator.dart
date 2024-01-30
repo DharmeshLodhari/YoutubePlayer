@@ -109,6 +109,7 @@ import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart'
 import 'package:Slydo/screens/more_apps/shopping/screens/print_qrcode.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/product_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/service_detail_page.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/share_cart_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
 import 'package:Slydo/screens/more_apps/taxi/arriving_driver.dart';
@@ -1991,6 +1992,13 @@ class RouteGenerator {
           child: AddTags(
             arguments: settings.arguments,
           ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SHARED_CARD_DETAILS:
+        return PageTransition(
+          child: SharedCartDetails(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

@@ -211,7 +211,7 @@ class MainSocketProvider extends ChangeNotifier {
   /// for connecting the user socket
   Future<void> connect() async {
     /// Todo: Uncomment code
-    // return;
+    return;
 
     _isConnected = false;
 

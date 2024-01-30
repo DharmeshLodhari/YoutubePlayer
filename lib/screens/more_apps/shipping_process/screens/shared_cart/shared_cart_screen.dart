@@ -1,13 +1,15 @@
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/share_cart_details.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/utils.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SharedCartScreen extends StatefulWidget {
@@ -24,11 +26,13 @@ class SharedCartScreen extends StatefulWidget {
 
 class SharedCartScreenState extends State<SharedCartScreen> {
   bool isLoading = false;
-  List<SharedCartModel> cartGroupDetails = [];
+  // List<SharedCartModel> cartGroupDetails = [];
   int? listCount = 0;
   bool noDataInList = false;
   String? listNext = "";
   String? listPrevious = "";
+
+  late SharedCartBloc sharedCartBloc;
 
   final GlobalKey<ScaffoldMessengerState> _sharedCartScaffoldMessengerKey =
       new GlobalKey<ScaffoldMessengerState>();
@@ -58,7 +62,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
     super.dispose();
   }
 
-  void getSharedCartListing() async {
+  Future<void> getSharedCartListing() async {
     if (!isLoading) {
       if (listNext != null && !isLoading) {
         isLoading = true;
@@ -77,6 +81,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
           return;
         }
 
+        sharedCartBloc.cartList = [];
         listCount = result['count'];
         listNext = result['next'];
         listPrevious = result['previous'];
@@ -85,17 +90,19 @@ class SharedCartScreenState extends State<SharedCartScreen> {
           setState(() {
             noDataInList = false;
             isLoading = false;
-            cartGroupDetails.addAll(tempList!);
+            // cartGroupDetails.addAll(tempList!);
+            sharedCartBloc.cartList.addAll(tempList);
+            // sharedCartBloc.cartList = tempList;
           });
         }
       }
-      if (cartGroupDetails.isEmpty) {
+      if (sharedCartBloc.cartList.isEmpty) {
         if (mounted) {
           setState(() {
             noDataInList = true;
           });
         }
-      } else if (listNext == null && cartGroupDetails.length > 6) {
+      } else if (listNext == null && sharedCartBloc.cartList.length > 6) {
         _sharedCartScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -107,6 +114,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
     return ScaffoldMessenger(
       key: _sharedCartScaffoldMessengerKey,
       child: SafeArea(
@@ -128,13 +136,19 @@ class SharedCartScreenState extends State<SharedCartScreen> {
   }
 
   Widget _buildBodyOfCart() {
+    if (isLoading) {
+      return Center(
+        child: CircularLoadingIndicator(),
+      );
+    }
+
     return noDataInList == true
         ? Center(
             child: NoItemInList(
                 msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
           )
         : ListView.builder(
-            itemCount: cartGroupDetails.length,
+            itemCount: sharedCartBloc.cartList.length,
             itemBuilder: (BuildContext context, int index) =>
                 getItemTile(index));
   }
@@ -157,11 +171,12 @@ class SharedCartScreenState extends State<SharedCartScreen> {
                   contentPadding: EdgeInsets.zero,
                   title: getTitle(index),
                   subtitle: followersWidget(
-                      userImages: cartGroupDetails[index].membersDetails),
+                      userImages:
+                          sharedCartBloc.cartList[index].membersDetails),
                   trailing: getTrailing(),
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => SharedCartDetails()));
+                    sharedCartBloc.currentSelectedIndex = index;
+                    Navigator.of(context).pushNamed(Routes.SHARED_CARD_DETAILS);
                   },
                 ),
               ),
@@ -176,7 +191,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Text(
-        appendStringDot("${cartGroupDetails[index].name}", 30),
+        appendStringDot("${sharedCartBloc.cartList[index].name}", 30),
         maxLines: 1,
         style: TextStyle(
           color: blackFont,
@@ -206,8 +221,18 @@ class SharedCartScreenState extends State<SharedCartScreen> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
+        listCount = 0;
+        listNext = "";
+        listPrevious = "";
+        sharedCartBloc.cartList = [];
+        if (mounted) setState(() {});
         getSharedCartListing();
-        _refreshController.refreshCompleted();
+        setState(() {
+          // Call the callback function with the updated list
+          //to pass the list back to edit product page
+          // widget.onListRefreshed!(productVariantList);
+          _refreshController.refreshCompleted();
+        });
       } else {
         showToast(
             message:

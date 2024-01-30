@@ -87,16 +87,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildBodyOfCart(),
-          ),
+          child: _buildBodyOfCart(),
         ),
       ),
     );
@@ -105,15 +96,15 @@ class NormalCartScreenState extends State<NormalCartScreen> {
   Widget _buildBodyOfCart() {
     return Stack(
       children: [
-        int.parse(getTotalPrice().toString()) == 0
-            ? Center(
-                child: NoItemInList(
-                    msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
-              )
-            : ListView.builder(
-                itemCount: basketBloc.items.length,
-                itemBuilder: (BuildContext context, int index) =>
-                    getItemTile(index)),
+        SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildCartItemList()),
         Positioned(
           bottom: 40, // Adjust the distance from the bottom as needed
           right: 20,
@@ -122,6 +113,18 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         ),
       ],
     );
+  }
+
+  Widget _buildCartItemList() {
+    return int.parse(getTotalPrice().toString()) == 0
+        ? Center(
+            child: NoItemInList(
+                msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
+          )
+        : ListView.builder(
+            itemCount: basketBloc.items.length,
+            itemBuilder: (BuildContext context, int index) =>
+                getItemTile(index));
   }
 
   Widget checkoutWidget() {
@@ -164,52 +167,43 @@ class NormalCartScreenState extends State<NormalCartScreen> {
                     width: 10,
                   ),
                 ),
-                MaterialButton(
-                  height: 40,
-                  color: navyBlue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  child: const SizedBox(
-                    width: 66,
-                    child: Text(
-                      "Checkout",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (appConfigurationModel?.enableCheckout == true) {
-                      // NavigationUtil.push(
-                      //   context,
-                      //   screen: const CheckoutScreen(),
-                      // );
-
-                      ShippingProcessBloc shippingProcessBloc =
-                          Provider.of<ShippingProcessBloc>(context,
-                              listen: false);
-                      shippingProcessBloc.currentSelectedIndex = null;
-
-                      Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
-                    } else {
-                      showToast(message: 'Checkout not available now');
-                    }
-
-                    // if (basketBloc.items.length != 0) {
-                    //   addNoteDialog();
-                    // } else {
-                    //   showToast(
-                    //       message: AppLocalization.of(context)!
-                    //           .pleaseAddSomeItemsFirst);
-                    // }
-                  },
-                )
+                _buildCheckoutButton(),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCheckoutButton() {
+    return MaterialButton(
+      height: 40,
+      color: navyBlue,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: const SizedBox(
+        width: 66,
+        child: Text(
+          "Checkout",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            fontFamily: "Inter",
+          ),
+        ),
+      ),
+      onPressed: () {
+        if (appConfigurationModel?.enableCheckout == true) {
+          ShippingProcessBloc shippingProcessBloc =
+              Provider.of<ShippingProcessBloc>(context, listen: false);
+          shippingProcessBloc.currentSelectedIndex = null;
+
+          Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
+        } else {
+          showToast(message: 'Checkout not available now');
+        }
+      },
     );
   }
 
@@ -662,7 +656,12 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         //fetch items again
         initializeShoppingCart();
         getTotalPrice();
-        _refreshController.refreshCompleted();
+        setState(() {
+          // Call the callback function with the updated list
+          //to pass the list back to edit product page
+          // widget.onListRefreshed!(productVariantList);
+          _refreshController.refreshCompleted();
+        });
       } else {
         showToast(
             message:

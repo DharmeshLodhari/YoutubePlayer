@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/normal_cart_screen.dart';
@@ -6,6 +8,7 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 
 class ShoppingCart extends StatefulWidget {
@@ -32,11 +35,21 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: _buildBody(),
+    return ColorfulSafeArea(
+      bottom: Platform.isIOS ? true : false,
+      top: false,
+      color: white,
+      child: WillPopScope(
+        onWillPop: () async {
+          return true;
+        },
+        child: ScaffoldMessenger(
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: _buildAppBar() as PreferredSizeWidget?,
+            body: _buildBody(),
+          ),
+        ),
       ),
     );
   }
@@ -117,7 +130,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     );
   }
 
-  Widget appBar() {
+  Widget _buildAppBar() {
     return AppBar(
       elevation: 0,
       titleSpacing: 16,
@@ -137,7 +150,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
       title: Text(
         AppLocalization.of(context)!.basket,
         style: TextStyle(
-            color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
+          fontSize: 20,
+          fontFamily: "Inter",
+          fontWeight: FontWeight.w700,
+          color: yarnBlack,
+          height: 1.3,
+        ),
       ),
       actions: <Widget>[
         RoundedBackgroundIcon(
