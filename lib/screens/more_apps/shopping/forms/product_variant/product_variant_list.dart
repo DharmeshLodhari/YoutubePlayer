@@ -15,7 +15,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../data/currency.dart';
 import '../../../../../routes/route_constants.dart';
-import '../../../../../widget/custom_box_shadow.dart';
 import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
@@ -93,7 +92,8 @@ class _ProductVariantListState extends State<ProductVariantList> {
       var tempList = result['results'];
 
       // productVariantList = Variant.convertToVariantList(tempList);
-      productVariantList = tempList;
+      // productVariantList = tempList;
+      productVariantList.addAll(tempList);
 
       if (mounted) {
         setState(() {
@@ -263,14 +263,14 @@ class _ProductVariantListState extends State<ProductVariantList> {
   Widget productVariantTile({required Variant variant}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
+        padding: EdgeInsets.symmetric(vertical: 7.0),
         child: ListTile(
-          // dense: variant.isDefault! ? true : false,
           title: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -279,16 +279,20 @@ class _ProductVariantListState extends State<ProductVariantList> {
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w600,
-                    fontSize: 18),
+                    fontFamily: "Inter",
+                    fontSize: 14),
               ),
+              SizedBox(height: 3.0),
               Text(
                 'Available . ${variant.quantity!}',
                 maxLines: 1,
                 style: TextStyle(
-                    color: blackFont.withOpacity(.5),
+                    color: darkGrey,
                     fontWeight: FontWeight.w400,
-                    fontSize: 14),
+                    fontFamily: "Inter",
+                    fontSize: 12),
               ),
+              SizedBox(height: 3.0),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -296,14 +300,14 @@ class _ProductVariantListState extends State<ProductVariantList> {
                     worldCurrencies[variant.currency!]!,
                     style: TextStyle(
                         fontFamily: "Inter",
-                        fontSize: 18.0,
+                        fontSize: 14.0,
                         color: blackFont,
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
                     moneyDisplayNormalizer(int.parse(variant.price.toString())),
                     style: TextStyle(
-                        fontSize: 18.0,
+                        fontSize: 14.0,
                         color: blackFont,
                         fontWeight: FontWeight.w600),
                   ),
@@ -343,28 +347,15 @@ class _ProductVariantListState extends State<ProductVariantList> {
         ),
       );
     } else {
-      return SizedBox(
-        height: 100,
-        child: CustomBoxShadow(
-          child: Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: boxShadowTwo,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: NetworkImage(
-                      imageUrl,
-                    ),
-                    fit: BoxFit.cover),
+      return Container(
+        width: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(
+              image: NetworkImage(
+                imageUrl,
               ),
-            ),
-          ),
+              fit: BoxFit.cover),
         ),
       );
     }

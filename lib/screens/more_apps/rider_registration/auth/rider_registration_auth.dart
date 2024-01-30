@@ -66,17 +66,42 @@ class RiderRegistrationAuthService extends AuthService {
     }
   }
 
-  Future<KYCDataModel> kycStatus(String? username) async {
+  Future<KYCDataModel> kycStatus(
+      {RiderRegistrationModel? registrationModel, String? username}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
     var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
-    print('Status of KYC...${response.body} and ${response.statusCode}');
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      var jsonData = jsonDecode(response.body);
-      return KYCDataModel.fromJson(jsonData);
-    } else {
-      showToast(message: response.body.toString());
-      throw response.body;
+
+    if (registrationModel != null) {
+      //create multipart request for POST or PATCH method
+      var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+      //add fields
+      // request.fields.addAll(registrationModel.toRegisterRider());
+
+      List<http.MultipartFile> files =
+          await registrationModel.updateMultipartFiles();
+      //add multipart to request
+      request.files.addAll(files);
+      headers.forEach((k, v) => request.headers[k] = v);
+      var response = await request.send();
+
+      if (response.statusCode == 413) {
+        return Future.error(
+            "Please upload smaller image, This image is too large.");
+      }
+      var responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var jsonData = jsonDecode(responseBody);
+
+        debugPrint('UPDATE ---> $jsonData');
+
+        return KYCDataModel.fromJson(jsonData);
+      } else {
+        return Future.error(
+            "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
+      }
     }
+    return Future.error("Error while updating KYC");
   }
 }

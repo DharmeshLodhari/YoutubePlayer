@@ -219,7 +219,7 @@ class _SearchModuleState extends State<SearchModule> {
         buttonKey: _key,
         context: context,
         hasIcon: true,
-        children: [
+        childList: [
           CustomizedPopUpMenuItemWithIcon(
               title: "User", value: "Users", icon: SlydoAppIcon.user),
           CustomizedPopUpMenuItemWithIcon(

@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -22,7 +25,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
-import '../../../../data/currency.dart';
 import '../../../../routes/route_constants.dart';
 import '../shopping_auth.dart';
 
@@ -80,9 +82,11 @@ class _AddProductState extends State<AddProduct> {
   List<ProductCategory>?
       subCategoriesCopy; //To hold the full product category at all times.
   bool isLoading = false;
+  bool isDiscountLoading = false;
   bool isAPILoading = false;
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
+  List<AddOns> productAddOnsList = [];
   var weightSi = ['Grams', 'Kilograms'];
   var widthSi = ['Centimetres', 'Metres'];
   var heightSi = ['Centimetres', 'Metres'];
@@ -98,9 +102,22 @@ class _AddProductState extends State<AddProduct> {
   bool trackInventory = false;
   bool trackInventoryView = false;
   bool measurementView = false;
+  bool discountView = false;
   List<Tags> userTags = [];
   ShippingAddress? defaultAddress;
   bool isEmpty = false;
+  int? discountItemCount = 0;
+  String? discountNext = "";
+  String? discountPrevious = "";
+  List<DiscountModel> discountList = [];
+  List<DiscountModel> discountListCopy = [];
+  bool noItemInList = false;
+  DiscountModel? pressedDiscount;
+  DiscountModel? selectedDiscount;
+  String discountName = "";
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
+      new GlobalKey<ScaffoldMessengerState>();
+
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -112,11 +129,60 @@ class _AddProductState extends State<AddProduct> {
     isLoading = true;
     if (mounted) setState(() {});
     Future.delayed(Duration(seconds: 2), () {
+      getDiscountList();
       getCategories();
       obtainCustomCategory();
       getAddressList();
     });
     super.initState();
+  }
+
+  void getDiscountList() async {
+    if (!isDiscountLoading) {
+      if (discountNext != null && !isDiscountLoading) {
+        isDiscountLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfDiscounts(discountNext, discountPrevious);
+
+        if (result == null) {
+          isDiscountLoading = false;
+          noItemInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        discountItemCount = result['count'];
+        discountNext = result['next'];
+        discountPrevious = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isDiscountLoading = false;
+            discountList.addAll(tempList);
+
+            discountListCopy = discountList;
+          });
+        }
+      }
+      if (discountList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (discountNext == null && discountList.length > 6) {
+        _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
   void getAddressList() async {
@@ -281,7 +347,6 @@ class _AddProductState extends State<AddProduct> {
                       getProductShortDescription(),
                       const SizedBox(height: 10),
                       getProductDescription(),
-
                       const SizedBox(height: 20),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
@@ -289,7 +354,6 @@ class _AddProductState extends State<AddProduct> {
                         getAvailableFromField(),
                         const SizedBox(height: 16),
                       ],
-
                       getMeasurementField(),
                       const SizedBox(height: 16),
                       if (measurementView == true) ...[
@@ -353,7 +417,12 @@ class _AddProductState extends State<AddProduct> {
                           const SizedBox(height: 40),
                         ]
                       ],
-
+                      getDiscountField(),
+                      const SizedBox(height: 16),
+                      if (discountView == true) ...[
+                        getDiscountListField(),
+                        const SizedBox(height: 16),
+                      ],
                       getTrackInventoryViewField(),
                       if (trackInventoryView == true) ...[
                         const SizedBox(height: 16),
@@ -363,31 +432,25 @@ class _AddProductState extends State<AddProduct> {
                         const SizedBox(height: 16),
                       ],
                       const SizedBox(height: 16),
-
                       getEnableInSuperStoreField(),
                       const SizedBox(height: 16),
-
-                      //TODO: hide this variant option
-                      // if (productVariantList.isEmpty) ...[
-                      //   getAddVariationFormField(),
-                      //   productVariation(),
-                      // ] else ...[
-                      //   displaySelectedVariant(),
-                      // ],
-                      // const SizedBox(height: 16),
-
-                      //TODO: hide this add-on
-                      // if (productAddOnsList == null ||
-                      //     productAddOnsList!.isEmpty) ...[
-                      // productAddOns(),
-                      // ] else ...[
-                      //   displaySelectedAddOn(),
-                      // ],
-                      // const SizedBox(height: 16),
-
+                      if (productVariantList == null ||
+                          productVariantList.isEmpty) ...[
+                        // getAddVariationFormField(),
+                        productVariation(),
+                      ] else ...[
+                        displaySelectedVariant(),
+                      ],
+                      const SizedBox(height: 16),
+                      if (productAddOnsList == null ||
+                          productAddOnsList.isEmpty) ...[
+                        productAddOns(),
+                      ] else ...[
+                        displaySelectedAddOn(),
+                      ],
+                      const SizedBox(height: 16),
                       defaultAddress == null ? SizedBox() : address(),
                       const SizedBox(height: 30),
-
                       getSubmitButton(),
                       const SizedBox(height: 20),
                     ],
@@ -599,6 +662,12 @@ class _AddProductState extends State<AddProduct> {
       maxLines: 5,
       textCapitalization: TextCapitalization.sentences,
       labelText: AppLocalization.of(context)!.description,
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return AppLocalization.of(context)!.description;
+      },
       onChanged: (val) {
         productDescription = val;
       },
@@ -1193,8 +1262,8 @@ class _AddProductState extends State<AddProduct> {
                 "Add Tags",
                 style: TextStyle(
                   color: navyBlue,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             )
@@ -1998,6 +2067,7 @@ class _AddProductState extends State<AddProduct> {
                   : '';
 
           product.trackInventory = trackInventory;
+          product.discount = selectedDiscount;
           product.quantity = inventoryCount;
 
           // product.variant = [];
@@ -2127,6 +2197,17 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
+  Widget getDiscountField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        discountView = !discountView;
+        setState(() {});
+      },
+      isChecked: discountView,
+      title: AppLocalization.of(context)!.discount,
+    );
+  }
+
   Widget getTrackInventoryViewField() {
     return CustomizedCheckBoxField(
       onTap: () {
@@ -2208,256 +2289,133 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Widget getAddVariationFormField() {
-    return GestureDetector(
-      onTap: () async {
-        final result = await Navigator.of(context)
-            .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
-          'option': 'new',
-          'productId': '',
-        });
-
-        // Handle the result (map) received from Product Add New Option
-        if (result != null && result is Variant) {
-          //save the variant details for later use
-          productVariantList.add(result);
-          if (mounted) setState(() {});
-        }
-      },
-      child: CustomizedDropDownField(
-        title: "Option",
-        child: ListTile(
-          dense: true,
-          title: Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: Text(
-                'Add different variation like colour & size',
-                style: TextStyle(
-                  color: blackFont,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  fontFamily: "Inter",
-                ),
-              ),
-            ),
-          ),
-          subtitle: Container(
-            padding: const EdgeInsets.only(
-                left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
-            margin: const EdgeInsets.only(
-                left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
-            decoration: BoxDecoration(
-                border: Border.all(
-                  color: navyBlue,
-                ),
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-            child: Center(
-              child: Text(
-                'Create Variant',
-                style: TextStyle(
-                  color: navyBlue,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  fontFamily: "Inter",
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget getAddVariationFormField() {
+  //   return GestureDetector(
+  //     onTap: () async {
+  //       final result = await Navigator.of(context)
+  //           .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+  //         'option': 'new',
+  //         'productId': '',
+  //       });
+  //
+  //       // Handle the result (map) received from Product Add New Option
+  //       if (result != null && result is Variant) {
+  //         //save the variant details for later use
+  //         productVariantList.add(result);
+  //         if (mounted) setState(() {});
+  //       }
+  //     },
+  //     child: CustomizedDropDownField(
+  //       title: "Option",
+  //       child: ListTile(
+  //         dense: true,
+  //         title: Center(
+  //           child: Padding(
+  //             padding: const EdgeInsets.only(top: 15.0),
+  //             child: Text(
+  //               'Add different variation like colour & size',
+  //               style: TextStyle(
+  //                 color: blackFont,
+  //                 fontWeight: FontWeight.w600,
+  //                 fontSize: 16,
+  //                 fontFamily: "Inter",
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         subtitle: Container(
+  //           padding: const EdgeInsets.only(
+  //               left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+  //           margin: const EdgeInsets.only(
+  //               left: 10.0, top: 15.0, bottom: 15.0, right: 10.0),
+  //           decoration: BoxDecoration(
+  //               border: Border.all(
+  //                 color: navyBlue,
+  //               ),
+  //               borderRadius: const BorderRadius.all(Radius.circular(10))),
+  //           child: Center(
+  //             child: Text(
+  //               'Create Variant',
+  //               style: TextStyle(
+  //                 color: navyBlue,
+  //                 fontWeight: FontWeight.w600,
+  //                 fontSize: 16,
+  //                 fontFamily: "Inter",
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget displaySelectedVariant() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Variant',
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Product Variant',
+              maxLines: 1,
+              style: TextStyle(
+                  color: darkGrey,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                  fontSize: 14),
+            ),
+            GestureDetector(
+              onTap: () async {
+                final result = await Navigator.of(context)
+                    .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
+                  'option': 'new',
+                  'productId': '',
+                });
+
+                // Handle the result (map) received from Product Add New Option
+                if (result != null && result is Variant) {
+                  //save the variant details for later use
+                  productVariantList.add(result);
+                  if (mounted) setState(() {});
+                }
+              },
+              child: Text(
+                'Add more',
                 maxLines: 1,
                 style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w600,
+                    color: navyBlue,
+                    fontWeight: FontWeight.w400,
                     fontFamily: "Inter",
                     fontSize: 14),
               ),
-              GestureDetector(
-                onTap: () async {
-                  final result = await Navigator.of(context)
-                      .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
-                    'option': 'new',
-                    'productId': '',
-                  });
-
-                  // Handle the result (map) received from Product Add New Option
-                  if (result != null && result is Variant) {
-                    //save the variant details for later use
-                    productVariantList.add(result);
-                    if (mounted) setState(() {});
-                  }
-                },
-                child: Text(
-                  'Add more',
-                  maxLines: 1,
-                  style: TextStyle(
-                      color: navyBlue,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: "Inter",
-                      fontSize: 16),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-          Container(
-            decoration: decorateBox(),
-            // Use `SingleChildScrollView` to provide a bounded height for the content
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListView.builder(
-                      // Use `physics` property to prevent nested scrolling
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: productVariantList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                          shadowColor: boxShadowTwo,
-                          elevation: 0,
-                          child: Container(
-                            decoration: decorateBox(),
-                            child: ListTile(
-                              dense: true,
-                              title: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    appendStringDot(
-                                        productVariantList[index].title!, 10),
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                        color: blackFont,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: "Inter",
-                                        fontSize: 18),
-                                  ),
-                                  Text(
-                                    'Available . ${productVariantList[index].quantity!}',
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                        color: blackFont.withOpacity(.5),
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: "Inter",
-                                        fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                              subtitle: Padding(
-                                padding: const EdgeInsets.only(top: 4.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Text(
-                                      worldCurrencies[
-                                          productVariantList[index].currency!]!,
-                                      style: TextStyle(
-                                          fontSize: 18.0,
-                                          color: blackFont,
-                                          fontFamily: "Inter",
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        moneyDisplayNormalizer(int.parse(
-                                            productVariantList[index]
-                                                .price
-                                                .toString())),
-                                        maxLines: 1,
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: blackFont,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              leading:
-                                  getVariantLeading(productVariantList[index]),
-                              trailing:
-                                  getVariantTrailing(productVariantList[index]),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget getVariantLeading(Variant productVariant) {
-    return Container(
-      width: 100,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        image: DecorationImage(
-            image: FileImage(
-              File(productVariant.localImages![0].path),
-            ),
-            fit: BoxFit.cover),
-      ),
-    );
-  }
-
-  Widget getVariantTrailing(Variant productVariant) {
-    return IconButton(
-      padding: const EdgeInsets.only(right: 6),
-      alignment: Alignment.topRight,
-      icon: Container(
-        decoration: BoxDecoration(
-          color: iconBtnGrey,
-          borderRadius: BorderRadius.circular(5),
+          ],
         ),
-        child: Icon(
-          SlydoAppIcon.remove,
-          color: blackFont,
-          size: 15,
+        SizedBox(height: 5),
+        ListView.builder(
+          padding: EdgeInsets.zero,
+          // Use `physics` property to prevent nested scrolling
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: productVariantList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return FormVariantsTile(
+                productVariantList: productVariantList,
+                index: index,
+                type: 'add');
+          },
         ),
-      ),
-      onPressed: () {
-        removeSelectedVariant(productVariant.title.toString());
-        if (mounted) setState(() {});
-      },
+      ],
     );
-  }
-
-  void removeSelectedVariant(String selectedVariantTitle) {
-    // Use the removeWhere method to remove the variant with the specified title.
-    productVariantList
-        .removeWhere((variant) => variant.title == selectedVariantTitle);
   }
 
   Widget getCategoryMeasurementField() {
     return CustomizedDropDownField(
-      title: '',
+      title: 'This will help user get recommended delivery options',
+      fontSize: 12,
+      titleColor: blackFont,
+      fontWeight: FontWeight.w400,
       child: ListTile(
         dense: true,
         title: Text(
@@ -2476,6 +2434,149 @@ class _AddProductState extends State<AddProduct> {
         ),
         onTap: () {
           measurementAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  Widget getDiscountListField() {
+    return CustomizedDropDownField(
+      title: 'Discount',
+      fontSize: 12,
+      titleColor: blackFont,
+      fontWeight: FontWeight.w400,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedDiscount != null
+              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+                  selectedDiscount?.merchant ??
+                  ""
+              : "",
+          style: TextStyle(
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          discountAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void discountAndroidSheet() {
+    discountList = discountListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search discount',
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      discountList = discountListCopy
+                          .where((element) =>
+                              (messageDecoderWithEmoji(element.name) ??
+                                      element.merchant ??
+                                      "")
+                                  .toLowerCase()
+                                  .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      discountList = discountListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: discountList.length,
+                    itemBuilder: (context, index) {
+                      DiscountModel discount = discountList[index];
+                      if (selectedDiscount == discount) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              messageDecoderWithEmoji(discount.name) ??
+                                  discount.merchant ??
+                                  "",
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedDiscount = discount;
+                              Navigator.pop(context);
+                              if (pressedDiscount != null) {
+                                selectedDiscount = pressedDiscount;
+                                discountName = messageDecoderWithEmoji(
+                                        selectedDiscount?.name) ??
+                                    selectedDiscount?.merchant ??
+                                    "";
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          messageDecoderWithEmoji(discount.name) ??
+                              discount.merchant ??
+                              "",
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedDiscount = discount;
+                          Navigator.pop(context);
+                          if (pressedDiscount != null) {
+                            selectedDiscount = pressedDiscount;
+                            discountName = messageDecoderWithEmoji(
+                                    selectedDiscount?.name) ??
+                                selectedDiscount?.merchant ??
+                                "";
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
@@ -2544,6 +2645,10 @@ class _AddProductState extends State<AddProduct> {
   Widget productVariation() {
     return GestureDetector(
       onTap: () async {
+        //disable click if add-on is not empty
+        if (productAddOnsList.isNotEmpty) {
+          return;
+        }
         final result = await Navigator.of(context)
             .pushNamed(Routes.PRODUCT_NEW_OPTION, arguments: {
           'option': 'new',
@@ -2565,9 +2670,9 @@ class _AddProductState extends State<AddProduct> {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: navyBlue,
+                  color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
                   fontFamily: "Inter",
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   fontSize: 14),
             ),
             Icon(
@@ -2593,7 +2698,7 @@ class _AddProductState extends State<AddProduct> {
               maxLines: 1,
               style: TextStyle(
                   color: darkGrey,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   fontFamily: "Inter",
                   fontSize: 14),
             ),
@@ -2621,8 +2726,8 @@ class _AddProductState extends State<AddProduct> {
                   flex: 2,
                   child: Text(
                     isEmpty
-                        ? "Add  a dispatch Address"
-                        : defaultAddress!.addressLineOne!,
+                        ? "Add a dispatch Address"
+                        : "${defaultAddress?.addressLineOne}, ${defaultAddress?.addressLineTwo}, ${defaultAddress?.city}, ${defaultAddress?.stateName}, ${defaultAddress?.country}, ${defaultAddress?.zip}",
                     maxLines: 2,
                     style: TextStyle(
                         color: isEmpty ? navyBlue : blackFont,
@@ -2647,8 +2752,23 @@ class _AddProductState extends State<AddProduct> {
 
   Widget productAddOns() {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         //disable click if variant is not empty
+        if (productVariantList.isNotEmpty) {
+          return;
+        }
+
+        final result = await Navigator.of(context)
+            .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+          'productId': '',
+        });
+
+        // Handle the result (map) received from PRODUCT_ADD_ON_LIST
+        if (result != null && result is List<AddOns>) {
+          //save the add-on details
+          productAddOnsList = result;
+          if (mounted) setState(() {});
+        }
       },
       child: Container(
         child: Row(
@@ -2658,9 +2778,8 @@ class _AddProductState extends State<AddProduct> {
               'Add Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color:
-                      productVariantList.isEmpty ? navyBlue : greyBorderColor,
-                  fontWeight: FontWeight.w600,
+                  color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
+                  fontWeight: FontWeight.w500,
                   fontFamily: "Inter",
                   fontSize: 14),
             ),
@@ -2671,6 +2790,70 @@ class _AddProductState extends State<AddProduct> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget displaySelectedAddOn() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Product Add-ons',
+              maxLines: 1,
+              style: TextStyle(
+                  color: darkGrey, fontWeight: FontWeight.w500, fontSize: 14),
+            ),
+            GestureDetector(
+              onTap: () async {
+                final result = await Navigator.of(context)
+                    .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
+                  'productId': '',
+                });
+
+                // Handle the result (map) received from PRODUCT_ADD_ON_LIST
+                if (result != null && result is List<AddOns>) {
+                  //save the add-on details
+                  productAddOnsList = result;
+                  if (mounted) setState(() {});
+                }
+              },
+              child: Text(
+                'See all',
+                maxLines: 1,
+                style: TextStyle(
+                    color: navyBlue, fontWeight: FontWeight.w400, fontSize: 14),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 5.0),
+        _buildAddOnList(),
+      ],
+    );
+  }
+
+  Widget _buildAddOnList() {
+    return Container(
+      // height: 200,
+      height: 80 * productAddOnsList.length.toDouble(),
+      child: ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        //+1 for progressbar
+        itemCount: productAddOnsList.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == productAddOnsList.length) {
+            return buildLoadingIndicator(isLoading: isLoading);
+          } else {
+            return FormAddOnTile(
+              productAddOnsList: productAddOnsList,
+              index: index,
+            );
+          }
+        },
       ),
     );
   }
@@ -2688,7 +2871,7 @@ class _AddProductState extends State<AddProduct> {
               style: TextStyle(
                   color:
                       productVariantList.isEmpty ? navyBlue : greyBorderColor,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   fontFamily: "Inter",
                   fontSize: 14),
             ),
@@ -2707,6 +2890,7 @@ class _AddProductState extends State<AddProduct> {
   void dispose() {
     _scrollController.dispose();
     _myController.dispose();
+    userTags = [];
     super.dispose();
   }
 }

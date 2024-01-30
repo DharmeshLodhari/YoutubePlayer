@@ -3,9 +3,9 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +29,10 @@ class _AddTagsState extends State<AddTags> {
 
   @override
   void initState() {
+    // tagList.add(Tags(name: 'Android', id: 101));
+    // tagList.add(Tags(name: 'Java', id: 102));
+    // tagList.add(Tags(name: 'PHP', id: 103));
+    // tagList.add(Tags(name: 'React', id: 104));
     isLoading = true;
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) async {

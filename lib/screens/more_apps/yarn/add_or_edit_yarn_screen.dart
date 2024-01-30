@@ -238,7 +238,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         buttonKey: _key,
         context: context,
         hasIcon: true,
-        children: [
+        childList: [
           CustomizedPopUpMenuItemWithIcon(
               title: "Blog", value: "Blog", icon: SlydoAppIcon.payout_list),
           CustomizedPopUpMenuItemWithIcon(

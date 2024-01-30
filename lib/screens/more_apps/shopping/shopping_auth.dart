@@ -699,13 +699,18 @@ class ShoppingAuthService extends AuthService {
     debugPrint('SEARCH BODY ---> ${response.body}');
 
     if (response.statusCode == 200) {
+      List<Variant> variantList = [];
       var jsonData = json.decode(response.body);
+
+      for (var item in jsonData) {
+        variantList.add(Variant.fromJson(item));
+      }
 
       Map<String, dynamic> result = {
         // "count": jsonData["count"],
         // "next": jsonData["next"],
         // "previous": jsonData["previous"],
-        "results": jsonData,
+        "results": variantList,
       };
       return result;
     } else {
@@ -2403,7 +2408,6 @@ class ShoppingAuthService extends AuthService {
       };
 
       // debugPrint('CALLING OTHER check ---> ${result}');
-
       return result;
     } else if (response.statusCode == 500) {
       return null;
@@ -2512,7 +2516,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List the  add-on with pagination
-  Future<dynamic> getAddOnsList(
+  Future<Map<String, dynamic>> getAddOnsList(
       String productId, String? next, String? previous) async {
     String url = AppConfig.baseUrl + "/api/v1/products/add-ons/";
 
@@ -2524,7 +2528,7 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
-      List items = [];
+      List<AddOns> items = [];
       var data = jsonData["results"];
 
       for (int i = 0; i < data.length; i++) {
@@ -2548,7 +2552,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List the  add-on options with pagination
-  Future<dynamic> getAddOnOptionsList(
+  Future<Map<String, dynamic>> getAddOnOptionsList(
       String productId, String? next, String? previous) async {
     String url = AppConfig.baseUrl + "/api/v1/products/add-on-options/";
 
@@ -2560,11 +2564,11 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
-      List items = [];
+      List<AddOnOption> items = [];
       var data = jsonData["results"];
 
       for (int i = 0; i < data.length; i++) {
-        var addOnOptions = AddOnOption.fromJson(data[i]);
+        AddOnOption addOnOptions = AddOnOption.fromJson(data[i]);
         items.add(addOnOptions);
       }
 
@@ -2811,7 +2815,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Update Addon option
-  Future<dynamic> updateAddOnOption(
+  Future<AddOnOption> updateAddOnOption(
       AddOnOption addOnOption, String productId) async {
     var url = AppConfig.baseUrl +
         "/api/v1/products/add-on-options/${addOnOption.id}/";
@@ -2850,7 +2854,7 @@ class ShoppingAuthService extends AuthService {
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("DATA:- ${request.fields}");
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");

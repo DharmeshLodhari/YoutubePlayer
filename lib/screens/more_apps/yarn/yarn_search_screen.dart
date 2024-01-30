@@ -179,7 +179,7 @@ class _SearchScreenState extends State<SearchScreen> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "Question", value: "question"),
         CustomizedPopUpMenuItem(title: "Yarn", value: "yarn"),
       ],

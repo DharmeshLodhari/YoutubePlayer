@@ -186,7 +186,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "All", value: "all"),
         CustomizedPopUpMenuItem(title: "From me", value: "received"),
         CustomizedPopUpMenuItem(title: "To me", value: "sent"),

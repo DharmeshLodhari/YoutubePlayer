@@ -191,7 +191,7 @@ class _SearchUsersProductAndServiceState
         buttonKey: _key,
         context: context,
         hasIcon: true,
-        children: [
+        childList: [
           CustomizedPopUpMenuItemWithIcon(
               title: "Product", value: "Products", icon: SlydoAppIcon.product),
           CustomizedPopUpMenuItemWithIcon(

@@ -212,10 +212,16 @@ class _RequireStepsState extends State<RequireSteps> {
   Widget _buildSubmitBtn() {
     return CurvedButton(
       onPressed: () {
-        riderRegistrationBloc.checkAllProofAdded(
-                riderRegistrationBloc.registrationModel?.rideTypeOptions)
-            ? riderRegister()
-            : null;
+        if (userBloc.user.rider == null) {
+          riderRegistrationBloc.checkAllProofAdded(
+                  riderRegistrationBloc.registrationModel?.rideTypeOptions)
+              ? riderRegister()
+              : null;
+        } else {
+          if (userBloc.user.rider?.isStatusApproved() == false) {
+            updateRiderKYC();
+          }
+        }
       },
       backgroundColor: riderRegistrationBloc.checkAllProofAdded(
                   riderRegistrationBloc.registrationModel?.rideTypeOptions) ||
@@ -240,8 +246,38 @@ class _RequireStepsState extends State<RequireSteps> {
           .then(
         (value) async {
           userBloc.updateRider(value);
+          riderRegistrationBloc.registrationModel?.clearAllProof();
           isLoading = false;
           if (mounted) setState(() {});
+          Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
+        },
+      ).catchError((error) {
+        isLoading = false;
+        if (mounted) setState(() {});
+        debugPrint(error.toString());
+        showToast(message: error.toString());
+      });
+    }
+    ;
+  }
+
+  Future<void> updateRiderKYC() async {
+    if (!isLoading) {
+      FocusScope.of(context).unfocus();
+      isLoading = true;
+      if (mounted) setState(() {});
+
+      await RiderRegistrationAuthService()
+          .kycStatus(
+              registrationModel: riderRegistrationBloc.registrationModel,
+              username: userBloc.user.userName)
+          .then(
+        (value) async {
+          // userBloc.updateRider(value);
+          riderRegistrationBloc.registrationModel?.clearAllProof();
+          isLoading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'KYC updated successfully !!');
           Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
         },
       ).catchError((error) {

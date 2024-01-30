@@ -37,7 +37,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   String? next = "";
   String? previous = "";
   String? productId = "";
-  List productAddOnList = [];
+  List<AddOns> productAddOnList = [];
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -148,7 +148,8 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context, productAddOnList);
+        // Navigator.pop(context, productAddOnList);
+        Navigator.pop(context);
         return true;
       },
       child: ScaffoldMessenger(
@@ -158,14 +159,15 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           backgroundColor: Colors.white,
           appBar: appBar() as PreferredSizeWidget?,
           body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildProductAddOnList()),
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildBody(),
+          ),
         ),
       ),
     );
@@ -183,10 +185,11 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           size: 24,
         ),
         onPressed: () {
-          List addOnList = productAddOnList
-              .where((addOn) => addOn.isChecked == true)
-              .toList();
-          Navigator.pop(context, addOnList);
+          // List<AddOns> addOnList = productAddOnList
+          //     .where((addOn) => addOn.isChecked == true)
+          //     .toList();
+          // Navigator.pop(context, addOnList);
+          Navigator.pop(context);
         },
       ),
       centerTitle: false,
@@ -201,6 +204,25 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           width: 16,
         ),
       ],
+    );
+  }
+
+  Widget _buildBody() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Text(
+            'Select from the available add-ons or create a new add-ons.',
+            style: TextStyle(
+                color: darkGrey,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter"),
+          ),
+          Expanded(child: _buildProductAddOnList()),
+        ],
+      ),
     );
   }
 
@@ -298,7 +320,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   }
 
   Widget loadAllCheckedAddOn() {
-    List addOnList =
+    List<AddOns> addOnList =
         productAddOnList.where((addOn) => addOn.isChecked == true).toList();
 
     Navigator.pop(context, addOnList);
@@ -308,7 +330,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   Widget productAddOnTile({required AddOns addOns, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -323,16 +345,19 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                 maxLines: 1,
                 style: TextStyle(
                     color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    fontFamily: "Inter"),
               ),
+              SizedBox(height: 5.0),
               Text(
                 '${addOns.options!.length} items',
                 maxLines: 1,
                 style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14),
+                    color: darkGrey,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    fontFamily: "Inter"),
               ),
             ],
           ),
@@ -352,7 +377,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
 
   void toggleAddOnCheckedState(int index) {
     if (index >= 0 && index < productAddOnList.length) {
-      productAddOnList[index].isChecked = !productAddOnList[index].isChecked;
+      productAddOnList[index].isChecked = !productAddOnList[index].isChecked!;
       if (mounted) setState(() {});
     }
   }

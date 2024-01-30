@@ -160,7 +160,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "All", value: "all"),
         CustomizedPopUpMenuItem(title: "Received", value: "received"),
         CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
