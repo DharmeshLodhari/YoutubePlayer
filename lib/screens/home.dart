@@ -503,7 +503,8 @@ class _HomeState extends State<Home> {
 
           InkWell(
             onTap: () {
-              // showSnackbar(context, message: "Coming soon");
+              showSnackbar(context, message: "Coming soon");
+              return;
               if (userBloc.user.rider == null) {
                 Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
               } else {
