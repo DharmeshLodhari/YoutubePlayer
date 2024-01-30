@@ -211,6 +211,7 @@ class MainSocketProvider extends ChangeNotifier {
   /// for connecting the user socket
   Future<void> connect() async {
     _isConnected = false;
+    return;
 
     /// change socket url according to recipient user url
     // var finalUrl = "$_socketUrl";

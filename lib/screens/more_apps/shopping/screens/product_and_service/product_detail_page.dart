@@ -606,6 +606,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> addToCart() async {
+    String type = "product";
+
+    if (basketBloc.items.isEmpty) {
+      basketBloc.addItemToCart(
+        item: product,
+        type: type,
+        variant: selectedVariant,
+        addOns: null,
+      );
+    }
+  }
+
+  Future<void> addToCartOld() async {
     // Todo check this call
     String type = product is Product ? "product" : "service";
     Map<String, dynamic> addOnPayLoad = {};
@@ -736,7 +749,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
     debugPrint("Data From Product Page : $dataInfo");
 
-    await _auth.addItemToShoppingCart(dataInfo);
+    // await _auth.addItemToShoppingCart(dataInfo);
   }
 
   Map<String, dynamic> getUpdatedCartItem(String productId, String type) {
