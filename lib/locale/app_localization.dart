@@ -2784,6 +2784,13 @@ class AppLocalization {
     );
   }
 
+  String get pleaseEnterCartName {
+    return Intl.message(
+      "Please Enter Cart Name",
+      name: "pleaseEnterCartName",
+    );
+  }
+
   String get describeYourServiceHere {
     return Intl.message(
       "Describe your service here..",
@@ -3352,8 +3359,8 @@ class AppLocalization {
 
   String get shoppingCartIsEmpty {
     return Intl.message(
-      "Shopping Cart Is Empty !!",
-      name: "shoppingCartIsEmpty",
+      "This cart is empty",
+      name: "thisCartIsEmpty",
     );
   }
 

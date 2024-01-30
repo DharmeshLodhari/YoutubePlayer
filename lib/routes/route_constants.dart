@@ -217,4 +217,5 @@ class Routes {
   static const String COMPLETED_UPLOAD_PHOTO = "/completed-upload-photo";
   static const String RIDERS_UPDATE = "/riders-update";
   static const String ADD_TAGS = "/add-tags";
+  static const String SHARED_CARD_DETAILS = "/shared-card-details";
 }

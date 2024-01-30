@@ -14,11 +14,9 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class FindJobsTab extends StatefulWidget {
   FindJobsTab({
     Key? key,
-    this.selectedCategory,
     this.onPageRefresh,
   }) : super(key: key);
 
-  final String? selectedCategory;
   Function(bool)? onPageRefresh;
 
   @override

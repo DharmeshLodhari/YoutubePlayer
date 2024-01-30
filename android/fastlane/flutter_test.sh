@@ -1,4 +1,4 @@
 #!/bin/bash
 cd ../../
 echo "Running tests"
-flutter test
+fvm flutter test
