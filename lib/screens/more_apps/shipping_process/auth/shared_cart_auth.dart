@@ -192,7 +192,7 @@ class SharedCartAuthService extends AuthService {
     //
     // print('List of cart group ::: ${response.body}');
     // if (response.statusCode == 200 || response.statusCode == 201) {
-    List<Product> cartItem = [];
+    List cartItem = [];
     //   var jsonData = json.decode(response.body);
 
     Map<String, dynamic> jsonData = {
@@ -278,16 +278,16 @@ class SharedCartAuthService extends AuthService {
       ],
     };
 
-    for (var item in jsonData["results"]) {
-      Product categories = Product.fromJson(item);
-      cartItem.add(categories);
-    }
+    // for (var item in jsonData["results"]) {
+    //   Product categories = Product.fromJson(item);
+    //   cartItem.add(item);
+    // }
 
     Map<String, dynamic> result = {
       "count": jsonData["count"],
       "next": jsonData["next"],
       "previous": jsonData["previous"],
-      "results": cartItem
+      "results": getCartItems(jsonData)
     };
 
     return result;
@@ -296,6 +296,31 @@ class SharedCartAuthService extends AuthService {
     // } else {
     //   return null;
     // }
+  }
+
+  List<dynamic> getCartItems(var jsonResponse) {
+    List items = [];
+    var data = jsonResponse["results"];
+
+    for (int i = 0; i < data.length; i++) {
+      if (data[i]["type"] == "product") {
+        debugPrint('fola one one:::: ${data[i]["qty"]}');
+
+        // for (int j = 0; j < data[i]["qty"]; j++) {
+        var product = Product.fromJson(data[i]);
+        items.add(product);
+
+        // debugPrint('fola one jsonData:::: ${product.name}');
+        // }
+      }
+      if (data[i]["type"] == "service") {
+        for (int j = 0; j < data[i]["qty"]; j++) {
+          var service = Service.fromJson(data[i]);
+          items.add(service);
+        }
+      }
+    }
+    return items;
   }
 
   Future<bool> addItemToSharedCart(String? cart_id, Map data) async {

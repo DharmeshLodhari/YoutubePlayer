@@ -9,12 +9,12 @@ import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class CartMembers extends StatefulWidget {
+class SharedCartMembers extends StatefulWidget {
   @override
-  State<CartMembers> createState() => _CartMembersState();
+  State<SharedCartMembers> createState() => _SharedCartMembersState();
 }
 
-class _CartMembersState extends State<CartMembers> {
+class _SharedCartMembersState extends State<SharedCartMembers> {
   SlidableController? _slideController;
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
@@ -91,7 +91,8 @@ class _CartMembersState extends State<CartMembers> {
                 shadowColor: boxShadowTwo,
                 elevation: 0,
                 child: InkWell(
-                  onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (_)=> SendPayment())),
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => SendPayment())),
                   child: Container(
                     decoration: decorateBox(),
                     child: ListTile(
@@ -102,7 +103,8 @@ class _CartMembersState extends State<CartMembers> {
                         verifiedIconColor: verifyGreen,
                       ),
                       subtitle: Text("text"),
-                      leading: GestureDetector(onTap: () {}, child: Text("ooo")),
+                      leading:
+                          GestureDetector(onTap: () {}, child: Text("ooo")),
                       trailing: Text("ll"),
                     ),
                   ),

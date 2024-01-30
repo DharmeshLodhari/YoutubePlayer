@@ -6,7 +6,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/cart_members.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -72,7 +71,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           return;
         }
 
-        basketBloc.items = [] as List<Map<String, dynamic>>;
+        basketBloc.items.clear();
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -81,7 +80,11 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           setState(() {
             noDataInList = false;
             isLoading = false;
-            basketBloc.items.addAll(tempList);
+            // basketBloc.items.addAll(tempList);
+            tempList.forEach((element) {
+              String type = element is Product ? "product" : "service";
+              basketBloc.addItemToCart(item: element, type: type);
+            });
           });
         }
       }
@@ -153,8 +156,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       actions: [
         InkWell(
           onTap: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (_) => CartMembers()));
+            Navigator.of(context).pushNamed(Routes.SHARED_CART_MEMBERS);
           },
           child: Center(
             child: followersWidget(
@@ -658,21 +660,10 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       ),
       onPressed: () {
         // if (appConfigurationModel?.enableCheckout == true) {
-        //   NavigationUtil.push(
-        //     context,
-        //     screen: const CheckoutScreen(),
-        //   );
+        Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
         // } else {
         //   showToast(message: 'Checkout not available now');
         // }
-
-        // // if (basketBloc.items.length != 0) {
-        // //   addNoteDialog();
-        // // } else {
-        // //   showToast(
-        // //       message: AppLocalization.of(context)!
-        // //           .pleaseAddSomeItemsFirst);
-        // // }
       },
     );
   }
