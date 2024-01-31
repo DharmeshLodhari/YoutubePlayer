@@ -230,23 +230,9 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
 
             itemWidgets.add(
               ShoppingCartTileForProduct(
-                {
-                  "type": data["type"],
-                  "item": product,
-                  "qty": variants.isEmpty ? data['quantity'] : single.quantity,
-                  "variant": single,
-                  "image": image,
-                  "addOn": null,
-                },
-                index: index,
-                onDecreaseVariantQty: (val) {
-                  removeVariantItem(index, val);
-                  // if (mounted) setState(() {});
-                },
-                onIncreaseVariantQty: (val) {
-                  addVariantItem(index, val);
-                  // if (mounted) setState(() {});
-                },
+                basketItem: data,
+                onDecreaseQty: () {},
+                onIncreaseQty: () {},
               ),
             );
           }
@@ -255,15 +241,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
 
           itemWidgets.add(
             ShoppingCartTileForProduct(
-              {
-                "type": data["type"],
-                "item": product,
-                "qty": data['qty'],
-                "addOn": addOn,
-                "variant": null,
-                "image": "",
-              },
-              index: index,
+              basketItem: data,
               onDecreaseQty: () {
                 removeItemAddOn(index);
               },
@@ -275,15 +253,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         } else {
           itemWidgets.add(
             ShoppingCartTileForProduct(
-              {
-                "type": data["type"],
-                "item": product,
-                "qty": data['qty'],
-                "variant": null,
-                "addOn": null,
-                "image": "",
-              },
-              index: index,
+              basketItem: data,
               onDecreaseQty: () {
                 removeItem(index);
                 // if (mounted) setState(() {});

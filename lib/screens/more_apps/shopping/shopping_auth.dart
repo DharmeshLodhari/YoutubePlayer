@@ -1321,7 +1321,7 @@ class ShoppingAuthService extends AuthService {
     return Future.error("ERROR:- ${response.body}");
   }
 
-  Future<bool> addItemToShoppingCart(Map data) async {
+  Future<bool> addOrUpdateItemToShoppingCart(Map<String, dynamic> data) async {
     var url = AppConfig.baseUrl + "/api/v1/shopping-cart/add-item/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);

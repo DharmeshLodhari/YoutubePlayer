@@ -4109,7 +4109,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             return;
           }
         });
-        Map data = {
+        Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].checkID,
           "qty": mapData["qty"],
@@ -4117,7 +4117,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         debugPrint("Data From Product Page : $data");
         showToast(message: "Item added to the cart !!");
 
-        await ShoppingAuthService().addItemToShoppingCart(data);
+        await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
       },
     );
   }

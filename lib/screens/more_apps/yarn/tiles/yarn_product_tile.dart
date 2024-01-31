@@ -21,6 +21,7 @@ import '../../user_profile/user_auth.dart';
 class YarnProductTile extends StatefulWidget {
   final Product? product;
   final TileRenderPlace tileRenderPlace;
+
   const YarnProductTile({
     Key? key,
     this.product,
@@ -296,14 +297,14 @@ class _YarnProductTileState extends State<YarnProductTile> {
             return;
           }
         });
-        Map data = {
+        Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
         showToast(message: "Item added to the cart !!");
-        await ShoppingAuthService().addItemToShoppingCart(data);
+        await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
       },
     );
   }

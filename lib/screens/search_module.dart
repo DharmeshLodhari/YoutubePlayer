@@ -301,20 +301,19 @@ class _SearchModuleState extends State<SearchModule> {
             ),
             cursorWidth: 1.5,
             cursorColor: navyBlue,
-            onChanged: (value) {
+            onChanged: (value) async {
               if (value.length >= 3) {
                 autoCompleteSearchText = value;
+                count = 0;
+                next = "";
+                previous = "";
 
-                setState(() {
-                  count = 0;
-                  next = "";
-                  previous = "";
+                results.clear();
+                isLoading = false;
+                noItemInList = false;
+                if (mounted) setState(() {});
 
-                  results.clear();
-                  isLoading = false;
-                  noItemInList = false;
-                  getSearchUserList();
-                });
+                await getSearchUserList();
 
                 if (results.isNotEmpty ||
                     searchItemTextController.text.length != 0) {
@@ -566,7 +565,7 @@ class _SearchModuleState extends State<SearchModule> {
     _refreshCtrl.refreshCompleted();
   }
 
-  void getSearchUserList() async {
+  Future<void> getSearchUserList() async {
     if (!isLoading) {
       debugPrint('GET LIST ---------->');
 

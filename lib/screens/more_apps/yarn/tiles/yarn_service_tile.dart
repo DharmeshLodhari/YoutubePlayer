@@ -21,11 +21,13 @@ import '../../user_profile/user_auth.dart';
 class YarnServiceTile extends StatefulWidget {
   final Service? service;
   final TileRenderPlace tileRenderPlace;
+
   const YarnServiceTile({
     Key? key,
     this.service,
     this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
   }) : super(key: key);
+
   @override
   State<YarnServiceTile> createState() => _YarnServiceTileState();
 }
@@ -296,14 +298,14 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
             return;
           }
         });
-        Map data = {
+        Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Service Page : $data");
         showToast(message: "Item added to the cart !!");
-        await ShoppingAuthService().addItemToShoppingCart(data);
+        await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
       },
     );
   }

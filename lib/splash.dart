@@ -530,7 +530,7 @@ class _SplashScreenState extends State<SplashScreen>
       List items = await ShoppingAuthService().getShoppingCart();
       items.forEach((element) {
         String type = element is Product ? "product" : "service";
-        basketBloc.addItemToCart(item: element, type: type);
+        basketBloc.addItemToCart(item: element, type: type, withApiCall: false);
       });
     } catch (e) {
       errorText += "ERROR:- while loading shopping cart ITEM\n";

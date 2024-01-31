@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,11 @@ class BasketBloc extends ChangeNotifier {
     _items = value as List<Map<String, dynamic>>;
     notifyListeners();
   }
+
+  /// New Model implemented
+  List<BasketItem> _basketItems = [];
+
+  List<BasketItem> get basketItems => _basketItems;
 
   int getProductOrServiceQuantityInCart(String id) {
     int quantity = 0;
@@ -101,15 +107,16 @@ class BasketBloc extends ChangeNotifier {
       {required var item,
       required String type,
       Variant? variant,
-      List<AddOns>? addOns}) {
+      List<AddOns>? addOns,
+      bool withApiCall = true}) {
     if (variant != null) {
-      addItemInBasketWithQty(item, type, variant);
+      addItemInBasketWithQty(item, type, variant, withApiCall: withApiCall);
     } else if (addOns != null && addOns.isNotEmpty) {
-      addItemInBasketWithAddOns(item, type, addOns);
+      addItemInBasketWithAddOns(item, type, addOns, withApiCall: withApiCall);
     } else if (variant != null && addOns != null && addOns.isEmpty) {
-      addItemInBasketWithQtyService(item, type);
+      addItemInBasketWithQtyService(item, type, withApiCall: withApiCall);
     } else {
-      addItemInBasketWithQtyService(item, type);
+      addItemInBasketWithQtyService(item, type, withApiCall: withApiCall);
     }
 
     addMerchantName(item);
@@ -165,7 +172,80 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMapCopy.remove(merchantFullName);
   }
 
-  void addItemInBasketWithQty(var item, String type, Variant variant) {
+  void addItemInBasketWithQty(
+      PurchasableItem item, String type, Variant variant,
+      {bool withApiCall = true}) {
+    /// if we create or update existing basket item we will store that item to this variable
+    /// for sending to server
+    BasketItem? addedOrUpdatedItem;
+
+    /// if there is no item in basket then we will add that directly with 1 qty
+    /// else we will check if same item present then we will increase qty of already added basket item
+    if (_basketItems.isEmpty) {
+      Product product = item as Product;
+
+      BasketItem basketItem = BasketItem(
+        type: type,
+        item: item,
+        qty: variant.quantity,
+        variants: [variant],
+      );
+
+      addedOrUpdatedItem = basketItem;
+      _basketItems.add(basketItem);
+    } else {
+      bool isSameItemPresent = false;
+
+      for (BasketItem basketItem in _basketItems) {
+        /// if item is product
+        if (item.isProduct) {
+          if (basketItem.item is Product) {
+            Product alreadyPresentProduct = basketItem.item as Product;
+            Product newProduct = item as Product;
+
+            /// check for product id is same then check for variant
+            if (alreadyPresentProduct.id == newProduct.id) {
+              if (variant.id == basketItem.variants?.first.id) {
+                if (basketItem.variants?.first.quantity != null) {
+                  basketItem.variants?.first.quantity =
+                      (basketItem.variants?.first.quantity ?? 1) + 1;
+                  isSameItemPresent = true;
+
+                  addedOrUpdatedItem = basketItem;
+                  break;
+                }
+              }
+            }
+          }
+        }
+
+        /// if item is service
+        else if (basketItem.item?.isService ?? false) {
+          /// TODO: write code for service
+        }
+      }
+
+      /// if same item is not present then we will add new basket item with qty 1
+      if (isSameItemPresent == false) {
+        BasketItem basketItem = BasketItem(
+            type: type, item: item, qty: variant.quantity, variants: [variant]);
+        addedOrUpdatedItem = basketItem;
+        _basketItems.add(basketItem);
+      }
+    }
+
+    notifyListeners();
+
+    /// add or update this item to the server
+    if (withApiCall && addedOrUpdatedItem != null) {
+      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem);
+      if (data.isNotEmpty) {
+        ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+      }
+    }
+  }
+
+  void addItemInBasketWithQtyOld(var item, String type, Variant variant) {
     bool itemExists = false;
 
     for (var element in _items) {
@@ -261,7 +341,12 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addItemInBasketWithAddOns(var item, String type, List<AddOns>? addOns) {
+  void addItemInBasketWithAddOns(var item, String type, List<AddOns>? addOns,
+      {bool withApiCall = true}) {
+    /// if we create or update existing basket item we will store that item to this variable
+    /// for sending to server
+    BasketItem? addedOrUpdatedItem;
+
     bool itemExists = false;
 
     _items.forEach((element) {
@@ -308,6 +393,14 @@ class BasketBloc extends ChangeNotifier {
     }
 
     notifyListeners();
+
+    /// add or update this item to the server
+    if (withApiCall && addedOrUpdatedItem != null) {
+      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem);
+      if (data.isNotEmpty) {
+        ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+      }
+    }
   }
 
   int calculateTotalPrice(String itemPrice, Map<String, dynamic> addOn) {
@@ -322,7 +415,43 @@ class BasketBloc extends ChangeNotifier {
     return itemPriceValue * 1 + optionTotalPrice;
   }
 
-  void addItemInBasketWithQtyService(var item, String type) {
+  void addItemInBasketWithQtyService(var item, String type,
+      {bool withApiCall = true}) {
+    /// if we create or update existing basket item we will store that item to this variable
+    /// for sending to server
+    BasketItem? addedOrUpdatedItem;
+
+    bool flag = false;
+
+    _basketItems.forEach((element) {
+      if (element.item?.id == item.id) {
+        flag = true;
+        element.qty = int.parse(element.qty.toString()) + 1;
+        addedOrUpdatedItem = element;
+        debugPrint("Exising Item Added");
+        return;
+      }
+    });
+
+    if (!flag) {
+      BasketItem basketItem = BasketItem(item: item, qty: item.qty, type: type);
+
+      _basketItems.add(basketItem);
+
+      addedOrUpdatedItem = basketItem;
+    }
+    notifyListeners();
+
+    /// add or update this item to the server
+    if (withApiCall && addedOrUpdatedItem != null) {
+      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem!);
+      if (data.isNotEmpty) {
+        ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+      }
+    }
+  }
+
+  void addItemInBasketWithQtyServiceOld(var item, String type) {
     bool flag = false;
 
     _items.forEach((element) {
@@ -483,8 +612,9 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resetShoppingCart() async {
+  Future<void> resetShoppingCart() async {
     _items.clear();
+    _basketItems.clear();
     List itemsCart = await ShoppingAuthService().getShoppingCart();
 
     for (var element in itemsCart) {
@@ -501,54 +631,151 @@ class BasketBloc extends ChangeNotifier {
 
         if (variantList != null && variantList.isNotEmpty) {
           for (var variant in variantList) {
-            // if (variant is Variant) {
-            //   String? price = variant.price.toString();
-            //   String? id = variant.id.toString();
-            //   int? quantity = variant.quantity;
-            //   String? value = variant.value;
-            //   String? type2 = variant.type;
-            //   String? colour = variant.colour;
-            //
-            //   String? variantImage; // Get the first image from pictures
-            //
-            //   if (variant.pictures != null &&
-            //       variant.pictures is List &&
-            //       (variant.pictures as List).isNotEmpty) {
-            //     // variantImage = variant.pictures?.first['file'];
-            //     variantImage = variant.pictures?.first.image.toString();
-            //   }
-            //
-            //   Map<String, dynamic> variant1 = {
-            //     "id": id,
-            //     "quantity": quantity,
-            //     "image": variantImage,
-            //     "price": price,
-            //     "colour": colour,
-            //     "value": value,
-            //     "type": type2,
-            //   };
-            //
-            //   debugPrint('Variant Data: $variant1');
-
-            // Add each variant as a separate item to the cart
-            addItemToCart(item: element, type: type, variant: variant);
-            // }
+            addItemToCart(
+              item: element,
+              type: type,
+              variant: variant,
+              withApiCall: false,
+            );
           }
         } else if (convertedList != null && convertedList.isNotEmpty) {
           addItemToCart(
-              item: element, type: type, variant: null, addOns: convertedList);
+            item: element,
+            type: type,
+            variant: null,
+            addOns: convertedList,
+            withApiCall: false,
+          );
         } else {
           // If no variants are present, add the product as a single item to the cart
-          addItemToCart(item: element, type: type);
+          addItemToCart(
+            item: element,
+            type: type,
+            withApiCall: false,
+          );
         }
       } else {
-        addItemToCart(item: element, type: type, variant: null, addOns: null);
+        addItemToCart(
+          item: element,
+          type: type,
+          variant: null,
+          addOns: null,
+          withApiCall: false,
+        );
       }
     }
     if (itemsCart.isEmpty) {
       _items.clear();
+      _basketItems.clear();
     }
 
     notifyListeners();
+  }
+
+  Map<String, dynamic> getServerPayload() {
+    Map<String, dynamic> data = {};
+
+    return data;
+  }
+
+  void increaseQty(BasketItem data, {bool withApiCall = true}) {
+    /// if we create or update existing basket item we will store that item to this variable
+    /// for sending to server
+    BasketItem? addedOrUpdatedItem;
+
+    if (data.item?.isProduct ?? false) {
+      /// if basket item has variant
+      if (data.hasVariant) {
+        for (BasketItem basketItem in _basketItems) {
+          if (basketItem.item?.id == data.item?.id) {
+            Variant? variant = basketItem.variants?.first;
+            if (variant != null) {
+              if (variant.id == data.variants?.first.id) {
+                variant.quantity = (variant.quantity ?? 0) + 1;
+                basketItem.qty = (basketItem.qty ?? 0) + 1;
+
+                addedOrUpdatedItem = basketItem;
+                break;
+              }
+            }
+          }
+        }
+      } else {
+        for (BasketItem basketItem in _basketItems) {
+          if (basketItem.item?.id == data.item?.id) {
+            Product product = basketItem.item as Product;
+
+            basketItem.qty = (basketItem.qty ?? 0) + 1;
+            product.qty = (product.qty ?? 0) + 1;
+
+            addedOrUpdatedItem = basketItem;
+            break;
+          }
+        }
+      }
+    }
+
+    notifyListeners();
+
+    if (withApiCall && addedOrUpdatedItem != null) {
+      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem);
+      if (data.isNotEmpty) {
+        ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+      }
+    }
+  }
+
+  void decreaseQty(BasketItem data, {bool withApiCall = true}) {
+    /// if we create or update existing basket item we will store that item to this variable
+    /// for sending to server
+    BasketItem? addedOrUpdatedItem;
+
+    if (data.item?.isProduct ?? false) {
+      /// if basket item has variant
+      if (data.hasVariant) {
+        for (BasketItem basketItem in _basketItems) {
+          if (basketItem.item?.id == data.item?.id) {
+            Variant? variant = basketItem.variants?.first;
+            if (variant != null) {
+              if (variant.id == data.variants?.first.id) {
+                variant.quantity = (variant.quantity ?? 0) - 1;
+                basketItem.qty = (basketItem.qty ?? 0) - 1;
+                addedOrUpdatedItem = basketItem;
+                break;
+              }
+            }
+          }
+        }
+      } else {
+        for (BasketItem basketItem in _basketItems) {
+          if (basketItem.item?.id == data.item?.id) {
+            Product product = basketItem.item as Product;
+
+            basketItem.qty = (basketItem.qty ?? 0) - 1;
+            product.qty = (product.qty ?? 0) - 1;
+
+            addedOrUpdatedItem = basketItem;
+            break;
+          }
+        }
+      }
+    }
+
+    notifyListeners();
+
+    if (withApiCall && addedOrUpdatedItem != null) {
+      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem);
+      if (data.isNotEmpty) {
+        if (addedOrUpdatedItem.getQty() == 0 && data["qty"] == 0) {
+          _basketItems.remove(addedOrUpdatedItem);
+          notifyListeners();
+
+          /// to remove from cart
+          ShoppingAuthService().removeItemFromShoppingCart(data);
+        } else {
+          ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+        }
+      }
+    }
   }
 }

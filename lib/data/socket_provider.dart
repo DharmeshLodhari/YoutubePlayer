@@ -32,6 +32,7 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// Variable for listening the internet connections
   static bool? _isNetworkConnectionIsOn;
+
   bool? get isNetworkOn => _isNetworkConnectionIsOn;
   static bool _isFirstTime = true;
   static StreamSubscription? networkConnectionSubscription;
@@ -214,7 +215,6 @@ class MainSocketProvider extends ChangeNotifier {
     return;
 
     _isConnected = false;
-    return;
 
     /// change socket url according to recipient user url
     // var finalUrl = "$_socketUrl";

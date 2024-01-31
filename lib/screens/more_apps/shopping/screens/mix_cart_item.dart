@@ -352,19 +352,12 @@ class _MixCartItemState extends State<MixCartItem> {
   Widget getItemTileUI(int index) {
     if (basketBloc.items[index]["item"] is Product) {
       return ShoppingCartTileForProduct(
-        basketBloc.items[index],
-        index: index,
+        basketItem: basketBloc.items[index],
         onDecreaseQty: () {
           removeItem(index);
         },
         onIncreaseQty: () {
           addItem(index);
-        },
-        onDecreaseVariantQty: (val) {
-          // removeVariantItem(index, val);
-        },
-        onIncreaseVariantQty: (val) {
-          // addVariantItem(index, val);
         },
       );
     }
@@ -410,13 +403,13 @@ class _MixCartItemState extends State<MixCartItem> {
         return;
       }
     });
-    Map data = {
+    Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].conversationID,
       "qty": mapData["qty"],
     };
     debugPrint("Data From increasing the  item : $data");
-    await ShoppingAuthService().addItemToShoppingCart(data);
+    await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
   }
 
   void removeItem(int index) async {

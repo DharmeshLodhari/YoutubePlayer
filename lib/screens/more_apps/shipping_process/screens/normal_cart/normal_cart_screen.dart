@@ -6,15 +6,18 @@ import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -24,7 +27,7 @@ class NormalCartScreen extends StatefulWidget {
     this.onPageRefresh,
   }) : super(key: key);
 
-  Function(bool)? onPageRefresh;
+  final Function(bool)? onPageRefresh;
 
   @override
   State<NormalCartScreen> createState() => NormalCartScreenState();
@@ -46,6 +49,8 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
   ScrollController _normalScrollController = new ScrollController();
   AppConfigurationModel? appConfigurationModel;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -72,8 +77,10 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     super.dispose();
   }
 
-  void initializeShoppingCart() async {
-    basketBloc.resetShoppingCart();
+  Future<void> initializeShoppingCart() async {
+    isLoading = true;
+    await basketBloc.resetShoppingCart();
+    isLoading = false;
   }
 
   @override
@@ -116,15 +123,22 @@ class NormalCartScreenState extends State<NormalCartScreen> {
   }
 
   Widget _buildCartItemList() {
-    return int.parse(getTotalPrice().toString()) == 0
+    if (isLoading) {
+      return Center(
+        child: CircularLoadingIndicator(),
+      );
+    }
+
+    return basketBloc.basketItems.isEmpty && isLoading == false
         ? Center(
             child: NoItemInList(
                 msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
           )
         : ListView.builder(
-            itemCount: basketBloc.items.length,
+            itemCount: basketBloc.basketItems.length,
             itemBuilder: (BuildContext context, int index) =>
-                getItemTile(index));
+                getItemTile(index),
+          );
   }
 
   Widget checkoutWidget() {
@@ -208,121 +222,116 @@ class NormalCartScreenState extends State<NormalCartScreen> {
   }
 
   Widget getItemTile(int index) {
-    List<Widget> itemWidgets = []; // Create an empty list to hold widgets
+    final BasketItem data = basketBloc.basketItems[index];
 
-    if (basketBloc.items.length > index) {
-      final data = basketBloc.items[index];
-      final item = data["item"];
-
-      if (item is Product) {
-        Product product = item;
-
-        List<Variant>? variants = product.variantModels;
-        List<AddOns>? addOn = product.addOnsModels;
-
-        if (variants != null && variants.isNotEmpty) {
-          for (var variant in variants) {
-            Map<String, dynamic> variant1 = {
-              "id": variant.id,
-              "quantity": variant.quantity,
-              "price": variant.price,
-              "colour": variant.colour,
-              "value": variant.value,
-              "type": variant.type,
-            };
-
-            String image = variant.localImages.toString();
-            Variant single = Variant.fromJson(variant1);
-
-            itemWidgets.add(
-              ShoppingCartTileForProduct(
-                {
-                  "type": data["type"],
-                  "item": product,
-                  "qty": variants.isEmpty ? data['quantity'] : single.quantity,
-                  "variant": single,
-                  "image": image,
-                  "addOn": null,
-                },
-                index: index,
-                onDecreaseVariantQty: (val) {
-                  removeVariantItem(index, val);
-                  // if (mounted) setState(() {});
-                },
-                onIncreaseVariantQty: (val) {
-                  addVariantItem(index, val);
-                  // if (mounted) setState(() {});
-                },
-              ),
-            );
-          }
-        } else if (addOn != null && addOn.isNotEmpty) {
-          debugPrint('fola cart:::: ${addOn}');
-
-          itemWidgets.add(
-            ShoppingCartTileForProduct(
-              {
-                "type": data["type"],
-                "item": product,
-                "qty": data['qty'],
-                "addOn": addOn,
-                "variant": null,
-                "image": "",
-              },
-              index: index,
-              onDecreaseQty: () {
-                removeItemAddOn(index);
-              },
-              onIncreaseQty: () {
-                addItemAddOn(index);
-              },
-            ),
-          );
-        } else {
-          itemWidgets.add(
-            ShoppingCartTileForProduct(
-              {
-                "type": data["type"],
-                "item": product,
-                "qty": data['qty'],
-                "variant": null,
-                "addOn": null,
-                "image": "",
-              },
-              index: index,
-              onDecreaseQty: () {
-                removeItem(index);
-                // if (mounted) setState(() {});
-              },
-              onIncreaseQty: () {
-                addItem(index);
-                // if (mounted) setState(() {});
-              },
-            ),
-          );
-        }
-      } else {
-        itemWidgets.add(
-          ShoppingCartTileForService(
-            data,
-            index: index,
-            onDecreaseQty: () {
-              index != null ? removeItem(index) : SizedBox.shrink();
-            },
-            onIncreaseQty: () {
-              index != null ? addItem(index) : SizedBox.shrink();
-            },
-          ),
-        );
-      }
-    } else {
-      return Container(); // Return an empty container if index is out of bounds
+    if (data.item?.isProduct ?? false) {
+      return ShoppingCartTileForProduct(
+        key: UniqueKey(),
+        basketItem: data,
+        onIncreaseQty: () {
+          basketBloc.increaseQty(data);
+        },
+        onDecreaseQty: () {
+          basketBloc.decreaseQty(data);
+        },
+      );
     }
-
-    return Column(
-      children: itemWidgets,
-    );
+    return Container();
   }
+
+  // Widget getItemTileOld(int index) {
+  //   final BasketItem data = basketBloc.basketItems[index];
+  //   final PurchasableItem item = data.item!;
+  //
+  //   if (item is Product) {
+  //     Product product = item;
+  //
+  //     List<AddOns>? addOn = product.addOnsModels;
+  //
+  //     Variant? variant = data.variants?.first;
+  //
+  //     if (variant != null) {
+  //       Map<String, dynamic> variant1 = {
+  //         "id": variant.id,
+  //         "quantity": variant.quantity,
+  //         "price": variant.price,
+  //         "colour": variant.colour,
+  //         "value": variant.value,
+  //         "type": variant.type,
+  //       };
+  //
+  //       String image = variant.localImages.toString();
+  //       Variant single = Variant.fromJson(variant1);
+  //
+  //       return ShoppingCartTileForProduct(
+  //         {
+  //           "type": data.type,
+  //           "item": product,
+  //           "qty": variant.quantity,
+  //           "variant": single,
+  //           "image": image,
+  //           "addOn": null,
+  //         },
+  //         index: index,
+  //         onDecreaseVariantQty: (val) {
+  //           removeVariantItem(index, val);
+  //         },
+  //         onIncreaseVariantQty: (val) {
+  //           addVariantItem(index, val);
+  //         },
+  //       );
+  //     } else if (addOn != null && addOn.isNotEmpty) {
+  //       debugPrint('fola cart:::: ${addOn}');
+  //
+  //       return ShoppingCartTileForProduct(
+  //         {
+  //           "type": data.type,
+  //           "item": product,
+  //           "qty": data.qty,
+  //           "addOn": addOn,
+  //           "variant": null,
+  //           "image": "",
+  //         },
+  //         index: index,
+  //         onDecreaseQty: () {
+  //           removeItemAddOn(index);
+  //         },
+  //         onIncreaseQty: () {
+  //           addItemAddOn(index);
+  //         },
+  //       );
+  //     } else {
+  //       return ShoppingCartTileForProduct(
+  //         {
+  //           "type": data.type,
+  //           "item": product,
+  //           "qty": data.qty,
+  //           "variant": null,
+  //           "addOn": null,
+  //           "image": "",
+  //         },
+  //         index: index,
+  //         onDecreaseQty: () {
+  //           removeItem(index);
+  //         },
+  //         onIncreaseQty: () {
+  //           addItem(index);
+  //         },
+  //       );
+  //     }
+  //   } else {
+  //     return ShoppingCartTileForService(
+  //       data,
+  //       index: index,
+  //       onDecreaseQty: () {
+  //         removeItem(index);
+  //       },
+  //       onIncreaseQty: () {
+  //         addItem(index);
+  //       },
+  //     );
+  //   }
+  // }
 
   int getTotalPrice() {
     int totalPrice = 0;
@@ -416,7 +425,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
       };
       await ShoppingAuthService().removeItemFromShoppingCart(data);
     } else {
-      await ShoppingAuthService().addItemToShoppingCart(dataInfo);
+      await ShoppingAuthService().addOrUpdateItemToShoppingCart(dataInfo);
     }
   }
 
@@ -511,13 +520,13 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         return;
       }
     });
-    Map data = {
+    Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].id,
       "qty": mapData["qty"],
     };
     debugPrint("Data From increasing the  item : $data");
-    await ShoppingAuthService().addItemToShoppingCart(data);
+    await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
   }
 
   void addVariantItem(int index, int variantId) async {
@@ -533,7 +542,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     Map<String, dynamic> dataInfo =
         getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
 
-    await ShoppingAuthService().addItemToShoppingCart(dataInfo);
+    await ShoppingAuthService().addOrUpdateItemToShoppingCart(dataInfo);
   }
 
   void removeItem(int index) async {
@@ -583,14 +592,14 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         })?.toList() ??
         [];
 
-    Map data = {
+    Map<String, dynamic> data = {
       "type": type,
       "id": mapData["item"].id,
       "qty": mapData["qty"],
       "add_ons": transformedList,
     };
     debugPrint("Data From increasing the  item : $data");
-    await ShoppingAuthService().addItemToShoppingCart(data);
+    await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
   }
 
   void removeItemAddOn(int index) async {
@@ -608,7 +617,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
     if (mapData['qty'] == 0 || mapData['qty'] == -1) {
       //remove item from cart and local
-      Map data = {
+      Map<String, dynamic> data = {
         "type": type,
         "id": mapData["item"].id,
         "qty": mapData["qty"],
@@ -633,14 +642,14 @@ class NormalCartScreenState extends State<NormalCartScreen> {
             })?.toList() ??
             [];
 
-        Map data = {
+        Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,
           "qty": mapData["qty"],
           "add_ons": transformedList,
         };
         debugPrint("Data From increasing the  item : $data");
-        await ShoppingAuthService().addItemToShoppingCart(data);
+        await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
       }
     }
   }

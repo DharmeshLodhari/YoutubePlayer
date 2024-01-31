@@ -31,6 +31,7 @@ class DisplayProduct extends StatefulWidget {
   final Product product;
   final bool giveRightPadding;
   final Function()? onProductRefresh;
+
   const DisplayProduct(
       {Key? key,
       required this.product,
@@ -447,13 +448,13 @@ class _DisplayProductState extends State<DisplayProduct> {
           return;
         }
       });
-      Map data = {
+      Map<String, dynamic> data = {
         "type": type,
         "id": mapData["item"].id,
         "qty": mapData["qty"],
       };
       debugPrint("Data From Display Product widget Page : $data");
-      await _auth.addItemToShoppingCart(data);
+      await _auth.addOrUpdateItemToShoppingCart(data);
     } else {
       showToast(message: AppLocalization.of(context)!.productOutOfStock);
     }
@@ -585,6 +586,7 @@ class DisplayService extends StatefulWidget {
   final Service service;
   final bool giveRightPadding;
   final Function()? onServiceRefresh;
+
   const DisplayService(
       {Key? key,
       required this.service,
@@ -996,13 +998,13 @@ class _DisplayServiceState extends State<DisplayService> {
           return;
         }
       });
-      Map data = {
+      Map<String, dynamic> data = {
         "type": type,
         "id": mapData["item"].id,
         "qty": mapData["qty"],
       };
       debugPrint("Data From Display Product widget Page : $data");
-      await _auth.addItemToShoppingCart(data);
+      await _auth.addOrUpdateItemToShoppingCart(data);
     } else {
       showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
     }

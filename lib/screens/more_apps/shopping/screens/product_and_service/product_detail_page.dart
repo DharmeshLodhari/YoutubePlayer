@@ -608,14 +608,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future<void> addToCart() async {
     String type = "product";
 
-    if (basketBloc.items.isEmpty) {
-      basketBloc.addItemToCart(
-        item: product,
-        type: type,
-        variant: selectedVariant,
-        addOns: null,
-      );
-    }
+    basketBloc.addItemToCart(
+      item: product?.copyWith(qty: 1),
+      type: type,
+      variant: selectedVariant?.copyWith(quantity: 1),
+      addOns: null,
+    );
   }
 
   Future<void> addToCartOld() async {
@@ -626,7 +624,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     List<AddOns> selectedAddOnsList = [];
 
     Product productSend = product!;
-    productSend = productSend.copyWith(quantity: 1);
+    productSend = productSend.copyWith(qty: 1);
 
     /// TODO:BRIJESH CHECK ADDON
     // product?.addOnsModels?.forEach((addOn) {
@@ -834,7 +832,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
+    if (basketBloc.basketItems.length == 0) {
       return null;
     }
     return Text(
@@ -847,30 +845,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   int getBadgeCount() {
     int totalItem = 0;
 
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
-    });
+    for (var item in basketBloc.basketItems) {
+      if (item.item is Product) {
+        if (item.variants != null) {
+          // If there are variants, calculate the total quantity from variants
 
-    // for (var item in basketBloc.items) {
-    //
-    //    if (item['item'] is Product) {
-    //     var product = item['item'] as Product;
-    //
-    //     if (product.variant!.isEmpty && product.variant != null) {
-    //       // If the variant list is empty, add the quantity to the total
-    //       totalItem += int.parse(item['qty'].toString());
-    //     } else {
-    //       // If there are variants, calculate the total quantity from variants
-    //       for(var variant in product.variant!){
-    //         var vProduct = Variant.fromJson(variant);
-    //         totalItem += int.parse(vProduct.quantity.toString());
-    //       }
-    //     }
-    //
-    //   } else if (item['item'] is Service) {
-    //     totalItem += int.parse(item['qty'].toString());
-    //   }
-    // }
+          totalItem +=
+              int.parse(item.variants?.first.quantity?.toString() ?? "0");
+        } else {
+          // If the variant list is empty, add the quantity to the total
+          totalItem += int.parse(item.qty.toString());
+        }
+      } else if (item.item is Service) {
+        totalItem += int.parse(item.qty.toString());
+      }
+    }
 
     return totalItem;
   }

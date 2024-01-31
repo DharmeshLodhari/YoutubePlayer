@@ -361,14 +361,14 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
             return;
           }
         });
-        Map data = {
+        Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
         showToast(message: "Item added to the cart !!");
-        await ShoppingAuthService().addItemToShoppingCart(data);
+        await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
       },
     );
   }
@@ -710,14 +710,14 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
             return;
           }
         });
-        Map data = {
+        Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].checkID,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
         showToast(message: "Item added to the cart !!");
-        await ShoppingAuthService().addItemToShoppingCart(data);
+        await ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
       },
     );
   }

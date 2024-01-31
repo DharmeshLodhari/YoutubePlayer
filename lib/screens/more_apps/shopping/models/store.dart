@@ -227,8 +227,17 @@ List<PaymentCategory> paymentCategories = <PaymentCategory>[
   ),
 ];
 
-class Product {
+class PurchasableItem {
   String? id;
+
+  bool get isProduct => this is Product;
+
+  bool get isService => this is Service;
+
+  PurchasableItem({this.id});
+}
+
+class Product extends PurchasableItem {
   String? name;
   String? type;
   String? webUrl;
@@ -294,7 +303,7 @@ class Product {
   int? qty;
 
   Product({
-    this.id,
+    super.id,
     this.name,
     this.type,
     this.webUrl,
@@ -394,7 +403,7 @@ class Product {
     return data;
   }
 
-  Map toJson() {
+  Map<String, dynamic> toJson() {
     return {
       "id": id,
       "name": name,
@@ -599,7 +608,7 @@ class Product {
     return imageLinks;
   }
 
-  Product copyWith({required int quantity}) {
+  Product copyWith({int? qty}) {
     return Product(
       id: this.id,
       name: this.name ?? "",
@@ -637,7 +646,7 @@ class Product {
       heightSiUnit: this.heightSiUnit,
       widthSiUnit: this.widthSiUnit,
       trackInventory: this.trackInventory,
-      quantity: quantity ?? this.quantity,
+      quantity: this.quantity,
       pricePercentageChange: this.pricePercentageChange ?? 0.0,
       // discountedPrice: object["discounted_price"],
       // discountIsActive: object["discount_is_active"],
@@ -645,6 +654,7 @@ class Product {
       // discountValue: object["discount_value"],
       oldPrice: this.oldPrice,
       isShippable: this.isShippable,
+      qty: qty ?? this.qty,
     );
   }
 
@@ -969,7 +979,46 @@ class Variant {
     return null;
   }
 
-  copyWith() {}
+  Variant copyWith({
+    String? id,
+    String? title,
+    String? size,
+    String? colour,
+    VariantTypes? type,
+    String? price,
+    String? value,
+    List<File>? localImages,
+    List<String?>? serverImages,
+    int? quantity,
+    bool? isAvailable,
+    DateTime? availableFrom,
+    String? currency,
+    bool? trackInventory,
+  }) {
+    return Variant(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      size: size ?? this.size,
+      colour: colour ?? this.colour,
+      type: type ?? this.type,
+      price: price ?? this.price,
+      value: value ?? this.value,
+      localImages: localImages ?? this.localImages,
+      serverImages: serverImages ?? this.serverImages,
+      quantity: quantity ?? this.quantity,
+      isAvailable: isAvailable ?? this.isAvailable,
+      availableFrom: availableFrom ?? this.availableFrom,
+      currency: currency ?? this.currency,
+      trackInventory: trackInventory ?? this.trackInventory,
+    );
+  }
+
+  String? getCoverImage() {
+    if (serverImages != null && serverImages!.isNotEmpty) {
+      return serverImages!.first;
+    }
+    return null;
+  }
 }
 
 class AddOnOption {
@@ -1229,8 +1278,7 @@ class CustomCategory {
   }
 }
 
-class Service {
-  String? id;
+class Service extends PurchasableItem {
   String? name;
   String? description;
   String? shortDescription;
@@ -1251,7 +1299,7 @@ class Service {
   bool? canRate = false;
 
   Service(
-      {this.id,
+      {super.id,
       this.name,
       this.description,
       this.shortDescription,
@@ -1323,8 +1371,8 @@ class Service {
     };
   }
 
-  Map toJson() {
-    return {
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
       "id": id,
       "name": name,
       "description": description,

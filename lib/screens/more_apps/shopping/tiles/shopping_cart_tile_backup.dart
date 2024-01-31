@@ -14,25 +14,86 @@ import 'package:provider/provider.dart';
 import '../../../../utils/colors.dart';
 
 //ignore: must_be_immutable
-class ShoppingCartTileForProduct extends StatelessWidget {
-  late Product product;
+class ShoppingCartTileForProduct extends StatefulWidget {
+  Product? item;
+  String? type;
+  String? image;
+  int? qty;
+  int? index;
+  Function? onIncreaseQty;
+  Function? onDecreaseQty;
+  Function(int variantIndex)? onIncreaseVariantQty;
+  Function(int variantIndex)? onDecreaseVariantQty;
+  Function? onIncreaseAddOnQty;
+  Function? onDecreaseAddOnQty;
 
-  late BasketItem basketItem;
+  Variant? variant;
+  List? addOn;
+  List<Map<String, dynamic>?> variantList = [];
 
-  final Function() onIncreaseQty;
-  final Function() onDecreaseQty;
+  ShoppingCartTileForProduct(Map<String, dynamic> item,
+      {this.onIncreaseQty,
+      this.onDecreaseQty,
+      this.index,
+      this.onIncreaseVariantQty,
+      this.onDecreaseVariantQty,
+      this.onIncreaseAddOnQty,
+      this.onDecreaseAddOnQty}) {
+    type = item["type"];
+    this.item = item["item"];
+    qty = item["qty"];
+    variant = item["variant"];
+    addOn = item["addOn"];
+    image = item["image"];
+  }
 
-  ShoppingCartTileForProduct({
-    Key? key,
-    required this.basketItem,
-    required this.onIncreaseQty,
-    required this.onDecreaseQty,
-  }) : super(key: key);
+  @override
+  _ShoppingCartTileForProductState createState() =>
+      _ShoppingCartTileForProductState();
+}
+
+class _ShoppingCartTileForProductState
+    extends State<ShoppingCartTileForProduct> {
+  late BasketBloc basketBloc;
+
+  List<AddOnOption> addOnOptionList = [];
+
+  @override
+  void initState() {
+    if (widget.addOn != null) {
+      // debugPrint('add-on addOnOption:::: ${widget.addOn}');
+
+      for (var item in widget.addOn!) {
+        // debugPrint('add-on addOnOption 2:::: ${item['options']}');
+
+        for (var option in item['options']) {
+          AddOnOption addOnOption = AddOnOption(
+            id: option['id'],
+            picture: option['picture'],
+            name: option['name'],
+            description: option['description'],
+            merchant: option['merchant'],
+            currency: option['currency'],
+            price: option['price'].toString(),
+          );
+          addOnOptionList.add(addOnOption);
+        }
+      }
+
+      // debugPrint('add-on addOnOption 3:::: ${addOnOptionList}');
+
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    product = basketItem.item as Product;
+    basketBloc = Provider.of<BasketBloc>(context);
+
     try {
+      // if (int.parse(getTotalPrice()) == 0) {
+      //   return Container();
+      // } else {
       return Container(
         color: Colors.white,
         child: Card(
@@ -55,7 +116,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                     subtitle: getSubtitle(context),
                     onTap: () {
                       Navigator.pushNamed(context, Routes.PRODUCT,
-                          arguments: {"product": product});
+                          arguments: {"product": widget.item});
                     },
                   ),
                 ),
@@ -64,18 +125,22 @@ class ShoppingCartTileForProduct extends StatelessWidget {
           ),
         ),
       );
+      // }
     } catch (e) {
       return Container();
     }
   }
 
   Widget getLeading() {
-    String? image;
-
-    image = product.cover;
-
-    if (basketItem.hasVariant) {
-      image = basketItem.variants?.first.getCoverImage() ?? product.cover;
+    String image = "";
+    if (widget.addOn != null) {
+      image = widget.item!.serverImages!.first!;
+      // debugPrint('add-on image:::: ${widget.item!.serverImages}');
+    } else if (widget.variant != null) {
+      // image = widget.image!;
+      image = widget.item!.serverImages!.first!;
+    } else {
+      image = widget.item?.cover ?? "";
     }
 
     return ClipOval(
@@ -83,12 +148,12 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         height: 48,
         width: 48,
         // imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
-        imageUrl: image != null ? image : defaultImage,
+        imageUrl: image != "" ? image : defaultImage,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.contain,
         errorWidget: productAndServiceErrorWidget,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => product.cover == null
+        placeholder: (context, url) => widget.item?.cover == null
             ? Icon(Icons.widgets)
             : CircularLoadingIndicator(),
       ),
@@ -100,7 +165,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          appendStringDot("${product.name}", 10),
+          appendStringDot("${widget.item!.name}", 10),
           maxLines: 1,
           style: TextStyle(
             color: blackFont,
@@ -114,6 +179,20 @@ class ShoppingCartTileForProduct extends StatelessWidget {
   }
 
   Widget getTrailing() {
+    // Check if the item has a variant and is not empty
+
+    int variantId = 0;
+    int variantQuantity = 0;
+
+    if (widget.variant != null) {
+      String variant = widget.variant!.id.toString() ?? '';
+
+      if (variant.isNotEmpty) {
+        variantId = int.parse(widget.variant!.id.toString());
+        variantQuantity = int.parse(widget.variant!.quantity.toString());
+      }
+    }
+
     return Container(
       width: 100,
       color: Colors.transparent,
@@ -129,7 +208,12 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                 color: blackFont,
                 size: 2,
               ),
-              onTap: onDecreaseQty,
+              // onTap: widget.variant == null ? widget.onDecreaseQty : () => widget.onDecreaseVariantQty!(variantId),
+              onTap: widget.variant == null
+                  ? widget.onDecreaseQty
+                  : (widget.addOn != null
+                      ? widget.onDecreaseQty
+                      : () => widget.onDecreaseVariantQty!(variantId)),
             ),
             Expanded(
               child: SizedBox(
@@ -137,7 +221,9 @@ class ShoppingCartTileForProduct extends StatelessWidget {
               ),
             ),
             Text(
-              basketItem.getQty().toString(),
+              widget.variant != null
+                  ? variantQuantity.toString()
+                  : widget.qty.toString(),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -157,7 +243,12 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                 color: blackFont,
                 size: 14, // Adjust the size as needed
               ),
-              onTap: onIncreaseQty,
+              // onTap: widget.variant == null ? widget.onIncreaseQty : () => widget.onIncreaseVariantQty!(variantId),
+              onTap: widget.variant == null
+                  ? widget.onIncreaseQty
+                  : (widget.addOn != null
+                      ? widget.onIncreaseQty
+                      : () => widget.onIncreaseVariantQty!(variantId)),
             ),
           ],
         ),
@@ -166,13 +257,39 @@ class ShoppingCartTileForProduct extends StatelessWidget {
   }
 
   String getProductPrice() {
-    var totalPrice = int.parse(product.price!);
+    var totalPrice = int.parse(widget.item!.price!);
+
+    if (widget.variant != null) {
+      totalPrice = 0;
+      totalPrice = int.parse(widget.variant!.price.toString());
+    }
 
     return totalPrice.toString();
   }
 
   String getTotalPrice() {
-    var totalPrice = (basketItem.qty ?? 0) * int.parse(product.price!);
+    var totalPrice = (basketBloc.basketItems[widget.index!].qty ?? 0) *
+        int.parse(widget.item!.price!);
+
+    // Check if the item has a variant and is not empty
+    if (widget.variant != null) {
+      totalPrice = 0;
+      totalPrice += int.parse(widget.variant!.quantity.toString()) *
+          int.parse(widget.variant!.price.toString());
+    }
+
+    if (widget.addOn != null && widget.addOn!.isNotEmpty) {
+      totalPrice = 0;
+      totalPrice = (basketBloc.basketItems[widget.index!].qty ?? 0) *
+          int.parse(widget.item!.price!);
+
+      var totalPrices = 0;
+
+      for (var option in addOnOptionList) {
+        totalPrices += int.parse(option.price!);
+      }
+      totalPrice = totalPrice + totalPrices;
+    }
 
     return totalPrice.toString();
   }
@@ -181,9 +298,9 @@ class ShoppingCartTileForProduct extends StatelessWidget {
     String color = '';
     String size = '';
 
-    if (basketItem.variants?.first != null) {
-      String variantColor = basketItem.variants?.first.colour ?? '';
-      String variantSize = basketItem.variants?.first.value ?? '';
+    if (widget.variant != null) {
+      String variantColor = widget.variant!.colour ?? '';
+      String variantSize = widget.variant!.value ?? '';
 
       if (variantColor.isNotEmpty) {
         color = variantColor;
@@ -195,8 +312,10 @@ class ShoppingCartTileForProduct extends StatelessWidget {
     }
     List<String> names = [];
 
-    for (var option in ["Coke", "Fruite"]) {
-      names.add(option);
+    if (widget.addOn != null) {
+      for (var option in addOnOptionList) {
+        names.add(option.name!);
+      }
     }
 
     final concatenatedText = names.join(', ');
@@ -224,7 +343,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
           height: 2,
         ),
         getSubTotalPriceWidget(),
-        if (concatenatedText != "") ...[
+        if (widget.addOn != null && widget.addOn!.isNotEmpty) ...[
           Text(
             "Add-ons: $concatenatedText",
             maxLines: 3,
@@ -260,7 +379,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[product.currency!]!,
+          worldCurrencies[widget.item!.currency!]!,
           style: TextStyle(
               color: blackFont,
               fontFamily: "Inter",
@@ -285,7 +404,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[product.currency!]!,
+          worldCurrencies[widget.item!.currency!]!,
           style: TextStyle(
               color: black,
               fontFamily: "Inter",
@@ -309,7 +428,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
 
   Widget getSellerName(BuildContext context) {
     return Text(
-      product.seller!,
+      widget.item!.seller!,
       style: TextStyle(
         fontSize: 12,
         color: darkGrey,
