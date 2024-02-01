@@ -48,58 +48,29 @@ class BasketBloc extends ChangeNotifier {
     return quantity;
   }
 
-  int getSubTotalPriceByMerchant({required String merchantUserName}) {
-    int subTotal = 0;
+  int getTotalPrice() {
+    int totalPrice = 0;
 
-    items.forEach((element) {
-      var item = element['item'];
-
-      if (merchantUserName == item.getMerchantUserName()) {
-        List<Map<String, dynamic>> variants = [];
-        if (element['variants'] != null) {
-          variants = element['variants'];
+    for (var item in _basketItems) {
+      int variantTotal = 0;
+      int normalTotal = 0;
+      if (item.item?.isProduct ?? false) {
+        if (item.hasVariant) {
+          int variantPrice =
+              int.parse(item.variants?.first.price.toString() ?? "");
+          int quantity = item.variants?.first.quantity ?? 0;
+          variantTotal += variantPrice * quantity;
+          totalPrice += variantTotal;
         } else {
-          subTotal +=
-              int.parse(element['qty'].toString()) * int.parse(item.price);
+          Product product = item.item as Product;
+
+          normalTotal = int.parse(product.price.toString()) *
+              int.parse(product.qty.toString());
+          totalPrice += normalTotal;
         }
-
-        if (variants.isEmpty) {
-        } else {
-          for (var variant in variants) {
-            if (variant.containsKey('id') &&
-                variant['id'] != null &&
-                variant['id'].toString().isNotEmpty) {
-              int quantity = variant['quantity'];
-              int currentPrice = int.parse(variant['price'].toString());
-              subTotal += quantity * currentPrice;
-            }
-          }
-        }
-      }
-    });
-
-    return subTotal;
-  }
-
-  bool isAnyIdEmpty(List<Map<String, dynamic>> mapList) {
-    for (var map in mapList) {
-      if (map.containsKey('id') &&
-          map['id'] != null &&
-          map['id'].toString().isNotEmpty) {
-        // Found a map with a non-empty 'id' value, return false
-        return false;
       }
     }
-    // No map with a non-empty 'id' value was found, return true
-    return true;
-  }
-
-  int getTotalPriceByMerchant(
-      {required String merchantUserName, required int shippingOptionPrice}) {
-    int total = getSubTotalPriceByMerchant(merchantUserName: merchantUserName) +
-        shippingOptionPrice;
-
-    return total;
+    return totalPrice;
   }
 
   // this will add the product or service in the cart;
@@ -777,5 +748,59 @@ class BasketBloc extends ChangeNotifier {
         }
       }
     }
+  }
+
+  int getSubTotalPriceByMerchant({required String merchantUserName}) {
+    int subTotal = 0;
+
+    items.forEach((element) {
+      var item = element['item'];
+
+      if (merchantUserName == item.getMerchantUserName()) {
+        List<Map<String, dynamic>> variants = [];
+        if (element['variants'] != null) {
+          variants = element['variants'];
+        } else {
+          subTotal +=
+              int.parse(element['qty'].toString()) * int.parse(item.price);
+        }
+
+        if (variants.isEmpty) {
+        } else {
+          for (var variant in variants) {
+            if (variant.containsKey('id') &&
+                variant['id'] != null &&
+                variant['id'].toString().isNotEmpty) {
+              int quantity = variant['quantity'];
+              int currentPrice = int.parse(variant['price'].toString());
+              subTotal += quantity * currentPrice;
+            }
+          }
+        }
+      }
+    });
+
+    return subTotal;
+  }
+
+  bool isAnyIdEmpty(List<Map<String, dynamic>> mapList) {
+    for (var map in mapList) {
+      if (map.containsKey('id') &&
+          map['id'] != null &&
+          map['id'].toString().isNotEmpty) {
+        // Found a map with a non-empty 'id' value, return false
+        return false;
+      }
+    }
+    // No map with a non-empty 'id' value was found, return true
+    return true;
+  }
+
+  int getTotalPriceByMerchant(
+      {required String merchantUserName, required int shippingOptionPrice}) {
+    int total = getSubTotalPriceByMerchant(merchantUserName: merchantUserName) +
+        shippingOptionPrice;
+
+    return total;
   }
 }

@@ -169,8 +169,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      moneyDisplayNormalizer(
-                          int.parse(getTotalPrice().toString())),
+                      moneyDisplayNormalizer(basketBloc.getTotalPrice()),
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -333,7 +332,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
   //   }
   // }
 
-  int getTotalPrice() {
+  int getTotalPriceOld() {
     int totalPrice = 0;
 
     for (var item in basketBloc.items) {
@@ -664,7 +663,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         basketBloc.total = 0;
         //fetch items again
         initializeShoppingCart();
-        getTotalPrice();
+        basketBloc.getTotalPrice();
         setState(() {
           // Call the callback function with the updated list
           //to pass the list back to edit product page
