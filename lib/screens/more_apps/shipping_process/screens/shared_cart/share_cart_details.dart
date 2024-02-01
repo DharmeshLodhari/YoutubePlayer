@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
@@ -185,7 +186,8 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           ),
           controller: _refreshController,
           onRefresh: _onRefresh,
-          child: _buildListOfCartItems(),
+          // child: _buildListOfCartItems(),
+          child: Container(),
         ),
       ),
     );
@@ -634,14 +636,14 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
                 width: 10,
               ),
             ),
-            _buildCheckoutButton(),
+            _buildCheckoutButton(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCheckoutButton() {
+  Widget _buildCheckoutButton(BuildContext context) {
     return MaterialButton(
       height: 40,
       color: navyBlue,
@@ -659,13 +661,54 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         ),
       ),
       onPressed: () {
-        // if (appConfigurationModel?.enableCheckout == true) {
-        Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
-        // } else {
-        //   showToast(message: 'Checkout not available now');
-        // }
+        _buildCartPaymentRequestDialog(context);
       },
     );
+  }
+
+  void _buildCartPaymentRequestDialog(BuildContext context) {
+    showDialogBoxWithInput(
+        context: context,
+        actionOneTextColor: blackFont,
+        actionOneBgColor: greyBorderColor,
+        actionTwoTextColor: white,
+        actionTwoBgColor: navyBlue,
+        actionOneText: AppLocalization.of(context)!.cancel,
+        actionTwoText: AppLocalization.of(context)!.viewNow,
+        firstActionPrimary: false,
+        content: Padding(
+          padding: const EdgeInsets.only(left: 10, right: 10, top: 25),
+          child: Column(
+            children: [
+              Text(AppLocalization.of(context)!.cartPaymentRequest,
+                  style: TextStyle(
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: "Inter",
+                      fontSize: 16.0),
+                  textAlign: TextAlign.center),
+              Container(
+                margin:
+                    EdgeInsets.only(top: 25, bottom: 15, left: 20, right: 20),
+                child: Text(
+                    'A payment request of ₦0.00 from ${sharedCartBloc.getSharedCartModel().name} shared cart?',
+                    style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Inter",
+                        fontSize: 14.0),
+                    textAlign: TextAlign.center),
+              ),
+            ],
+          ),
+        ),
+        leftButtonOnPressed: () async {
+          Navigator.pop(context);
+        },
+        rightButtonOnPressed: () async {
+          Navigator.pop(context);
+          Navigator.of(context).pushNamed(Routes.SHARED_CARD_CONFIRM_ORDER);
+        });
   }
 
   void _onRefresh() async {

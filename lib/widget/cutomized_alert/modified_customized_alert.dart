@@ -117,15 +117,15 @@ class ModifiedCustomizedAlert {
                 ),
               ),
               contentPadding: style.buttonAreaPadding,
-              content: Column(
-                children: [
-                  Row(
+              content: Column(children: [
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: _getButtons(),
                 ),
-                SizedBox(height: 29,)
-                ]
-              ),
+                SizedBox(
+                  height: 20,
+                )
+              ]),
             ),
           ),
         ),

@@ -2709,8 +2709,9 @@ class _AddProductState extends State<AddProduct> {
             onTap: () {
               if (!isEmpty) {
                 Navigator.of(context)
-                    .pushNamed(Routes.DISPATCH_ADDRESS)
-                    .whenComplete(() => getAddressList());
+                    .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
+                  "isForSelection": true,
+                }).whenComplete(() => getAddressList());
               } else {
                 NavigationUtil.push(
                   context,

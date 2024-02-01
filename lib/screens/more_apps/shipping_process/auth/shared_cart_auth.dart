@@ -346,4 +346,28 @@ class SharedCartAuthService extends AuthService {
     } else
       return false;
   }
+
+  Future<bool> removeMemberFromSharedCart(String? cart_id, Map data) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/add-members-to-shared-shopping-cart/$cart_id/";
+    var _data = jsonEncode(data);
+    var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    } else
+      return false;
+  }
+
+  Future<bool> addMemberToSharedCart(String? cart_id, Map data) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/add-members-to-shared-shopping-cart/$cart_id/";
+    var _data = jsonEncode(data);
+    var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers, body: _data);
+    if (response.statusCode == 200) {
+      return true;
+    } else
+      return false;
+  }
 }

@@ -1703,7 +1703,10 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           iconData: SlydoAppIcon.edit,
           onTap: () async {
             Navigator.pop(context);
-            Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
+            Navigator.of(context)
+                .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
+              "isForSelection": true,
+            });
           },
         ),
       );
