@@ -106,6 +106,8 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
             .where((element) => element != null)
             .toList()
             .map((e) => <String, dynamic>{"id": e?.id, "quantity": e?.quantity})
+            .toList()
+            .where((element) => element["quantity"] != 0)
             .toList();
 
         data["id"] = product.id;

@@ -558,6 +558,7 @@ class _DisplayProductState extends State<DisplayProduct> {
     for (var data in basketBloc.basketItems) {
       if (widget.product.id! == data.item?.id) {
         result = true;
+        break;
       }
       result = false;
     }
