@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -104,9 +106,8 @@ List<ProductCondition> conditions = <ProductCondition>[
     'Original packaging or with tag',
   ),
 ];
+
 List<ProductCondition> deliverTimeCondition = <ProductCondition>[
-  
-     
   const ProductCondition(
     '10',
     "5-10 mins",
@@ -127,7 +128,6 @@ List<ProductCondition> deliverTimeCondition = <ProductCondition>[
     '50',
     "40-50 mins",
   ),
- 
   const ProductCondition(
     '60',
     "50mins - 1hr",
@@ -144,8 +144,6 @@ List<ProductCondition> deliverTimeCondition = <ProductCondition>[
     '90',
     "1hr 20 mins- 1hr 30 mins",
   ),
-
-  
   const ProductCondition(
     '100',
     "1hrs 30 mins- 1hr 40 mins",
@@ -206,8 +204,6 @@ List<ProductCondition> deliverTimeCondition = <ProductCondition>[
     '240',
     "3hrs 50 mins- 4hr",
   ),
- 
- 
 ];
 
 List<PaymentCategory> paymentCategories = <PaymentCategory>[
@@ -251,17 +247,19 @@ class Product {
   ProductCategory? subCategory;
   ProductCategory? customCategory;
   List<Tags>? tags;
-  num? preparationTime;
+  int? preparationTime;
   String? manufacturer;
   bool? isAvailable;
   DateTime? availableFrom;
   String? currency;
-  List<dynamic>? pictureMap;
+  List<Picture>? pictureMap;
   double? rating;
   bool? canRate;
   bool? enableInSuperStore;
-  List<dynamic>? variant;
-  List<dynamic>? addOns;
+  // List<dynamic>? variant;
+  List<Variant>? variantModels;
+  // List<dynamic>? addOns;
+  List<AddOns>? addOnsModels;
   double? weight;
   String? weightSiUnit;
   double? height;
@@ -269,15 +267,29 @@ class Product {
   double? width;
   String? widthSiUnit;
   bool? trackInventory;
+  DiscountModel? discount;
   int? quantity;
   double? pricePercentageChange;
   bool isSelected;
-  num? discountValue;
+  int? discountValue;
   String? discountType;
   bool? discountIsActive;
-  num? discountedPrice;
+  int? discountedPrice;
   int? oldPrice;
   bool? isShippable;
+  String? addressId;
+
+  // DateTime? createdAt;
+  // bool? enableInSuperstore;
+  // String? createdBy;
+  // String? createdByFullname;
+  // String? createdByAvatar;
+  // String? updatedBy;
+  // String? updatedByFullname;
+  // String? updatedByAvatar;
+  // ItemEdBy? itemAddedBy;
+  // ItemEdBy? itemUpdatedBy;
+  int? qty;
 
   Product({
     this.id,
@@ -307,8 +319,10 @@ class Product {
     this.currency,
     this.pictureMap,
     this.rating = 0.0,
-    this.variant,
-    this.addOns,
+    // this.variant,
+    this.variantModels,
+    // this.addOns,
+    this.addOnsModels,
     this.weight = 0.0,
     this.weightSiUnit,
     this.height = 0.0,
@@ -316,6 +330,7 @@ class Product {
     this.width = 0.0,
     this.widthSiUnit,
     this.trackInventory,
+    this.discount,
     this.quantity,
     this.pricePercentageChange,
     this.canRate = false,
@@ -326,17 +341,19 @@ class Product {
     this.discountedPrice,
     this.oldPrice,
     this.isShippable,
-    });
+    this.addressId,
+    this.qty,
+  });
 
   Map toMap() {
-    var data =  {
+    var data = {
       "name": name,
       "description": description,
       "short_description":
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
-      "category":  category!.id,
+      "category": category!.id,
       "sub_category": subCategory!.id,
       "custom_category": customCategory!.id,
       "tags": tags!.map((e) => e.id!).toList(),
@@ -347,8 +364,10 @@ class Product {
       "enable_in_superstore": enableInSuperStore,
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
-      "variants": variant,
-      "add_ons": addOns,
+      // "variants": variant,
+      "variants": variantModels,
+      // "add_ons": addOns,
+      "add_ons": addOnsModels,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -364,8 +383,10 @@ class Product {
       "discounted_price": discountedPrice,
       'old_price': oldPrice,
       'is_shippable': isShippable,
+      'address_id': addressId,
+      'qty': qty,
     };
-    if(preparationTime != null && preparationTime! != 0){
+    if (preparationTime != null && preparationTime! != 0) {
       data["preparation_time"] = preparationTime;
     }
     return data;
@@ -394,8 +415,10 @@ class Product {
       "seller_fullname": sellerFullName,
       "seller_avatar": sellerAvatar,
       "currency": currency,
-      "variants": variant,
-      "add_ons": addOns,
+      // "variants": variant,
+      "variants": variantModels,
+      // "add_ons": addOns,
+      "add_ons": addOnsModels,
       "weight": weight,
       'weight_si_unit': weightSiUnit,
       'height': height,
@@ -411,7 +434,15 @@ class Product {
       "discounted_price": discountedPrice,
       'old_price': oldPrice,
       'is_shippable': isShippable,
+      'address_id': addressId,
+      'qty': qty,
     };
+  }
+
+  int getBuyNowProductPrice() {
+    int totalPrice = 0;
+    totalPrice = int.parse(price!);
+    return totalPrice;
   }
 
   factory Product.fromJson(object) {
@@ -438,12 +469,12 @@ class Product {
 
     dynamic getProductCategory(object) {
       try {
-        return ProductCategory(object["name"],
-            id: object["id"]);
+        return ProductCategory(object["name"], id: object["id"]);
       } catch (e) {
         return null;
       }
     }
+
     return Product(
       id: object["id"].toString(),
       name: object["name"] ?? "",
@@ -459,7 +490,9 @@ class Product {
       sellerFullName: object["seller_fullname"] ?? "",
       qrCode: object["qr_code"] ?? "",
       condition: object["condition"] ?? "",
-      category: object['category'] == null ?  null : getProductCategory(object["category"]) ,
+      category: object['category'] == null
+          ? null
+          : getProductCategory(object["category"]),
       subCategory: object['sub_category'] == null
           ? null
           : getProductCategory(object["sub_category"]),
@@ -467,9 +500,7 @@ class Product {
           ? null
           : getProductCategory(object["custom_category"]),
       tags: object['tags'] != null
-          ? (object['tags'] as List)
-              .map((i) => Tags.fromJson(i))
-              .toList()
+          ? (object['tags'] as List).map((i) => Tags.fromJson(i)).toList()
           : [],
       preparationTime: object["preparation_time"] ?? 0,
       manufacturer: object["manufacturer"] ?? "",
@@ -479,8 +510,16 @@ class Product {
       pictureMap: object["pictureMap"] ?? [],
       rating: formatRating(double.parse(object['rating']?.toString() ?? "0")),
       canRate: object["can_rate"] ?? false,
-      variant: object["variants"],
-      addOns: object["add_ons"],
+      // variant: object["variants"],
+      variantModels: object["variants"] == null
+          ? []
+          : List<Variant>.from(
+              object["variants"]!.map((x) => Variant.fromJson(x))),
+      // addOns: object["add_ons"],
+      addOnsModels: object["add_ons"] == null
+          ? []
+          : List<AddOns>.from(
+              object["add_ons"]!.map((x) => AddOns.fromJson(x))),
       weight: object["weight"],
       weightSiUnit: object["weight_si_unit"],
       height: object["height"],
@@ -495,6 +534,7 @@ class Product {
       discountedPrice: object['discounted_price'],
       oldPrice: object["old_price"],
       isShippable: object["is_shippable"],
+      qty: object["qty"],
     );
   }
 
@@ -503,8 +543,6 @@ class Product {
 
     return short;
   }
-
-  
 
   String? getMerchantUserName() {
     return seller;
@@ -539,8 +577,8 @@ class Product {
   String getImageId(String? imageUrl) {
     debugPrint("${serverImages}");
     for (var data in pictureMap!) {
-      if (data['file'] == imageUrl) {
-        return data['id'].toString();
+      if (data.path == imageUrl) {
+        return data.id.toString();
       }
     }
     return "";
@@ -569,7 +607,7 @@ class Product {
       enableInSuperStore: this.enableInSuperStore ?? false,
       localImages: this.localImages ?? [],
       serverImages: this.serverImages,
-      cover:this.cover ?? "",
+      cover: this.cover ?? "",
       seller: this.seller ?? "",
       sellerAvatar: this.sellerAvatar ?? "",
       sellerFullName: this.sellerFullName ?? "",
@@ -587,8 +625,10 @@ class Product {
       pictureMap: this.pictureMap ?? [],
       rating: this.rating,
       canRate: this.canRate ?? false,
-      variant: this.variant,
-      addOns: this.addOns,
+      // variant: this.variant,
+      variantModels: this.variantModels,
+      // addOns: this.addOns,
+      addOnsModels: this.addOnsModels,
       weight: this.weight,
       weightSiUnit: this.widthSiUnit,
       height: this.height,
@@ -597,7 +637,6 @@ class Product {
       trackInventory: this.trackInventory,
       quantity: quantity ?? this.quantity,
       pricePercentageChange: this.pricePercentageChange ?? 0.0,
-
       // discountedPrice: object["discounted_price"],
       // discountIsActive: object["discount_is_active"],
       // discountType: object["discount_type"],
@@ -605,7 +644,6 @@ class Product {
       oldPrice: this.oldPrice,
       isShippable: this.isShippable,
     );
-
   }
 }
 
@@ -619,11 +657,20 @@ class Variant {
   String? value;
   List<File>? localImages;
   List<String?>? serverImages;
-  String? quantity;
+  int? quantity;
   bool? isAvailable;
   DateTime? availableFrom;
   String? currency;
   bool? trackInventory;
+
+  // List<Pictures>? pictures;
+  // DateTime? createdAt;
+  // String? merchant;
+  // int? oldPrice;
+  // int? discountValue;
+  // String? discountType;
+  // bool? discountIsActive;
+  // int? discountedPrice;
 
   Variant(
       {this.id,
@@ -640,6 +687,25 @@ class Variant {
       this.isAvailable,
       this.availableFrom,
       this.currency});
+
+  // factory Variant.fromMap(Map<String, dynamic> map) {
+  //   return Variant(
+  //     id: map["id"],
+  //     title: map["title"],
+  //     size: map["size"],
+  //     colour: map["colour"], // or map["color"] based on your naming convention
+  //     trackInventory: map["trackInventory"],
+  //     type: map["type"],
+  //     price: map["price"],
+  //     value: map["value"],
+  //     quantity: map["quantity"],
+  //     localImages: map["localImages"],
+  //     serverImages: map["serverImages"],
+  //     isAvailable: map["isAvailable"],
+  //     availableFrom: map["availableFrom"],
+  //     currency: map["currency"],
+  //   );
+  // }
 
   Map toMap() {
     return {
@@ -682,7 +748,7 @@ class Variant {
       Variant variant = Variant(
         id: data['id'].toString(),
         title: data['title'],
-        quantity: data['quantity'].toString(),
+        quantity: data['quantity'],
         colour: data["colour"] ?? "",
         value: data["value"] ?? "",
         type: data["type"] ?? "",
@@ -726,7 +792,7 @@ class Variant {
       id: object["id"].toString(),
       title: object["title"].toString(),
       colour: object["colour"] ?? "",
-      quantity: object["quantity"] ?? "",
+      quantity: object["quantity"] ?? 0,
       value: object["value"] ?? "",
       price: object["price"].toString(),
       trackInventory: object["track_inventory"] ?? false,
@@ -790,23 +856,28 @@ class AddOnOption {
   String? name;
   String? description;
   String? merchant;
+  String? selectType;
   String? currency;
   String? price;
   bool? isAvailable;
-  bool? isChecked;
+  bool isChecked = false;
   DateTime? createdAt;
+  int quantity = 0;
 
-  AddOnOption(
-      {this.id,
-        this.picture,
-        this.name,
-        this.description,
-        this.merchant,
-        this.currency,
-        this.price,
-        this.isAvailable,
-        this.isChecked,
-        this.createdAt});
+  AddOnOption({
+    this.id,
+    this.picture,
+    this.name,
+    this.description,
+    this.merchant,
+    this.selectType,
+    this.currency,
+    this.price,
+    this.isAvailable,
+    this.isChecked = false,
+    this.createdAt,
+    this.quantity = 0,
+  });
 
   AddOnOption.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -814,11 +885,13 @@ class AddOnOption {
     name = json['name'];
     description = json['description'];
     merchant = json['merchant'];
+    selectType = json['select_type'];
     currency = json['currency'];
     price = json['price'].toString();
     isAvailable = json['is_available'];
     isChecked = json['is_checked'] ?? false;
     createdAt = getProductDateTime(json['created_at']);
+    quantity = json['quantity'] ?? 0;
   }
 
   static DateTime getProductDateTime(var date) {
@@ -836,10 +909,12 @@ class AddOnOption {
     data['name'] = this.name;
     data['description'] = this.description;
     data['merchant'] = this.merchant;
+    data['select_type'] = this.selectType;
     data['currency'] = this.currency;
     data['price'] = this.price;
     data['is_available'] = this.isAvailable;
     data['created_at'] = this.createdAt;
+    data['quantity'] = this.quantity;
     return data;
   }
 }
@@ -855,18 +930,20 @@ class AddOns {
   bool? isRequired;
   bool? isChecked;
   DateTime? createdAt;
+  String? groupValue;
 
   AddOns(
       {this.id,
-        this.options,
-        this.merchant,
-        this.name,
-        this.description,
-        this.inputType,
-        this.selectType,
-        this.isRequired,
-        this.isChecked,
-        this.createdAt});
+      this.options,
+      this.merchant,
+      this.name,
+      this.description,
+      this.inputType,
+      this.selectType,
+      this.isRequired,
+      this.isChecked,
+      this.createdAt,
+      this.groupValue});
 
   AddOns.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -938,20 +1015,26 @@ class AddOns {
 
     if (data != null) {
       for (int i = 0; i < data.length; i++) {
-          addOnOption.add(AddOnOption.fromJson(data[i]));
+        addOnOption.add(AddOnOption.fromJson(data[i]));
       }
     }
     return addOnOption;
   }
+}
 
+class ProductCondition {
+  const ProductCondition(this.name, this.description);
 
+  final String name;
+  final String description;
 }
 
 class Tags {
   num? id;
   String? name;
+  bool isSelected;
 
-  Tags({this.id, this.name});
+  Tags({this.id, this.name, this.isSelected = false});
 
   factory Tags.fromJson(Map<String, dynamic> json) {
     return Tags(
@@ -967,59 +1050,61 @@ class Tags {
     return data;
   }
 }
+
 class SubCategory {
   num? id;
   String? name;
- 
 
-  SubCategory(
-      {this.id,
-      this.name,
-     });
+  SubCategory({
+    this.id,
+    this.name,
+  });
 
   Map toMap() {
     return {
       "name": name,
     };
   }
+
   Map toJson() {
     return {
       "id": id,
       "name": name,
     };
   }
+
   SubCategory.fromJson(object) {
     id = object["id"];
     name = object["name"] ?? "";
   }
-
 }
+
 class CustomCategory {
   num? id;
   String? name;
- 
 
-  CustomCategory(
-      {this.id,
-      this.name,
-     });
+  CustomCategory({
+    this.id,
+    this.name,
+  });
 
   Map toMap() {
     return {
       "name": name,
     };
   }
+
   Map toJson() {
     return {
       "id": id,
       "name": name,
     };
   }
+
   CustomCategory.fromJson(object) {
     id = object["id"];
     name = object["name"] ?? "";
   }
-
 }
 
 class Service {
@@ -1191,13 +1276,6 @@ class ProductCategory {
 
   final String name;
   final dynamic id;
-}
-
-class ProductCondition {
-  const ProductCondition(this.name, this.description);
-
-  final String name;
-  final String description;
 }
 
 class ServiceCategory {

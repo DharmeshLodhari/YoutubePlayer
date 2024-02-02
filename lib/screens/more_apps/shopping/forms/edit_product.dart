@@ -1,27 +1,29 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/custom_textfield_tag.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/delete_product_and_service_confirm_alert.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
-import '../../../../data/currency.dart';
+
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/navigation_util.dart';
-import '../../../../widget/rounded_background_icon.dart';
-import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../shopping_auth.dart';
 
 // ignore: must_be_immutable
@@ -71,7 +73,6 @@ class _EditProductState extends State<EditProduct> {
   List<ProductCategory>? productCategoriesCopy;
   List<ProductCategory>? productCustomCategoriesCopy;
   String productCustomCategory = "";
-  List<ProductCategory> tagList = [];
 
   ProductCondition? selectedProductCondition;
   ProductCondition? selectedPreparationCondition;
@@ -83,8 +84,9 @@ class _EditProductState extends State<EditProduct> {
   bool isLoading = false;
   bool isAPILoading = false;
   bool productEnableInSuperStore = false;
-  final myController = TextEditingController();
+  TextfieldTagsController _myController = TextfieldTagsController();
   List<Tags> userTags = [];
+  // List<Tags> allTags = [];
 
   //text editing controllers for the edit fields
   TextEditingController productTitleController = TextEditingController();
@@ -101,7 +103,7 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController inventoryCountController = TextEditingController();
   int inventoryCount = 0;
   List<Variant> productVariantList = [];
-  List? productAddOnsList = [];
+  List<AddOns> productAddOnsList = [];
   bool inventoryIsAvailable = false;
   var weightSi = ['Grams', 'Kilograms'];
   var widthSi = ['Centimetres', 'Metres'];
@@ -120,6 +122,20 @@ class _EditProductState extends State<EditProduct> {
   bool measurementView = false;
   bool show = false;
 
+  bool isDiscountLoading = false;
+  bool discountView = false;
+  int? discountItemCount = 0;
+  String? discountNext = "";
+  String? discountPrevious = "";
+  List<DiscountModel> discountList = [];
+  List<DiscountModel> discountListCopy = [];
+  bool noItemInList = false;
+  DiscountModel? pressedDiscount;
+  DiscountModel? selectedDiscount;
+  String discountName = "";
+  final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
+      new GlobalKey<ScaffoldMessengerState>();
+
   @override
   void deactivate() {
     CacheManager().deleteCache();
@@ -131,22 +147,11 @@ class _EditProductState extends State<EditProduct> {
     productId = arguments['productId'];
     getCategories();
     Future.delayed(Duration(seconds: 2), () {
+      getDiscountList();
       obtainCategories();
       obtainCustomCategory();
     });
-        myController.addListener(_printLatestValue);
-
     super.initState();
-  }
-
-  _printLatestValue() {
-    if (myController.text.length > 2) {
-      getProductTags(userBloc!.userAbout!.industry!.id!, myController.text);
-      show = true;
-    } else {
-      show = false;
-    }
-    setState(() {});
   }
 
   @override
@@ -227,9 +232,9 @@ class _EditProductState extends State<EditProduct> {
               : currentProduct.widthSiUnit == ""
                   ? ''
                   : 'Metres';
-          trackInventory = currentProduct.trackInventory!;
 
-          trackInventoryView = trackInventory;
+          trackInventoryView = currentProduct.trackInventory!;
+          selectedDiscount = currentProduct.discount;
 
           weightController.text = currentProduct.weight != 0.0
               ? currentProduct.weight.toString()
@@ -244,11 +249,15 @@ class _EditProductState extends State<EditProduct> {
           inventoryCountController.text = inventoryCount.toString();
 
           //convert list to variant
-          productVariantList =
-              Variant.convertToVariantList(currentProduct.variant!);
-          productAddOnsList = currentProduct.addOns != null
-              ? AddOns.convertToAddOnList(currentProduct.addOns!)
-              : [];
+          productVariantList = currentProduct.variantModels ?? [];
+          // productVariantList = currentProduct.variantModels != null
+          //     ? Variant.convertToVariantList(currentProduct.variantModels!)
+          //     : [];
+          //convert list to addOns
+          productAddOnsList = currentProduct.addOnsModels ?? [];
+          // productAddOnsList = currentProduct.addOnsModels != null
+          //     ? AddOns.convertToAddOnList(currentProduct.addOnsModels!)
+          //     : [];
 
           // assigning the dropdown from currentProduct
           selectedProductCategory = currentProduct.category;
@@ -286,6 +295,54 @@ class _EditProductState extends State<EditProduct> {
     });
   }
 
+  void getDiscountList() async {
+    if (!isDiscountLoading) {
+      if (discountNext != null && !isDiscountLoading) {
+        isDiscountLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfDiscounts(discountNext, discountPrevious);
+
+        if (result == null) {
+          isDiscountLoading = false;
+          noItemInList = true;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        discountItemCount = result['count'];
+        discountNext = result['next'];
+        discountPrevious = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noItemInList = false;
+            isDiscountLoading = false;
+            discountList.addAll(tempList);
+
+            discountListCopy = discountList;
+          });
+        }
+      }
+      if (discountList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (discountNext == null && discountList.length > 6) {
+        _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
   void obtainCategories() async {
     try {
       productCategories = await ShoppingAuthService()
@@ -300,6 +357,7 @@ class _EditProductState extends State<EditProduct> {
     isLoading = false;
     if (mounted) setState(() {});
   }
+
   void obtainCustomCategory() async {
     try {
       productCustomCategories = await ShoppingAuthService()
@@ -312,22 +370,6 @@ class _EditProductState extends State<EditProduct> {
     }
 
     isLoading = false;
-    if (mounted) setState(() {});
-  }
-
-  getProductTags(id, searchText) async {
-    if (mounted) setState(() {});
-
-    try {
-      List<ProductCategory> result =
-          await ShoppingAuthService().getProductTags(id, searchText);
-
-      tagList = result;
-      show = true;
-    } catch (e) {
-      tagList = [];
-    }
-
     if (mounted) setState(() {});
   }
 
@@ -433,132 +475,28 @@ class _EditProductState extends State<EditProduct> {
                       const SizedBox(height: 10),
                       getCustomCategoryField(),
                       const SizedBox(height: 10),
-                      Text(
-                        "Tag",
-                        style: TextStyle(
-                            color: darkGrey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      SizedBox(
-                        height: 6,
-                      ),
-                    
-                      TextFieldTags(
-                        tagsStyler: productTextFieldTagStyler,
-                        validator: (value) {
-                          return null;
-                        },
-                        initialTags: (userTags).map((e) => e.name!).toList(),
-                        textEditingController: myController,
-                        textFieldStyler: TextFieldStyler(
-                          helperText: '',
-                          hintText: '',
-                          textFieldEnabled: true,
-                          textFieldFocusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: greyBorderColor,
-                              width: 1.0,
-                            ),
-                          ),
-                          textFieldBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: greyBorderColor,
-                              width: 1.0,
-                            ),
-                          ),
-                          textFieldEnabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: greyBorderColor,
-                              width: 1.0,
-                            ),
-                          ),
-                        ),
-                        onTag: (tag) {
-                          // setState(() {
-                          //   userTags.add(tag);
-                          //   userTags = userTags.toSet().toList();
-                          // });
-                          // userTags.removeWhere((tag) => tag.isEmpty);
-                        },
-                        onDelete: (tag) {
-                          setState(() {
-                            userTags.remove(tag);
-                          });
-                          userTags.removeWhere((tag) => tag.name!.isEmpty);
-                        },
-                      ),
-                      if (show && tagList.isNotEmpty)
-                        Container(
-                          width: double.infinity,
-                          height: 200,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border:
-                                  Border.all(width: 1, color: greyBorderColor),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: tagList.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(
-                                  tagList[index].name,
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                dense: true,
-                                onTap: () {
-                                  String text = tagList[index]
-                                      .name
-                                      .replaceFirst(" ", "-");
-                                  setState(() {
-                                    myController.text = text + " ";
-
-                                    myController.selection =
-                                        TextSelection.collapsed(
-                                            offset: text.length);
-                                    userTags.add(
-                                       tagList[index] as Tags
-                                    );
-                                    userTags = userTags.toSet().toList();
-                                  });
-                                  FocusScope.of(context).requestFocus();
-
-                                  // print(userTags);print("______________");
-                                  userTags.removeWhere((tag) => tag.name!.isEmpty);
-                                },
-                              );
-                            },
-                          ),
-                        ),
-
+                      getAddTagsField(),
                       getProductConditionField(),
                       const SizedBox(height: 10),
-                                            if (userBloc!.userAbout!.industry!.name! ==
+                      if (userBloc!.userAbout!.industry!.name! ==
                               "Restaurant/Cafe" ||
                           userBloc!.userAbout!.industry!.name! ==
-                              "Pharmaceutical")
-                      getProductDeliveryTimeField(),
-                      SizedBox(height: 16),
+                              "Pharmaceutical") ...[
+                        getProductDeliveryTimeField(),
+                        SizedBox(height: 10),
+                      ],
                       getProductShortDescription(),
                       SizedBox(height: 10),
                       getProductDescription(),
 
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
                       getIsAvailableField(),
                       const SizedBox(height: 16),
                       if (productIsAvailable == true) ...[
                         getAvailableFromField(),
                         const SizedBox(height: 16),
                       ],
+
                       getMeasurementField(),
                       const SizedBox(height: 16),
                       if (measurementView == true) ...[
@@ -624,6 +562,12 @@ class _EditProductState extends State<EditProduct> {
                         ]
                       ],
 
+                      getDiscountField(),
+                      const SizedBox(height: 16),
+                      if (discountView == true) ...[
+                        getDiscountListField(),
+                        const SizedBox(height: 16),
+                      ],
                       getTrackInventoryViewField(),
                       if (trackInventoryView == true) ...[
                         const SizedBox(height: 16),
@@ -632,10 +576,11 @@ class _EditProductState extends State<EditProduct> {
                         getTrackInventoryField(),
                         const SizedBox(height: 16),
                       ],
+                      const SizedBox(height: 16),
 
-                      SizedBox(height: 16),
                       getEnableInSuperStoreField(),
-                      const SizedBox(height: 25),
+                      const SizedBox(height: 16),
+
                       if (productVariantList == null ||
                           productVariantList.isEmpty) ...[
                         // getAddVariationFormField(),
@@ -643,16 +588,16 @@ class _EditProductState extends State<EditProduct> {
                       ] else ...[
                         displaySelectedVariant(),
                       ],
+                      const SizedBox(height: 16),
 
-                      const SizedBox(height: 25),
                       if (productAddOnsList == null ||
-                          productAddOnsList!.isEmpty) ...[
+                          productAddOnsList.isEmpty) ...[
                         productAddOns(),
                       ] else ...[
                         displaySelectedAddOn(),
                       ],
-
                       SizedBox(height: 30),
+
                       getSubmitButton(),
                       SizedBox(height: 20),
                     ],
@@ -1454,7 +1399,6 @@ class _EditProductState extends State<EditProduct> {
                                 dense: true,
                                 title: Row(
                                   children: [
-                                    
                                     Expanded(
                                       child: Text(
                                         selectedPreparationCondition != null
@@ -1513,6 +1457,70 @@ class _EditProductState extends State<EditProduct> {
       preparationCondition = selectedPreparationCondition!.name;
       setState(() {});
     }
+  }
+
+  Widget getAddTagsField() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Tag",
+              style: TextStyle(
+                  color: darkGrey, fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            GestureDetector(
+              onTap: () async {
+                var result = await Navigator.of(context).pushNamed(
+                    Routes.ADD_TAGS,
+                    arguments: {"tagList": userTags});
+                if (result != null && result is List<Tags>) {
+                  userTags = [];
+                  _myController.clearTags();
+
+                  for (var tags in result) {
+                    if (tags.isSelected == true) {
+                      // _myController.addTag = tags.name
+                      //         ?.replaceAll(" ", "-")
+                      //         .toLowerCase() ??
+
+                      _myController.addTag = tags.name ?? "";
+
+                      Tags tagData = Tags(id: tags.id, name: tags.name);
+                      userTags.add(tagData);
+                    }
+                  }
+                  // userTags.addAll(allTags);
+                }
+                setState(() {});
+              },
+              child: Text(
+                "Add Tags",
+                style: TextStyle(
+                  color: navyBlue,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            )
+          ],
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        CustomTextFieldTag(
+          initialTags: (userTags).map((e) => e.name!).toList(),
+          textfieldTagsController: _myController,
+          onTap: (String tag) {
+            setState(() {
+              userTags.removeWhere((e) => e.name == tag);
+            });
+            userTags.removeWhere((tag) => tag.name!.isEmpty);
+          },
+        ),
+      ],
+    );
   }
 
   Widget getProductConditionField() {
@@ -1649,68 +1657,70 @@ class _EditProductState extends State<EditProduct> {
                   },
                 ),
                 const SizedBox(height: 20),
-                subCategories ==
-                    null ? SizedBox() : Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: subCategories!.length,
-                    itemBuilder: (context, index) {
-                      ProductCategory category = subCategories![index];
-                      if (selectedSubCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedSubCategory = category;
-                              Navigator.pop(context);
-                              if (pressedSubCategory != null) {
-                                selectedSubCategory = pressedSubCategory;
-                                productSubCategory = selectedSubCategory!.name;
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
+                subCategories == null
+                    ? SizedBox()
+                    : Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: subCategories!.length,
+                          itemBuilder: (context, index) {
+                            ProductCategory category = subCategories![index];
+                            if (selectedSubCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedSubCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedSubCategory != null) {
+                                      selectedSubCategory = pressedSubCategory;
+                                      productSubCategory =
+                                          selectedSubCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCategory != null) {
+                                  selectedSubCategory = pressedCategory;
+                                  productCategory = selectedSubCategory!.name;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
                         ),
-                        dense: true,
-                        onTap: () {
-                          pressedCategory = category;
-                          Navigator.pop(context);
-                          if (pressedCategory != null) {
-                            selectedSubCategory = pressedCategory;
-                            productCategory = selectedSubCategory!.name;
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
+                      ),
               ],
             ),
           );
@@ -1718,6 +1728,7 @@ class _EditProductState extends State<EditProduct> {
       ),
     );
   }
+
   void customCategoryAndroidSheet() {
     customCategories = productCustomCategoriesCopy;
     androidBottomSheet(
@@ -1776,7 +1787,8 @@ class _EditProductState extends State<EditProduct> {
                               Navigator.pop(context);
                               if (pressedSubCategory != null) {
                                 selectedCustomCategory = pressedCustomCategory;
-                                productCustomCategory = selectedCustomCategory!.name;
+                                productCustomCategory =
+                                    selectedCustomCategory!.name;
                                 setState(() {});
                               }
                             },
@@ -1799,7 +1811,8 @@ class _EditProductState extends State<EditProduct> {
                           Navigator.pop(context);
                           if (pressedCustomCategory != null) {
                             selectedCustomCategory = pressedCustomCategory;
-                            productCustomCategory = selectedCustomCategory!.name;
+                            productCustomCategory =
+                                selectedCustomCategory!.name;
                             setState(() {});
                           }
                         },
@@ -1914,8 +1927,6 @@ class _EditProductState extends State<EditProduct> {
       ),
     );
   }
-
-
 
   void selectItemCondition() async {
     final pressedCondition = await showDialog<ProductCondition>(
@@ -2132,8 +2143,9 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.subCategory = selectedSubCategory;
           currentProduct.customCategory = selectedCustomCategory;
           currentProduct.tags = userTags;
-          if(selectedPreparationCondition != null){
-          currentProduct.preparationTime = num.parse(selectedPreparationCondition!.name);
+          if (selectedPreparationCondition != null) {
+            currentProduct.preparationTime =
+                int.parse(selectedPreparationCondition!.name);
           }
           currentProduct.condition = productCondition;
           currentProduct.price = moneyInputNormalizer(productPrice!).toString();
@@ -2165,6 +2177,7 @@ class _EditProductState extends State<EditProduct> {
               : selectedWidth == 'Metres'
                   ? 'm'
                   : '';
+          currentProduct.discount = selectedDiscount;
           currentProduct.trackInventory = trackInventory;
           currentProduct.quantity = inventoryCount;
           await _auth
@@ -2318,6 +2331,17 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  Widget getDiscountField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        discountView = !discountView;
+        setState(() {});
+      },
+      isChecked: discountView,
+      title: AppLocalization.of(context)!.discount,
+    );
+  }
+
   Widget getTrackInventoryViewField() {
     return CustomizedCheckBoxField(
       onTap: () {
@@ -2429,6 +2453,149 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
+  Widget getDiscountListField() {
+    return CustomizedDropDownField(
+      title: 'Discount',
+      fontSize: 12,
+      titleColor: blackFont,
+      fontWeight: FontWeight.w400,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedDiscount != null
+              ? messageDecoderWithEmoji(selectedDiscount?.name) ??
+                  selectedDiscount?.merchant ??
+                  ""
+              : "",
+          style: TextStyle(
+              color: blackFont,
+              fontSize: 16,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          discountAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void discountAndroidSheet() {
+    discountList = discountListCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search discount',
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      discountList = discountListCopy
+                          .where((element) =>
+                              (messageDecoderWithEmoji(element.name) ??
+                                      element.merchant ??
+                                      "")
+                                  .toLowerCase()
+                                  .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      discountList = discountListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: discountList.length,
+                    itemBuilder: (context, index) {
+                      DiscountModel discount = discountList[index];
+                      if (selectedDiscount == discount) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              messageDecoderWithEmoji(discount.name) ??
+                                  discount.merchant ??
+                                  "",
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedDiscount = discount;
+                              Navigator.pop(context);
+                              if (pressedDiscount != null) {
+                                selectedDiscount = pressedDiscount;
+                                discountName = messageDecoderWithEmoji(
+                                        selectedDiscount?.name) ??
+                                    selectedDiscount?.merchant ??
+                                    "";
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          messageDecoderWithEmoji(discount.name) ??
+                              discount.merchant ??
+                              "",
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedDiscount = discount;
+                          Navigator.pop(context);
+                          if (pressedDiscount != null) {
+                            selectedDiscount = pressedDiscount;
+                            discountName = messageDecoderWithEmoji(
+                                    selectedDiscount?.name) ??
+                                selectedDiscount?.merchant ??
+                                "";
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget getAddVariationFormField() {
     return GestureDetector(
       onTap: () async {
@@ -2456,8 +2623,8 @@ class _EditProductState extends State<EditProduct> {
                 'Add different variation like colour & size',
                 style: TextStyle(
                   color: blackFont,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
                 ),
               ),
             ),
@@ -2495,22 +2662,23 @@ class _EditProductState extends State<EditProduct> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Variant',
+              'Product Variant',
               maxLines: 1,
               style: TextStyle(
-                  color: blackFont.withOpacity(.5),
-                  fontWeight: FontWeight.w600,
+                  color: darkGrey,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
                   fontSize: 14),
             ),
             GestureDetector(
-              onTap: () {
-                final data = Navigator.of(context)
+              onTap: () async {
+                final data = await Navigator.of(context)
                     .pushNamed(Routes.PRODUCT_VARIANT_LIST, arguments: {
                   'productId': productId,
                 });
 
                 // Handle the result (map) received from PRODUCT_VARIANT_LIST
-                if (data != null && data is List<Variant>) {
+                if (data != null && data is Variant) {
                   //clear previous list, update the list
                   // debugPrint('fola data::: ${data}');
                   // debugPrint('fola data 2::: ${data.runtimeType}');
@@ -2520,6 +2688,7 @@ class _EditProductState extends State<EditProduct> {
                   // productVariantList = data;
 
                   // variantData = data;
+                  productVariantList.add(data);
                   if (mounted) setState(() {});
                 }
               },
@@ -2527,7 +2696,11 @@ class _EditProductState extends State<EditProduct> {
                 'See all',
                 maxLines: 1,
                 style: TextStyle(
-                    color: navyBlue, fontWeight: FontWeight.w400, fontSize: 16),
+                  color: navyBlue,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                ),
               ),
             ),
           ],
@@ -2539,139 +2712,30 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget _buildProductVariantList() {
-    return Container(
-      height: 200,
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        //+1 for progressbar
-        itemCount: productVariantList.length + 1,
-        controller: scrollControllerVariant,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == productVariantList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return productVariantTile(
-              variant: productVariantList[index],
-            );
-          }
-        },
-      ),
+    return ListView.builder(
+      padding: EdgeInsets.zero,
+      controller: scrollControllerVariant,
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: productVariantList.length,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == productVariantList.length) {
+          return buildLoadingIndicator(isLoading: isLoading);
+        } else {
+          return FormVariantsTile(
+              productVariantList: productVariantList,
+              index: index,
+              type: 'edit');
+        }
+      },
     );
-  }
-
-  Widget productVariantTile({required Variant variant}) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
-        child: ListTile(
-          dense: true,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                appendStringDot(variant.title!, 20),
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18),
-              ),
-              Text(
-                'Available . ${variant.quantity!}',
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    worldCurrencies[variant.currency!]!,
-                    style: TextStyle(
-                        fontFamily: "Inter",
-                        fontSize: 18.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    moneyDisplayNormalizer(int.parse(variant.price.toString())),
-                    style: TextStyle(
-                        fontSize: 18.0,
-                        color: blackFont,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ],
-              )
-            ],
-          ),
-          leading: GestureDetector(
-            onTap: () {
-              String? url = variant.serverImages![0]!;
-              Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
-            },
-            child: checkProductImage(variant),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget checkProductImage(Variant variant) {
-    // Retrieve the first image from the 'pictures' list
-    String? url = "";
-
-    for (var item in variant.serverImages!) {
-      url = item;
-    }
-
-    String imageUrl = url!.replaceAll('https//', 'https://');
-    if (url == "") {
-      return CircleAvatar(
-        backgroundColor: navyBlue,
-        radius: 25,
-        child: Text(
-          getInitials(variant.title!).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w700),
-        ),
-      );
-    } else {
-      return SizedBox(
-        height: 100,
-        child: CustomBoxShadow(
-          child: Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: boxShadowTwo,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: NetworkImage(
-                      imageUrl,
-                    ),
-                    fit: BoxFit.cover),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
   }
 
   Widget productVariation() {
     return GestureDetector(
       onTap: () async {
-        if (productAddOnsList!.isNotEmpty) {
+        //disable click if add-on is not empty
+        if (productAddOnsList.isNotEmpty) {
           return;
         }
         final result = await Navigator.of(context).pushNamed(
@@ -2679,9 +2743,9 @@ class _EditProductState extends State<EditProduct> {
             arguments: {'productId': productId, 'option': 'edit'});
 
         // Handle the result (map) received from Product Add New Option
-        if (result != null && result is List<Variant>) {
+        if (result != null && result is Variant) {
           //save the variant details for later use
-          productVariantList = result;
+          productVariantList.add(result);
           if (mounted) setState(() {});
         }
       },
@@ -2693,10 +2757,9 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Variation',
               maxLines: 1,
               style: TextStyle(
-                  color: productAddOnsList!.isEmpty
-                      ? navyBlue
-                      : blackFont.withOpacity(.5),
-                  fontWeight: FontWeight.w600,
+                  color: productAddOnsList.isNotEmpty ? darkGrey : navyBlue,
+                  fontFamily: "Inter",
+                  fontWeight: FontWeight.w500,
                   fontSize: 14),
             ),
             Icon(
@@ -2724,7 +2787,7 @@ class _EditProductState extends State<EditProduct> {
         });
 
         // Handle the result (map) received from PRODUCT_ADD_ON_LIST
-        if (result != null && result is List<dynamic>) {
+        if (result != null && result is List<AddOns>) {
           //save the add-on details
           productAddOnsList = result;
           if (mounted) setState(() {});
@@ -2738,10 +2801,9 @@ class _EditProductState extends State<EditProduct> {
               'Add Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color: productVariantList.isEmpty
-                      ? navyBlue
-                      : blackFont.withOpacity(.5),
-                  fontWeight: FontWeight.w600,
+                  color: productVariantList.isNotEmpty ? darkGrey : navyBlue,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
                   fontSize: 14),
             ),
             Icon(
@@ -2765,9 +2827,7 @@ class _EditProductState extends State<EditProduct> {
               'Product Add-ons',
               maxLines: 1,
               style: TextStyle(
-                  color: blackFont.withOpacity(.5),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14),
+                  color: darkGrey, fontWeight: FontWeight.w600, fontSize: 14),
             ),
             GestureDetector(
               onTap: () async {
@@ -2777,9 +2837,9 @@ class _EditProductState extends State<EditProduct> {
                 });
 
                 // Handle the result (map) received from PRODUCT_ADD_ON_LIST
-                if (data != null && data is AddOns) {
+                if (data != null && data is List<AddOns>) {
                   //save the add-on details
-                  productAddOnsList!.add(data);
+                  productAddOnsList = data;
                   if (mounted) setState(() {});
                 }
               },
@@ -2787,7 +2847,7 @@ class _EditProductState extends State<EditProduct> {
                 'See all',
                 maxLines: 1,
                 style: TextStyle(
-                    color: navyBlue, fontWeight: FontWeight.w400, fontSize: 16),
+                    color: navyBlue, fontWeight: FontWeight.w400, fontSize: 14),
               ),
             ),
           ],
@@ -2801,19 +2861,20 @@ class _EditProductState extends State<EditProduct> {
   Widget _buildAddOnList() {
     return Container(
       // height: 200,
-      height: 80 * productAddOnsList!.length.toDouble(),
+      height: 80 * productAddOnsList.length.toDouble(),
       child: ListView.builder(
         physics: NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 10),
         //+1 for progressbar
-        itemCount: productAddOnsList!.length + 1,
+        itemCount: productAddOnsList.length + 1,
         controller: scrollControllerVariant,
         itemBuilder: (BuildContext context, int index) {
-          if (index == productAddOnsList!.length) {
+          if (index == productAddOnsList.length) {
             return buildLoadingIndicator(isLoading: isLoading);
           } else {
-            return addOnTile(
-              addOns: productAddOnsList![index],
+            return FormAddOnTile(
+              productAddOnsList: productAddOnsList,
+              index: index,
             );
           }
         },
@@ -2821,45 +2882,43 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  Widget addOnTile({required AddOns addOns}) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-        decoration: BoxDecoration(
-          border: Border.all(width: 1, color: greyBorderColor),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: ListTile(
-          dense: true,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                appendStringDot(addOns.name!, 20),
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18),
-              ),
-              Text(
-                '${addOns.options!.length} items',
-                maxLines: 1,
-                style: TextStyle(
-                    color: blackFont.withOpacity(.5),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget addOnTile({required AddOns addOns}) {
+  //   return Card(
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  //     // margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+  //     shadowColor: boxShadowTwo,
+  //     elevation: 0,
+  //     child: Container(
+  //       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+  //       decoration: BoxDecoration(
+  //         border: Border.all(width: 1, color: greyBorderColor),
+  //         borderRadius: BorderRadius.all(Radius.circular(10)),
+  //       ),
+  //       child: ListTile(
+  //         dense: true,
+  //         title: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               appendStringDot(addOns.name!, 20),
+  //               maxLines: 1,
+  //               style: TextStyle(
+  //                   color: blackFont,
+  //                   fontWeight: FontWeight.w600,
+  //                   fontSize: 18),
+  //             ),
+  //             Text(
+  //               '${addOns.options!.length} items',
+  //               maxLines: 1,
+  //               style: TextStyle(
+  //                   color: darkGrey, fontWeight: FontWeight.w400, fontSize: 14),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {
@@ -2870,7 +2929,7 @@ class _EditProductState extends State<EditProduct> {
     productPriceController.dispose();
     _scrollController.dispose();
     scrollControllerVariant.dispose();
-        myController.dispose();
+    _myController.dispose();
 
     super.dispose();
   }

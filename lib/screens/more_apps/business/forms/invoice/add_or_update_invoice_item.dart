@@ -12,8 +12,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../utils/date_time_and_money_converter.dart';
-import '../../../../../widget/LoadingIndicator.dart';
+import '../../../../../widget/loading_indicator.dart';
 import '../../bloc/invoice_bloc.dart';
 
 // ignore: must_be_immutable

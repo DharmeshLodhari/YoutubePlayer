@@ -248,7 +248,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
         if (driverFindingTimer?.isActive ?? false) {
           driverFindingTimer?.cancel();
         }
-        Navigator.of(context).pushNamed("/cancle-booking");
+        Navigator.of(context).pushNamed("/cancel-booking");
       },
       borderRadius: 10,
       backgroundColor: navyBlue,

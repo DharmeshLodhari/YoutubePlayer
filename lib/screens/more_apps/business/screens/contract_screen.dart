@@ -2,7 +2,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/screens/more_apps/business/tiles/contract_and_invoice_tile.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ import '../../../../utils/enums.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../widget/customized_popup_menu.dart';
 import '../../../../widget/dialog.dart';
-import '../../../../widget/noItemInList.dart';
+import '../../../../widget/no_item_in_list.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../bloc/contract_bloc.dart';
 import '../business_auth.dart';
@@ -207,7 +207,7 @@ class _ContractScreenState extends State<ContractScreen> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "All", value: "All"),
         CustomizedPopUpMenuItem(title: "Ended", value: "Ended"),
         CustomizedPopUpMenuItem(title: "Active", value: "Active"),

@@ -6,6 +6,9 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/auth/rider_registration_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
@@ -18,14 +21,14 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/curved_btn.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:badges/badges.dart' as badges;
 import 'package:shimmer/shimmer.dart';
+
 import '../data/currency.dart';
 import '../data/database_helper.dart';
 import '../locator.dart';
@@ -36,11 +39,11 @@ import '../services/secure_storage.dart';
 import '../utils/country_picker/country.dart';
 import '../utils/country_picker/utils.dart';
 import '../utils/navigation_util.dart';
-import '../widget/CustomBoxShadow.dart';
-import '../widget/LoadingIndicator.dart';
 import '../widget/bottom_sheet_item.dart';
+import '../widget/custom_box_shadow.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../widget/dialog.dart';
+import '../widget/loading_indicator.dart';
 import '../widget/rounded_background_icon.dart';
 import '../widget/user_dashboard_item_tile.dart';
 import 'moments/screens/moments_screen.dart';
@@ -60,6 +63,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldHomeKey = GlobalKey<ScaffoldState>();
   late UserBloc userBloc;
+  late RiderRegistrationBloc riderRegistrationBloc;
 
   late MainSocketProvider socketProvider;
 
@@ -96,10 +100,14 @@ class _HomeState extends State<Home> {
   int count = 0;
   bool noList = false;
 
+  ShippingAddress? defaultAddress;
+  bool isEmpty = false;
+
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
+    getList();
     getYarnList(categoryId: null);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -246,7 +254,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  getExploreMoments() async {
+  void getExploreMoments() async {
     if (!isExploreMomentsLoading) {
       if (nextExploreMoments != null && !isExploreMomentsLoading) {
         if (mounted) {
@@ -320,6 +328,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    riderRegistrationBloc = Provider.of<RiderRegistrationBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     appLocalization = AppLocalization.of(context)!;
@@ -495,13 +504,17 @@ class _HomeState extends State<Home> {
           InkWell(
             onTap: () {
               showSnackbar(context, message: "Coming soon");
+              return;
+              if (userBloc.user.rider == null) {
+                Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
+              } else {
+                if (userBloc.user.rider?.isStatusApproved() == false) {
+                  getKYCStatus();
+                } else {
+                  Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
+                }
+              }
             },
-            // child: Container(
-            //   margin: EdgeInsets.symmetric(horizontal: 16),
-            //   child: Image.asset(
-            //     "assets/images/bike_home.png",
-            //   ),
-            // ),
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 16),
               child: Image.asset(
@@ -533,6 +546,18 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
+  }
+
+  Future<void> getKYCStatus() async {
+    await RiderRegistrationAuthService()
+        .getKYCStatus(userBloc.user.userName)
+        .then((value) {
+      riderRegistrationBloc.updateKYCDataModel(value);
+      Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
   }
 
   Widget _displayShortcutButtons() {
@@ -791,8 +816,8 @@ class _HomeState extends State<Home> {
     double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-      height: 80.0 + dynamicHeight,
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+      height: 90.0 + dynamicHeight,
       // height: 110.0,
       decoration: BoxDecoration(
         color: HexColor(color).withOpacity(opacity),
@@ -807,7 +832,7 @@ class _HomeState extends State<Home> {
               SvgPicture.asset(
                 imagePath.toSVG(),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Text(
                 title,
                 style: TextStyle(
@@ -872,7 +897,6 @@ class _HomeState extends State<Home> {
         } else {
           showUpgradeDialog(context);
         }
-
         break;
       case 'Socials':
         hideBalance();
@@ -930,40 +954,97 @@ class _HomeState extends State<Home> {
           profileAndroidSheet();
         },
         child: userImageUserInitialsPic(
-            userBloc.user.avatar ?? "", userBloc.user.fullName ?? "", 25, 48),
+            userBloc.user.avatar ?? "", userBloc.user.fullName ?? "", 25, 45),
       ),
-      title: InkWell(
-        key: tutorialUserProfileDetailKey,
-        onTap: () {
-          Navigator.pushNamed(context, Routes.USER_PROFILE,
-              arguments: {"searchedUserName": userBloc.user.userName});
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              getGreetingMessage(),
-              style: TextStyle(
-                  fontSize: 12,
-                  fontFamily: 'Inter',
-                  color: HexColor(
-                    "#151515",
-                  )),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            key: tutorialUserProfileDetailKey,
+            onTap: () {
+              Navigator.pushNamed(context, Routes.USER_PROFILE,
+                  arguments: {"searchedUserName": userBloc.user.userName});
+            },
+            child: Row(
+              children: [
+                Text(
+                  getGreetingMessage(),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Inter',
+                      color: black,
+                      fontWeight: FontWeight.w400),
+                ),
+                SizedBox(
+                  width: 3,
+                ),
+                userNameWithVerifiedIcon(
+                  name: userBloc.user.displayName() ?? "",
+                  isVerified: userBloc.user.isVerified,
+                  verifiedIconColor: verifyGreen,
+                  textStyle: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: black,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+              ],
             ),
-            userNameWithVerifiedIcon(
-              name: userBloc.user.displayName() ?? "",
-              isVerified: userBloc.user.isVerified,
-              verifiedIconColor: verifyGreen,
-              textStyle: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: HexColor("#151515")),
+          ),
+          SizedBox(height: 5.0),
+          InkWell(
+            onTap: () {
+              if (!isEmpty) {
+                showChangeAddressDialog(context);
+              } else {
+                showNoAddressFoundDialog(context);
+              }
+            },
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 2.0, horizontal: 5.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(color: navyBlue)),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.location_pin,
+                        color: Colors.black,
+                        size: 18.0,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text(
+                          isEmpty
+                              ? 'Select Location'
+                              : "${defaultAddress?.city}, ${defaultAddress?.stateName}" ??
+                                  "",
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Inter',
+                              color: black,
+                              fontWeight: FontWeight.w300),
+                        ),
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Colors.black,
+                        size: 15.0,
+                      ),
+                    ],
+                  ),
+                ),
+                Container(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: <Widget>[
-        
         RoundedBackgroundIcon(
             backgroundColor: Colors.transparent,
             onTap: () {
@@ -987,6 +1068,73 @@ class _HomeState extends State<Home> {
         const SizedBox(width: 8.0),
       ],
     );
+  }
+
+  Future<void> showNoAddressFoundDialog(BuildContext context) async {
+    showDialogBoxWithTitle(
+      context: context,
+      actionTextColor: white,
+      actionBgColor: navyBlue,
+      title: AppLocalization.of(context)!.noAddressFound,
+      actionText: AppLocalization.of(context)!.addNewAddress,
+      description: AppLocalization.of(context)!.addressFoundMsg,
+      ButtonOnPressed: () {
+        NavigationUtil.push(context, screen: AddEditShippingAddress())
+            .whenComplete(() => getList());
+      },
+    );
+  }
+
+  Future<void> showChangeAddressDialog(BuildContext context) async {
+    showDialogBoxWithTitle(
+      context: context,
+      actionTextColor: white,
+      actionBgColor: navyBlue,
+      title: AppLocalization.of(context)!.changeAddress,
+      actionText: AppLocalization.of(context)!.selectAddress,
+      description: AppLocalization.of(context)!.changeAddressMsg,
+      ButtonOnPressed: () async {
+        await Navigator.of(context).pushNamed(
+          Routes.DISPATCH_ADDRESS,
+          arguments: {
+            "isForSelection": true,
+            "shippingAddress": defaultAddress,
+            "onShippingAddressChange": (address) {
+              defaultAddress = address;
+              setState(() {});
+            }
+          },
+        );
+        setState(() {});
+      },
+    );
+  }
+
+  void getList() async {
+    if (mounted) setState(() {});
+
+    Map<String, dynamic>? result =
+        await ShoppingAuthService().listOfDispatchAddress("", null);
+
+    if (result == null) {
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+
+    List<ShippingAddress> tempList = result['results'];
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        isEmpty = tempList.isEmpty;
+        if (isEmpty) {
+          showNoAddressFoundDialog(context);
+        }
+        defaultAddress = tempList.firstWhere((element) => element.is_default!);
+      });
+    }
   }
 
   Widget _cartBtn() {

@@ -9,20 +9,21 @@ import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +45,6 @@ import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
-import '../checkout_screen.dart';
 
 class ProductDetailPage extends StatefulWidget {
   var arguments;
@@ -52,22 +52,19 @@ class ProductDetailPage extends StatefulWidget {
   ProductDetailPage({required this.arguments});
 
   @override
-  _ProductDetailPageState createState() =>
-      _ProductDetailPageState(arguments: arguments);
+  _ProductDetailPageState createState() => _ProductDetailPageState();
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage>
     with TickerProviderStateMixin {
-  var arguments;
   bool canRate = false;
-
-  _ProductDetailPageState({this.arguments});
 
   final _auth = ShoppingAuthService();
   Product? product;
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc? userBloc;
   late BasketBloc basketBloc;
+  late ShippingProcessBloc shippingProcessBloc;
   List<String?>? displayProductImages = [];
 
   late bool isValidCustomer;
@@ -104,17 +101,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
   String staticImage = "";
-  List addOnList = [];
+  // List addOnList = [];
   ScrollController scrollControllerAddOn = ScrollController();
   bool isLoading = false;
+
   @override
   void initState() {
-    product = arguments[
+    product = widget.arguments[
         'product']; // We get this when we are coming from the product list page.
     if (product != null) {
       productId = product!.id;
     } else {
-      productId = arguments[
+      productId = widget.arguments[
           'productId']; // We get this when we are coming from the moment detail page.
     }
 
@@ -213,6 +211,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     if (productIsLoading) {
       return Scaffold(
         body: Center(
@@ -558,64 +557,65 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        if (product!.isAvailable!) {
-          if (isValidCustomer) {
-            if (productVariantList.isNotEmpty) {
-              if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                // print("Both color and size lists are showing.");
-                if (selectedColor.isNotEmpty && selectedSize.isNotEmpty) {
-                  addToCart();
-                  return true;
-                } else {
-                  showToast(
-                      message:
-                          AppLocalization.of(context)!.selectVariantColorSize);
-                }
-              } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-                // print("color list is showing.");
-                if (selectedSize.isNotEmpty) {
-                  addToCart();
-                  return true;
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantSize);
-                }
-              } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-                // print("size list is showing.");
-                if (selectedColor.isNotEmpty) {
-                  addToCart();
-                  return true;
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantColor);
-                }
-              }
-            } else if (addOnList.isNotEmpty) {
+        // if (product!.isAvailable!) {
+        //   if (isValidCustomer) {
+        if (productVariantList.isNotEmpty) {
+          if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+            // print("Both color and size lists are showing.");
+            if (selectedColor.isNotEmpty && selectedSize.isNotEmpty) {
               addToCart();
               return true;
             } else {
-              //product has no variant or is a service
+              showToast(
+                  message: AppLocalization.of(context)!.selectVariantColorSize);
+            }
+          } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+            // print("color list is showing.");
+            if (selectedSize.isNotEmpty) {
               addToCart();
               return true;
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)!.selectVariantSize);
             }
-          } else {
-            showToast(
-                message:
-                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+          } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+            // print("size list is showing.");
+            if (selectedColor.isNotEmpty) {
+              addToCart();
+              return true;
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)!.selectVariantColor);
+            }
           }
+        } else if (product?.addOnsModels?.isNotEmpty == true) {
+          addToCart();
+          return true;
         } else {
-          showToast(message: AppLocalization.of(context)!.productOutOfStock);
+          //product has no variant or is a service
+          addToCart();
+          return true;
         }
+        //   } else {
+        //     showToast(
+        //         message:
+        //             AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+        //   }
+        // } else {
+        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
+        // }
       },
     );
   }
 
   Future<void> addToCart() async {
+    // Todo check this call
     String type = product is Product ? "product" : "service";
     Map<String, dynamic> variantPayLoad = {};
     Map<String, dynamic> addOnPayLoad = {};
     List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
-    List<Map<String, dynamic>> selectedAddOnsList = [];
+    List<AddOns> selectedAddOnsList = [];
+    Variant variantModel = Variant();
 
     Product productSend = product!;
     productSend = productSend.copyWith(quantity: 1);
@@ -648,46 +648,50 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         "type": "Size",
       };
     }
-    addOnList.forEach((addOn) {
-      if (addOn.options != null) {
+    variantModel = Variant.fromJson(variantPayLoad);
+
+    product?.addOnsModels?.forEach((addOn) {
+      final options = addOn.options;
+      if (options != null) {
         // Filter the options to include only those with option.isChecked == true
-        List<AddOnOption> selectedOptions =
-            addOn.options!.where((option) => option.isChecked == true).toList();
+        // List<AddOnOption> selectedOptions =
+        //     addOn.options!.where((option) => option.isChecked == true).toList();
+        //
+        // if (selectedOptions.isNotEmpty) {
+        //   Map<String, dynamic> selectedAddOn = {
+        //     "id": addOn.id,
+        //     "options": selectedOptions
+        //         .map((option) => {
+        //               "id": option.id,
+        //               "quantity": 1,
+        //               "name": option.name,
+        //               "price": option.price,
+        //               "currency": option.currency,
+        //             })
+        //         .toList(),
+        //   }; // Todo check this call
 
-        if (selectedOptions.isNotEmpty) {
-          Map<String, dynamic> selectedAddOn = {
-            "id": addOn.id,
-            "options": selectedOptions
-                .map((option) => {
-                      "id": option.id,
-                      "quantity": 1,
-                      "name": option.name,
-                      "price": option.price,
-                      "currency": option.currency,
-                    })
-                .toList(),
-          };
+        Map<String, dynamic> selectedAddOnServer = {
+          "id": addOn.id,
+          "options": options
+              .map((option) => {
+                    "id": option.id,
+                    "quantity": 1,
+                  })
+              .toList(),
+        }; // Todo check this call
 
-          Map<String, dynamic> selectedAddOnServer = {
-            "id": addOn.id,
-            "options": selectedOptions
-                .map((option) => {
-                      "id": option.id,
-                      "quantity": 1,
-                    })
-                .toList(),
-          };
-
-          selectedAddOnsList.add(selectedAddOn);
-          selectedAddOnsCartServerList.add(selectedAddOnServer);
-        }
+        selectedAddOnsList.add(addOn);
+        selectedAddOnsCartServerList.add(selectedAddOnServer);
+        // }
       }
     });
 
     // debugPrint("Data From Product Page v-id : $selectedVariantId");
     // debugPrint("Data From Product Page v-id : $variantPayLoad");
     // debugPrint("Data From Product Page v-id one : ${basketBloc.items}");
-    if (selectedAddOnsList.isNotEmpty && addOnList.isNotEmpty) {
+    if (selectedAddOnsList.isNotEmpty &&
+        product?.addOnsModels?.isNotEmpty == true) {
       addOnPayLoad = {
         "id": productId,
         "qty": 1,
@@ -707,18 +711,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
     if (basketBloc.items.isEmpty && variantPayLoad.isNotEmpty) {
       basketBloc.addItemToCart(
-          item: productSend, type: type, variant: variantPayLoad, addOns: null);
+          item: productSend, type: type, variant: variantModel, addOns: null);
     } else {
       for (var item in basketBloc.items) {
         Product productInCart = item['item'];
 
         if (productInCart.id.toString() == productId) {
-          List variantList = item['item'].variant;
+          List<Variant>? variantList = productInCart.variantModels;
 
-          for (var variant in variantList) {
-            if (variant['id'].toString() == selectedVariantId) {
-              int currentQuantity = int.parse(variant['quantity'].toString());
-              variant['quantity'] = currentQuantity + 1;
+          for (var variant in variantList!) {
+            if (variant.id.toString() == selectedVariantId) {
+              int currentQuantity = int.parse(variant.quantity.toString());
+              variant.quantity = currentQuantity + 1;
 
               Map<String, dynamic> dataInfo =
                   getUpdatedCartItem(productId!, type);
@@ -730,7 +734,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           basketBloc.addItemToCart(
               item: productSend,
               type: type,
-              variant: variantPayLoad,
+              variant: variantModel,
               addOns: null);
 
           // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
@@ -752,7 +756,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
       // Product ID doesn't exist in the cart, add it with the variant
       basketBloc.addItemToCart(
-          item: productSend, type: type, variant: variantPayLoad, addOns: null);
+          item: productSend, type: type, variant: variantModel, addOns: null);
     }
 
     Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
@@ -771,7 +775,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (element["variants"] != null &&
           element.containsKey("variants") &&
           productId == item.id) {
-        List variantsList = element['item'].variant;
+        List<Variant> variantsList =
+            (element['item'] as Product).variantModels ?? [];
 
         // debugPrint('fola chat one fourrrr::: ${variantsList.length}');
 
@@ -787,9 +792,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
           // Iterate through the variants and add each variant to the variantDataList
           for (var variant in variantsList) {
-            if (variant.containsKey("id") && variant["id"] != null) {
-              int variantId = int.parse(variant["id"].toString());
-              int variantQuantity = int.parse(variant["quantity"].toString());
+            if (variant.id != null) {
+              int variantId = int.parse(variant.id.toString());
+              int? variantQuantity = variant.quantity;
 
               // debugPrint("Data From Product Page v-id 5 : ${variant}");
 
@@ -980,7 +985,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   SizedBox(
                     height: 10,
                   ),
-                  if (addOnList.isNotEmpty) ...[
+                  if (product?.addOnsModels?.isNotEmpty == true) ...[
                     _buildAddonWidget(),
                     SizedBox(
                       height: 16,
@@ -1368,15 +1373,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       displayProductImages = product!.serverImages;
       staticImage = product!.serverImages![0]!;
       productIsLoading = false;
-      productVariantList = Variant.convertToVariantList(product!.variant!);
+      productVariantList = product?.variantModels ?? [];
+      //     Variant.convertToVariantList(product!.variantModels!);
 
       //get the price and more information to string
       price = product!.price.toString();
       moreInformation = product!.description.toString();
 
-      addOnList = product!.addOns != null
-          ? AddOns.convertToAddOnList(product!.addOns!)
-          : [];
+      // addOnList = product!.addOns != null
+      //     ? AddOns.convertToAddOnList(product!.addOns!)
+      //     : [];
 
       colorGroups = {};
       sizeGroups = {};
@@ -1648,7 +1654,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 style: TextStyle(
                     fontSize: 16,
                     fontFamily: "Inter",
-                    color: blackFont.withOpacity(.5),
+                    color: darkGrey,
                     fontWeight: FontWeight.bold),
               ),
               SizedBox(
@@ -1679,7 +1685,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 style: TextStyle(
                     fontSize: 16,
                     fontFamily: 'Inter',
-                    color: blackFont.withOpacity(.5),
+                    color: darkGrey,
                     fontWeight: FontWeight.bold),
               ),
               SizedBox(
@@ -1809,7 +1815,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   selectedVariantId = variant.id!;
                   selectedVariantImage = variant.serverImages![0]!;
                   selectedVariantPrice = variant.price!;
-                  stockLeft = int.parse(variant.quantity!);
+                  stockLeft = variant.quantity!;
                   // }
                 } else {
                   //set the selected size to zero
@@ -1913,7 +1919,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ? variant.serverImages![0]!
                     : staticImage;
                 selectedVariantPrice = variant.price!;
-                stockLeft = int.parse(variant.quantity!);
+                stockLeft = variant.quantity!;
               }
 
               if (mounted) setState(() {});
@@ -2118,395 +2124,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         //   thickness: 1,
         // ),
         // _buildAddonList(),
-        ...addOnList.map((addon) => addOnTile(addOns: addon)).toList()
+        ...product?.addOnsModels
+                ?.map((addon) => AddOnTile(addOns: addon))
+                .toList() ??
+            []
       ],
     );
-  }
-
-  Widget _buildAddonList() {
-    return Container(
-      // height: 200,
-      height: 100 * addOnList.length.toDouble(),
-      child: ListView.builder(
-        // physics: NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        //+1 for progressbar
-        itemCount: addOnList.length + 1,
-        controller: scrollControllerAddOn,
-        shrinkWrap: true,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == addOnList.length) {
-            return buildLoadingIndicator(isLoading: isLoading);
-          } else {
-            return addOnTile(
-              addOns: addOnList[index],
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  Widget addOnTile({required AddOns addOns}) {
-    List<AddOnOption>? addOnOption = addOns.options;
-
-    return Card(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      // shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
-        // decoration: BoxDecoration(
-        //   border: Border.all(width: 1, color: greyBorderColor),
-        //   borderRadius: BorderRadius.all(Radius.circular(10)),
-        // ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    appendStringDot(addOns.name!, 15),
-                    maxLines: 1,
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: navyBlue),
-                      borderRadius: BorderRadius.all(Radius.circular(7)),
-                      color: addOns.isRequired == true ? navyBlue : white,
-                    ),
-                    child: Text(
-                      addOns.isRequired == true ? 'Required' : 'Optional',
-                      maxLines: 1,
-                      style: TextStyle(
-                          color: addOns.isRequired == true ? white : navyBlue,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 10),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Divider(
-              height: 0,
-              color: dividerColor,
-              thickness: 1,
-            ),
-            // Container(
-            //   child: ListView.builder(
-            //     itemCount: addOnOption!.length,
-            //     shrinkWrap: true,
-            //     physics: NeverScrollableScrollPhysics(),
-            //     itemBuilder: (context, index) => _displayAddOnOption(
-            //       addOnOption[index],
-            //       addOns,
-            //     ),
-            //   ),
-            // )
-            ...addOnOption!
-                .map((option) => _displayAddOnOption(option, addOns))
-                .toList()
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _displayAddOnOption(AddOnOption addOnOption, AddOns addOns) {
-    return Container(
-      padding: EdgeInsets.only(top: 15),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                if (addOnOption.picture != null)
-                  InkWell(
-                    onTap: () {
-                      showDescription(addOnOption);
-                    },
-                    child: Container(
-                      height: 48,
-                      width: 48,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: dividerColor,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        child: CachedNetworkImage(
-                          imageUrl: addOnOption.picture!,
-                          fit: BoxFit.fill,
-                          errorWidget: productAndServiceErrorWidget,
-                        ),
-                      ),
-                    ),
-                  ),
-                SizedBox(width: 8),
-                Expanded(
-                  flex: 4,
-                  child: InkWell(
-                    onTap: () {
-                      if (addOnOption.picture == null) {
-                        showDescription(addOnOption);
-                      }
-                    },
-                    child: Text(
-                      appendStringDot(addOnOption.name!, 100),
-                      maxLines: 2,
-                      style: TextStyle(
-                          color: blackFont,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14),
-                    ),
-                  ),
-                ),
-                Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    if (addOns.inputType == 'checkbox') {
-                      addOns.options!.forEach((data) {
-                        if (data.id == addOnOption.id) {
-                          // Found the option with the target ID, change its isChecked value
-                          addOnOption.isChecked = !addOnOption.isChecked!;
-                        }
-                      });
-                      if (mounted) setState(() {});
-                    } else if (addOns.inputType == 'radio') {
-                      updateAddOnOptions(addOns.options!, addOnOption.id!);
-                    }
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text(
-                        '(${worldCurrencies[addOnOption.currency!]!}',
-                        style: TextStyle(
-                            fontFamily: "Inter",
-                            fontSize: 14.0,
-                            color: blackFont.withOpacity(.5),
-                            fontWeight: FontWeight.w500),
-                      ),
-                      Text(
-                        '${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))})',
-                        style: TextStyle(
-                            fontSize: 14.0,
-                            color: darkGrey,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w500),
-                      ),
-                      if (addOns.inputType == 'checkbox') ...[
-                        SizedBox(width: 10),
-                        Checkbox(
-                          visualDensity: const VisualDensity(
-                              horizontal: VisualDensity.minimumDensity,
-                              vertical: VisualDensity.minimumDensity),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          value: addOnOption.isChecked,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(2)),
-                          side: BorderSide(width: 1, color: darkGrey),
-                          activeColor: navyBlue,
-                          onChanged: (bool? value) {
-                            // Handle checkbox state change here
-                            addOns.options!.forEach((data) {
-                              if (data.id == addOnOption.id) {
-                                // Found the option with the target ID, change its isChecked value
-                                addOnOption.isChecked = !addOnOption.isChecked!;
-                              }
-                            });
-                            if (mounted) setState(() {});
-                          },
-                        ),
-                      ],
-                      if (addOns.inputType == 'radio') ...[
-                        SizedBox(width: 10),
-                        Radio<bool>(
-                          visualDensity: const VisualDensity(
-                              horizontal: VisualDensity.minimumDensity,
-                              vertical: VisualDensity.minimumDensity),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          value: addOnOption.isChecked!,
-                          groupValue:
-                              true, // You need to provide a unique group value for the radio buttons
-                          activeColor: navyBlue,
-                          onChanged: (bool? value) {
-                            // Handle radio button selection here
-                            updateAddOnOptions(
-                                addOns.options!, addOnOption.id!);
-                          },
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 15),
-          Divider(
-            height: 0,
-            color: dividerColor,
-            thickness: 1,
-          ),
-        ],
-      ),
-    );
-  }
-
-  void showDescription(AddOnOption addOnOption) {
-    showDialog<String>(
-        barrierDismissible: true,
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(21.0),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              addOnOption.picture != null
-                                  ? Row(
-                                      children: [
-                                        Container(
-                                          height: 100,
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: dividerColor,
-                                              ),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10))),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
-                                            child: CachedNetworkImage(
-                                              imageUrl: addOnOption.picture!,
-                                              fit: BoxFit.fill,
-                                              errorWidget:
-                                                  productAndServiceErrorWidget,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 16),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              addOnOption.name!,
-                                              style: TextStyle(
-                                                  color: blackFont,
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontFamily: 'Inter'),
-                                            ),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                            Text(
-                                              '${worldCurrencies[addOnOption.currency!]!}${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))}',
-                                              style: TextStyle(
-                                                  color: darkGrey,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontFamily: 'Inter'),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          addOnOption.name!,
-                                          style: TextStyle(
-                                              color: blackFont,
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.w600,
-                                              fontFamily: 'Inter'),
-                                        ),
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          '${worldCurrencies[addOnOption.currency!]!}${moneyDisplayNormalizer(int.parse(addOnOption.price.toString()))}',
-                                          style: TextStyle(
-                                              color: darkGrey,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              fontFamily: 'Inter'),
-                                        )
-                                      ],
-                                    ),
-                              SizedBox(height: 16),
-                              Text(
-                                "Description",
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Inter'),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                addOnOption.description!,
-                                style: TextStyle(
-                                    color: darkGrey,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Inter'),
-                              )
-                            ]),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-  }
-
-  void updateAddOnOptions(List<AddOnOption> options, int targetId) {
-    options.forEach((addOnOption) {
-      if (addOnOption.id == targetId) {
-        addOnOption.isChecked = true;
-      } else {
-        addOnOption.isChecked = false;
-      }
-      if (mounted) setState(() {});
-    });
   }
 
   Widget _buildSellerInfoWidget() {
@@ -2687,11 +2310,23 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> processCartBuyNow(BuildContext context) async {
-    bool result = await showDisclaimerDialogueForGoods(context);
-    if (result) {
-      getRecipient();
-      navigateToSendPayment();
+    ShippingProcessBloc shippingProcessBloc =
+        Provider.of<ShippingProcessBloc>(context, listen: false);
+    shippingProcessBloc.isUseCartProcess(false);
+    List<ShippingAddress> addresses =
+        await getAddressListing([product?.addressId]);
+    if (addresses.isNotEmpty) {
+      shippingProcessBloc.updateBuyNowProduct(product, addresses[0]);
+      Navigator.pushNamed(context, Routes.DELIVERY_OPTION);
+    } else {
+      await Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
+      setState(() {});
     }
+    // bool result = await showDisclaimerDialogueForGoods(context);
+    // if (result) {
+    //   getRecipient();
+    //   navigateToSendPayment();
+    // }
     return;
   }
 
@@ -2708,7 +2343,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     List<Map<String, dynamic>> selectedAddOnsList = [];
     int addOnPrice = 0;
 
-    addOnList.forEach((addOn) {
+    product?.addOnsModels?.forEach((addOn) {
       if (addOn.options != null) {
         // Filter the options to include only those with option.isChecked == true
         List<AddOnOption> selectedOptions =

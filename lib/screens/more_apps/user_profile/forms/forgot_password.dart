@@ -8,9 +8,10 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/LoadingIndicator.dart';
+import '../../../../widget/loading_indicator.dart';
 import '../user_auth.dart';
 
 class ForgotPassword extends StatefulWidget {

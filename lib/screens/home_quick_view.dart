@@ -1,10 +1,10 @@
-import 'package:Slydo/screens/super_store/super_store.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../locator.dart';
@@ -14,10 +14,9 @@ import '../utils/colors.dart';
 import '../utils/navigation_util.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
-import '../widget/LoadingIndicator.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../widget/dialog.dart';
-import '../widget/noItemInList.dart';
+import '../widget/loading_indicator.dart';
 import '../widget/rounded_background_icon.dart';
 import 'connection_module/channels_list.dart';
 import 'connection_module/connections_dashboard.dart';

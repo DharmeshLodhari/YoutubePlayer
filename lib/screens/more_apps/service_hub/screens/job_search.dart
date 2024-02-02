@@ -1,16 +1,12 @@
-import 'dart:developer';
-
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/tiles/jos_description_card.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -141,8 +137,10 @@ class _JobsSearchState extends State<JobsSearch> {
       title: Text(
         "Search",
         style: TextStyle(
-            color: blackFont, fontSize: 18,
-            fontFamily: "Inter", fontWeight: FontWeight.bold),
+            color: blackFont,
+            fontSize: 18,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
         GestureDetector(
@@ -307,7 +305,6 @@ class _JobsSearchState extends State<JobsSearch> {
               fontWeight: FontWeight.w600,
               color: darkGrey,
             ),
-          
             hintText: "",
             fillColor: Colors.white,
             filled: true,

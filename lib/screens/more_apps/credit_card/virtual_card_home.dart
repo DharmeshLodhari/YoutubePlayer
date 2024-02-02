@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/credit_card/models/all_cards.dart';
@@ -11,8 +12,8 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.da
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
@@ -20,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../../routes/route_constants.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_textform_field.dart';
@@ -27,7 +29,6 @@ import '../../../widget/dialog.dart';
 import 'auth/debit_card_auth.dart';
 
 class VirtualCardHome extends StatefulWidget {
-
   const VirtualCardHome({Key? key}) : super(key: key);
 
   @override
@@ -75,7 +76,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   Map<int, FocusNode> _focusNodes = {};
   Timer? _debounce;
 
-
   @protected
   void initState() {
     getList();
@@ -118,7 +118,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
         if (mounted) setState(() {});
 
-        if(cardList.isNotEmpty){
+        if (cardList.isNotEmpty) {
           //call card history
           getTransactionList();
         }
@@ -150,7 +150,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         Map<String, dynamic>? result = await _auth.getSingleCardsTransactions(
           nextTransaction,
           previousTransaction,
-            currentCard.cardId,
+          currentCard.cardId,
         );
         if (result == null) {
           isLoadingTransaction = false;
@@ -166,8 +166,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
         if (mounted) setState(() {});
 
-
-        if (isFirstTimeTransaction && nextTransaction != null && nextTransaction != "") {
+        if (isFirstTimeTransaction &&
+            nextTransaction != null &&
+            nextTransaction != "") {
           isFirstTimeTransaction = false;
           getTransactionList();
         }
@@ -181,7 +182,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -216,21 +216,19 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if(cardList.isEmpty)...[
+                if (cardList.isEmpty) ...[
                   Container(
                       margin: const EdgeInsets.only(left: 20.0, right: 20.0),
                       child: noCreditCard()),
                   Expanded(child: _buildNoCreditCardView()),
-                ]
-                else...[
-                  Container(
-                      child: creditCardCarousel(cardList)),
-                  Expanded(child: _buildOtherView()),],
+                ] else ...[
+                  Container(child: creditCardCarousel(cardList)),
+                  Expanded(child: _buildOtherView()),
+                ],
               ],
             ),
           ),
         ),
-
       ),
     );
   }
@@ -258,13 +256,12 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        if(cardList.isNotEmpty)...[
+        if (cardList.isNotEmpty) ...[
           addBtn(),
           const SizedBox(width: 12),
           // settingBtn(),
           // const SizedBox(width: 12.0),
         ],
-
       ],
     );
   }
@@ -279,13 +276,11 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         color: blackFont,
       ),
       onTap: () async {
-
-        if(cardList.length >= 3){
+        if (cardList.length >= 3) {
           showToast(message: 'Maximum debit card limit reached');
-        }else{
+        } else {
           Navigator.pushNamed(context, Routes.ADD_VIRTUAL_CARD);
         }
-
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -363,14 +358,13 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
   }
 
   Widget creditCard(AllCards cardData, int index) {
-
     var cardColors = [];
     var cardColor;
 
-    if(cardList[_currentIndex].color == null){
+    if (cardList[_currentIndex].color == null) {
       cardColors = [navyBlue, richPink, black, orange];
       cardColor = cardColors[index % cardColors.length];
-    }else{
+    } else {
       String? color = cardList[_currentIndex].color;
       switch (color) {
         case 'Slydo Blue':
@@ -386,11 +380,10 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
           cardColor = orange;
           break;
         default:
-        // Handle default case (when color doesn't match any specific case)
+          // Handle default case (when color doesn't match any specific case)
           cardColor = navyBlue;
           break;
       }
-
     }
     _focusNodes.putIfAbsent(index, () => FocusNode());
 
@@ -410,17 +403,16 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
           ),
         ),
         child: card!
-            ? mainCreditCardContent(cardData, index) :
-        Opacity(
-          opacity: 0.2,
-          child: mainCreditCardContent(cardData, index),
-        ),
+            ? mainCreditCardContent(cardData, index)
+            : Opacity(
+                opacity: 0.2,
+                child: mainCreditCardContent(cardData, index),
+              ),
       ),
     );
   }
 
-  Widget mainCreditCardContent(AllCards cardData, int index){
-
+  Widget mainCreditCardContent(AllCards cardData, int index) {
     return Row(
       children: [
         // Left side with text
@@ -454,7 +446,8 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                           ),
                         ),
                         focusNode: _focusNodes[index],
-                        onChanged: (newText) => onTextChanged(newText, index, cardData),
+                        onChanged: (newText) =>
+                            onTextChanged(newText, index, cardData),
                       ),
                     ),
                     // Text(
@@ -472,7 +465,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                         Text(
                           cardData.isBalanceHidden!
                               ? '****'
-                              : cardData.currencyCode == 'USD' ? formatAsDollar(cardData.availableBalance!) : formatAsNaira(cardData.availableBalance!),
+                              : cardData.currencyCode == 'USD'
+                                  ? formatAsDollar(cardData.availableBalance!)
+                                  : formatAsNaira(cardData.availableBalance!),
                           style: TextStyle(
                             color: white,
                             fontWeight: FontWeight.bold,
@@ -484,7 +479,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                     ),
                     const SizedBox(height: 20.0),
                     Text(
-                      cardData.isBalanceHidden! ? '****************' : insertSpacesInCardNumber(cardData.cardNumber!),
+                      cardData.isBalanceHidden!
+                          ? '****************'
+                          : insertSpacesInCardNumber(cardData.cardNumber!),
                       style: TextStyle(
                         color: white,
                         fontWeight: FontWeight.bold,
@@ -495,7 +492,11 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                     Row(
                       children: [
                         Text(
-                          cardData.isBalanceHidden! ? '**********' : appendStringDot('${cardData.nameLine1} ${cardData.nameLine2}', 15),
+                          cardData.isBalanceHidden!
+                              ? '**********'
+                              : appendStringDot(
+                                  '${cardData.nameLine1} ${cardData.nameLine2}',
+                                  15),
                           style: TextStyle(
                             color: white,
                             fontWeight: FontWeight.bold,
@@ -504,8 +505,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                         ),
                         const SizedBox(width: 10.0),
                         Text(
-                          cardData.isBalanceHidden! ? '****' :
-                          "${cardData.expiration!.substring(0, 2)}/${cardData.expiration!.substring(2)}",
+                          cardData.isBalanceHidden!
+                              ? '****'
+                              : "${cardData.expiration!.substring(0, 2)}/${cardData.expiration!.substring(2)}",
                           style: TextStyle(
                             color: white,
                             fontWeight: FontWeight.bold,
@@ -514,7 +516,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                         ),
                         const SizedBox(width: 10.0),
                         Text(
-                          cardData.isBalanceHidden! ? '***' : cardData.securityCode!,
+                          cardData.isBalanceHidden!
+                              ? '***'
+                              : cardData.securityCode!,
                           style: TextStyle(
                             color: white,
                             fontWeight: FontWeight.bold,
@@ -526,7 +530,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                   ],
                 ),
               ),
-
             ],
           ),
         ),
@@ -554,7 +557,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                         "slydo".toSVG(),
                         fit: BoxFit.cover,
                       ),
-
                     ],
                   ),
                 ),
@@ -565,29 +567,29 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                     children: [
                       cardData.cardBrand == 'Visa'
                           ? SvgPicture.asset(
-                        "visa".toSVG(),
-                        fit: BoxFit.cover,
-                      )
+                              "visa".toSVG(),
+                              fit: BoxFit.cover,
+                            )
                           : SvgPicture.asset(
-                        "mastercard".toSVG(),
-                        fit: BoxFit.cover,
-                      ),
+                              "mastercard".toSVG(),
+                              fit: BoxFit.cover,
+                            ),
                       const SizedBox(width: 5.0),
                       cardData.cardBrand == 'Visa'
                           ? SizedBox.shrink()
                           : Column(
-                        children: [
-                          Text(
-                            'Mastercard',
-                            style: TextStyle(
-                              color: white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                              children: [
+                                Text(
+                                  'Mastercard',
+                                  style: TextStyle(
+                                    color: white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 5.0),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 5.0),
-                        ],
-                      ),
                     ],
                   ),
                 ),
@@ -605,10 +607,8 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       _focusNodes[index]!.unfocus(); // Disable focus for the specific card
       // print('Performing API call for card $index with text: $newText');
       editCard(cardData, newText);
-
     });
   }
-
 
   Widget addCardLabelField() {
     return CustomizedTextFormField(
@@ -625,7 +625,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         //save to database onfocus lost
         // cardLabel = val;
         labelController.text = val;
-        if(mounted)setState(() {});
+        if (mounted) setState(() {});
       },
     );
   }
@@ -741,7 +741,8 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
             Padding(
               padding: const EdgeInsets.only(left: 12.0),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
                   border: Border.all(color: navyBlue.withOpacity(0.65)),
                   borderRadius: BorderRadius.circular(20),
@@ -757,7 +758,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         ],
       ),
     );
-
   }
 
   Widget _searchBtn() {
@@ -773,7 +773,8 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         ),
       ),
       onTap: () {
-        Navigator.of(context).pushNamed(Routes.SEARCH_TRANSACTION_CARD, arguments: {
+        Navigator.of(context)
+            .pushNamed(Routes.SEARCH_TRANSACTION_CARD, arguments: {
           'data': cardList[_currentIndex].cardId,
         });
       },
@@ -817,8 +818,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     );
   }
 
-  Widget noCreditCard(){
-
+  Widget noCreditCard() {
     return SizedBox(
       height: 200,
       child: Card(
@@ -847,7 +847,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 30.0),
-
                           Text(
                             '',
                             style: TextStyle(
@@ -856,8 +855,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                               fontSize: 14,
                             ),
                           ),
-
-
                           const SizedBox(height: 25.0),
                           Text(
                             'Debit Card',
@@ -876,11 +873,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                               fontSize: 14,
                             ),
                           ),
-
                         ],
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -908,7 +903,6 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                               "slydo".toSVG(),
                               fit: BoxFit.cover,
                             ),
-
                           ],
                         ),
                       ),
@@ -1009,8 +1003,8 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              subtitle:
-              const Text('Pay easily with your virtual card when you travel abroad.'),
+              subtitle: const Text(
+                  'Pay easily with your virtual card when you travel abroad.'),
             ),
             const SizedBox(height: 30),
             getSubmitButton(),
@@ -1023,19 +1017,18 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
   Widget getSubmitButton() {
     return CurvedButton(
-      onPressed:  () async {
+      onPressed: () async {
         FocusScope.of(context).unfocus();
 
-
-        final data = await Navigator.of(context).pushNamed(Routes.ADD_VIRTUAL_CARD);
+        final data =
+            await Navigator.of(context).pushNamed(Routes.ADD_VIRTUAL_CARD);
 
         // Handle the result (map) received from ADD_VIRTUAL_CARD
         if (data != null && data == true) {
           //refresh list
           _onRefresh();
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         }
-
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -1074,7 +1067,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     noItemInList = false;
     noItemInTransactionList = false;
     _currentIndex = 0;
-    if(mounted)setState(() {});
+    if (mounted) setState(() {});
     getList();
   }
 
@@ -1085,7 +1078,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
     transactionList = [];
     isFirstTimeTransaction = true;
     noItemInTransactionList = false;
-    if(mounted)setState(() {});
+    if (mounted) setState(() {});
     getTransactionList();
   }
 
@@ -1132,16 +1125,16 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         label: "Fund Card",
         onPressed: () async {
           // Handle 'Fund Card' action
-          final data = await Navigator.of(context).pushNamed(Routes.FUND_VIRTUAL_CARD, arguments: {
+          final data = await Navigator.of(context)
+              .pushNamed(Routes.FUND_VIRTUAL_CARD, arguments: {
             'data': cardList[_currentIndex],
           });
 
           // Handle the result (map) received from FUND_VIRTUAL_CARD
           if (data != null && data == true) {
             _refresh();
-            if(mounted)setState(() {});
+            if (mounted) setState(() {});
           }
-
         },
       ),
       CardAction(
@@ -1149,21 +1142,24 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
         label: "Withdraw",
         onPressed: () async {
           // Handle 'Withdraw' action
-          final data = await Navigator.of(context).pushNamed(Routes.WITHDRAW_VIRTUAL_CARD, arguments: {
+          final data = await Navigator.of(context)
+              .pushNamed(Routes.WITHDRAW_VIRTUAL_CARD, arguments: {
             'data': cardList[_currentIndex],
           });
 
           // Handle the result (map) received from WITHDRAW_VIRTUAL_CARD
           if (data != null && data == true) {
             _refresh();
-            if(mounted)setState(() {});
+            if (mounted) setState(() {});
           }
         },
       ),
       CardAction(
         iconAsset: "freeze_card".toSVG(),
         // label: "Freeze Card",
-        label: cardList[_currentIndex].activated! ? "Freeze Card" : "Unfreeze Card",
+        label: cardList[_currentIndex].activated!
+            ? "Freeze Card"
+            : "Unfreeze Card",
         onPressed: () {
           freezeCardDialog(cardList[_currentIndex]);
         },
@@ -1175,22 +1171,26 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
           cancelCardDialog(cardList[_currentIndex]);
         },
       ),
-
     ];
   }
 
-   void freezeCardDialog(AllCards allCards) {
+  void freezeCardDialog(AllCards allCards) {
     showDialogBox(
       context: context,
       actionOneTextColor: white,
       actionOneBgColor: navyBlue,
       actionTwoTextColor: blackFont,
       actionTwoBgColor: greyBorderColor,
-      title: allCards.activated! ? AppLocalization.of(context)!.freeze: AppLocalization.of(context)!.unFreeze,
+      title: allCards.activated!
+          ? AppLocalization.of(context)!.freeze
+          : AppLocalization.of(context)!.unFreeze,
       actionTwoText: AppLocalization.of(context)!.cancel,
-      actionOneText: allCards.activated! ? AppLocalization.of(context)!.freeze: AppLocalization.of(context)!.unFreeze,
-      description:
-      allCards.activated! ? "Are you sure you want to freeze \nthis card?" : "Are you sure you want to unfreeze \nthis card?",
+      actionOneText: allCards.activated!
+          ? AppLocalization.of(context)!.freeze
+          : AppLocalization.of(context)!.unFreeze,
+      description: allCards.activated!
+          ? "Are you sure you want to freeze \nthis card?"
+          : "Are you sure you want to unfreeze \nthis card?",
       roundedBackgroundIcon: RoundedBackgroundIcon(
         width: 90,
         height: 90,
@@ -1199,14 +1199,13 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       ),
       leftButtonOnPressed: () {
         isLoading = true;
-        if(mounted)setState(() {});
+        if (mounted) setState(() {});
         freezeCard(allCards);
-
       },
     );
   }
 
-   void cancelCardDialog(AllCards allCards) {
+  void cancelCardDialog(AllCards allCards) {
     showDialogBox(
       context: context,
       actionOneTextColor: white,
@@ -1217,7 +1216,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       actionTwoText: AppLocalization.of(context)!.ignore,
       actionOneText: AppLocalization.of(context)!.cancel,
       description:
-      "Are you sure you want to cancel \nthis card, you will not be able to use this \ncard for any transaction again?",
+          "Are you sure you want to cancel \nthis card, you will not be able to use this \ncard for any transaction again?",
       roundedBackgroundIcon: RoundedBackgroundIcon(
         width: 90,
         height: 90,
@@ -1226,7 +1225,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
       ),
       leftButtonOnPressed: () {
         isLoading = true;
-        if(mounted)setState(() {});
+        if (mounted) setState(() {});
         cancelCard(allCards);
       },
     );
@@ -1234,9 +1233,9 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
   Future<void> freezeCard(AllCards allCards) async {
     bool? cardStatus = allCards.activated;
-    if(cardStatus == true){
+    if (cardStatus == true) {
       cardStatus = false;
-    }else{
+    } else {
       cardStatus = true;
     }
     Map<String, dynamic> result = {
@@ -1245,81 +1244,70 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
 
     await _auth.freezeCard(result, allCards.cardId.toString()).then((value) {
       isLoading = false;
-      if(mounted)setState(() {});
+      if (mounted) setState(() {});
 
-      if(value == true){
+      if (value == true) {
         // refresh layout
         _onRefresh();
-        if(cardStatus == true){
+        if (cardStatus == true) {
           showToast(message: "Debit Card Activated Successfully");
-        }else{
+        } else {
           showToast(message: "Debit Card Deactivated Successfully");
         }
 
         return true;
-      }else{
-
+      } else {
         showToast(message: "Error occurred");
         return true;
       }
-
-
     }).catchError((error) {
       debugPrint(error.toString());
       isLoading = false;
-      if(mounted)setState(() {});
+      if (mounted) setState(() {});
       showToast(message: error.toString());
     });
   }
 
   Future<void> cancelCard(AllCards allCards) async {
-
     await _auth.terminateCard(allCards.cardId.toString()).then((value) {
       isLoading = false;
-      if(mounted)setState(() {});
+      if (mounted) setState(() {});
 
-      if(value == true){
+      if (value == true) {
         // refresh layout
         _onRefresh();
-          showToast(message: "Debit Card Terminated");
+        showToast(message: "Debit Card Terminated");
 
         return true;
-      }else{
-
+      } else {
         showToast(message: "Debit Card Termination Failed");
         return true;
       }
-
     }).catchError((error) {
       debugPrint(error.toString());
       isLoading = false;
-      if(mounted)setState(() {});
+      if (mounted) setState(() {});
       showToast(message: error.toString());
     });
   }
 
   Future<void> editCard(AllCards allCards, String label) async {
-
     Map<String, dynamic> result = {
       "label": label,
     };
 
     await _auth.updateCardLabel(result, allCards.cardId!).then((value) {
-      if(value == true){
+      if (value == true) {
         // Navigator.pop(context, value);
         showToast(message: "Card Label Updated");
         return true;
-      }else{
+      } else {
         showToast(message: "Card Label Failed To Update");
         return true;
       }
-
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
     });
-
   }
-
 }
-

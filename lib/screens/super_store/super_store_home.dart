@@ -1,27 +1,22 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
-import 'package:Slydo/screens/super_store/shop_list_screen.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen_with_tags.dart';
 import 'package:Slydo/screens/super_store/super_store.dart';
-import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:badges/badges.dart' as badges;
 import 'package:shimmer/shimmer.dart';
+
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
 import '../../utils/util.dart';
 import '../../widget/rounded_background_icon.dart';
-import '../more_apps/shopping/models/store.dart';
-import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
-import '../more_apps/yarn/yarn_setting_screen.dart';
 
 class SuperStoreHome extends StatefulWidget {
   const SuperStoreHome({Key? key}) : super(key: key);
@@ -279,16 +274,12 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
         return industryView(getImagePath(data.alias), data.alias!);
       case 'Liquor Store':
         return industryView(getImagePath(data.alias), data.alias!);
-
       case 'Pharmaceutical':
         return industryView(getImagePath(data.alias), data.alias!);
-
       case 'Restaurant/Cafe':
         return industryView(getImagePath(data.alias), data.alias!);
-
       case 'Retail':
         return industryView(getImagePath(data.alias), data.alias!);
-
       default:
         return industryView(getImagePath(data.alias), data.alias!);
     }

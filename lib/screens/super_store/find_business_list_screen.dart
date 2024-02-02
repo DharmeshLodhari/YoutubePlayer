@@ -3,11 +3,12 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
-import '../../widget/noItemInList.dart';
+import '../../widget/no_item_in_list.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 import '../more_apps/user_profile/models/user.dart';
 import '../more_apps/yarn/utils/yarn_enum.dart';
@@ -65,7 +66,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     //   if (_scrollController.position.pixels ==
     //           _scrollController.position.maxScrollExtent &&
     //       _scrollController.position.pixels != 0) {
-    getSuggestionBusinessList();
+    // getSuggestionBusinessList();
     //   }
     // });
     // Listen for scroll offset changes
@@ -309,7 +310,8 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Found ${findBusinessCount} store${findBusinessCount! > 0 ? "s" : ""}",
+                    // "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
+                    "Found ${findBusinessCount} ${widget.industry}${findBusinessCount! > 0 ? "s" : ""}",
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 18,

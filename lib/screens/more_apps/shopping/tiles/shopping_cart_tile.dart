@@ -1,13 +1,10 @@
-import 'dart:convert';
-
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/tiles/variant_overlay.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +40,7 @@ class ShoppingCartTileForProduct extends StatefulWidget {
       this.onDecreaseAddOnQty}) {
     type = item["type"];
     this.item = item["item"];
-    qty = int.tryParse(item["qty"].toString());
+    qty = item["qty"];
     variant = item["variant"];
     addOn = item["addOn"];
     image = item["image"];
@@ -109,8 +106,9 @@ class _ShoppingCartTileForProductState
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: ListTile(
+                      contentPadding: EdgeInsets.zero,
                       leading: getLeading(),
                       title: getTitle(),
                       trailing: getTrailing(),
@@ -138,7 +136,8 @@ class _ShoppingCartTileForProductState
       image = widget.item!.serverImages!.first!;
       // debugPrint('add-on image:::: ${widget.item!.serverImages}');
     } else if (widget.variant != null) {
-      image = widget.image!;
+      // image = widget.image!;
+      image = widget.item!.serverImages!.first!;
     } else {
       image = widget.item?.cover ?? "";
     }
@@ -161,7 +160,6 @@ class _ShoppingCartTileForProductState
   }
 
   Widget getTitle() {
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -169,9 +167,12 @@ class _ShoppingCartTileForProductState
           appendStringDot("${widget.item!.name}", 10),
           maxLines: 1,
           style: TextStyle(
-              color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            fontFamily: "Inter",
+          ),
         ),
-        getSubTotalPriceWidget(),
       ],
     );
   }
@@ -204,7 +205,7 @@ class _ShoppingCartTileForProductState
               icon: Icon(
                 SlydoAppIcon.minus,
                 color: blackFont,
-                size: 2, // Adjust the size as needed
+                size: 2,
               ),
               // onTap: widget.variant == null ? widget.onDecreaseQty : () => widget.onDecreaseVariantQty!(variantId),
               onTap: widget.variant == null
@@ -226,6 +227,7 @@ class _ShoppingCartTileForProductState
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: blackFont,
+                fontFamily: "Inter",
               ),
             ),
             Expanded(
@@ -238,7 +240,7 @@ class _ShoppingCartTileForProductState
               icon: Icon(
                 SlydoAppIcon.plus,
                 color: blackFont,
-                size: 16, // Adjust the size as needed
+                size: 14, // Adjust the size as needed
               ),
               // onTap: widget.variant == null ? widget.onIncreaseQty : () => widget.onIncreaseVariantQty!(variantId),
               onTap: widget.variant == null
@@ -275,11 +277,10 @@ class _ShoppingCartTileForProductState
           int.parse(widget.variant!.price.toString());
     }
 
-    if(widget.addOn != null && widget.addOn!.isNotEmpty){
-
+    if (widget.addOn != null && widget.addOn!.isNotEmpty) {
       totalPrice = 0;
-      totalPrice = basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
-
+      totalPrice = basketBloc.items[widget.index!]["qty"] *
+          int.parse(widget.item!.price!);
 
       var totalPrices = 0;
 
@@ -325,9 +326,6 @@ class _ShoppingCartTileForProductState
           height: 2,
         ),
         getSellerName(context),
-        SizedBox(
-          height: 10,
-        ),
         if (color.isNotEmpty) ...[
           SizedBox(
             height: 2,
@@ -340,6 +338,10 @@ class _ShoppingCartTileForProductState
           ),
           getSize(size)
         ],
+        SizedBox(
+          height: 2,
+        ),
+        getSubTotalPriceWidget(),
         if (widget.addOn != null && widget.addOn!.isNotEmpty) ...[
           Text(
             "Add-ons: $concatenatedText",
@@ -357,7 +359,11 @@ class _ShoppingCartTileForProductState
             Text(
               "Subtotal",
               style: TextStyle(
-                  fontSize: 16, color: darkGrey, fontWeight: FontWeight.w700),
+                fontSize: 12,
+                color: darkGrey,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+              ),
             ),
             getTotalPriceWidget(),
           ],
@@ -376,13 +382,17 @@ class _ShoppingCartTileForProductState
           style: TextStyle(
               color: blackFont,
               fontFamily: "Inter",
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               fontSize: 14),
         ),
         Text(
           moneyDisplayNormalizer(int.parse(getTotalPrice())),
           style: TextStyle(
-              color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
+            color: blackFont,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            fontFamily: "Inter",
+          ),
         ),
       ],
     );
@@ -395,17 +405,21 @@ class _ShoppingCartTileForProductState
         Text(
           worldCurrencies[widget.item!.currency!]!,
           style: TextStyle(
-              color: darkGrey,
+              color: black,
               fontFamily: "Inter",
-              fontWeight: FontWeight.w600,
-              fontSize: 12),
+              fontWeight: FontWeight.w500,
+              fontSize: 14),
         ),
         Text(
           // moneyDisplayNormalizer(int.parse(getProductPrice())),
           appendStringDot(
               moneyDisplayNormalizer(int.parse(getProductPrice())), 6),
           style: TextStyle(
-              color: darkGrey, fontWeight: FontWeight.w600, fontSize: 12),
+            color: black,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            fontFamily: "Inter",
+          ),
         ),
       ],
     );
@@ -414,21 +428,30 @@ class _ShoppingCartTileForProductState
   Widget getSellerName(BuildContext context) {
     return Text(
       widget.item!.seller!,
-      style: TextStyle(fontSize: 10, color: darkGrey),
+      style: TextStyle(
+        fontSize: 12,
+        color: darkGrey,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
+      ),
     );
   }
 
   Widget getColor(String color) {
     return Row(
       children: [
-        Text(
-          "Color: ",
-          style: TextStyle(fontSize: 10, color: darkGrey),
-        ),
+        // Text(
+        //   "Color: ",
+        //   style: TextStyle(fontSize: 10, color: darkGrey),
+        // ),
         Text(
           color,
           style: TextStyle(
-              fontSize: 10, color: black, fontWeight: FontWeight.w600),
+            fontSize: 12,
+            color: black,
+            fontWeight: FontWeight.w500,
+            fontFamily: "Inter",
+          ),
         ),
       ],
     );
@@ -437,14 +460,18 @@ class _ShoppingCartTileForProductState
   Widget getSize(String size) {
     return Row(
       children: [
-        Text(
-          "Size: ",
-          style: TextStyle(fontSize: 10, color: darkGrey),
-        ),
+        // Text(
+        //   "Size: ",
+        //   style: TextStyle(fontSize: 10, color: darkGrey),
+        // ),
         Text(
           size,
           style: TextStyle(
-              fontSize: 10, color: black, fontWeight: FontWeight.w600),
+            fontSize: 12,
+            color: black,
+            fontWeight: FontWeight.w500,
+            fontFamily: "Inter",
+          ),
         ),
       ],
     );

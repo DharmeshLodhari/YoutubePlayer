@@ -8,12 +8,11 @@ import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../routes/route_constants.dart';
-import '../../../widget/LoadingIndicator.dart';
-import '../../../widget/item_display_card.dart';
-import '../../more_apps/messaging/message_auth.dart';
-import 'package:badges/badges.dart' as badges;
 
+import '../../../routes/route_constants.dart';
+import '../../../widget/item_display_card.dart';
+import '../../../widget/loading_indicator.dart';
+import '../../more_apps/messaging/message_auth.dart';
 import '../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../more_apps/yarn/utils/utils.dart';
 import '../../more_apps/yarn/utils/yarn_enum.dart';
@@ -23,8 +22,10 @@ class CustomSlydoChannelCard extends StatefulWidget {
   ChannelModel? channelModel;
   final TileRenderPlace tileRenderPlace;
 
-  CustomSlydoChannelCard({required this.channelModel,
-    this.tileRenderPlace = TileRenderPlace.YarnTimeLine,});
+  CustomSlydoChannelCard({
+    required this.channelModel,
+    this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
+  });
 
   @override
   _CustomSlydoChannelCardState createState() => _CustomSlydoChannelCardState();
@@ -53,7 +54,6 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
 
     return getChannel();
   }
-
 
   Widget getChannel() {
     return Card(
@@ -109,7 +109,8 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
           Container(
             padding: widget.tileRenderPlace == TileRenderPlace.Thiny
                 ? const EdgeInsets.only(left: 15, top: 20, bottom: 5, right: 15)
-                : const EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
+                : const EdgeInsets.only(
+                    left: 15, top: 30, bottom: 10, right: 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -119,10 +120,10 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                   children: [
                     InkWell(
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, Routes.USER_PROFILE, arguments: {
-                          "searchedUserName": widget.channelModel!.owner!
-                        });
+                        Navigator.pushNamed(context, Routes.USER_PROFILE,
+                            arguments: {
+                              "searchedUserName": widget.channelModel!.owner!
+                            });
                       },
                       child: Container(
                         child: Column(
@@ -133,16 +134,16 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                                 child: Text(
                                   appendStringDot(
                                       messageDecoderWithEmoji(
-                                          widget.channelModel!.groupName ??
-                                              "") ??
+                                              widget.channelModel!.groupName ??
+                                                  "") ??
                                           "",
                                       widget.tileRenderPlace ==
-                                          TileRenderPlace.Thiny
+                                              TileRenderPlace.Thiny
                                           ? 13
                                           : 20),
                                   style: TextStyle(
                                       fontSize: widget.tileRenderPlace ==
-                                          TileRenderPlace.Thiny
+                                              TileRenderPlace.Thiny
                                           ? 12
                                           : 16,
                                       fontWeight: FontWeight.w700,
@@ -155,33 +156,34 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                                   child: userNameWithVerifiedIcon(
                                       name: appendStringDot(
                                           messageDecoderWithEmoji(
-                                              '@${widget.channelModel!.owner}') ??
+                                                  '@${widget.channelModel!.owner}') ??
                                               "",
                                           widget.tileRenderPlace ==
-                                              TileRenderPlace.Thiny
+                                                  TileRenderPlace.Thiny
                                               ? 13
                                               : 20),
                                       isVerified: false,
                                       textStyle: TextStyle(
                                         fontSize: widget.tileRenderPlace ==
-                                            TileRenderPlace.Thiny
+                                                TileRenderPlace.Thiny
                                             ? 11
                                             : 14,
                                         color: HexColor("#151515"),
                                         fontWeight: FontWeight.w500,
                                       ),
                                       verifiedIconColor: verifyGreen,
-                                      verifiedIconSize: widget.tileRenderPlace ==
-                                          TileRenderPlace.Thiny
-                                          ? 12
-                                          : 15),
+                                      verifiedIconSize:
+                                          widget.tileRenderPlace ==
+                                                  TileRenderPlace.Thiny
+                                              ? 12
+                                              : 15),
                                 ),
-
-                                if(widget.channelModel?.isMember == false)...[
+                                if (widget.channelModel?.isMember == false) ...[
                                   SizedBox(width: 20),
                                   Text(
                                     '${getFormattedViewCount(
-                                      noOfViews: widget.channelModel!.noOfMembers!,
+                                      noOfViews:
+                                          widget.channelModel!.noOfMembers!,
                                       addViewText: false,
                                     )} Member(s)',
                                     maxLines: 1,
@@ -194,7 +196,6 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                                     softWrap: false,
                                   )
                                 ],
-
                               ],
                             ),
                           ],
@@ -212,7 +213,6 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                       ? 2.0
                       : 5.0,
                 ),
-
                 if (widget.channelModel!.description!.isNotEmpty ||
                     widget.channelModel!.description! != null) ...[
                   const SizedBox(
@@ -223,11 +223,12 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                     children: [
                       Expanded(
                         child: Text(
-                          messageDecoderWithEmoji(widget.channelModel!.description!) ??
+                          messageDecoderWithEmoji(
+                                  widget.channelModel!.description!) ??
                               "",
                           style: TextStyle(
                             fontSize:
-                            getFontSize(widget.tileRenderPlace, context),
+                                getFontSize(widget.tileRenderPlace, context),
                             fontWeight: FontWeight.w600,
                             color: blackFont,
                           ),
@@ -244,7 +245,7 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
           ),
           SizedBox(
             height:
-            widget.tileRenderPlace == TileRenderPlace.Thiny ? 5.0 : 10.0,
+                widget.tileRenderPlace == TileRenderPlace.Thiny ? 5.0 : 10.0,
           ),
         ],
       ),
@@ -255,56 +256,56 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
     return InkWell(
       onTap: widget.channelModel?.isMember == true
           ? () {
-        showToast(message: 'You are already a member');
-      }
+              showToast(message: 'You are already a member');
+            }
           : () {
-        if (mounted) setState(() => isLoading = true);
-        MessageAuth()
-            .joinChannel(
-            channelId: widget.channelModel!.id!,
-            userName: userBloc.user.userName!)
-            .then((value) {
-          if (mounted) setState(() => isLoading = false);
+              if (mounted) setState(() => isLoading = true);
+              MessageAuth()
+                  .joinChannel(
+                      channelId: widget.channelModel!.id!,
+                      userName: userBloc.user.userName!)
+                  .then((value) {
+                if (mounted) setState(() => isLoading = false);
 
-          if (value) {
-            showToast(message: "Joined channel successfully");
-            widget.channelModel!.isMember = true;
-            if (mounted) setState(() {});
-          }
-        }).catchError((error) {
-          if (mounted) setState(() => isLoading = false);
-          if (error.toString().contains('is full')) {
-            showToast(message: error.toString());
-          } else {
-            showToast(message: 'Something went wrong, please try again.');
-          }
+                if (value) {
+                  showToast(message: "Joined channel successfully");
+                  widget.channelModel!.isMember = true;
+                  if (mounted) setState(() {});
+                }
+              }).catchError((error) {
+                if (mounted) setState(() => isLoading = false);
+                if (error.toString().contains('is full')) {
+                  showToast(message: error.toString());
+                } else {
+                  showToast(message: 'Something went wrong, please try again.');
+                }
 
-          debugPrint("ERROR: $error");
-        });
-      },
+                debugPrint("ERROR: $error");
+              });
+            },
       child: isLoading
           ? SizedBox(
-        width: 20,
-        height: 20,
-        child: CircularLoadingIndicator(color: navyBlue),
-      )
+              width: 20,
+              height: 20,
+              child: CircularLoadingIndicator(color: navyBlue),
+            )
           : Container(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(width: 1, color: black),
-          color: widget.channelModel?.isMember == true ? black : white,
-        ),
-        child: Text(
-          widget.channelModel?.isMember == true ? 'Joined' : 'Join',
-          style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: widget.channelModel?.isMember == true ? white : black),
-        ),
-      ),
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(width: 1, color: black),
+                color: widget.channelModel?.isMember == true ? black : white,
+              ),
+              child: Text(
+                widget.channelModel?.isMember == true ? 'Joined' : 'Join',
+                style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color:
+                        widget.channelModel?.isMember == true ? white : black),
+              ),
+            ),
     );
-
   }
 
   Widget getWallpaper() {
@@ -314,34 +315,33 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
         topRight: Radius.circular(10),
       ),
       child: widget.channelModel!.banner == "" ||
-          widget.channelModel!.banner == null
+              widget.channelModel!.banner == null
           ? Image.asset(
-        "assets/images/default_user_wallpaper.png",
-        width: double.infinity,
-        fit: BoxFit.cover,
-      )
+              "assets/images/default_user_wallpaper.png",
+              width: double.infinity,
+              fit: BoxFit.cover,
+            )
           : GestureDetector(
-        onTap: () {
-          Navigator.of(context).pushNamed("/photo-viewer",
-              arguments: widget.channelModel!.banner);
-        },
-        child: Container(
-          color: navyBlue,
-          child: CachedNetworkImage(
-            width: double.infinity,
-            // height: double.infinity,
-            errorWidget: wallpaperErrorWidget,
-            imageUrl: widget.channelModel!.banner!,
-            fit: BoxFit.cover,
-            placeholder: (context, url) =>
-                Center(child: CircularLoadingIndicator()),
-            color: blackFont.withOpacity(0.4),
-            colorBlendMode: BlendMode.darken,
-            filterQuality: FilterQuality.high,
-          ),
-        ),
-      ),
+              onTap: () {
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: widget.channelModel!.banner);
+              },
+              child: Container(
+                color: navyBlue,
+                child: CachedNetworkImage(
+                  width: double.infinity,
+                  // height: double.infinity,
+                  errorWidget: wallpaperErrorWidget,
+                  imageUrl: widget.channelModel!.banner!,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                  color: blackFont.withOpacity(0.4),
+                  colorBlendMode: BlendMode.darken,
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
+            ),
     );
   }
 }
-

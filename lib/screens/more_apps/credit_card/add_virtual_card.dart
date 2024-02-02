@@ -1,16 +1,16 @@
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../shopping/shopping_auth.dart';
 
@@ -46,11 +46,15 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
   bool isLoading = false;
   bool isAPILoading = false;
   List<String> stateList = [];
-  List<String> idTypeList = ['NATIONAL ID','PASSPORT', 'VOTERS CARD', 'DRIVERS LICENSE'];
+  List<String> idTypeList = [
+    'NATIONAL ID',
+    'PASSPORT',
+    'VOTERS CARD',
+    'DRIVERS LICENSE'
+  ];
   List<String> stateListCopy = [];
   Map<String, bool> stateCheckMark = {};
   String selectedIdType = "";
-
 
   @override
   void deactivate() {
@@ -130,114 +134,109 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
 
     return isLoading
         ? Center(
-      child: CircularLoadingIndicator(),
-    )
-    : SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-        child: Column(
-          children: [
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Fill out your personal information",
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                ),
-                Text(
-                  "1/3",
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                ),
-              ],
-            ),
-            const SizedBox(height: 15),
-
-            Card(
-              elevation: 2,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              shadowColor: iconBtnGrey,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: iconBtnGrey, width: 1)),
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(height: 20),
-                        addFirstNameField(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        addLastNameField(),
-
-                        const SizedBox(height: 10),
-                        addAddressField(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        addCityField(),
-                        const SizedBox(height: 10),
-                        getStateField(),
-                        const SizedBox(height: 10),
-                        getZipCodeField(),
-                        const SizedBox(height: 10),
-                        getBvnField(),
-                        const SizedBox(height: 10),
-                        getIdTypeField(),
-                        const SizedBox(height: 10),
-                        getIdNumberField(),
-
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Container(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 20,
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Fill out your personal information",
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: blackFont,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                      ),
+                      Text(
+                        "1/3",
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: blackFont,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                      ),
+                    ],
                   ),
-
-                  getSubmitButton(),
-                  const SizedBox(
-                    height: 20,
+                  const SizedBox(height: 15),
+                  Card(
+                    elevation: 2,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    shadowColor: iconBtnGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: iconBtnGrey, width: 1)),
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: isScreenIsSmall ? 8 : 16),
+                          child: Column(
+                            children: <Widget>[
+                              const SizedBox(height: 20),
+                              addFirstNameField(),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              addLastNameField(),
+                              const SizedBox(height: 10),
+                              addAddressField(),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              addCityField(),
+                              const SizedBox(height: 10),
+                              getStateField(),
+                              const SizedBox(height: 10),
+                              getZipCodeField(),
+                              const SizedBox(height: 10),
+                              getBvnField(),
+                              const SizedBox(height: 10),
+                              getIdTypeField(),
+                              const SizedBox(height: 10),
+                              getIdNumberField(),
+                              const SizedBox(height: 16),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        getSubmitButton(),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-
+          );
   }
-
 
   Widget addFirstNameField() {
     return CustomizedTextFormField(
@@ -317,9 +316,9 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
   Widget getBvnField() {
     return CustomizedTextFormField(
       labelText: "BVN",
-        inputFormatters: [
-          LengthLimitingTextInputFormatter(11),
-        ],
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(11),
+      ],
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -346,7 +345,6 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
       },
     );
   }
-
 
   Widget getStateField() {
     return CustomizedDropDownField(
@@ -404,9 +402,10 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
                   hintText: 'Search State',
                   onChanged: (value) {
                     if (value.toString().isNotEmpty) {
-                      stateList = stateListCopy.where((element) => element
-                          .toLowerCase()
-                          .startsWith(value.toString().toLowerCase()))
+                      stateList = stateListCopy
+                          .where((element) => element
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
                           .toList();
                       changeState(() {});
                     } else {
@@ -483,14 +482,19 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
                         dense: true,
                         onTap: () {
                           idType = category;
-                          ['NATIONAL ID','PASSPORT', 'VOTERS CARD', 'DRIVERS LICENSE'];
-                          if(category == 'NATIONAL ID'){
+                          [
+                            'NATIONAL ID',
+                            'PASSPORT',
+                            'VOTERS CARD',
+                            'DRIVERS LICENSE'
+                          ];
+                          if (category == 'NATIONAL ID') {
                             selectedIdType = "NATIONAL_ID";
-                          }else if(category == 'PASSPORT'){
+                          } else if (category == 'PASSPORT') {
                             selectedIdType = "PASSPORT";
-                          }else if(category == 'VOTERS CARD'){
+                          } else if (category == 'VOTERS CARD') {
                             selectedIdType = "VOTERSCARD";
-                          }else if(category == 'DRIVERS LICENSE'){
+                          } else if (category == 'DRIVERS LICENSE') {
                             selectedIdType = "DRIVERS_LICENSE";
                           }
 
@@ -511,13 +515,11 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
     );
   }
 
-
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: () async {
         FocusScope.of(context).unfocus();
         gotoGenerateVirtualCard();
-
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -528,35 +530,32 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
 
   Future<void> gotoGenerateVirtualCard() async {
     if (_formKey.currentState!.validate()) {
+      if (validateDropdown()) {
+        Map<String, dynamic> result = {
+          "first_name": firstName,
+          "last_name": lastName,
+          "address1": address,
+          "address2": address,
+          "city": city,
+          "state": state,
+          "zipcode": zipCode,
+          "id_number": idNumber,
+          "id_type": selectedIdType,
+          "customer_bvn": bvn,
+        };
 
-        if (validateDropdown()) {
+        final data = await Navigator.of(context)
+            .pushNamed(Routes.DESIGN_VIRTUAL_CARD, arguments: {
+          'data': result,
+        });
 
-          Map<String, dynamic> result = {
-            "first_name": firstName,
-            "last_name": lastName,
-            "address1": address,
-            "address2": address,
-            "city": city,
-            "state": state,
-            "zipcode": zipCode,
-            "id_number": idNumber,
-            "id_type": selectedIdType,
-            "customer_bvn": bvn,
-          };
-
-
-          final data = await Navigator.of(context).pushNamed(Routes.DESIGN_VIRTUAL_CARD, arguments: {
-            'data': result,
-          });
-
-          // Handle the result (map) received from GENERATE_VIRTUAL_CARD
-          if (data != null && data == true) {
-            //send callback
-            Navigator.pop(context, data);
-            if(mounted)setState(() {});
-          }
+        // Handle the result (map) received from GENERATE_VIRTUAL_CARD
+        if (data != null && data == true) {
+          //send callback
+          Navigator.pop(context, data);
+          if (mounted) setState(() {});
         }
-
+      }
     }
   }
 
@@ -565,17 +564,14 @@ class _AddVirtualCardState extends State<AddVirtualCard> {
       return true;
     } else {
       showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectStateOrIdTYpe);
+          message: AppLocalization.of(context)!.pleaseSelectStateOrIdTYpe);
       return false;
     }
   }
-
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
-
 }

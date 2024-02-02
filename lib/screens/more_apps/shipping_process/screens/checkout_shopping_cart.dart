@@ -3,30 +3,28 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/share_cart_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
 import 'package:Slydo/screens/more_apps/yarn/trending_list_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_list_screen.dart';
-import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../locator.dart';
 import '../../../../services/app_config_bloc.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
+import '../../shopping/shopping_auth.dart';
 import '../../user_profile/user_auth.dart';
-import '../shopping_auth.dart';
 
 class ShoppingCart extends StatefulWidget {
   @override
@@ -34,7 +32,7 @@ class ShoppingCart extends StatefulWidget {
 }
 
 class _ShoppingCartState extends State<ShoppingCart> {
-  late BasketBloc basketBloc = BasketBloc();
+  late BasketBloc basketBloc;
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc userBloc;
   List<int?> orders = [];
@@ -85,6 +83,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
     super.initState();
     _pageViewController = PageController(initialPage: 0);
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      initializeShoppingCart();
+    });
   }
 
   @override
@@ -100,7 +102,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
       body: // if (_tabsVisible) ...[
           Column(
         children: [
-          
           YarnTabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
@@ -119,9 +120,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
       //   height: 16,
       // ),
       // ],
-      floatingActionButton: int.parse(getTotalPrice().toString()) == 0
-          ? Container()
-          : checkoutWidget(),
+      floatingActionButton:
+          int.parse(getTotalPrice().toString()) == 0 ? null : checkoutWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -151,34 +151,51 @@ class _ShoppingCartState extends State<ShoppingCart> {
             onRefresh: _onRefresh,
             child: _buildBodyOfCart(),
           ),
-          ListView(
-            key: latestViewStateKey,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              InkWell(
-                onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (_)=> SharedCartDetails())),
-                child: Card(
-                  margin: EdgeInsets.all(20),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("My Birthday Hangout"),
-                            SizedBox(height: 10),
-                            buildMultipleFollowersWidget()
-                          ],
-                        ),
-                        Spacer(),
-                        Text("N100"),
-                      ],
-                    ),
+              Center(
+                child: Text(
+                  'Coming soon',
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Inter",
                   ),
                 ),
-              )
+              ),
             ],
           ),
+          // ListView(
+          //   key: latestViewStateKey,
+          //   children: [
+          //     InkWell(
+          //       onTap: () => Navigator.push(context,
+          //           MaterialPageRoute(builder: (_) => SharedCartDetails())),
+          //       child: Card(
+          //         margin: EdgeInsets.all(20),
+          //         child: Padding(
+          //           padding: const EdgeInsets.all(20.0),
+          //           child: Row(
+          //             children: [
+          //               Column(
+          //                 crossAxisAlignment: CrossAxisAlignment.start,
+          //                 children: [
+          //                   Text("My Birthday Hangout"),
+          //                   SizedBox(height: 10),
+          //                   buildMultipleFollowersWidget()
+          //                 ],
+          //               ),
+          //               Spacer(),
+          //               Text("N100"),
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //     )
+          //   ],
+          // ),
         ],
       ),
     );
@@ -225,21 +242,21 @@ class _ShoppingCartState extends State<ShoppingCart> {
       ),
       actions: <Widget>[
         RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.add,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+          height: 34,
+          width: 34,
+          icon: Icon(
+            SlydoAppIcon.add,
+            size: 16,
+            color: blackFont,
+          ),
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
                 arguments: {"create": "basket"});
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    ),
-    SizedBox(width: 8),
+          },
+          backgroundColor: iconBtnGrey,
+          enableMargin: true,
+        ),
+        SizedBox(width: 8),
         scanQRCodeBtn(),
         const SizedBox(
           width: 16,
@@ -287,68 +304,81 @@ class _ShoppingCartState extends State<ShoppingCart> {
       child: Container(
         decoration: decorateBox(),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(
-                  AppLocalization.of(context)!.total + " : ",
-                  style: TextStyle(fontSize: 14, color: blackFont),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      AppLocalization.of(context)!.total + " : ",
+                      style: TextStyle(fontSize: 14, color: blackFont),
+                    ),
+                    Text(
+                      worldCurrencies[userBloc.user.currency!]!,
+                      style: const TextStyle(
+                          fontFamily: "Inter",
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      moneyDisplayNormalizer(
+                          int.parse(getTotalPrice().toString())),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                Text(
-                  worldCurrencies[userBloc.user.currency!]!,
-                  style: const TextStyle(
-                      fontFamily: "Inter",
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
+                const Expanded(
+                  child: SizedBox(
+                    width: 10,
+                  ),
                 ),
-                Text(
-                  moneyDisplayNormalizer(int.parse(getTotalPrice().toString())),
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                MaterialButton(
+                  height: 40,
+                  color: navyBlue,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  child: const SizedBox(
+                    width: 66,
+                    child: Text(
+                      "Checkout",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (appConfigurationModel?.enableCheckout == true) {
+                      // NavigationUtil.push(
+                      //   context,
+                      //   screen: const CheckoutScreen(),
+                      // );
+
+                      ShippingProcessBloc shippingProcessBloc =
+                          Provider.of<ShippingProcessBloc>(context,
+                              listen: false);
+                      shippingProcessBloc.currentSelectedIndex = null;
+
+                      Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
+                    } else {
+                      showToast(message: 'Checkout not available now');
+                    }
+
+                    // if (basketBloc.items.length != 0) {
+                    //   addNoteDialog();
+                    // } else {
+                    //   showToast(
+                    //       message: AppLocalization.of(context)!
+                    //           .pleaseAddSomeItemsFirst);
+                    // }
+                  },
+                )
               ],
             ),
-            const Expanded(
-              child: SizedBox(
-                width: 10,
-              ),
-            ),
-            MaterialButton(
-              height: 40,
-              color: navyBlue,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: const SizedBox(
-                width: 66,
-                child: Text(
-                  "Checkout",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14),
-                ),
-              ),
-              onPressed: () {
-                if (appConfigurationModel?.enableCheckout == true) {
-                  NavigationUtil.push(
-                    context,
-                    screen: const CheckoutScreen(),
-                  );
-                } else {
-                  showToast(message: 'Checkout not available now');
-                }
-
-                // if (basketBloc.items.length != 0) {
-                //   addNoteDialog();
-                // } else {
-                //   showToast(
-                //       message: AppLocalization.of(context)!
-                //           .pleaseAddSomeItemsFirst);
-                // }
-              },
-            )
           ],
         ),
       ),
@@ -367,23 +397,23 @@ class _ShoppingCartState extends State<ShoppingCart> {
       final item = data["item"];
 
       if (item is Product) {
-        final product = item as Product;
+        Product product = item;
 
-        List? variants = data['item'].variant;
-        List? addOn = item.addOns;
+        List<Variant>? variants = product.variantModels;
+        List<AddOns>? addOn = product.addOnsModels;
 
         if (variants != null && variants.isNotEmpty) {
           for (var variant in variants) {
             Map<String, dynamic> variant1 = {
-              "id": variant!["id"],
-              "quantity": variant['quantity'].toString(),
-              "price": variant['price'],
-              "colour": variant['colour'],
-              "value": variant['value'],
-              "type": variant['type']
+              "id": variant.id,
+              "quantity": variant.quantity,
+              "price": variant.price,
+              "colour": variant.colour,
+              "value": variant.value,
+              "type": variant.type,
             };
 
-            String image = variant!["image"].toString();
+            String image = variant.localImages.toString();
             Variant single = Variant.fromJson(variant1);
 
             itemWidgets.add(
@@ -672,14 +702,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
     Map<String, dynamic> dataInfo = {};
 
     for (var element in basketBloc.items) {
-      final item = element["item"];
+      Product item = element["item"];
       int totalVariantQuantity = 0;
 
-      if (element["variants"] != null &&
-          element.containsKey("variants") &&
-          productId == item.id) {
-        // List variantsList = element["variants"];
-        List variantsList = element['item'].variant;
+      if (item.variantModels != null && productId == item.id) {
+        List<Variant> variantsList = item.variantModels ?? [];
 
         // debugPrint("Data From Product Page v-id 5 : ${variantsList}");
         // debugPrint("Data From Product Page v-id 6 : ${element["item"].variant}");
@@ -697,9 +724,9 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
           // Iterate through the variants and add each variant to the variantDataList
           for (var variant in variantsList) {
-            if (variant.containsKey("id") && variant["id"] != null) {
-              int variantId = int.parse(variant["id"].toString());
-              int variantQuantity = int.parse(variant["quantity"].toString());
+            if (variant.id != null) {
+              int variantId = int.parse(variant.id.toString());
+              int? variantQuantity = variant.quantity;
 
               variantDataList.add({
                 "id": variantId,
@@ -758,36 +785,35 @@ class _ShoppingCartState extends State<ShoppingCart> {
       var product = item["item"];
 
       if (product is Product) {
-        if (product.addOns != null) {
-          if (product.addOns!.isNotEmpty) {
-            for (var itemAddOn in product.addOns!) {
-              if (itemAddOn.containsKey('options')) {
-                List<Map<String, dynamic>> options =
-                    List<Map<String, dynamic>>.from(itemAddOn['options']);
+        if (product.addOnsModels != null) {
+          if (product.addOnsModels!.isNotEmpty) {
+            for (var itemAddOn in product.addOnsModels!) {
+              // if (itemAddOn.containsKey('options')) {
+              //   List<Map<String, dynamic>> options =
+              //       List<Map<String, dynamic>>.from(itemAddOn.options);
 
-                for (var option in options) {
-                  int AddOnOptionPrice =
-                      int.parse(option['price'].toString()) ?? 0;
-                  int quantity = int.parse(option['quantity'].toString()) ?? 0;
-                  AddOnTotal += AddOnOptionPrice * quantity;
-                }
-
-                int price = int.parse(product.price.toString()) ?? 0;
-                int quantity = int.parse(item['qty'].toString()) ?? 0;
-                int priceQuantity = price * quantity;
-                totalPrice += AddOnTotal + priceQuantity;
+              for (var option in itemAddOn.options!) {
+                int AddOnOptionPrice = int.parse(option.price.toString()) ?? 0;
+                int quantity = option.quantity ?? 0;
+                AddOnTotal += AddOnOptionPrice * quantity;
               }
+
+              int price = int.parse(product.price.toString()) ?? 0;
+              int quantity = item['qty'] ?? 0;
+              int priceQuantity = price * quantity;
+              totalPrice += AddOnTotal + priceQuantity;
+              // }
             }
           }
         }
 
-        if (product.variant != null) {
+        if (product.variantModels != null) {
           // If the variant list is not empty, calculate the total price using variants
-          if (product.variant!.isNotEmpty) {
-            for (var variant in product.variant!) {
+          if (product.variantModels!.isNotEmpty) {
+            for (var variant in product.variantModels!) {
               // if(variant['quantity'] != null || variant['price'] != null){
-              int variantPrice = int.parse(variant['price'].toString()) ?? 0;
-              int quantity = int.parse(variant['quantity'].toString()) ?? 0;
+              int variantPrice = int.parse(variant.price.toString()) ?? 0;
+              int quantity = variant.quantity ?? 0;
               itemTotal += variantPrice * quantity;
               // }
 
@@ -796,22 +822,25 @@ class _ShoppingCartState extends State<ShoppingCart> {
           totalPrice += itemTotal;
         }
 
-        if (product.addOns != null && product.variant != null) {
+        if (product.addOnsModels != null && product.variantModels != null) {
           int normalTotal = 0;
           normalTotal = int.parse(product.price.toString()) *
               int.parse(item['qty'].toString());
           totalPrice += normalTotal;
         }
+      } else if (product is Service) {
+        itemTotal = int.parse(product.price.toString());
+        totalPrice += itemTotal;
       } else {
         itemTotal = int.parse(product.price.toString()) *
-            int.parse(product.quantity.toString());
+            int.parse(product?.quantity?.toString() ?? "1");
         totalPrice += itemTotal;
       }
 
       // totalPrice += itemTotal;
     }
     basketBloc.orderTotal = totalPrice;
-    if (mounted) setState(() {});
+    // if (mounted) setState(() {});
 
     return totalPrice;
   }

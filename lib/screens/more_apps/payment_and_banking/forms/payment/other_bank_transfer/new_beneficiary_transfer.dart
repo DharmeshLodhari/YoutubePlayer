@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -10,9 +11,9 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:http/http.dart' as http;
 
 import '../../../../../../data/currency.dart';
 import '../../../../../../data/database_helper.dart';
@@ -20,7 +21,7 @@ import '../../../../../../data/environment.dart';
 import '../../../../../../routes/route_constants.dart';
 import '../../../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../../../../../../widget/dialog.dart';
-import '../../../../../../widget/noItemInList.dart';
+import '../../../../../../widget/no_item_in_list.dart';
 import '../../../../payment_loading_screen.dart';
 import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../../models/VirtualAccount.dart';
@@ -168,9 +169,9 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                                   left: 8, bottom: 0, top: 0, right: 15),
                               hintText: 'Select Bank',
                               hintStyle: TextStyle(
-                                fontSize: 18,
-                                color: blackFont,
-                                fontWeight: FontWeight.w600),
+                                  fontSize: 18,
+                                  color: blackFont,
+                                  fontWeight: FontWeight.w600),
                               suffixIcon: Icon(
                                 Icons.arrow_drop_down_outlined,
                                 color: blackFont,
@@ -239,14 +240,15 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                                       children: <InlineSpan>[
                                         TextSpan(
                                           text: double.parse(moneyDisplayNormalizer(
-                                      displayPossibleCashOutAmount(
-                                      accountBalance!))) >= 35.00 ? worldCurrencies[
-                                                  userBloc.user.currency!]! +
-                                              moneyDisplayNormalizer(
-                                                  displayPossibleCashOutAmount(
-                                                      accountBalance!)) :
-                                          '${worldCurrencies[
-                                          userBloc.user.currency!]!}0.00',
+                                                      displayPossibleCashOutAmount(
+                                                          accountBalance!))) >=
+                                                  35.00
+                                              ? worldCurrencies[userBloc
+                                                      .user.currency!]! +
+                                                  moneyDisplayNormalizer(
+                                                      displayPossibleCashOutAmount(
+                                                          accountBalance!))
+                                              : '${worldCurrencies[userBloc.user.currency!]!}0.00',
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: blackFont,
@@ -480,8 +482,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
 
                 if (response.statusCode == 201) {
                   Navigator.pop(context);
-                  Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
-                      arguments: {'page': 1});
+                  Navigator.of(context)
+                      .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});
                 } else if (response.statusCode == 500) {
                   Navigator.pop(context);
                   if (mounted) {
@@ -677,16 +679,15 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
           });
         });
     bottomSheetMounted = false;
-    if (result == null) {
-    }
+    if (result == null) {}
   }
 
   Widget searchBox() {
     return Container(
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionTheme:
-              const TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+          textSelectionTheme: const TextSelectionThemeData()
+              .copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -773,7 +774,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                 searchBankList();
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -802,7 +804,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
                 searchBankList();
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -971,7 +974,8 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   void getBankListSearched() async {
-    String url = "${AppConfig.baseUrl}/api/v1/transactions/get-bank-info/?search=${searchItemTextController.text}";
+    String url =
+        "${AppConfig.baseUrl}/api/v1/transactions/get-bank-info/?search=${searchItemTextController.text}";
 
     if (!isItemLoading) {
       if (next != null && !isItemLoading) {
@@ -1143,5 +1147,4 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
       }
     });
   }
-
 }

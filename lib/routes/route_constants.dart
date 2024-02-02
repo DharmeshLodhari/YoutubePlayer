@@ -106,7 +106,7 @@ class Routes {
   static const String NO_VEHICLE_FOUND = "/no-vehicle-found";
   static const String TERMS_AND_CONDITION = "/terms-and-condition";
   static const String RATE_AND_TIP_DRIVER = "/rate-and-tip-driver";
-  static const String CANCLE_BOOKING = "/cancle-booking";
+  static const String CANCEL_BOOKING = "/cancel-booking";
   static const String CONTACT_DRIVER = "/contact-driver";
   static const String MOVIES = "/movies";
   static const String MOVIE_CATEGORY = "/movie-category";
@@ -192,12 +192,29 @@ class Routes {
   static const String PRE_ACCOUNT_UPGRADE = "/pre-account-upgrade";
   static const String PRODUCT_ADD_ON_LIST = "/product-add-on-list";
   static const String ADD_ON_OPTION_LIST = "/add-on-option-list";
-  static const String PRODUCT_ADD_ON_OPTION_CREATE = "/product-add-on-option-create";
-  static const String PRODUCT_ADD_ON_OPTION_UPDATE = "/product-add-on-option-update";
+  static const String PRODUCT_ADD_ON_OPTION_CREATE =
+      "/product-add-on-option-create";
+  static const String PRODUCT_ADD_ON_OPTION_UPDATE =
+      "/product-add-on-option-update";
   static const String NEW_ADD_ON = "/new-add-on";
   static const String UPDATE_ADD_ON = "/update-add-on";
   static const String FLASH_TAG_LIST = "/flash-tag-list";
   static const String DISCOUNT_LIST = "/discount-list";
   static const String CUSTOM_CATEGORY = "/custom-Category";
-  static const String DISPATCH_ADDRESS = "/dispatch_address";
+  static const String DISPATCH_ADDRESS = "/dispatch-address";
+  static const String RIDER_DASHBOARD = "/rider-dashboard";
+  static const String RIDER_JOB_DETAILS = "/job-details";
+  // static const String TAKE_PICTURE = "/take-picture";
+  static const String CONFIRM_ORDER = "/confirm-order";
+  static const String DELIVERY_OPTION = "/delivery-option";
+  static const String SHIPPING_OPTION = "/shipping-option";
+  static const String SUCCESSFUL_ORDER = "/successful-order";
+  static const String RIDE_TYPE = "/ride-type";
+  static const String REQUIRE_STEPS = "/require-steps";
+  static const String STEPS_INFO = "/steps-info";
+  static const String TAKE_PROOF_PHOTO = "/take-proof-photo";
+  static const String PREVIEW_SCREEN = "/preview-screen";
+  static const String COMPLETED_UPLOAD_PHOTO = "/completed-upload-photo";
+  static const String RIDERS_UPDATE = "/riders-update";
+  static const String ADD_TAGS = "/add-tags";
 }

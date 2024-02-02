@@ -1,14 +1,12 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
-import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class EventList extends StatefulWidget {
@@ -30,16 +28,16 @@ class _EventListState extends State<EventList> {
   bool noEventInList = false;
   GlobalKey<ScaffoldState> _eventScaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldMessengerState> _eventMessengerScaffoldKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   RefreshController _eventRefreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   @override
   void initState() {
     this.getReviewList();
     _eventScrollController.addListener(() {
       if (_eventScrollController.position.pixels ==
-          _eventScrollController.position.maxScrollExtent &&
+              _eventScrollController.position.maxScrollExtent &&
           _eventScrollController.position.pixels != 0) {
         getReviewList();
       }
@@ -63,7 +61,7 @@ class _EventListState extends State<EventList> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _eventRefreshController.refreshCompleted();
       }
     });
@@ -157,25 +155,25 @@ class _EventListState extends State<EventList> {
   Widget _buildReviewList() {
     return noEventInList
         ? NoItemInList(
-      msg: AppLocalization.of(context)!.noResultFound,
-    )
+            msg: AppLocalization.of(context)!.noResultFound,
+          )
         : ListView.builder(
-      physics: ClampingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-      controller: _eventScrollController,
-      itemCount: eventList.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == eventList.length) {
-          return _buildReviewIndicator();
-        } else {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: ReviewTile(
-                review: eventList[index], reviewedUser: widget.user),
+            physics: ClampingScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+            controller: _eventScrollController,
+            itemCount: eventList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == eventList.length) {
+                return _buildReviewIndicator();
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: ReviewTile(
+                      review: eventList[index], reviewedUser: widget.user),
+                );
+              }
+            },
           );
-        }
-      },
-    );
   }
 
   Widget _buildReviewIndicator() {

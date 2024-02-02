@@ -4,8 +4,8 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 
@@ -78,14 +78,11 @@ class _SendPaymentState extends State<SendPayment> {
                     child: Column(
                       children: [
                         getAmountField(),
-                                SizedBox(height: 20),
-
+                        SizedBox(height: 20),
                         getAmountField(),
-                                SizedBox(height: 20),
-
+                        SizedBox(height: 20),
                         getAmountField(),
-                                SizedBox(height: 20),
-
+                        SizedBox(height: 20),
                         getAmountField(),
                       ],
                     ),
@@ -102,10 +99,12 @@ class _SendPaymentState extends State<SendPayment> {
               Text(
                 "Toggle to activate this tag",
                 style: TextStyle(
-                    fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
+                    fontSize: 14,
+                    color: blackFont,
+                    fontWeight: FontWeight.w600),
               ),
               Spacer(),
-               Switch(
+              Switch(
                 onChanged: (value) {
                   // flashTagAlertModel.isActive = !flashTagAlertModel.isActive;
                   // setState(() {});
@@ -113,7 +112,6 @@ class _SendPaymentState extends State<SendPayment> {
                 value: true,
                 activeColor: Theme.of(context).primaryColor,
               ),
-              
             ],
           ),
         ),
@@ -122,12 +120,13 @@ class _SendPaymentState extends State<SendPayment> {
           padding: const EdgeInsets.all(16.0),
           child: CurvedButton(
             text: 'Send payment',
-            onPressed: (){},
+            onPressed: () {},
           ),
         )
       ],
     );
   }
+
   Widget getAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
@@ -157,6 +156,7 @@ class _SendPaymentState extends State<SendPayment> {
       },
     );
   }
+
   Widget appBar() {
     return AppBar(
       leading: IconButton(

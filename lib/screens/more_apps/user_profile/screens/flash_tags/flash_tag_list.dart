@@ -1,17 +1,14 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_flash_tag_alert.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_flash_tag_alert.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
-
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -177,8 +174,7 @@ class _FlashTagListState extends State<FlashTagList> {
         itemBuilder: (context, index) {
           return CustomBoxShadow(
             child: Container(
-                            height: 90,
-
+              height: 90,
               padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: CustomBoxShadow(
                 child: Card(

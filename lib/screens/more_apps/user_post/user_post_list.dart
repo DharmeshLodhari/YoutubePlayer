@@ -4,8 +4,8 @@ import 'package:Slydo/screens/more_apps/user_post/tile/user_post_tile.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -15,7 +15,8 @@ class UserPostList extends StatefulWidget {
   final String? titleToSearch;
   String? channelUserName;
 
-  UserPostList({@required this.user, this.titleToSearch, this.channelUserName, Key? key})
+  UserPostList(
+      {@required this.user, this.titleToSearch, this.channelUserName, Key? key})
       : super(key: key);
 
   @override
@@ -102,8 +103,10 @@ class _UserPostListState extends State<UserPostList> {
         if (mounted) setState(() {});
 
         try {
-          result = await UserPostAuth()
-              .listUserPosts(next: postNext, userName: widget.user!.userName, channelUserName: widget.channelUserName);
+          result = await UserPostAuth().listUserPosts(
+              next: postNext,
+              userName: widget.user!.userName,
+              channelUserName: widget.channelUserName);
         } catch (e) {
           isPostLoading = false;
           noPostInList = true;
@@ -127,7 +130,6 @@ class _UserPostListState extends State<UserPostList> {
         postNext = result['next'];
         postPrevious = result['previous'];
         List tempList = result['results'] as List;
-
 
         List<UserPost> posts = [];
 
@@ -166,7 +168,8 @@ class _UserPostListState extends State<UserPostList> {
           )
         : ListView.builder(
             physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.only(right: 16, left: 16, top: 8, bottom: 0),
+            padding:
+                const EdgeInsets.only(right: 16, left: 16, top: 8, bottom: 0),
             controller: _postScrollController,
             itemCount: postList.length + 1,
             itemBuilder: (BuildContext context, int index) {

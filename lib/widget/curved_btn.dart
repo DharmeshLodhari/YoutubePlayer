@@ -1,5 +1,5 @@
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
@@ -12,7 +12,7 @@ class CurvedButton extends StatelessWidget {
   String? text;
   Color? backgroundColor;
   Color? textColor;
-  Function onPressed;
+  Function? onPressed;
   double height;
   double borderRadius;
   bool isLoading;
@@ -64,6 +64,7 @@ class CurvedButton extends StatelessWidget {
                 style: TextStyle(
                     color: textColor,
                     fontSize: fontSize,
+                    fontFamily: "Inter",
                     fontWeight: FontWeight.w600),
               ),
       ),
@@ -77,11 +78,11 @@ class CurvedButton extends StatelessWidget {
         showToast(message: 'Payment not available at the moment');
         return;
       } else {
-        onPressed();
+        onPressed?.call();
         return;
       }
     } else {
-      onPressed();
+      onPressed?.call();
     }
   }
 }
@@ -118,7 +119,11 @@ class OutlineCurvedButton extends StatelessWidget {
         child: Text(
           text!,
           style: TextStyle(
-              color: textColor, fontSize: 16, fontWeight: FontWeight.w600),
+            color: textColor,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
         ),
       ),
     );

@@ -3,7 +3,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
-import 'CustomBoxShadow.dart';
+import 'custom_box_shadow.dart';
 
 // ignore: must_be_immutable
 class UserDashboardItemTile extends StatelessWidget {

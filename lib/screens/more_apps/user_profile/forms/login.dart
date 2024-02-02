@@ -19,9 +19,9 @@ import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
@@ -520,7 +520,7 @@ class _UserLoginState extends State<UserLogin> {
       phoneNumber =
           "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
       password = passwordController!.text.trim();
-          await _auth.authenticate(phoneNumber, password).then((value) async {
+      await _auth.authenticate(phoneNumber, password).then((value) async {
         _user = value;
         if (_user.fullName != null) {
           //method call for storing user info into shared preference

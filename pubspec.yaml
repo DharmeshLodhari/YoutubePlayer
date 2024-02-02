@@ -3,7 +3,7 @@ description: The slydo application.
 version: 2.1.9+61
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
   animated_fractionally_sized_box: ^2.0.1
@@ -124,7 +124,7 @@ dependencies:
   swipe_image_gallery: ^0.8.0
   swipe_to: ^0.1.0-nullsafety.1
   syncfusion_flutter_pdf: ^19.3.47-beta
-  textfield_tags: 1.4.3
+  textfield_tags: ^2.0.2
   tutorial_coach_mark: ^1.1.1
   url_launcher: 6.1.4
   uuid: ^3.0.4
@@ -190,6 +190,7 @@ flutter:
     - assets/images/payout/
     - assets/images/store/
     - assets/images/home/
+    - assets/images/rider/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

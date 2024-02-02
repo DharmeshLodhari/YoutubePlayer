@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Invoice.dart';
@@ -20,8 +18,8 @@ import 'package:quiver/iterables.dart';
 
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
-import '../../../../../widget/LoadingIndicator.dart';
 import '../../../../../widget/dialog.dart';
+import '../../../../../widget/loading_indicator.dart';
 import '../../../../search_user.dart';
 import '../../business_auth.dart';
 

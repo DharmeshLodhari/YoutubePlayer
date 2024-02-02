@@ -56,6 +56,44 @@ import 'cutomized_alert/customized_alert_for_nudge.dart';
 //   ).show();
 // }
 //
+Future<bool?> showDialogBoxWithTitle(
+    {Widget? content,
+    required BuildContext context,
+    String? title,
+    String? description,
+    bool firstActionPrimary = true,
+    Color? actionBgColor,
+    Color? actionTextColor,
+    Function()? ButtonOnPressed,
+    required String actionText, // DialogButton's text
+    bool isOverlayTapDismiss = true,
+    RoundedBackgroundIcon? roundedBackgroundIcon}) {
+  return CustomizedAlert(
+    title: title,
+    content: content,
+    context: context,
+    desc: description,
+    roundedBackgroundIcon: roundedBackgroundIcon,
+    style: AlertStyle(
+      isOverlayTapDismiss: isOverlayTapDismiss,
+      isCloseButton: false,
+    ),
+    buttons: [
+      DialogButton(
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? false : true);
+          if (ButtonOnPressed != null) {
+            ButtonOnPressed();
+          }
+        },
+        textColor: actionTextColor,
+        text: actionText,
+        backgroundColor: actionBgColor,
+      )
+    ],
+  ).show();
+}
+
 Future<bool?> showDialogBoxWithImage({
   required BuildContext context,
   String? title,
@@ -230,6 +268,7 @@ Future<bool?> showDialogBox(
     ],
   ).show();
 }
+
 Future<bool?> showDialogBoxWithInput(
     {Widget? content,
     required BuildContext context,
@@ -258,26 +297,24 @@ Future<bool?> showDialogBoxWithInput(
       isCloseButton: false,
     ),
     buttons: [
-      if(leftButtonOnPressed != null)
-      DialogButton(
-        onPressed: () {
+      if (leftButtonOnPressed != null)
+        DialogButton(
+          onPressed: () {
             leftButtonOnPressed();
-          
-        },
-        textColor: actionOneTextColor,
-        text: actionOneText,
-        backgroundColor: actionOneBgColor,
-      ),
+          },
+          textColor: actionOneTextColor,
+          text: actionOneText,
+          backgroundColor: actionOneBgColor,
+        ),
       if (rightButtonOnPressed != null)
-      DialogButton(
-        onPressed: () {
+        DialogButton(
+          onPressed: () {
             rightButtonOnPressed();
-          
-        },
-        textColor: actionTwoTextColor,
-        text: actionTwoText ?? "",
-        backgroundColor: actionTwoBgColor,
-      )
+          },
+          textColor: actionTwoTextColor,
+          text: actionTwoText ?? "",
+          backgroundColor: actionTwoBgColor,
+        )
     ],
   ).show();
 }
@@ -312,9 +349,10 @@ Widget dropDownPickItemWidget(
       Text(
         label ?? '',
         style: TextStyle(
-          color: blackFont,
+          color: darkGrey,
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
+          fontFamily: "Inter",
         ),
       ),
       SizedBox(height: 5),

@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 
 import '../../../../../utils/util.dart';
-import '../../../../../widget/LoadingIndicator.dart';
 import '../../../../../widget/curved_btn.dart';
+import '../../../../../widget/loading_indicator.dart';
 import '../../payment_and_banking_auth.dart';
 import 'models/credit_card_data_model.dart';
 

@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/product_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
@@ -17,9 +18,7 @@ import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
 
-import '../../../data/state_notifier.dart';
 import 'models/store.dart';
 
 class ShoppingAuthService extends AuthService {
@@ -268,10 +267,13 @@ class ShoppingAuthService extends AuthService {
   Product createProduct(Map<String, dynamic> item) {
     Product product = Product();
     product.id = item['id'];
+    product.type = item['type'];
     product.cover = item['cover'];
     product.localImages = item['localImages'];
     product.serverImages = product.imageDataToList(item['pictures']);
-    product.pictureMap = item['pictures'];
+    product.pictureMap = item['pictures'].isEmpty
+        ? []
+        : (item['pictures'] as List).map((i) => Picture.fromJson(i)).toList();
     product.name = item['name'];
     product.qrCode = item['qr_code'];
     product.manufacturer = item['manufacturer'];
@@ -303,8 +305,10 @@ class ShoppingAuthService extends AuthService {
     product.rating = formatRating(item['rating'] ?? 0.0);
     product.canRate = item["can_rate"] ?? false;
     product.enableInSuperStore = item["enable_in_superstore"] ?? false;
-    product.variant = item["variants"] ?? null;
-
+    // product.variant = item["variants"] ?? null;
+    product.variantModels = item['variants'].isEmpty
+        ? []
+        : (item['variants'] as List).map((i) => Variant.fromJson(i)).toList();
     product.weight = item['weight'] ?? 0.0;
     product.weightSiUnit = item['weight_si_unit'] ?? '';
     product.height = item['height'] ?? 0.0;
@@ -318,8 +322,12 @@ class ShoppingAuthService extends AuthService {
     product.discountType = item['discount_type'];
     product.discountIsActive = item['discount_is_active'];
     product.discountedPrice = item['discounted_price'];
-    product.addOns = item['add_ons'];
-
+    // product.addOns = item['add_ons'];
+    product.addOnsModels = item['add_ons'].isEmpty
+        ? []
+        : (item['add_ons'] as List).map((i) => AddOns.fromJson(i)).toList();
+    product.addressId = item['address_id'];
+    product.qty = item['qty'];
     return product;
   }
 
@@ -691,13 +699,18 @@ class ShoppingAuthService extends AuthService {
     debugPrint('SEARCH BODY ---> ${response.body}');
 
     if (response.statusCode == 200) {
+      List<Variant> variantList = [];
       var jsonData = json.decode(response.body);
+
+      for (var item in jsonData) {
+        variantList.add(Variant.fromJson(item));
+      }
 
       Map<String, dynamic> result = {
         // "count": jsonData["count"],
         // "next": jsonData["next"],
         // "previous": jsonData["previous"],
-        "results": jsonData,
+        "results": variantList,
       };
       return result;
     } else {
@@ -1896,9 +1909,9 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
-  Future<List<ProductCategory>> getProductTags(id, val) async {
-    var url = AppConfig.baseUrl +
-        "/api/v1/products/tags/?industries/${id}&search=${val}";
+  Future<List<Tags>> getProductTags(id) async {
+    var url = AppConfig.baseUrl + "/api/v1/products/tags";
+    // "/api/v1/products/tags/?industries/${id}&search=${val}";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -1909,18 +1922,17 @@ class ShoppingAuthService extends AuthService {
 
       List<dynamic> results = jsonData["results"];
 
-      List<ProductCategory> categories = [];
+      List<Tags> categories = [];
 
       for (int i = 0; i < results.length; i++) {
-        categories
-            .add(ProductCategory(results[i]['name']!, id: results[i]['id']));
+        categories.add(Tags(name: results[i]['name']!, id: results[i]['id']));
       }
 
       return categories;
     } else {
       debugPrint(
           "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
-      return Future.value(<ProductCategory>[]);
+      return Future.value(<Tags>[]);
     }
   }
 
@@ -2326,7 +2338,7 @@ class ShoppingAuthService extends AuthService {
       }
       List<ShippingAddress> shippingAddressList = [];
       var jsonData = json.decode(response.body);
-
+      print(jsonData);
       for (var item in jsonData["results"]) {
         ShippingAddress address = ShippingAddress.fromJson(item);
         shippingAddressList.add(address);
@@ -2396,7 +2408,6 @@ class ShoppingAuthService extends AuthService {
       };
 
       // debugPrint('CALLING OTHER check ---> ${result}');
-
       return result;
     } else if (response.statusCode == 500) {
       return null;
@@ -2505,7 +2516,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List the  add-on with pagination
-  Future<dynamic> getAddOnsList(
+  Future<Map<String, dynamic>> getAddOnsList(
       String productId, String? next, String? previous) async {
     String url = AppConfig.baseUrl + "/api/v1/products/add-ons/";
 
@@ -2517,7 +2528,7 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
-      List items = [];
+      List<AddOns> items = [];
       var data = jsonData["results"];
 
       for (int i = 0; i < data.length; i++) {
@@ -2541,7 +2552,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List the  add-on options with pagination
-  Future<dynamic> getAddOnOptionsList(
+  Future<Map<String, dynamic>> getAddOnOptionsList(
       String productId, String? next, String? previous) async {
     String url = AppConfig.baseUrl + "/api/v1/products/add-on-options/";
 
@@ -2553,11 +2564,11 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
-      List items = [];
+      List<AddOnOption> items = [];
       var data = jsonData["results"];
 
       for (int i = 0; i < data.length; i++) {
-        var addOnOptions = AddOnOption.fromJson(data[i]);
+        AddOnOption addOnOptions = AddOnOption.fromJson(data[i]);
         items.add(addOnOptions);
       }
 
@@ -2804,7 +2815,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Update Addon option
-  Future<dynamic> updateAddOnOption(
+  Future<AddOnOption> updateAddOnOption(
       AddOnOption addOnOption, String productId) async {
     var url = AppConfig.baseUrl +
         "/api/v1/products/add-on-options/${addOnOption.id}/";
@@ -2843,7 +2854,7 @@ class ShoppingAuthService extends AuthService {
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint("DATA:- ${request.fields}");
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
@@ -2856,6 +2867,20 @@ class ShoppingAuthService extends AuthService {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
       return Future.error("ERROR:- $responseBody");
+    }
+  }
+
+  Future<ProductDetails> getProductLink() async {
+    var url = AppConfig.baseUrl + "/api/v1/products/add-by-token/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    print('Status of KYC...${response.body} and ${response.statusCode}');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var jsonData = jsonDecode(response.body);
+      return ProductDetails.fromJson(jsonData);
+    } else {
+      showToast(message: response.body.toString());
+      throw response.body;
     }
   }
 }

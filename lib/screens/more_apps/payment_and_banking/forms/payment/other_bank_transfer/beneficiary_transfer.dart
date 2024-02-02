@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/util.dart';
@@ -8,16 +9,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../../../data/currency.dart';
 import '../../../../../../data/database_helper.dart';
 import '../../../../../../routes/route_constants.dart';
 import '../../../../../../utils/slydo_app_icon_icons.dart';
-import '../../../../../../widget/LoadingIndicator.dart';
 import '../../../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
-import '../../../../../../widget/noItemInList.dart';
+import '../../../../../../widget/loading_indicator.dart';
+import '../../../../../../widget/no_item_in_list.dart';
 import '../../../../../../widget/slide_action_button.dart';
 import '../../../../../../widget/vertical_list_item.dart';
 import '../../../../payment_loading_screen.dart';
@@ -104,7 +106,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
         clearSearchAndAllBanks();
         searchBankList();
-
       }
     });
 
@@ -147,7 +148,7 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
   Widget scaffoldBody() {
     bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
-    if(!isLoading && bankAccountBloc.bankAccount!.accountName == null){
+    if (!isLoading && bankAccountBloc.bankAccount!.accountName == null) {
       return NoItemInList(
         msg: AppLocalization.of(context)!.emptyBeneficiary,
       );
@@ -237,14 +238,16 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
                                                 children: <InlineSpan>[
                                                   TextSpan(
                                                     text: double.parse(moneyDisplayNormalizer(
-                                                        displayPossibleCashOutAmount(
-                                                            accountBalance!))) >= 35.00 ? worldCurrencies[
-                                                    userBloc.user.currency!]! +
-                                                        moneyDisplayNormalizer(
-                                                            displayPossibleCashOutAmount(
-                                                                accountBalance!)) :
-                                                    '${worldCurrencies[
-                                                    userBloc.user.currency!]!}0.00',
+                                                                displayPossibleCashOutAmount(
+                                                                    accountBalance!))) >=
+                                                            35.00
+                                                        ? worldCurrencies[userBloc
+                                                                .user
+                                                                .currency!]! +
+                                                            moneyDisplayNormalizer(
+                                                                displayPossibleCashOutAmount(
+                                                                    accountBalance!))
+                                                        : '${worldCurrencies[userBloc.user.currency!]!}0.00',
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         color: blackFont,
@@ -412,8 +415,8 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
 
                   if (response.statusCode == 201) {
                     Navigator.pop(context);
-                    Navigator.of(context).pushNamed(Routes.TRANSACTIONS,
-                        arguments: {'page': 1});
+                    Navigator.of(context)
+                        .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 1});
                   } else if (response.statusCode == 500) {
                     Navigator.pop(context);
                     if (mounted) {
@@ -734,8 +737,10 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
         }
 
         //if there is no default set as true the pick first account
-        if ( bankAccountBloc.bankAccount!.accountName == null && bankAccountList.isNotEmpty) {
-          bankAccountBloc.bankAccount = bankAccountList[0]; // Pick the first item in the list
+        if (bankAccountBloc.bankAccount!.accountName == null &&
+            bankAccountList.isNotEmpty) {
+          bankAccountBloc.bankAccount =
+              bankAccountList[0]; // Pick the first item in the list
 
         }
       });
@@ -749,7 +754,6 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
       }
     }
   }
-
 
   Widget buildBankList(BuildContext context) {
     return noItemInList
@@ -958,9 +962,8 @@ class _BeneficiaryTransferState extends State<BeneficiaryTransfer> {
     next = "";
     previous = "";
     bankAccountList = [];
-    if(mounted) setState(() {});
+    if (mounted) setState(() {});
     getList(searchText);
-
   }
 
   void clearSearchAndAllBanks() {

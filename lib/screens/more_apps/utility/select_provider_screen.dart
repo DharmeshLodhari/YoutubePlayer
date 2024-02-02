@@ -1,13 +1,13 @@
 import 'package:Slydo/screens/more_apps/utility/utility_provider_tile.dart';
 import 'package:Slydo/utils/enums.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../locale/app_localization.dart';
 import '../../../utils/util.dart';
-import '../../../widget/noItemInList.dart';
+import '../../../widget/no_item_in_list.dart';
 import 'models/provider_model.dart';
 import 'utility_auth.dart';
 

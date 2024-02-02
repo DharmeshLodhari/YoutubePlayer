@@ -30,9 +30,11 @@ Color lightGrey = HexColor("#FBFBFF");
 Color chatBackgroundColor = HexColor("#F4F5F6");
 Color iconBtnGrey = HexColor("#F8F9FF");
 Color greyBorderColor = HexColor("#DDE1E7");
+Color greyTagColor = HexColor("#e8ebef");
 Color dividerColor = HexColor("#EBEDFC");
 Color mateRed = HexColor("#F35B46");
 Color mateRedLight = HexColor("#FFECEA");
+Color redBtn = HexColor("#FE5151");
 Color eyeGrey = HexColor("#A5ADB6");
 Color starYellow = HexColor("#FFAB00");
 Color graphWitheBackground = HexColor("#F3F3F3");
@@ -52,3 +54,6 @@ Color orange = HexColor("#F08770");
 
 Color boxShadow = Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);
+
+Color lightOrangeColor = Color(0xC7FFE2A9);
+Color darkOrangeColor = Color(0xFFFFA500);

@@ -13,7 +13,7 @@ import '../../../../utils/enums.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/customized_popup_menu.dart';
-import '../../../../widget/noItemInList.dart';
+import '../../../../widget/no_item_in_list.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../../../../widget/slide_action_button.dart';
 import '../bloc/invoice_bloc.dart';
@@ -209,7 +209,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "All", value: "All"),
         CustomizedPopUpMenuItem(title: "Paid", value: "Paid"),
         CustomizedPopUpMenuItem(title: "Drafts", value: "Draft"),

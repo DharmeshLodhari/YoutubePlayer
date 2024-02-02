@@ -1,11 +1,11 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/credit_card/auth/debit_card_auth.dart';
 import 'package:Slydo/screens/more_apps/credit_card/models/card_transactions.dart';
-import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../../utils/util.dart';
 import '../payment_and_banking/tiles/transaction.dart';
-
 
 class SearchTransactionCard extends StatefulWidget {
   var arguments;
@@ -17,13 +17,12 @@ class SearchTransactionCard extends StatefulWidget {
 }
 
 class SearchTransactionCardState extends State<SearchTransactionCard> {
-
-
   List<CardTransactions> transactionList = [];
 
-  final GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldSearchKey =
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   bool isLoading = false;
 
@@ -38,15 +37,13 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
   String autoCompleteSearchText = "";
   TextEditingController searchController = TextEditingController();
 
-
   @override
   void initState() {
-
     cardId = widget.arguments["data"];
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
         if (next != null) {
           getList();
@@ -95,13 +92,12 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
         }
 
         Map<String, dynamic>? result =
-        await DebitCardAuth().searchSingleCardsTransactions(
+            await DebitCardAuth().searchSingleCardsTransactions(
           next,
           previous,
           cardId,
           searchController.text,
         );
-
 
         if (result == null) {
           isLoading = false;
@@ -141,7 +137,6 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -206,41 +201,41 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
     return Container(
       child: Column(
         children: [
-
           const SizedBox(height: 6),
           searchBox(),
           const SizedBox(height: 12),
-          isLoading ? const CircularProgressIndicator() : const SizedBox.shrink(),
+          isLoading
+              ? const CircularProgressIndicator()
+              : const SizedBox.shrink(),
           isSearchIsEmpty
               ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!
-                  .pleaseTypeSomethingToGetResult,
-              isResult: false,
-            ),
-          )
-              : noItemInList
-              ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!.noResultFound,
-            ),
-          )
-              : Expanded(
-            child: ListView(
-                children: transactionList
-                    .map(
-                      (transaction) => Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8, horizontal: 10),
-                    child: Container(
-                      // margin: const EdgeInsets.all(8.0),
-                      child: showCardTransaction(transaction),
-                    ),
-
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!
+                        .pleaseTypeSomethingToGetResult,
+                    isResult: false,
                   ),
                 )
-                    .toList()),
-          ),
+              : noItemInList
+                  ? Expanded(
+                      child: NoItemInList(
+                        msg: AppLocalization.of(context)!.noResultFound,
+                      ),
+                    )
+                  : Expanded(
+                      child: ListView(
+                          children: transactionList
+                              .map(
+                                (transaction) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 10),
+                                  child: Container(
+                                    // margin: const EdgeInsets.all(8.0),
+                                    child: showCardTransaction(transaction),
+                                  ),
+                                ),
+                              )
+                              .toList()),
+                    ),
         ],
       ),
     );
@@ -334,6 +329,4 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
       ),
     );
   }
-
-
 }

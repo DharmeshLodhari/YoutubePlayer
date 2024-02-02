@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../data/state_notifier.dart';
 import '../utils/util.dart';
-import 'LoadingIndicator.dart';
+import 'loading_indicator.dart';
 
 typedef Widget? BuildCounterWidget(
     int? currentLength, int? maxLength, bool? isFocused);
@@ -39,6 +39,7 @@ class CustomizedTextFormField extends StatefulWidget {
   bool? enabled;
   bool isAmountField;
   String labelText;
+  double? fontSize;
   String? hintText;
   Color? labelColor;
   int? maxLength;
@@ -75,7 +76,7 @@ class CustomizedTextFormField extends StatefulWidget {
     this.onTap,
     this.onFieldSubmitted,
     this.controller,
-    this.fontWeight=FontWeight.w500,
+    this.fontWeight = FontWeight.w500,
     // this.buildCounterWidget,
     this.currencySymbol,
     this.showLabelOrPassword = true,
@@ -96,6 +97,7 @@ class CustomizedTextFormField extends StatefulWidget {
     this.inputFormatters,
     this.contentPadding = const EdgeInsets.symmetric(vertical: 10),
     this.borderWidth,
+    this.fontSize = 16,
   });
 
   @override
@@ -122,11 +124,13 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                       ? Text(
                           widget.labelText,
                           style: TextStyle(
-                              color: widget.labelColor != null
-                                  ? widget.labelColor
-                                  : darkGrey,
-                              fontSize: 16,
-                              fontWeight: widget.fontWeight),
+                            color: widget.labelColor != null
+                                ? widget.labelColor
+                                : darkGrey,
+                            fontSize: widget.fontSize,
+                            fontWeight: widget.fontWeight,
+                            fontFamily: "Inter",
+                          ),
                         )
                       : SizedBox.shrink(),
                   widget.hasLabel
@@ -200,7 +204,8 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                               shape: BoxShape.circle,
                               color: darkGrey.withOpacity(.12)),
                           child: Text(
-                            widget.currencySymbol ?? worldCurrencies[userBloc.user.currency!]!,
+                            widget.currencySymbol ??
+                                worldCurrencies[userBloc.user.currency!]!,
                             style: TextStyle(
                               color: blackFont,
                               fontWeight: FontWeight.bold,

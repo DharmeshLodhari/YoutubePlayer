@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../data/currency.dart';
 import '../l10n/messages_all.dart';
 import '../utils/util.dart';
 
@@ -353,6 +352,48 @@ class AppLocalization {
     return Intl.message(
       "Are you sure you want to upgrade account to business account?",
       name: "upgradeHomeMsg",
+    );
+  }
+
+  String get noAddressFound {
+    return Intl.message(
+      "No Address Found",
+      name: "noAddressFound",
+    );
+  }
+
+  String get addNewAddress {
+    return Intl.message(
+      "Add New Address",
+      name: "addNewAddress",
+    );
+  }
+
+  String get addressFoundMsg {
+    return Intl.message(
+      "Kindly add an address to your list to continue using this App. This will help us give you recommendation that are relevant & closer to you.",
+      name: "addressFoundMsg",
+    );
+  }
+
+  String get changeAddress {
+    return Intl.message(
+      "Change Address",
+      name: "changeAddress",
+    );
+  }
+
+  String get selectAddress {
+    return Intl.message(
+      "Select Address",
+      name: "selectAddress",
+    );
+  }
+
+  String get changeAddressMsg {
+    return Intl.message(
+      "Kindly add a current address to your list to continue using this App. This will help us give you recommendation that are relevant & closer to you.",
+      name: "addressFoundMsg",
     );
   }
 
@@ -1380,6 +1421,13 @@ class AppLocalization {
     return Intl.message(
       "Measurement",
       name: "measurement",
+    );
+  }
+
+  String get discount {
+    return Intl.message(
+      "Discount",
+      name: "discount",
     );
   }
 
@@ -2574,6 +2622,13 @@ class AppLocalization {
     );
   }
 
+  String get jobAcceptedFromListing {
+    return Intl.message(
+      "Accepted Successfully",
+      name: "jobRemovedFromListingSuccessfully",
+    );
+  }
+
   String get endJob {
     return Intl.message(
       "Job ended Successfully",
@@ -2591,6 +2646,13 @@ class AppLocalization {
   String get cancelledApplicactionForJobSuccessfully {
     return Intl.message(
       "Job Cancelled Successfully",
+      name: "jobCancelledSuccessfully",
+    );
+  }
+
+  String get journyStartedSuccessfully {
+    return Intl.message(
+      "Job Started Successfully",
       name: "jobCancelledSuccessfully",
     );
   }

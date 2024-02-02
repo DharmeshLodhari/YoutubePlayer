@@ -17,8 +17,8 @@ import '../screens/more_apps/user_profile/user_auth.dart';
 import '../utils/colors.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
-import 'LoadingIndicator.dart';
 import 'dialog.dart';
+import 'loading_indicator.dart';
 
 class CustomSlydoUserCard extends StatefulWidget {
   final CustomerProfile user;

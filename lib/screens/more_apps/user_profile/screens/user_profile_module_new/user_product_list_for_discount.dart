@@ -1,29 +1,20 @@
-import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/navigation_util.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:Slydo/widget/item_display_card_for_discount.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:text_scroll/text_scroll.dart';
 
-import '../../../../../widget/item_display_card.dart';
-import '../../../../../widget/noItemInList.dart';
+import '../../../../../widget/no_item_in_list.dart';
 
 // ignore: must_be_immutable
 class UserProductListForDiscount extends StatefulWidget {
@@ -370,22 +361,22 @@ class _UserProductListForDiscountState
     return productNext == "" && isProductLoading
         ? SizedBox.shrink()
         : ListView.builder(
-          shrinkWrap: true,
-          controller: _productScrollController,
-          itemCount: productList.length,
-          itemBuilder: (context, index) {
-            return SizedBox(
-              child: DisplayProductForDiscount(
-                product: productList[index],
-                onChange: (bool value) {
-                  productList[index].isSelected = value;
-                  if (mounted) setState(() {});
-                },
-                isSelected: productList[index].isSelected,
-              ),
-            );
-          },
-        );
+            shrinkWrap: true,
+            controller: _productScrollController,
+            itemCount: productList.length,
+            itemBuilder: (context, index) {
+              return SizedBox(
+                child: DisplayProductForDiscount(
+                  product: productList[index],
+                  onChange: (bool value) {
+                    productList[index].isSelected = value;
+                    if (mounted) setState(() {});
+                  },
+                  isSelected: productList[index].isSelected,
+                ),
+              );
+            },
+          );
   }
 
   Widget getOutOfStockTag(int index) {

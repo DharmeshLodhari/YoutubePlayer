@@ -1,7 +1,7 @@
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

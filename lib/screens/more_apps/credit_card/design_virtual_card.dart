@@ -5,10 +5,10 @@ import 'package:Slydo/screens/more_apps/credit_card/utils/utils.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,13 +21,11 @@ class DesignVirtualCard extends StatefulWidget {
 
   DesignVirtualCard({this.arguments, Key? key}) : super(key: key);
 
-
   @override
   DesignVirtualCardState createState() => DesignVirtualCardState();
 }
 
 class DesignVirtualCardState extends State<DesignVirtualCard> {
-
   final _formKey = GlobalKey<FormState>();
   UserBloc? userBloc;
 
@@ -57,7 +55,6 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
 
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -106,103 +103,97 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
 
     return isLoading
         ? Center(
-      child: CircularLoadingIndicator(),
-    )
+            child: CircularLoadingIndicator(),
+          )
         : SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-        child: Column(
-          children: [
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Customise your card",
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                ),
-                Text(
-                  "2/3",
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                ),
-              ],
-            ),
-            const SizedBox(height: 15),
-
-            creditCardCarousel(),
-
-            const SizedBox(height: 15),
-
-            Card(
-              elevation: 2,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              shadowColor: iconBtnGrey,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: iconBtnGrey, width: 1)),
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(height: 20),
-                        getCardBrandField(),
-                        const SizedBox(height: 20),
-                        getCardTypeField(),
-                        const SizedBox(height: 10),
-                        addCardLabelField(),
-
-                        const SizedBox(height: 20),
-
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Container(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 20,
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Customise your card",
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: blackFont,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                      ),
+                      Text(
+                        "2/3",
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: blackFont,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                      ),
+                    ],
                   ),
-
-                  getSubmitButton(),
-                  const SizedBox(
-                    height: 20,
+                  const SizedBox(height: 15),
+                  creditCardCarousel(),
+                  const SizedBox(height: 15),
+                  Card(
+                    elevation: 2,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    shadowColor: iconBtnGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: iconBtnGrey, width: 1)),
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: isScreenIsSmall ? 8 : 16),
+                          child: Column(
+                            children: <Widget>[
+                              const SizedBox(height: 20),
+                              getCardBrandField(),
+                              const SizedBox(height: 20),
+                              getCardTypeField(),
+                              const SizedBox(height: 10),
+                              addCardLabelField(),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        getSubmitButton(),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-
+          );
   }
 
-  Widget creditCardCarousel(){
+  Widget creditCardCarousel() {
     return Column(
       children: [
         CarouselSlider(
@@ -245,7 +236,6 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
   }
 
   Widget creditCard(Color color) {
-
     return Container(
       height: 200,
       child: Card(
@@ -262,14 +252,13 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
               fit: BoxFit.cover,
             ),
           ),
-          child:  mainCreditCardContent(),
+          child: mainCreditCardContent(),
         ),
       ),
     );
   }
 
-  Widget mainCreditCardContent(){
-
+  Widget mainCreditCardContent() {
     return Row(
       children: [
         // Left side with text
@@ -291,12 +280,15 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
                         fontSize: 16,
                       ),
                     ),
-
                     const SizedBox(height: 10.0),
                     Row(
                       children: [
                         Text(
-                          cardType == 'Dollar' && cardBrand.isNotEmpty && cardLabel.isNotEmpty ? formatAsDollar(0.0) : '****',
+                          cardType == 'Dollar' &&
+                                  cardBrand.isNotEmpty &&
+                                  cardLabel.isNotEmpty
+                              ? formatAsDollar(0.0)
+                              : '****',
                           style: TextStyle(
                             color: white,
                             fontWeight: FontWeight.bold,
@@ -348,7 +340,6 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
                   ],
                 ),
               ),
-
             ],
           ),
         ),
@@ -376,7 +367,6 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
                         "slydo".toSVG(),
                         fit: BoxFit.cover,
                       ),
-
                     ],
                   ),
                 ),
@@ -404,9 +394,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
                           ],
                         ),
                       ],
-                    )
-                ),
-
+                    )),
               ],
             ),
           ),
@@ -430,14 +418,13 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
     );
   }
 
-
   Widget getCardBrandField() {
     return CustomizedDropDownField(
       title: AppLocalization.of(context)!.cardBrand,
       child: ListTile(
         dense: true,
         title: Text(
-          cardBrand.isNotEmpty? cardBrand : "",
+          cardBrand.isNotEmpty ? cardBrand : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -458,7 +445,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
       child: ListTile(
         dense: true,
         title: Text(
-          cardType.isNotEmpty? cardType : "",
+          cardType.isNotEmpty ? cardType : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -570,11 +557,10 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
       onPressed: isAPILoading
           ? () {}
           : () async {
-        FocusScope.of(context).unfocus();
+              FocusScope.of(context).unfocus();
 
-        await goToGeneratePage();
-
-      },
+              await goToGeneratePage();
+            },
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "Generate Debit Card",
@@ -584,17 +570,15 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
 
   goToGeneratePage() async {
     if (_formKey.currentState!.validate()) {
-
       if (validateDropdown()) {
-
         String color = "";
-        if(currentColorIndex == 0){
+        if (currentColorIndex == 0) {
           color = 'Slydo Blue';
-        }else if(currentColorIndex == 1){
+        } else if (currentColorIndex == 1) {
           color = 'Pink';
-        }else if(currentColorIndex == 2){
+        } else if (currentColorIndex == 2) {
           color = 'Black';
-        }else if(currentColorIndex == 3){
+        } else if (currentColorIndex == 3) {
           color = 'Orange';
         }
 
@@ -614,8 +598,8 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
           "color": color,
         };
 
-
-        final data = await Navigator.of(context).pushNamed(Routes.GENERATE_VIRTUAL_CARD, arguments: {
+        final data = await Navigator.of(context)
+            .pushNamed(Routes.GENERATE_VIRTUAL_CARD, arguments: {
           'data': result,
         });
 
@@ -623,11 +607,9 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
         if (data != null && data == true) {
           //send callback
           Navigator.pop(context, data);
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         }
-
       }
-
     }
   }
 
@@ -635,9 +617,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
     if (cardBrand.isNotEmpty || cardType.isNotEmpty) {
       return true;
     } else {
-      showToast(
-          message: AppLocalization.of(context)!
-              .pleaseSelectCardBrand);
+      showToast(message: AppLocalization.of(context)!.pleaseSelectCardBrand);
       return false;
     }
   }
@@ -647,5 +627,4 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
     _scrollController.dispose();
     super.dispose();
   }
-
 }

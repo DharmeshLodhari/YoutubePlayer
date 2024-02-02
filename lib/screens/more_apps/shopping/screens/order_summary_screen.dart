@@ -3,12 +3,13 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/currency.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../widget/LoadingIndicator.dart';
 import '../../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import '../../../../widget/loading_indicator.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../user_profile/models/user.dart';
 import '../utils.dart';

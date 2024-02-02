@@ -61,7 +61,7 @@ class _YarnCommentListState extends State<YarnCommentList> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "Latest", value: "-created_at"),
         CustomizedPopUpMenuItem(title: "Older", value: "created_at"),
       ],

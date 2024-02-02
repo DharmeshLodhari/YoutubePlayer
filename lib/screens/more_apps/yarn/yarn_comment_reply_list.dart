@@ -60,7 +60,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
+      childList: [
         CustomizedPopUpMenuItem(title: "Latest", value: "-created_at"),
         CustomizedPopUpMenuItem(title: "Older", value: "created_at"),
       ],
@@ -205,8 +205,6 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
             yarnComments.addAll(tempList);
           });
         }
-
-
       }
       if (yarnComments.isEmpty) {
         if (mounted) {
