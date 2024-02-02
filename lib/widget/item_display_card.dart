@@ -440,21 +440,22 @@ class _DisplayProductState extends State<DisplayProduct> {
 
     if (widget.product.isAvailable!) {
       String type = "product";
-      basketBloc.addItemToCart(item: widget.product, type: type);
-      late var mapData;
-      basketBloc.items.forEach((element) {
-        if (element["item"].id == widget.product.id) {
-          mapData = element;
-          return;
-        }
-      });
-      Map<String, dynamic> data = {
-        "type": type,
-        "id": mapData["item"].id,
-        "qty": mapData["qty"],
-      };
-      debugPrint("Data From Display Product widget Page : $data");
-      await _auth.addOrUpdateItemToShoppingCart(data);
+      basketBloc.addItemToCart(
+          item: widget.product.copyWith(qty: 1), type: type);
+      // late var mapData;
+      // basketBloc.items.forEach((element) {
+      //   if (element["item"].id == widget.product.id) {
+      //     mapData = element;
+      //     return;
+      //   }
+      // });
+      // Map<String, dynamic> data = {
+      //   "type": type,
+      //   "id": mapData["item"].id,
+      //   "qty": mapData["qty"],
+      // };
+      // debugPrint("Data From Display Product widget Page : $data");
+      // await _auth.addOrUpdateItemToShoppingCart(data);
     } else {
       showToast(message: AppLocalization.of(context)!.productOutOfStock);
     }
@@ -553,11 +554,19 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   bool isInCart() {
-    if (basketBloc.getProductOrServiceQuantityInCart(widget.product.id!) == 0) {
-      return false;
-    } else {
-      return true;
+    var result = false;
+    for (var data in basketBloc.basketItems) {
+      if (widget.product.id! == data.item?.id) {
+        result = true;
+      }
+      result = false;
     }
+    // if (basketBloc.getProductOrServiceQuantityInCart(widget.product.id!) == 0) {
+    //   return false;
+    // } else {
+    //   return true;
+    // }
+    return result;
   }
 
   void removeProductFromCart() async {

@@ -100,11 +100,11 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          appendStringDot("${product.name}", 10),
+          appendStringDot("${product.name}", 12),
           maxLines: 1,
           style: TextStyle(
             color: blackFont,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             fontSize: 14,
             fontFamily: "Inter",
           ),
@@ -117,50 +117,56 @@ class ShoppingCartTileForProduct extends StatelessWidget {
     return Container(
       width: 100,
       color: Colors.transparent,
-      child: Center(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            RoundedBackgroundIcon(
-              backgroundColor: iconBtnGrey,
-              icon: Icon(
-                SlydoAppIcon.minus,
-                color: blackFont,
-                size: 2,
-              ),
-              onTap: onDecreaseQty,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          getProductPriceWidget(),
+          Expanded(
+            child: Row(
+              children: [
+                RoundedBackgroundIcon(
+                  backgroundColor: iconBtnGrey,
+                  icon: Icon(
+                    SlydoAppIcon.minus,
+                    color: blackFont,
+                    size: 2,
+                  ),
+                  onTap: onDecreaseQty,
+                ),
+                Expanded(
+                  child: SizedBox(
+                    width: 10,
+                  ),
+                ),
+                Text(
+                  basketItem.getQty().toString(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                    fontFamily: "Inter",
+                  ),
+                ),
+                Expanded(
+                  child: SizedBox(
+                    width: 10,
+                  ),
+                ),
+                RoundedBackgroundIcon(
+                  backgroundColor: iconBtnGrey,
+                  icon: Icon(
+                    SlydoAppIcon.plus,
+                    color: blackFont,
+                    size: 14, // Adjust the size as needed
+                  ),
+                  onTap: onIncreaseQty,
+                ),
+              ],
             ),
-            Expanded(
-              child: SizedBox(
-                width: 10,
-              ),
-            ),
-            Text(
-              basketItem.getQty().toString(),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: blackFont,
-                fontFamily: "Inter",
-              ),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: 10,
-              ),
-            ),
-            RoundedBackgroundIcon(
-              backgroundColor: iconBtnGrey,
-              icon: Icon(
-                SlydoAppIcon.plus,
-                color: blackFont,
-                size: 14, // Adjust the size as needed
-              ),
-              onTap: onIncreaseQty,
-            ),
-          ],
-        ),
+          ),
+          getSubTotalPriceWidget(),
+        ],
       ),
     );
   }
@@ -208,6 +214,9 @@ class ShoppingCartTileForProduct extends StatelessWidget {
           height: 2,
         ),
         getSellerName(context),
+        SizedBox(
+          height: 10,
+        ),
         if (color.isNotEmpty) ...[
           SizedBox(
             height: 2,
@@ -220,42 +229,35 @@ class ShoppingCartTileForProduct extends StatelessWidget {
           ),
           getSize(size)
         ],
-        SizedBox(
-          height: 2,
-        ),
-        getSubTotalPriceWidget(),
         if (concatenatedText != "") ...[
           Text(
-            "Add-ons: $concatenatedText",
+            "Adds-ons : $concatenatedText",
             maxLines: 3,
             style: TextStyle(
-                fontSize: 12, color: darkGrey, fontWeight: FontWeight.w600),
+                fontSize: 10,
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter"),
           ),
         ],
         SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Subtotal",
-              style: TextStyle(
-                fontSize: 12,
-                color: darkGrey,
-                fontWeight: FontWeight.w500,
-                fontFamily: "Inter",
-              ),
-            ),
-            getTotalPriceWidget(),
-          ],
+        Text(
+          "Subtotal",
+          style: TextStyle(
+            fontSize: 12,
+            color: darkGrey,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
         ),
         // getTotalPriceWidget(),
       ],
     );
   }
 
-  Widget getTotalPriceWidget() {
+  Widget getSubTotalPriceWidget() {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -268,6 +270,8 @@ class ShoppingCartTileForProduct extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
+          // appendStringDot(
+          //     moneyDisplayNormalizer(int.parse(getProductPrice())), 8),
           moneyDisplayNormalizer(int.parse(getTotalPrice())),
           style: TextStyle(
             color: blackFont,
@@ -280,7 +284,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
     );
   }
 
-  Widget getSubTotalPriceWidget() {
+  Widget getProductPriceWidget() {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -293,9 +297,9 @@ class ShoppingCartTileForProduct extends StatelessWidget {
               fontSize: 14),
         ),
         Text(
-          // moneyDisplayNormalizer(int.parse(getProductPrice())),
-          appendStringDot(
-              moneyDisplayNormalizer(int.parse(getProductPrice())), 6),
+          moneyDisplayNormalizer(int.parse(getProductPrice())),
+          // appendStringDot(
+          //     moneyDisplayNormalizer(int.parse(getProductPrice())), 8),
           style: TextStyle(
             color: black,
             fontWeight: FontWeight.w500,
@@ -313,7 +317,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       style: TextStyle(
         fontSize: 12,
         color: darkGrey,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w500,
         fontFamily: "Inter",
       ),
     );
@@ -327,11 +331,11 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         //   style: TextStyle(fontSize: 10, color: darkGrey),
         // ),
         Text(
-          color,
+          "Color : $color",
           style: TextStyle(
-            fontSize: 12,
-            color: black,
-            fontWeight: FontWeight.w500,
+            fontSize: 10,
+            color: blackFont,
+            fontWeight: FontWeight.w400,
             fontFamily: "Inter",
           ),
         ),
@@ -347,11 +351,11 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         //   style: TextStyle(fontSize: 10, color: darkGrey),
         // ),
         Text(
-          size,
+          "Size : $size",
           style: TextStyle(
-            fontSize: 12,
-            color: black,
-            fontWeight: FontWeight.w500,
+            fontSize: 10,
+            color: blackFont,
+            fontWeight: FontWeight.w400,
             fontFamily: "Inter",
           ),
         ),
