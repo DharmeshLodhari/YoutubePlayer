@@ -125,7 +125,14 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
         /// to getDefault selected address
         for (ShippingAddress address in itemList) {
-          if (address.is_default == true) {
+          if (address.is_default == true && isForSelection == false) {
+            selectedShippingAddress = address;
+            break;
+          }
+
+          if (isForSelection == true &&
+              selectedShippingAddress != null &&
+              selectedShippingAddress?.id == address.id) {
             selectedShippingAddress = address;
             break;
           }
@@ -172,7 +179,14 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
     /// to getDefault selected address
     for (ShippingAddress address in itemList) {
-      if (address.is_default == true) {
+      if (address.is_default == true && isForSelection == false) {
+        selectedShippingAddress = address;
+        break;
+      }
+
+      if (isForSelection == true &&
+          selectedShippingAddress != null &&
+          selectedShippingAddress?.id == address.id) {
         selectedShippingAddress = address;
         break;
       }
@@ -386,6 +400,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
     // if (itemList[index].is_default == true) {
     //   selectedShippingAddress = itemList[index];
     // }
+
     return Container(
       // height: 120,
       margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -451,7 +466,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                 SizedBox(height: 10),
                 Row(
                   children: [
-                    if (isForSelection == true)
+                    if (isForSelection == false)
                       InkWell(
                         onTap: itemList[index].is_default!
                             ? null

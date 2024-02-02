@@ -16,6 +16,7 @@ class SharedCartModel {
   List<String>? members;
   String? customerUsername;
   String? createdAt;
+  bool? splitBillEvenly = false;
 
   SharedCartModel({
     this.id,
@@ -25,6 +26,7 @@ class SharedCartModel {
     this.members,
     this.customerUsername,
     this.createdAt,
+    this.splitBillEvenly,
   });
 
   SharedCartModel.fromJson(dynamic json) {

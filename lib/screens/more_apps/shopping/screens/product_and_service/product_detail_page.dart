@@ -2319,10 +2319,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       shippingProcessBloc.updateBuyNowProduct(product, addresses[0]);
       Navigator.pushNamed(context, Routes.DELIVERY_OPTION);
     } else {
-      await Navigator.of(context)
-          .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
-        "isForSelection": true,
-      });
+      await Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
       setState(() {});
     }
     // bool result = await showDisclaimerDialogueForGoods(context);

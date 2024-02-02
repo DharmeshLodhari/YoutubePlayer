@@ -449,7 +449,7 @@ class _AddProductState extends State<AddProduct> {
                         displaySelectedAddOn(),
                       ],
                       const SizedBox(height: 16),
-                      defaultAddress == null ? SizedBox() : address(),
+                      address(),
                       const SizedBox(height: 30),
                       getSubmitButton(),
                       const SizedBox(height: 20),
@@ -2687,14 +2687,15 @@ class _AddProductState extends State<AddProduct> {
   }
 
   Widget address() {
-    // print(defaultAddress!.city);
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isEmpty) ...[
+          ...[
             Text(
-              'Dispatch Address',
+              !isEmpty && defaultAddress != null
+                  ? 'Dispatch Address'
+                  : "Add a dispatch Address",
               maxLines: 1,
               style: TextStyle(
                   color: darkGrey,
@@ -2707,11 +2708,16 @@ class _AddProductState extends State<AddProduct> {
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              if (!isEmpty) {
+              if (!isEmpty && defaultAddress != null) {
                 Navigator.of(context)
                     .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
                   "isForSelection": true,
-                }).whenComplete(() => getAddressList());
+                  "shippingAddress": defaultAddress,
+                  "onShippingAddressChange": (address) {
+                    defaultAddress = address;
+                    setState(() {});
+                  }
+                });
               } else {
                 NavigationUtil.push(
                   context,
@@ -2726,9 +2732,9 @@ class _AddProductState extends State<AddProduct> {
                 Flexible(
                   flex: 2,
                   child: Text(
-                    isEmpty
-                        ? "Add a dispatch Address"
-                        : "${defaultAddress?.addressLineOne}, ${defaultAddress?.addressLineTwo}, ${defaultAddress?.city}, ${defaultAddress?.stateName}, ${defaultAddress?.country}, ${defaultAddress?.zip}",
+                    !isEmpty && defaultAddress != null
+                        ? "${defaultAddress?.addressLineOne}, ${defaultAddress?.addressLineTwo}, ${defaultAddress?.city}, ${defaultAddress?.stateName}, ${defaultAddress?.country}, ${defaultAddress?.zip}"
+                        : "",
                     maxLines: 2,
                     style: TextStyle(
                         color: isEmpty ? navyBlue : blackFont,

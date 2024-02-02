@@ -1,3 +1,4 @@
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -6,6 +7,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MembersPaymentTile extends StatefulWidget {
   MembersPaymentTile({this.members, this.index, super.key});
@@ -21,9 +23,11 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
   double percentageValue = 0.0;
   final _formKey = GlobalKey<FormState>();
   TextEditingController _controller = TextEditingController();
+  late SharedCartBloc sharedCartBloc;
 
   @override
   Widget build(BuildContext context) {
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 7, vertical: 7),
@@ -34,6 +38,7 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
         child: GestureDetector(
           onTap: () {
             _buildPaymentPercentageDialog(context);
+            setState(() {});
           },
           child: ListTile(
             leading: ClipOval(
@@ -71,7 +76,7 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
                 max: 100,
                 inactiveColor: greyBorderColor,
                 activeColor: richPink,
-                value: 50.0,
+                value: widget.members?.paymentPercentageValue?.toDouble() ?? 0,
                 onChanged: (newValue) {
                   // setState(() {
                   //   final to = Duration(milliseconds: newValue.floor());
@@ -98,7 +103,7 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    '10%',
+                    "${widget.members?.paymentPercentageValue.toString() ?? 0}%",
                     style: TextStyle(
                         color: blackFont,
                         fontWeight: FontWeight.w600,
@@ -121,6 +126,7 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
         actionBgColor: navyBlue,
         actionText: 'Save',
         firstActionPrimary: false,
+        isOverlayTapDismiss: false,
         content: StatefulBuilder(builder: (context, setState) {
           return Form(
             key: _formKey,
@@ -208,7 +214,11 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
           );
         }),
         ButtonOnPressed: () async {
-          Navigator.pop(context, true);
+          sharedCartBloc.updatePaymentPercentageValue(
+              int.parse(_controller.text.trim()), widget.index ?? 0);
+          percentageValue = 0.0;
+          _controller.clear();
+          setState(() {});
         });
   }
 }

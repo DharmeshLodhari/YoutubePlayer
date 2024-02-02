@@ -107,7 +107,7 @@ class _HomeState extends State<Home> {
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
-    getList();
+    getAddressList();
     getYarnList(categoryId: null);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -1079,7 +1079,7 @@ class _HomeState extends State<Home> {
       description: AppLocalization.of(context)!.addressFoundMsg,
       ButtonOnPressed: () {
         NavigationUtil.push(context, screen: AddEditShippingAddress())
-            .whenComplete(() => getList());
+            .whenComplete(() => getAddressList());
       },
     );
   }
@@ -1093,23 +1093,15 @@ class _HomeState extends State<Home> {
       actionText: AppLocalization.of(context)!.selectAddress,
       description: AppLocalization.of(context)!.changeAddressMsg,
       ButtonOnPressed: () async {
-        await Navigator.of(context).pushNamed(
-          Routes.DISPATCH_ADDRESS,
-          arguments: {
-            "isForSelection": true,
-            "shippingAddress": defaultAddress,
-            "onShippingAddressChange": (address) {
-              defaultAddress = address;
-              setState(() {});
-            }
-          },
-        );
+        await Navigator.of(context)
+            .pushNamed(Routes.DISPATCH_ADDRESS)
+            .whenComplete(() => getAddressList());
         setState(() {});
       },
     );
   }
 
-  void getList() async {
+  void getAddressList() async {
     if (mounted) setState(() {});
 
     Map<String, dynamic>? result =

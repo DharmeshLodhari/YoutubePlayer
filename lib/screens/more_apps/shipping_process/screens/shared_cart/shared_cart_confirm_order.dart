@@ -347,7 +347,7 @@ class _SharedCartConfirmOrderState extends State<SharedCartConfirmOrder> {
         ),
         Text(
           // "₦${moneyDisplayNormalizer(shippingProcessBloc.getTotalShipping())}",
-          "₦0.00}",
+          "₦0.00",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,

@@ -186,8 +186,8 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           ),
           controller: _refreshController,
           onRefresh: _onRefresh,
-          // child: _buildListOfCartItems(),
-          child: Container(),
+          child: _buildListOfCartItems(),
+          // child: Container(),
         ),
       ),
     );

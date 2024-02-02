@@ -24,6 +24,15 @@ class SharedCartBloc extends ChangeNotifier {
     return _cartList[_currentSelectedIndex!];
   }
 
+  int? _memberDetailsCurrentIndex;
+
+  int? get memberDetailsCurrentIndex => _memberDetailsCurrentIndex;
+
+  set memberDetailsCurrentIndex(int? value) {
+    _memberDetailsCurrentIndex = value;
+    notifyListeners();
+  }
+
   // List<Product> _cartItemList = [];
   //
   // List get cartItemList => _cartItemList;
@@ -31,5 +40,19 @@ class SharedCartBloc extends ChangeNotifier {
   // set items(List<Product> value) {
   //   _cartItemList = value;
   //   notifyListeners();
+  // }
+
+  void updatePaymentPercentageValue(int val, int index) {
+    getSharedCartModel().membersDetails?[index].paymentPercentageValue = val;
+    notifyListeners();
+  }
+
+  void updateSplitBillEvenly(int val, int index) {
+    getSharedCartModel().membersDetails?[index].paymentPercentageValue = val;
+    notifyListeners();
+  }
+
+  // int spilitBillEvenly() {
+  //   if()
   // }
 }
