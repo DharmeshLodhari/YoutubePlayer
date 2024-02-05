@@ -75,13 +75,14 @@ class BasketBloc extends ChangeNotifier {
 
   // this will add the product or service in the cart;
   void addItemToCart(
-      {required var item,
+      {required PurchasableItem item,
       required String type,
       Variant? variant,
       List<AddOns>? addOns,
       bool withApiCall = true}) {
     if (variant != null) {
-      addItemInBasketWithQty(item, type, variant, withApiCall: withApiCall);
+      addItemInBasketWithVariants(item, type, variant,
+          withApiCall: withApiCall);
     } else if (addOns != null && addOns.isNotEmpty) {
       addItemInBasketWithAddOns(item, type, addOns, withApiCall: withApiCall);
     } else if (variant != null && addOns != null && addOns.isEmpty) {
@@ -143,7 +144,7 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMapCopy.remove(merchantFullName);
   }
 
-  void addItemInBasketWithQty(
+  void addItemInBasketWithVariants(
       PurchasableItem item, String type, Variant variant,
       {bool withApiCall = true}) {
     /// if we create or update existing basket item we will store that item to this variable
@@ -153,8 +154,6 @@ class BasketBloc extends ChangeNotifier {
     /// if there is no item in basket then we will add that directly with 1 qty
     /// else we will check if same item present then we will increase qty of already added basket item
     if (_basketItems.isEmpty) {
-      Product product = item as Product;
-
       BasketItem basketItem = BasketItem(
         type: type,
         item: item,
@@ -218,7 +217,7 @@ class BasketBloc extends ChangeNotifier {
     }
   }
 
-  void addItemInBasketWithQtyOld(var item, String type, Variant variant) {
+  void addItemInBasketWithVariantsOld(var item, String type, Variant variant) {
     bool itemExists = false;
 
     for (var element in _items) {
@@ -314,7 +313,63 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addItemInBasketWithAddOns(var item, String type, List<AddOns>? addOns,
+  void addItemInBasketWithAddOns(
+      PurchasableItem item, String type, List<AddOns>? addOns,
+      {bool withApiCall = true}) {
+    /// if we create or update existing basket item we will store that item to this variable
+    /// for sending to server
+    BasketItem? addedOrUpdatedItem;
+
+    /// if there is no item in basket then we will add that directly with 1 qty
+    /// else we will check if same item present then we will increase qty of already added basket item
+    bool isSameItemPresent = false;
+
+    for (BasketItem basketItem in _basketItems) {
+      /// if item is product
+      if (item.isProduct) {
+        if (basketItem.item is Product) {
+          Product alreadyPresentProduct = basketItem.item as Product;
+          Product newProduct = item as Product;
+
+          /// check for product id is same then check for addOns
+          if (alreadyPresentProduct.id == newProduct.id) {
+            basketItem.qty = (basketItem.qty ?? 0) + 1;
+            isSameItemPresent = true;
+
+            addedOrUpdatedItem = basketItem;
+            break;
+          }
+        }
+      }
+
+      /// if item is service
+      else if (basketItem.item?.isService ?? false) {
+        /// TODO: write code for service
+      }
+    }
+
+    /// if same item is not present then we will add new basket item with qty 1
+    if (isSameItemPresent == false) {
+      BasketItem basketItem = BasketItem(
+          type: type, item: item, qty: (item as Product).qty, addOns: addOns);
+      addedOrUpdatedItem = basketItem;
+      _basketItems.add(basketItem);
+    }
+
+    notifyListeners();
+
+    /// add or update this item to the server
+    if (withApiCall && addedOrUpdatedItem != null) {
+      BasketListModifierPayload data = _basketItems.toPayload(
+          addedOrUpdatedItem,
+          actionType: BasketListModifierAction.increaseQty);
+      if (data.payload.isNotEmpty) {
+        // ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
+      }
+    }
+  }
+
+  void addItemInBasketWithAddOnsOld(var item, String type, List<AddOns>? addOns,
       {bool withApiCall = true}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -749,10 +804,6 @@ class BasketBloc extends ChangeNotifier {
       );
       if (data.payload.isNotEmpty) {
         if (data.payloadType == BasketListModifierPayloadTypes.remove) {
-          _basketItems.remove(addedOrUpdatedItem);
-          notifyListeners();
-
-          /// to remove from cart
           ShoppingAuthService().removeItemFromShoppingCart(data.payload);
         } else {
           ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:badges/badges.dart' as badges;
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/service_hub/screens/jobs_dashboard.dart'
 import 'package:Slydo/screens/more_apps/service_hub/service_hub.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -218,7 +219,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
+    if (basketBloc.basketItems.length == 0) {
       return null;
     }
     return Text(
@@ -234,8 +235,8 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
+    basketBloc.basketItems.forEach((element) {
+      totalItem = totalItem + int.parse(element.qty.toString());
     });
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
@@ -246,7 +247,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.items.length == 0
+          padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,

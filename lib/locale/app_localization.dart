@@ -3556,6 +3556,13 @@ class AppLocalization {
     );
   }
 
+  String get selectAddons {
+    return Intl.message(
+      "Select addOn first",
+      name: "selectAddons",
+    );
+  }
+
   String get selectVariantColor {
     return Intl.message(
       "Select colour first",

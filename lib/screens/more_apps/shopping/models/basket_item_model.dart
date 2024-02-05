@@ -11,6 +11,7 @@ class BasketItem {
     this.item,
     this.qty,
     this.variants,
+    this.addOns,
   });
 
   BasketItem.fromJson(dynamic json) {
@@ -23,14 +24,22 @@ class BasketItem {
         variants?.add(Variant.fromJson(v));
       });
     }
+    if (json['addOns'] != null) {
+      addOns = [];
+      json['addOns'].forEach((v) {
+        addOns?.add(AddOns.fromJson(v));
+      });
+    }
   }
 
   bool get hasVariant => variants?.isNotEmpty ?? false;
+  bool get hasAddOns => addOns?.isNotEmpty ?? false;
 
   String? type;
   PurchasableItem? item;
   int? qty;
   List<Variant>? variants;
+  List<AddOns>? addOns;
 
   int getQty() {
     int qty = 0;
@@ -165,7 +174,26 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
           } else {
             payloadType = BasketListModifierPayloadTypes.addOrUpdate;
           }
+
+          /// to remove those items from basket item which's variant's qty =0;
+          this.removeWhere((element) => element.variants?.isEmpty ?? false);
         }
+      } else if (item.hasAddOns) {
+        data["id"] = product.id;
+        data["type"] = item.type;
+        data["qty"] = item.qty;
+        List<Map<String, dynamic>> addOnsDataList = (item.item as Product)
+            .getSelectedAddsOns()
+            .map((e) => {
+                  "id": e.id,
+                  "options": e
+                      .getSelectedAddsOnsOption()
+                      .map((option) =>
+                          {"id": option.id, "quantity": option.quantity})
+                      .toList()
+                })
+            .toList();
+        data["add_ons"] = addOnsDataList;
       }
 
       /// product without variant
@@ -176,6 +204,8 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
 
         if (item.qty == 0) {
           payloadType = BasketListModifierPayloadTypes.remove;
+
+          this.remove(item);
         } else {
           payloadType = BasketListModifierPayloadTypes.addOrUpdate;
         }

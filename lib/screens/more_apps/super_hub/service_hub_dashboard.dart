@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -120,7 +121,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
+    if (basketBloc.basketItems.length == 0) {
       return null;
     }
     return Text(
@@ -132,8 +133,8 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
+    basketBloc.basketItems.forEach((element) {
+      totalItem = totalItem + int.parse(element.qty.toString());
     });
     return totalItem > 99 ? '99+' : totalItem.toString();
   }
@@ -146,13 +147,13 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.items.length == 0
+          padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
               : EdgeInsets.only(
-              left: getBadgeCount().length == 1 ? 6 : 8,
-              right: 6,
-              top: 4,
-              bottom: 4),
+                  left: getBadgeCount().length == 1 ? 6 : 8,
+                  right: 6,
+                  top: 4,
+                  bottom: 4),
           elevation: 0,
         ),
         badgeAnimation: const badges.BadgeAnimation.rotation(

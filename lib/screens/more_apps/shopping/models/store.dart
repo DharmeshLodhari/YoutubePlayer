@@ -726,6 +726,23 @@ class Product extends PurchasableItem {
 
     return sizeGroups;
   }
+
+  List<AddOns> getSelectedAddsOns({bool isRequired = false}) {
+    List<AddOns> selectedAddOnsList = [];
+
+    for (AddOns addOn in addOnsModels ?? []) {
+      bool isSelected = false;
+
+      isSelected = addOn.options
+              ?.where((addOns) => addOns.isSelected() == true)
+              .toList()
+              .isNotEmpty ??
+          false;
+
+      if (isSelected) selectedAddOnsList.add(addOn);
+    }
+    return selectedAddOnsList;
+  }
 }
 
 enum VariantTypes { Color, Size, ColorAndSize }
@@ -1132,6 +1149,32 @@ class AddOns {
     isRequired = json['is_required'];
     isChecked = json['is_checked'] ?? false;
     createdAt = getProductDateTime(json['created_at']);
+  }
+
+  bool isSelected() {
+    if (inputType == "radio") {
+      if (name == groupValue) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (inputType == "checkbox") {
+      if (isChecked ?? false) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  List<AddOnOption> getSelectedAddsOnsOption() {
+    List<AddOnOption> selectedAddOnsList = [];
+
+    for (AddOnOption addOn in options ?? []) {
+      if (addOn.isChecked) selectedAddOnsList.add(addOn);
+    }
+    return selectedAddOnsList;
   }
 
   static DateTime getProductDateTime(var date) {

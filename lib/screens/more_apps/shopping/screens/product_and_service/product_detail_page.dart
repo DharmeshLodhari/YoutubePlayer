@@ -11,7 +11,6 @@ import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -39,7 +38,6 @@ import '../../../../home_tab/qr_code_page.dart';
 import '../../../payment_and_banking/models/FinancialInstitution.dart';
 import '../../../payment_and_banking/models/VirtualAccount.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import '../../../user_profile/user_auth.dart';
 import '../../../yarn/models/share_as_yarn_model.dart';
 import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
@@ -476,7 +474,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         badgeStyle: badges.BadgeStyle(
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
-            padding: basketBloc.items.length == 0
+            padding: basketBloc.basketItems.length == 0
                 ? EdgeInsets.all(0)
                 : EdgeInsets.all(4)),
         child: Center(
@@ -548,59 +546,63 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       width: 44,
       icon: Icon(
         SlydoAppIcon.add_cart,
-        color: product!.isAvailable! ? navyBlue : greyBorderColor,
+        // color: product!.isAvailable! ? navyBlue : greyBorderColor,
+        color: navyBlue,
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        if (product?.isAvailable ?? false) {
-          if (isValidCustomer) {
-            if (product?.variantModels?.isNotEmpty ?? false) {
-              if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                // print("Both color and size lists are showing.");
-                if (selectedVariant != null) {
-                  addToCart();
-                  return true;
-                } else {
-                  showToast(
-                      message:
-                          AppLocalization.of(context)!.selectVariantColorSize);
-                }
-              } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-                // print("color list is showing.");
-                if (selectedVariant != null) {
-                  addToCart();
-                  return true;
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantSize);
-                }
-              } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-                // print("size list is showing.");
-                if (selectedVariant != null) {
-                  addToCart();
-                  return true;
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantColor);
-                }
+        // if (product?.isAvailable ?? false) {
+        if (isValidCustomer) {
+          if (product?.variantModels?.isNotEmpty ?? false) {
+            if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+              // print("Both color and size lists are showing.");
+              if (selectedVariant != null) {
+                addToCart();
+                return true;
+              } else {
+                showToast(
+                    message:
+                        AppLocalization.of(context)!.selectVariantColorSize);
               }
-            } else if (product?.addOnsModels?.isNotEmpty == true) {
-              addToCart();
-              return true;
-            } else {
-              //product has no variant or is a service
-              addToCart();
-              return true;
+            } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+              // print("color list is showing.");
+              if (selectedVariant != null) {
+                addToCart();
+                return true;
+              } else {
+                showToast(
+                    message: AppLocalization.of(context)!.selectVariantSize);
+              }
+            } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+              // print("size list is showing.");
+              if (selectedVariant != null) {
+                addToCart();
+                return true;
+              } else {
+                showToast(
+                    message: AppLocalization.of(context)!.selectVariantColor);
+              }
             }
+          } else if (product?.addOnsModels?.isNotEmpty == true) {
+            if (product?.getSelectedAddsOns().isNotEmpty == true) {
+              addToCart();
+            } else {
+              showToast(message: AppLocalization.of(context)!.selectAddons);
+            }
+            return true;
           } else {
-            showToast(
-                message:
-                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+            //product has no variant or is a service
+            addToCart();
+            return true;
           }
         } else {
-          showToast(message: AppLocalization.of(context)!.productOutOfStock);
+          showToast(
+              message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
         }
+        // } else {
+        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
+        // }
       },
     );
   }
@@ -611,10 +613,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     print("BASKETBLOC:- ${basketBloc.basketItems}");
 
     basketBloc.addItemToCart(
-      item: product?.copyWith(qty: 1),
+      item: product!.copyWith(qty: 1),
       type: type,
       variant: selectedVariant?.copyWith(quantity: 1),
-      addOns: null,
+      addOns: product?.getSelectedAddsOns(),
     );
   }
 
@@ -844,7 +846,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  int getBadgeCount() {
+  String getBadgeCount() {
     int totalItem = 0;
 
     for (var item in basketBloc.basketItems) {
@@ -863,7 +865,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       }
     }
 
-    return totalItem;
+    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   Widget floatingActionBar() {

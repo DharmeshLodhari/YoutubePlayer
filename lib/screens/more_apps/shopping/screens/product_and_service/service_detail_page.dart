@@ -480,7 +480,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         badgeStyle: badges.BadgeStyle(
             shape: badges.BadgeShape.circle,
             badgeColor: naturalGreen,
-            padding: basketBloc.items.length == 0
+            padding: basketBloc.basketItems.length == 0
                 ? EdgeInsets.all(0)
                 : EdgeInsets.all(4)),
         child: Center(
@@ -591,7 +591,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       badgeStyle: badges.BadgeStyle(
         shape: badges.BadgeShape.circle,
         badgeColor: naturalGreen,
-        padding: basketBloc.items.length == 0
+        padding: basketBloc.basketItems.length == 0
             ? EdgeInsets.all(0)
             : EdgeInsets.all(4),
       ),
@@ -612,7 +612,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
+    if (basketBloc.basketItems.length == 0) {
       return null;
     }
     return Text(
@@ -622,12 +622,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
-  int getBadgeCount() {
+  String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
+    basketBloc.basketItems.forEach((element) {
+      totalItem = totalItem + int.parse(element.qty.toString());
     });
-    return totalItem;
+    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   Widget floatingActionBar() {

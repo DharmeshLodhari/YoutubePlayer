@@ -350,7 +350,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.items.length == 0
+          padding: basketBloc.basketItems.length == 0
               ? EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
@@ -376,7 +376,7 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
+    if (basketBloc.basketItems.length == 0) {
       return null;
     }
     return Text(
@@ -391,8 +391,8 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
+    basketBloc.basketItems.forEach((element) {
+      totalItem = totalItem + int.parse(element.qty.toString());
     });
     // for (var item in basketBloc.items) {
     //

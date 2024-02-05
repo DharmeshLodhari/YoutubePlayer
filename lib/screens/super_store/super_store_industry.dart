@@ -1,23 +1,17 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
-import 'package:Slydo/screens/super_store/find_business_list_screen.dart';
 import 'package:Slydo/screens/super_store/shop_list_screen.dart';
-import 'package:Slydo/screens/super_store/widget/product_category_selection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:badges/badges.dart' as badges;
+
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
 import '../../utils/util.dart';
 import '../../widget/rounded_background_icon.dart';
-import '../more_apps/shopping/models/store.dart';
-import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
-import '../more_apps/yarn/yarn_setting_screen.dart';
 
 class SuperStoreIndustry extends StatefulWidget {
   final String next;
@@ -269,7 +263,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
-          padding: basketBloc.items.length == 0
+          padding: basketBloc.basketItems.length == 0
               ? EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
@@ -295,7 +289,7 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
   }
 
   Widget? getBadgeContent() {
-    if (basketBloc.items.length == 0) {
+    if (basketBloc.basketItems.length == 0) {
       return null;
     }
     return Text(
@@ -311,8 +305,8 @@ class _SuperStoreState extends State<SuperStoreIndustry> {
 
   String getBadgeCount() {
     int totalItem = 0;
-    basketBloc.items.forEach((element) {
-      totalItem = totalItem + int.parse(element['qty'].toString());
+    basketBloc.basketItems.forEach((element) {
+      totalItem = totalItem + int.parse(element.qty.toString());
     });
     // for (var item in basketBloc.items) {
     //

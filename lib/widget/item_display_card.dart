@@ -440,8 +440,34 @@ class _DisplayProductState extends State<DisplayProduct> {
 
     if (widget.product.isAvailable!) {
       String type = "product";
-      basketBloc.addItemToCart(
-          item: widget.product.copyWith(qty: 1), type: type);
+      if (widget.product.variantModels?.isEmpty == false) {
+        showToast(message: 'Please select product color or size');
+        Product currentProduct = Product();
+        currentProduct.name = widget.product.name;
+        currentProduct.id = widget.product.id;
+        currentProduct.shortDescription = widget.product.shortDescription;
+        currentProduct.description = "";
+        currentProduct.condition = widget.product.condition;
+        currentProduct.currency = widget.product.currency;
+        currentProduct.price = widget.product.price;
+        currentProduct.availableFrom =
+            widget.product.availableFrom ?? DateTime.now();
+        currentProduct.isAvailable = widget.product.isAvailable;
+        currentProduct.qrCode = widget.product.qrCode;
+        currentProduct.seller = widget.product.seller;
+        currentProduct.manufacturer = widget.product.manufacturer;
+        currentProduct.serverImages = widget.product.serverImages;
+        currentProduct.rating = widget.product.rating;
+        currentProduct.discountValue = widget.product.discountValue;
+        currentProduct.discountIsActive = widget.product.discountIsActive;
+        currentProduct.discountType = widget.product.discountType;
+        currentProduct.discountedPrice = widget.product.discountedPrice;
+        Navigator.pushNamed(context, '/product',
+            arguments: {"product": currentProduct});
+      } else {
+        basketBloc.addItemToCart(
+            item: widget.product.copyWith(qty: 1), type: type);
+      }
       // late var mapData;
       // basketBloc.items.forEach((element) {
       //   if (element["item"].id == widget.product.id) {
