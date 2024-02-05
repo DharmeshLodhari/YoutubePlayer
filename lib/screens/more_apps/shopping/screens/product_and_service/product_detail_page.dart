@@ -851,7 +851,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           // If there are variants, calculate the total quantity from variants
 
           totalItem +=
-              int.parse(item.variants?.first.quantity?.toString() ?? "0");
+              int.parse(item.getVariant()?.quantity?.toString() ?? "0");
         } else {
           // If the variant list is empty, add the quantity to the total
           totalItem += int.parse(item.qty.toString());
@@ -2041,7 +2041,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         // ),
         // _buildAddonList(),
         ...product?.addOnsModels
-                ?.map((addon) => AddOnTile(addOns: addon))
+                ?.map((addon) =>
+                    AddOnTile(addOns: addon, isValidCustomer: isValidCustomer))
                 .toList() ??
             []
       ],

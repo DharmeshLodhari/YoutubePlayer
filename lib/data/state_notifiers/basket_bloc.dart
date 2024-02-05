@@ -209,9 +209,11 @@ class BasketBloc extends ChangeNotifier {
 
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
-      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem);
-      if (data.isNotEmpty) {
-        ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+      BasketListModifierPayload data = _basketItems.toPayload(
+          addedOrUpdatedItem,
+          actionType: BasketListModifierAction.increaseQty);
+      if (data.payload.isNotEmpty) {
+        ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
       }
     }
   }
@@ -367,9 +369,11 @@ class BasketBloc extends ChangeNotifier {
 
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
-      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem);
-      if (data.isNotEmpty) {
-        ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+      BasketListModifierPayload data = _basketItems.toPayload(
+          addedOrUpdatedItem,
+          actionType: BasketListModifierAction.increaseQty);
+      if (data.payload.isNotEmpty) {
+        ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
       }
     }
   }
@@ -415,9 +419,11 @@ class BasketBloc extends ChangeNotifier {
 
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
-      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem!);
-      if (data.isNotEmpty) {
-        ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+      BasketListModifierPayload data = _basketItems.toPayload(
+          addedOrUpdatedItem!,
+          actionType: BasketListModifierAction.increaseQty);
+      if (data.payload.isNotEmpty) {
+        ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
       }
     }
   }
@@ -689,9 +695,11 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
 
     if (withApiCall && addedOrUpdatedItem != null) {
-      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem);
-      if (data.isNotEmpty) {
-        ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+      BasketListModifierPayload data = _basketItems.toPayload(
+          addedOrUpdatedItem,
+          actionType: BasketListModifierAction.increaseQty);
+      if (data.payload.isNotEmpty) {
+        ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
       }
     }
   }
@@ -735,16 +743,19 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
 
     if (withApiCall && addedOrUpdatedItem != null) {
-      Map<String, dynamic> data = _basketItems.toPayload(addedOrUpdatedItem);
-      if (data.isNotEmpty) {
-        if (addedOrUpdatedItem.getQty() == 0 && data["qty"] == 0) {
+      BasketListModifierPayload data = _basketItems.toPayload(
+        addedOrUpdatedItem,
+        actionType: BasketListModifierAction.decreaseQty,
+      );
+      if (data.payload.isNotEmpty) {
+        if (data.payloadType == BasketListModifierPayloadTypes.remove) {
           _basketItems.remove(addedOrUpdatedItem);
           notifyListeners();
 
           /// to remove from cart
-          ShoppingAuthService().removeItemFromShoppingCart(data);
+          ShoppingAuthService().removeItemFromShoppingCart(data.payload);
         } else {
-          ShoppingAuthService().addOrUpdateItemToShoppingCart(data);
+          ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
         }
       }
     }

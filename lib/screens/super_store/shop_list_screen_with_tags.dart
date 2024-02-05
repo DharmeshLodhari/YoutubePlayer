@@ -213,13 +213,13 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
             var tempList2 = result['results'];
             todaysDealList.addAll(tempList2);
           }
+        }
 
-          noItemInList = false;
-          isLoading = false;
+        noItemInList = false;
+        isLoading = false;
 
-          if (mounted) {
-            setState(() {});
-          }
+        if (mounted) {
+          setState(() {});
         }
 
         // if (itemList.isEmpty) {

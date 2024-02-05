@@ -78,50 +78,110 @@ class BasketItem {
     }
     return null;
   }
+
+  void cleanVariantsWithZeroQty() {
+    if (hasVariant) {
+      if (variants?.first.quantity == 0) {
+        variants = [];
+      }
+    }
+  }
+
+  Variant? getVariant() {
+    if (hasVariant) {
+      return variants?.first;
+    }
+    return null;
+  }
+}
+
+enum BasketListModifierPayloadTypes { addOrUpdate, remove }
+
+enum BasketListModifierAction { increaseQty, decreaseQty }
+
+class BasketListModifierPayload {
+  final Map<String, dynamic> payload;
+  final BasketListModifierPayloadTypes payloadType;
+
+  BasketListModifierPayload({required this.payloadType, required this.payload});
 }
 
 extension BasketItemListPayloadGenerator on List<BasketItem> {
-  Map<String, dynamic> toPayload(BasketItem item) {
+  BasketListModifierPayload toPayload(BasketItem item,
+      {required BasketListModifierAction actionType}) {
     Map<String, dynamic> data = {};
+
+    BasketListModifierPayloadTypes payloadType =
+        BasketListModifierPayloadTypes.addOrUpdate;
 
     /// for product
     if (item.item?.isProduct ?? false) {
       Product product = item.item as Product;
 
-      /// we will find all the basket Item with same product but different variant
-      List<BasketItem> listOfBasketItem = this.where((element) {
-        if (element.item?.isProduct ?? false) {
-          if ((element.item as Product).id == product.id) {
-            return true;
+      /// if we are building payload for product which have variant
+      if (item.hasVariant) {
+        /// first we will check if the any variant have zero qty then we will remove those variants
+        if (actionType == BasketListModifierAction.decreaseQty) {
+          this.forEach((element) {
+            element.cleanVariantsWithZeroQty();
+          });
+        }
+
+        // we will find all the basket Item with same product but different variant
+        List<BasketItem> listOfBasketItem = this.where((element) {
+          if (element.item?.isProduct ?? false) {
+            if ((element.item as Product).id == product.id) {
+              return true;
+            }
+          }
+          return false;
+        }).toList();
+
+        if (listOfBasketItem.isNotEmpty) {
+          List<Variant?> getListOfVariant = listOfBasketItem
+              .where((element) => element.variants?.isNotEmpty ?? false)
+              .toList()
+              .map((e) => e.variants?.first)
+              .toList();
+
+          List<Map<String, dynamic>> variantData = getListOfVariant
+              .where((element) => element != null)
+              .toList()
+              .map((e) =>
+                  <String, dynamic>{"id": e?.id, "quantity": e?.quantity})
+              .toList();
+
+          data["id"] = product.id;
+          data["type"] = item.type;
+
+          num qty = variantData.fold<num>(0,
+              (previousValue, element) => previousValue + element["quantity"]);
+
+          data["qty"] = qty;
+          data["variants"] = variantData;
+
+          if (variantData.isEmpty) {
+            payloadType = BasketListModifierPayloadTypes.remove;
+          } else {
+            payloadType = BasketListModifierPayloadTypes.addOrUpdate;
           }
         }
-        return false;
-      }).toList();
+      }
 
-      if (listOfBasketItem.isNotEmpty) {
-        List<Variant?> getListOfVariant =
-            listOfBasketItem.map((e) => e.variants?.first).toList();
-
-        List<Map<String, dynamic>> variantData = getListOfVariant
-            .where((element) => element != null)
-            .toList()
-            .map((e) => <String, dynamic>{"id": e?.id, "quantity": e?.quantity})
-            .toList()
-            .where((element) => element["quantity"] != 0)
-            .toList();
-
+      /// product without variant
+      else {
         data["id"] = product.id;
         data["type"] = item.type;
-        if (variantData.isEmpty) {
-          data["qty"] = item.qty;
+        data["qty"] = item.qty;
+
+        if (item.qty == 0) {
+          payloadType = BasketListModifierPayloadTypes.remove;
         } else {
-          data["qty"] = variantData.fold<num>(0,
-              (previousValue, element) => previousValue + element["quantity"]);
+          payloadType = BasketListModifierPayloadTypes.addOrUpdate;
         }
-        data["variants"] = variantData;
       }
     }
-
-    return data;
+    // return data;
+    return BasketListModifierPayload(payloadType: payloadType, payload: data);
   }
 }

@@ -9,9 +9,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AddOnTile extends StatefulWidget {
-  const AddOnTile({required this.addOns, super.key});
+  const AddOnTile(
+      {required this.addOns, required this.isValidCustomer, super.key});
 
   final AddOns addOns;
+  final bool isValidCustomer;
 
   @override
   State<AddOnTile> createState() => _AddOnTileState();
@@ -274,6 +276,10 @@ class _AddOnTileState extends State<AddOnTile> {
     required AddOns addOns,
     required AddOnOption addOnOption,
   }) {
+    if (widget.isValidCustomer == false) {
+      return Container();
+    }
+
     if (addOns.inputType == 'checkbox') {
       return Checkbox(
         visualDensity: const VisualDensity(
