@@ -831,10 +831,11 @@ class _AddProductState extends State<AddProduct> {
                               overflow: TextOverflow.fade,
                               softWrap: false,
                               style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontFamily: "Inter",
-                                  fontWeight: FontWeight.w600),
+                                color: navyBlue,
+                                fontSize: 16,
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             trailing: Icon(
                               SlydoAppIcon.checked,

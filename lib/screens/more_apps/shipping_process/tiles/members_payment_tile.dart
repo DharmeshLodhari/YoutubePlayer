@@ -37,7 +37,9 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
         decoration: decorateBox(),
         child: GestureDetector(
           onTap: () {
-            _buildPaymentPercentageDialog(context);
+            sharedCartBloc.getSharedCartModel().splitBillEvenly == false
+                ? _buildPaymentPercentageDialog(context)
+                : null;
             setState(() {});
           },
           child: ListTile(
@@ -76,7 +78,13 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
                 max: 100,
                 inactiveColor: greyBorderColor,
                 activeColor: richPink,
-                value: widget.members?.paymentPercentageValue?.toDouble() ?? 0,
+                value: sharedCartBloc.getSharedCartModel().splitBillEvenly ==
+                        true
+                    ? sharedCartBloc
+                        .getSharedCartModel()
+                        .getSplitBillEvenly()
+                        .toDouble()
+                    : widget.members?.paymentPercentageValue?.toDouble() ?? 0,
                 onChanged: (newValue) {
                   // setState(() {
                   //   final to = Duration(milliseconds: newValue.floor());
@@ -103,7 +111,9 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "${widget.members?.paymentPercentageValue.toString() ?? 0}%",
+                    sharedCartBloc.getSharedCartModel().splitBillEvenly == true
+                        ? "${sharedCartBloc.getSharedCartModel().getSplitBillEvenly().toStringAsFixed(2)}%"
+                        : "${widget.members?.paymentPercentageValue.toString() ?? 0}%",
                     style: TextStyle(
                         color: blackFont,
                         fontWeight: FontWeight.w600,

@@ -46,13 +46,4 @@ class SharedCartBloc extends ChangeNotifier {
     getSharedCartModel().membersDetails?[index].paymentPercentageValue = val;
     notifyListeners();
   }
-
-  void updateSplitBillEvenly(int val, int index) {
-    getSharedCartModel().membersDetails?[index].paymentPercentageValue = val;
-    notifyListeners();
-  }
-
-  // int spilitBillEvenly() {
-  //   if()
-  // }
 }

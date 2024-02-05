@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/checkout_product_service.dart';
@@ -65,6 +67,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   late UserBloc? userBloc;
   late BasketBloc basketBloc;
   late ShippingProcessBloc shippingProcessBloc;
+  late SharedCartBloc sharedCartBloc;
   List<String?>? displayProductImages = [];
 
   late bool isValidCustomer;
@@ -104,6 +107,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   // List addOnList = [];
   ScrollController scrollControllerAddOn = ScrollController();
   bool isLoading = false;
+  List<String> cartNameList = [];
+  String? selectType = "";
 
   @override
   void initState() {
@@ -131,7 +136,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     canReviewProduct();
 
     fetchReviewList();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      fetchCartData();
+    });
+
     super.initState();
+  }
+
+  void fetchCartData() async {
+    List<SharedCartModel> cartList = await getCartList();
+    cartNameList.add('My cart');
+    for (var cart in cartList) {
+      cartNameList.add(cart.name ?? "");
+    }
+    selectType = cartNameList[0];
   }
 
   void fetchReviewList() async {
@@ -211,7 +230,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
     if (productIsLoading) {
       return Scaffold(
         body: Center(
@@ -219,9 +242,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
       );
     }
-    basketBloc = Provider.of<BasketBloc>(context);
-    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     isValidCustomer = userBloc?.user.userName != product!.seller;
     return WillPopScope(
@@ -556,56 +576,120 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async {
-        // if (product!.isAvailable!) {
-        //   if (isValidCustomer) {
-        if (productVariantList.isNotEmpty) {
-          if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-            // print("Both color and size lists are showing.");
-            if (selectedColor.isNotEmpty && selectedSize.isNotEmpty) {
-              addToCart();
-              return true;
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!.selectVariantColorSize);
-            }
-          } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-            // print("color list is showing.");
-            if (selectedSize.isNotEmpty) {
-              addToCart();
-              return true;
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!.selectVariantSize);
-            }
-          } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-            // print("size list is showing.");
-            if (selectedColor.isNotEmpty) {
-              addToCart();
-              return true;
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!.selectVariantColor);
-            }
+      onTap: () {
+        if (product!.isAvailable!) {
+          if (isValidCustomer) {
+            getBottomSheetCartList();
+          } else {
+            showToast(
+                message:
+                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
           }
-        } else if (product?.addOnsModels?.isNotEmpty == true) {
+        } else {
+          showToast(message: AppLocalization.of(context)!.productOutOfStock);
+        }
+      },
+    );
+  }
+
+  getBottomSheetCartList() {
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Wrap(
+              children: [
+                Center(
+                  child: Text(
+                    "Active Cart",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w700,
+                      color: blackFont,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 25),
+                Divider(
+                  color: dividerColor,
+                  thickness: 1,
+                ),
+                const SizedBox(height: 20),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: cartNameList.length,
+                  itemBuilder: (context, index) {
+                    return RadioListTile(
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
+                      value: cartNameList[index],
+                      groupValue: cartNameList[0],
+                      onChanged: (value) {
+                        setState(() {
+                          selectType = value.toString();
+                        });
+                      },
+                      controlAffinity: ListTileControlAffinity.trailing,
+                      title: Text(
+                        cartNameList[index],
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: blackFont,
+                          fontFamily: "Inter",
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  itemAddToSelectedCart() {
+    if (productVariantList.isNotEmpty) {
+      if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+        // print("Both color and size lists are showing.");
+        if (selectedColor.isNotEmpty && selectedSize.isNotEmpty) {
           addToCart();
           return true;
         } else {
-          //product has no variant or is a service
+          showToast(
+              message: AppLocalization.of(context)!.selectVariantColorSize);
+        }
+      } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+        // print("color list is showing.");
+        if (selectedSize.isNotEmpty) {
           addToCart();
           return true;
+        } else {
+          showToast(message: AppLocalization.of(context)!.selectVariantSize);
         }
-        //   } else {
-        //     showToast(
-        //         message:
-        //             AppLocalization.of(context)!.youCanNotPurchaseThisItem);
-        //   }
-        // } else {
-        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
-        // }
-      },
-    );
+      } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+        // print("size list is showing.");
+        if (selectedColor.isNotEmpty) {
+          addToCart();
+          return true;
+        } else {
+          showToast(message: AppLocalization.of(context)!.selectVariantColor);
+        }
+      }
+    } else if (product?.addOnsModels?.isNotEmpty == true) {
+      addToCart();
+      return true;
+    } else {
+      //product has no variant or is a service
+      addToCart();
+      return true;
+    }
   }
 
   Future<void> addToCart() async {

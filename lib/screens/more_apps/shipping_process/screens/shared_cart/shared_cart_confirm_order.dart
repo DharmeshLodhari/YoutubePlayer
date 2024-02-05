@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
@@ -10,6 +11,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SharedCartConfirmOrder extends StatefulWidget {
   const SharedCartConfirmOrder({super.key});
@@ -19,6 +21,7 @@ class SharedCartConfirmOrder extends StatefulWidget {
 }
 
 class _SharedCartConfirmOrderState extends State<SharedCartConfirmOrder> {
+  late UserBloc userBloc;
   ShippingAddress? defaultAddress;
   bool isAddressEmpty = false;
   ScrollController _confirmOrderScrollController = new ScrollController();
@@ -54,6 +57,7 @@ class _SharedCartConfirmOrderState extends State<SharedCartConfirmOrder> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -284,18 +288,18 @@ class _SharedCartConfirmOrderState extends State<SharedCartConfirmOrder> {
       padding: const EdgeInsets.all(16.0),
       child: CurvedButton(
         onPressed: () {
-          Navigator.of(context).pushNamed(Routes.SEND_CART_PAYMENT);
-          // BottomSheetPassCode(
-          //     context: context,
-          //     isValidCallback: () async {
-          //       // await checkAccountBalance();
-          //
-          //       // Create the orders
-          //       await placeOrder();
-          //     },
-          //     cancelCallBack: () {
-          //       Navigator.pop(context);
-          //     });
+          Navigator.of(context).pushNamed(
+            Routes.SEND_PAYMENT,
+            arguments: <String, dynamic>{
+              'isFromProfile': false,
+              'isFromChat': false,
+              'isFromMoment': false,
+              'isFromYarn': false,
+              'isFromSharedCart': true,
+              'recipient': userBloc.user.userName,
+            },
+          );
+          // Navigator.of(context).pushNamed(Routes.SEND_CART_PAYMENT);
         },
         backgroundColor: navyBlue,
         textColor: white,

@@ -30,11 +30,9 @@ class SendCartPayment extends StatefulWidget {
 }
 
 class _SendCartPaymentState extends State<SendCartPayment> {
-  bool _switchValue = false;
   late SharedCartBloc sharedCartBloc;
   SlidableController? _slideController;
   bool isLoading = false;
-  bool isChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +146,8 @@ class _SendCartPaymentState extends State<SendCartPayment> {
                     const SizedBox(
                       height: 10,
                     ),
-                    if (_switchValue == true) _buildMemberList(),
+                    if (sharedCartBloc.getSharedCartModel().splitBill == true)
+                      _buildMemberList(),
                   ],
                 ),
               ),
@@ -313,9 +312,9 @@ class _SendCartPaymentState extends State<SendCartPayment> {
         Transform.scale(
           scale: .8,
           child: CupertinoSwitch(
-              value: _switchValue,
+              value: sharedCartBloc.getSharedCartModel().splitBill ?? false,
               onChanged: (value) {
-                _switchValue = value;
+                sharedCartBloc.getSharedCartModel().splitBill = value;
                 setState(() {});
               },
               activeColor: const Color(0xff3F61DB) // Color when switch is ON
@@ -360,10 +359,11 @@ class _SendCartPaymentState extends State<SendCartPayment> {
   Widget _buildSplitEvenly() {
     return CustomizedCheckBoxField(
       onTap: () {
-        isChecked = !isChecked;
+        sharedCartBloc.getSharedCartModel().splitBillEvenly =
+            !(sharedCartBloc.getSharedCartModel().splitBillEvenly ?? false);
         setState(() {});
       },
-      isChecked: isChecked,
+      isChecked: sharedCartBloc.getSharedCartModel().splitBillEvenly,
       title: "Split bill evenly",
     );
   }
@@ -373,7 +373,7 @@ class _SendCartPaymentState extends State<SendCartPayment> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Total : 100%',
+          'Total : ${sharedCartBloc.getSharedCartModel().getTotalOfPercentage()}%',
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.w500,
@@ -422,14 +422,30 @@ class _SendCartPaymentState extends State<SendCartPayment> {
       padding: const EdgeInsets.all(16.0),
       child: CurvedButton(
         onPressed: () {
-          BottomSheetPassCode(
-              context: context,
-              isValidCallback: () {
-                Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);
-              },
-              cancelCallBack: () {
-                Navigator.pop(context);
-              });
+          if (sharedCartBloc.getSharedCartModel().splitBill == true) {
+            if (sharedCartBloc.getSharedCartModel().getTotalOfPercentage() ==
+                100) {
+              BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () {
+                    Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);
+                  },
+                  cancelCallBack: () {
+                    Navigator.pop(context);
+                  });
+            } else {
+              showToast(message: "Total payment is not 100%");
+            }
+          } else {
+            BottomSheetPassCode(
+                context: context,
+                isValidCallback: () {
+                  Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);
+                },
+                cancelCallBack: () {
+                  Navigator.pop(context);
+                });
+          }
         },
         backgroundColor: navyBlue,
         textColor: white,

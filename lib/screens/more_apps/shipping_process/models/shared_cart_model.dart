@@ -16,6 +16,7 @@ class SharedCartModel {
   List<String>? members;
   String? customerUsername;
   String? createdAt;
+  bool? splitBill = false;
   bool? splitBillEvenly = false;
 
   SharedCartModel({
@@ -26,6 +27,7 @@ class SharedCartModel {
     this.members,
     this.customerUsername,
     this.createdAt,
+    this.splitBill,
     this.splitBillEvenly,
   });
 
@@ -74,6 +76,32 @@ class SharedCartModel {
     map['customer_username'] = customerUsername;
     map['created_at'] = createdAt;
     return map;
+  }
+
+  double getSplitBillEvenly() {
+    double? result = 0;
+    if (splitBillEvenly == true) {
+      if (membersDetails != null) {
+        int? listLength = membersDetails?.length ?? 0;
+
+        result = 100 / listLength;
+      }
+    }
+    return result;
+  }
+
+  int getTotalOfPercentage() {
+    int total = 0;
+    if (splitBillEvenly == true) {
+      total = 100;
+    } else {
+      if (membersDetails != null) {
+        for (var item in membersDetails!) {
+          total += item.paymentPercentageValue ?? 0;
+        }
+      }
+    }
+    return total;
   }
 }
 

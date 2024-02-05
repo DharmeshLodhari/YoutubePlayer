@@ -186,8 +186,8 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           ),
           controller: _refreshController,
           onRefresh: _onRefresh,
-          child: _buildListOfCartItems(),
-          // child: Container(),
+          // child: _buildListOfCartItems(),
+          child: Container(),
         ),
       ),
     );
@@ -690,14 +690,40 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
               Container(
                 margin:
                     EdgeInsets.only(top: 25, bottom: 15, left: 20, right: 20),
-                child: Text(
-                    'A payment request of ₦0.00 from ${sharedCartBloc.getSharedCartModel().name} shared cart?',
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: "Inter",
-                        fontSize: 14.0),
-                    textAlign: TextAlign.center),
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.black,
+                    ),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: 'A payment request of ₦0.00 from ',
+                          style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: "Inter",
+                            fontSize: 14.0,
+                          )),
+                      TextSpan(
+                          text: '${sharedCartBloc.getSharedCartModel().name} ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: blackFont,
+                            fontFamily: "Inter",
+                            fontSize: 14.0,
+                          )),
+                      TextSpan(
+                          text: 'shared cart?',
+                          style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: "Inter",
+                            fontSize: 14.0,
+                          )),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
