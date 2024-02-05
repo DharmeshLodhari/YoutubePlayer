@@ -608,6 +608,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future<void> addToCart() async {
     String type = "product";
 
+    print("BASKETBLOC:- ${basketBloc.basketItems}");
+
     basketBloc.addItemToCart(
       item: product?.copyWith(qty: 1),
       type: type,
