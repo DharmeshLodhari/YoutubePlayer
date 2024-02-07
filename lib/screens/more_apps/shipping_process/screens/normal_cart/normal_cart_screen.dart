@@ -13,11 +13,11 @@ import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -228,7 +228,11 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         key: UniqueKey(),
         basketItem: data,
         onIncreaseQty: () {
-          basketBloc.increaseQty(data);
+          if (data.hasAddOns) {
+            confirmAddOnsDialog(data);
+          } else {
+            basketBloc.increaseQty(data);
+          }
         },
         onDecreaseQty: () {
           basketBloc.decreaseQty(data);
@@ -677,6 +681,26 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         _refreshController.refreshCompleted();
       }
     });
+  }
+
+  Future<void> confirmAddOnsDialog(BasketItem data) async {
+    await showDialogBox(
+      context: context,
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      title: "Repeat last used Add-ons?",
+      actionOneText: "I'll choose",
+      actionTwoText: "Repeat last",
+      leftButtonOnPressed: () {
+        Navigator.pushNamed(context, Routes.PRODUCT,
+            arguments: {"product": data.item as Product});
+      },
+      rightButtonOnPressed: () {
+        basketBloc.increaseQty(data);
+      },
+    );
   }
 
 // Widget addItemToBasket() {

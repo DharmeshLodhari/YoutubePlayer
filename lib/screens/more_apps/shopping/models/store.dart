@@ -608,8 +608,8 @@ class Product extends PurchasableItem {
     return imageLinks;
   }
 
-  Product copyWith({int? qty}) {
-    return Product(
+  Product copyWith({int? qty, bool withSelectedAddOn = false}) {
+    Product product = Product(
       id: this.id,
       name: this.name ?? "",
       description: this.description ?? "",
@@ -637,9 +637,10 @@ class Product extends PurchasableItem {
       rating: this.rating,
       canRate: this.canRate ?? false,
       // variant: this.variant,
-      variantModels: this.variantModels,
+      variantModels: this.variantModels?.map((e) => e.copyWith()).toList(),
       // addOns: this.addOns,
-      addOnsModels: this.addOnsModels,
+      // addOnsModels: this.addOnsModels,
+      addOnsModels: this.addOnsModels?.map((e) => e.copyWith()).toList(),
       weight: this.weight,
       weightSiUnit: this.widthSiUnit,
       height: this.height,
@@ -656,6 +657,15 @@ class Product extends PurchasableItem {
       isShippable: this.isShippable,
       qty: qty ?? this.qty,
     );
+    if (withSelectedAddOn) {
+      product.addOnsModels =
+          getSelectedAddsOns(listOfAddonModel: product.addOnsModels);
+
+      for (AddOns addOns in product.addOnsModels ?? []) {
+        addOns.options = addOns.getSelectedAddsOnsOption(addOns);
+      }
+    }
+    return product;
   }
 
   Map<String, List<Variant>> getVariants(
@@ -727,17 +737,18 @@ class Product extends PurchasableItem {
     return sizeGroups;
   }
 
-  List<AddOns> getSelectedAddsOns({bool isRequired = false}) {
+  List<AddOns> getSelectedAddsOns(
+      {bool isRequired = false, List<AddOns>? listOfAddonModel}) {
     List<AddOns> selectedAddOnsList = [];
 
-    for (AddOns addOn in addOnsModels ?? []) {
+    for (AddOns addOn in listOfAddonModel ?? addOnsModels ?? []) {
       bool isSelected = false;
 
-      isSelected = addOn.options
-              ?.where((addOns) => addOns.isSelected() == true)
-              .toList()
-              .isNotEmpty ??
-          false;
+      isSelected = addOn
+          .getSelectedAddsOnsOption(addOn)
+          .where((addOns) => addOns.isAddOnsSelected(addOn) == true)
+          .toList()
+          .isNotEmpty;
 
       if (isSelected) selectedAddOnsList.add(addOn);
     }
@@ -1048,10 +1059,10 @@ class AddOnOption {
   String? currency;
   String? price;
   bool? isAvailable;
-  bool isChecked = false;
+  bool isSelected = false;
   DateTime? createdAt;
   int quantity = 0;
-
+  bool isChecked = false;
   AddOnOption({
     this.id,
     this.picture,
@@ -1062,9 +1073,10 @@ class AddOnOption {
     this.currency,
     this.price,
     this.isAvailable,
-    this.isChecked = false,
+    this.isSelected = false,
     this.createdAt,
     this.quantity = 0,
+    this.isChecked = false,
   });
 
   AddOnOption.fromJson(Map<String, dynamic> json) {
@@ -1077,9 +1089,42 @@ class AddOnOption {
     currency = json['currency'];
     price = json['price'].toString();
     isAvailable = json['is_available'];
-    isChecked = json['is_checked'] ?? false;
+    isSelected = json['is_selected'] ?? false;
     createdAt = getProductDateTime(json['created_at']);
     quantity = json['quantity'] ?? 0;
+    isChecked = json['is_checked'] ?? false;
+  }
+
+  AddOnOption copyWith({
+    int? id,
+    String? picture,
+    String? name,
+    String? description,
+    String? merchant,
+    String? selectType,
+    String? currency,
+    String? price,
+    bool? isAvailable,
+    bool? isSelected,
+    DateTime? createdAt,
+    int? quantity,
+    bool? isChecked,
+  }) {
+    return AddOnOption(
+      id: id ?? this.id,
+      picture: picture ?? this.picture,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      merchant: merchant ?? this.merchant,
+      selectType: selectType ?? this.selectType,
+      currency: currency ?? this.currency,
+      price: price ?? this.price,
+      isAvailable: isAvailable ?? this.isAvailable,
+      isSelected: isSelected ?? this.isSelected,
+      createdAt: createdAt ?? this.createdAt,
+      quantity: quantity ?? this.quantity,
+      isChecked: isChecked ?? this.isChecked,
+    );
   }
 
   static DateTime getProductDateTime(var date) {
@@ -1104,6 +1149,23 @@ class AddOnOption {
     data['created_at'] = this.createdAt;
     data['quantity'] = this.quantity;
     return data;
+  }
+
+  bool isAddOnsSelected(AddOns addon) {
+    if (addon.inputType == "radio") {
+      if (name == addon.groupValue) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (addon.inputType == "checkbox") {
+      if (isChecked ?? false) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 }
 
@@ -1149,30 +1211,42 @@ class AddOns {
     isRequired = json['is_required'];
     isChecked = json['is_checked'] ?? false;
     createdAt = getProductDateTime(json['created_at']);
+    groupValue = json['group_value'] ?? null;
   }
 
-  bool isSelected() {
-    if (inputType == "radio") {
-      if (name == groupValue) {
-        return true;
-      } else {
-        return false;
-      }
-    } else if (inputType == "checkbox") {
-      if (isChecked ?? false) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    return false;
+  AddOns copyWith({
+    int? id,
+    List<AddOnOption>? options,
+    String? merchant,
+    String? name,
+    String? description,
+    String? inputType,
+    String? selectType,
+    bool? isRequired,
+    bool? isChecked,
+    DateTime? createdAt,
+    String? groupValue,
+  }) {
+    return AddOns(
+      id: id ?? this.id,
+      options: options ?? this.options?.map((e) => e.copyWith()).toList(),
+      merchant: merchant ?? this.merchant,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      inputType: inputType ?? this.inputType,
+      selectType: selectType ?? this.selectType,
+      isRequired: isRequired ?? this.isRequired,
+      isChecked: isChecked ?? this.isChecked,
+      createdAt: createdAt ?? this.createdAt,
+      groupValue: groupValue ?? this.groupValue,
+    );
   }
 
-  List<AddOnOption> getSelectedAddsOnsOption() {
+  List<AddOnOption> getSelectedAddsOnsOption(AddOns addOns) {
     List<AddOnOption> selectedAddOnsList = [];
 
     for (AddOnOption addOn in options ?? []) {
-      if (addOn.isChecked) selectedAddOnsList.add(addOn);
+      if (addOn.isAddOnsSelected(addOns)) selectedAddOnsList.add(addOn);
     }
     return selectedAddOnsList;
   }

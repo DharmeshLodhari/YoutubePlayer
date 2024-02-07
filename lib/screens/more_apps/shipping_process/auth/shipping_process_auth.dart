@@ -44,19 +44,19 @@ class ShippingProcessAuthService extends AuthService {
 
   // List shipping options
   Future<List<ShippingOptionModel>> getShippingEstimation(
-      PackageDetailsModel packageDetailsModel) async {
+      PackageDetailsModel packageDetailsModel, String cartId) async {
     String url = AppConfig.baseUrl;
     if (packageDetailsModel.shippingType == ShippingTypes.slydo) {
       url +=
           "/api/v1/shipping/get-rates/slydo/?delivery_address_id=${packageDetailsModel.deliveryAddress?.id}&pickup_address_id=${packageDetailsModel.addressId}"
-          "&anonymous=true&cart_id=29be44ec-fa3f-4980-a98e-64c828cca9fc&currency=NGN&merchant=${packageDetailsModel.merchant}/";
+          "&anonymous=true&cart_id=$cartId&currency=NGN&merchant=${packageDetailsModel.merchant}/";
     } else if (packageDetailsModel.shippingType == ShippingTypes.merchant) {
       url +=
           "/api/v1/shipping-options/public-list/${packageDetailsModel.merchant}/";
     } else if (packageDetailsModel.shippingType == ShippingTypes.courier) {
       url +=
           "/api/v1/shipping/get-rates/terminal/?delivery_address_id=${packageDetailsModel.deliveryAddress?.id}&pickup_address_id=${packageDetailsModel.addressId}"
-          "&anonymous=false&cart_id=29be44ec-fa3f-4980-a98e-64c828cca9fc&currency=NGN&merchant=${packageDetailsModel.merchant}/";
+          "&anonymous=false&cart_id=$cartId&currency=NGN&merchant=${packageDetailsModel.merchant}/";
     }
 
     var headers = await getAuthHeaders();
@@ -96,18 +96,18 @@ class ShippingProcessAuthService extends AuthService {
     var _data = jsonEncode(data);
     debugPrint('Order details ::: $_data');
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
-
-    debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return jsonData;
-    } else {
-      showToast(message: response.body.toString());
-      throw response.body;
-    }
+    // var headers = await getAuthHeaders();
+    // var response = await httpPost(url, headers: headers, body: _data);
+    // var jsonData = jsonDecode(response.body);
+    //
+    // debugPrint(
+    //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    // if (response.statusCode == 200 || response.statusCode == 201) {
+    //   return jsonData;
+    // } else {
+    //   showToast(message: response.body.toString());
+    //   throw response.body;
+    // }
   }
 
   // List of Addresses
@@ -153,6 +153,30 @@ class ShippingProcessAuthService extends AuthService {
       return null;
     } else {
       return null;
+    }
+  }
+
+  Future<String> getCartId() async {
+    String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/?id=true";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    // var jsonData = jsonDecode(response.body);
+
+    debugPrint('URL :: $url');
+    debugPrint('BODY shipping:: ${response.body}');
+    debugPrint('STATUS CO  :: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      String id = data['id'];
+
+      return id;
+    } else {
+      debugPrint('BODY shipping 00:: ${response.body}');
+
+      return Future.error(response.body);
     }
   }
 }

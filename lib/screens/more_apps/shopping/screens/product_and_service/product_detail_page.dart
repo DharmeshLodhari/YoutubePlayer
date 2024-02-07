@@ -9,10 +9,8 @@ import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -611,12 +609,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     String type = "product";
 
     print("BASKETBLOC:- ${basketBloc.basketItems}");
+    Product products = product!.copyWith(qty: 1, withSelectedAddOn: true);
 
     basketBloc.addItemToCart(
-      item: product!.copyWith(qty: 1),
+      item: products,
       type: type,
       variant: selectedVariant?.copyWith(quantity: 1),
-      addOns: product?.getSelectedAddsOns(),
+      addOns: products.addOnsModels,
     );
   }
 
@@ -2180,69 +2179,76 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         textColor: Colors.white,
         text: "BUY NOW",
         onPressed: () async {
-          if (product!.isAvailable!) {
-            if (isValidCustomer) {
-              //check if product has variant
-              if (product?.variantModels?.isNotEmpty ?? false) {
-                if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                  // print("Both color and size lists are showing.");
-                  if (selectedVariant != null) {
-                    processCartBuyNow(context);
-                  } else {
-                    showToast(
-                        message: AppLocalization.of(context)!
-                            .selectVariantColorSize);
-                  }
-                } else if (colorGroups.isNotEmpty && sizeGroups.isEmpty) {
-                  // print("color list is showing.");
-                  if (selectedVariant != null) {
-                    // print("Color list is showing.");
-                    processCartBuyNow(context);
-                  } else {
-                    showToast(
-                        message:
-                            AppLocalization.of(context)!.selectVariantColor);
-                  }
-                } else if (colorGroups.isEmpty && sizeGroups.isNotEmpty) {
-                  // print("size list is showing.");
-                  if (selectedVariant != null) {
-                    // print("Size list is showing.");
-                    processCartBuyNow(context);
-                  } else {
-                    showToast(
-                        message:
-                            AppLocalization.of(context)!.selectVariantSize);
-                  }
+          // if (product!.isAvailable!) {
+          if (isValidCustomer) {
+            //check if product has variant
+            if (product?.variantModels?.isNotEmpty ?? false) {
+              if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+                // print("Both color and size lists are showing.");
+                if (selectedVariant != null) {
+                  processCartBuyNow(context);
+                } else {
+                  showToast(
+                      message:
+                          AppLocalization.of(context)!.selectVariantColorSize);
                 }
-              } else {
-                processCartBuyNow(context);
+              } else if (colorGroups.isNotEmpty && sizeGroups.isEmpty) {
+                // print("color list is showing.");
+                if (selectedVariant != null) {
+                  // print("Color list is showing.");
+                  processCartBuyNow(context);
+                } else {
+                  showToast(
+                      message: AppLocalization.of(context)!.selectVariantColor);
+                }
+              } else if (colorGroups.isEmpty && sizeGroups.isNotEmpty) {
+                // print("size list is showing.");
+                if (selectedVariant != null) {
+                  // print("Size list is showing.");
+                  processCartBuyNow(context);
+                } else {
+                  showToast(
+                      message: AppLocalization.of(context)!.selectVariantSize);
+                }
               }
             } else {
-              showToast(
-                  message:
-                      AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+              processCartBuyNow(context);
             }
           } else {
-            showToast(message: AppLocalization.of(context)!.productOutOfStock);
+            showToast(
+                message:
+                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
           }
+          // } else {
+          //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
+          // }
         },
       ),
     );
   }
 
   Future<void> processCartBuyNow(BuildContext context) async {
+    Product products = product!.copyWith(qty: 1, withSelectedAddOn: true);
+
+    Variant? variant = selectedVariant?.copyWith(quantity: 1);
+    List<AddOns> addOns = products.addOnsModels ?? [];
+
     ShippingProcessBloc shippingProcessBloc =
         Provider.of<ShippingProcessBloc>(context, listen: false);
     shippingProcessBloc.isUseCartProcess(false);
-    List<ShippingAddress> addresses =
-        await getAddressListing([product?.addressId]);
-    if (addresses.isNotEmpty) {
-      shippingProcessBloc.updateBuyNowProduct(product, addresses[0]);
-      Navigator.pushNamed(context, Routes.DELIVERY_OPTION);
-    } else {
-      await Navigator.of(context).pushNamed(Routes.DISPATCH_ADDRESS);
-      setState(() {});
-    }
+    // List<ShippingAddress> addresses =
+    //     await getAddressListing([product?.addressId]);
+    // if (addresses.isNotEmpty) {
+    // shippingProcessBloc.updateBuyNowProduct(product, addresses[0]);
+    shippingProcessBloc.updateBuyNowProduct(product, variant, addOns);
+    Navigator.pushNamed(context, Routes.DELIVERY_OPTION);
+    // } else {
+    //   await Navigator.of(context)
+    //       .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
+    //     "isForSelection": true,
+    //   });
+    //   setState(() {});
+    // }
     // bool result = await showDisclaimerDialogueForGoods(context);
     // if (result) {
     //   getRecipient();

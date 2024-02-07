@@ -29,13 +29,15 @@ class _ShippingOptionState extends State<ShippingOption> {
 
   late ShippingProcessBloc shippingProcessBloc;
   late CustomerProfileBloc customerProfileBloc;
+  String cartId = "";
 
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
+      (timeStamp) async {
+        await getCartId();
         ShippingProcessBloc shippingProcessBloc =
             Provider.of<ShippingProcessBloc>(context, listen: false);
 
@@ -309,7 +311,7 @@ class _ShippingOptionState extends State<ShippingOption> {
       if (mounted) setState(() {});
 
       await ShippingProcessAuthService()
-          .getShippingEstimation(packageDetailModel)
+          .getShippingEstimation(packageDetailModel, cartId)
           .then(
         (value) {
           value.forEach((element) {
@@ -324,5 +326,22 @@ class _ShippingOptionState extends State<ShippingOption> {
         showToast(message: error.toString());
       });
     }
+  }
+
+  Future<void> getCartId() async {
+    if (mounted) setState(() {});
+
+    cartId = await ShippingProcessAuthService().getCartId();
+    // await ShippingProcessAuthService().getCartId().then(
+    //   (value) {
+    //     cartId = value;
+    //     isLoading = false;
+    //     if (mounted) setState(() {});
+    //   },
+    // ).catchError((error) {
+    //   isLoading = false;
+    //   if (mounted) setState(() {});
+    //   showToast(message: error.toString());
+    // });
   }
 }

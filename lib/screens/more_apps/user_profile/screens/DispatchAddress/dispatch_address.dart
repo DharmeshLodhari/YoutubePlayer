@@ -450,7 +450,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
                 SizedBox(height: 10),
                 Row(
                   children: [
-                    if (isForSelection == true)
+                    if (!isForSelection)
                       InkWell(
                         onTap: itemList[index].is_default!
                             ? null

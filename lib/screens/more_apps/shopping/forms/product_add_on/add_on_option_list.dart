@@ -187,7 +187,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
         ),
         onPressed: () {
           List<AddOnOption> addOnOption = addOnOptionList
-              .where((addOnOption) => addOnOption.isChecked == true)
+              .where((addOnOption) => addOnOption.isSelected == true)
               .toList();
           Navigator.pop(context, addOnOption);
         },
@@ -338,7 +338,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
               Expanded(
                 child: Checkbox(
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  value: addOnOption.isChecked,
+                  value: addOnOption.isSelected,
                   activeColor: navyBlue,
                   onChanged: (bool? value) {
                     // Handle checkbox state change here
@@ -355,7 +355,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
 
   void toggleAddOnCheckedState(int index) {
     if (index >= 0 && index < addOnOptionList.length) {
-      addOnOptionList[index].isChecked = !addOnOptionList[index].isChecked;
+      addOnOptionList[index].isSelected = !addOnOptionList[index].isSelected;
       if (mounted) setState(() {});
     }
   }
@@ -384,7 +384,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
 
   Widget loadAllCheckedAddOn() {
     List<AddOnOption> addOnOption = addOnOptionList
-        .where((addOnOption) => addOnOption.isChecked == true)
+        .where((addOnOption) => addOnOption.isSelected == true)
         .toList();
 
     Navigator.pop(context, addOnOption);

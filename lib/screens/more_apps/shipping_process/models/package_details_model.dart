@@ -20,6 +20,8 @@ class PackageDetailsModel {
   bool insurePackage = false;
   bool isShippingProcessCompleted = false;
   Product? buyNow;
+  Variant? variants;
+  List<AddOns>? addOns;
 
   PackageDetailsModel({
     this.addressId,
@@ -35,6 +37,8 @@ class PackageDetailsModel {
     this.shippingType,
     this.isShippingProcessCompleted = false,
     this.buyNow,
+    this.variants,
+    this.addOns,
   });
 
   factory PackageDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -97,12 +101,31 @@ class PackageDetailsModel {
   }
 
   Map<String, dynamic> toBuyNowPlaceOrder(String? userName) {
+    List<Map<String, dynamic>> addOnsDataList = addOns
+            ?.map((e) => {
+                  "id": e.id,
+                  "options": e.options
+                      ?.map((option) =>
+                          {"id": option.id, "quantity": option.quantity})
+                      .toList()
+                })
+            .toList() ??
+        [];
+
+    List<Variant?> getListOfVariant = [variants];
+
+    List<Map<String, dynamic>> variantData = getListOfVariant
+        .where((element) => element != null)
+        .toList()
+        .map((e) => <String, dynamic>{"id": e?.id, "quantity": e?.quantity})
+        .toList();
+
     Map<String, dynamic> data = {
       "id": buyNow?.id ?? "",
       "qty": buyNow?.quantity ?? 1,
       "type": buyNow?.type ?? 'product',
-      "add_ons": buyNow?.addOnsModels,
-      "variants": buyNow?.variantModels,
+      "add_ons": addOnsDataList,
+      "variants": variantData,
       "item_added_by": userName ?? "",
     };
     return data;

@@ -46,6 +46,8 @@ class BasketItem {
     if ((item?.isProduct ?? false)) {
       if (hasVariant) {
         qty = variants?.first.quantity ?? 0;
+      } else if (hasAddOns) {
+        qty = this.qty ?? 0;
       } else {
         qty = (item as Product).qty ?? 0;
       }
@@ -183,17 +185,24 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
         data["type"] = item.type;
         data["qty"] = item.qty;
         List<Map<String, dynamic>> addOnsDataList = (item.item as Product)
-            .getSelectedAddsOns()
-            .map((e) => {
-                  "id": e.id,
-                  "options": e
-                      .getSelectedAddsOnsOption()
-                      .map((option) =>
-                          {"id": option.id, "quantity": option.quantity})
-                      .toList()
-                })
-            .toList();
+                .addOnsModels
+                ?.map((e) => {
+                      "id": e.id,
+                      "options": e.options
+                          ?.map((option) =>
+                              {"id": option.id, "quantity": option.quantity})
+                          .toList()
+                    })
+                .toList() ??
+            [];
         data["add_ons"] = addOnsDataList;
+
+        if (item.qty == 0) {
+          payloadType = BasketListModifierPayloadTypes.remove;
+          this.remove(item);
+        } else {
+          payloadType = BasketListModifierPayloadTypes.addOrUpdate;
+        }
       }
 
       /// product without variant
@@ -204,7 +213,6 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
 
         if (item.qty == 0) {
           payloadType = BasketListModifierPayloadTypes.remove;
-
           this.remove(item);
         } else {
           payloadType = BasketListModifierPayloadTypes.addOrUpdate;

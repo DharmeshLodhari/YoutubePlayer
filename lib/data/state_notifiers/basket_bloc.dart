@@ -40,9 +40,9 @@ class BasketBloc extends ChangeNotifier {
   int getProductOrServiceQuantityInCart(String id) {
     int quantity = 0;
 
-    items.forEach((element) {
-      if (element["item"].id == id) {
-        quantity = int.parse(element['qty'].toString());
+    _basketItems.forEach((element) {
+      if (element.item?.id == id) {
+        quantity = int.parse(element.qty.toString());
       }
     });
     return quantity;
@@ -364,7 +364,7 @@ class BasketBloc extends ChangeNotifier {
           addedOrUpdatedItem,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
-        // ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
+        ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
       }
     }
   }
@@ -732,6 +732,24 @@ class BasketBloc extends ChangeNotifier {
             }
           }
         }
+
+        /// if basket item has add0ns
+      } else if (data.hasAddOns) {
+        for (BasketItem basketItem in _basketItems) {
+          Product product = basketItem.item as Product;
+
+          if (basketItem.item?.id == data.item?.id) {
+            for (AddOns addOns in basketItem.addOns ?? []) {
+              for (AddOnOption options in addOns.options ?? []) {
+                options.quantity = options.quantity + 1;
+              }
+            }
+            basketItem.qty = (basketItem.qty ?? 0) + 1;
+            product.qty = (product.qty ?? 0) + 1;
+            addedOrUpdatedItem = basketItem;
+            break;
+          }
+        }
       } else {
         for (BasketItem basketItem in _basketItems) {
           if (basketItem.item?.id == data.item?.id) {
@@ -778,6 +796,24 @@ class BasketBloc extends ChangeNotifier {
                 break;
               }
             }
+          }
+        }
+
+        /// if basket item has add0ns
+      } else if (data.hasAddOns) {
+        for (BasketItem basketItem in _basketItems) {
+          Product product = basketItem.item as Product;
+
+          if (basketItem.item?.id == data.item?.id) {
+            for (AddOns addOns in basketItem.addOns ?? []) {
+              for (AddOnOption options in addOns.options ?? []) {
+                options.quantity = options.quantity - 1;
+              }
+            }
+            basketItem.qty = (basketItem.qty ?? 0) - 1;
+            product.qty = (product.qty ?? 0) - 1;
+            addedOrUpdatedItem = basketItem;
+            break;
           }
         }
       } else {

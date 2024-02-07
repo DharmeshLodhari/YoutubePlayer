@@ -43,23 +43,43 @@ class ShoppingCartTileForProduct extends StatelessWidget {
           elevation: 0,
           child: Container(
             decoration: decorateBox(),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: ListTile(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Column(
+                children: [
+                  ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: getLeading(),
                     title: getTitle(),
-                    trailing: getTrailing(),
                     subtitle: getSubtitle(context),
+                    trailing: getTrailing(),
                     onTap: () {
                       Navigator.pushNamed(context, Routes.PRODUCT,
                           arguments: {"product": product});
                     },
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(),
+                      Text(
+                        "Subtotal",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: darkGrey,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Inter",
+                        ),
+                      ),
+                      SizedBox(width: 60),
+                      getSubTotalPriceWidget(),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -118,54 +138,47 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       width: 100,
       color: Colors.transparent,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          getProductPriceWidget(),
-          Expanded(
-            child: Row(
-              children: [
-                RoundedBackgroundIcon(
-                  backgroundColor: iconBtnGrey,
-                  icon: Icon(
-                    SlydoAppIcon.minus,
-                    color: blackFont,
-                    size: 2,
-                  ),
-                  onTap: onDecreaseQty,
+          Expanded(child: getProductPriceWidget()),
+          Row(
+            children: [
+              RoundedBackgroundIcon(
+                backgroundColor: iconBtnGrey,
+                icon: Icon(
+                  SlydoAppIcon.minus,
+                  color: blackFont,
+                  size: 2,
                 ),
-                Expanded(
-                  child: SizedBox(
-                    width: 10,
-                  ),
+                onTap: onDecreaseQty,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                basketItem.getQty().toString(),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: blackFont,
+                  fontFamily: "Inter",
                 ),
-                Text(
-                  basketItem.getQty().toString(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: blackFont,
-                    fontFamily: "Inter",
-                  ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              RoundedBackgroundIcon(
+                backgroundColor: iconBtnGrey,
+                icon: Icon(
+                  SlydoAppIcon.plus,
+                  color: blackFont,
+                  size: 14, // Adjust the size as needed
                 ),
-                Expanded(
-                  child: SizedBox(
-                    width: 10,
-                  ),
-                ),
-                RoundedBackgroundIcon(
-                  backgroundColor: iconBtnGrey,
-                  icon: Icon(
-                    SlydoAppIcon.plus,
-                    color: blackFont,
-                    size: 14, // Adjust the size as needed
-                  ),
-                  onTap: onIncreaseQty,
-                ),
-              ],
-            ),
+                onTap: onIncreaseQty,
+              ),
+            ],
           ),
-          getSubTotalPriceWidget(),
         ],
       ),
     );
@@ -199,10 +212,14 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         size = variantSize;
       }
     }
-    List<String> names = [];
+    List<String>? names = [];
 
-    for (var option in ["Coke", "Fruite"]) {
-      names.add(option);
+    if (basketItem.hasAddOns) {
+      for (AddOns addOn in basketItem.addOns ?? []) {
+        List<String>? optionName =
+            addOn.options?.map((e) => e.name ?? "").toList();
+        names.addAll(optionName ?? []);
+      }
     }
 
     final concatenatedText = names.join(', ');
@@ -240,19 +257,6 @@ class ShoppingCartTileForProduct extends StatelessWidget {
                 fontFamily: "Inter"),
           ),
         ],
-        SizedBox(
-          height: 10,
-        ),
-        Text(
-          "Subtotal",
-          style: TextStyle(
-            fontSize: 12,
-            color: darkGrey,
-            fontWeight: FontWeight.w600,
-            fontFamily: "Inter",
-          ),
-        ),
-        // getTotalPriceWidget(),
       ],
     );
   }
@@ -266,7 +270,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
           style: TextStyle(
               color: blackFont,
               fontFamily: "Inter",
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               fontSize: 14),
         ),
         Text(
@@ -275,7 +279,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
           moneyDisplayNormalizer(int.parse(getTotalPrice())),
           style: TextStyle(
             color: blackFont,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             fontSize: 14,
             fontFamily: "Inter",
           ),

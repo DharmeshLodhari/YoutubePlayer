@@ -76,7 +76,7 @@ class ModifiedCustomizedAlert {
                           Column(
                             children: <Widget>[
                               SizedBox(
-                                height: 24,
+                                height: 20,
                               ),
                               _getImage() ?? Container(),
                               SizedBox(
@@ -117,15 +117,15 @@ class ModifiedCustomizedAlert {
                 ),
               ),
               contentPadding: style.buttonAreaPadding,
-              content: Column(
-                children: [
-                  Row(
+              content: Column(children: [
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: _getButtons(),
                 ),
-                SizedBox(height: 29,)
-                ]
-              ),
+                SizedBox(
+                  height: 20,
+                )
+              ]),
             ),
           ),
         ),
