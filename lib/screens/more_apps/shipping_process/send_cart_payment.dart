@@ -1,14 +1,26 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/tiles/members_payment_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
+
+import '../../../widget/vertical_list_item.dart';
 
 class SendCartPayment extends StatefulWidget {
   const SendCartPayment({Key? key}) : super(key: key);
@@ -18,6 +30,10 @@ class SendCartPayment extends StatefulWidget {
 }
 
 class _SendCartPaymentState extends State<SendCartPayment> {
+  late SharedCartBloc sharedCartBloc;
+  SlidableController? _slideController;
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return ColorfulSafeArea(
@@ -68,52 +84,71 @@ class _SendCartPaymentState extends State<SendCartPayment> {
   }
 
   Widget _buildBody() {
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
     return SafeArea(
       child: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Card(
-                  elevation: 20,
-                  shape: RoundedRectangleBorder(
-                      side: BorderSide(color: selectedListItemBackgroundBlue),
-                      borderRadius: BorderRadius.circular(10)),
-                  margin: EdgeInsets.zero,
-                  shadowColor: boxShadowTwo,
-                  color: white,
-                  child: Container(
-                    decoration: decorateBox(),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildUserProfile(),
-                          const SizedBox(
-                            height: 16,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                          side:
+                              BorderSide(color: selectedListItemBackgroundBlue),
+                          borderRadius: BorderRadius.circular(10)),
+                      margin: EdgeInsets.zero,
+                      shadowColor: boxShadowTwo,
+                      color: white,
+                      child: Container(
+                        decoration: decorateBox(),
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildUserProfile(),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Divider(
+                                  thickness: 1,
+                                  color: dividerColor,
+                                ),
+                              ),
+                              _buildRecipient(),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              _buildAmount(),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              _buildCategory(),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              _buildReference(),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                            ],
                           ),
-                          _buildRecipient(),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          _buildAmount(),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          _buildCategory(),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          _buildReference(),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    _buildSplitBill(),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    if (sharedCartBloc.getSharedCartModel().splitBill == true)
+                      _buildMemberList(),
+                  ],
                 ),
               ),
             ),
@@ -195,11 +230,33 @@ class _SendCartPaymentState extends State<SendCartPayment> {
 
   Widget _buildAmount() {
     return CustomizedTextFormField(
-      fontSize: 14,
       labelText: "Amount",
-      labelColor: darkGrey,
-      fontWeight: FontWeight.w500,
+      keyboardType: Platform.isIOS
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            // productPrice = double.parse(val.replaceAll(',', '')).toString();
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        if (val.isNotEmpty) {
+          try {
+            double.parse(val.replaceAll(',', ''));
+            return null;
+          } catch (e) {
+            return AppLocalization.of(context)!.invalidAmount;
+          }
+        }
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
     );
+    ;
   }
 
   Widget _buildCategory() {
@@ -239,19 +296,156 @@ class _SendCartPaymentState extends State<SendCartPayment> {
     );
   }
 
+  Widget _buildSplitBill() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Split Bill',
+          style: TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+            fontSize: 14,
+          ),
+        ),
+        Transform.scale(
+          scale: .8,
+          child: CupertinoSwitch(
+              value: sharedCartBloc.getSharedCartModel().splitBill ?? false,
+              onChanged: (value) {
+                sharedCartBloc.getSharedCartModel().splitBill = value;
+                setState(() {});
+              },
+              activeColor: const Color(0xff3F61DB) // Color when switch is ON
+              ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMemberList() {
+    return Column(
+      children: [
+        ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: sharedCartBloc.getSharedCartModel().membersDetails?.length,
+          itemBuilder: (BuildContext context, int index) {
+            if (index ==
+                sharedCartBloc.getSharedCartModel().membersDetails?.length) {
+              return buildLoadingIndicator(isLoading: isLoading);
+            } else {
+              return _getSlidableWithLists(
+                context,
+                MembersPaymentTile(
+                    members: sharedCartBloc
+                        .getSharedCartModel()
+                        .membersDetails?[index],
+                    index: index),
+                sharedCartBloc.getSharedCartModel().membersDetails?[index],
+              );
+            }
+          },
+        ),
+        const SizedBox(height: 10),
+        _buildSplitEvenly(),
+        const SizedBox(height: 10),
+        _buildTotalAmount(),
+      ],
+    );
+  }
+
+  Widget _buildSplitEvenly() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        sharedCartBloc.getSharedCartModel().splitBillEvenly =
+            !(sharedCartBloc.getSharedCartModel().splitBillEvenly ?? false);
+        setState(() {});
+      },
+      isChecked: sharedCartBloc.getSharedCartModel().splitBillEvenly,
+      title: "Split bill evenly",
+    );
+  }
+
+  Widget _buildTotalAmount() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Total : ${sharedCartBloc.getSharedCartModel().getTotalOfPercentage()}%',
+          style: TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.w500,
+            fontFamily: "Inter",
+            fontSize: 14,
+          ),
+        ),
+        Text(
+          '₦0.00',
+          style: TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.w700,
+            fontFamily: "Inter",
+            fontSize: 16,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _getSlidableWithLists(
+      BuildContext context, Widget cartMemberTile, UserFollowers? member) {
+    return Slidable(
+      controller: _slideController,
+      direction: Axis.horizontal,
+      actionPane: SlidableBehindActionPane(),
+      actionExtentRatio: 0.25,
+      child: VerticalListItem(cartMemberTile),
+      secondaryActions: listActionSlideActions(member: member),
+    );
+  }
+
+  List<Widget> listActionSlideActions({UserFollowers? member}) {
+    return [
+      SlideActionButton(
+          backgroundColor: naturalGreen,
+          icon: SlydoAppIcon.true_icon,
+          onTap: () {},
+          title: AppLocalization.of(context)!.accept,
+          slideController: _slideController),
+    ];
+  }
+
   Widget _buildPaymentButton() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: CurvedButton(
         onPressed: () {
-          BottomSheetPassCode(
-              context: context,
-              isValidCallback: () {
-                Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);
-              },
-              cancelCallBack: () {
-                Navigator.pop(context);
-              });
+          if (sharedCartBloc.getSharedCartModel().splitBill == true) {
+            if (sharedCartBloc.getSharedCartModel().getTotalOfPercentage() ==
+                100) {
+              BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () {
+                    Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);
+                  },
+                  cancelCallBack: () {
+                    Navigator.pop(context);
+                  });
+            } else {
+              showToast(message: "Total payment is not 100%");
+            }
+          } else {
+            BottomSheetPassCode(
+                context: context,
+                isValidCallback: () {
+                  Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);
+                },
+                cancelCallBack: () {
+                  Navigator.pop(context);
+                });
+          }
         },
         backgroundColor: navyBlue,
         textColor: white,

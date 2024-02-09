@@ -113,6 +113,10 @@ class ShippingAddress {
     return "${line_1}, ${city}, ${stateName}, ${country}";
   }
 
+  String toFullAddress() {
+    return "${line_1}, ${line_2}, ${city}, ${stateName}, ${country}, ${zip}";
+  }
+
   Map<String, dynamic> toAddUpdate() {
     return {
       'city': city,
@@ -688,13 +692,16 @@ class UserFollowers {
   bool? isVerified;
   String? fullName;
   String? accountType;
+  int? paymentPercentageValue = 0;
 
-  UserFollowers(
-      {this.userName,
-      this.avatar,
-      this.isVerified,
-      this.fullName,
-      this.accountType});
+  UserFollowers({
+    this.userName,
+    this.avatar,
+    this.isVerified,
+    this.fullName,
+    this.accountType,
+    this.paymentPercentageValue = 0,
+  });
 
   UserFollowers.fromJson(dynamic json) {
     userName = json['username'];

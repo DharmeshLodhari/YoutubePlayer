@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
@@ -63,6 +65,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   late UserBloc? userBloc;
   late BasketBloc basketBloc;
   late ShippingProcessBloc shippingProcessBloc;
+  late SharedCartBloc sharedCartBloc;
   List<String?>? displayProductImages = [];
 
   late bool isValidCustomer;
@@ -98,6 +101,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   // List addOnList = [];
   ScrollController scrollControllerAddOn = ScrollController();
   bool isLoading = false;
+  List<String> cartNameList = [];
+  String? selectType = "";
 
   @override
   void initState() {
@@ -125,7 +130,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     canReviewProduct();
 
     fetchReviewList();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      fetchCartData();
+    });
+
     super.initState();
+  }
+
+  void fetchCartData() async {
+    List<SharedCartModel> cartList = await getCartList();
+    cartNameList.add('My cart');
+    for (var cart in cartList) {
+      cartNameList.add(cart.name ?? "");
+    }
+    selectType = cartNameList[0];
   }
 
   void fetchReviewList() async {
@@ -205,7 +224,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
     if (productIsLoading) {
       return Scaffold(
         body: Center(
@@ -213,9 +236,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
       );
     }
-    basketBloc = Provider.of<BasketBloc>(context);
-    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     isValidCustomer = userBloc?.user.userName != product!.seller;
     return WillPopScope(
@@ -546,8 +566,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       width: 44,
       icon: Icon(
         SlydoAppIcon.add_cart,
-        // color: product!.isAvailable! ? navyBlue : greyBorderColor,
-        color: navyBlue,
+        color: product!.isAvailable! ? navyBlue : greyBorderColor,
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
@@ -608,6 +627,68 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           showToast(message: AppLocalization.of(context)!.productOutOfStock);
         }
       },
+    );
+  }
+
+  getBottomSheetCartList() {
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Wrap(
+              children: [
+                Center(
+                  child: Text(
+                    "Active Cart",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w700,
+                      color: blackFont,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 25),
+                Divider(
+                  color: dividerColor,
+                  thickness: 1,
+                ),
+                const SizedBox(height: 20),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: cartNameList.length,
+                  itemBuilder: (context, index) {
+                    return RadioListTile(
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
+                      value: cartNameList[index],
+                      groupValue: cartNameList[0],
+                      onChanged: (value) {
+                        setState(() {
+                          selectType = value.toString();
+                        });
+                      },
+                      controlAffinity: ListTileControlAffinity.trailing,
+                      title: Text(
+                        cartNameList[index],
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: blackFont,
+                          fontFamily: "Inter",
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -690,7 +771,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           variant: null,
           addOns: selectedAddOnsList);
 
-      //TODO:BRIJESH CHECK API TO ADD ITEM IN CART MOVE THIS TO BASKET BLOC
       // await _auth.addItemToShoppingCart(addOnPayLoad);
       return;
     }
@@ -714,7 +794,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
               Map<String, dynamic> dataInfo =
                   getUpdatedCartItem(productId!, type);
-              //TODO:BRIJESH CHECK API TO ADD ITEM IN CART MOVE THIS TO BASKET BLOC
               // await _auth.addItemToShoppingCart(addOnPayLoad);
               return;
             }
@@ -732,7 +811,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
           debugPrint("Data From Product Page exist : $dataInfo");
 
-          //TODO:BRIJESH CHECK API TO ADD ITEM IN CART MOVE THIS TO BASKET BLOC
           // await _auth.addItemToShoppingCart(addOnPayLoad);
 
           // for(var item in basketBloc.items){

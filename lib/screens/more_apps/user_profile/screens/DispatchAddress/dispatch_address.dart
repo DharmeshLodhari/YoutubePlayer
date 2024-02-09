@@ -125,7 +125,14 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
         /// to getDefault selected address
         for (ShippingAddress address in itemList) {
-          if (address.is_default == true) {
+          if (address.is_default == true && isForSelection == false) {
+            selectedShippingAddress = address;
+            break;
+          }
+
+          if (isForSelection == true &&
+              selectedShippingAddress != null &&
+              selectedShippingAddress?.id == address.id) {
             selectedShippingAddress = address;
             break;
           }
@@ -172,7 +179,14 @@ class _DispatchAddressState extends State<DispatchAddress> {
 
     /// to getDefault selected address
     for (ShippingAddress address in itemList) {
-      if (address.is_default == true) {
+      if (address.is_default == true && isForSelection == false) {
+        selectedShippingAddress = address;
+        break;
+      }
+
+      if (isForSelection == true &&
+          selectedShippingAddress != null &&
+          selectedShippingAddress?.id == address.id) {
         selectedShippingAddress = address;
         break;
       }
@@ -437,7 +451,8 @@ class _DispatchAddressState extends State<DispatchAddress> {
                   height: 10,
                 ),
                 Text(
-                  "${itemList[index].line_1!}, ${itemList[index].line_2}, ${itemList[index].city}, ${itemList[index].stateName}, ${itemList[index].country}, ${itemList[index].zip}",
+                  itemList[index].toFullAddress(),
+                  // "${itemList[index].line_1!}, ${itemList[index].line_2}, ${itemList[index].city}, ${itemList[index].stateName}, ${itemList[index].country}, ${itemList[index].zip}",
                   maxLines: 2,
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
