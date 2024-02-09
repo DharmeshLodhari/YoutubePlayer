@@ -383,9 +383,9 @@ class _DispatchAddressState extends State<DispatchAddress> {
   }
 
   Widget itemTile(int index) {
-    // if (itemList[index].is_default == true) {
-    //   selectedShippingAddress = itemList[index];
-    // }
+    if (itemList[index].is_default == true) {
+      selectedShippingAddress = itemList[index];
+    }
     return Container(
       // height: 120,
       margin: const EdgeInsets.symmetric(vertical: 10.0),

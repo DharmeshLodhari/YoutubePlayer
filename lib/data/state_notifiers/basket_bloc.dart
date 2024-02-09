@@ -336,6 +336,41 @@ class BasketBloc extends ChangeNotifier {
             basketItem.qty = (basketItem.qty ?? 0) + 1;
             isSameItemPresent = true;
 
+            if ((alreadyPresentProduct.addOnsModels?.isNotEmpty ?? false) &&
+                (newProduct.addOnsModels?.isNotEmpty ?? false)) {
+              for (AddOns newAddOn in newProduct.addOnsModels ?? []) {
+                bool isExistingAddOn = false;
+                for (AddOns oldAddOn
+                    in alreadyPresentProduct.addOnsModels ?? []) {
+                  if (oldAddOn.id == newAddOn.id) {
+                    isExistingAddOn = true;
+
+                    for (AddOnOption newOption in newAddOn.options ?? []) {
+                      bool isExistingAddOnOptions = false;
+                      for (AddOnOption oldOption in oldAddOn.options ?? []) {
+                        if (oldOption.id == newOption.id) {
+                          isExistingAddOnOptions = true;
+
+                          oldOption.quantity =
+                              oldOption.quantity + newOption.quantity;
+                          break;
+                        }
+                      }
+
+                      if (isExistingAddOnOptions == false) {
+                        oldAddOn.options?.add(newOption);
+                      }
+                    }
+
+                    break;
+                  }
+                }
+
+                if (isExistingAddOn == false) {
+                  alreadyPresentProduct.addOnsModels?.add(newAddOn);
+                }
+              }
+            }
             addedOrUpdatedItem = basketItem;
             break;
           }
@@ -710,19 +745,28 @@ class BasketBloc extends ChangeNotifier {
     return data;
   }
 
-  void increaseQty(BasketItem data, {bool withApiCall = true}) {
+  void increaseQty(
+      {Product? currentProduct, BasketItem? data, bool withApiCall = true}) {
+    if (currentProduct != null) {
+      for (BasketItem item in _basketItems) {
+        if (item.item?.id == currentProduct.id) {
+          data = item;
+        }
+      }
+    }
+
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
     BasketItem? addedOrUpdatedItem;
 
-    if (data.item?.isProduct ?? false) {
+    if (data?.item?.isProduct ?? false) {
       /// if basket item has variant
-      if (data.hasVariant) {
+      if (data?.hasVariant ?? false) {
         for (BasketItem basketItem in _basketItems) {
-          if (basketItem.item?.id == data.item?.id) {
+          if (basketItem.item?.id == data?.item?.id) {
             Variant? variant = basketItem.variants?.first;
             if (variant != null) {
-              if (variant.id == data.variants?.first.id) {
+              if (variant.id == data?.variants?.first.id) {
                 variant.quantity = (variant.quantity ?? 0) + 1;
                 basketItem.qty = (basketItem.qty ?? 0) + 1;
 
@@ -734,11 +778,11 @@ class BasketBloc extends ChangeNotifier {
         }
 
         /// if basket item has add0ns
-      } else if (data.hasAddOns) {
+      } else if (data?.hasAddOns ?? false) {
         for (BasketItem basketItem in _basketItems) {
           Product product = basketItem.item as Product;
 
-          if (basketItem.item?.id == data.item?.id) {
+          if (basketItem.item?.id == data?.item?.id) {
             for (AddOns addOns in basketItem.addOns ?? []) {
               for (AddOnOption options in addOns.options ?? []) {
                 options.quantity = options.quantity + 1;
@@ -752,7 +796,7 @@ class BasketBloc extends ChangeNotifier {
         }
       } else {
         for (BasketItem basketItem in _basketItems) {
-          if (basketItem.item?.id == data.item?.id) {
+          if (basketItem.item?.id == data?.item?.id) {
             Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) + 1;
@@ -777,19 +821,28 @@ class BasketBloc extends ChangeNotifier {
     }
   }
 
-  void decreaseQty(BasketItem data, {bool withApiCall = true}) {
+  void decreaseQty(
+      {Product? currentProduct, BasketItem? data, bool withApiCall = true}) {
+    if (currentProduct != null) {
+      for (BasketItem item in _basketItems) {
+        if (item.item?.id == currentProduct.id) {
+          data = item;
+        }
+      }
+    }
+
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
     BasketItem? addedOrUpdatedItem;
 
-    if (data.item?.isProduct ?? false) {
+    if (data?.item?.isProduct ?? false) {
       /// if basket item has variant
-      if (data.hasVariant) {
+      if (data?.hasVariant ?? false) {
         for (BasketItem basketItem in _basketItems) {
-          if (basketItem.item?.id == data.item?.id) {
+          if (basketItem.item?.id == data?.item?.id) {
             Variant? variant = basketItem.variants?.first;
             if (variant != null) {
-              if (variant.id == data.variants?.first.id) {
+              if (variant.id == data?.variants?.first.id) {
                 variant.quantity = (variant.quantity ?? 0) - 1;
                 basketItem.qty = (basketItem.qty ?? 0) - 1;
                 addedOrUpdatedItem = basketItem;
@@ -800,16 +853,16 @@ class BasketBloc extends ChangeNotifier {
         }
 
         /// if basket item has add0ns
-      } else if (data.hasAddOns) {
+      } else if (data?.hasAddOns ?? false) {
         for (BasketItem basketItem in _basketItems) {
           Product product = basketItem.item as Product;
 
-          if (basketItem.item?.id == data.item?.id) {
-            for (AddOns addOns in basketItem.addOns ?? []) {
-              for (AddOnOption options in addOns.options ?? []) {
-                options.quantity = options.quantity - 1;
-              }
-            }
+          if (basketItem.item?.id == data?.item?.id) {
+            // for (AddOns addOns in basketItem.addOns ?? []) {
+            //   for (AddOnOption options in addOns.options ?? []) {
+            //     options.quantity = options.quantity - 1;
+            //   }
+            // }
             basketItem.qty = (basketItem.qty ?? 0) - 1;
             product.qty = (product.qty ?? 0) - 1;
             addedOrUpdatedItem = basketItem;
@@ -818,7 +871,7 @@ class BasketBloc extends ChangeNotifier {
         }
       } else {
         for (BasketItem basketItem in _basketItems) {
-          if (basketItem.item?.id == data.item?.id) {
+          if (basketItem.item?.id == data?.item?.id) {
             Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) - 1;

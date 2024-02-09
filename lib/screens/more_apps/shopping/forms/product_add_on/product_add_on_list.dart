@@ -37,6 +37,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   String? next = "";
   String? previous = "";
   String? productId = "";
+  bool? isForCheckboxSelection = false;
   List<AddOns> productAddOnList = [];
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
@@ -52,6 +53,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
   @override
   void initState() {
     productId = widget.arguments["productId"];
+    isForCheckboxSelection = widget.arguments["isForCheckboxSelection"];
 
     getAddOnList();
 
@@ -275,7 +277,8 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                       context,
                       GestureDetector(
                         onTap: () {
-                          toggleAddOnCheckedState(index);
+                          if (isForCheckboxSelection == true)
+                            toggleAddOnCheckedState(index);
                         },
                         child: productAddOnTile(
                             addOns: productAddOnList[index], index: index),
@@ -361,15 +364,16 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
               ),
             ],
           ),
-
-          trailing: Checkbox(
-            value: addOns.isChecked ?? false,
-            activeColor: navyBlue,
-            onChanged: (bool? value) {
-              // Handle checkbox state change here
-              toggleAddOnCheckedState(index!);
-            },
-          ),
+          trailing: isForCheckboxSelection == true
+              ? Checkbox(
+                  value: addOns.isChecked ?? false,
+                  activeColor: navyBlue,
+                  onChanged: (bool? value) {
+                    // Handle checkbox state change here
+                    toggleAddOnCheckedState(index!);
+                  },
+                )
+              : null,
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 
 class ShippingProcessBloc extends ChangeNotifier {
@@ -93,8 +94,8 @@ class ShippingProcessBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateBuyNowProduct(
-      Product? value, Variant? variant, List<AddOns> addOns) {
+  void updateBuyNowProduct(Product? value, Variant? variant,
+      List<AddOns> addOns, ShippingAddress addressListing) {
     getPackageDetailModel().buyNow = value;
     getPackageDetailModel().variants = variant;
     getPackageDetailModel().addOns = addOns;
@@ -102,7 +103,7 @@ class ShippingProcessBloc extends ChangeNotifier {
     getPackageDetailModel().addressId = value?.addressId;
     getPackageDetailModel().totalItems = 1;
     getPackageDetailModel().totalPrice = value?.getBuyNowProductPrice();
-    // getPackageDetailModel().merchantAddress = addressListing;
+    getPackageDetailModel().merchantAddress = addressListing;
     notifyListeners();
   }
 

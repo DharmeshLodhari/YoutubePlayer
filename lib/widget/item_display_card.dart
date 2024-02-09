@@ -2,6 +2,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -68,28 +69,8 @@ class _DisplayProductState extends State<DisplayProduct> {
           return;
         }
 
-        Product currentProduct = Product();
-        currentProduct.name = widget.product.name;
-        currentProduct.id = widget.product.id;
-        currentProduct.shortDescription = widget.product.shortDescription;
-        currentProduct.description = "";
-        currentProduct.condition = widget.product.condition;
-        currentProduct.currency = widget.product.currency;
-        currentProduct.price = widget.product.price;
-        currentProduct.availableFrom =
-            widget.product.availableFrom ?? DateTime.now();
-        currentProduct.isAvailable = widget.product.isAvailable;
-        currentProduct.qrCode = widget.product.qrCode;
-        currentProduct.seller = widget.product.seller;
-        currentProduct.manufacturer = widget.product.manufacturer;
-        currentProduct.serverImages = widget.product.serverImages;
-        currentProduct.rating = widget.product.rating;
-        currentProduct.discountValue = widget.product.discountValue;
-        currentProduct.discountIsActive = widget.product.discountIsActive;
-        currentProduct.discountType = widget.product.discountType;
-        currentProduct.discountedPrice = widget.product.discountedPrice;
         Navigator.pushNamed(context, '/product',
-            arguments: {"product": currentProduct});
+            arguments: {"product": widget.product});
       },
       child: SizedBox(
         width: 200,
@@ -438,32 +419,16 @@ class _DisplayProductState extends State<DisplayProduct> {
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
 
-    if (widget.product.isAvailable!) {
+    if (widget.product.isProductAvailableNow()) {
       String type = "product";
-      if (widget.product.variantModels?.isEmpty == false) {
-        showToast(message: 'Please select product color or size');
-        Product currentProduct = Product();
-        currentProduct.name = widget.product.name;
-        currentProduct.id = widget.product.id;
-        currentProduct.shortDescription = widget.product.shortDescription;
-        currentProduct.description = "";
-        currentProduct.condition = widget.product.condition;
-        currentProduct.currency = widget.product.currency;
-        currentProduct.price = widget.product.price;
-        currentProduct.availableFrom =
-            widget.product.availableFrom ?? DateTime.now();
-        currentProduct.isAvailable = widget.product.isAvailable;
-        currentProduct.qrCode = widget.product.qrCode;
-        currentProduct.seller = widget.product.seller;
-        currentProduct.manufacturer = widget.product.manufacturer;
-        currentProduct.serverImages = widget.product.serverImages;
-        currentProduct.rating = widget.product.rating;
-        currentProduct.discountValue = widget.product.discountValue;
-        currentProduct.discountIsActive = widget.product.discountIsActive;
-        currentProduct.discountType = widget.product.discountType;
-        currentProduct.discountedPrice = widget.product.discountedPrice;
+      if (widget.product.variantModels?.isNotEmpty ?? false) {
+        showToast(message: AppLocalization.of(context)!.selectVariantColorSize);
         Navigator.pushNamed(context, '/product',
-            arguments: {"product": currentProduct});
+            arguments: {"product": widget.product});
+      } else if (widget.product.addOnsModels?.isNotEmpty ?? false) {
+        showToast(message: AppLocalization.of(context)!.selectRequiredAddons);
+        Navigator.pushNamed(context, '/product',
+            arguments: {"product": widget.product});
       } else {
         basketBloc.addItemToCart(
             item: widget.product.copyWith(qty: 1), type: type);
@@ -503,7 +468,11 @@ class _DisplayProductState extends State<DisplayProduct> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      addProductToCart();
+                      if (widget.product.addOnsModels?.isNotEmpty ?? false) {
+                        confirmAddOnsDialog();
+                      } else {
+                        basketBloc.increaseQty(currentProduct: widget.product);
+                      }
                     },
                     child: SvgPicture.asset(
                       'assets/images/add.svg',
@@ -528,7 +497,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      removeProductFromCart();
+                      basketBloc.decreaseQty(currentProduct: widget.product);
                     },
                     child: SvgPicture.asset('assets/images/minus.svg',
                         height: 17, width: 17),
@@ -544,6 +513,26 @@ class _DisplayProductState extends State<DisplayProduct> {
         child: Container(),
       );
     }
+  }
+
+  Future<void> confirmAddOnsDialog() async {
+    await showDialogBox(
+      context: context,
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      title: "Repeat last used Add-ons?",
+      actionOneText: "I'll choose",
+      actionTwoText: "Repeat last",
+      leftButtonOnPressed: () {
+        Navigator.pushNamed(context, Routes.PRODUCT,
+            arguments: {"product": widget.product, "type": "changeAddons"});
+      },
+      rightButtonOnPressed: () {
+        basketBloc.increaseQty(currentProduct: widget.product);
+      },
+    );
   }
 
   Widget displayShoppingAddingToCartControl() {
@@ -596,7 +585,7 @@ class _DisplayProductState extends State<DisplayProduct> {
     return result;
   }
 
-  void removeProductFromCart() async {
+  void removeProductFromCartOld() async {
     String type = "product";
 
     late var mapData;

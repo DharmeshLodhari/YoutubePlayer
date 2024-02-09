@@ -332,16 +332,5 @@ class _ShippingOptionState extends State<ShippingOption> {
     if (mounted) setState(() {});
 
     cartId = await ShippingProcessAuthService().getCartId();
-    // await ShippingProcessAuthService().getCartId().then(
-    //   (value) {
-    //     cartId = value;
-    //     isLoading = false;
-    //     if (mounted) setState(() {});
-    //   },
-    // ).catchError((error) {
-    //   isLoading = false;
-    //   if (mounted) setState(() {});
-    //   showToast(message: error.toString());
-    // });
   }
 }

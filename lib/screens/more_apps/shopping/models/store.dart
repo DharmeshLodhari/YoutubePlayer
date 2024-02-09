@@ -549,6 +549,15 @@ class Product extends PurchasableItem {
     );
   }
 
+  bool isProductAvailableNow() {
+    if ((isAvailable ?? false) &&
+        quantity! >= 1 &&
+        (availableFrom?.isBefore(DateTime.now()) ?? false)) {
+      return true;
+    }
+    return false;
+  }
+
   String getShortDescription(String short, String long) {
     if (short.length > 100) return long;
 
@@ -753,6 +762,29 @@ class Product extends PurchasableItem {
       if (isSelected) selectedAddOnsList.add(addOn);
     }
     return selectedAddOnsList;
+  }
+
+  bool isAllRequiredProductSelected() {
+    bool isAllSelected = false;
+    for (AddOns addOn in addOnsModels ?? []) {
+      bool isSelected = false;
+      if (addOn.isRequired == true) {
+        isSelected = addOn
+            .getSelectedAddsOnsOption(addOn)
+            .where((addOns) => addOns.isAddOnsSelected(addOn) == true)
+            .toList()
+            .isNotEmpty;
+      } else {
+        isSelected = true;
+      }
+
+      if (!isSelected) {
+        isAllSelected = false;
+        break;
+      }
+      isAllSelected = true;
+    }
+    return isAllSelected;
   }
 }
 

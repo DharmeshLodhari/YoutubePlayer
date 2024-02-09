@@ -2784,6 +2784,7 @@ class _EditProductState extends State<EditProduct> {
         final result = await Navigator.of(context)
             .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
           'productId': productId,
+          'isForCheckboxSelection': true,
         });
 
         // Handle the result (map) received from PRODUCT_ADD_ON_LIST
@@ -2834,6 +2835,7 @@ class _EditProductState extends State<EditProduct> {
                 final data = await Navigator.of(context)
                     .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
                   'productId': productId,
+                  'isForCheckboxSelection': true,
                 });
 
                 // Handle the result (map) received from PRODUCT_ADD_ON_LIST

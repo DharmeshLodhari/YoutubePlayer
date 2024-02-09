@@ -3556,10 +3556,10 @@ class AppLocalization {
     );
   }
 
-  String get selectAddons {
+  String get selectRequiredAddons {
     return Intl.message(
-      "Select addOn first",
-      name: "selectAddons",
+      "Select required addons",
+      name: "selectRequiredAddons",
     );
   }
 

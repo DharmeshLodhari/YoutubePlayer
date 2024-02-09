@@ -9,8 +9,10 @@ import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat
 import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -550,57 +552,61 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        // if (product?.isAvailable ?? false) {
-        if (isValidCustomer) {
-          if (product?.variantModels?.isNotEmpty ?? false) {
-            if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-              // print("Both color and size lists are showing.");
-              if (selectedVariant != null) {
+        if (product?.isProductAvailableNow() ?? false) {
+          if (isValidCustomer) {
+            if (product?.variantModels?.isNotEmpty ?? false) {
+              if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+                // print("Both color and size lists are showing.");
+                if (selectedVariant != null) {
+                  addToCart();
+                  return true;
+                } else {
+                  showToast(
+                      message:
+                          AppLocalization.of(context)!.selectVariantColorSize);
+                }
+              } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+                // print("color list is showing.");
+                if (selectedVariant != null) {
+                  addToCart();
+                  return true;
+                } else {
+                  showToast(
+                      message: AppLocalization.of(context)!.selectVariantSize);
+                }
+              } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+                // print("size list is showing.");
+                if (selectedVariant != null) {
+                  addToCart();
+                  return true;
+                } else {
+                  showToast(
+                      message: AppLocalization.of(context)!.selectVariantColor);
+                }
+              }
+            } else if (product?.addOnsModels?.isNotEmpty ?? false) {
+              bool isRequired =
+                  product?.isAllRequiredProductSelected() ?? false;
+              if (isRequired == true) {
                 addToCart();
                 return true;
               } else {
                 showToast(
-                    message:
-                        AppLocalization.of(context)!.selectVariantColorSize);
+                    message: AppLocalization.of(context)!.selectRequiredAddons);
               }
-            } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-              // print("color list is showing.");
-              if (selectedVariant != null) {
-                addToCart();
-                return true;
-              } else {
-                showToast(
-                    message: AppLocalization.of(context)!.selectVariantSize);
-              }
-            } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-              // print("size list is showing.");
-              if (selectedVariant != null) {
-                addToCart();
-                return true;
-              } else {
-                showToast(
-                    message: AppLocalization.of(context)!.selectVariantColor);
-              }
-            }
-          } else if (product?.addOnsModels?.isNotEmpty == true) {
-            if (product?.getSelectedAddsOns().isNotEmpty == true) {
-              addToCart();
             } else {
-              showToast(message: AppLocalization.of(context)!.selectAddons);
+              //product has no variant or is a service
+              addToCart();
+              return true;
             }
-            return true;
           } else {
-            //product has no variant or is a service
-            addToCart();
-            return true;
+            showToast(
+                message:
+                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
           }
         } else {
-          showToast(
-              message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+          showToast(message: AppLocalization.of(context)!.productOutOfStock);
         }
-        // } else {
-        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
-        // }
       },
     );
   }
@@ -868,27 +874,37 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget floatingActionBar() {
-    return Card(
-      elevation: 10,
-      margin: EdgeInsets.zero,
-      shadowColor: boxShadowTwo,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-        child: Row(
-          children: <Widget>[
-            messageSellerWidget(),
-            SizedBox(
-              width: 8,
+    return widget.arguments["type"] == "changeAddons"
+        ? Card(
+            elevation: 10,
+            margin: EdgeInsets.zero,
+            shadowColor: boxShadowTwo,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+              child: _buildOkButtonWidget(),
             ),
-            addToCartWidget(),
-            SizedBox(
-              width: 8,
+          )
+        : Card(
+            elevation: 10,
+            margin: EdgeInsets.zero,
+            shadowColor: boxShadowTwo,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+              child: Row(
+                children: <Widget>[
+                  messageSellerWidget(),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  addToCartWidget(),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  _buildBuyButtonWidget(),
+                ],
+              ),
             ),
-            _buildBuyButtonWidget(),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget _buildProductDetailsPage(BuildContext context) {
@@ -2179,49 +2195,86 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         textColor: Colors.white,
         text: "BUY NOW",
         onPressed: () async {
-          // if (product!.isAvailable!) {
-          if (isValidCustomer) {
-            //check if product has variant
-            if (product?.variantModels?.isNotEmpty ?? false) {
-              if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                // print("Both color and size lists are showing.");
-                if (selectedVariant != null) {
+          if (product?.isProductAvailableNow() ?? false) {
+            if (isValidCustomer) {
+              //check if product has variant
+              if (product?.variantModels?.isNotEmpty ?? false) {
+                if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+                  // print("Both color and size lists are showing.");
+                  if (selectedVariant != null) {
+                    processCartBuyNow(context);
+                  } else {
+                    showToast(
+                        message: AppLocalization.of(context)!
+                            .selectVariantColorSize);
+                  }
+                } else if (colorGroups.isNotEmpty && sizeGroups.isEmpty) {
+                  // print("color list is showing.");
+                  if (selectedVariant != null) {
+                    // print("Color list is showing.");
+                    processCartBuyNow(context);
+                  } else {
+                    showToast(
+                        message:
+                            AppLocalization.of(context)!.selectVariantColor);
+                  }
+                } else if (colorGroups.isEmpty && sizeGroups.isNotEmpty) {
+                  // print("size list is showing.");
+                  if (selectedVariant != null) {
+                    // print("Size list is showing.");
+                    processCartBuyNow(context);
+                  } else {
+                    showToast(
+                        message:
+                            AppLocalization.of(context)!.selectVariantSize);
+                  }
+                }
+              }
+              //check if product has add-ons
+              else if (product?.addOnsModels?.isNotEmpty ?? false) {
+                bool isRequired =
+                    product?.isAllRequiredProductSelected() ?? false;
+                if (isRequired == true) {
                   processCartBuyNow(context);
                 } else {
                   showToast(
                       message:
-                          AppLocalization.of(context)!.selectVariantColorSize);
+                          AppLocalization.of(context)!.selectRequiredAddons);
                 }
-              } else if (colorGroups.isNotEmpty && sizeGroups.isEmpty) {
-                // print("color list is showing.");
-                if (selectedVariant != null) {
-                  // print("Color list is showing.");
-                  processCartBuyNow(context);
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantColor);
-                }
-              } else if (colorGroups.isEmpty && sizeGroups.isNotEmpty) {
-                // print("size list is showing.");
-                if (selectedVariant != null) {
-                  // print("Size list is showing.");
-                  processCartBuyNow(context);
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantSize);
-                }
+              } else {
+                processCartBuyNow(context);
               }
             } else {
-              processCartBuyNow(context);
+              showToast(
+                  message:
+                      AppLocalization.of(context)!.youCanNotPurchaseThisItem);
             }
           } else {
-            showToast(
-                message:
-                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+            showToast(message: AppLocalization.of(context)!.productOutOfStock);
           }
-          // } else {
-          //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
-          // }
+        },
+      ),
+    );
+  }
+
+  Widget _buildOkButtonWidget() {
+    return Expanded(
+      child: CurvedButton(
+        isPaymentBtn: true,
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "Ok",
+        onPressed: () async {
+          if (product?.addOnsModels?.isNotEmpty ?? false) {
+            bool isRequired = product?.isAllRequiredProductSelected() ?? false;
+            if (isRequired == true) {
+              addToCart();
+              Navigator.pop(context);
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)!.selectRequiredAddons);
+            }
+          }
         },
       ),
     );
@@ -2236,19 +2289,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     ShippingProcessBloc shippingProcessBloc =
         Provider.of<ShippingProcessBloc>(context, listen: false);
     shippingProcessBloc.isUseCartProcess(false);
-    // List<ShippingAddress> addresses =
-    //     await getAddressListing([product?.addressId]);
-    // if (addresses.isNotEmpty) {
-    // shippingProcessBloc.updateBuyNowProduct(product, addresses[0]);
-    shippingProcessBloc.updateBuyNowProduct(product, variant, addOns);
-    Navigator.pushNamed(context, Routes.DELIVERY_OPTION);
-    // } else {
-    //   await Navigator.of(context)
-    //       .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
-    //     "isForSelection": true,
-    //   });
-    //   setState(() {});
-    // }
+    List<ShippingAddress> addresses =
+        await getAddressListing([product?.addressId]);
+    if (addresses.isNotEmpty) {
+      shippingProcessBloc.updateBuyNowProduct(
+          product, variant, addOns, addresses[0]);
+      Navigator.pushNamed(context, Routes.DELIVERY_OPTION);
+    } else {
+      await Navigator.of(context)
+          .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
+        "isForSelection": false,
+      });
+      setState(() {});
+    }
     // bool result = await showDisclaimerDialogueForGoods(context);
     // if (result) {
     //   getRecipient();

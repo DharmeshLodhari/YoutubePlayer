@@ -96,18 +96,18 @@ class ShippingProcessAuthService extends AuthService {
     var _data = jsonEncode(data);
     debugPrint('Order details ::: $_data');
 
-    // var headers = await getAuthHeaders();
-    // var response = await httpPost(url, headers: headers, body: _data);
-    // var jsonData = jsonDecode(response.body);
-    //
-    // debugPrint(
-    //     "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    // if (response.statusCode == 200 || response.statusCode == 201) {
-    //   return jsonData;
-    // } else {
-    //   showToast(message: response.body.toString());
-    //   throw response.body;
-    // }
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _data);
+    var jsonData = jsonDecode(response.body);
+
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonData;
+    } else {
+      showToast(message: response.body.toString());
+      throw response.body;
+    }
   }
 
   // List of Addresses

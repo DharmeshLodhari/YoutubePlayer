@@ -231,11 +231,11 @@ class NormalCartScreenState extends State<NormalCartScreen> {
           if (data.hasAddOns) {
             confirmAddOnsDialog(data);
           } else {
-            basketBloc.increaseQty(data);
+            basketBloc.increaseQty(data: data);
           }
         },
         onDecreaseQty: () {
-          basketBloc.decreaseQty(data);
+          basketBloc.decreaseQty(data: data);
         },
       );
     }
@@ -694,11 +694,13 @@ class NormalCartScreenState extends State<NormalCartScreen> {
       actionOneText: "I'll choose",
       actionTwoText: "Repeat last",
       leftButtonOnPressed: () {
-        Navigator.pushNamed(context, Routes.PRODUCT,
-            arguments: {"product": data.item as Product});
+        Navigator.pushNamed(context, Routes.PRODUCT, arguments: {
+          "product": data.item as Product,
+          "type": "changeAddons"
+        });
       },
       rightButtonOnPressed: () {
-        basketBloc.increaseQty(data);
+        basketBloc.increaseQty(data: data);
       },
     );
   }
