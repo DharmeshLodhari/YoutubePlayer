@@ -2,17 +2,21 @@ import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../widget/vertical_list_item.dart';
 
@@ -27,6 +31,9 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
+  SharedCartModel cartDetails = SharedCartModel();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   bool isLoading = false;
 
   @override
@@ -36,11 +43,48 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getCartDetails();
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
   }
 
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
+
+  Future<void> getCartDetails() async {
+    if (!isLoading) {
+      if (mounted) {
+        isLoading = true;
+        setState(() {});
+      }
+
+      await SharedCartAuthService()
+          .getCartDetails(sharedCartBloc.getSharedCartModel().id)
+          .then((value) {
+        cartDetails = value;
+        if (mounted) {
+          isLoading = false;
+          setState(() {});
+        }
+      }).catchError((error) {
+        if (mounted) {
+          isLoading = false;
+          setState(() {});
+        }
+        debugPrint(error.toString());
+        debugPrint("Product check variant::: ${error.toString()}");
+        // showToast(message: error.toString());
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +119,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
         },
       ),
       title: Text(
-        sharedCartBloc.getSharedCartModel().name ?? "",
+        cartDetails.name ?? "",
         style: TextStyle(
             color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
       ),
@@ -90,7 +134,9 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
           ),
           onTap: () {
             Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
-                arguments: {"create": "addMember"});
+                arguments: {
+                  "create": "addMember"
+                }).whenComplete(() => getCartDetails());
           },
           backgroundColor: iconBtnGrey,
           enableMargin: true,
@@ -105,40 +151,55 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   }
 
   Widget _buildBody() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: sharedCartBloc.getSharedCartModel().membersDetails?.length == 0 ||
-              sharedCartBloc.getSharedCartModel().membersDetails == null
-          ? NoItemInList(
-              title: AppLocalization.of(context)!.noMembersYet,
-              msg: AppLocalization.of(context)!.noMembersYet,
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              //+1 for progressbar
-              itemCount:
-                  sharedCartBloc.getSharedCartModel().membersDetails?.length,
-              itemBuilder: (BuildContext context, int index) {
-                if (index ==
-                    sharedCartBloc
-                        .getSharedCartModel()
-                        .membersDetails
-                        ?.length) {
-                  return buildLoadingIndicator(isLoading: isLoading);
-                } else {
-                  return _getSlidableWithLists(
-                    context,
-                    cartMemberTile(
-                        members: sharedCartBloc
-                            .getSharedCartModel()
-                            .membersDetails?[index],
-                        index: index),
-                    sharedCartBloc.getSharedCartModel().membersDetails?[index],
-                  );
-                }
-              },
+    return ScaffoldMessenger(
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
             ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildCartMembers(),
+          ),
+        ),
+      ),
     );
+    ;
+  }
+
+  Widget _buildCartMembers() {
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : cartDetails.membersDetails?.length == 0 ||
+                cartDetails.membersDetails == null
+            ? NoItemInList(
+                title: AppLocalization.of(context)!.noMembersYet,
+                msg: AppLocalization.of(context)!.noMembersYet,
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                //+1 for progressbar
+                itemCount: cartDetails.membersDetails?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == cartDetails.membersDetails?.length) {
+                    return buildLoadingIndicator(isLoading: isLoading);
+                  } else {
+                    return _getSlidableWithLists(
+                      context,
+                      cartMemberTile(
+                          members: cartDetails.membersDetails?[index],
+                          index: index),
+                      cartDetails.membersDetails?[index],
+                    );
+                  }
+                },
+              );
   }
 
   Widget cartMemberTile({required UserFollowers? members, int? index}) {
@@ -203,32 +264,50 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () async {
-            deleteMember(member);
+            await deleteMember(member);
           },
           title: AppLocalization.of(context)!.remove,
           slideController: _slideController),
     ];
   }
 
-  void deleteMember(UserFollowers? member) {
+  Future<void> deleteMember(UserFollowers? member) async {
     Map<String, dynamic> data = {
       "members": [member?.userName]
     };
-    SharedCartAuthService()
-        .removeMemberFromSharedCart(
-            sharedCartBloc.getSharedCartModel().id, data)
+    await SharedCartAuthService()
+        .removeMemberFromSharedCart(cartDetails.id, data)
         .then((value) {
       if (value == true) {
         showToast(
             message: AppLocalization.of(context)!.memberDeletedSuccessfully);
-        //remove the selected add-on from the list using it id
-        // member.removeWhere((addOn) => addOn.id == member.id);
-        if (mounted) setState(() {});
+        _onRefresh();
       } else {
         showToast(message: AppLocalization.of(context)!.memberIsNotDeleted);
       }
     }).catchError((error) {
       showToast(message: error.toString());
+    });
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        getCartDetails();
+        setState(() {
+          // Call the callback function with the updated list
+          //to pass the list back to edit product page
+          // widget.onListRefreshed!(productVariantList);
+          _refreshController.refreshCompleted();
+        });
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _refreshController.refreshCompleted();
+      }
     });
   }
 }

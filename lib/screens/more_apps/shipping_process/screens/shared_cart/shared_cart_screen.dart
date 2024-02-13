@@ -205,7 +205,8 @@ class SharedCartScreenState extends State<SharedCartScreen> {
 
   Widget getTrailing() {
     return Text(
-      "₦0.00",
+      "₦0.0",
+      // "₦${moneyDisplayNormalizer(int.parse(sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice().toString()))}",
       maxLines: 1,
       style: TextStyle(
         color: navyBlue,

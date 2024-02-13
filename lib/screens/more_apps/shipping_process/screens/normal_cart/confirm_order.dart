@@ -16,7 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ConfirmOrder extends StatefulWidget {
-  const ConfirmOrder({Key? key}) : super(key: key);
+  ConfirmOrder({this.arguments, Key? key}) : super(key: key);
+
+  var arguments;
 
   @override
   State<ConfirmOrder> createState() => _ConfirmOrderState();
@@ -31,12 +33,16 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
   bool isOrderLoading = false;
   bool isSelected = false;
   List<int?> orders = [];
+  String sharedCartId = '';
+  bool isSharedCart = false;
 
   late ShippingProcessBloc shippingProcessBloc;
 
   @override
   void initState() {
     super.initState();
+    sharedCartId = widget.arguments['sharedCartId'];
+    isSharedCart = widget.arguments['isSharedCart'];
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
         if (shippingProcessBloc.isUseCart == true) {
@@ -53,7 +59,9 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      await ShippingProcessAuthService().getAllPackageDetail().then(
+      await ShippingProcessAuthService()
+          .getAllPackageDetail(isSharedCart, sharedCartId)
+          .then(
         (value) {
           shippingProcessBloc.packagesList = value;
           shippingProcessBloc.isPaymentSuccessfully(false);
@@ -235,21 +243,24 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       padding: const EdgeInsets.all(16.0),
       child: CurvedButton(
         onPressed: () {
-          BottomSheetPassCode(
-              context: context,
-              isValidCallback: () async {
-                // await checkAccountBalance();
+          isSharedCart == true
+              ? Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT)
+              : BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () async {
+                    // await checkAccountBalance();
 
-                // Create the orders
-                await placeOrder();
-              },
-              cancelCallBack: () {
-                Navigator.pop(context);
-              });
+                    // Create the orders
+                    await placeOrder();
+                  },
+                  cancelCallBack: () {
+                    Navigator.pop(context);
+                  });
         },
         backgroundColor: navyBlue,
         textColor: white,
-        text: 'Pay ₦${moneyDisplayNormalizer(getTotalOrder())}',
+        text:
+            'Pay ₦${moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder())}',
         isLoading: isOrderLoading,
       ),
     );
@@ -278,7 +289,9 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       await ShippingProcessAuthService()
           .placeOrder(
               data: shippingProcessBloc.toPlaceOrder(userBloc.user.userName),
-              isCartProcess: shippingProcessBloc.isUseCart)
+              isCartProcess: shippingProcessBloc.isUseCart,
+              isSharedCart: true,
+              sharedCartId: sharedCartId)
           .then(
         (value) async {
           if (value != null) {
@@ -409,7 +422,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           ),
         ),
         Text(
-          "₦${moneyDisplayNormalizer(getTotalOrder())}",
+          "₦${moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder())}",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
@@ -419,11 +432,5 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
         ),
       ],
     );
-  }
-
-  int? getTotalOrder() {
-    int? totalItemCost = shippingProcessBloc.getTotalItemCost();
-    int? totalShipping = shippingProcessBloc.getTotalShipping();
-    return (totalItemCost ?? 0) + (totalShipping ?? 0);
   }
 }

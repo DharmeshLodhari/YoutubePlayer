@@ -101,7 +101,10 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
                 children: [
                   Expanded(
                     child: Text(
-                      '₦0.00',
+                      sharedCartBloc.getSharedCartModel().splitBillEvenly ==
+                              true
+                          ? '₦${moneyDisplayNormalizer(sharedCartBloc.getSharedCartModel().getSplitBillEvenlyPayment())}'
+                          : '₦${moneyDisplayNormalizer(widget.members?.dividedPayment)}',
                       style: TextStyle(
                           color: navyBlue,
                           fontWeight: FontWeight.w700,
@@ -224,8 +227,10 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
           );
         }),
         ButtonOnPressed: () async {
-          sharedCartBloc.updatePaymentPercentageValue(
-              int.parse(_controller.text.trim()), widget.index ?? 0);
+          sharedCartBloc.updatePercentageAndPrice(
+              cart: sharedCartBloc.getSharedCartModel(),
+              val: double.parse(_controller.text.trim()),
+              index: widget.index ?? 0);
           percentageValue = 0.0;
           _controller.clear();
           setState(() {});

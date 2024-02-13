@@ -212,7 +212,8 @@ class NormalCartScreenState extends State<NormalCartScreen> {
               Provider.of<ShippingProcessBloc>(context, listen: false);
           shippingProcessBloc.currentSelectedIndex = null;
 
-          Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
+          Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER,
+              arguments: {'isSharedCart': false, 'sharedCartId': ''});
         } else {
           showToast(message: 'Checkout not available now');
         }
@@ -226,6 +227,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     if (data.item?.isProduct ?? false) {
       return ShoppingCartTileForProduct(
         key: UniqueKey(),
+        isSharedCart: false,
         basketItem: data,
         onIncreaseQty: () {
           if (data.hasAddOns) {

@@ -62,6 +62,12 @@ class ShippingProcessBloc extends ChangeNotifier {
     return total;
   }
 
+  int? getTotalOrder() {
+    int? totalItemCost = getTotalItemCost();
+    int? totalShipping = getTotalShipping();
+    return (totalItemCost ?? 0) + (totalShipping ?? 0);
+  }
+
   void updateDeliveryOption(String pickedDeliveryOption) {
     if (pickedDeliveryOption == "Shipping") {
       getPackageDetailModel().deliveryOption = DeliveryOptions.shipping;

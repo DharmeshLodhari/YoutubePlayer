@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/states_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -123,9 +124,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       }
 
       List<Cities> tempList = result['results'];
-      // tempList.forEach((element) {
-      //   states.add(element.name!);
-      // });
+      cityList = [];
       if (mounted) {
         setState(() {
           isLoading = false;
@@ -350,12 +349,6 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     return CustomizedTextFormField(
       labelText: "Address Line 2",
       initialValue: shippingAddress.line_2 ?? "",
-      validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return "This field should not be empty";
-      },
       onChanged: (val) {
         shippingAddress.line_2 = val;
       },
@@ -366,6 +359,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     return CustomizedTextFormField(
       labelText: "Postcode",
       initialValue: shippingAddress.zip ?? "",
+      keyboardType: TextInputType.number,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -477,12 +471,11 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
       onChanged: (String? value) async {
         StatesModel picked =
             itemList.firstWhere((element) => element.name == value);
+        selectedCity = null;
         await getShippingCities(picked.isoCode);
         shippingAddress.stateName = picked.name;
         setState(() {
           selectedState = value!;
-          // cityList = [];
-          // selectedCity = null;
         });
       },
       validator: (String? value) {
@@ -667,32 +660,13 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
   }
 
   Widget toggleActiveTag() {
-    return Row(
-      children: [
-        Checkbox(
-          activeColor: navyBlue,
-          value: shippingAddress.is_residential ?? false,
-          tristate: false,
-          onChanged: (value) {
-            shippingAddress.is_residential = shippingAddress.is_residential;
-            setState(() {});
-          },
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-        ),
-        // Switch(
-        //   onChanged: (value) {
-        //     discountModel.isActive = !discountModel.isActive;
-        //     setState(() {});
-        //   },
-        //   value: discountModel.isActive,
-        //   activeColor: Theme.of(context).primaryColor,
-        // ),
-        Text(
-          "This is a residential address",
-          style: TextStyle(
-              fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
-        ),
-      ],
+    return CustomizedCheckBoxField(
+      onTap: () {
+        shippingAddress.is_residential = !shippingAddress.is_residential;
+        setState(() {});
+      },
+      isChecked: shippingAddress.is_residential,
+      title: "This is a residential address",
     );
   }
 

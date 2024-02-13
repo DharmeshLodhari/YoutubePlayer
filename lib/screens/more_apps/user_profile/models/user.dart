@@ -20,7 +20,7 @@ class ShippingAddress {
   String? created_at;
   String? updated_at;
   String? email;
-  bool? is_residential;
+  bool is_residential = false;
   String? first_name;
   String? last_name;
   String? line_1;
@@ -44,7 +44,7 @@ class ShippingAddress {
       this.created_at,
       this.updated_at,
       this.email,
-      this.is_residential,
+      this.is_residential = false,
       this.first_name,
       this.last_name,
       this.line_1,
@@ -692,7 +692,8 @@ class UserFollowers {
   bool? isVerified;
   String? fullName;
   String? accountType;
-  int? paymentPercentageValue = 0;
+  double? paymentPercentageValue = 0;
+  int? dividedPayment = 0;
 
   UserFollowers({
     this.userName,
@@ -701,6 +702,7 @@ class UserFollowers {
     this.fullName,
     this.accountType,
     this.paymentPercentageValue = 0,
+    this.dividedPayment = 0,
   });
 
   UserFollowers.fromJson(dynamic json) {

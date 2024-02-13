@@ -1219,24 +1219,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
-  Product getProduct(String productId) {
-    Product product = Product();
-    product.id = productId;
-    product.name = "";
-    product.shortDescription = "";
-    product.description = "";
-    product.condition = "";
-    product.currency = userBloc.user.currency;
-    product.price = "0";
-    product.availableFrom = DateTime.now();
-    product.isAvailable = false;
-    product.qrCode = "";
-    product.seller = "";
-    product.manufacturer = "";
-    product.serverImages = [];
-    return product;
-  }
-
   void updateStatus(value) {
     showDialog(
         context: context,

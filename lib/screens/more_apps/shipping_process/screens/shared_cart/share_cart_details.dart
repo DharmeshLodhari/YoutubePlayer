@@ -1,16 +1,21 @@
 import 'dart:io';
 
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
+import 'package:Slydo/data/state_notifiers/shipping_process_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/utils.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
@@ -24,10 +29,11 @@ class SharedCartDetails extends StatefulWidget {
 }
 
 class _SharedCartDetailsState extends State<SharedCartDetails> {
-  late BasketBloc basketBloc;
   late SharedCartBloc sharedCartBloc;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  ScrollController _sharedScrollController = new ScrollController();
+  AppConfigurationModel? appConfigurationModel;
   bool isLoading = false;
   int? count = 0;
   bool noDataInList = false;
@@ -47,12 +53,23 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   void initState() {
     super.initState();
 
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getCartItemsList();
+    });
+
+    _sharedScrollController.addListener(() {
+      if (_sharedScrollController.position.pixels ==
+              _sharedScrollController.position.maxScrollExtent &&
+          _sharedScrollController.position.pixels != 0) {
+        getCartItemsList();
+      }
     });
   }
 
   Future<void> getCartItemsList() async {
+    sharedCartBloc.getSharedCartModel().basketItems.clear();
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
@@ -72,7 +89,6 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           return;
         }
 
-        basketBloc.items.clear();
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -81,21 +97,67 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           setState(() {
             noDataInList = false;
             isLoading = false;
-            // basketBloc.items.addAll(tempList);
-            tempList.forEach((element) {
+
+            for (var element in tempList) {
               String type = element is Product ? "product" : "service";
-              basketBloc.addItemToCart(item: element, type: type);
-            });
+
+              // debugPrint('Variant Data element: $element');
+
+              if (element is Product) {
+                /// varient
+                List<Variant>? variantList = element.variantModels;
+
+                /// adds on
+                List<AddOns>? convertedList = element.addOnsModels;
+
+                if (variantList != null && variantList.isNotEmpty) {
+                  for (var variant in variantList) {
+                    sharedCartBloc.addItemToSharedCart(
+                        cart: sharedCartBloc.getSharedCartModel(),
+                        item: element,
+                        type: type,
+                        variant: variant,
+                        withApiCall: false);
+                  }
+                } else if (convertedList != null && convertedList.isNotEmpty) {
+                  sharedCartBloc.addItemToSharedCart(
+                      cart: sharedCartBloc.getSharedCartModel(),
+                      item: element,
+                      type: type,
+                      variant: null,
+                      addOns: convertedList,
+                      withApiCall: false);
+                } else {
+                  sharedCartBloc.addItemToSharedCart(
+                      cart: sharedCartBloc.getSharedCartModel(),
+                      item: element,
+                      type: type,
+                      withApiCall: false);
+                }
+              } else {
+                sharedCartBloc.addItemToSharedCart(
+                    cart: sharedCartBloc.getSharedCartModel(),
+                    item: element,
+                    type: type,
+                    variant: null,
+                    addOns: null,
+                    withApiCall: false);
+              }
+            }
+            if (tempList.isEmpty) {
+              sharedCartBloc.getSharedCartModel().basketItems.clear();
+            }
           });
         }
       }
-      if (basketBloc.items.isEmpty) {
+      if (sharedCartBloc.getSharedCartModel().basketItems.isEmpty) {
         if (mounted) {
           setState(() {
             noDataInList = true;
           });
         }
-      } else if (next == null && basketBloc.items.length > 6) {
+      } else if (next == null &&
+          sharedCartBloc.getSharedCartModel().basketItems.length > 6) {
         _cartItemScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -108,7 +170,6 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   @override
   Widget build(BuildContext context) {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
-    basketBloc = Provider.of<BasketBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -186,356 +247,58 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           ),
           controller: _refreshController,
           onRefresh: _onRefresh,
-          // child: _buildListOfCartItems(),
-          child: Container(),
+          child: _buildListOfCartItems(),
         ),
       ),
     );
   }
 
   Widget _buildListOfCartItems() {
-    // return int.parse(getTotalPrice().toString()) == 0
-    //     ? Center(
-    //         child: NoItemInList(
-    //             msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
-    //       )
-    //     :
-    return ListView.builder(
-        itemCount: basketBloc.items.length,
-        itemBuilder: (BuildContext context, int index) => getItemTile(index));
+    if (isLoading) {
+      return Center(
+        child: CircularLoadingIndicator(),
+      );
+    }
+
+    return sharedCartBloc.getSharedCartModel().basketItems.isEmpty &&
+            isLoading == false
+        ? Center(
+            child: NoItemInList(
+                msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
+          )
+        : ListView.builder(
+            itemCount: sharedCartBloc.getSharedCartModel().basketItems.length,
+            itemBuilder: (BuildContext context, int index) =>
+                getItemTile(index),
+          );
   }
 
   Widget getItemTile(int index) {
-    List<Widget> itemWidgets = []; // Create an empty list to hold widgets
+    final BasketItem data =
+        sharedCartBloc.getSharedCartModel().basketItems[index];
 
-    if (basketBloc.items.length > index) {
-      final data = basketBloc.items[index];
-      final item = data["item"];
-
-      if (item is Product) {
-        Product product = item;
-
-        List<Variant>? variants = product.variantModels;
-        List<AddOns>? addOn = product.addOnsModels;
-
-        if (variants != null && variants.isNotEmpty) {
-          for (var variant in variants) {
-            Map<String, dynamic> variant1 = {
-              "id": variant.id,
-              "quantity": variant.quantity,
-              "price": variant.price,
-              "colour": variant.colour,
-              "value": variant.value,
-              "type": variant.type,
-            };
-
-            String image = variant.localImages.toString();
-            Variant single = Variant.fromJson(variant1);
-
-            itemWidgets.add(
-              ShoppingCartTileForProduct(
-                basketItem: data,
-                onDecreaseQty: () {},
-                onIncreaseQty: () {},
-              ),
-            );
+    if (data.item?.isProduct ?? false) {
+      return ShoppingCartTileForProduct(
+        key: UniqueKey(),
+        isSharedCart: true,
+        basketItem: data,
+        onIncreaseQty: () {
+          if (data.hasAddOns) {
+            confirmAddOnsDialog(data);
+          } else {
+            sharedCartBloc.increaseItemToSharedCart(
+                sharedCartBloc.getSharedCartModel(),
+                data: data);
           }
-        } else if (addOn != null && addOn.isNotEmpty) {
-          debugPrint('fola cart:::: ${addOn}');
-
-          itemWidgets.add(
-            ShoppingCartTileForProduct(
-              basketItem: data,
-              onDecreaseQty: () {
-                removeItemAddOn(index);
-              },
-              onIncreaseQty: () {
-                addItemAddOn(index);
-              },
-            ),
-          );
-        } else {
-          itemWidgets.add(
-            ShoppingCartTileForProduct(
-              basketItem: data,
-              onDecreaseQty: () {
-                removeItem(index);
-                // if (mounted) setState(() {});
-              },
-              onIncreaseQty: () {
-                addItem(index);
-                // if (mounted) setState(() {});
-              },
-            ),
-          );
-        }
-      } else {
-        itemWidgets.add(
-          ShoppingCartTileForService(
-            data,
-            index: index,
-            onDecreaseQty: () {
-              index != null ? removeItem(index) : SizedBox.shrink();
-            },
-            onIncreaseQty: () {
-              index != null ? addItem(index) : SizedBox.shrink();
-            },
-          ),
-        );
-      }
-    } else {
-      return Container(); // Return an empty container if index is out of bounds
+        },
+        onDecreaseQty: () {
+          sharedCartBloc.decreaseItemToSharedCart(
+              sharedCartBloc.getSharedCartModel(),
+              data: data);
+        },
+      );
     }
-
-    return Column(
-      children: itemWidgets,
-    );
-  }
-
-  void removeItem(int index) async {
-    String type =
-        basketBloc.items[index]["item"] is Product ? "product" : "service";
-
-    late var mapData;
-    basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
-        mapData = element;
-        return;
-      }
-    });
-    Map data = {
-      "type": type,
-      "id": mapData["item"].id,
-      "qty": mapData["qty"] - 1,
-    };
-
-    debugPrint("Data send From Remove Button : ${mapData["item"].id}");
-    basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
-    await SharedCartAuthService()
-        .removeItemFromSharedCart(sharedCartBloc.getSharedCartModel().id, data);
-  }
-
-  void addItem(int index) async {
-    String type =
-        basketBloc.items[index]["item"] is Product ? "product" : "service";
-
-    basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
-
-    late var mapData;
-    basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
-        mapData = element;
-        return;
-      }
-    });
-    Map data = {
-      "type": type,
-      "id": mapData["item"].id,
-      "qty": mapData["qty"],
-    };
-    debugPrint("Data From increasing the  item : $data");
-    await SharedCartAuthService()
-        .addItemToSharedCart(sharedCartBloc.getSharedCartModel().id, data);
-  }
-
-  void removeVariantItem(int index, int variantId) async {
-    String type =
-        basketBloc.items[index]["item"] is Product ? "product" : "service";
-
-    Product selectedProduct = basketBloc.items[index]["item"];
-    basketBloc.removeOrReduceVariant(selectedProduct.id.toString(), variantId);
-
-    Map<String, dynamic> dataInfo =
-        getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
-
-    debugPrint('fola chat one fourrrr::: ${dataInfo}');
-
-    //close pop up if quantity to reduce is 1 currently
-    if (dataInfo["variants"] == null) {
-      basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
-
-      Map<String, dynamic> data = {
-        "id": ["productId"],
-        "type": dataInfo["type"],
-        "qty": 0,
-      };
-      await SharedCartAuthService().removeItemFromSharedCart(
-          sharedCartBloc.getSharedCartModel().id, data);
-    } else {
-      await SharedCartAuthService().addItemToSharedCart(
-          sharedCartBloc.getSharedCartModel().id, dataInfo);
-    }
-  }
-
-  Map<String, dynamic> getUpdatedCartItem(String type, String productId) {
-    Map<String, dynamic> dataInfo = {};
-
-    for (var element in basketBloc.items) {
-      Product item = element["item"];
-      int totalVariantQuantity = 0;
-
-      if (item.variantModels != null && productId == item.id) {
-        List<Variant> variantsList = item.variantModels ?? [];
-
-        // debugPrint("Data From Product Page v-id 5 : ${variantsList}");
-        // debugPrint("Data From Product Page v-id 6 : ${element["item"].variant}");
-        // debugPrint("Data From Product Page v-id 7 : ${item['variants']}");
-
-        // Initialize dataInfo with common information
-        dataInfo = {
-          "id": productId,
-          "type": type,
-        };
-
-        // Check if variantsList is not empty
-        if (variantsList.isNotEmpty) {
-          List<Map<String, dynamic>> variantDataList = [];
-
-          // Iterate through the variants and add each variant to the variantDataList
-          for (var variant in variantsList) {
-            if (variant.id != null) {
-              int variantId = int.parse(variant.id.toString());
-              int? variantQuantity = variant.quantity;
-
-              variantDataList.add({
-                "id": variantId,
-                "quantity": variantQuantity,
-              });
-            }
-          }
-
-          // debugPrint("Data From Product Page v-id 5 : ${variantDataList}");
-
-          // Add the variantDataList to dataInfo["variants"]
-          dataInfo["variants"] = variantDataList;
-
-          // Calculate the totalVariantQuantity based on variantDataList
-          totalVariantQuantity = variantDataList.fold<int>(
-              0,
-              (sum, variant) =>
-                  sum + int.parse(variant['quantity'].toString()));
-        }
-
-        // Set the total quantity in dataInfo
-        dataInfo["qty"] =
-            variantsList.isNotEmpty ? totalVariantQuantity : item.quantity;
-      } else {
-        dataInfo = {
-          "id": item.id,
-          "qty": element['qty'],
-          "type": type,
-          "variants": [],
-        };
-      }
-    }
-    return dataInfo;
-  }
-
-  void addVariantItem(int index, int variantId) async {
-    String type =
-        basketBloc.items[index]["item"] is Product ? "product" : "service";
-
-    // debugPrint('fola cart:::: ${variantId}');
-    Product selectedProduct = basketBloc.items[index]["item"];
-
-    basketBloc.increaseVariantQuantity(
-        selectedProduct.id.toString(), variantId);
-
-    Map<String, dynamic> dataInfo =
-        getUpdatedCartItem(type, basketBloc.items[index]["item"].id);
-
-    await SharedCartAuthService()
-        .addItemToSharedCart(sharedCartBloc.getSharedCartModel().id, dataInfo);
-  }
-
-  void removeItemAddOn(int index) async {
-    late var mapData;
-    String type =
-        basketBloc.items[index]["item"] is Product ? "product" : "service";
-    basketBloc.items.forEach((element) async {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
-        element['qty'] = int.parse(element['qty'].toString()) - 1;
-        mapData = element;
-        return;
-      }
-    });
-    if (mounted) setState(() {});
-
-    if (mapData['qty'] == 0 || mapData['qty'] == -1) {
-      //remove item from cart and local
-      Map data = {
-        "type": type,
-        "id": mapData["item"].id,
-        "qty": mapData["qty"],
-      };
-      basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
-      await SharedCartAuthService().removeItemFromSharedCart(
-          sharedCartBloc.getSharedCartModel().id, data);
-    } else {
-      //update to server is qty is not zero
-      debugPrint('add-on add mapData qty not 0/-1::: ${mapData['qty']}');
-      if (mapData['qty'] != 0) {
-        // debugPrint('add-on add three::: ${mapData['add_ons']}');
-
-        var addOn = mapData['add_ons'];
-
-        List<dynamic> transformedList = addOn?.map((item) {
-              List<dynamic> options = item['options']?.map((option) {
-                    return {"id": option['id'], "quantity": option['quantity']};
-                  })?.toList() ??
-                  [];
-
-              return {"id": item['id'], "options": options};
-            })?.toList() ??
-            [];
-
-        Map data = {
-          "type": type,
-          "id": mapData["item"].id,
-          "qty": mapData["qty"],
-          "add_ons": transformedList,
-        };
-        debugPrint("Data From increasing the  item : $data");
-        await SharedCartAuthService()
-            .addItemToSharedCart(sharedCartBloc.getSharedCartModel().id, data);
-      }
-    }
-  }
-
-  void addItemAddOn(int index) async {
-    late var mapData;
-    String type =
-        basketBloc.items[index]["item"] is Product ? "product" : "service";
-    basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
-        element['qty'] = int.parse(element['qty'].toString()) + 1;
-        mapData = element;
-        return;
-      }
-    });
-    if (mounted) setState(() {});
-    //update to server
-    var addOn = mapData['add_ons'];
-
-    List<dynamic> transformedList = addOn?.map((item) {
-          List<dynamic> options = item['options']?.map((option) {
-                return {"id": option['id'], "quantity": option['quantity']};
-              })?.toList() ??
-              [];
-
-          return {"id": item['id'], "options": options};
-        })?.toList() ??
-        [];
-
-    Map data = {
-      "type": type,
-      "id": mapData["item"].id,
-      "qty": mapData["qty"],
-      "add_ons": transformedList,
-    };
-    debugPrint("Data From increasing the  item : $data");
-    await SharedCartAuthService()
-        .addItemToSharedCart(sharedCartBloc.getSharedCartModel().id, data);
+    return Container();
   }
 
   Widget scanQRCodeBtn() {
@@ -590,8 +353,10 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
                   ),
                 ),
                 Text(
-                  // moneyDisplayNormalizer(int.parse(getTotalPrice().toString())),
-                  '0.00',
+                  moneyDisplayNormalizer(int.parse(sharedCartBloc
+                      .getSharedCartModel()
+                      .getSharedCartTotalPrice()
+                      .toString())),
                   style: TextStyle(
                     fontFamily: "Inter",
                     fontSize: 16,
@@ -631,7 +396,19 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         ),
       ),
       onPressed: () {
-        _buildCartPaymentRequestDialog(context);
+        if (appConfigurationModel?.enableCheckout == true) {
+          ShippingProcessBloc shippingProcessBloc =
+              Provider.of<ShippingProcessBloc>(context, listen: false);
+          shippingProcessBloc.currentSelectedIndex = null;
+
+          Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
+            'isSharedCart': true,
+            'sharedCartId': sharedCartBloc.getSharedCartModel().id
+          });
+        } else {
+          showToast(message: 'Checkout not available now');
+        }
+        // _buildCartPaymentRequestDialog(context);
       },
     );
   }
@@ -703,7 +480,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         },
         rightButtonOnPressed: () async {
           Navigator.pop(context);
-          Navigator.of(context).pushNamed(Routes.SHARED_CARD_CONFIRM_ORDER);
+          Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
         });
   }
 
@@ -712,12 +489,16 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
+        //clear old items
+        // sharedCartBloc.getSharedCartModel().basketItems.clear();
+        // basketBloc.total = 0;
+        //fetch items again
         count = 0;
         next = "";
         previous = "";
-        basketBloc.items = [];
-        if (mounted) setState(() {});
+        noDataInList = false;
         getCartItemsList();
+        // basketBloc.getTotalPrice();
         setState(() {
           // Call the callback function with the updated list
           //to pass the list back to edit product page
@@ -731,5 +512,29 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         _refreshController.refreshCompleted();
       }
     });
+  }
+
+  Future<void> confirmAddOnsDialog(BasketItem data) async {
+    await showDialogBox(
+      context: context,
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      title: "Repeat last used Add-ons?",
+      actionOneText: "I'll choose",
+      actionTwoText: "Repeat last",
+      leftButtonOnPressed: () {
+        Navigator.pushNamed(context, Routes.PRODUCT, arguments: {
+          "product": data.item as Product,
+          "type": "changeAddons"
+        });
+      },
+      rightButtonOnPressed: () {
+        sharedCartBloc.increaseItemToSharedCart(
+            sharedCartBloc.getSharedCartModel(),
+            data: data);
+      },
+    );
   }
 }

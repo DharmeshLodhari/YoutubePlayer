@@ -1,4 +1,6 @@
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:flutter/material.dart';
 
 class SharedCartBloc extends ChangeNotifier {
@@ -24,26 +26,59 @@ class SharedCartBloc extends ChangeNotifier {
     return _cartList[_currentSelectedIndex!];
   }
 
-  int? _memberDetailsCurrentIndex;
-
-  int? get memberDetailsCurrentIndex => _memberDetailsCurrentIndex;
-
-  set memberDetailsCurrentIndex(int? value) {
-    _memberDetailsCurrentIndex = value;
-    notifyListeners();
+  void addItemToSharedCart(
+      {required SharedCartModel cart,
+      required PurchasableItem item,
+      required String type,
+      Variant? variant,
+      List<AddOns>? addOns,
+      bool withApiCall = true}) {
+    for (SharedCartModel sh in cartList) {
+      if (sh.id == cart.id) {
+        sh.addItemToCart(
+            item: item, type: type, variant: variant, addOns: addOns);
+        notifyListeners();
+        break;
+      }
+    }
   }
 
-  // List<Product> _cartItemList = [];
-  //
-  // List get cartItemList => _cartItemList;
-  //
-  // set items(List<Product> value) {
-  //   _cartItemList = value;
-  //   notifyListeners();
-  // }
+  void increaseItemToSharedCart(SharedCartModel cart,
+      {Product? currentProduct, BasketItem? data, bool withApiCall = true}) {
+    for (SharedCartModel sh in cartList) {
+      if (sh.id == cart.id) {
+        sh.increaseQty(
+            currentProduct: currentProduct,
+            data: data,
+            withApiCall: withApiCall);
+        notifyListeners();
+        break;
+      }
+    }
+  }
 
-  void updatePaymentPercentageValue(int val, int index) {
-    getSharedCartModel().membersDetails?[index].paymentPercentageValue = val;
-    notifyListeners();
+  void decreaseItemToSharedCart(SharedCartModel cart,
+      {Product? currentProduct, BasketItem? data, bool withApiCall = true}) {
+    for (SharedCartModel sh in cartList) {
+      if (sh.id == cart.id) {
+        sh.decreaseQty(
+            currentProduct: currentProduct,
+            data: data,
+            withApiCall: withApiCall);
+        notifyListeners();
+        break;
+      }
+    }
+  }
+
+  void updatePercentageAndPrice(
+      {SharedCartModel? cart, required double val, required int index}) {
+    for (SharedCartModel sh in cartList) {
+      if (sh.id == cart?.id) {
+        sh.updatePerAndPrice(val, index);
+        notifyListeners();
+        break;
+      }
+    }
   }
 }

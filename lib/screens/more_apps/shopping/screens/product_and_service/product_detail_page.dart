@@ -14,6 +14,7 @@ import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_mode
 import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/add_on_tile.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -64,8 +65,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc? userBloc;
   late BasketBloc basketBloc;
-  late ShippingProcessBloc shippingProcessBloc;
   late SharedCartBloc sharedCartBloc;
+  late ShippingProcessBloc shippingProcessBloc;
+
   List<String?>? displayProductImages = [];
 
   late bool isValidCustomer;
@@ -101,8 +103,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   // List addOnList = [];
   ScrollController scrollControllerAddOn = ScrollController();
   bool isLoading = false;
-  List<String> cartNameList = [];
-  String? selectType = "";
 
   @override
   void initState() {
@@ -131,20 +131,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     fetchReviewList();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      fetchCartData();
-    });
-
     super.initState();
-  }
-
-  void fetchCartData() async {
-    List<SharedCartModel> cartList = await getCartList();
-    cartNameList.add('My cart');
-    for (var cart in cartList) {
-      cartNameList.add(cart.name ?? "");
-    }
-    selectType = cartNameList[0];
   }
 
   void fetchReviewList() async {
@@ -225,10 +212,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
-    sharedCartBloc = Provider.of<SharedCartBloc>(context);
+
     if (productIsLoading) {
       return Scaffold(
         body: Center(
@@ -560,25 +548,66 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget addToCartWidget() {
-    return RoundedBackgroundIcon(
-      borderRadius: 16,
-      height: 44,
-      width: 44,
-      icon: Icon(
-        SlydoAppIcon.add_cart,
-        color: product!.isAvailable! ? navyBlue : greyBorderColor,
-        size: 22,
-      ),
-      backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async {
-        if (product?.isProductAvailableNow() ?? false) {
+    return GestureDetector(
+      onLongPress: () {
+        // if (product?.isProductAvailableNow() ?? false) {
+        if (isValidCustomer) {
+          if (product?.variantModels?.isNotEmpty ?? false) {
+            if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+              // print("Both color and size lists are showing.");
+              if (selectedVariant != null) {
+                showBottomSheetDialog();
+              } else {
+                showToast(
+                    message:
+                        AppLocalization.of(context)!.selectVariantColorSize);
+              }
+            } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+              // print("color list is showing.");
+              if (selectedVariant != null) {
+                showBottomSheetDialog();
+              } else {
+                showToast(
+                    message: AppLocalization.of(context)!.selectVariantSize);
+              }
+            } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+              // print("size list is showing.");
+              if (selectedVariant != null) {
+                showBottomSheetDialog();
+              } else {
+                showToast(
+                    message: AppLocalization.of(context)!.selectVariantColor);
+              }
+            }
+          } else if (product?.addOnsModels?.isNotEmpty ?? false) {
+            bool isRequired = product?.isAllRequiredProductSelected() ?? false;
+            if (isRequired == true) {
+              showBottomSheetDialog();
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)!.selectRequiredAddons);
+            }
+          } else {
+            //product has no variant or is a service
+            showBottomSheetDialog();
+          }
+        } else {
+          showToast(
+              message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+        }
+        // } else {
+        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
+        // }
+      },
+      child: RoundedBackgroundIcon(
+        onTap: () {
+          // if (product?.isProductAvailableNow() ?? false) {
           if (isValidCustomer) {
             if (product?.variantModels?.isNotEmpty ?? false) {
               if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
                 // print("Both color and size lists are showing.");
                 if (selectedVariant != null) {
                   addToCart();
-                  return true;
                 } else {
                   showToast(
                       message:
@@ -588,7 +617,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 // print("color list is showing.");
                 if (selectedVariant != null) {
                   addToCart();
-                  return true;
                 } else {
                   showToast(
                       message: AppLocalization.of(context)!.selectVariantSize);
@@ -597,7 +625,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 // print("size list is showing.");
                 if (selectedVariant != null) {
                   addToCart();
-                  return true;
                 } else {
                   showToast(
                       message: AppLocalization.of(context)!.selectVariantColor);
@@ -608,7 +635,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   product?.isAllRequiredProductSelected() ?? false;
               if (isRequired == true) {
                 addToCart();
-                return true;
               } else {
                 showToast(
                     message: AppLocalization.of(context)!.selectRequiredAddons);
@@ -616,80 +642,43 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             } else {
               //product has no variant or is a service
               addToCart();
-              return true;
             }
           } else {
             showToast(
                 message:
                     AppLocalization.of(context)!.youCanNotPurchaseThisItem);
           }
-        } else {
-          showToast(message: AppLocalization.of(context)!.productOutOfStock);
-        }
-      },
+          // } else {
+          //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
+          // }
+        },
+        borderRadius: 16,
+        height: 44,
+        width: 44,
+        icon: Icon(
+          SlydoAppIcon.add_cart,
+          color: product?.isProductAvailableNow() ?? false
+              ? navyBlue
+              : greyBorderColor,
+          size: 22,
+        ),
+        backgroundColor: navyBlue.withOpacity(0.08),
+      ),
     );
   }
 
-  getBottomSheetCartList() {
-    androidBottomSheet(
+  showBottomSheetDialog() async {
+    var result = await androidBottomSheet(
       context: context,
-      child: StatefulBuilder(
-        builder: (context, changeState) {
-          return Padding(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: Wrap(
-              children: [
-                Center(
-                  child: Text(
-                    "Active Cart",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontFamily: "Inter",
-                      fontWeight: FontWeight.w700,
-                      color: blackFont,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 25),
-                Divider(
-                  color: dividerColor,
-                  thickness: 1,
-                ),
-                const SizedBox(height: 20),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: cartNameList.length,
-                  itemBuilder: (context, index) {
-                    return RadioListTile(
-                      contentPadding: EdgeInsets.zero,
-                      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
-                      value: cartNameList[index],
-                      groupValue: cartNameList[0],
-                      onChanged: (value) {
-                        setState(() {
-                          selectType = value.toString();
-                        });
-                      },
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      title: Text(
-                        cartNameList[index],
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: blackFont,
-                          fontFamily: "Inter",
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+      child: AllActiveCart(),
     );
+    if (result != null && result is SharedCartModel) {
+      if (result.id == 'my-cart') {
+        addToCart();
+      } else {
+        addToSharedCart(result);
+      }
+    }
   }
 
   Future<void> addToCart() async {
@@ -704,6 +693,19 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       variant: selectedVariant?.copyWith(quantity: 1),
       addOns: products.addOnsModels,
     );
+  }
+
+  Future<void> addToSharedCart(SharedCartModel result) async {
+    String type = "product";
+
+    Product products = product!.copyWith(qty: 1, withSelectedAddOn: true);
+
+    sharedCartBloc.addItemToSharedCart(
+        cart: result,
+        item: products,
+        type: type,
+        variant: selectedVariant?.copyWith(quantity: 1),
+        addOns: products.addOnsModels);
   }
 
   Future<void> addToCartOld() async {
@@ -1423,7 +1425,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget getOutOfStockTag() {
-    if (!product!.isAvailable!) {
+    if (!(product?.isProductAvailableNow() ?? false)) {
       return Positioned(
         left: 8,
         top: 8,
@@ -2269,7 +2271,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return Expanded(
       child: CurvedButton(
         isPaymentBtn: true,
-        backgroundColor: product!.isAvailable! ? navyBlue : greyBorderColor,
+        backgroundColor: product?.isProductAvailableNow() ?? false
+            ? navyBlue
+            : greyBorderColor,
         textColor: Colors.white,
         text: "BUY NOW",
         onPressed: () async {

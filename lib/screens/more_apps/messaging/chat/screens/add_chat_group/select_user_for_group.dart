@@ -555,6 +555,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         .then(
       (value) async {
         if (value == true) {
+          showToast(
+              message: AppLocalization.of(context)!.memberAddedSuccessfully);
           Navigator.pop(context);
         } else {
           showToast(message: 'Error');

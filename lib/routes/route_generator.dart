@@ -99,9 +99,8 @@ import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/del
 import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/shipping_option.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/successful_order.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/shared_cart/share_cart_details.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/screens/shared_cart/shared_cart_confirm_order.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/shared_cart/shared_cart_members.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/send_cart_payment.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/shared_cart/shared_cart_payment.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_tags.dart';
@@ -1913,7 +1912,9 @@ class RouteGenerator {
       /// Shipping Process
       case Routes.CONFIRM_ORDER:
         return PageTransition(
-          child: ConfirmOrder(),
+          child: ConfirmOrder(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -2006,13 +2007,6 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.SHARED_CARD_CONFIRM_ORDER:
-        return PageTransition(
-          child: SharedCartConfirmOrder(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
       case Routes.SHARED_CART_MEMBERS:
         return PageTransition(
           child: SharedCartMembers(),
@@ -2020,9 +2014,9 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.SEND_CART_PAYMENT:
+      case Routes.SHARED_CART_PAYMENT:
         return PageTransition(
-          child: SendCartPayment(),
+          child: SharedCartPayment(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

@@ -1276,6 +1276,27 @@ class AppLocalization {
     );
   }
 
+  String get requestPaymentSuccessfully {
+    return Intl.message(
+      "Send Request Payment Successfully",
+      name: "requestPaymentSuccessfully",
+    );
+  }
+
+  String get requestFailed {
+    return Intl.message(
+      "Request Failed",
+      name: "requestFailed",
+    );
+  }
+
+  String get memberAddedSuccessfully {
+    return Intl.message(
+      "Member Added Successfully",
+      name: "memberAddedSuccessfully",
+    );
+  }
+
   String get memberDeletedSuccessfully {
     return Intl.message(
       "Member Deleted Successfully",

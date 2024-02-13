@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/tiles/members_payment_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -10,7 +13,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
-import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -20,19 +22,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
-import '../../../widget/vertical_list_item.dart';
+import '../../../../../widget/vertical_list_item.dart';
 
-class SendCartPayment extends StatefulWidget {
-  const SendCartPayment({Key? key}) : super(key: key);
+class SharedCartPayment extends StatefulWidget {
+  const SharedCartPayment({Key? key}) : super(key: key);
 
   @override
-  State<SendCartPayment> createState() => _SendCartPaymentState();
+  State<SharedCartPayment> createState() => _SharedCartPaymentState();
 }
 
-class _SendCartPaymentState extends State<SendCartPayment> {
+class _SharedCartPaymentState extends State<SharedCartPayment> {
   late SharedCartBloc sharedCartBloc;
+  late UserBloc userBloc;
   SlidableController? _slideController;
+  TextEditingController amountController = TextEditingController();
   bool isLoading = false;
+  String? selectedCategory;
+  List<String?> paymentCategories = [];
+
+  @override
+  void initState() {
+    selectedCategory = "Shopping";
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      amountController.text = moneyDisplayNormalizer(int.parse(sharedCartBloc
+          .getSharedCartModel()
+          .getSharedCartTotalPrice()
+          .toString()));
+    });
+    fetchCategory();
+    super.initState();
+  }
+
+  void fetchCategory() async {
+    PaymentAndBankingAuth().getPaymentCategory().then((result) {
+      if (mounted) {
+        setState(() {
+          List categoriesList = result["results"]["data"];
+          categoriesList.forEach((data) {
+            paymentCategories.add(data["name"]);
+          });
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +117,7 @@ class _SendCartPaymentState extends State<SendCartPayment> {
 
   Widget _buildBody() {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     return SafeArea(
       child: Column(
         children: [
@@ -110,23 +143,23 @@ class _SendCartPaymentState extends State<SendCartPayment> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildUserProfile(),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Divider(
-                                  thickness: 1,
-                                  color: dividerColor,
-                                ),
-                              ),
-                              _buildRecipient(),
-                              const SizedBox(
-                                height: 16,
-                              ),
+                              // _buildUserProfile(),
+                              // Padding(
+                              //   padding: const EdgeInsets.all(8.0),
+                              //   child: Divider(
+                              //     thickness: 1,
+                              //     color: dividerColor,
+                              //   ),
+                              // ),
+                              // _buildRecipient(),
+                              // const SizedBox(
+                              //   height: 16,
+                              // ),
                               _buildAmount(),
                               const SizedBox(
                                 height: 16,
                               ),
-                              _buildCategory(),
+                              getCategoryDropDown(),
                               const SizedBox(
                                 height: 16,
                               ),
@@ -230,11 +263,13 @@ class _SendCartPaymentState extends State<SendCartPayment> {
 
   Widget _buildAmount() {
     return CustomizedTextFormField(
+      controller: amountController,
       labelText: "Amount",
       keyboardType: Platform.isIOS
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
+      isReadOnly: true,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
@@ -259,32 +294,123 @@ class _SendCartPaymentState extends State<SendCartPayment> {
     ;
   }
 
-  Widget _buildCategory() {
-    return CustomizedDropDownField(
-      title: "Category",
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
-      child: Container(
-        child: ListTile(
-          dense: true,
-          title: Text(
-            'Shopping',
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+  Widget getCategoryDropDown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          AppLocalization.of(context)!.category,
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        const SizedBox(
+          height: 6,
+        ),
+        Card(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: const EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            title: Text(
+              selectedCategory != null ? selectedCategory! : "",
+              softWrap: false,
+              overflow: TextOverflow.fade,
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            overflow: TextOverflow.fade,
-            softWrap: false,
-            maxLines: 1,
-          ),
-          trailing: Icon(
-            Icons.keyboard_arrow_down,
-            color: darkGrey,
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
+            onTap: () {
+              selectCategory();
+            },
           ),
         ),
-      ),
+      ],
     );
+  }
+
+  void selectCategory() async {
+    final pressedCategory = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: paymentCategories.map<Widget>((category) {
+                          if (selectedCategory == category) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  category!,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, category);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              category!,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCategory != null) {
+      selectedCategory = pressedCategory;
+      debugPrint("selected category $selectedCategory");
+      setState(() {});
+    }
   }
 
   Widget _buildReference() {
@@ -336,15 +462,27 @@ class _SendCartPaymentState extends State<SendCartPayment> {
                 sharedCartBloc.getSharedCartModel().membersDetails?.length) {
               return buildLoadingIndicator(isLoading: isLoading);
             } else {
-              return _getSlidableWithLists(
-                context,
-                MembersPaymentTile(
-                    members: sharedCartBloc
-                        .getSharedCartModel()
-                        .membersDetails?[index],
-                    index: index),
-                sharedCartBloc.getSharedCartModel().membersDetails?[index],
-              );
+              return sharedCartBloc
+                          .getSharedCartModel()
+                          .membersDetails?[index]
+                          .userName !=
+                      userBloc.user.userName
+                  ? _getSlidableWithLists(
+                      context,
+                      MembersPaymentTile(
+                          members: sharedCartBloc
+                              .getSharedCartModel()
+                              .membersDetails?[index],
+                          index: index),
+                      sharedCartBloc
+                          .getSharedCartModel()
+                          .membersDetails?[index],
+                    )
+                  : MembersPaymentTile(
+                      members: sharedCartBloc
+                          .getSharedCartModel()
+                          .membersDetails?[index],
+                      index: index);
             }
           },
         ),
@@ -382,7 +520,7 @@ class _SendCartPaymentState extends State<SendCartPayment> {
           ),
         ),
         Text(
-          '₦0.00',
+          '₦${moneyDisplayNormalizer(sharedCartBloc.getSharedCartModel().getSplitBillTotalPayment())}',
           style: TextStyle(
             color: blackFont,
             fontWeight: FontWeight.w700,
@@ -425,14 +563,7 @@ class _SendCartPaymentState extends State<SendCartPayment> {
           if (sharedCartBloc.getSharedCartModel().splitBill == true) {
             if (sharedCartBloc.getSharedCartModel().getTotalOfPercentage() ==
                 100) {
-              BottomSheetPassCode(
-                  context: context,
-                  isValidCallback: () {
-                    Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);
-                  },
-                  cancelCallBack: () {
-                    Navigator.pop(context);
-                  });
+              requestForPayment();
             } else {
               showToast(message: "Total payment is not 100%");
             }
@@ -449,8 +580,49 @@ class _SendCartPaymentState extends State<SendCartPayment> {
         },
         backgroundColor: navyBlue,
         textColor: white,
-        text: 'Send Payment',
+        text: sharedCartBloc.getSharedCartModel().splitBill == true
+            ? 'Request Payment'
+            : 'Send Payment',
       ),
     );
+  }
+
+  Future<void> requestForPayment() async {
+    List<Map<String, dynamic>> dataList = [];
+    for (UserFollowers member
+        in sharedCartBloc.getSharedCartModel().membersDetails ?? []) {
+      Map<String, dynamic> data = {
+        "username": member.userName,
+        "currency": "NGN",
+        "amount": sharedCartBloc.getSharedCartModel().splitBillEvenly == true
+            ? sharedCartBloc.getSharedCartModel().getSplitBillEvenlyPayment()
+            : member.dividedPayment,
+        "percentage":
+            sharedCartBloc.getSharedCartModel().splitBillEvenly == true
+                ? sharedCartBloc
+                    .getSharedCartModel()
+                    .getSplitBillEvenly()
+                    .toStringAsFixed(2)
+                : member.paymentPercentageValue.toString(),
+      };
+      dataList.add(data);
+    }
+    Map<String, dynamic> metaData = {
+      "meta_data": {
+        "user_data": dataList,
+      }
+    };
+    await SharedCartAuthService()
+        .requestPayment(sharedCartBloc.getSharedCartModel().id, metaData)
+        .then((value) {
+      if (value == true) {
+        showToast(
+            message: AppLocalization.of(context)!.requestPaymentSuccessfully);
+      } else {
+        showToast(message: AppLocalization.of(context)!.requestFailed);
+      }
+    }).catchError((error) {
+      showToast(message: error.toString());
+    });
   }
 }

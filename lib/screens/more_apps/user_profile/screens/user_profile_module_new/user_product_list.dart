@@ -385,7 +385,7 @@ class _UserProductListState extends State<UserProductList> {
   }
 
   Widget getOutOfStockTag(int index) {
-    if (!productList[index].isAvailable!) {
+    if (!productList[index].isProductAvailableNow()) {
       if (widget.isOwner) {
         return Positioned(
           left: 38,

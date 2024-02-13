@@ -11,9 +11,16 @@ import 'package:flutter/cupertino.dart';
 
 class ShippingProcessAuthService extends AuthService {
   // Get all package details in cart
-  Future<List<PackageDetailsModel>> getAllPackageDetail() async {
+  Future<List<PackageDetailsModel>> getAllPackageDetail(
+      isSharedCart, String cartId) async {
     try {
-      var url = "${AppConfig.baseUrl}/api/v1/shopping-cart/item-addresses/";
+      var url = AppConfig.baseUrl;
+
+      if (!isSharedCart) {
+        url += "/api/v1/shopping-cart/item-addresses/";
+      } else {
+        url += "/api/v1/shopping-cart/shared-cart/$cartId/item-addresses/";
+      }
 
       var headers = await getAuthHeaders();
       var response = await httpGet(url, headers: headers);
@@ -86,10 +93,17 @@ class ShippingProcessAuthService extends AuthService {
   }
 
   // Placing An order
-  Future<dynamic> placeOrder({Map? data, bool? isCartProcess}) async {
+  Future<dynamic> placeOrder(
+      {Map? data,
+      bool? isCartProcess,
+      bool? isSharedCart,
+      String? sharedCartId}) async {
     String url = AppConfig.baseUrl;
     if (isCartProcess == true) {
       url += "/api/v1/shopping-cart/";
+    } else if (isSharedCart == true) {
+      url +=
+          "/api/v1/shopping-cart/place-order-from-shared-cart/$sharedCartId/";
     } else {
       url += "/api/v1/shopping-cart/buy-now/";
     }

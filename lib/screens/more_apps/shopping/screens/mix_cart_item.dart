@@ -353,6 +353,7 @@ class _MixCartItemState extends State<MixCartItem> {
     if (basketBloc.items[index]["item"] is Product) {
       return ShoppingCartTileForProduct(
         basketItem: basketBloc.items[index],
+        isSharedCart: false,
         onDecreaseQty: () {
           removeItem(index);
         },
@@ -518,24 +519,6 @@ class _MixCartItemState extends State<MixCartItem> {
         'itemIndex': index
       },
     );
-  }
-
-  Product getProduct(String productId) {
-    Product product = Product();
-    product.id = productId;
-    product.name = "";
-    product.shortDescription = "";
-    product.description = "";
-    product.condition = "";
-    product.currency = userBloc.user.currency;
-    product.price = "0";
-    product.availableFrom = DateTime.now();
-    product.isAvailable = false;
-    product.qrCode = "";
-    product.seller = "";
-    product.manufacturer = "";
-    product.serverImages = [];
-    return product;
   }
 
   addNoteDialog() {
