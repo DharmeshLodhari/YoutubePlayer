@@ -348,6 +348,13 @@ class AppLocalization {
     );
   }
 
+  String get confirmPayment {
+    return Intl.message(
+      "Confirm Payment",
+      name: "confirmPayment",
+    );
+  }
+
   String get cartPaymentRequest {
     return Intl.message(
       "Cart Payment Request",

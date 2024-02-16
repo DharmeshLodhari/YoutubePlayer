@@ -256,7 +256,7 @@ class _ShippingOptionsListState extends State<ShippingOptionsList> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[userBloc.user.currency]!,
+          "${worldCurrencies[userBloc.user.currency]}",
           style: TextStyle(
               fontFamily: "Inter",
               color: navyBlue,

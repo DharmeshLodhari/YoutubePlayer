@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -176,8 +175,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : cartDetails.membersDetails?.length == 0 ||
-                cartDetails.membersDetails == null
+        : cartDetails.members?.length == 0 || cartDetails.members == null
             ? NoItemInList(
                 title: AppLocalization.of(context)!.noMembersYet,
                 msg: AppLocalization.of(context)!.noMembersYet,
@@ -185,24 +183,23 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
             : ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 //+1 for progressbar
-                itemCount: cartDetails.membersDetails?.length,
+                itemCount: cartDetails.members?.length,
                 itemBuilder: (BuildContext context, int index) {
-                  if (index == cartDetails.membersDetails?.length) {
+                  if (index == cartDetails.members?.length) {
                     return buildLoadingIndicator(isLoading: isLoading);
                   } else {
                     return _getSlidableWithLists(
                       context,
                       cartMemberTile(
-                          members: cartDetails.membersDetails?[index],
-                          index: index),
-                      cartDetails.membersDetails?[index],
+                          members: cartDetails.members?[index], index: index),
+                      cartDetails.members?[index],
                     );
                   }
                 },
               );
   }
 
-  Widget cartMemberTile({required UserFollowers? members, int? index}) {
+  Widget cartMemberTile({required SharedCartMemberModel? members, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -246,8 +243,8 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
     );
   }
 
-  Widget _getSlidableWithLists(
-      BuildContext context, Widget cartMemberTile, UserFollowers? member) {
+  Widget _getSlidableWithLists(BuildContext context, Widget cartMemberTile,
+      SharedCartMemberModel? member) {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
@@ -258,7 +255,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
     );
   }
 
-  List<Widget> listActionSlideActions({UserFollowers? member}) {
+  List<Widget> listActionSlideActions({SharedCartMemberModel? member}) {
     return [
       SlideActionButton(
           backgroundColor: mateRed,
@@ -271,7 +268,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
     ];
   }
 
-  Future<void> deleteMember(UserFollowers? member) async {
+  Future<void> deleteMember(SharedCartMemberModel? member) async {
     Map<String, dynamic> data = {
       "members": [member?.userName]
     };

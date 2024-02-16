@@ -705,7 +705,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         item: products,
         type: type,
         variant: selectedVariant?.copyWith(quantity: 1),
-        addOns: products.addOnsModels);
+        addOns: products.addOnsModels,
+        currentUser: userBloc?.user.userName);
   }
 
   Future<void> addToCartOld() async {

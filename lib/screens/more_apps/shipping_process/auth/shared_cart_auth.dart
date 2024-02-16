@@ -320,8 +320,6 @@ class SharedCartAuthService extends AuthService {
 
     for (int i = 0; i < data.length; i++) {
       if (data[i]["type"] == "product") {
-        debugPrint('fola one one:::: ${data[i]["qty"]}');
-
         // for (int j = 0; j < data[i]["qty"]; j++) {
         var product = Product.fromJson(data[i]);
         items.add(product);

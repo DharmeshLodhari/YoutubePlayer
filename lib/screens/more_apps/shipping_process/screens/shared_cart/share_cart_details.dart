@@ -1,7 +1,8 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
-import 'package:Slydo/data/state_notifiers/shipping_process_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -30,6 +31,7 @@ class SharedCartDetails extends StatefulWidget {
 
 class _SharedCartDetailsState extends State<SharedCartDetails> {
   late SharedCartBloc sharedCartBloc;
+  late UserBloc userBloc;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   ScrollController _sharedScrollController = new ScrollController();
@@ -97,6 +99,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           setState(() {
             noDataInList = false;
             isLoading = false;
+            String? currentUser = userBloc.user.userName;
 
             for (var element in tempList) {
               String type = element is Product ? "product" : "service";
@@ -117,6 +120,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
                         item: element,
                         type: type,
                         variant: variant,
+                        currentUser: currentUser,
                         withApiCall: false);
                   }
                 } else if (convertedList != null && convertedList.isNotEmpty) {
@@ -126,12 +130,14 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
                       type: type,
                       variant: null,
                       addOns: convertedList,
+                      currentUser: currentUser,
                       withApiCall: false);
                 } else {
                   sharedCartBloc.addItemToSharedCart(
                       cart: sharedCartBloc.getSharedCartModel(),
                       item: element,
                       type: type,
+                      currentUser: currentUser,
                       withApiCall: false);
                 }
               } else {
@@ -141,6 +147,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
                     type: type,
                     variant: null,
                     addOns: null,
+                    currentUser: currentUser,
                     withApiCall: false);
               }
             }
@@ -170,6 +177,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   @override
   Widget build(BuildContext context) {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -222,7 +230,9 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           },
           child: Center(
             child: followersWidget(
-                userImages: sharedCartBloc.getSharedCartModel().membersDetails),
+                userImages: sharedCartBloc
+                    .getSharedCartModel()
+                    .convertToUserFollowersList()),
           ),
         ),
         scanQRCodeBtn(),
@@ -343,8 +353,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
                   ),
                 ),
                 Text(
-                  // worldCurrencies[userBloc.user.currency!]!,
-                  '₦',
+                  worldCurrencies[userBloc.user.currency!]!,
                   style: TextStyle(
                     fontFamily: "Inter",
                     fontSize: 16,
@@ -381,7 +390,10 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   Widget _buildCheckoutButton(BuildContext context) {
     return MaterialButton(
       height: 40,
-      color: navyBlue,
+      color: sharedCartBloc.getSharedCartModel().customerUsername ==
+              userBloc.user.userName
+          ? navyBlue
+          : darkGrey,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: const SizedBox(
         width: 66,
@@ -396,18 +408,24 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         ),
       ),
       onPressed: () {
-        if (appConfigurationModel?.enableCheckout == true) {
-          ShippingProcessBloc shippingProcessBloc =
-              Provider.of<ShippingProcessBloc>(context, listen: false);
-          shippingProcessBloc.currentSelectedIndex = null;
+        // if (appConfigurationModel?.enableCheckout == true &&
+        //     sharedCartBloc.getSharedCartModel().customerUsername ==
+        //         userBloc.user.userName &&
+        //     sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice() !=
+        //         0) {
+        ShippingProcessBloc shippingProcessBloc =
+            Provider.of<ShippingProcessBloc>(context, listen: false);
+        shippingProcessBloc.currentSelectedIndex = null;
 
-          Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
-            'isSharedCart': true,
-            'sharedCartId': sharedCartBloc.getSharedCartModel().id
-          });
-        } else {
-          showToast(message: 'Checkout not available now');
-        }
+        Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
+          'isSharedCart': true,
+          'sharedCartId': sharedCartBloc.getSharedCartModel().id
+        });
+
+        // Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+        // } else {
+        //   showToast(message: 'Checkout not available now');
+        // }
         // _buildCartPaymentRequestDialog(context);
       },
     );

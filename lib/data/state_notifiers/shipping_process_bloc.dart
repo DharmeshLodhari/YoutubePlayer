@@ -36,10 +36,10 @@ class ShippingProcessBloc extends ChangeNotifier {
   }
 
   bool? isAllShippingProcessCompleted() {
-    bool result = true;
+    bool result = false;
     for (int i = 0; i < _packagesList.length; i++) {
-      if (_packagesList[i].isShippingProcessCompleted == false) {
-        result = false;
+      if (_packagesList[i].isShippingProcessCompleted == true) {
+        result = true;
         break;
       }
     }

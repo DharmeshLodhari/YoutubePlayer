@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -260,7 +261,7 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
         backgroundColor: navyBlue,
         textColor: white,
         text:
-            'Pay ₦${moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder())}',
+            'Pay ${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder())}',
         isLoading: isOrderLoading,
       ),
     );
@@ -290,8 +291,8 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           .placeOrder(
               data: shippingProcessBloc.toPlaceOrder(userBloc.user.userName),
               isCartProcess: shippingProcessBloc.isUseCart,
-              isSharedCart: true,
-              sharedCartId: sharedCartId)
+              isSharedCart: false,
+              sharedCartId: '')
           .then(
         (value) async {
           if (value != null) {
@@ -343,14 +344,27 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             fontFamily: "Inter",
           ),
         ),
-        Text(
-          "₦${moneyDisplayNormalizer(shippingProcessBloc.getTotalItemCost())}",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: darkGrey,
-            fontFamily: "Inter",
-          ),
+        Row(
+          children: [
+            Text(
+              "${worldCurrencies[userBloc.user.currency]}",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontFamily: "Inter",
+              ),
+            ),
+            Text(
+              moneyDisplayNormalizer(shippingProcessBloc.getTotalItemCost()),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -369,14 +383,27 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             fontFamily: "Inter",
           ),
         ),
-        Text(
-          "₦${moneyDisplayNormalizer(shippingProcessBloc.getTotalShipping())}",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: darkGrey,
-            fontFamily: "Inter",
-          ),
+        Row(
+          children: [
+            Text(
+              "${worldCurrencies[userBloc.user.currency]}",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontFamily: "Inter",
+              ),
+            ),
+            Text(
+              moneyDisplayNormalizer(shippingProcessBloc.getTotalShipping()),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -395,14 +422,27 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             fontFamily: "Inter",
           ),
         ),
-        Text(
-          "₦0.00",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: darkGrey,
-            fontFamily: "Inter",
-          ),
+        Row(
+          children: [
+            Text(
+              "${worldCurrencies[userBloc.user.currency]}",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontFamily: "Inter",
+              ),
+            ),
+            Text(
+              "0.00",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -421,14 +461,27 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             fontFamily: "Inter",
           ),
         ),
-        Text(
-          "₦${moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder())}",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: black,
-            fontFamily: "Inter",
-          ),
+        Row(
+          children: [
+            Text(
+              "${worldCurrencies[userBloc.user.currency]}",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: black,
+                fontFamily: "Inter",
+              ),
+            ),
+            Text(
+              moneyDisplayNormalizer(shippingProcessBloc.getTotalOrder()),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: black,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
         ),
       ],
     );

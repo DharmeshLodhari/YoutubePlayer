@@ -1,4 +1,6 @@
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
@@ -33,6 +35,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
   String? listPrevious = "";
 
   late SharedCartBloc sharedCartBloc;
+  late UserBloc userBloc;
 
   final GlobalKey<ScaffoldMessengerState> _sharedCartScaffoldMessengerKey =
       new GlobalKey<ScaffoldMessengerState>();
@@ -115,6 +118,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
   @override
   Widget build(BuildContext context) {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     return ScaffoldMessenger(
       key: _sharedCartScaffoldMessengerKey,
       child: SafeArea(
@@ -171,9 +175,9 @@ class SharedCartScreenState extends State<SharedCartScreen> {
                   contentPadding: EdgeInsets.zero,
                   title: getTitle(index),
                   subtitle: followersWidget(
-                      userImages:
-                          sharedCartBloc.cartList[index].membersDetails),
-                  trailing: getTrailing(),
+                      userImages: sharedCartBloc.cartList[index]
+                          .convertToUserFollowersList()),
+                  trailing: getTrailing(index),
                   onTap: () {
                     sharedCartBloc.currentSelectedIndex = index;
                     Navigator.of(context).pushNamed(Routes.SHARED_CARD_DETAILS);
@@ -203,16 +207,32 @@ class SharedCartScreenState extends State<SharedCartScreen> {
     );
   }
 
-  Widget getTrailing() {
-    return Text(
-      "₦0.0",
-      // "₦${moneyDisplayNormalizer(int.parse(sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice().toString()))}",
-      maxLines: 1,
-      style: TextStyle(
-        color: navyBlue,
-        fontWeight: FontWeight.w700,
-        fontSize: 14,
-        fontFamily: "Inter",
+  Widget getTrailing(int index) {
+    return Container(
+      width: 100,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            worldCurrencies[userBloc.user.currency]!,
+            style: TextStyle(
+              color: navyBlue,
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+          ),
+          Text(
+            moneyDisplayNormalizer(
+                int.parse(sharedCartBloc.cartList[index].subtotal.toString())),
+            style: TextStyle(
+              color: navyBlue,
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              fontFamily: "Inter",
+            ),
+          ),
+        ],
       ),
     );
   }

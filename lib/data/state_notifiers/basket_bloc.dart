@@ -53,6 +53,8 @@ class BasketBloc extends ChangeNotifier {
 
     for (var item in _basketItems) {
       int variantTotal = 0;
+      int AddOnOptionTotal = 0;
+      int AddOnTotal = 0;
       int normalTotal = 0;
       if (item.item?.isProduct ?? false) {
         if (item.hasVariant) {
@@ -61,6 +63,18 @@ class BasketBloc extends ChangeNotifier {
           int quantity = item.variants?.first.quantity ?? 0;
           variantTotal += variantPrice * quantity;
           totalPrice += variantTotal;
+        } else if (item.hasAddOns) {
+          Product product = item.item as Product;
+          for (AddOns itemAddOn in item.addOns ?? []) {
+            for (var option in itemAddOn.options!) {
+              AddOnOptionTotal +=
+                  int.parse(option.price.toString()) * option.quantity;
+            }
+          }
+          normalTotal = int.parse(product.price.toString()) *
+              int.parse(product.qty.toString());
+          AddOnTotal = AddOnOptionTotal + normalTotal;
+          totalPrice += AddOnTotal;
         } else {
           Product product = item.item as Product;
 

@@ -979,7 +979,7 @@ class _HomeState extends State<Home> {
                   width: 3,
                 ),
                 userNameWithVerifiedIcon(
-                  name: userBloc.user.displayName() ?? "",
+                  name: appendStringDot(userBloc.user.displayName() ?? "", 15),
                   isVerified: userBloc.user.isVerified,
                   verifiedIconColor: verifyGreen,
                   textStyle: TextStyle(

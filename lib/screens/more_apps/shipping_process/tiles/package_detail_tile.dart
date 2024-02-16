@@ -14,10 +14,12 @@ class PackageDetailTile extends StatelessWidget {
   final PackageDetailsModel packageDetailsModel;
   final int index;
   late ShippingProcessBloc shippingProcessBloc;
+  late UserBloc userBloc;
 
   @override
   Widget build(BuildContext context) {
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     return Container(
       margin: EdgeInsets.all(7.0),
       decoration: BoxDecoration(
@@ -78,30 +80,46 @@ class PackageDetailTile extends StatelessWidget {
           fontFamily: "Inter",
         ),
       ),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (shippingProcessBloc
-                  .packagesList[index].isShippingProcessCompleted ==
-              true)
-            Checkbox(
-              visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-              checkColor: Colors.white,
-              activeColor: navyBlue,
-              value: true,
-              shape: const CircleBorder(),
-              onChanged: (bool? value) {},
+      trailing: Container(
+        width: 100,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (shippingProcessBloc
+                    .packagesList[index].isShippingProcessCompleted ==
+                true)
+              Checkbox(
+                visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+                checkColor: Colors.white,
+                activeColor: navyBlue,
+                value: true,
+                shape: const CircleBorder(),
+                onChanged: (bool? value) {},
+              ),
+            Row(
+              children: [
+                Text(
+                  "${worldCurrencies[userBloc.user.currency]}",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: black,
+                    fontFamily: "Inter",
+                  ),
+                ),
+                Text(
+                  moneyDisplayNormalizer(packageDetailsModel.totalPrice),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: black,
+                    fontFamily: "Inter",
+                  ),
+                ),
+              ],
             ),
-          Text(
-            "₦${moneyDisplayNormalizer(packageDetailsModel.totalPrice)}",
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: black,
-              fontFamily: "Inter",
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

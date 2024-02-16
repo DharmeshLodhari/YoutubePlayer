@@ -692,8 +692,6 @@ class UserFollowers {
   bool? isVerified;
   String? fullName;
   String? accountType;
-  double? paymentPercentageValue = 0;
-  int? dividedPayment = 0;
 
   UserFollowers({
     this.userName,
@@ -701,8 +699,6 @@ class UserFollowers {
     this.isVerified,
     this.fullName,
     this.accountType,
-    this.paymentPercentageValue = 0,
-    this.dividedPayment = 0,
   });
 
   UserFollowers.fromJson(dynamic json) {

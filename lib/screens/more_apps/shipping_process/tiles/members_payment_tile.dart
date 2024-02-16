@@ -1,6 +1,8 @@
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -9,127 +11,165 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MembersPaymentTile extends StatefulWidget {
-  MembersPaymentTile({this.members, this.index, super.key});
+class MemberPaymentTile extends StatefulWidget {
+  MemberPaymentTile({this.member, this.index, super.key});
 
   final int? index;
-  final UserFollowers? members;
+  final SharedCartMemberModel? member;
 
   @override
-  State<MembersPaymentTile> createState() => _MembersPaymentTileState();
+  State<MemberPaymentTile> createState() => _MemberPaymentTileState();
 }
 
-class _MembersPaymentTileState extends State<MembersPaymentTile> {
+class _MemberPaymentTileState extends State<MemberPaymentTile> {
   double percentageValue = 0.0;
   final _formKey = GlobalKey<FormState>();
   TextEditingController _controller = TextEditingController();
   late SharedCartBloc sharedCartBloc;
+  late UserBloc userBloc;
 
   @override
   Widget build(BuildContext context) {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+      margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: GestureDetector(
           onTap: () {
-            sharedCartBloc.getSharedCartModel().splitBillEvenly == false
+            sharedCartBloc.getSharedCartModel().splitBillEvenly == false &&
+                    sharedCartBloc.isUserCartOwner(context) == true
                 ? _buildPaymentPercentageDialog(context)
                 : null;
             setState(() {});
           },
           child: ListTile(
-            leading: ClipOval(
-              child: CachedNetworkImage(
-                height: 45,
-                width: 45,
-                imageUrl: widget.members?.avatar == ""
-                    ? defaultImage
-                    : widget.members?.avatar ?? "",
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fill,
-                errorWidget: imageErrorWidget,
-                filterQuality: FilterQuality.high,
-              ),
-            ),
-            title: Text(
-              '@${widget.members?.userName}',
-              style: TextStyle(
-                  color: blackFont,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  fontFamily: "Inter"),
-            ),
-            subtitle: SliderTheme(
-              data: Theme.of(context).sliderTheme.copyWith(
-                  overlayShape: SliderComponentShape.noOverlay,
-                  trackHeight: 4,
-                  thumbShape: RoundSliderThumbShape(
-                      disabledThumbRadius: 0,
-                      enabledThumbRadius: 0,
-                      elevation: 0,
-                      pressedElevation: 0)),
-              child: Slider(
-                min: 0,
-                max: 100,
-                inactiveColor: greyBorderColor,
-                activeColor: richPink,
-                value: sharedCartBloc.getSharedCartModel().splitBillEvenly ==
-                        true
-                    ? sharedCartBloc
-                        .getSharedCartModel()
-                        .getSplitBillEvenly()
-                        .toDouble()
-                    : widget.members?.paymentPercentageValue?.toDouble() ?? 0,
-                onChanged: (newValue) {
-                  // setState(() {
-                  //   final to = Duration(milliseconds: newValue.floor());
-                  //   _visibleValue = to;
-                  // });
-                },
-              ),
-            ),
-            trailing: Container(
-              width: 100,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Text(
-                      sharedCartBloc.getSharedCartModel().splitBillEvenly ==
-                              true
-                          ? '₦${moneyDisplayNormalizer(sharedCartBloc.getSharedCartModel().getSplitBillEvenlyPayment())}'
-                          : '₦${moneyDisplayNormalizer(widget.members?.dividedPayment)}',
-                      style: TextStyle(
-                          color: navyBlue,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          fontFamily: "Inter"),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    sharedCartBloc.getSharedCartModel().splitBillEvenly == true
-                        ? "${sharedCartBloc.getSharedCartModel().getSplitBillEvenly().toStringAsFixed(2)}%"
-                        : "${widget.members?.paymentPercentageValue.toString() ?? 0}%",
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        fontFamily: "Inter"),
-                  ),
-                ],
-              ),
-            ),
+            leading: getLeading(),
+            title: getTitle(),
+            subtitle: getSubTitle(),
+            trailing: getTrailing(),
           ),
         ),
       ),
     );
+  }
+
+  Widget getLeading() {
+    return ClipOval(
+      child: CachedNetworkImage(
+        height: 45,
+        width: 45,
+        imageUrl: widget.member?.avatar == ""
+            ? defaultImage
+            : widget.member?.avatar ?? "",
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fill,
+        errorWidget: imageErrorWidget,
+        filterQuality: FilterQuality.high,
+      ),
+    );
+  }
+
+  Widget getTitle() {
+    return Text(
+      '@${widget.member?.userName}',
+      style: TextStyle(
+          color: blackFont,
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
+          fontFamily: "Inter"),
+    );
+  }
+
+  Widget getSubTitle() {
+    return SliderTheme(
+      data: Theme.of(context).sliderTheme.copyWith(
+          overlayShape: SliderComponentShape.noOverlay,
+          trackHeight: 4,
+          thumbShape: RoundSliderThumbShape(
+              disabledThumbRadius: 0,
+              enabledThumbRadius: 0,
+              elevation: 0,
+              pressedElevation: 0)),
+      child: Slider(
+        min: 0,
+        max: 100,
+        inactiveColor: greyBorderColor,
+        activeColor: richPink,
+        value: getSliderValue(),
+        onChanged: (newValue) {
+          // setState(() {
+          //   final to = Duration(milliseconds: newValue.floor());
+          //   _visibleValue = to;
+          // });
+        },
+      ),
+    );
+  }
+
+  double getSliderValue() {
+    double sliderValue = 0;
+    sliderValue = widget.member?.percentageValue?.toDouble() ?? 0;
+    return sliderValue;
+  }
+
+  Widget getTrailing() {
+    return Container(
+      width: 100,
+      padding: EdgeInsets.symmetric(vertical: 3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Text(
+              getAmount(),
+              style: TextStyle(
+                  color: navyBlue,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  fontFamily: "Inter"),
+            ),
+          ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                getPercentage(),
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    fontFamily: "Inter"),
+              ),
+              // Image.asset(
+              //   height: 15,
+              //   width: 15,
+              //   "assets/images/check_mark.jpeg",
+              //   fit: BoxFit.fitWidth,
+              // ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String getPercentage() {
+    String percentage = "0";
+    percentage = "${widget.member?.percentageValue.toString() ?? 0}%";
+    return percentage;
+  }
+
+  String getAmount() {
+    String amount = "0";
+    amount =
+        '${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(widget.member?.paymentValue)}';
+    return amount;
   }
 
   void _buildPaymentPercentageDialog(BuildContext context) {
@@ -169,7 +209,7 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
                             textAlign: TextAlign.center),
                       ),
                       SizedBox(height: 30),
-                      Text('Name : @${widget.members?.userName}',
+                      Text('Name : @${widget.member?.userName}',
                           style: TextStyle(
                               color: darkGrey,
                               fontWeight: FontWeight.w500,
@@ -230,7 +270,8 @@ class _MembersPaymentTileState extends State<MembersPaymentTile> {
           sharedCartBloc.updatePercentageAndPrice(
               cart: sharedCartBloc.getSharedCartModel(),
               val: double.parse(_controller.text.trim()),
-              index: widget.index ?? 0);
+              index: widget.index ?? 0,
+              context: context);
           percentageValue = 0.0;
           _controller.clear();
           setState(() {});

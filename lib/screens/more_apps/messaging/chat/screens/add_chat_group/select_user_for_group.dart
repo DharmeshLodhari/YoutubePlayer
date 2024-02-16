@@ -5,6 +5,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -416,8 +417,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         if (widget.arguments["create"] == "addMember" &&
             sharedCartBloc.getSharedCartModel() != null) {
           for (int i = 0; i < users.length; i++) {
-            List<UserFollowers>? memberList =
-                sharedCartBloc.getSharedCartModel().membersDetails ?? [];
+            List<SharedCartMemberModel>? memberList =
+                sharedCartBloc.getSharedCartModel().members ?? [];
             for (int j = 0; j < memberList.length; j++) {
               if (users[i].userName == memberList[j].userName) {
                 selectedConnectionList.add(users[i]);
@@ -531,8 +532,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   Future<void> addCartGroup() async {
     List<String> result = [];
     for (int i = 0; i < selectedConnectionList.length; i++) {
-      List<UserFollowers>? memberList =
-          sharedCartBloc.getSharedCartModel().membersDetails ?? [];
+      List<SharedCartMemberModel>? memberList =
+          sharedCartBloc.getSharedCartModel().members ?? [];
       bool isExist = false;
       for (int j = 0; j < memberList.length; j++) {
         if (selectedConnectionList[i].userName == memberList[j].userName) {

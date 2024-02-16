@@ -2070,6 +2070,7 @@ class _AddProductState extends State<AddProduct> {
           product.trackInventory = trackInventory;
           product.discount = selectedDiscount;
           product.quantity = inventoryCount;
+          product.addressId = defaultAddress?.id;
 
           // product.variant = [];
 

@@ -13,13 +13,14 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 
 class SharedCartModel {
   String? id;
-  List<UserFollowers>? membersDetails;
   String? name;
-  bool? shared;
-  List<String>? members;
   String? customerUsername;
-  String? createdAt;
-  // MetaData? metaData;
+  bool? shared;
+  DateTime? createdAt;
+  int? subtotal;
+  // List<Product>? cartItems;
+  SharedMetaData? metaData;
+  List<SharedCartMemberModel>? members;
   bool? splitBill = false;
   bool? splitBillEvenly = false;
 
@@ -29,88 +30,78 @@ class SharedCartModel {
 
   SharedCartModel({
     this.id,
-    this.membersDetails,
     this.name,
-    this.shared,
-    this.members,
     this.customerUsername,
+    this.shared,
     this.createdAt,
-    // this.metaData,
+    this.subtotal,
+    // this.cartItems,
+    this.metaData,
+    this.members,
     this.splitBill,
     this.splitBillEvenly,
   });
 
   SharedCartModel.fromJson(dynamic json) {
-    id = json['id'];
-    if (json['members_details'] != null) {
-      membersDetails = [];
-      json['members_details'].forEach((v) {
-        membersDetails?.add(UserFollowers.fromJson(v));
-      });
-    }
-    name = json['name'];
-    shared = json['shared'];
-    members = json['members'] != null ? json['members'].cast<String>() : [];
-    customerUsername = json['customer_username'];
-    createdAt = json['created_at'];
-    // metaData: json["meta_data"] == null ? null : MetaData.fromJson(json["meta_data"]),
+    id = json["id"];
+    name = json["name"];
+    customerUsername = json["customer_username"];
+    shared = json["shared"];
+    createdAt =
+        json["created_at"] == null ? null : DateTime.parse(json["created_at"]);
+    subtotal = json["subtotal"];
+    // cartItems = json["cart_items"] == null
+    //     ? []
+    //     : List<Product>.from(
+    //         json["cart_items"]!.map((x) => Product.fromJson(x)));
+    metaData = json["meta_data"] == null
+        ? null
+        : SharedMetaData.fromJson(json["meta_data"]);
+    members = json["members"] == null
+        ? []
+        : List<SharedCartMemberModel>.from(json["members"]!
+            .map((x) => SharedCartMemberModel.fromJson(x, metaData)));
   }
 
   SharedCartModel copyWith({
     String? id,
-    List<UserFollowers>? membersDetails,
     String? name,
-    bool? shared,
-    List<String>? members,
     String? customerUsername,
-    String? createdAt,
+    bool? shared,
+    DateTime? createdAt,
+    int? subtotal,
+    // List<Product>? cartItems,
+    // SharedMetaData? metaData,
+    List<SharedCartMemberModel>? members,
   }) =>
       SharedCartModel(
         id: id ?? this.id,
-        membersDetails: membersDetails ?? this.membersDetails,
         name: name ?? this.name,
-        shared: shared ?? this.shared,
-        members: members ?? this.members,
         customerUsername: customerUsername ?? this.customerUsername,
+        shared: shared ?? this.shared,
         createdAt: createdAt ?? this.createdAt,
+        subtotal: subtotal ?? this.subtotal,
+        // cartItems: cartItems ?? this.cartItems,
+        // metaData: metaData ?? this.metaData,
+        members: members ?? this.members,
       );
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;
-    if (membersDetails != null) {
-      map['members_details'] = membersDetails?.map((v) => v.toJson()).toList();
-    }
     map['name'] = name;
-    map['shared'] = shared;
-    map['members'] = members;
     map['customer_username'] = customerUsername;
-    map['created_at'] = createdAt;
-    // "meta_data": metaData?.toJson(),
+    map['shared'] = shared;
+    map['created_at'] = createdAt?.toIso8601String();
+    map['subtotal'] = subtotal;
+    // map['cart_items'] = cartItems == null
+    //     ? []
+    //     : List<dynamic>.from(cartItems!.map((x) => x.toJson()));
+    // map['meta_data'] = metaData?.toJson();
+    map['members'] = members == null
+        ? []
+        : List<SharedCartMemberModel>.from(members!.map((x) => x.toJson()));
     return map;
-  }
-
-  double getSplitBillEvenly() {
-    double? result = 0;
-    if (splitBillEvenly == true) {
-      if (membersDetails != null) {
-        int? listLength = membersDetails?.length ?? 0;
-
-        result = 100 / listLength;
-      }
-    }
-    return result;
-  }
-
-  int getSplitBillEvenlyPayment() {
-    int? result = 0;
-    if (splitBillEvenly == true) {
-      if (membersDetails != null) {
-        int? listLength = membersDetails?.length ?? 0;
-
-        result = (getSharedCartTotalPrice() / listLength).floor();
-      }
-    }
-    return result;
   }
 
   // this will add the product or service in the cart;
@@ -119,20 +110,23 @@ class SharedCartModel {
       required String type,
       Variant? variant,
       List<AddOns>? addOns,
-      bool withApiCall = true}) {
+      bool withApiCall = true,
+      String? currentUser}) {
     if (variant != null) {
       addItemInBasketWithVariants(item, type, variant,
           withApiCall: withApiCall);
     } else if (addOns != null && addOns.isNotEmpty) {
       addItemInBasketWithAddOns(item, type, addOns, withApiCall: withApiCall);
     } else if (variant != null && addOns != null && addOns.isEmpty) {
-      addItemInBasketWithQtyService(item, type, withApiCall: withApiCall);
+      addItemInBasketWithQtyService(item, type, currentUser,
+          withApiCall: withApiCall);
     } else {
-      addItemInBasketWithQtyService(item, type, withApiCall: withApiCall);
+      addItemInBasketWithQtyService(item, type, currentUser,
+          withApiCall: withApiCall);
     }
   }
 
-  void addItemInBasketWithQtyService(var item, String type,
+  void addItemInBasketWithQtyService(var item, String type, String? currentUser,
       {bool withApiCall = true}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -144,13 +138,30 @@ class SharedCartModel {
       if (element.item?.id == item.id) {
         flag = true;
         element.qty = int.parse(element.qty.toString()) + 1;
+
+        if (withApiCall == true) {
+          (element.item as Product).getItemAddedByDetails(
+              currentUser, element.qty ?? 0,
+              actionType: BasketListModifierAction.increaseQty);
+        }
+
         addedOrUpdatedItem = element;
         return;
       }
     });
 
     if (!flag) {
-      BasketItem basketItem = BasketItem(item: item, qty: item.qty, type: type);
+      if (withApiCall == true) {
+        (item as Product).getItemAddedByDetails(currentUser, item.qty ?? 0,
+            actionType: BasketListModifierAction.increaseQty);
+      }
+
+      BasketItem basketItem = BasketItem(
+        item: item,
+        qty: item.qty,
+        type: type,
+        itemAddedBy: item.itemAddedBy,
+      );
 
       _basketItems.add(basketItem);
 
@@ -485,6 +496,8 @@ class SharedCartModel {
 
     for (var item in _basketItems) {
       int variantTotal = 0;
+      int AddOnOptionTotal = 0;
+      int AddOnTotal = 0;
       int normalTotal = 0;
       if (item.item?.isProduct ?? false) {
         if (item.hasVariant) {
@@ -493,6 +506,18 @@ class SharedCartModel {
           int quantity = item.variants?.first.quantity ?? 0;
           variantTotal += variantPrice * quantity;
           totalPrice += variantTotal;
+        } else if (item.hasAddOns) {
+          Product product = item.item as Product;
+          for (AddOns itemAddOn in item.addOns ?? []) {
+            for (var option in itemAddOn.options!) {
+              AddOnOptionTotal +=
+                  int.parse(option.price.toString()) * option.quantity;
+            }
+          }
+          normalTotal = int.parse(product.price.toString()) *
+              int.parse(product.qty.toString());
+          AddOnTotal = AddOnOptionTotal + normalTotal;
+          totalPrice += AddOnTotal;
         } else {
           Product product = item.item as Product;
 
@@ -505,79 +530,214 @@ class SharedCartModel {
     return totalPrice;
   }
 
+  void getSplitBillEvenlyPercentage() {
+    if (splitBillEvenly == true) {
+      if (members != null) {
+        int? listLength = members?.length ?? 0;
+
+        for (var item in members!) {
+          item.percentageValue =
+              double.parse((100 / listLength).toStringAsFixed(2));
+        }
+      }
+    }
+  }
+
+  void getSplitBillEvenlyPayment(int? totalOrder) {
+    if (splitBillEvenly == true) {
+      if (members != null) {
+        int? listLength = members?.length ?? 0;
+
+        for (var item in members!) {
+          item.paymentValue = ((totalOrder ?? 0) / listLength).floor();
+        }
+      }
+    }
+  }
+
+  void updatePerAndPrice(double val, int index) {}
+
   double getTotalOfPercentage() {
     double total = 0;
     if (splitBillEvenly == true) {
       total = 100;
     } else {
-      if (membersDetails != null) {
-        for (var item in membersDetails!) {
-          total += item.paymentPercentageValue ?? 0;
+      if (members != null) {
+        for (var item in members!) {
+          total += item.percentageValue ?? 0;
+        }
+      }
+    }
+    return total.roundToDouble();
+  }
+
+  int getSplitBillTotalPayment(int? totalOrder) {
+    int total = 0;
+    if (splitBillEvenly == true) {
+      total = totalOrder ?? 0;
+    } else {
+      if (members != null) {
+        for (SharedCartMemberModel item in members ?? []) {
+          total += item.paymentValue ?? 0;
         }
       }
     }
     return total;
   }
 
-  void updatePerAndPrice(double val, int index) {
-    membersDetails?[index].paymentPercentageValue = val;
+  List<UserFollowers> convertToUserFollowersList() {
+    List<UserFollowers> userList = [];
 
-    int dividedPayment = 0;
-    if (splitBillEvenly == true) {
-      dividedPayment = (getSharedCartTotalPrice() /
-              int.parse(membersDetails?.length.toString() ?? ''))
-          .floor();
-    } else {
-      dividedPayment = ((getSharedCartTotalPrice() * val) / 100).floor();
-    }
-    membersDetails?[index].dividedPayment = dividedPayment;
-  }
-
-  int getSplitBillTotalPayment() {
-    int total = 0;
-    for (UserFollowers item in membersDetails ?? []) {
-      total += item.dividedPayment ?? 0;
-    }
-    return total;
+    userList = members?.map((e) => e.toUserFollowerModel()).toList() ?? [];
+    return userList;
   }
 }
 
-// /// username : "psami"
-// /// avatar : "http://0.0.0.0:8000/static/images/User_Avatar.png"
-// /// full_name : "psami"
-//
-// class MembersDetails {
-//   String? username;
-//   String? avatar;
-//   String? fullName;
-//
-//   MembersDetails({
-//     this.username,
-//     this.avatar,
-//     this.fullName,
-//   });
-//
-//   MembersDetails.fromJson(dynamic json) {
-//     username = json['username'];
-//     avatar = json['avatar'];
-//     fullName = json['full_name'];
-//   }
-//
-//   MembersDetails copyWith({
-//     String? username,
-//     String? avatar,
-//     String? fullName,
-//   }) =>
-//       MembersDetails(
-//         username: username ?? this.username,
-//         avatar: avatar ?? this.avatar,
-//         fullName: fullName ?? this.fullName,
-//       );
-//   Map<String, dynamic> toJson() {
-//     final map = <String, dynamic>{};
-//     map['username'] = username;
-//     map['avatar'] = avatar;
-//     map['full_name'] = fullName;
-//     return map;
-//   }
-// }
+class SharedCartMemberModel {
+  String? userName;
+  String? avatar;
+  bool? isVerified;
+  String? fullName;
+  String? accountType;
+  double? percentageValue = 0;
+  int? paymentValue = 0;
+
+  SharedCartMemberModel({
+    this.userName,
+    this.avatar,
+    this.isVerified,
+    this.fullName,
+    this.accountType,
+    this.percentageValue = 0,
+    this.paymentValue = 0,
+  });
+
+  SharedCartMemberModel.fromJson(dynamic json, SharedMetaData? mataDataJson) {
+    userName = json['username'];
+    avatar = json['avatar'];
+    isVerified = json['is_verified'];
+    fullName = json['full_name'];
+    accountType = json['account_type'];
+    if (mataDataJson != null) {
+      List<UserData>? userData = mataDataJson.userData
+              ?.where((element) => element.username == userName)
+              .toList() ??
+          [];
+      if (userData != null && userData.isNotEmpty) {
+        percentageValue = double.parse(userData.first.percentage.toString());
+        paymentValue = userData.first.amount;
+      }
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['username'] = userName;
+    map['avatar'] = avatar;
+    map['is_verified'] = isVerified;
+    map['full_name'] = fullName;
+    map['account_type'] = accountType;
+    return map;
+  }
+
+  UserFollowers toUserFollowerModel() {
+    UserFollowers userFollowers = UserFollowers();
+    userFollowers.avatar = avatar;
+    return userFollowers;
+  }
+}
+
+class SharedMetaData {
+  List<UserData>? userData;
+
+  SharedMetaData({
+    this.userData,
+  });
+
+  factory SharedMetaData.fromJson(Map<String, dynamic> json) => SharedMetaData(
+        userData: json["user-data"] == null
+            ? []
+            : List<UserData>.from(
+                json["user-data"]!.map((x) => UserData.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "user-data": userData == null
+            ? []
+            : List<dynamic>.from(userData!.map((x) => x.toJson())),
+      };
+}
+
+class CartItem {
+  String? id;
+  int? qty;
+  String? type;
+  List<Variant>? variants;
+  String? itemUpdatedBy;
+  List<AddOns>? addOns;
+
+  CartItem({
+    this.id,
+    this.qty,
+    this.type,
+    this.variants,
+    this.itemUpdatedBy,
+    this.addOns,
+  });
+
+  factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
+        id: json["id"],
+        qty: json["qty"],
+        type: json["type"],
+        variants: json["variants"] == null
+            ? []
+            : List<Variant>.from(
+                json["variants"]!.map((x) => Variant.fromJson(x))),
+        itemUpdatedBy: json["item_updated_by"],
+        addOns: json["add_ons"] == null
+            ? []
+            : List<AddOns>.from(
+                json["add_ons"]!.map((x) => AddOns.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "qty": qty,
+        "type": type,
+        "variants": variants == null
+            ? []
+            : List<Variant>.from(variants!.map((x) => x.toJson())),
+        "item_updated_by": itemUpdatedBy,
+        "add_ons": addOns == null
+            ? []
+            : List<AddOns>.from(addOns!.map((x) => x.toJson())),
+      };
+}
+
+class UserData {
+  int? amount;
+  String? currency;
+  String? username;
+  double? percentage;
+
+  UserData({
+    this.amount,
+    this.currency,
+    this.username,
+    this.percentage,
+  });
+
+  factory UserData.fromJson(Map<String, dynamic> json) => UserData(
+        amount: json["amount"],
+        currency: json["currency"],
+        username: json["username"],
+        percentage: json["percentage"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "amount": amount,
+        "currency": currency,
+        "username": username,
+        "percentage": percentage,
+      };
+}

@@ -182,7 +182,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 Routes.SELECT_USER_FOR_GROUP,
                 arguments: {"create": "basket"});
 
-            if (result != null && result is bool && result == true) {}
+            if (result != null && result is bool && result == true) {
+              sharedStateKey = GlobalKey<SharedCartScreenState>();
+              setState(() {});
+            }
           },
           backgroundColor: iconBtnGrey,
           enableMargin: true,

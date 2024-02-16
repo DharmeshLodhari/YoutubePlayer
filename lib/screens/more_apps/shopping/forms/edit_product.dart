@@ -5,8 +5,11 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_add_on_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/form_variants_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_edit_shipping_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -122,6 +125,9 @@ class _EditProductState extends State<EditProduct> {
   bool measurementView = false;
   bool show = false;
 
+  ShippingAddress? defaultAddress;
+  bool isEmpty = false;
+
   bool isDiscountLoading = false;
   bool discountView = false;
   int? discountItemCount = 0;
@@ -150,6 +156,7 @@ class _EditProductState extends State<EditProduct> {
       getDiscountList();
       obtainCategories();
       obtainCustomCategory();
+      getAddressList();
     });
     super.initState();
   }
@@ -340,6 +347,30 @@ class _EditProductState extends State<EditProduct> {
           duration: Duration(milliseconds: 500),
         ));
       }
+    }
+  }
+
+  void getAddressList() async {
+    if (mounted) setState(() {});
+
+    Map<String, dynamic>? result =
+        await ShoppingAuthService().listOfDispatchAddress("", null);
+
+    if (result == null) {
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+
+    List<ShippingAddress> tempList = result['results'];
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        isEmpty = tempList.isEmpty;
+        defaultAddress = tempList.firstWhere((element) => element.is_default!);
+      });
     }
   }
 
@@ -596,8 +627,9 @@ class _EditProductState extends State<EditProduct> {
                       ] else ...[
                         displaySelectedAddOn(),
                       ],
+                      const SizedBox(height: 16),
+                      address(),
                       SizedBox(height: 30),
-
                       getSubmitButton(),
                       SizedBox(height: 20),
                     ],
@@ -686,6 +718,77 @@ class _EditProductState extends State<EditProduct> {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget address() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ...[
+            Text(
+              !isEmpty && defaultAddress != null
+                  ? 'Dispatch Address'
+                  : "Add a dispatch Address",
+              maxLines: 1,
+              style: TextStyle(
+                  color: darkGrey,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                  fontSize: 14),
+            ),
+            SizedBox(height: 6),
+          ],
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              if (!isEmpty && defaultAddress != null) {
+                Navigator.of(context)
+                    .pushNamed(Routes.DISPATCH_ADDRESS, arguments: {
+                  "isForSelection": true,
+                  "shippingAddress": defaultAddress,
+                  "onShippingAddressChange": (address) {
+                    defaultAddress = address;
+                    setState(() {});
+                  }
+                });
+              } else {
+                NavigationUtil.push(
+                  context,
+                  screen: AddEditShippingAddress(),
+                ).whenComplete(() => getAddressList());
+              }
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: Text(
+                    !isEmpty && defaultAddress != null
+                        ? "${defaultAddress?.addressLineOne}, ${defaultAddress?.addressLineTwo}, ${defaultAddress?.city}, ${defaultAddress?.stateName}, ${defaultAddress?.country}, ${defaultAddress?.zip}"
+                        : "",
+                    maxLines: 2,
+                    style: TextStyle(
+                        color: isEmpty ? navyBlue : blackFont,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: "Inter",
+                        fontSize: 14),
+                  ),
+                ),
+                SizedBox(width: 20),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: blackFont,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -2180,6 +2283,7 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.discount = selectedDiscount;
           currentProduct.trackInventory = trackInventory;
           currentProduct.quantity = inventoryCount;
+          currentProduct.addressId = defaultAddress?.id;
           await _auth
               .editProduct(currentProduct, productAddOnsList)
               .then((value) {
