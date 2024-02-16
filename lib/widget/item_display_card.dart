@@ -1,5 +1,8 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -47,6 +50,7 @@ class DisplayProduct extends StatefulWidget {
 class _DisplayProductState extends State<DisplayProduct> {
   late bool isOwner;
   late BasketBloc basketBloc;
+  late SharedCartBloc sharedCartBloc;
   bool showAddToCartButton = true;
   final _auth = ShoppingAuthService();
   late YarnDashboardBloc yarnDashboardBloc;
@@ -60,6 +64,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return GestureDetector(
       onTap: () {
@@ -418,7 +423,6 @@ class _DisplayProductState extends State<DisplayProduct> {
       return showToast(
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
-
     if (widget.product.isProductAvailableNow()) {
       String type = "product";
       if (widget.product.variantModels?.isNotEmpty ?? false) {
@@ -433,23 +437,18 @@ class _DisplayProductState extends State<DisplayProduct> {
         basketBloc.addItemToCart(
             item: widget.product.copyWith(qty: 1), type: type);
       }
-      // late var mapData;
-      // basketBloc.items.forEach((element) {
-      //   if (element["item"].id == widget.product.id) {
-      //     mapData = element;
-      //     return;
-      //   }
-      // });
-      // Map<String, dynamic> data = {
-      //   "type": type,
-      //   "id": mapData["item"].id,
-      //   "qty": mapData["qty"],
-      // };
-      // debugPrint("Data From Display Product widget Page : $data");
-      // await _auth.addOrUpdateItemToShoppingCart(data);
     } else {
       showToast(message: AppLocalization.of(context)!.productOutOfStock);
     }
+  }
+
+  Future<void> addToSharedCart(SharedCartModel result) async {
+    String type = "product";
+
+    Product products = widget.product.copyWith(qty: 1, withSelectedAddOn: true);
+
+    sharedCartBloc.addItemToSharedCart(
+        cart: result, item: products, type: type);
   }
 
   Widget displayShoppingCartControls() {
@@ -549,23 +548,67 @@ class _DisplayProductState extends State<DisplayProduct> {
       iconBackgroundColor = greyBorderColor;
       iconColor = blackFont;
     }
-    return RoundedBackgroundIcon(
-      height: 30,
-      width: 30,
-      borderRadius: 20,
-      icon: Icon(
-        iconValue,
-        size: 14,
-        color: iconColor,
+    return GestureDetector(
+      onLongPress: () {
+        if (isOwner) {
+          return showToast(
+              message:
+                  AppLocalization.of(context)!.cantPurchaseYourOwnServices);
+        }
+        if (widget.product.isProductAvailableNow()) {
+          String type = "product";
+          if (widget.product.variantModels?.isNotEmpty ?? false) {
+            showToast(
+                message: AppLocalization.of(context)!.selectVariantColorSize);
+            Navigator.pushNamed(context, '/product',
+                arguments: {"product": widget.product});
+          } else if (widget.product.addOnsModels?.isNotEmpty ?? false) {
+            showToast(
+                message: AppLocalization.of(context)!.selectRequiredAddons);
+            Navigator.pushNamed(context, '/product',
+                arguments: {"product": widget.product});
+          } else {
+            showBottomSheetDialog();
+          }
+        } else {
+          showToast(message: AppLocalization.of(context)!.productOutOfStock);
+        }
+      },
+      child: RoundedBackgroundIcon(
+        height: 30,
+        width: 30,
+        borderRadius: 20,
+        icon: Icon(
+          iconValue,
+          size: 14,
+          color: iconColor,
+        ),
+        backgroundColor: iconBackgroundColor,
+        onTap: () async {
+          setState(() {
+            showAddToCartButton = false;
+          });
+          addProductToCart();
+        },
       ),
-      backgroundColor: iconBackgroundColor,
-      onTap: () async {
+    );
+  }
+
+  showBottomSheetDialog() async {
+    var result = await androidBottomSheet(
+      context: context,
+      child: AllActiveCart(),
+    );
+    if (result != null && result is SharedCartModel) {
+      if (result.id == 'my-cart') {
         setState(() {
           showAddToCartButton = false;
         });
         addProductToCart();
-      },
-    );
+      } else {
+        addToSharedCart(result);
+      }
+    }
   }
 
   bool isInCart() {

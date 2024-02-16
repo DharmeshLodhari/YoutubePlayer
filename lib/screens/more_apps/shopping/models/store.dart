@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -298,8 +299,8 @@ class Product extends PurchasableItem {
   // String? updatedBy;
   // String? updatedByFullname;
   // String? updatedByAvatar;
-  // ItemEdBy? itemAddedBy;
-  // ItemEdBy? itemUpdatedBy;
+  List<AddedBy>? itemAddedBy;
+  // UserFollowers? itemUpdatedBy;
   int? qty;
 
   Product({
@@ -353,6 +354,8 @@ class Product extends PurchasableItem {
     this.oldPrice,
     this.isShippable,
     this.addressId,
+    this.itemAddedBy,
+    // this.itemUpdatedBy,
     this.qty,
   });
 
@@ -395,6 +398,8 @@ class Product extends PurchasableItem {
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
+      'item_added_by': itemAddedBy,
+      // 'item_updated_by': itemUpdatedBy,
       'qty': qty,
     };
     if (preparationTime != null && preparationTime! != 0) {
@@ -446,6 +451,8 @@ class Product extends PurchasableItem {
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
+      "item_added_by": itemAddedBy!.map((v) => v.toJson()).toList(),
+      // "item_updated_by": itemUpdatedBy?.toJson(),
       'qty': qty,
     };
   }
@@ -545,6 +552,13 @@ class Product extends PurchasableItem {
       discountedPrice: object['discounted_price'],
       oldPrice: object["old_price"],
       isShippable: object["is_shippable"],
+      itemAddedBy: object["item_added_by"] == null
+          ? []
+          : List<AddedBy>.from(
+              object["item_added_by"]!.map((x) => AddedBy.fromJson(x))),
+      // itemUpdatedBy: object["item_updated_by"] == null
+      //     ? null
+      //     : UserFollowers.fromJson(object["item_updated_by"]),
       qty: object["qty"],
     );
   }
@@ -658,12 +672,16 @@ class Product extends PurchasableItem {
       trackInventory: this.trackInventory,
       quantity: this.quantity,
       pricePercentageChange: this.pricePercentageChange ?? 0.0,
+      // isSelected: this.isSelected ?? 0.0,
       // discountedPrice: object["discounted_price"],
       // discountIsActive: object["discount_is_active"],
       // discountType: object["discount_type"],
       // discountValue: object["discount_value"],
       oldPrice: this.oldPrice,
       isShippable: this.isShippable,
+      addressId: this.addressId,
+      itemAddedBy: this.itemAddedBy,
+      // itemUpdatedBy: this.itemUpdatedBy,
       qty: qty ?? this.qty,
     );
     if (withSelectedAddOn) {
@@ -785,6 +803,31 @@ class Product extends PurchasableItem {
       isAllSelected = true;
     }
     return isAllSelected;
+  }
+
+  void getItemAddedByDetails(String? username, int quantity,
+      {required BasketListModifierAction actionType}) {
+    bool isAlreadyPresent = false;
+    for (AddedBy item in itemAddedBy ?? []) {
+      if (item.username == username) {
+        if (actionType == BasketListModifierAction.increaseQty) {
+          quantity = quantity + 1;
+          isAlreadyPresent = true;
+          break;
+        } else if (actionType == BasketListModifierAction.decreaseQty) {
+          if (quantity == 0) {
+          } else {
+            quantity = quantity - 1;
+          }
+          isAlreadyPresent = true;
+          break;
+        }
+      }
+    }
+
+    if (isAlreadyPresent == false) {
+      itemAddedBy?.add(AddedBy(username: username, quantity: quantity));
+    }
   }
 }
 
@@ -1601,6 +1644,26 @@ class ServiceCategory {
   const ServiceCategory(this.name);
 
   final String name;
+}
+
+class AddedBy {
+  String? username;
+  int? quantity;
+
+  AddedBy({
+    this.username,
+    this.quantity,
+  });
+
+  factory AddedBy.fromJson(Map<String, dynamic> json) => AddedBy(
+        username: json["username"],
+        quantity: json["quantity"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "username": username,
+        "quantity": quantity,
+      };
 }
 
 class Order {

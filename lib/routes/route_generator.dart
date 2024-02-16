@@ -98,6 +98,9 @@ import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/con
 import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/delivery_option.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/shipping_option.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/successful_order.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/shared_cart/share_cart_details.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/shared_cart/shared_cart_members.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/screens/shared_cart/shared_cart_payment.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_tags.dart';
@@ -109,7 +112,6 @@ import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart'
 import 'package:Slydo/screens/more_apps/shopping/screens/print_qrcode.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/product_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/service_detail_page.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/share_cart_details.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
 import 'package:Slydo/screens/more_apps/taxi/arriving_driver.dart';
@@ -1910,7 +1912,9 @@ class RouteGenerator {
       /// Shipping Process
       case Routes.CONFIRM_ORDER:
         return PageTransition(
-          child: ConfirmOrder(),
+          child: ConfirmOrder(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1999,6 +2003,20 @@ class RouteGenerator {
       case Routes.SHARED_CARD_DETAILS:
         return PageTransition(
           child: SharedCartDetails(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SHARED_CART_MEMBERS:
+        return PageTransition(
+          child: SharedCartMembers(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SHARED_CART_PAYMENT:
+        return PageTransition(
+          child: SharedCartPayment(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

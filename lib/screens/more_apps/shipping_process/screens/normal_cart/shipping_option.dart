@@ -306,7 +306,6 @@ class _ShippingOptionState extends State<ShippingOption> {
   Future<void> getShippingEstimation(
       PackageDetailsModel packageDetailModel) async {
     if (!isLoading) {
-      shippingList.clear();
       isLoading = true;
       if (mounted) setState(() {});
 

@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -17,6 +19,7 @@ import 'package:Slydo/widget/search_text_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
@@ -31,6 +34,7 @@ class SelectUserForGroup extends StatefulWidget {
 }
 
 class _SelectUserForGroupState extends State<SelectUserForGroup> {
+  late SharedCartBloc sharedCartBloc;
   final GlobalKey<ScaffoldState> _scaffoldSelectUserForGroupKey =
       new GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
@@ -68,16 +72,18 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     }
 
     searchUserController = TextEditingController();
-    this.getList();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      this.getList();
 
-    super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
-        getList();
-      }
+      _scrollController.addListener(() {
+        if (_scrollController.position.pixels ==
+                _scrollController.position.maxScrollExtent &&
+            _scrollController.position.pixels != 0) {
+          getList();
+        }
+      });
     });
+    super.initState();
 
     searchUserController!.addListener(() {
       if (searchUserController!.text.length >= 5) {
@@ -104,12 +110,12 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         }
       }
     });
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
     return ScaffoldMessenger(
       key: _scaffoldMessengerSelectUserForGroupKey,
       child: Scaffold(
@@ -203,6 +209,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       if (result != null && result == true) {
         Navigator.of(context).pop(true);
       }
+    } else if (widget.arguments["create"] == "addMember") {
+      await addCartGroup();
     } else {
       Navigator.of(context).pushNamed(Routes.SET_NAME_AND_PROFILE_FOR_GROUP,
           arguments: {
@@ -406,6 +414,19 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
           }
         });
 
+        if (widget.arguments["create"] == "addMember" &&
+            sharedCartBloc.getSharedCartModel() != null) {
+          for (int i = 0; i < users.length; i++) {
+            List<SharedCartMemberModel>? memberList =
+                sharedCartBloc.getSharedCartModel().members ?? [];
+            for (int j = 0; j < memberList.length; j++) {
+              if (users[i].userName == memberList[j].userName) {
+                selectedConnectionList.add(users[i]);
+              }
+            }
+          }
+        }
+
         isLoading = false;
         if (mounted) setState(() {});
 
@@ -498,6 +519,50 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
           showToast(message: 'Error');
           debugPrint(
             "Could not create group",
+          );
+          Navigator.pop(context);
+        }
+      },
+    ).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+  }
+
+  Future<void> addCartGroup() async {
+    List<String> result = [];
+    for (int i = 0; i < selectedConnectionList.length; i++) {
+      List<SharedCartMemberModel>? memberList =
+          sharedCartBloc.getSharedCartModel().members ?? [];
+      bool isExist = false;
+      for (int j = 0; j < memberList.length; j++) {
+        if (selectedConnectionList[i].userName == memberList[j].userName) {
+          isExist = true;
+          break;
+        }
+      }
+      if (!isExist) {
+        result.add(selectedConnectionList[i].userName ?? "");
+      }
+    }
+
+    Map<String, dynamic> groupData = {
+      // "members": selectedConnectionList.map((e) => e.userName).toList()
+      "members": result
+    };
+    await SharedCartAuthService()
+        .addMemberToSharedCart(
+            sharedCartBloc.getSharedCartModel().id, groupData)
+        .then(
+      (value) async {
+        if (value == true) {
+          showToast(
+              message: AppLocalization.of(context)!.memberAddedSuccessfully);
+          Navigator.pop(context);
+        } else {
+          showToast(message: 'Error');
+          debugPrint(
+            "Could not add group",
           );
           Navigator.pop(context);
         }

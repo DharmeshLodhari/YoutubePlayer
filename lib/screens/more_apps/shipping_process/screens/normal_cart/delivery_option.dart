@@ -375,7 +375,8 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             shippingProcessBloc.updateShippingProcessCompleted(true);
             shippingProcessBloc.isUseCart == true
                 ? Navigator.of(context).pop()
-                : Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER);
+                : Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER,
+                    arguments: {'isSharedCart': false, 'sharedCartId': ''});
           },
           backgroundColor: navyBlue,
           textColor: white,

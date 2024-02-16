@@ -348,6 +348,20 @@ class AppLocalization {
     );
   }
 
+  String get confirmPayment {
+    return Intl.message(
+      "Confirm Payment",
+      name: "confirmPayment",
+    );
+  }
+
+  String get cartPaymentRequest {
+    return Intl.message(
+      "Cart Payment Request",
+      name: "cartPaymentRequest",
+    );
+  }
+
   String get upgradeHomeMsg {
     return Intl.message(
       "Are you sure you want to upgrade account to business account?",
@@ -514,6 +528,13 @@ class AppLocalization {
     return Intl.message(
       "CANCEL",
       name: "cancel",
+    );
+  }
+
+  String get viewNow {
+    return Intl.message(
+      "View Now",
+      name: "viewNow",
     );
   }
 
@@ -1178,6 +1199,13 @@ class AppLocalization {
     );
   }
 
+  String get noMembersYet {
+    return Intl.message(
+      "No Members Yet",
+      name: "noAddOnYet",
+    );
+  }
+
   String get noAddOnYet {
     return Intl.message(
       "No Add-Ons Yet",
@@ -1252,6 +1280,41 @@ class AppLocalization {
     return Intl.message(
       "Variant Deleted Successfully",
       name: "variantDeletedSuccessfully",
+    );
+  }
+
+  String get requestPaymentSuccessfully {
+    return Intl.message(
+      "Send Request Payment Successfully",
+      name: "requestPaymentSuccessfully",
+    );
+  }
+
+  String get requestFailed {
+    return Intl.message(
+      "Request Failed",
+      name: "requestFailed",
+    );
+  }
+
+  String get memberAddedSuccessfully {
+    return Intl.message(
+      "Member Added Successfully",
+      name: "memberAddedSuccessfully",
+    );
+  }
+
+  String get memberDeletedSuccessfully {
+    return Intl.message(
+      "Member Deleted Successfully",
+      name: "memberDeletedSuccessfully",
+    );
+  }
+
+  String get memberIsNotDeleted {
+    return Intl.message(
+      "Member is not deleted !!",
+      name: "memberIsNotDeleted",
     );
   }
 

@@ -15,9 +15,7 @@ import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 
 import '../../../../data/state_notifier.dart';
-import '../../../../locator.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../services/app_config_bloc.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
@@ -253,19 +251,18 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
                   //         .appConfigurationModel
                   //         ?.enablePayment ==
                   //     true) {
-                    Navigator.of(context).pushNamed(
-                      Routes.SEND_PAYMENT,
-                      arguments: <String, dynamic>{
-                        'recipient': widget.comment.authorUsername!,
-                        'isFromProfile': false,
-                        'isFromChat': false,
-                        'defaultReferenceText':
-                            'Payment from  "${truncateString(
-                          str: widget.comment.comment!,
-                          lengthToTruncateAt: 8,
-                        )}\" comment'
-                      },
-                    );
+                  Navigator.of(context).pushNamed(
+                    Routes.SEND_PAYMENT,
+                    arguments: <String, dynamic>{
+                      'recipient': widget.comment.authorUsername!,
+                      'isFromProfile': false,
+                      'isFromChat': false,
+                      'defaultReferenceText': 'Payment from  "${truncateString(
+                        str: widget.comment.comment!,
+                        lengthToTruncateAt: 8,
+                      )}\" comment'
+                    },
+                  );
                   // } else {
                   //   showToast(message: 'Payment not available at the moment');
                   // }

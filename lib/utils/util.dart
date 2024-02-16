@@ -403,12 +403,12 @@ BoxDecoration decorateBox(
   );
 }
 
-void androidBottomSheet(
+Future<dynamic> androidBottomSheet(
     {required BuildContext context,
     required Widget child,
     bool enableDrag = true,
-    bool isDismissible = true}) {
-  showModalBottomSheet<void>(
+    bool isDismissible = true}) async {
+  var result = await showModalBottomSheet(
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     context: context,
@@ -429,6 +429,7 @@ void androidBottomSheet(
       );
     },
   );
+  return result;
 }
 
 Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,

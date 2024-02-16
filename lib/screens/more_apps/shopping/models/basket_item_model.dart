@@ -6,13 +6,20 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 /// variants : [{}]
 
 class BasketItem {
-  BasketItem({
-    this.type,
-    this.item,
-    this.qty,
-    this.variants,
-    this.addOns,
-  });
+  String? type;
+  PurchasableItem? item;
+  int? qty;
+  List<Variant>? variants;
+  List<AddOns>? addOns;
+  List<AddedBy>? itemAddedBy;
+
+  BasketItem(
+      {this.type,
+      this.item,
+      this.qty,
+      this.variants,
+      this.addOns,
+      this.itemAddedBy});
 
   BasketItem.fromJson(dynamic json) {
     type = json['type'];
@@ -30,16 +37,16 @@ class BasketItem {
         addOns?.add(AddOns.fromJson(v));
       });
     }
+    if (json['item_added_by'] != null) {
+      itemAddedBy = [];
+      json['item_added_by'].forEach((v) {
+        itemAddedBy?.add(AddedBy.fromJson(v));
+      });
+    }
   }
 
   bool get hasVariant => variants?.isNotEmpty ?? false;
   bool get hasAddOns => addOns?.isNotEmpty ?? false;
-
-  String? type;
-  PurchasableItem? item;
-  int? qty;
-  List<Variant>? variants;
-  List<AddOns>? addOns;
 
   int getQty() {
     int qty = 0;
@@ -60,12 +67,16 @@ class BasketItem {
     dynamic item,
     int? qty,
     List<Variant>? variants,
+    List<AddOns>? addOns,
+    List<AddedBy>? itemAddedBy,
   }) =>
       BasketItem(
         type: type ?? this.type,
         item: item ?? this.item,
         qty: qty ?? this.qty,
         variants: variants ?? this.variants,
+        addOns: addOns ?? this.addOns,
+        itemAddedBy: itemAddedBy ?? this.itemAddedBy,
       );
 
   Map<String, dynamic> toJson() {
@@ -75,6 +86,12 @@ class BasketItem {
     map['qty'] = qty;
     if (variants != null) {
       map['variants'] = variants?.map((v) => v.toJson()).toList();
+    }
+    if (addOns != null) {
+      map['addOns'] = addOns?.map((v) => v.toJson()).toList();
+    }
+    if (itemAddedBy != null) {
+      map['item_added_by'] = itemAddedBy?.map((v) => v.toJson()).toList();
     }
     return map;
   }
@@ -207,9 +224,32 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
 
       /// product without variant
       else {
+        List<BasketItem> listOfBasketItem = this.where((element) {
+          if (element.item?.isProduct ?? false) {
+            if ((element.item as Product).id == product.id) {
+              return true;
+            }
+          }
+          return false;
+        }).toList();
+
+        List<AddedBy?> itemAddedBy = listOfBasketItem
+            .where((element) => element.itemAddedBy?.isNotEmpty ?? false)
+            .toList()
+            .map((e) => e.itemAddedBy?.first)
+            .toList();
+
+        List<Map<String, dynamic>> itemAddedByData = itemAddedBy
+            .where((element) => element != null)
+            .toList()
+            .map((e) =>
+                <String, dynamic>{"username": e?.username, "qty": e?.quantity})
+            .toList();
+
         data["id"] = product.id;
         data["type"] = item.type;
         data["qty"] = item.qty;
+        data["item_added_by"] = itemAddedByData;
 
         if (item.qty == 0) {
           payloadType = BasketListModifierPayloadTypes.remove;

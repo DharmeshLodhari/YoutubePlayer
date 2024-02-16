@@ -3,6 +3,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -21,12 +22,15 @@ class ShoppingCartTileForProduct extends StatelessWidget {
 
   final Function() onIncreaseQty;
   final Function() onDecreaseQty;
+  final bool isSharedCart;
+  List<UserFollowers>? membersDetails;
 
   ShoppingCartTileForProduct({
     Key? key,
     required this.basketItem,
     required this.onIncreaseQty,
     required this.onDecreaseQty,
+    required this.isSharedCart,
   }) : super(key: key);
 
   @override
@@ -98,7 +102,9 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       image = basketItem.variants?.first.getCoverImage() ?? product.cover;
     }
 
-    return ClipOval(
+    // return isSharedCart == false ?
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10.0),
       child: CachedNetworkImage(
         height: 48,
         width: 48,
@@ -113,6 +119,64 @@ class ShoppingCartTileForProduct extends StatelessWidget {
             : CircularLoadingIndicator(),
       ),
     );
+    // : Stack(
+    //     children: [
+    //       Container(
+    //         height: 100,
+    //         padding: EdgeInsets.only(top: 10, right: 10),
+    //         child: ClipRRect(
+    //           borderRadius: BorderRadius.circular(10.0),
+    //           child: CachedNetworkImage(
+    //             height: 50,
+    //             width: 50,
+    //             // imageUrl: widget.variant != null && widget.image!.isNotEmpty ? widget.image! : widget.item?.cover ?? defaultImage,
+    //             imageUrl: image != null ? image : defaultImage,
+    //             colorBlendMode: BlendMode.darken,
+    //             fit: BoxFit.contain,
+    //             errorWidget: productAndServiceErrorWidget,
+    //             filterQuality: FilterQuality.high,
+    //             placeholder: (context, url) =>
+    //                 product.itemUpdatedBy?.avatar == null
+    //                     ? Icon(Icons.widgets)
+    //                     : CircularLoadingIndicator(),
+    //           ),
+    //         ),
+    //       ),
+    //       Positioned(
+    //         top: 0,
+    //         right: 0,
+    //         child: (product.itemUpdatedBy?.avatar == "" ||
+    //                 product.itemUpdatedBy?.avatar ==
+    //                     "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png")
+    //             ? CircleAvatar(
+    //                 backgroundColor: navyBlue,
+    //                 radius: 9,
+    //                 child: Text(
+    //                   getInitials(product.itemUpdatedBy?.fullName ?? "")
+    //                       .toUpperCase(),
+    //                   style: TextStyle(
+    //                       color: white,
+    //                       fontWeight: FontWeight.w600,
+    //                       fontSize: 10),
+    //                 ),
+    //               )
+    //             : ClipOval(
+    //                 child: CachedNetworkImage(
+    //                   height: 18,
+    //                   width: 18,
+    //                   imageUrl: product.itemUpdatedBy?.avatar ?? "",
+    //                   colorBlendMode: BlendMode.darken,
+    //                   fit: BoxFit.contain,
+    //                   errorWidget: productAndServiceErrorWidget,
+    //                   filterQuality: FilterQuality.high,
+    //                   placeholder: (context, url) => product.cover == null
+    //                       ? Icon(Icons.widgets)
+    //                       : CircularLoadingIndicator(),
+    //                 ),
+    //               ),
+    //       ),
+    //     ],
+    //   );
   }
 
   Widget getTitle() {
@@ -185,13 +249,35 @@ class ShoppingCartTileForProduct extends StatelessWidget {
   }
 
   String getProductPrice() {
-    var totalPrice = int.parse(product.price!);
+    var totalPrice = 0;
+    if (product.isProduct) {
+      if (basketItem.variants != null) {
+        totalPrice = int.parse(basketItem.variants?.first.price ?? "0");
+      } else {
+        totalPrice = int.parse(product.price ?? "0");
+      }
+    }
 
     return totalPrice.toString();
   }
 
   String getTotalPrice() {
-    var totalPrice = (basketItem.qty ?? 0) * int.parse(product.price!);
+    int totalPrice = 0;
+    int AddOnTotal = 0;
+    if (product.isProduct) {
+      if (basketItem.addOns != null) {
+        for (AddOns itemAddOn in basketItem.addOns ?? []) {
+          for (var option in itemAddOn.options!) {
+            AddOnTotal += int.parse(option.price.toString()) * option.quantity;
+          }
+        }
+        int priceQuantity =
+            (basketItem.qty ?? 0) * int.parse(getProductPrice());
+        totalPrice += AddOnTotal + priceQuantity;
+      } else {
+        totalPrice = (basketItem.qty ?? 0) * int.parse(getProductPrice());
+      }
+    }
 
     return totalPrice.toString();
   }

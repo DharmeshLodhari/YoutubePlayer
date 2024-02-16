@@ -20,7 +20,7 @@ class ShippingAddress {
   String? created_at;
   String? updated_at;
   String? email;
-  bool? is_residential;
+  bool is_residential = false;
   String? first_name;
   String? last_name;
   String? line_1;
@@ -44,7 +44,7 @@ class ShippingAddress {
       this.created_at,
       this.updated_at,
       this.email,
-      this.is_residential,
+      this.is_residential = false,
       this.first_name,
       this.last_name,
       this.line_1,
@@ -111,6 +111,10 @@ class ShippingAddress {
 
   String toAddressString() {
     return "${line_1}, ${city}, ${stateName}, ${country}";
+  }
+
+  String toFullAddress() {
+    return "${line_1}, ${line_2}, ${city}, ${stateName}, ${country}, ${zip}";
   }
 
   Map<String, dynamic> toAddUpdate() {
@@ -689,12 +693,13 @@ class UserFollowers {
   String? fullName;
   String? accountType;
 
-  UserFollowers(
-      {this.userName,
-      this.avatar,
-      this.isVerified,
-      this.fullName,
-      this.accountType});
+  UserFollowers({
+    this.userName,
+    this.avatar,
+    this.isVerified,
+    this.fullName,
+    this.accountType,
+  });
 
   UserFollowers.fromJson(dynamic json) {
     userName = json['username'];

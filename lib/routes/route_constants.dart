@@ -218,4 +218,6 @@ class Routes {
   static const String RIDERS_UPDATE = "/riders-update";
   static const String ADD_TAGS = "/add-tags";
   static const String SHARED_CARD_DETAILS = "/shared-card-details";
+  static const String SHARED_CART_MEMBERS = "/shared-card-members";
+  static const String SHARED_CART_PAYMENT = "/send-cart-payment";
 }

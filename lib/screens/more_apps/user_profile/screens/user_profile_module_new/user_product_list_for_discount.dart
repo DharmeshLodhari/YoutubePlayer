@@ -380,7 +380,7 @@ class _UserProductListForDiscountState
   }
 
   Widget getOutOfStockTag(int index) {
-    if (!productList[index].isAvailable!) {
+    if (!productList[index].isProductAvailableNow()) {
       return Positioned(
         left: 38,
         top: 14,

@@ -1648,7 +1648,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             Navigator.of(context)
                 .pushNamed(Routes.PRODUCT_ADD_ON_LIST, arguments: {
               'productId': '',
-              'isForCheckboxSelection': true,
+              'isForCheckboxSelection': false,
             });
           },
         ),

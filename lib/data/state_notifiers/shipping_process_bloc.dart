@@ -36,10 +36,10 @@ class ShippingProcessBloc extends ChangeNotifier {
   }
 
   bool? isAllShippingProcessCompleted() {
-    bool result = true;
+    bool result = false;
     for (int i = 0; i < _packagesList.length; i++) {
-      if (_packagesList[i].isShippingProcessCompleted == false) {
-        result = false;
+      if (_packagesList[i].isShippingProcessCompleted == true) {
+        result = true;
         break;
       }
     }
@@ -60,6 +60,12 @@ class ShippingProcessBloc extends ChangeNotifier {
       total += _packagesList[i].shippingOption?.price ?? 0;
     }
     return total;
+  }
+
+  int? getTotalOrder() {
+    int? totalItemCost = getTotalItemCost();
+    int? totalShipping = getTotalShipping();
+    return (totalItemCost ?? 0) + (totalShipping ?? 0);
   }
 
   void updateDeliveryOption(String pickedDeliveryOption) {
