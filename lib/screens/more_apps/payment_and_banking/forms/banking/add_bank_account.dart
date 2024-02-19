@@ -741,7 +741,7 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget pullToRefresh() {
-    return searchItemTextController!.text.isEmpty
+    return searchItemTextController.text.isEmpty
         ? NoItemInList(
             msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
             isResult: false,
@@ -885,18 +885,18 @@ class _AddAccountState extends State<AddAccount> {
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        bankList!.clear();
+        bankList.clear();
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
-          bankList!.add(BankModel.fromJson(item));
+          bankList.add(BankModel.fromJson(item));
         });
 
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
       }
-      if (bankList!.isEmpty) {
+      if (bankList.isEmpty) {
         noSearchedItem = true;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});

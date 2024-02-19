@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
+
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/applicant_list_model.dart';
@@ -248,7 +248,6 @@ class ServiceHubAuthService extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
 
     debugPrint(
         "REVIEW AND RATE URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -271,7 +270,6 @@ class ServiceHubAuthService extends AuthService {
       url,
       headers: headers,
     );
-    var jsonData = jsonDecode(response.body);
 
     debugPrint(
         "REVIEW AND RATE URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -293,7 +291,6 @@ class ServiceHubAuthService extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
 
     debugPrint(
         "ACCEPT JOB APPLICANT URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -431,7 +428,7 @@ class ServiceHubAuthService extends AuthService {
       var headers = await getAuthHeaders();
       var response = await httpGet(url, headers: headers);
       debugPrint('RETREIVE Job LISTING URL BODY ---> ${response.body}');
-  
+
       print(response.statusCode);
       if (response.statusCode == 200) {
         return JobModel.fromJson(json.decode(response.body));
@@ -577,7 +574,6 @@ class ServiceHubAuthService extends AuthService {
     if (response.statusCode == 204) {
       return true;
     } else {
-      var jsonData = json.decode(response.body);
       return false;
     }
   }

@@ -1515,50 +1515,49 @@ class _EditJobState extends State<EditJob> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: productCategories.map<Widget>((category) {
-                              if (selectedProductCategory == category) {
-                                return Container(
-                                  color: selectedListItemBackgroundBlue,
-                                  child: ListTile(
-                                    dense: true,
-                                    title: Text(
-                                      category.name,
-                                      overflow: TextOverflow.fade,
-                                      softWrap: false,
-                                      style: TextStyle(
-                                          color: navyBlue,
-                                          fontSize: 16,
-                                          fontFamily: "Inter",
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    trailing: Icon(
-                                      SlydoAppIcon.checked,
-                                      color: navyBlue,
-                                      size: 12,
-                                    ),
-                                    onTap: () {
-                                      Navigator.pop(context, category);
-                                    },
-                                  ),
-                                );
-                              }
-                              return ListTile(
+                          if (selectedProductCategory == category) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
                                 title: Text(
                                   category.name,
-                                  softWrap: false,
                                   overflow: TextOverflow.fade,
+                                  softWrap: false,
                                   style: TextStyle(
-                                      color: blackFont,
+                                      color: navyBlue,
                                       fontSize: 16,
                                       fontFamily: "Inter",
-                                      fontWeight: FontWeight.w400),
+                                      fontWeight: FontWeight.w600),
                                 ),
-                                dense: true,
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
                                 onTap: () {
                                   Navigator.pop(context, category);
                                 },
-                              );
-                            }).toList() ??
-                            [],
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              category.name,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontFamily: "Inter",
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),

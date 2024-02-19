@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
@@ -14,7 +15,6 @@ import '../../../main.dart';
 import '../../../widget/image_crop.dart';
 
 class CreateMediaMomentScreen extends StatefulWidget {
-
   var arguments;
 
   CreateMediaMomentScreen({Key? key, this.arguments}) : super(key: key);
@@ -36,7 +36,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (cameras.isNotEmpty) {
         _initCameraController(newCameraDescription: cameras[0]);
       } else {
@@ -236,9 +236,12 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                             NavigationUtil.push(
                               context,
                               screen: PreviewMomentScreen(
-                                filePath: getMediaPathToSendToPreviewScreen(),
-                                  arguments: {"channel": widget.arguments == null ? "" : widget.arguments['channel']}
-                              ),
+                                  filePath: getMediaPathToSendToPreviewScreen(),
+                                  arguments: {
+                                    "channel": widget.arguments == null
+                                        ? ""
+                                        : widget.arguments['channel']
+                                  }),
                             );
                             imagePath = null;
                             videoPath = null;

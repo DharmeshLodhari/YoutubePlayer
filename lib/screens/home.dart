@@ -1021,8 +1021,7 @@ class _HomeState extends State<Home> {
                         child: Text(
                           isEmpty
                               ? 'Select Location'
-                              : "${defaultAddress?.city}, ${defaultAddress?.stateName}" ??
-                                  "",
+                              : "${defaultAddress?.city}, ${defaultAddress?.stateName}",
                           style: TextStyle(
                               fontSize: 12,
                               fontFamily: 'Inter',

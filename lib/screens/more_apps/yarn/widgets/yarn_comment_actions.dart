@@ -280,7 +280,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   String getCommentCount() {
     if (widget.comment.replyCount != null && widget.comment.replyCount != 0) {
       if (widget.minusComment == true) {
-        return (widget.comment.replyCount! - 1).toString() ?? "";
+        return (widget.comment.replyCount! - 1).toString();
       } else {
         return widget.comment.replyCount?.toString() ?? "";
       }

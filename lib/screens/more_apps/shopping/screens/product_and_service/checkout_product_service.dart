@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../../data/currency.dart';
 import '../../../../../data/state_notifier.dart';
-import '../../../../../utils/colors.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../utils/util.dart';

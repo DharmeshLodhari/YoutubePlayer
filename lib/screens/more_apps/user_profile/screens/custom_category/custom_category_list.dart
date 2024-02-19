@@ -456,8 +456,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
                 children: [
                   Text(
                     messageDecoderWithEmoji(itemList[index].name) ??
-                        itemList[index].name ??
-                        "",
+                        itemList[index].name,
                     maxLines: 1,
                     style: TextStyle(
                         fontWeight: FontWeight.w600,

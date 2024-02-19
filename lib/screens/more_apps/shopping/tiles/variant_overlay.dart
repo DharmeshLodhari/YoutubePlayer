@@ -1,6 +1,6 @@
-import 'package:Slydo/utils/colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../data/currency.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/curved_btn.dart';
@@ -12,7 +12,14 @@ class VariantOverlay extends StatefulWidget {
   final Function(int variantId) onSubtract;
   String? currency;
 
-  VariantOverlay({Key? key, required this.variant, required this.onClose, required this.currency, required this.onAdd, required this.onSubtract}) : super(key: key);
+  VariantOverlay(
+      {Key? key,
+      required this.variant,
+      required this.onClose,
+      required this.currency,
+      required this.onAdd,
+      required this.onSubtract})
+      : super(key: key);
 
   @override
   State<VariantOverlay> createState() => _VariantOverlayState();
@@ -21,7 +28,6 @@ class VariantOverlay extends StatefulWidget {
 class _VariantOverlayState extends State<VariantOverlay> {
   @override
   Widget build(BuildContext context) {
-
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -34,8 +40,11 @@ class _VariantOverlayState extends State<VariantOverlay> {
               Container(
                 alignment: Alignment.topRight,
                 child: IconButton(
-                  icon: Icon(Icons.close, color: black,),
-                  onPressed:() {
+                  icon: Icon(
+                    Icons.close,
+                    color: black,
+                  ),
+                  onPressed: () {
                     widget.onClose();
                   },
                   color: Colors.white,
@@ -52,7 +61,9 @@ class _VariantOverlayState extends State<VariantOverlay> {
                     final item = widget.variant![index];
 
                     return Padding(
-                      padding: widget.variant?.length == 0 ? const EdgeInsets.all(8.0): const EdgeInsets.only(left: 20.0),
+                      padding: widget.variant?.length == 0
+                          ? const EdgeInsets.all(8.0)
+                          : const EdgeInsets.only(left: 20.0),
                       child: Card(
                         color: Colors.white,
                         child: Padding(
@@ -67,10 +78,11 @@ class _VariantOverlayState extends State<VariantOverlay> {
                                 placeholder: (context, url) => Container(
                                     height: 20.0,
                                     width: 20.0,
-                                    child: Center(child: CircularProgressIndicator())),
-                                errorWidget: (context, url, error) => Icon(Icons.error),
+                                    child: Center(
+                                        child: CircularProgressIndicator())),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
                               ),
-
                               const SizedBox(height: 20),
                               Text('Quantity: ${item['quantity']}'),
                               const SizedBox(height: 20),
@@ -81,11 +93,9 @@ class _VariantOverlayState extends State<VariantOverlay> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-
                                   _buildIncreaseButtonWidget(index),
                                   SizedBox(width: 20),
                                   _buildDecreaseButtonWidget(index, item),
-
                                 ],
                               ),
                             ],
@@ -125,8 +135,8 @@ class _VariantOverlayState extends State<VariantOverlay> {
   }
 
   Widget getTotalPriceWidget(Map<String, dynamic> item) {
-    var totalPrice =
-        int.parse(item['quantity'].toString()) * int.parse(item['current_price']);
+    var totalPrice = int.parse(item['quantity'].toString()) *
+        int.parse(item['current_price']);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -165,7 +175,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
         text: "Add",
         onPressed: () async {
           widget.onAdd(index);
-          if(mounted)setState(() {});
+          if (mounted) setState(() {});
         },
       ),
     );
@@ -182,7 +192,7 @@ class _VariantOverlayState extends State<VariantOverlay> {
           widget.onSubtract(index);
           setState(() {
             //check if its the quantity is one and if its the only variant in the list
-            if(item['quantity'] == 1 && widget.variant?.length == 1){
+            if (item['quantity'] == 1 && widget.variant?.length == 1) {
               widget.onClose;
             }
           });

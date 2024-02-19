@@ -856,7 +856,7 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
   }
 
   Widget pullToRefresh() {
-    return searchItemTextController!.text.isEmpty
+    return searchItemTextController.text.isEmpty
         ? NoItemInList(
             msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
             isResult: false,
@@ -999,11 +999,11 @@ class _NewBeneficiaryTransferState extends State<NewBeneficiaryTransfer> {
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
           bottomSheetStateSetterGlobal!(() {});
-        bankList!.clear();
+        bankList.clear();
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
-          bankList!.add(BankModel.fromJson(item));
+          bankList.add(BankModel.fromJson(item));
         });
 
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)

@@ -582,7 +582,7 @@ class _CachedVideoAppLifeCycleObserver extends Object
   final CachedVideoPlayerController _controller;
 
   void initialize() {
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -602,7 +602,7 @@ class _CachedVideoAppLifeCycleObserver extends Object
   }
 
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
   }
 }
 

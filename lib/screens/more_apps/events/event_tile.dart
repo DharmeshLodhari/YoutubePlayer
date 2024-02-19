@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';

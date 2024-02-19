@@ -1,4 +1,3 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
@@ -9,9 +8,9 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/get_app_bar_tile.dart
 import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:text_scroll/text_scroll.dart';
+
 import '../utils.dart';
 
 class BusinessProfileScreen extends StatefulWidget {
@@ -121,7 +120,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
 
     // Iterate through the JSON object and add tabs for boolean values that are true
     reorderedBoolMap.forEach((key, value) {
-      if (value is bool && value) {
+      if (value) {
         // Add the tab
         addTab(key, capitalizeAndRemoveUnderscores(key));
       }
@@ -670,7 +669,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       userTabs.clear();
       // Iterate through the JSON object and add tabs for boolean values that are true
       val.forEach((key, value) {
-        if (value is bool && value) {
+        if (value) {
           // Add the tab
           addTab(key, capitalizeAndRemoveUnderscores(key));
         }

@@ -1,7 +1,5 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';

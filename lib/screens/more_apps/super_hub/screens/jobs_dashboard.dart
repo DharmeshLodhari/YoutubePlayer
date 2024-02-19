@@ -4,9 +4,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../tiles/jos_description_card.dart';
@@ -98,7 +95,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
                       return Padding(
                         padding: const EdgeInsets.only(right: 15.0),
                         child: GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, Routes.CATEGORY_JOBS),
+                          onTap: () => Navigator.pushNamed(
+                              context, Routes.CATEGORY_JOBS),
                           child: categoryCard(),
                         ),
                       );
@@ -129,8 +127,10 @@ class _JobsDashboardState extends State<JobsDashboard> {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10.0),
                         child: GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, Routes.JOB_DETAILS),
-                          child: JobDescriptionCard(),),
+                          onTap: () =>
+                              Navigator.pushNamed(context, Routes.JOB_DETAILS),
+                          child: JobDescriptionCard(),
+                        ),
                       );
                     }),
               )
@@ -203,5 +203,3 @@ class _JobsDashboardState extends State<JobsDashboard> {
     );
   }
 }
-
-

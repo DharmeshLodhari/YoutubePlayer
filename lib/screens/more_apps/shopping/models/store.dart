@@ -1234,7 +1234,7 @@ class AddOnOption {
         return false;
       }
     } else if (addon.inputType == "checkbox") {
-      if (isChecked ?? false) {
+      if (isChecked) {
         return true;
       } else {
         return false;

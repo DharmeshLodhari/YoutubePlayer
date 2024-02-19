@@ -77,7 +77,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
 
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // initializePopMenu();
     });
   }

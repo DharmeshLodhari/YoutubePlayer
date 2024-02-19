@@ -259,6 +259,6 @@ class _TopicActionsForNotificationState
     };
     await sendDataToSocket(data);
     showToast(
-        message: yarnTopic.isQuestion! ? 'Yarn Shared' : 'Question Shared');
+        message: yarnTopic.isQuestion ? 'Yarn Shared' : 'Question Shared');
   }
 }

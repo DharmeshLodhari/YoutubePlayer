@@ -5,7 +5,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/package_details_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shipping_option_model.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/loading_indicator.dart';

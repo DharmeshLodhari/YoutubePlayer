@@ -4,7 +4,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';

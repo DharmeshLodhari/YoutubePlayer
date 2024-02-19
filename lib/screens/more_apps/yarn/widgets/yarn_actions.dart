@@ -1,14 +1,12 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
-import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
@@ -319,20 +317,20 @@ class _YarnActionsState extends State<YarnActions> {
               //         .appConfigurationModel
               //         ?.enablePayment ==
               //     true) {
-                Navigator.of(context).pushNamed(
-                  Routes.SEND_PAYMENT,
-                  arguments: <String, dynamic>{
-                    'recipient': widget.yarn.author,
-                    'isFromProfile': false,
-                    'isFromChat': false,
-                    'isFromYarn': true,
-                    'isFromMoment': false,
-                    'callback': onCallback,
-                    'yarnId': widget.yarn.id != null ? widget.yarn.id! : '',
-                    'defaultReferenceText':
-                        'Payment from Yarn, Yard ID : ${widget.yarn.id != null ? widget.yarn.id! : ''} '
-                  },
-                );
+              Navigator.of(context).pushNamed(
+                Routes.SEND_PAYMENT,
+                arguments: <String, dynamic>{
+                  'recipient': widget.yarn.author,
+                  'isFromProfile': false,
+                  'isFromChat': false,
+                  'isFromYarn': true,
+                  'isFromMoment': false,
+                  'callback': onCallback,
+                  'yarnId': widget.yarn.id != null ? widget.yarn.id! : '',
+                  'defaultReferenceText':
+                      'Payment from Yarn, Yard ID : ${widget.yarn.id != null ? widget.yarn.id! : ''} '
+                },
+              );
               // } else {
               //   showToast(message: 'Payment not available at the moment');
               // }
@@ -372,7 +370,7 @@ class _YarnActionsState extends State<YarnActions> {
     if (widget.yarn.numberOfComments != null &&
         widget.yarn.numberOfComments != 0) {
       if (widget.minusComment == true) {
-        return (widget.yarn.numberOfComments! - 1).toString() ?? "";
+        return (widget.yarn.numberOfComments! - 1).toString();
       } else {
         return widget.yarn.numberOfComments?.toString() ?? "";
       }

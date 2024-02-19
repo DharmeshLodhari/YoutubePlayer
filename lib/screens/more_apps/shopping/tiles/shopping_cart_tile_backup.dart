@@ -11,8 +11,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../utils/colors.dart';
-
 //ignore: must_be_immutable
 class ShoppingCartTileForProduct extends StatefulWidget {
   Product? item;
@@ -185,7 +183,7 @@ class _ShoppingCartTileForProductState
     int variantQuantity = 0;
 
     if (widget.variant != null) {
-      String variant = widget.variant!.id.toString() ?? '';
+      String variant = widget.variant!.id.toString();
 
       if (variant.isNotEmpty) {
         variantId = int.parse(widget.variant!.id.toString());

@@ -2,7 +2,6 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -303,10 +302,8 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
             ),
             Expanded(
               child: Text(
-                getAmountFormatter(virtualAccount
-                        ?.accountTier?.cumulativeBalance
-                        .toString()) ??
-                    "",
+                getAmountFormatter(
+                    virtualAccount?.accountTier?.cumulativeBalance.toString()),
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w600,
@@ -329,9 +326,8 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
             Expanded(
               child: Text(
                 getAmountFormatter(virtualAccount
-                        ?.accountTier?.dailyCumulativeTransactionLimit
-                        .toString()) ??
-                    "",
+                    ?.accountTier?.dailyCumulativeTransactionLimit
+                    .toString()),
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w600,

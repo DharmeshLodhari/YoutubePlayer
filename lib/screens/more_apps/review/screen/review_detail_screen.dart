@@ -2,7 +2,6 @@ import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

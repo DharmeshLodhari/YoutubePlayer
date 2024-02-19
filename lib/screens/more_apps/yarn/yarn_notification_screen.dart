@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../locale/app_localization.dart';
-import '../../../utils/colors.dart';
 import '../../../widget/no_item_in_list.dart';
 import 'models/Topics/Notifications.dart';
 

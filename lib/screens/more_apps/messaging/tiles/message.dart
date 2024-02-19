@@ -8,7 +8,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../utils/colors.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 // ignore: must_be_immutable

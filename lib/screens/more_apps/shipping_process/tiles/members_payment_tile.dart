@@ -3,7 +3,6 @@ import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';

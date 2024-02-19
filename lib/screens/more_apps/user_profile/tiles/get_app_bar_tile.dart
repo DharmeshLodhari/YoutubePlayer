@@ -489,7 +489,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserDetails() {
-    Color borderColor = getUserTypeColor(user: searchedUser!);
     return Positioned(
       top: 170,
       left: 20,
@@ -997,7 +996,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             YarnSmartText(
-              text: messageDecoderWithEmoji(searchedUser?.bio)! ?? '',
+              text: messageDecoderWithEmoji(searchedUser?.bio)!,
               style: TextStyle(
                   color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
               maxLines: 6,

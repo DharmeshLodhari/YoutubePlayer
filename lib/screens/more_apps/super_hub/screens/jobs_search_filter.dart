@@ -1,9 +1,5 @@
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class JobsSearchFilter extends StatefulWidget {
   const JobsSearchFilter({Key? key}) : super(key: key);

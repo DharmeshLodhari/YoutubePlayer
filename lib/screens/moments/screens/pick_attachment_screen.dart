@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
-import '../../../utils/colors.dart';
 import '../../../utils/util.dart';
 import '../../../widget/loading_indicator.dart';
 import '../../../widget/no_item_in_list.dart';

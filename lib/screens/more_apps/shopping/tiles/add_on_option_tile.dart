@@ -1,7 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/custom_box_shadow.dart';
 import 'package:flutter/material.dart';
@@ -66,8 +65,7 @@ class AddOnOptionTile extends StatelessWidget {
                     fontWeight: FontWeight.w700),
               ),
               Text(
-                moneyDisplayNormalizer(
-                    int.parse(addOnOption.price.toString() ?? "")),
+                moneyDisplayNormalizer(int.parse(addOnOption.price.toString())),
                 style: TextStyle(
                     fontSize: 14.0,
                     color: darkGrey,
@@ -80,7 +78,7 @@ class AddOnOptionTile extends StatelessWidget {
               String? url = addOnOption.picture;
               Navigator.of(context).pushNamed("/photo-viewer", arguments: url);
             },
-            child: checkProductImage(addOnOption!),
+            child: checkProductImage(addOnOption),
           ),
         ),
       ),

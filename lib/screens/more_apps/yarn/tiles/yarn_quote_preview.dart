@@ -7,25 +7,21 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../routes/route_constants.dart';
+
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
-import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/screens/user_profile_module_new/utils.dart';
-import '../yarn_search_screen.dart';
 import '../models/Topics/yarn_model.dart';
 import '../utils/slydo_yarn_links.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
-import '../widgets/yarn_options.dart';
 import '../yarn_dashboard_bloc.dart';
 
 class YarnQuotePreview extends StatefulWidget {
@@ -113,10 +109,10 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
 
   bool shouldShowYarnText() {
     if (widget.yarn.isSensitiveContent == true &&
-        _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
+        _yarnSettings.yarnSettings.allowSensitiveContent == false) {
       return _showText();
     } else if (widget.yarn.isAdultContent == true &&
-        _yarnSettings.yarnSettings?.allowAdultContent == false) {
+        _yarnSettings.yarnSettings.allowAdultContent == false) {
       return _showText();
     }
     return true;

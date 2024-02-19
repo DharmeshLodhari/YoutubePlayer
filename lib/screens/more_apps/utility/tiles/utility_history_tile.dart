@@ -1,6 +1,5 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/utility/models/utility_transaction_model.dart';
-import 'package:Slydo/screens/more_apps/utility/utility_auth.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_history_details.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';

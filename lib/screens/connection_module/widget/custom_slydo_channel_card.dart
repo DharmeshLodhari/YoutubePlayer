@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/channel_model.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -214,7 +213,7 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                       : 5.0,
                 ),
                 if (widget.channelModel!.description!.isNotEmpty ||
-                    widget.channelModel!.description! != null) ...[
+                    widget.channelModel!.description! != "") ...[
                   const SizedBox(
                     height: 10.0,
                   ),

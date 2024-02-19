@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/colors.dart';
 import '../user_auth.dart';
 
 // ignore: must_be_immutable

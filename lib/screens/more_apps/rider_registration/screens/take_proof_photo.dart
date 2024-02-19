@@ -5,7 +5,6 @@ import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:camera/camera.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';

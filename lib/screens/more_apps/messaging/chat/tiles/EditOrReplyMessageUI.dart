@@ -6,7 +6,6 @@ import 'package:Slydo/screens/more_apps/messaging/chat/tiles/post_title_for_chat
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/flutter_gifimage.dart';
@@ -772,8 +771,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                           fontWeight: FontWeight.w400),
                     ),
                     Text(
-                      moneyDisplayNormalizer(
-                          int.parse(data['pay'].toString())),
+                      moneyDisplayNormalizer(int.parse(data['pay'].toString())),
                       style: TextStyle(
                           color: darkGrey,
                           fontSize: 12,

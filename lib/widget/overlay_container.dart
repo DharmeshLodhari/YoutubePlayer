@@ -47,7 +47,7 @@ class _OverlayContainerState extends State<OverlayContainer>
     if (widget.show) {
       _show();
     }
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -88,12 +88,12 @@ class _OverlayContainerState extends State<OverlayContainer>
     if (widget.show) {
       _hide();
     }
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   void _show() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(Duration(milliseconds: 280));
       if (_opened) {
         _overlayEntry.remove();
@@ -106,7 +106,7 @@ class _OverlayContainerState extends State<OverlayContainer>
 
   void _hide() {
     if (_opened) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _overlayEntry.remove();
         _opened = false;
       });

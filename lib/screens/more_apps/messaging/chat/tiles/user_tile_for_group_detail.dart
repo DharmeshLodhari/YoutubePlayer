@@ -1,9 +1,7 @@
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../routes/route_constants.dart';
@@ -24,7 +22,6 @@ class UserTileForGroupDetail extends StatefulWidget {
 class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
   @override
   Widget build(BuildContext context) {
-
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -40,7 +37,8 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
             verifiedIconColor: verifyGreen,
           ),
           subtitle: getSubtitle(context),
-          leading: showSelectedUserAvatar(widget.user!.avatar!, widget.user!.fullName!),
+          leading: showSelectedUserAvatar(
+              widget.user!.avatar!, widget.user!.fullName!),
           trailing: getTrailing(),
           onTap: () async {
             await Navigator.pushNamed(context, '/profile',
@@ -52,15 +50,17 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
     return tile;
   }
 
-  Widget showSelectedUserAvatar(String imageUrl, String fullName){
+  Widget showSelectedUserAvatar(String imageUrl, String fullName) {
     Color borderColor = getUserTypeColor(user: widget.user!);
 
-    if (imageUrl == null || imageUrl == ""
-        || imageUrl == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+    if (imageUrl == null ||
+        imageUrl == "" ||
+        imageUrl ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return GestureDetector(
-        onTap: (){
-          Navigator.of(context)
-              .pushNamed(Routes.PHOTO_VIEWER, arguments: getInitials(fullName).toUpperCase());
+        onTap: () {
+          Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+              arguments: getInitials(fullName).toUpperCase());
         },
         child: CircleAvatar(
           backgroundColor: navyBlue,
@@ -88,9 +88,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
             child: ClipOval(
               child: CachedNetworkImage(
                 errorWidget: imageErrorWidget,
-                imageUrl: imageUrl == ""
-                    ? defaultImage
-                    : imageUrl,
+                imageUrl: imageUrl == "" ? defaultImage : imageUrl,
                 colorBlendMode: BlendMode.darken,
                 fit: BoxFit.fill,
                 filterQuality: FilterQuality.high,

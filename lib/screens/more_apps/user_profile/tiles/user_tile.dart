@@ -1,10 +1,8 @@
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../routes/route_constants.dart';
 import '../screens/user_profile_module_new/profile_template/utils.dart';
 
 // ignore: must_be_immutable
@@ -20,7 +18,6 @@ class UserTile extends StatefulWidget {
 class _UserTileState extends State<UserTile> {
   @override
   Widget build(BuildContext context) {
-
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -45,8 +42,10 @@ class _UserTileState extends State<UserTile> {
   Widget getAvatar() {
     Color borderColor = getUserTypeColorByType(type: widget.user!.type!);
 
-    if (widget.user!.avatar == null || widget.user!.avatar == ""
-    || widget.user!.avatar == "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+    if (widget.user!.avatar == null ||
+        widget.user!.avatar == "" ||
+        widget.user!.avatar ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
       return CircleAvatar(
         backgroundColor: navyBlue,
         radius: 25,

@@ -623,7 +623,7 @@ class YarnAuth extends AuthService {
     Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
     debugPrint('DATA ---> $_data');
 
-    if (addYarnAndQuestion.isQuestion ?? false) {
+    if (addYarnAndQuestion.isQuestion) {
       request.fields["title"] = addYarnAndQuestion.title!;
     }
 
@@ -758,7 +758,7 @@ class YarnAuth extends AuthService {
     Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
     debugPrint('DATA ---> $_data');
 
-    if (addYarnAndQuestion.isQuestion ?? false) {
+    if (addYarnAndQuestion.isQuestion) {
       request.fields["title"] =
           messageDecoderWithEmoji(addYarnAndQuestion.title)!;
     }

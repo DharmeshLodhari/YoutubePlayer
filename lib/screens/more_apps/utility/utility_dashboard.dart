@@ -1,7 +1,5 @@
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/utility/select_provider_screen.dart';
 import 'package:Slydo/utils/enums.dart';
-import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';

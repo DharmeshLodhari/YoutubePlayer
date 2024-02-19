@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
@@ -16,25 +14,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
-import '../../service_hub/models/active_job_listing.dart';
 import '../../service_hub/models/jobs.dart';
 import '../../service_hub/tiles/jos_description_card.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../../user_profile/screens/user_profile_module_new/utils.dart';
-import '../yarn_search_screen.dart';
 import '../models/Topics/yarn_model.dart';
 import '../utils/slydo_yarn_links.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
 import '../yarn_dashboard_bloc.dart';
+import '../yarn_search_screen.dart';
 import '../yarn_setting_screen.dart';
 
 class YarnTile extends StatefulWidget {
@@ -561,7 +559,7 @@ class _YarnTileState extends State<YarnTile> {
             height: 5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(removedLink)! ?? '',
+            text: messageDecoderWithEmoji(removedLink)!,
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
             // atStyle: TextStyle(
@@ -649,7 +647,7 @@ class _YarnTileState extends State<YarnTile> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(removedLink)! ?? '',
+      text: messageDecoderWithEmoji(removedLink)!,
       style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
       // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,

@@ -36,7 +36,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     // fetching device info from db
     fetchDeviceInfo();
@@ -53,7 +53,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

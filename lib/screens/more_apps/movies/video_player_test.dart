@@ -1,5 +1,4 @@
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 

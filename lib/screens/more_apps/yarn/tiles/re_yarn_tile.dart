@@ -1,6 +1,4 @@
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_category_individual_tag.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
@@ -8,10 +6,12 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
@@ -230,7 +230,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
             height: 5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(removedLink)! ?? '',
+            text: messageDecoderWithEmoji(removedLink)!,
             atStyle: TextStyle(color: navyBlue),
             disableAt: false,
             onTagClick: (tag) {
@@ -309,7 +309,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(removedLink)! ?? '',
+      text: messageDecoderWithEmoji(removedLink)!,
       atStyle: TextStyle(color: navyBlue, fontSize: 14),
       disableAt: false,
       onTagClick: (tag) {

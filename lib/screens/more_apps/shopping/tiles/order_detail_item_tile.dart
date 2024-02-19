@@ -7,8 +7,6 @@ import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../utils/colors.dart';
-
 // ignore: must_be_immutable
 class OrderTileForProduct extends StatefulWidget {
   Product? item;

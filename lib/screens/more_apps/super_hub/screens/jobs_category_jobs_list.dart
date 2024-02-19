@@ -4,9 +4,6 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class JobsCategoryJobsList extends StatefulWidget {
   const JobsCategoryJobsList({Key? key}) : super(key: key);
@@ -19,22 +16,23 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lightGrey,
-      appBar: appBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
-        child: ListView.builder(
-          itemCount: 8,
-          itemBuilder: (context, index){
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10.0),
-            child: GestureDetector(
-              onTap: () => Navigator.pushNamed(context, Routes.JOB_DETAILS),
-              child: JobDescriptionCard(),),
-          );
-        }),
-      )
-    );
+        backgroundColor: lightGrey,
+        appBar: appBar(),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+          child: ListView.builder(
+              itemCount: 8,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: GestureDetector(
+                    onTap: () =>
+                        Navigator.pushNamed(context, Routes.JOB_DETAILS),
+                    child: JobDescriptionCard(),
+                  ),
+                );
+              }),
+        ));
   }
 
   AppBar appBar() {
@@ -64,7 +62,9 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
       ),
       actions: [
         _filterBtn(),
-        SizedBox(width: 12,)
+        SizedBox(
+          width: 12,
+        )
       ],
     );
   }

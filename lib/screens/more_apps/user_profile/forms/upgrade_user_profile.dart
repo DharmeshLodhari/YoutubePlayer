@@ -12,7 +12,6 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../utils/colors.dart';
 import '../user_auth.dart';
 
 class UpgradeUserProfile extends StatefulWidget {

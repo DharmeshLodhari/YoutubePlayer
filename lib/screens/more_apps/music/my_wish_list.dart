@@ -1,7 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/music/models/PartialMusicItem.dart';
 import 'package:Slydo/screens/more_apps/music/music_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:connectivity/connectivity.dart';

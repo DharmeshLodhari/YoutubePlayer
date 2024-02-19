@@ -962,8 +962,8 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   Widget momentCommentingOption(MomentsModel momentModel) {
     bool isCommentingEnable = false;
     String title;
-    if (momentModel.enableCommenting ?? false) {
-      isCommentingEnable = momentModel.enableCommenting!;
+    if (momentModel.enableCommenting) {
+      isCommentingEnable = momentModel.enableCommenting;
     }
 
     IconData icon;
@@ -1186,7 +1186,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
 
   bool commentingEnabled() {
     return widget.currentMoment.enableCommenting != null &&
-        widget.currentMoment.enableCommenting!;
+        widget.currentMoment.enableCommenting;
   }
 
   Widget getPayMeBtn() {

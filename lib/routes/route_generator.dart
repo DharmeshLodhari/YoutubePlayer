@@ -422,7 +422,7 @@ class RouteGenerator {
         // final args = settings.arguments as Map<String, dynamic>;
 
         return PageTransition(
-          child: CreateorEditPostScreen(
+          child: CreateOrEditPostScreen(
             userPost: settings.arguments != null
                 ? settings.arguments as UserPost
                 : null,

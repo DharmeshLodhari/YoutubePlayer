@@ -1,5 +1,4 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:connectivity/connectivity.dart';

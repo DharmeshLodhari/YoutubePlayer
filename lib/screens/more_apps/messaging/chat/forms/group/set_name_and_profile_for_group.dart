@@ -9,16 +9,13 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -68,10 +65,11 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
     groupDescriptionController = TextEditingController();
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
-    createTitle = widget.arguments != null
-        && widget.arguments["create"] == "group" ? "New Group"
-        : "New Channel";
-        // : "New Paid Channel";
+    createTitle =
+        widget.arguments != null && widget.arguments["create"] == "group"
+            ? "New Group"
+            : "New Channel";
+    // : "New Paid Channel";
 
     // appConfigurationModel?.enablePaidGroupChat = true;
 
@@ -168,52 +166,50 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   }
 
   Widget getProfileCover() {
-
     return GestureDetector(
-        onTap: (){
+        onTap: () {
           pickWallpaper();
         },
         child: Container(height: 150, child: getProfileWallpaper()));
   }
 
   Widget getProfileWallpaper() {
-
-    return  groupModel.groupProfilePhoto == null
+    return groupModel.groupProfilePhoto == null
         ? Container(
-      color: greyBorderColor,
-      child: Stack(
-        children: [
-          Positioned(
-            bottom: 10, // Adjust the position as needed
-            right: 20, // Adjust the position as needed
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: darkGreyYarn, // Color of the border
-                  width: 2.0, // Border width
+            color: greyBorderColor,
+            child: Stack(
+              children: [
+                Positioned(
+                  bottom: 10, // Adjust the position as needed
+                  right: 20, // Adjust the position as needed
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: darkGreyYarn, // Color of the border
+                        width: 2.0, // Border width
+                      ),
+                    ),
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.all(4.0), // Padding around the icon
+                      child: Icon(
+                        Icons.camera_alt, // Replace with your desired icon
+                        size: 25, // Adjust the size of the icon as needed
+                        color: darkGreyYarn, // Color of the icon
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0), // Padding around the icon
-                child: Icon(
-                  Icons.camera_alt, // Replace with your desired icon
-                  size: 25, // Adjust the size of the icon as needed
-                  color: darkGreyYarn, // Color of the icon
-                ),
-              ),
+              ],
             ),
-          ),
-        ],
-      ),
-    )
-    : Container(
-      child: Image.file(
-        File(groupModel.groupProfilePhoto!),
-        fit: BoxFit.fill,
-      ),
-    );
-
+          )
+        : Container(
+            child: Image.file(
+              File(groupModel.groupProfilePhoto!),
+              fit: BoxFit.fill,
+            ),
+          );
   }
 
   Widget getMakePublicField() {
@@ -284,7 +280,9 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                   color: blackFont, fontWeight: FontWeight.w700, fontSize: 16),
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.zero,
-                  hintText:  widget.arguments["create"] == "group" ? "Type group name here" : "Type channel name here",
+                  hintText: widget.arguments["create"] == "group"
+                      ? "Type group name here"
+                      : "Type channel name here",
                   hintStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w300,
@@ -461,63 +459,61 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   }
 
   Widget getPaidGroupChatField() {
-    return widget.arguments != null
-        && widget.arguments["create"] == "group" ? SizedBox.shrink()
+    return widget.arguments != null && widget.arguments["create"] == "group"
+        ? SizedBox.shrink()
         : Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            const Expanded(
-              child: Text(
-                'Create paid channel',
-                style:
-                TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Create paid channel',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Switch(
+                    activeColor: navyBlue,
+                    value: false,
+                    onChanged: (bool value) {
+                      setState(() {
+                        // makeGroupPaid = value;
+                        showToast(message: 'Coming Soon');
+                      });
+                    },
+                    // value: makeGroupPaid!,
+                  ),
+                  SizedBox(width: 10),
+                ],
               ),
-            ),
-            Switch(
-              activeColor: navyBlue,
-              value: false,
-              onChanged: (bool value) {
-                setState(() {
-                  // makeGroupPaid = value;
-                  showToast(message: 'Coming Soon');
-                });
-              },
-              // value: makeGroupPaid!,
-            ),
-            SizedBox(width: 10),
-          ],
-        ),
-        if (makeGroupPaid!) ...[
-          SizedBox(
-            height: 10,
-          ),
-          CustomizedTextFormField(
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            keyboardType: TextInputType.phone,
-            controller: _channelFeeCtrl,
-            isAmountField: true,
-            labelText: AppLocalization.of(context)!.amount,
-            onChanged: (value) {},
-            validator: (val) {
-              try {
-                double userAmount = double.parse(val.replaceAll(',', ''));
-                // if (userAmount > amountLimit) {
-                //   return 'You cannot fund more than $amountLimit';
-                // }
-              } catch (e) {
-                return AppLocalization.of(context)!.invalidAmount;
-              }
-              return null;
-            },
-          ),
-        ],
-        SizedBox(height: 10),
-
-      ],
-    );
-
+              if (makeGroupPaid!) ...[
+                SizedBox(
+                  height: 10,
+                ),
+                CustomizedTextFormField(
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.phone,
+                  controller: _channelFeeCtrl,
+                  isAmountField: true,
+                  labelText: AppLocalization.of(context)!.amount,
+                  onChanged: (value) {},
+                  validator: (val) {
+                    try {
+                      double userAmount = double.parse(val.replaceAll(',', ''));
+                      // if (userAmount > amountLimit) {
+                      //   return 'You cannot fund more than $amountLimit';
+                      // }
+                    } catch (e) {
+                      return AppLocalization.of(context)!.invalidAmount;
+                    }
+                    return null;
+                  },
+                ),
+              ],
+              SizedBox(height: 10),
+            ],
+          );
   }
 
   Widget getLimitGroupMembersField() {
@@ -531,7 +527,9 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.arguments["create"] == "group" ? 'Limit group members' : 'Limit channel members',
+                    widget.arguments["create"] == "group"
+                        ? 'Limit group members'
+                        : 'Limit channel members',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                   Text(
@@ -657,7 +655,9 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         return;
       } else if (int.parse(_maxNoOfUsersCtrl.text) < 3) {
         showToast(
-            message: widget.arguments["create"] == "group" ? 'You can not create group with less than 3 members' : 'You can not create channel with less than 3 members');
+            message: widget.arguments["create"] == "group"
+                ? 'You can not create group with less than 3 members'
+                : 'You can not create channel with less than 3 members');
         return;
       }
     }
@@ -685,7 +685,9 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               child: CircularLoadingIndicator(),
             ));
 
-    await MessageAuth().createGroupChat(group: groupModel, type: widget.arguments["create"]).then((value) async {
+    await MessageAuth()
+        .createGroupChat(group: groupModel, type: widget.arguments["create"])
+        .then((value) async {
       Navigator.pop(context);
       ChatUserModel chatUserModel = ChatUserModel.fromChatConversation(value);
       ChatUserManager().addUser(conversationId: chatUserModel.conversationId);

@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/colors.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class PayoutTile extends StatelessWidget {

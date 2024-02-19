@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_ra
 import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_auth.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';

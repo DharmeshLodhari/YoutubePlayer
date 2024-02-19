@@ -192,8 +192,7 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
                             ),
                             Text(
                               messageDecoderWithEmoji(
-                                      widget.service!.shortDescription!)! ??
-                                  "",
+                                  widget.service!.shortDescription!)!,
                               maxLines: 2,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,

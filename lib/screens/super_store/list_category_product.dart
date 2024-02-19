@@ -51,8 +51,8 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
 
       var tempList = result!['results'];
 
-      nextUrl = result!['next'];
-      productCount = result!['count'];
+      nextUrl = result['next'];
+      productCount = result['count'];
 
       productList.addAll(tempList);
     }

@@ -7,7 +7,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/tiles/package_detail_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';

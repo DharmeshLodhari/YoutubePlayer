@@ -3,7 +3,6 @@ import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -1087,8 +1086,7 @@ class _DisplayServiceState extends State<DisplayService> {
               params..body = widget.service.name ?? "";
               params
                 ..attachment = {
-                  "service":
-                      widget.service.toJson().cast<String, dynamic>() ?? {}
+                  "service": widget.service.toJson().cast<String, dynamic>()
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {

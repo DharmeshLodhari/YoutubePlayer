@@ -2,7 +2,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/connection_module/widget/custom_slydo_channel_card.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 

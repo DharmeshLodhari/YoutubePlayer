@@ -848,8 +848,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   Widget momentCommentingOption(MomentsModel momentModel) {
     bool isCommentingEnable = false;
     String title;
-    if (momentModel.enableCommenting ?? false) {
-      isCommentingEnable = momentModel.enableCommenting!;
+    if (momentModel.enableCommenting) {
+      isCommentingEnable = momentModel.enableCommenting;
     }
 
     IconData icon;
@@ -1063,7 +1063,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
 
   bool commentingEnabled() {
     return currentMoment!.enableCommenting != null &&
-        currentMoment!.enableCommenting!;
+        currentMoment!.enableCommenting;
   }
 
   Widget getPayMeBtn() {

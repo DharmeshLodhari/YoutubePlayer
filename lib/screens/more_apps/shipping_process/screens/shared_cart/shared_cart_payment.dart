@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
-import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
@@ -15,7 +14,6 @@ import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_mode
 import 'package:Slydo/screens/more_apps/shipping_process/tiles/members_payment_tile.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/services/location_service.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';

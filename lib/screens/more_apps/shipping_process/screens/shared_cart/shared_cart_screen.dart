@@ -5,7 +5,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/utils.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';

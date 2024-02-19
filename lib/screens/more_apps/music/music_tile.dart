@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:Slydo/screens/more_apps/music/models/PartialMusicItem.dart';
 import 'package:Slydo/screens/more_apps/music/models/music_album.dart'
     as musicAlbum;
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
