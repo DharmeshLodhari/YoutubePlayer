@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
@@ -21,13 +20,13 @@ import '../../../moments/screens/moment_detail/moment_comment.screen.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../add_or_edit_yarn_screen.dart';
-import '../yarn_report_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/yarn_model.dart';
 import '../utils/utils.dart';
 import '../yarn_auth.dart';
 import '../yarn_dashboard_bloc.dart';
 import '../yarn_list_screen.dart';
+import '../yarn_report_screen.dart';
 
 class YarnOptions extends StatefulWidget {
   Yarn? yarnTopic;
@@ -56,7 +55,7 @@ class YarnOptions extends StatefulWidget {
       this.momentUsername,
       this.moment,
       this.reloadView,
-        this.callbackUpdateCommentCount,
+      this.callbackUpdateCommentCount,
       this.onDeleteComment});
 
   @override
@@ -769,7 +768,7 @@ class _YarnOptionsState extends State<YarnOptions> {
         await YarnAuth().deleteSingleTopics(yarnId: widget.yarnTopic!.id);
     if (data != null && data) {
       showToast(
-          message: isQuestion!
+          message: isQuestion
               ? "Question Deleted Successfully"
               : "Yarn Deleted Successfully");
       if (widget.yarnTopic != null) {

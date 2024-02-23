@@ -24,7 +24,7 @@ class _SearchingForRideState extends State<SearchingForRide> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       navigateToArrivingDriver();
     });
   }

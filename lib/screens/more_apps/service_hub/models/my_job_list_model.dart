@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
 
 MyJobList myJobListFromJson(String str) => MyJobList.fromJson(json.decode(str));
@@ -28,7 +27,8 @@ class MyJobList {
         count: json["count"],
         next: json["next"],
         previous: json["previous"],
-        results: List<JobModel>.from(json["results"].map((x) => JobModel.fromJson(x))),
+        results: List<JobModel>.from(
+            json["results"].map((x) => JobModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

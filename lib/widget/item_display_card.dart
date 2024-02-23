@@ -3,7 +3,6 @@ import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/all_active_cart.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -50,6 +49,7 @@ class DisplayProduct extends StatefulWidget {
 class _DisplayProductState extends State<DisplayProduct> {
   late bool isOwner;
   late BasketBloc basketBloc;
+  late UserBloc userBloc;
   late SharedCartBloc sharedCartBloc;
   bool showAddToCartButton = true;
   final _auth = ShoppingAuthService();
@@ -64,6 +64,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return GestureDetector(
@@ -435,7 +436,9 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product});
       } else {
         basketBloc.addItemToCart(
-            item: widget.product.copyWith(qty: 1), type: type);
+          item: widget.product.copyWith(qty: 1),
+          type: type,
+        );
       }
     } else {
       showToast(message: AppLocalization.of(context)!.productOutOfStock);
@@ -448,7 +451,11 @@ class _DisplayProductState extends State<DisplayProduct> {
     Product products = widget.product.copyWith(qty: 1, withSelectedAddOn: true);
 
     sharedCartBloc.addItemToSharedCart(
-        cart: result, item: products, type: type);
+      cart: result,
+      item: products,
+      type: type,
+      currentUser: userBloc.user.convertToUser(),
+    );
   }
 
   Widget displayShoppingCartControls() {
@@ -606,6 +613,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         });
         addProductToCart();
       } else {
+        await sharedCartBloc.refreshSharedCart(context, result);
         addToSharedCart(result);
       }
     }
@@ -669,6 +677,7 @@ class DisplayService extends StatefulWidget {
 class _DisplayServiceState extends State<DisplayService> {
   late bool isOwner;
   late BasketBloc basketBloc;
+  late UserBloc userBloc;
   bool showAddToCartButton = true;
   final _auth = ShoppingAuthService();
   late YarnDashboardBloc yarnDashboardBloc;
@@ -683,6 +692,7 @@ class _DisplayServiceState extends State<DisplayService> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return GestureDetector(
       onTap: () {
@@ -1058,7 +1068,10 @@ class _DisplayServiceState extends State<DisplayService> {
     }
     if (widget.service.isAvailable!) {
       String type = "service";
-      basketBloc.addItemToCart(item: widget.service, type: type);
+      basketBloc.addItemToCart(
+        item: widget.service,
+        type: type,
+      );
       late var mapData;
       basketBloc.items.forEach((element) {
         if (element["item"].id == widget.service.id) {
@@ -1087,8 +1100,7 @@ class _DisplayServiceState extends State<DisplayService> {
               params..body = widget.service.name ?? "";
               params
                 ..attachment = {
-                  "service":
-                      widget.service.toJson().cast<String, dynamic>() ?? {}
+                  "service": widget.service.toJson().cast<String, dynamic>()
                 };
               bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {

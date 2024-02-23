@@ -52,7 +52,6 @@ class _PayoutScreenState extends State<PayoutScreen> {
   List bankAccountList = [];
   bool noItemInList = false;
   BankAccount? selectedBank;
-  TextEditingController _amountController = TextEditingController();
 
   @override
   void initState() {

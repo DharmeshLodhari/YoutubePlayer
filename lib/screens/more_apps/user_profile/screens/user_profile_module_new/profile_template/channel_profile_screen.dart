@@ -3,12 +3,9 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/get_app_bar_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
-import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
-import '../../../../../../widget/rounded_background_icon.dart';
 import '../utils.dart';
 
 class ChannelProfileScreen extends StatefulWidget {
@@ -75,7 +72,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     var orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
-    if (result != null && result is Map<String, dynamic>) {
+    if (result != null) {
       orderingList = channelDetail!['owner']['profile_menu']['ordering'];
       // Iterate through the JSON object and filter boolean values
       result.forEach((key, value) {
@@ -105,7 +102,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
 
     // Iterate through the JSON object and add tabs for boolean values that are true
     reorderedBoolMap.forEach((key, value) {
-      if (value is bool && value) {
+      if (value) {
         // Add the tab
         addTab(key, capitalizeAndRemoveUnderscores(key));
       }
@@ -403,7 +400,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       userTabs.clear();
       // Iterate through the JSON object and add tabs for boolean values that are true
       val.forEach((key, value) {
-        if (value is bool && value) {
+        if (value) {
           // Add the tab
           addTab(key, capitalizeAndRemoveUnderscores(key));
         }

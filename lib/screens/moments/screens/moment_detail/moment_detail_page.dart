@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/single_moment_detail.dart';
 import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
@@ -150,7 +151,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       for (int i = startIndex; i <= endIndex; i++) {
         List<MomentsModel> momentsModelList = await MomentsService()
             .getMomentsWithOwnerName(
-                ownerName: widget.listOfConnectionNames[i], channelUsername: '');
+                ownerName: widget.listOfConnectionNames[i],
+                channelUsername: '');
         widget.momentsModelList = List.from(widget.momentsModelList)
           ..add(momentsModelList);
       }
@@ -200,7 +202,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
         try {
           List<MomentsModel> momentsModelList = await MomentsService()
               .getMomentsWithOwnerName(
-                  ownerName: widget.listOfConnectionNames[indexToWorkWith], channelUsername: '');
+                  ownerName: widget.listOfConnectionNames[indexToWorkWith],
+                  channelUsername: '');
           if (getNextList) {
             widget.momentsModelList.add(momentsModelList);
           } else {
@@ -375,7 +378,7 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
-          widget.momentsModelList.map((e) => e.numberOfComments!).toList();
+          widget.momentsModelList.map((e) => e.numberOfComments).toList();
 
       debugPrint(
           'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
@@ -400,7 +403,6 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
       scrollDirection: Axis.horizontal,
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
-
         return SingleMomentDetailScreen(
           momentsModelList: widget.momentsModelList,
           videoPlayerControllers: widget.videoPlayerControllers,
@@ -409,11 +411,13 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
           currentMoment: widget.momentsModelList[index],
           onLeftSwipe: () {
             _pageCtrl!.previousPage(
-                duration: const Duration(milliseconds: 200), curve: Curves.easeIn);
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeIn);
           },
           onRightSwipe: () {
             _pageCtrl!.nextPage(
-                duration: const Duration(milliseconds: 200), curve: Curves.easeIn);
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeIn);
           },
           onMomentPop: widget.onMomentPop,
           pageCtrl: _pageCtrl!,

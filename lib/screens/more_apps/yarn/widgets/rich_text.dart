@@ -1,4 +1,3 @@
-import 'package:Slydo/main.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -6,8 +5,8 @@ import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
 import '../../../../utils/common.dart';
 import '../../../../utils/navigation_util.dart';
-import '../yarn_search_screen.dart';
 import '../utils/utils.dart';
+import '../yarn_search_screen.dart';
 
 class RichTextForTitle extends StatelessWidget {
   String? description;
@@ -47,7 +46,7 @@ class RichTextForTitle extends StatelessWidget {
         }
 
         textSpans.add(TextSpan(
-          text: messageDecoderWithEmoji('$removeDot$addSpace' ?? ''),
+          text: messageDecoderWithEmoji('$removeDot$addSpace'),
           style: TextStyle(
             color: navyBlue,
             fontSize: fontSize,
@@ -61,7 +60,7 @@ class RichTextForTitle extends StatelessWidget {
         ));
         if (removedString != '') {
           textSpans.add(TextSpan(
-            text: messageDecoderWithEmoji('$removedString ' ?? ''),
+            text: messageDecoderWithEmoji('$removedString '),
             style: TextStyle(
               color: blackFont,
               fontSize: fontSize,
@@ -76,7 +75,7 @@ class RichTextForTitle extends StatelessWidget {
         }
 
         textSpans.add(TextSpan(
-          text: messageDecoderWithEmoji('$removeDot$addSpace' ?? ''),
+          text: messageDecoderWithEmoji('$removeDot$addSpace'),
           style: TextStyle(
             color: navyBlue,
             fontSize: fontSize,
@@ -90,7 +89,7 @@ class RichTextForTitle extends StatelessWidget {
         ));
         if (removedString != '') {
           textSpans.add(TextSpan(
-              text: messageDecoderWithEmoji('$removedString ' ?? ''),
+              text: messageDecoderWithEmoji('$removedString '),
               style: TextStyle(
                 color: blackFont,
                 fontSize: fontSize,
@@ -99,7 +98,7 @@ class RichTextForTitle extends StatelessWidget {
         }
       } else {
         textSpans.add(TextSpan(
-          text: messageDecoderWithEmoji('$value ' ?? ''),
+          text: messageDecoderWithEmoji('$value '),
           style: TextStyle(
             color: blackFont,
             fontSize: fontSize,

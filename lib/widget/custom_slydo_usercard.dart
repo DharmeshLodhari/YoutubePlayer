@@ -14,7 +14,6 @@ import '../routes/route_constants.dart';
 import '../screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import '../screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../screens/more_apps/user_profile/user_auth.dart';
-import '../utils/colors.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
 import 'dialog.dart';

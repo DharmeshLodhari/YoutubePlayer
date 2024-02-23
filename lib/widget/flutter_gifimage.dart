@@ -226,7 +226,7 @@ Future<List<ImageInfo>?> fetchGif(ImageProvider provider) async {
     data = provider.bytes;
   }
 
-  ui.Codec codec = await PaintingBinding.instance!
+  ui.Codec codec = await PaintingBinding.instance
       .instantiateImageCodec(data.buffer.asUint8List());
   infos = [];
   for (int i = 0; i < codec.frameCount; i++) {

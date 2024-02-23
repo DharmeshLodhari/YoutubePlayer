@@ -26,18 +26,18 @@ import '../more_apps/user_post/models/user_post.dart';
 import '../more_apps/yarn/utils/utils.dart';
 import '../more_apps/yarn/widgets/ask_mention_view.dart';
 
-class CreateorEditPostScreen extends StatefulWidget {
+class CreateOrEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
-  String? channel;
+  final String? channel;
 
-  CreateorEditPostScreen({Key? key, this.userPost, this.channel})
+  CreateOrEditPostScreen({Key? key, this.userPost, this.channel})
       : super(key: key);
 
   @override
-  State<CreateorEditPostScreen> createState() => _CreateOrEditPostScreenState();
+  State<CreateOrEditPostScreen> createState() => _CreateOrEditPostScreenState();
 }
 
-class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
+class _CreateOrEditPostScreenState extends State<CreateOrEditPostScreen> {
   String? blogId;
   String? _imagePath;
   String? _videoPath;
@@ -619,7 +619,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     if (videoPath != null) {
       int sizeInBytes = File(videoPath).lengthSync();
 
-      int sizeInMb = (sizeInBytes / (1024 * 1024)).toInt();
+      int sizeInMb = (sizeInBytes ~/ (1024 * 1024)).toInt();
 
       debugPrint('SIZE IN MB --> $sizeInMb');
 

@@ -16,7 +16,6 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/tiles/moment_tab_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:flutter/material.dart';
 
@@ -204,10 +203,15 @@ Widget momentTab(CustomerProfile? searchedUser, String channelUsername) {
   );
 }
 
-Widget productTab(CustomerProfile? searchedUser, bool isOwner, bool isChannel, {String? next, String? type}) {
+Widget productTab(CustomerProfile? searchedUser, bool isOwner, bool isChannel,
+    {String? next, String? type}) {
   return KeepAlivePage(
     child: UserProductList(
-        user: searchedUser, isOwner: isOwner, channel: isChannel, next: next, type: type),
+        user: searchedUser,
+        isOwner: isOwner,
+        channel: isChannel,
+        next: next,
+        type: type),
   );
 }
 
@@ -250,7 +254,7 @@ String getInitials(String fullName) {
 
 String getGroupUsername(String channelUsername) {
   if (channelUsername.contains(' ')) {
-    return "${channelUsername.replaceAll(' ', '') ?? ''}";
+    return "${channelUsername.replaceAll(' ', '')}";
   } else {
     return channelUsername;
   }
@@ -265,7 +269,8 @@ Widget showDiscountValue(String discountType, num discountValue, currency) {
       "-" +
           (discountType == "percentage"
               ? discountValue.toString() + "% off"
-              : worldCurrencies[currency!]! +  moneyDisplayNormalizer(discountValue.toInt()).toString()),
+              : worldCurrencies[currency!]! +
+                  moneyDisplayNormalizer(discountValue.toInt()).toString()),
       style: TextStyle(
         color: white,
         fontSize: 10,

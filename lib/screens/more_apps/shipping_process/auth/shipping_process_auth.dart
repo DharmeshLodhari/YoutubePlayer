@@ -14,7 +14,7 @@ class ShippingProcessAuthService extends AuthService {
   Future<List<PackageDetailsModel>> getAllPackageDetail(
       isSharedCart, String cartId) async {
     try {
-      var url = AppConfig.baseUrl;
+      String url = AppConfig.baseUrl;
 
       if (!isSharedCart) {
         url += "/api/v1/shopping-cart/item-addresses/";
@@ -127,7 +127,7 @@ class ShippingProcessAuthService extends AuthService {
   // List of Addresses
   Future<Map<String, dynamic>?> getAddressListing(
       String? next, String? previous, Map? data) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }

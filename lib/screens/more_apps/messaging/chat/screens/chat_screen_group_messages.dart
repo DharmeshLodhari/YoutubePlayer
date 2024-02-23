@@ -289,7 +289,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     /// by adding observer in this screen we can listen the app life cycle state
     /// on this screen by this method
     // lib/screens/more_apps/messaging/chat/screens/chat_screen.dart:294
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void checkNetworkConnectivity() async {
@@ -1574,7 +1574,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           Navigator.pop(context);
 
           NavigationUtil.push(context,
-              screen: CreateorEditPostScreen(
+              screen: CreateOrEditPostScreen(
                   // arguments: {"channel": chatConversation!.userName}
                   channel: chatConversation!.userName!));
         },

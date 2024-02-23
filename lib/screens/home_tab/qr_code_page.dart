@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/util.dart';
@@ -15,7 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
-import '../../routes/route_constants.dart';
+
 import '../../routes/route_constants.dart';
 import '../../utils/slydo_app_icon_icons.dart';
 import '../../widget/bottom_sheet_item.dart';
@@ -47,17 +48,15 @@ class _QrCodePageState extends State<QrCodePage> {
   int _currentIndex = 0;
   bool noFinancialInfo = false;
 
-
   @override
   void initState() {
-
-    if(widget.arguments['isProfile'] != "false"){
+    if (widget.arguments['isProfile'] != "false") {
       searchedUser = widget.arguments['isProfile'];
     }
 
     virtualAccount = widget.arguments['virtualAccount'];
 
-    if(virtualAccount!.accountNumber!.isNotEmpty){
+    if (virtualAccount!.accountNumber!.isNotEmpty) {
       noFinancialInfo = true;
     }
     super.initState();
@@ -93,7 +92,6 @@ class _QrCodePageState extends State<QrCodePage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -106,16 +104,12 @@ class _QrCodePageState extends State<QrCodePage> {
       appBar: appBar(),
       body: Container(
         color: Colors.white,
-        child: Container(
-          color: white,
-            child: _foregroundScreen()),
+        child: Container(color: white, child: _foregroundScreen()),
       ),
     );
   }
 
-
   Widget _foregroundScreen() {
-
     return Center(
       child: Column(
         children: [
@@ -148,7 +142,7 @@ class _QrCodePageState extends State<QrCodePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               2, // Number of items in the CarouselSlider
-                  (index) {
+              (index) {
                 return Container(
                   width: 8,
                   height: 8,
@@ -164,14 +158,12 @@ class _QrCodePageState extends State<QrCodePage> {
           const SizedBox(height: 20),
           _scanQrButtonWidget(),
           const SizedBox(height: 20),
-
         ],
       ),
     );
   }
 
   Widget _buildCarouselItem() {
-
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -196,10 +188,10 @@ class _QrCodePageState extends State<QrCodePage> {
                     color: blackFont,
                   ),
                 ),
-                _bankDetails() ,
-                      const SizedBox(
-                        height: 10,
-                      ),
+                _bankDetails(),
+                const SizedBox(
+                  height: 10,
+                ),
                 _displayUserInfo(),
                 const SizedBox(
                   height: 10,
@@ -208,14 +200,12 @@ class _QrCodePageState extends State<QrCodePage> {
               ],
             ),
           ),
-
         ],
       ),
     );
   }
 
   Widget _buildCarouselItemBlue() {
-
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -240,10 +230,10 @@ class _QrCodePageState extends State<QrCodePage> {
                     color: white,
                   ),
                 ),
-                _financialInfo() ,
-                      const SizedBox(
-                        height: 10,
-                      ),
+                _financialInfo(),
+                const SizedBox(
+                  height: 10,
+                ),
                 _displayUserInfo(),
                 const SizedBox(
                   height: 10,
@@ -257,7 +247,6 @@ class _QrCodePageState extends State<QrCodePage> {
     );
   }
 
-
   Widget _bankDetails() {
     return InkWell(
       onTap: () {
@@ -266,24 +255,36 @@ class _QrCodePageState extends State<QrCodePage> {
       },
       child: Column(
         children: [
-          const SizedBox(height: 10.0,),
-          virtualAccount!.financialInstitution!.name != null ? Text(
-            appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
-            maxLines: 1,
-            style: TextStyle(fontSize: 16, color: HexColor("#151515"), fontWeight: FontWeight.w600),
-          ): SizedBox.shrink(),
+          const SizedBox(
+            height: 10.0,
+          ),
+          virtualAccount!.financialInstitution!.name != null
+              ? Text(
+                  appendStringDot(
+                      virtualAccount!.financialInstitution!.name!, 25),
+                  maxLines: 1,
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: HexColor("#151515"),
+                      fontWeight: FontWeight.w600),
+                )
+              : SizedBox.shrink(),
           Text(
-              appendStringDot(virtualAccount!.accountNumber!, 15),
+            appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
-            style: TextStyle(fontSize: 30, color: HexColor("#151515"), fontWeight: FontWeight.w700),
+            style: TextStyle(
+                fontSize: 30,
+                color: HexColor("#151515"),
+                fontWeight: FontWeight.w700),
           ),
           Text(
             appendStringDot(virtualAccount!.accountName!, 25),
             maxLines: 1,
-            style: TextStyle(fontSize: 16, color: HexColor("#151515"), fontWeight: FontWeight.w600),
+            style: TextStyle(
+                fontSize: 16,
+                color: HexColor("#151515"),
+                fontWeight: FontWeight.w600),
           ),
-
-
         ],
       ),
     );
@@ -303,8 +304,7 @@ class _QrCodePageState extends State<QrCodePage> {
           margin: const EdgeInsets.all(13),
           child: CustomPaint(
             painter: QrPainter(
-                data:
-                getUserProfileLink(userBloc.user, searchedUser),
+                data: getUserProfileLink(userBloc.user, searchedUser),
                 options: const QrOptions(
                     shapes: QrShapes(
                         darkPixel: QrPixelShapeCircle(radiusFraction: .8),
@@ -320,18 +320,18 @@ class _QrCodePageState extends State<QrCodePage> {
     );
   }
 
-  String getUserProfileLink(User user, CustomerProfile? searchUser){
+  String getUserProfileLink(User user, CustomerProfile? searchUser) {
     var userObject;
     userObject = searchUser ?? user;
     var path = userObject.type!;
 
-    if(widget.arguments['product'] != null){
+    if (widget.arguments['product'] != null) {
       return widget.arguments['productUrl'];
     }
 
-    if(path == 'User' || path == null){
+    if (path == 'User' || path == null) {
       path = 'user';
-    }else{
+    } else {
       path = 'store';
     }
     String url = "https://slydo.co/$path/${userObject.userName}";
@@ -346,24 +346,30 @@ class _QrCodePageState extends State<QrCodePage> {
       },
       child: Column(
         children: [
-          const SizedBox(height: 10.0,),
-          virtualAccount!.financialInstitution!.name != null ? Text(
-            appendStringDot(virtualAccount!.financialInstitution!.name!, 25),
-            maxLines: 1,
-            style: TextStyle(fontSize: 16, color: white, fontWeight: FontWeight.w600),
-          ) : SizedBox.shrink(),
+          const SizedBox(
+            height: 10.0,
+          ),
+          virtualAccount!.financialInstitution!.name != null
+              ? Text(
+                  appendStringDot(
+                      virtualAccount!.financialInstitution!.name!, 25),
+                  maxLines: 1,
+                  style: TextStyle(
+                      fontSize: 16, color: white, fontWeight: FontWeight.w600),
+                )
+              : SizedBox.shrink(),
           Text(
             appendStringDot(virtualAccount!.accountNumber!, 15),
             maxLines: 1,
-            style: TextStyle(fontSize: 30, color: white, fontWeight: FontWeight.w700),
+            style: TextStyle(
+                fontSize: 30, color: white, fontWeight: FontWeight.w700),
           ),
           Text(
             appendStringDot(virtualAccount!.accountName!, 25),
             maxLines: 1,
-            style: TextStyle(fontSize: 16, color: white, fontWeight: FontWeight.w600),
+            style: TextStyle(
+                fontSize: 16, color: white, fontWeight: FontWeight.w600),
           ),
-
-
         ],
       ),
     );
@@ -373,17 +379,22 @@ class _QrCodePageState extends State<QrCodePage> {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName":
-            virtualAccount!.customerUsername!});
+            arguments: {"searchedUserName": virtualAccount!.customerUsername!});
       },
       child: Column(
         children: [
-          const SizedBox(height: 10.0,),
+          const SizedBox(
+            height: 10.0,
+          ),
           Text(
-            appendStringDot(virtualAccount == null ? '@${virtualAccount!.customerUsername!}' :
-            getGroupUsername('@${virtualAccount!.customerUsername!}'), 25),
+            appendStringDot(
+                virtualAccount == null
+                    ? '@${virtualAccount!.customerUsername!}'
+                    : getGroupUsername('@${virtualAccount!.customerUsername!}'),
+                25),
             maxLines: 1,
-            style: TextStyle(fontSize: 14, color: white, fontWeight: FontWeight.w600),
+            style: TextStyle(
+                fontSize: 14, color: white, fontWeight: FontWeight.w600),
           ),
           // userNameWithVerifiedIcon(
           //   name: searchedUser == null ? '@${userBloc.user.userName}' : '@${searchedUser!.userName!}',
@@ -394,11 +405,14 @@ class _QrCodePageState extends State<QrCodePage> {
           //       color: white,
           //       fontWeight: FontWeight.w600),
           // ),
-          const SizedBox(height: 10.0,),
+          const SizedBox(
+            height: 10.0,
+          ),
           Text(
             "SCAN TO PAY",
             maxLines: 1,
-            style: TextStyle(fontSize: 22, color: white, fontWeight: FontWeight.w700),
+            style: TextStyle(
+                fontSize: 22, color: white, fontWeight: FontWeight.w700),
           ),
         ],
       ),
@@ -409,24 +423,35 @@ class _QrCodePageState extends State<QrCodePage> {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName":
-            virtualAccount!.customerUsername!});
+            arguments: {"searchedUserName": virtualAccount!.customerUsername!});
       },
       child: Column(
         children: [
-          const SizedBox(height: 10.0,),
-
-          Text(
-            appendStringDot(virtualAccount == null ? '@${virtualAccount!.customerUsername!}' :
-            getGroupUsername('@${virtualAccount!.customerUsername!}'), 25),
-            maxLines: 1,
-            style: TextStyle(fontSize: 14, color: HexColor("#151515"), fontWeight: FontWeight.w600),
+          const SizedBox(
+            height: 10.0,
           ),
-          const SizedBox(height: 10.0,),
+          Text(
+            appendStringDot(
+                virtualAccount == null
+                    ? '@${virtualAccount!.customerUsername!}'
+                    : getGroupUsername('@${virtualAccount!.customerUsername!}'),
+                25),
+            maxLines: 1,
+            style: TextStyle(
+                fontSize: 14,
+                color: HexColor("#151515"),
+                fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(
+            height: 10.0,
+          ),
           Text(
             "SCAN TO PAY",
             maxLines: 1,
-            style: TextStyle(fontSize: 22, color: HexColor("#151515"), fontWeight: FontWeight.w700),
+            style: TextStyle(
+                fontSize: 22,
+                color: HexColor("#151515"),
+                fontWeight: FontWeight.w700),
           ),
         ],
       ),
@@ -451,7 +476,6 @@ class _QrCodePageState extends State<QrCodePage> {
       ),
     );
   }
-
 
   Widget menuIcon() {
     return RoundedBackgroundIcon(
@@ -484,7 +508,8 @@ class _QrCodePageState extends State<QrCodePage> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -496,17 +521,16 @@ class _QrCodePageState extends State<QrCodePage> {
   List<Widget> generateBottomSheetItem() {
     List<Widget> list = [];
 
-      list.add(
-        bottomSheetItem(
-          title: AppLocalization.of(context)!.share,
-          iconData: SlydoAppIcon.share,
-          onTap: () {
-            Navigator.pop(context);
-            shareQrCode();
-          },
-        ),
-      );
-
+    list.add(
+      bottomSheetItem(
+        title: AppLocalization.of(context)!.share,
+        iconData: SlydoAppIcon.share,
+        onTap: () {
+          Navigator.pop(context);
+          shareQrCode();
+        },
+      ),
+    );
 
     list.add(
       bottomSheetItem(
@@ -523,59 +547,72 @@ class _QrCodePageState extends State<QrCodePage> {
     return list;
   }
 
-   void shareQrCode()  async {
-     await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
-       if (image != null) {
-         final directory = await getApplicationDocumentsDirectory();
-         final imagePath = searchedUser == null ? await File('${directory.path}/${userBloc.user.displayName()!}.png').create()
-         : await File('${directory.path}/${searchedUser!.displayName()!}.png').create();
-         await imagePath.writeAsBytes(image);
+  void shareQrCode() async {
+    await screenshotController
+        .capture(delay: const Duration(milliseconds: 10))
+        .then((Uint8List? image) async {
+      if (image != null) {
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath = searchedUser == null
+            ? await File(
+                    '${directory.path}/${userBloc.user.displayName()!}.png')
+                .create()
+            : await File(
+                    '${directory.path}/${searchedUser!.displayName()!}.png')
+                .create();
+        await imagePath.writeAsBytes(image);
 
-         /// Share Plugin
-         await Share.shareFiles([imagePath.path]);
-       }
-     });
-
+        /// Share Plugin
+        await Share.shareFiles([imagePath.path]);
+      }
+    });
   }
 
-   void downloadQrCode()  async {
+  void downloadQrCode() async {
+    // Request external storage permission
+    var status = await Permission.storage.request();
 
-     // Request external storage permission
-     var status = await Permission.storage.request();
+    if (status.isGranted) {
+      showToast(message: 'Downloading QR Code');
 
-     if (status.isGranted) {
-       showToast(message: 'Downloading QR Code');
+      var freeSpace = await DiskSpace.getFreeDiskSpace;
 
-       var freeSpace = await DiskSpace.getFreeDiskSpace;
+      if (freeSpace != null && freeSpace > 10.00) {
+        await screenshotController
+            .capture(delay: const Duration(milliseconds: 10))
+            .then((Uint8List? image) async {
+          if (image != null) {
+            //download image
+            var path = await ExternalPath.getExternalStoragePublicDirectory(
+                ExternalPath.DIRECTORY_DOWNLOADS);
 
-       if (freeSpace != null && freeSpace > 10.00) {
-         await screenshotController
-             .capture(delay: const Duration(milliseconds: 10))
-             .then((Uint8List? image) async {
-           if (image != null) {
-             //download image
-             var path = await ExternalPath.getExternalStoragePublicDirectory(
-                 ExternalPath.DIRECTORY_DOWNLOADS);
+            final imagePath = searchedUser == null
+                ? await File(
+                        '$path/${userBloc.user.displayName()!} + ${getCurrentDate()}.png')
+                    .create()
+                : await File(
+                        '$path/${searchedUser!.displayName()!} + ${getCurrentDate()}.png')
+                    .create();
 
-             final imagePath =
-             searchedUser == null ? await File('$path/${userBloc.user.displayName()!} + ${getCurrentDate()}.png').create()
-             : await File('$path/${searchedUser!.displayName()!} + ${getCurrentDate()}.png').create();
+            await imagePath.writeAsBytes(image);
 
-             await imagePath.writeAsBytes(image);
+            await Future.delayed(Duration.zero);
 
-             await Future.delayed(Duration.zero);
-
-             showToast(message: 'Image downloaded to Download Folder on device storage');
-           }
-         });
-       } else {
-         showToast(message: 'The device\'s internal memory is full or the available space is unknown.');
-       }
-     } else if (status.isPermanentlyDenied) {
-       showToast(message: 'Please grant permission from device settings to access storage.');
-     }
-
-
+            showToast(
+                message:
+                    'Image downloaded to Download Folder on device storage');
+          }
+        });
+      } else {
+        showToast(
+            message:
+                'The device\'s internal memory is full or the available space is unknown.');
+      }
+    } else if (status.isPermanentlyDenied) {
+      showToast(
+          message:
+              'Please grant permission from device settings to access storage.');
+    }
   }
 
   getCurrentDate() {

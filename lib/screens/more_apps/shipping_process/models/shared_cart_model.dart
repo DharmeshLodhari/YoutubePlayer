@@ -59,8 +59,8 @@ class SharedCartModel {
         : SharedMetaData.fromJson(json["meta_data"]);
     members = json["members"] == null
         ? []
-        : List<SharedCartMemberModel>.from(json["members"]!
-            .map((x) => SharedCartMemberModel.fromJson(x, metaData)));
+        : List<SharedCartMemberModel>.from(json["members"]!.map(
+            (x) => SharedCartMemberModel.fromJson(x, mataDataJson: metaData)));
   }
 
   SharedCartModel copyWith({
@@ -111,23 +111,26 @@ class SharedCartModel {
       Variant? variant,
       List<AddOns>? addOns,
       bool withApiCall = true,
-      String? currentUser}) {
+      SharedCartMemberModel? currentUser,
+      bool replaceUpdatedBy = false}) {
     if (variant != null) {
-      addItemInBasketWithVariants(item, type, variant,
-          withApiCall: withApiCall);
+      addItemInBasketWithVariants(item, type, variant, currentUser,
+          withApiCall: withApiCall, replaceUpdatedBy: replaceUpdatedBy);
     } else if (addOns != null && addOns.isNotEmpty) {
-      addItemInBasketWithAddOns(item, type, addOns, withApiCall: withApiCall);
+      addItemInBasketWithAddOns(item, type, addOns, currentUser,
+          withApiCall: withApiCall, replaceUpdatedBy: replaceUpdatedBy);
     } else if (variant != null && addOns != null && addOns.isEmpty) {
       addItemInBasketWithQtyService(item, type, currentUser,
-          withApiCall: withApiCall);
+          withApiCall: withApiCall, replaceUpdatedBy: replaceUpdatedBy);
     } else {
       addItemInBasketWithQtyService(item, type, currentUser,
-          withApiCall: withApiCall);
+          withApiCall: withApiCall, replaceUpdatedBy: replaceUpdatedBy);
     }
   }
 
-  void addItemInBasketWithQtyService(var item, String type, String? currentUser,
-      {bool withApiCall = true}) {
+  void addItemInBasketWithQtyService(
+      var item, String type, SharedCartMemberModel? currentUser,
+      {bool withApiCall = true, bool replaceUpdatedBy = false}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
     BasketItem? addedOrUpdatedItem;
@@ -137,11 +140,16 @@ class SharedCartModel {
     _basketItems.forEach((element) {
       if (element.item?.id == item.id) {
         flag = true;
-        element.qty = int.parse(element.qty.toString()) + 1;
+
+        if (replaceUpdatedBy == true) {
+          (element.item as Product).itemAddedBy = item.itemAddedBy;
+          element.itemAddedBy = item.itemAddedBy;
+          element.qty = item.qty;
+        }
 
         if (withApiCall == true) {
-          (element.item as Product).getItemAddedByDetails(
-              currentUser, element.qty ?? 0,
+          element.qty = int.parse(element.qty.toString()) + 1;
+          (element.item as Product).getItemAddedByDetails(currentUser,
               actionType: BasketListModifierAction.increaseQty);
         }
 
@@ -152,13 +160,13 @@ class SharedCartModel {
 
     if (!flag) {
       if (withApiCall == true) {
-        (item as Product).getItemAddedByDetails(currentUser, item.qty ?? 0,
+        (item as Product).getItemAddedByDetails(currentUser,
             actionType: BasketListModifierAction.increaseQty);
       }
 
       BasketItem basketItem = BasketItem(
         item: item,
-        qty: item.qty,
+        qty: (item as Product).qty,
         type: type,
         itemAddedBy: item.itemAddedBy,
       );
@@ -179,9 +187,9 @@ class SharedCartModel {
     }
   }
 
-  void addItemInBasketWithVariants(
-      PurchasableItem item, String type, Variant variant,
-      {bool withApiCall = true}) {
+  void addItemInBasketWithVariants(PurchasableItem item, String type,
+      Variant variant, SharedCartMemberModel? currentUser,
+      {bool withApiCall = true, bool replaceUpdatedBy = false}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
     BasketItem? addedOrUpdatedItem;
@@ -189,6 +197,11 @@ class SharedCartModel {
     /// if there is no item in basket then we will add that directly with 1 qty
     /// else we will check if same item present then we will increase qty of already added basket item
     if (_basketItems.isEmpty) {
+      if (withApiCall == true) {
+        variant.getVariantAddedByDetails(currentUser,
+            actionType: BasketListModifierAction.increaseQty);
+      }
+
       BasketItem basketItem = BasketItem(
         type: type,
         item: item,
@@ -196,8 +209,9 @@ class SharedCartModel {
         variants: [variant],
       );
 
-      addedOrUpdatedItem = basketItem;
       _basketItems.add(basketItem);
+
+      addedOrUpdatedItem = basketItem;
     } else {
       bool isSameItemPresent = false;
 
@@ -212,9 +226,25 @@ class SharedCartModel {
             if (alreadyPresentProduct.id == newProduct.id) {
               if (variant.id == basketItem.variants?.first.id) {
                 if (basketItem.variants?.first.quantity != null) {
-                  basketItem.variants?.first.quantity =
-                      (basketItem.variants?.first.quantity ?? 1) + 1;
                   isSameItemPresent = true;
+
+                  if (replaceUpdatedBy == true) {
+                    for (Variant variant in newProduct.variantModels ?? []) {
+                      if (variant.id == basketItem.variants?.first.id) {
+                        basketItem.variants?.first.addedBy = variant.addedBy;
+                        basketItem.variants?.first.addedBy = variant.addedBy;
+                        // basketItem.variants?.first.quantity = variant.quantity;
+                      }
+                    }
+                  }
+
+                  if (withApiCall == true) {
+                    basketItem.variants?.first.quantity =
+                        (basketItem.variants?.first.quantity ?? 1) + 1;
+                    basketItem.variants?.first.getVariantAddedByDetails(
+                        currentUser,
+                        actionType: BasketListModifierAction.increaseQty);
+                  }
 
                   addedOrUpdatedItem = basketItem;
                   break;
@@ -232,8 +262,18 @@ class SharedCartModel {
 
       /// if same item is not present then we will add new basket item with qty 1
       if (isSameItemPresent == false) {
+        if (withApiCall == true) {
+          variant.getVariantAddedByDetails(currentUser,
+              actionType: BasketListModifierAction.increaseQty);
+        }
+
         BasketItem basketItem = BasketItem(
-            type: type, item: item, qty: variant.quantity, variants: [variant]);
+          type: type,
+          item: item,
+          qty: variant.quantity,
+          variants: [variant],
+        );
+
         addedOrUpdatedItem = basketItem;
         _basketItems.add(basketItem);
       }
@@ -250,9 +290,9 @@ class SharedCartModel {
     }
   }
 
-  void addItemInBasketWithAddOns(
-      PurchasableItem item, String type, List<AddOns>? addOns,
-      {bool withApiCall = true}) {
+  void addItemInBasketWithAddOns(PurchasableItem item, String type,
+      List<AddOns>? addOns, SharedCartMemberModel? currentUser,
+      {bool withApiCall = true, bool replaceUpdatedBy = false}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
     BasketItem? addedOrUpdatedItem;
@@ -277,6 +317,7 @@ class SharedCartModel {
                 (newProduct.addOnsModels?.isNotEmpty ?? false)) {
               for (AddOns newAddOn in newProduct.addOnsModels ?? []) {
                 bool isExistingAddOn = false;
+
                 for (AddOns oldAddOn
                     in alreadyPresentProduct.addOnsModels ?? []) {
                   if (oldAddOn.id == newAddOn.id) {
@@ -284,13 +325,22 @@ class SharedCartModel {
 
                     for (AddOnOption newOption in newAddOn.options ?? []) {
                       bool isExistingAddOnOptions = false;
+
                       for (AddOnOption oldOption in oldAddOn.options ?? []) {
                         if (oldOption.id == newOption.id) {
                           isExistingAddOnOptions = true;
 
-                          oldOption.quantity =
-                              oldOption.quantity + newOption.quantity;
-                          break;
+                          if (replaceUpdatedBy == true) {
+                            oldOption.addedBy = newOption.addedBy;
+                            oldOption.addedBy = newOption.addedBy;
+                            oldOption.quantity = newOption.quantity;
+                          }
+
+                          if (withApiCall == true) {
+                            oldOption.quantity =
+                                oldOption.quantity + newOption.quantity;
+                            break;
+                          }
                         }
                       }
 
@@ -308,6 +358,55 @@ class SharedCartModel {
                 }
               }
             }
+
+            if (replaceUpdatedBy == true) {
+              (basketItem.item as Product).itemAddedBy = item.itemAddedBy;
+              basketItem.itemAddedBy = item.itemAddedBy;
+              basketItem.qty = item.qty;
+            }
+
+            if (withApiCall == true) {
+              Product presentProduct = (basketItem.item as Product);
+
+              for (AddOns addOn in addOns ?? []) {
+                for (AddOns presentAddOn in presentProduct.addOnsModels ?? []) {
+                  bool isAddOnExist = false;
+
+                  if (presentAddOn.id == addOn.id) {
+                    isAddOnExist = true;
+
+                    bool isAddOnOptionExist = false;
+                    for (AddOnOption addOnOptions in addOn.options ?? []) {
+                      for (AddOnOption presentAddOnOptions
+                          in presentAddOn.options ?? []) {
+                        if (presentAddOnOptions.id == addOnOptions.id) {
+                          isAddOnOptionExist = true;
+
+                          presentAddOnOptions.getAddOnOptionAddedByDetails(
+                              currentUser,
+                              actionType: BasketListModifierAction.increaseQty);
+                          break;
+                        }
+                      }
+
+                      if (isAddOnOptionExist == false) {
+                        addOnOptions.getAddOnOptionAddedByDetails(currentUser,
+                            actionType: BasketListModifierAction.increaseQty);
+                        presentAddOn.options?.add(addOnOptions);
+                      }
+                    }
+
+                    if (isAddOnExist == false) {
+                      presentProduct.addOnsModels?.add(addOn);
+                    }
+                  }
+                }
+              }
+
+              presentProduct.getItemAddedByDetails(currentUser,
+                  actionType: BasketListModifierAction.increaseQty);
+            }
+
             addedOrUpdatedItem = basketItem;
             break;
           }
@@ -322,8 +421,25 @@ class SharedCartModel {
 
     /// if same item is not present then we will add new basket item with qty 1
     if (isSameItemPresent == false) {
+      if (withApiCall == true) {
+        (item as Product).getItemAddedByDetails(currentUser,
+            actionType: BasketListModifierAction.increaseQty);
+
+        for (AddOns addOn in addOns ?? []) {
+          for (AddOnOption option in addOn.options ?? []) {
+            option.getAddOnOptionAddedByDetails(currentUser,
+                actionType: BasketListModifierAction.increaseQty);
+          }
+        }
+      }
+
       BasketItem basketItem = BasketItem(
-          type: type, item: item, qty: (item as Product).qty, addOns: addOns);
+          type: type,
+          item: item,
+          qty: (item as Product).qty,
+          addOns: addOns,
+          itemAddedBy: item.itemAddedBy);
+
       addedOrUpdatedItem = basketItem;
       _basketItems.add(basketItem);
     }
@@ -340,7 +456,10 @@ class SharedCartModel {
   }
 
   void increaseQty(
-      {Product? currentProduct, BasketItem? data, bool withApiCall = true}) {
+      {Product? currentProduct,
+      BasketItem? data,
+      SharedCartMemberModel? currentUser,
+      bool withApiCall = true}) async {
     if (currentProduct != null) {
       for (BasketItem item in _basketItems) {
         if (item.item?.id == currentProduct.id) {
@@ -364,6 +483,12 @@ class SharedCartModel {
                 variant.quantity = (variant.quantity ?? 0) + 1;
                 basketItem.qty = (basketItem.qty ?? 0) + 1;
 
+                if (withApiCall == true) {
+                  basketItem.variants?.first.getVariantAddedByDetails(
+                      currentUser,
+                      actionType: BasketListModifierAction.increaseQty);
+                }
+
                 addedOrUpdatedItem = basketItem;
                 break;
               }
@@ -384,6 +509,19 @@ class SharedCartModel {
             }
             basketItem.qty = (basketItem.qty ?? 0) + 1;
             product.qty = (product.qty ?? 0) + 1;
+
+            if (withApiCall == true) {
+              (basketItem.item as Product).getItemAddedByDetails(currentUser,
+                  actionType: BasketListModifierAction.increaseQty);
+
+              for (AddOns addOn in basketItem.addOns ?? []) {
+                for (AddOnOption option in addOn.options ?? []) {
+                  option.getAddOnOptionAddedByDetails(currentUser,
+                      actionType: BasketListModifierAction.increaseQty);
+                }
+              }
+            }
+
             addedOrUpdatedItem = basketItem;
             break;
           }
@@ -396,6 +534,10 @@ class SharedCartModel {
             basketItem.qty = (basketItem.qty ?? 0) + 1;
             product.qty = (product.qty ?? 0) + 1;
 
+            if (withApiCall == true) {
+              (basketItem.item as Product).getItemAddedByDetails(currentUser,
+                  actionType: BasketListModifierAction.increaseQty);
+            }
             addedOrUpdatedItem = basketItem;
             break;
           }
@@ -414,7 +556,10 @@ class SharedCartModel {
   }
 
   void decreaseQty(
-      {Product? currentProduct, BasketItem? data, bool withApiCall = true}) {
+      {Product? currentProduct,
+      BasketItem? data,
+      SharedCartMemberModel? currentUser,
+      bool withApiCall = true}) async {
     if (currentProduct != null) {
       for (BasketItem item in _basketItems) {
         if (item.item?.id == currentProduct.id) {
@@ -437,6 +582,13 @@ class SharedCartModel {
               if (variant.id == data?.variants?.first.id) {
                 variant.quantity = (variant.quantity ?? 0) - 1;
                 basketItem.qty = (basketItem.qty ?? 0) - 1;
+
+                if (withApiCall == true) {
+                  basketItem.variants?.first.getVariantAddedByDetails(
+                      currentUser,
+                      actionType: BasketListModifierAction.decreaseQty);
+                }
+
                 addedOrUpdatedItem = basketItem;
                 break;
               }
@@ -457,6 +609,11 @@ class SharedCartModel {
             // }
             basketItem.qty = (basketItem.qty ?? 0) - 1;
             product.qty = (product.qty ?? 0) - 1;
+
+            if (withApiCall == true) {
+              (basketItem.item as Product).getItemAddedByDetails(currentUser,
+                  actionType: BasketListModifierAction.decreaseQty);
+            }
             addedOrUpdatedItem = basketItem;
             break;
           }
@@ -468,6 +625,11 @@ class SharedCartModel {
 
             basketItem.qty = (basketItem.qty ?? 0) - 1;
             product.qty = (product.qty ?? 0) - 1;
+
+            if (withApiCall == true) {
+              (basketItem.item as Product).getItemAddedByDetails(currentUser,
+                  actionType: BasketListModifierAction.decreaseQty);
+            }
 
             addedOrUpdatedItem = basketItem;
             break;
@@ -596,28 +758,23 @@ class SharedCartModel {
 class SharedCartMemberModel {
   String? userName;
   String? avatar;
-  bool? isVerified;
   String? fullName;
-  String? accountType;
   double? percentageValue = 0;
   int? paymentValue = 0;
 
   SharedCartMemberModel({
     this.userName,
     this.avatar,
-    this.isVerified,
     this.fullName,
-    this.accountType,
     this.percentageValue = 0,
     this.paymentValue = 0,
   });
 
-  SharedCartMemberModel.fromJson(dynamic json, SharedMetaData? mataDataJson) {
+  SharedCartMemberModel.fromJson(Map<String, dynamic> json,
+      {SharedMetaData? mataDataJson}) {
     userName = json['username'];
     avatar = json['avatar'];
-    isVerified = json['is_verified'];
     fullName = json['full_name'];
-    accountType = json['account_type'];
     if (mataDataJson != null) {
       List<UserData>? userData = mataDataJson.userData
               ?.where((element) => element.username == userName)
@@ -634,15 +791,15 @@ class SharedCartMemberModel {
     final map = <String, dynamic>{};
     map['username'] = userName;
     map['avatar'] = avatar;
-    map['is_verified'] = isVerified;
     map['full_name'] = fullName;
-    map['account_type'] = accountType;
     return map;
   }
 
   UserFollowers toUserFollowerModel() {
     UserFollowers userFollowers = UserFollowers();
+    userFollowers.userName = userName;
     userFollowers.avatar = avatar;
+    userFollowers.fullName = fullName;
     return userFollowers;
   }
 }

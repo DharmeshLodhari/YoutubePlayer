@@ -17,6 +17,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/util.dart';
@@ -941,7 +942,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(newString)! ?? '',
+      text: messageDecoderWithEmoji(newString)!,
       style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
       // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,

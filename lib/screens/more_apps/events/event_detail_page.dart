@@ -2,7 +2,6 @@ import 'package:Slydo/screens/more_apps/events/event_auth.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
 import 'package:Slydo/screens/more_apps/events/models/EventDetailItem.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';

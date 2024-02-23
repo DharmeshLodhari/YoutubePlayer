@@ -1,15 +1,11 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/flash_tags/flash_tag_alert_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-
 import 'package:flutter/material.dart';
 
 class AddEditFlashTagAlert extends StatefulWidget {
@@ -206,49 +202,48 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: flashTagCategory.map<Widget>((category) {
-                              if (flashTagAlertModel.type?.toString() ==
-                                  category.toString()) {
-                                return Container(
-                                  color: selectedListItemBackgroundBlue,
-                                  child: ListTile(
-                                    dense: true,
-                                    title: Text(
-                                      category.toString(),
-                                      overflow: TextOverflow.fade,
-                                      softWrap: false,
-                                      style: TextStyle(
-                                          color: navyBlue,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    trailing: Icon(
-                                      SlydoAppIcon.checked,
-                                      color: navyBlue,
-                                      size: 12,
-                                    ),
-                                    onTap: () {
-                                      Navigator.pop(context, category);
-                                    },
-                                  ),
-                                );
-                              }
-                              return ListTile(
+                          if (flashTagAlertModel.type?.toString() ==
+                              category.toString()) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
                                 title: Text(
                                   category.toString(),
-                                  softWrap: false,
                                   overflow: TextOverflow.fade,
+                                  softWrap: false,
                                   style: TextStyle(
-                                      color: blackFont,
+                                      color: navyBlue,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w400),
+                                      fontWeight: FontWeight.w600),
                                 ),
-                                dense: true,
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
                                 onTap: () {
                                   Navigator.pop(context, category);
                                 },
-                              );
-                            }).toList() ??
-                            [],
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              category.toString(),
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, category);
+                            },
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),

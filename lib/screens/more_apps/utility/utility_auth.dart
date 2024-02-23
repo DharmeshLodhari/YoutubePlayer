@@ -1,15 +1,14 @@
 import 'dart:convert';
+
 import 'package:Slydo/screens/more_apps/utility/models/bill_payment_model.dart';
 import 'package:Slydo/screens/more_apps/utility/models/provider_product_model.dart';
 import 'package:Slydo/screens/more_apps/utility/models/utility_transaction_model.dart';
-
-import 'models/provider_model.dart';
-
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 
 import '../../../data/environment.dart';
 import '../../../utils/enums.dart';
+import 'models/provider_model.dart';
 
 class UtilityAuth extends AuthService {
   Future<Map<String, dynamic>?> getUtilityProviderList(
@@ -17,7 +16,7 @@ class UtilityAuth extends AuthService {
       {required UtilitiesProvidersEnum providerEnum}) async {
     String utilitiesProvider = enumToString(providerEnum);
 
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -80,7 +79,7 @@ class UtilityAuth extends AuthService {
 
   Future<Map<String, dynamic>?> getUtilityTransactions(
       String? next, String? previous) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }

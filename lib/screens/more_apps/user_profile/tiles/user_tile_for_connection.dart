@@ -14,7 +14,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../routes/route_constants.dart';
 import '../screens/user_profile_module_new/profile_template/utils.dart';
 
 // ignore: must_be_immutable
@@ -38,7 +37,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       try {
         if (mounted) {
           mainSocketProvider =

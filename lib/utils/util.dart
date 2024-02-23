@@ -2536,7 +2536,7 @@ Widget userImageUserInitialsPic(
 
 bool canSendMoney(int? amount, String? limit) {
   // virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!
-  return amount! <= int.parse("500000" ?? "0");
+  return amount! <= int.parse("500000");
 }
 
 Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {

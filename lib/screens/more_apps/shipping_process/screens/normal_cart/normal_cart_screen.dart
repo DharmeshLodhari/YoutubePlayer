@@ -1,8 +1,5 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/data/state_notifiers/basket_bloc.dart';
-import 'package:Slydo/data/state_notifiers/shipping_process_bloc.dart';
-import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -11,7 +8,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -355,12 +351,12 @@ class NormalCartScreenState extends State<NormalCartScreen> {
               //       List<Map<String, dynamic>>.from(itemAddOn.options);
 
               for (var option in itemAddOn.options!) {
-                int AddOnOptionPrice = int.parse(option.price.toString()) ?? 0;
-                int quantity = option.quantity ?? 0;
+                int AddOnOptionPrice = int.parse(option.price.toString());
+                int quantity = option.quantity;
                 AddOnTotal += AddOnOptionPrice * quantity;
               }
 
-              int price = int.parse(product.price.toString()) ?? 0;
+              int price = int.parse(product.price.toString());
               int quantity = item['qty'] ?? 0;
               int priceQuantity = price * quantity;
               totalPrice += AddOnTotal + priceQuantity;
@@ -374,7 +370,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
           if (product.variantModels!.isNotEmpty) {
             for (var variant in product.variantModels!) {
               // if(variant['quantity'] != null || variant['price'] != null){
-              int variantPrice = int.parse(variant.price.toString()) ?? 0;
+              int variantPrice = int.parse(variant.price.toString());
               int quantity = variant.quantity ?? 0;
               itemTotal += variantPrice * quantity;
               // }

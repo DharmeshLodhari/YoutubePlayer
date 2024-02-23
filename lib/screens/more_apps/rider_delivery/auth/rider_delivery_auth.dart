@@ -10,7 +10,7 @@ class RiderDeliveryAuthService extends AuthService {
   //get rider job list
   Future<Map<String, dynamic>?> getJobListing(
       String? next, String? previous) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -55,7 +55,7 @@ class RiderDeliveryAuthService extends AuthService {
   // Fetch a job
   Future<DeliveryModel?> fetchJob(String? jobId) async {
     try {
-      var url = "${AppConfig.baseUrl}/api/v1/shipping/journeys/$jobId/";
+      String url = "${AppConfig.baseUrl}/api/v1/shipping/journeys/$jobId/";
 
       debugPrint('Fetch Job URL ---> $url');
 
@@ -82,65 +82,116 @@ class RiderDeliveryAuthService extends AuthService {
 
   // Accept Offer
   Future<bool> acceptOffer(String? jobId) async {
-    var url =
+    if (jobId == null) {
+      return false;
+    }
+    String url =
         AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/accept-offer/";
     var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
-    print('Accept jobber...${response.body} and ${response.statusCode}');
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return true;
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
     }
-    return false;
   }
 
   // Reject Offer
   Future<bool> rejectOffer(String? jobId) async {
-    var url =
+    if (jobId == null) {
+      return false;
+    }
+    String url =
         AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/reject-offer/";
     var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
-    print('Reject jobber...${response.body} and ${response.statusCode}');
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return true;
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
     }
-    return false;
   }
 
   // Start Journey
   Future<bool> startJourney(String? jobId) async {
-    var url =
+    if (jobId == null) {
+      return false;
+    }
+    String url =
         AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/start-offer/";
     var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
-    print('Start jobber...${response.body} and ${response.statusCode}');
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return true;
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
     }
-    return false;
   }
 
   // End Journey
   Future<bool> endJourney(String? jobId) async {
-    var url = AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/end-offer/";
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
-    print('End jobber...${response.body} and ${response.statusCode}');
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return true;
+    if (jobId == null) {
+      return false;
     }
-    return false;
+    String url =
+        AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/end-offer/";
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
   }
 
   // Cancel Journey
   Future<bool> cancelJourney(String? jobId) async {
-    var url =
+    if (jobId == null) {
+      return false;
+    }
+    String url =
         AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/cancel-offer/";
     var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
-    print('Cancel jobber...${response.body} and ${response.statusCode}');
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return true;
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
     }
-    return false;
   }
 }

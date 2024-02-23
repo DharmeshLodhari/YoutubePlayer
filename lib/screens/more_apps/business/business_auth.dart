@@ -16,7 +16,7 @@ class BusinessAuth extends AuthService {
   //get all contract list
   Future<Map<String, dynamic>?> getContractList(String? next,
       {ContractStatus? contractStatus, required bool isContractor}) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -67,7 +67,8 @@ class BusinessAuth extends AuthService {
   }
 
   Future<ContractModel> getContract(String id) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
+    String url =
+        AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -84,7 +85,7 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> acceptContract({required int contractId}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/transactions/payment-contract/accepted/$contractId";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -97,7 +98,7 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> cancelOrRejectContract({required int contractId}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/transactions/payment-contract/reject-or-cancel/$contractId/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -110,7 +111,8 @@ class BusinessAuth extends AuthService {
   }
 
   Future<String?> getConversationId({required String name}) async {
-    var url = AppConfig.baseUrl + "/api/v1/user/contacts/get-conversation-id/";
+    String url =
+        AppConfig.baseUrl + "/api/v1/user/contacts/get-conversation-id/";
 
     var data = {"contact": name};
 
@@ -129,7 +131,7 @@ class BusinessAuth extends AuthService {
 
   Future<Map<String, dynamic>?> getContractTransactions(
       String? next, String? previous, bool moneyIn, bool moneyOut) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -194,7 +196,7 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> addContract(Map data) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
+    String url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
     var headers = await getAuthHeaders();
 
     var _data = jsonEncode(data);
@@ -210,7 +212,8 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> updateContract({String? id, Map? data}) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
+    String url =
+        AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
@@ -227,7 +230,7 @@ class BusinessAuth extends AuthService {
   //get all invoice list
   Future<Map<String, dynamic>?> getInvoiceList(String? next, String? previous,
       {InvoiceStatus? invoiceStatus, required bool isSender}) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }

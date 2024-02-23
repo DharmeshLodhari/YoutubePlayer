@@ -179,7 +179,7 @@ class __ScaffoldBodyState extends State<_ScaffoldBody> {
       assignMarkers();
     }
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         // render the floating button on widget
         _fabPosition = _initialSheetChildSize * context.size!.height;

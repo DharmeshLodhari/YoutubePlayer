@@ -35,7 +35,7 @@ class _StartupScreenState extends State<StartupScreen> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
           isIntroDone = arguments != null ? arguments['isIntroDone'] : false;

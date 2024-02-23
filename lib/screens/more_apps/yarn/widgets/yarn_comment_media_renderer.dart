@@ -7,7 +7,6 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_single_media_preview.d
 import 'package:flutter/material.dart';
 import 'package:swipe_image_gallery/swipe_image_gallery.dart';
 
-import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
 
 class YarnCommentMediaRender extends StatefulWidget {

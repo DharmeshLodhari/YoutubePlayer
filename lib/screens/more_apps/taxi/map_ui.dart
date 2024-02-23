@@ -107,7 +107,7 @@ class _MapUIState extends State<MapUI> {
               taxiBloc.startingPoint!.geometry!.location!.lng!),
           zoom: 14.5);
 
-      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         Future.delayed(Duration(seconds: 1)).then((value) {
           if (mounted) {
             googleMapController!.animateCamera(CameraUpdate.newLatLngBounds(

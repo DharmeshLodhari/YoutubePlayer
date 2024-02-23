@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
+
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/applicant_list_model.dart';
@@ -19,7 +19,7 @@ class ServiceHubAuthService extends AuthService {
     String? next,
     String? previous,
   ) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -80,7 +80,7 @@ class ServiceHubAuthService extends AuthService {
   // get active job listing
   Future<ActiveJobListing?> getActiveJobListing(String? next, String? previous,
       {String? category, search, sortby, priceFrom, priceTo, location}) async {
-    var url = "/api/v1/job-service/listing/?";
+    String url = "/api/v1/job-service/listing/?";
     if (next == null) {
       return null;
     }
@@ -125,7 +125,7 @@ class ServiceHubAuthService extends AuthService {
   //get my job list
   Future<MyJobList?> getMyJobListing(String? next, String? previous,
       {String? myJobType, String? userId}) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -159,7 +159,7 @@ class ServiceHubAuthService extends AuthService {
     String? next,
     String? previous,
   ) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -187,7 +187,7 @@ class ServiceHubAuthService extends AuthService {
   Future<List<JobApplicantModel>?> getApplicantListData(
       String? next, String? previous,
       {String? jobId}) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -220,7 +220,7 @@ class ServiceHubAuthService extends AuthService {
 
   // accept applicant for the job
   Future<dynamic> acceptJobApplicant({String? jobId, Map? data}) async {
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/accept-job-applicant/";
     var _data = jsonEncode(data);
     debugPrint('ACCEPT JOB APPLICANT ::: $_data');
@@ -241,14 +241,13 @@ class ServiceHubAuthService extends AuthService {
 
   // rate and review contractor
   Future<dynamic> rateAndReviewContrator({String? jobId, Map? data}) async {
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/rate-contractor/";
     var _data = jsonEncode(data);
     debugPrint('ACCEPT JOB APPLICANT ::: $_data');
 
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
 
     debugPrint(
         "REVIEW AND RATE URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -263,7 +262,7 @@ class ServiceHubAuthService extends AuthService {
 
   // get rate and review contractor detail
   Future<dynamic> rateAndReviewContratorDetail({String? jobId}) async {
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/user-ratings/";
 
     var headers = await getAuthHeaders();
@@ -271,7 +270,6 @@ class ServiceHubAuthService extends AuthService {
       url,
       headers: headers,
     );
-    var jsonData = jsonDecode(response.body);
 
     debugPrint(
         "REVIEW AND RATE URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -286,14 +284,13 @@ class ServiceHubAuthService extends AuthService {
 
   // reject applicant for the job
   Future<dynamic> rejectJobApplicant({String? jobId, Map? data}) async {
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/reject-job-applicant/";
     var _data = jsonEncode(data);
     debugPrint('ACCEPT JOB APPLICANT ::: $_data');
 
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
 
     debugPrint(
         "ACCEPT JOB APPLICANT URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -309,7 +306,7 @@ class ServiceHubAuthService extends AuthService {
   Future<JobModel?> createJobRequest(Map _data) async {
     // print('actived $_data');
     var headers = await getAuthHeaders();
-    var url = "${AppConfig.baseUrl}/api/v1/job-service/job/";
+    String url = "${AppConfig.baseUrl}/api/v1/job-service/job/";
     // var _data = jsonEncode(data.toString());
     // debugPrint('PLACE DATA ::: $_data');
     _data["picture_count"] = _data['localImages'].length;
@@ -364,7 +361,7 @@ class ServiceHubAuthService extends AuthService {
   Future<JobModel?> editMyJob(Map _data, {required String jobId}) async {
     // print('actived $_data');
     var headers = await getAuthHeaders();
-    var url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
+    String url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
     // var _data = jsonEncode(data.toString());
     // debugPrint('PLACE DATA ::: $_data');
     _data["picture_count"] = _data['localImages'].length;
@@ -424,14 +421,14 @@ class ServiceHubAuthService extends AuthService {
   // retrieve job
   Future<JobModel?> retreiveJob({String? jobId}) async {
     try {
-      var url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
+      String url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
 
       debugPrint('RETREIVE Job URL ---> $url');
 
       var headers = await getAuthHeaders();
       var response = await httpGet(url, headers: headers);
       debugPrint('RETREIVE Job LISTING URL BODY ---> ${response.body}');
-  
+
       print(response.statusCode);
       if (response.statusCode == 200) {
         return JobModel.fromJson(json.decode(response.body));
@@ -452,7 +449,8 @@ class ServiceHubAuthService extends AuthService {
   // retrieve listed job job
   Future<ActiveListingData?> retreiveListedJob({String? listingId}) async {
     try {
-      var url = "${AppConfig.baseUrl}/api/v1/job-service/listing/$listingId/";
+      String url =
+          "${AppConfig.baseUrl}/api/v1/job-service/listing/$listingId/";
       debugPrint('RETREIVE Job URL ---> $url');
 
       var headers = await getAuthHeaders();
@@ -476,7 +474,7 @@ class ServiceHubAuthService extends AuthService {
 
   // create listing job
   Future<dynamic> createListing(Map data) async {
-    var url = "${AppConfig.baseUrl}/api/v1/job-service/listing/";
+    String url = "${AppConfig.baseUrl}/api/v1/job-service/listing/";
     var _data = jsonEncode(data);
     debugPrint('CREATE LISTING ::: $_data');
 
@@ -499,7 +497,7 @@ class ServiceHubAuthService extends AuthService {
   Future<bool> removeJobListing(String? listingId) async {
     var data = {"is_active": false};
     var _data = jsonEncode(data);
-    var url =
+    String url =
         AppConfig.baseUrl + "/api/v1/job-service/listing/" + listingId! + '/';
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers, body: _data);
@@ -513,7 +511,7 @@ class ServiceHubAuthService extends AuthService {
 
   // end job
   Future<bool> endJob(String? jobId) async {
-    var url = AppConfig.baseUrl + "/api/v1/job-service/job/$jobId/end-job/";
+    String url = AppConfig.baseUrl + "/api/v1/job-service/job/$jobId/end-job/";
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers);
     print('end jobber...${response.body} and ${response.statusCode}');
@@ -524,7 +522,7 @@ class ServiceHubAuthService extends AuthService {
   }
 
   Future<dynamic> applyForJob(Map data, {String? jobId}) async {
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/apply-for-job/";
     var _data = jsonEncode(data);
     debugPrint('APPLY FOR JOB  ::: $_data');
@@ -546,7 +544,7 @@ class ServiceHubAuthService extends AuthService {
 
   // cancel application
   Future<dynamic> cancelApplicationForJob(Map data, {String? jobId}) async {
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/cancel-application/";
     var _data = jsonEncode(data);
     debugPrint('CANCEL FOR JOB  ::: $_data and $jobId');
@@ -568,7 +566,7 @@ class ServiceHubAuthService extends AuthService {
 
   // delete My job
   Future<bool> deleteMyJob(String jobId) async {
-    var url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
+    String url = "${AppConfig.baseUrl}/api/v1/job-service/job/$jobId/";
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
@@ -577,14 +575,13 @@ class ServiceHubAuthService extends AuthService {
     if (response.statusCode == 204) {
       return true;
     } else {
-      var jsonData = json.decode(response.body);
       return false;
     }
   }
 
   // delete My job server images
   Future<bool> deleteJobServerImage({String? pictureId, String? jobId}) async {
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/job-service/job/${jobId!}/delete-picture/${pictureId!}/";
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
@@ -613,7 +610,7 @@ class ServiceHubAuthService extends AuthService {
   //search my job list
   Future<MyJobList?> searchMyJobListing(String? next, String? previous,
       String? username, String? searchText) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }

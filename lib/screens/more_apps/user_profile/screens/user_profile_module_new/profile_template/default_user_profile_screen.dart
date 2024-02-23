@@ -61,7 +61,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     var orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
-    if (result != null && result is Map<String, dynamic>) {
+    if (result != null) {
       orderingList = searchedUser!.profileMenu!.ordering!;
       // Iterate through the JSON object and filter boolean values
       result.forEach((key, value) {
@@ -78,19 +78,20 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
       }
     }
 
-
     // Create a list of keys not in 'ordering'
-    var remainingKeys = boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
+    var remainingKeys =
+        boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
 
     // Add the remaining keys to orderedKeys to ensure they are at the end
     orderedKeys.addAll(remainingKeys);
 
     // Create a new map with the ordered keys
-    reorderedBoolMap = Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
+    reorderedBoolMap =
+        Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
 
     // Iterate through the JSON object and add tabs for boolean values that are true
     reorderedBoolMap.forEach((key, value) {
-      if (value is bool && value) {
+      if (value) {
         // Add the tab
         addTab(key, capitalizeAndRemoveUnderscores(key));
       }
@@ -250,8 +251,8 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
             isLoading: widget.isLoading,
             isShrink: isShrink,
             scrollController: scrollController,
-            callback: (val){
-                refreshTabs(val);
+            callback: (val) {
+              refreshTabs(val);
             },
           ),
           SliverPersistentHeader(
@@ -306,7 +307,6 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
                 _tabController?.index == tabIndex ? white : HexColor("#78797A"),
             fontSize: 14,
             fontFamily: "Inter",
-
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -361,7 +361,6 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
   }
 
   refreshTabs(Map<String, bool> val) {
-
     if (compareMaps(reorderedBoolMap, val)) {
       debugPrint('The maps are equal.');
     } else {
@@ -371,7 +370,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
       userTabs.clear();
       // Iterate through the JSON object and add tabs for boolean values that are true
       val.forEach((key, value) {
-        if (value is bool && value) {
+        if (value) {
           // Add the tab
           addTab(key, capitalizeAndRemoveUnderscores(key));
         }
@@ -402,8 +401,6 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
 
       if (mounted) setState(() {});
       _tabController!.animateTo(0);
-
     }
-
   }
 }

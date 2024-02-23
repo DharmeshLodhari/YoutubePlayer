@@ -3,7 +3,6 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../../utils/colors.dart';
 import '../../../utils/util.dart';
 import '../../../widget/loading_indicator.dart';
 import 'models/provider_model.dart';

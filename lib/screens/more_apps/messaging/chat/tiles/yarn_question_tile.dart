@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../../main.dart';
+
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/util.dart';
@@ -391,7 +391,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             height: 5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(removedLink)! ?? '',
+            text: messageDecoderWithEmoji(removedLink)!,
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
             // atStyle: TextStyle(
@@ -473,7 +473,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(removedLink)! ?? '',
+      text: messageDecoderWithEmoji(removedLink)!,
       style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
       // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,
@@ -889,7 +889,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             height: 5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(newString)! ?? '',
+            text: messageDecoderWithEmoji(newString)!,
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
             // atStyle: TextStyle(
@@ -960,7 +960,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(newString)! ?? '',
+      text: messageDecoderWithEmoji(newString)!,
       style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
       // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,
@@ -1158,11 +1158,11 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
   Widget getDisplayWidget(Function() widgetDisplay) {
     if (yarn.isSensitiveContent == true &&
-        _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
+        _yarnSettings.yarnSettings.allowSensitiveContent == false) {
       return _buildSensitiveContentWidget();
     }
     if (yarn.isAdultContent == true &&
-        _yarnSettings.yarnSettings?.allowAdultContent == false) {
+        _yarnSettings.yarnSettings.allowAdultContent == false) {
       return _buildAdultContentWidget();
     }
     return widgetDisplay();

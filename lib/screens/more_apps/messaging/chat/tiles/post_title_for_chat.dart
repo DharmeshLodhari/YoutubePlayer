@@ -17,7 +17,7 @@ import '../../../user_post/models/user_post.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 
 class PostTileForChat extends StatefulWidget {
-  Map<String, dynamic>? message;
+  final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
   PostTileForChat(

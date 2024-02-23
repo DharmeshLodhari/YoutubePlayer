@@ -39,6 +39,7 @@ class MessageSoundPlayer {
         return messageData["author"];
       }
     }
+    return null;
   }
 
   String? determineSoundType({required Map<String, dynamic> messageData}) {

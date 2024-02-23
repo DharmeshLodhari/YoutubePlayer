@@ -252,7 +252,7 @@ class _EditProductState extends State<EditProduct> {
           widthController.text = currentProduct.width != 0.0
               ? currentProduct.width.toString()
               : '';
-          inventoryCount = currentProduct.quantity! ?? 0;
+          inventoryCount = currentProduct.quantity!;
           inventoryCountController.text = inventoryCount.toString();
 
           //convert list to variant

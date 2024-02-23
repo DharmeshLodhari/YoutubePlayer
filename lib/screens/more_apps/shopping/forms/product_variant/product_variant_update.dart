@@ -867,7 +867,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                           child: ListTile(
                             dense: true,
                             title: Text(
-                              category.toName() ?? "",
+                              category.toName(),
                               overflow: TextOverflow.fade,
                               softWrap: false,
                               style: TextStyle(
@@ -890,7 +890,7 @@ class _ProductVariantUpdateState extends State<ProductVariantUpdate> {
                       }
                       return ListTile(
                         title: Text(
-                          category.toName() ?? "",
+                          category.toName(),
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(

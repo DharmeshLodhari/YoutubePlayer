@@ -31,7 +31,7 @@ class SharedCartAuthService extends AuthService {
   //List Shared Shopping Carts
   Future<Map<String, dynamic>?> getSharedCartList(
       String? next, String? previous) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -173,7 +173,7 @@ class SharedCartAuthService extends AuthService {
   }
 
   Future<SharedCartModel> getCartDetails(String? cartId) async {
-    var url = "${AppConfig.baseUrl}/api/v1/shopping-cart/$cartId/";
+    String url = "${AppConfig.baseUrl}/api/v1/shopping-cart/$cartId/";
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers)
@@ -191,7 +191,7 @@ class SharedCartAuthService extends AuthService {
   //List Shared cart Items
   Future<Map<String, dynamic>?> getCartItemDetails(
       String? cartId, String? next, String? previous) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -337,63 +337,120 @@ class SharedCartAuthService extends AuthService {
     return items;
   }
 
-  Future<bool> addItemToSharedCart(String? cart_id, Map data) async {
-    var url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/add-item-to-shared-cart/$cart_id/";
-    var _data = jsonEncode(data);
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
+  Future<bool> addItemToSharedCart(String? cartId, Map data) async {
+    if (cartId == null) {
+      return false;
     }
-    return false;
-  }
-
-  Future<bool> removeItemFromSharedCart(String? cart_id, Map data) async {
-    var url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/remove-item-from-shared-cart/$cart_id/";
-    var _data = jsonEncode(data);
+    String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/add-item-to-shared-cart/$cartId/";
+    var requestData = jsonEncode(data);
     var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
-    } else
+
+    try {
+      var response = await httpPatch(url, headers: headers, body: requestData);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
       return false;
-  }
-
-  Future<bool> addMemberToSharedCart(String? cart_id, Map data) async {
-    var url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/add-members-to-shared-shopping-cart/$cart_id/";
-    var _data = jsonEncode(data);
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
-    } else
-      return false;
-  }
-
-  Future<bool> removeMemberFromSharedCart(String? cart_id, Map data) async {
-    var url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/remove-members-from-shared-shopping-cart/$cart_id/";
-    var _data = jsonEncode(data);
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
-    } else
-      return false;
-  }
-
-  Future<bool> requestPayment(String? cart_id, Map data) async {
-    var url = AppConfig.baseUrl +
-        "/api/v1/shopping-cart/update-cart-meta-data-shared-shopping-cart/$cart_id/";
-    var _data = jsonEncode(data);
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
-      return true;
     }
-    return false;
+  }
+
+  Future<bool> removeItemFromSharedCart(String? cartId, Map data) async {
+    if (cartId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/remove-item-from-shared-cart/$cartId/";
+    var requestData = jsonEncode(data);
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers, body: requestData);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
+  }
+
+  Future<bool> addMemberToSharedCart(String? cartId, Map data) async {
+    if (cartId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/add-members-to-shared-shopping-cart/$cartId/";
+    var requestData = jsonEncode(data);
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers, body: requestData);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
+  }
+
+  Future<bool> removeMemberFromSharedCart(String? cartId, Map data) async {
+    if (cartId == null) {
+      return false;
+    }
+
+    String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/remove-members-from-shared-shopping-cart/$cartId/";
+
+    var requestData = jsonEncode(data);
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers, body: requestData);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
+  }
+
+  Future<bool> requestPayment(String? cartId, Map data) async {
+    if (cartId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/shopping-cart/update-cart-meta-data-shared-shopping-cart/$cartId/";
+    var requestData = jsonEncode(data);
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers, body: requestData);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
   }
 }

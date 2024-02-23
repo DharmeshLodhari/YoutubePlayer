@@ -17,7 +17,7 @@ class MomentsUtils {
         backgroundColor: navyBlue,
         radius: 12,
         child: Text(
-          getInitials(fullName??"").toUpperCase(),
+          getInitials(fullName).toUpperCase(),
           style: TextStyle(color: white, fontWeight: FontWeight.w600),
         ),
       );

@@ -37,9 +37,9 @@ class BasketItem {
         addOns?.add(AddOns.fromJson(v));
       });
     }
-    if (json['item_added_by'] != null) {
+    if (json['added_by'] != null) {
       itemAddedBy = [];
-      json['item_added_by'].forEach((v) {
+      json['added_by'].forEach((v) {
         itemAddedBy?.add(AddedBy.fromJson(v));
       });
     }
@@ -91,7 +91,7 @@ class BasketItem {
       map['addOns'] = addOns?.map((v) => v.toJson()).toList();
     }
     if (itemAddedBy != null) {
-      map['item_added_by'] = itemAddedBy?.map((v) => v.toJson()).toList();
+      map['added_by'] = itemAddedBy?.map((v) => v.toJson()).toList();
     }
     return map;
   }
@@ -135,7 +135,7 @@ class BasketListModifierPayload {
 }
 
 extension BasketItemListPayloadGenerator on List<BasketItem> {
-  BasketListModifierPayload toPayload(BasketItem item,
+  BasketListModifierPayload toPayload(BasketItem basketItem,
       {required BasketListModifierAction actionType}) {
     Map<String, dynamic> data = {};
 
@@ -143,11 +143,20 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
         BasketListModifierPayloadTypes.addOrUpdate;
 
     /// for product
-    if (item.item?.isProduct ?? false) {
-      Product product = item.item as Product;
+    if (basketItem.item?.isProduct ?? false) {
+      Product product = basketItem.item as Product;
+
+      List<BasketItem> listOfBasketItem = this.where((element) {
+        if (element.item?.isProduct ?? false) {
+          if ((element.item as Product).id == product.id) {
+            return true;
+          }
+        }
+        return false;
+      }).toList();
 
       /// if we are building payload for product which have variant
-      if (item.hasVariant) {
+      if (basketItem.hasVariant) {
         /// first we will check if the any variant have zero qty then we will remove those variants
         if (actionType == BasketListModifierAction.decreaseQty) {
           this.forEach((element) {
@@ -156,14 +165,6 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
         }
 
         // we will find all the basket Item with same product but different variant
-        List<BasketItem> listOfBasketItem = this.where((element) {
-          if (element.item?.isProduct ?? false) {
-            if ((element.item as Product).id == product.id) {
-              return true;
-            }
-          }
-          return false;
-        }).toList();
 
         if (listOfBasketItem.isNotEmpty) {
           List<Variant?> getListOfVariant = listOfBasketItem
@@ -175,12 +176,20 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
           List<Map<String, dynamic>> variantData = getListOfVariant
               .where((element) => element != null)
               .toList()
-              .map((e) =>
-                  <String, dynamic>{"id": e?.id, "quantity": e?.quantity})
+              .map((e) => <String, dynamic>{
+                    "id": e?.id,
+                    "quantity": e?.quantity,
+                    "added_by": e?.addedBy
+                        ?.map((e) => <String, dynamic>{
+                              "user": e.user?.userName,
+                              "quantity": e.quantity
+                            })
+                        .toList()
+                  })
               .toList();
 
           data["id"] = product.id;
-          data["type"] = item.type;
+          data["type"] = basketItem.type;
 
           num qty = variantData.fold<num>(0,
               (previousValue, element) => previousValue + element["quantity"]);
@@ -197,63 +206,90 @@ extension BasketItemListPayloadGenerator on List<BasketItem> {
           /// to remove those items from basket item which's variant's qty =0;
           this.removeWhere((element) => element.variants?.isEmpty ?? false);
         }
-      } else if (item.hasAddOns) {
+      } else if (basketItem.hasAddOns) {
+        List<AddedBy> itemAddedBy = [];
+        List<BasketItem> basketItemAddedBy = listOfBasketItem
+            .where((element) => element.itemAddedBy?.isNotEmpty ?? false)
+            .toList();
+
+        for (BasketItem item in basketItemAddedBy) {
+          for (AddedBy addedBy in item.itemAddedBy ?? []) {
+            itemAddedBy.add(addedBy);
+          }
+        }
+
+        List<Map<String, dynamic>> itemAddedByData = itemAddedBy
+            .where((element) => element != null)
+            .toList()
+            .map((e) => <String, dynamic>{
+                  "user": e.user?.userName,
+                  "quantity": e.quantity
+                })
+            .toList();
+
         data["id"] = product.id;
-        data["type"] = item.type;
-        data["qty"] = item.qty;
-        List<Map<String, dynamic>> addOnsDataList = (item.item as Product)
+        data["type"] = basketItem.type;
+        data["qty"] = basketItem.qty;
+        List<Map<String, dynamic>> addOnsDataList = (basketItem.item as Product)
                 .addOnsModels
                 ?.map((e) => {
                       "id": e.id,
                       "options": e.options
-                          ?.map((option) =>
-                              {"id": option.id, "quantity": option.quantity})
+                          ?.map((option) => {
+                                "id": option.id,
+                                "quantity": option.quantity,
+                                "added_by": option.addedBy
+                                    ?.map((e) => <String, dynamic>{
+                                          "user": e.user?.userName,
+                                          "quantity": e.quantity
+                                        })
+                                    .toList()
+                              })
                           .toList()
                     })
                 .toList() ??
             [];
         data["add_ons"] = addOnsDataList;
+        data["added_by"] = itemAddedByData;
 
-        if (item.qty == 0) {
+        if (basketItem.qty == 0) {
           payloadType = BasketListModifierPayloadTypes.remove;
-          this.remove(item);
+          this.remove(basketItem);
         } else {
           payloadType = BasketListModifierPayloadTypes.addOrUpdate;
         }
       }
 
-      /// product without variant
+      /// product without variant and addOns
       else {
-        List<BasketItem> listOfBasketItem = this.where((element) {
-          if (element.item?.isProduct ?? false) {
-            if ((element.item as Product).id == product.id) {
-              return true;
-            }
-          }
-          return false;
-        }).toList();
-
-        List<AddedBy?> itemAddedBy = listOfBasketItem
+        List<AddedBy> itemAddedBy = [];
+        List<BasketItem> basketItemAddedBy = listOfBasketItem
             .where((element) => element.itemAddedBy?.isNotEmpty ?? false)
-            .toList()
-            .map((e) => e.itemAddedBy?.first)
             .toList();
+
+        for (BasketItem item in basketItemAddedBy) {
+          for (AddedBy addedBy in item.itemAddedBy ?? []) {
+            itemAddedBy.add(addedBy);
+          }
+        }
 
         List<Map<String, dynamic>> itemAddedByData = itemAddedBy
             .where((element) => element != null)
             .toList()
-            .map((e) =>
-                <String, dynamic>{"username": e?.username, "qty": e?.quantity})
+            .map((e) => <String, dynamic>{
+                  "user": e.user?.userName,
+                  "quantity": e.quantity
+                })
             .toList();
 
         data["id"] = product.id;
-        data["type"] = item.type;
-        data["qty"] = item.qty;
-        data["item_added_by"] = itemAddedByData;
+        data["type"] = basketItem.type;
+        data["qty"] = basketItem.qty;
+        data["added_by"] = itemAddedByData;
 
-        if (item.qty == 0) {
+        if (basketItem.qty == 0) {
           payloadType = BasketListModifierPayloadTypes.remove;
-          this.remove(item);
+          this.remove(basketItem);
         } else {
           payloadType = BasketListModifierPayloadTypes.addOrUpdate;
         }

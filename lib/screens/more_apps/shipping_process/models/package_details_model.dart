@@ -126,7 +126,7 @@ class PackageDetailsModel {
       "type": buyNow?.type ?? 'product',
       "add_ons": addOnsDataList,
       "variants": variantData,
-      "item_added_by": userName ?? "",
+      "added_by": userName ?? "",
     };
     return data;
   }

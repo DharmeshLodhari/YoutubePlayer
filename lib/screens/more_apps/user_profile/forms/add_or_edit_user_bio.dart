@@ -8,11 +8,11 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -118,7 +118,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     _nicknameController = TextEditingController();
     _fullNameController = TextEditingController();
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       userBioDetail = userBloc.userAbout;
       bioController!.text = messageDecoderWithEmoji(userBloc.user.bio!)!;
       if (userBioDetail?.userAddress?.addressLine1 != null) {

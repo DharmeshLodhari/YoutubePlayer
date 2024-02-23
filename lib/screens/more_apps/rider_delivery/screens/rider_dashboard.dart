@@ -4,7 +4,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/find_jobs_tab.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/service_tab.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';

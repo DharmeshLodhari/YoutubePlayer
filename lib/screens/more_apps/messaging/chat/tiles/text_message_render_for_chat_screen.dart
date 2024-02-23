@@ -7,8 +7,6 @@ import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/link_preview/flutter_link_preview.dart';
 import 'package:Slydo/utils/link_preview/web_analyzer.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -245,13 +243,13 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               if (info == null)
                 return InkWell(
                   onTap: () {
-                    launchUrl(Uri.parse(linkToBePreview!));
+                    launchUrl(Uri.parse(linkToBePreview));
                   },
                   child: Container(
                     margin:
                         EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
                     child: Text(
-                      linkToBePreview!,
+                      linkToBePreview,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: navyBlue, fontSize: 14),

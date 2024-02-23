@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
 import '../models/ask_categories_model.dart';
 import '../yarn_auth.dart';

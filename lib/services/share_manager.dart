@@ -11,7 +11,6 @@ import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/services/route_provider.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';

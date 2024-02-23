@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class JobModel {
   String? id;
   List<String>? tags;
@@ -191,8 +189,8 @@ class Category {
 class Video {
   String? id;
   String? file;
-  Null? imagePoster;
-  Null? caption;
+  Null imagePoster;
+  Null caption;
 
   Video({this.id, this.file, this.imagePoster, this.caption});
 

@@ -5,7 +5,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/utils.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
@@ -178,9 +177,15 @@ class SharedCartScreenState extends State<SharedCartScreen> {
                       userImages: sharedCartBloc.cartList[index]
                           .convertToUserFollowersList()),
                   trailing: getTrailing(index),
-                  onTap: () {
+                  onTap: () async {
                     sharedCartBloc.currentSelectedIndex = index;
-                    Navigator.of(context).pushNamed(Routes.SHARED_CARD_DETAILS);
+
+                    var result = await Navigator.of(context)
+                        .pushNamed(Routes.SHARED_CARD_DETAILS);
+
+                    if (result != null && result is bool && result == true) {
+                      _onRefresh();
+                    }
                   },
                 ),
               ),
@@ -209,7 +214,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
 
   Widget getTrailing(int index) {
     return Container(
-      width: 100,
+      width: 120,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

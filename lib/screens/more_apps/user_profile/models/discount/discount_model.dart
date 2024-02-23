@@ -1,4 +1,3 @@
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/place.dart';
 import 'package:Slydo/utils/extensions.dart';
 
@@ -46,12 +45,11 @@ class DiscountModel {
     value = json['value'];
     if (json['start_date'] != null) {
       List<int> parse = json['start_date']
-              .toString()
-              ?.split("-")
-              .toList()
-              .map((e) => int.parse(e))
-              .toList() ??
-          [];
+          .toString()
+          .split("-")
+          .toList()
+          .map((e) => int.parse(e))
+          .toList();
       if (parse != null) {
         startDate = DateTime(parse[0], parse[1], parse[2]);
       }
@@ -59,12 +57,11 @@ class DiscountModel {
 
     if (json['end_date'] != null) {
       List<int> parse = json['end_date']
-              .toString()
-              ?.split("-")
-              .toList()
-              .map((e) => int.parse(e))
-              .toList() ??
-          [];
+          .toString()
+          .split("-")
+          .toList()
+          .map((e) => int.parse(e))
+          .toList();
       if (parse != null) {
         endDate = DateTime(parse[0], parse[1], parse[2]);
       }
@@ -72,12 +69,11 @@ class DiscountModel {
 
     if (json['only_from'] != null) {
       List<int> parse = json['only_from']
-              .toString()
-              .split(":")
-              .toList()
-              .map((e) => int.parse(e))
-              .toList() ??
-          [];
+          .toString()
+          .split(":")
+          .toList()
+          .map((e) => int.parse(e))
+          .toList();
       if (parse != null) {
         onlyFrom = DateTime(DateTime.now().year, DateTime.now().month,
             DateTime.now().day, parse[0], parse[1]);
@@ -85,12 +81,11 @@ class DiscountModel {
     }
     if (json['only_to'] != null) {
       List<int> parse = json['only_to']
-              .toString()
-              .split(":")
-              .toList()
-              .map((e) => int.parse(e))
-              .toList() ??
-          [];
+          .toString()
+          .split(":")
+          .toList()
+          .map((e) => int.parse(e))
+          .toList();
       if (parse != null) {
         onlyTo = DateTime(DateTime.now().year, DateTime.now().month,
             DateTime.now().day, parse[0], parse[1]);
@@ -182,17 +177,16 @@ class DiscountModel {
       DateTime? onlyTo,
       Consumables? consumables}) {
     return DiscountModel(
-      id: id ?? this.id,
-      type: type ?? this.type,
-      value: value ?? this.value,
-      name: name ?? this.name,
-      startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
-      onlyFrom: onlyFrom ?? this.onlyFrom,
-      onlyTo: onlyTo ?? this.onlyTo,
-      consumables: consumables ?? this.consumables,
-      poster: poster ?? this.poster
-    );
+        id: id ?? this.id,
+        type: type ?? this.type,
+        value: value ?? this.value,
+        name: name ?? this.name,
+        startDate: startDate ?? this.startDate,
+        endDate: endDate ?? this.endDate,
+        onlyFrom: onlyFrom ?? this.onlyFrom,
+        onlyTo: onlyTo ?? this.onlyTo,
+        consumables: consumables ?? this.consumables,
+        poster: poster ?? this.poster);
   }
 
   void addProductsToDiscount(List<String?> products) {

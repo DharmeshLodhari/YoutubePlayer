@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -303,6 +305,16 @@ class Product extends PurchasableItem {
   // UserFollowers? itemUpdatedBy;
   int? qty;
 
+  List<UserFollowers> convertToUserFollowersList() {
+    List<UserFollowers> userList = [];
+
+    userList =
+        (itemAddedBy?.map((e) => e.user?.toUserFollowerModel()).toList() ?? [])
+            .cast<UserFollowers>();
+
+    return userList;
+  }
+
   Product({
     super.id,
     this.name,
@@ -398,7 +410,7 @@ class Product extends PurchasableItem {
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
-      'item_added_by': itemAddedBy,
+      'added_by': itemAddedBy,
       // 'item_updated_by': itemUpdatedBy,
       'qty': qty,
     };
@@ -451,7 +463,7 @@ class Product extends PurchasableItem {
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
-      "item_added_by": itemAddedBy!.map((v) => v.toJson()).toList(),
+      "added_by": itemAddedBy!.map((v) => v.toJson()).toList(),
       // "item_updated_by": itemUpdatedBy?.toJson(),
       'qty': qty,
     };
@@ -552,10 +564,10 @@ class Product extends PurchasableItem {
       discountedPrice: object['discounted_price'],
       oldPrice: object["old_price"],
       isShippable: object["is_shippable"],
-      itemAddedBy: object["item_added_by"] == null
+      itemAddedBy: object["added_by"] == null
           ? []
           : List<AddedBy>.from(
-              object["item_added_by"]!.map((x) => AddedBy.fromJson(x))),
+              object["added_by"]!.map((x) => AddedBy.fromJson(x))),
       // itemUpdatedBy: object["item_updated_by"] == null
       //     ? null
       //     : UserFollowers.fromJson(object["item_updated_by"]),
@@ -662,7 +674,6 @@ class Product extends PurchasableItem {
       // variant: this.variant,
       variantModels: this.variantModels?.map((e) => e.copyWith()).toList(),
       // addOns: this.addOns,
-      // addOnsModels: this.addOnsModels,
       addOnsModels: this.addOnsModels?.map((e) => e.copyWith()).toList(),
       weight: this.weight,
       weightSiUnit: this.widthSiUnit,
@@ -805,20 +816,25 @@ class Product extends PurchasableItem {
     return isAllSelected;
   }
 
-  void getItemAddedByDetails(String? username, int quantity,
+  void getItemAddedByDetails(SharedCartMemberModel? currentUser,
       {required BasketListModifierAction actionType}) {
     bool isAlreadyPresent = false;
-    for (AddedBy item in itemAddedBy ?? []) {
-      if (item.username == username) {
+
+    for (AddedBy addedBy in itemAddedBy ?? []) {
+      if (addedBy.user?.userName == currentUser?.userName) {
         if (actionType == BasketListModifierAction.increaseQty) {
-          quantity = quantity + 1;
+          addedBy.quantity = (addedBy.quantity ?? 0) + 1;
           isAlreadyPresent = true;
           break;
         } else if (actionType == BasketListModifierAction.decreaseQty) {
-          if (quantity == 0) {
-          } else {
-            quantity = quantity - 1;
+          if ((addedBy.quantity ?? 0) > 0) {
+            addedBy.quantity = (addedBy.quantity ?? 0) - 1;
+            if (addedBy.quantity == 0) {
+              itemAddedBy?.removeWhere(
+                  (element) => element.user?.userName == currentUser?.userName);
+            }
           }
+
           isAlreadyPresent = true;
           break;
         }
@@ -826,7 +842,18 @@ class Product extends PurchasableItem {
     }
 
     if (isAlreadyPresent == false) {
-      itemAddedBy?.add(AddedBy(username: username, quantity: quantity));
+      if (actionType == BasketListModifierAction.increaseQty) {
+        itemAddedBy ??= [];
+        itemAddedBy?.add(AddedBy(user: currentUser, quantity: 1));
+      } else if (actionType == BasketListModifierAction.decreaseQty) {
+        if ((itemAddedBy?.first.quantity ?? 0) > 0) {
+          itemAddedBy?.first.quantity = (itemAddedBy?.first.quantity ?? 0) - 1;
+          if (itemAddedBy?.first.quantity == 0) {
+            itemAddedBy?.removeWhere(
+                (element) => element.user?.userName == currentUser?.userName);
+          }
+        }
+      }
     }
   }
 }
@@ -878,6 +905,7 @@ class Variant {
   DateTime? availableFrom;
   String? currency;
   bool? trackInventory;
+  List<AddedBy>? addedBy;
 
   // List<Pictures>? pictures;
   // DateTime? createdAt;
@@ -888,21 +916,23 @@ class Variant {
   // bool? discountIsActive;
   // int? discountedPrice;
 
-  Variant(
-      {this.id,
-      this.title,
-      this.size,
-      this.colour,
-      this.trackInventory,
-      this.type,
-      this.price,
-      this.value,
-      this.quantity,
-      this.localImages,
-      this.serverImages,
-      this.isAvailable,
-      this.availableFrom,
-      this.currency});
+  Variant({
+    this.id,
+    this.title,
+    this.size,
+    this.colour,
+    this.trackInventory,
+    this.type,
+    this.price,
+    this.value,
+    this.quantity,
+    this.localImages,
+    this.serverImages,
+    this.isAvailable,
+    this.availableFrom,
+    this.currency,
+    this.addedBy,
+  });
 
   Map toMap() {
     return {
@@ -917,7 +947,8 @@ class Variant {
       "is_available": isAvailable,
       "available_from": availableFrom,
       "track_inventory": trackInventory,
-      "currency": currency
+      "currency": currency,
+      "added_by": addedBy
     };
   }
 
@@ -935,32 +966,8 @@ class Variant {
       "available_from": availableFrom.toString(),
       "track_inventory": trackInventory,
       "currency": currency,
+      "added_by": addedBy,
     };
-  }
-
-  static List<Variant> convertToVariantList(List<dynamic> dataList) {
-    List<Variant> variantList = [];
-
-    for (var data in dataList) {
-      Variant variant = Variant(
-        id: data['id'].toString(),
-        title: data['title'],
-        quantity: data['quantity'],
-        colour: data["colour"] ?? "",
-        value: data["value"] ?? "",
-        type: data["type"] ?? "",
-        price: data["price"].toString(),
-        trackInventory: data["track_inventory"] ?? false,
-        localImages: data["localImages"] ?? [],
-        serverImages: getProductImages(data["pictures"]),
-        isAvailable: data["is_available"] ?? true,
-        availableFrom: getProductDateTime(data["available_from"]),
-        currency: data["currency"] ?? "NGN",
-      );
-      variantList.add(variant);
-    }
-
-    return variantList;
   }
 
   factory Variant.fromJson(object) {
@@ -998,8 +1005,61 @@ class Variant {
       isAvailable: object["is_available"] ?? true,
       availableFrom: getProductDateTime(object["available_from"]),
       currency: object["currency"] ?? "NGN",
+      addedBy: object["added_by"] == null
+          ? []
+          : List<AddedBy>.from(
+              object["added_by"]!.map((x) => AddedBy.fromJson(x))),
       type: getVariantType(object),
     );
+  }
+
+  List<UserFollowers> convertToUserFollowersList() {
+    List<UserFollowers> userList = [];
+
+    userList =
+        (addedBy?.map((e) => e.user?.toUserFollowerModel()).toList() ?? [])
+            .cast<UserFollowers>();
+
+    return userList;
+  }
+
+  void getVariantAddedByDetails(SharedCartMemberModel? currentUser,
+      {required BasketListModifierAction actionType}) {
+    bool isAlreadyPresent = false;
+    for (AddedBy variantAddedBy in addedBy ?? []) {
+      if (variantAddedBy.user?.userName == currentUser?.userName) {
+        if (actionType == BasketListModifierAction.increaseQty) {
+          variantAddedBy.quantity = (variantAddedBy.quantity ?? 0) + 1;
+          isAlreadyPresent = true;
+          break;
+        } else if (actionType == BasketListModifierAction.decreaseQty) {
+          if ((variantAddedBy.quantity ?? 0) > 0) {
+            variantAddedBy.quantity = (variantAddedBy.quantity ?? 0) - 1;
+            if (variantAddedBy.quantity == 0) {
+              addedBy?.removeWhere(
+                  (element) => element.user?.userName == currentUser?.userName);
+            }
+          }
+          isAlreadyPresent = true;
+          break;
+        }
+      }
+    }
+
+    if (isAlreadyPresent == false) {
+      if (actionType == BasketListModifierAction.increaseQty) {
+        addedBy ??= [];
+        addedBy?.add(AddedBy(user: currentUser, quantity: 1));
+      } else if (actionType == BasketListModifierAction.decreaseQty) {
+        if ((addedBy?.first.quantity ?? 0) > 0) {
+          addedBy?.first.quantity = (addedBy?.first.quantity ?? 0) - 1;
+          if (addedBy?.first.quantity == 0) {
+            addedBy?.removeWhere(
+                (element) => element.user?.userName == currentUser?.userName);
+          }
+        }
+      }
+    }
   }
 
   static List<String> getProductImages(List? data) {
@@ -1096,6 +1156,7 @@ class Variant {
     bool? isAvailable,
     DateTime? availableFrom,
     String? currency,
+    List<AddedBy>? addedBy,
     bool? trackInventory,
   }) {
     return Variant(
@@ -1112,6 +1173,7 @@ class Variant {
       isAvailable: isAvailable ?? this.isAvailable,
       availableFrom: availableFrom ?? this.availableFrom,
       currency: currency ?? this.currency,
+      addedBy: addedBy ?? this.addedBy,
       trackInventory: trackInventory ?? this.trackInventory,
     );
   }
@@ -1138,6 +1200,8 @@ class AddOnOption {
   DateTime? createdAt;
   int quantity = 0;
   bool isChecked = false;
+  List<AddedBy>? addedBy;
+
   AddOnOption({
     this.id,
     this.picture,
@@ -1152,6 +1216,7 @@ class AddOnOption {
     this.createdAt,
     this.quantity = 0,
     this.isChecked = false,
+    this.addedBy,
   });
 
   AddOnOption.fromJson(Map<String, dynamic> json) {
@@ -1168,6 +1233,9 @@ class AddOnOption {
     createdAt = getProductDateTime(json['created_at']);
     quantity = json['quantity'] ?? 0;
     isChecked = json['is_checked'] ?? false;
+    addedBy = json['added_by'] == null
+        ? []
+        : List<AddedBy>.from(json['added_by'].map((x) => AddedBy.fromJson(x)));
   }
 
   AddOnOption copyWith({
@@ -1184,6 +1252,7 @@ class AddOnOption {
     DateTime? createdAt,
     int? quantity,
     bool? isChecked,
+    List<AddedBy>? addedBy,
   }) {
     return AddOnOption(
       id: id ?? this.id,
@@ -1199,6 +1268,7 @@ class AddOnOption {
       createdAt: createdAt ?? this.createdAt,
       quantity: quantity ?? this.quantity,
       isChecked: isChecked ?? this.isChecked,
+      addedBy: addedBy ?? this.addedBy,
     );
   }
 
@@ -1223,7 +1293,48 @@ class AddOnOption {
     data['is_available'] = this.isAvailable;
     data['created_at'] = this.createdAt;
     data['quantity'] = this.quantity;
+    data['added_by'] = this.addedBy;
     return data;
+  }
+
+  void getAddOnOptionAddedByDetails(SharedCartMemberModel? currentUser,
+      {required BasketListModifierAction actionType}) {
+    bool isAlreadyPresent = false;
+
+    for (AddedBy addOnsAddedBy in addedBy ?? []) {
+      if (addOnsAddedBy.user?.userName == currentUser?.userName) {
+        if (actionType == BasketListModifierAction.increaseQty) {
+          addOnsAddedBy.quantity = (addOnsAddedBy.quantity ?? 0) + 1;
+          isAlreadyPresent = true;
+          break;
+        } else if (actionType == BasketListModifierAction.decreaseQty) {
+          if ((addOnsAddedBy.quantity ?? 0) > 0) {
+            addOnsAddedBy.quantity = (addOnsAddedBy.quantity ?? 0) - 1;
+            if (addOnsAddedBy.quantity == 0) {
+              addedBy?.removeWhere(
+                  (element) => element.user?.userName == currentUser?.userName);
+            }
+          }
+          isAlreadyPresent = true;
+          break;
+        }
+      }
+    }
+
+    if (isAlreadyPresent == false) {
+      if (actionType == BasketListModifierAction.increaseQty) {
+        addedBy ??= [];
+        addedBy?.add(AddedBy(user: currentUser, quantity: 1));
+      } else if (actionType == BasketListModifierAction.decreaseQty) {
+        if ((addedBy?.first.quantity ?? 0) > 0) {
+          addedBy?.first.quantity = (addedBy?.first.quantity ?? 0) - 1;
+          if (addedBy?.first.quantity == 0) {
+            addedBy?.removeWhere(
+                (element) => element.user?.userName == currentUser?.userName);
+          }
+        }
+      }
+    }
   }
 
   bool isAddOnsSelected(AddOns addon) {
@@ -1234,7 +1345,7 @@ class AddOnOption {
         return false;
       }
     } else if (addon.inputType == "checkbox") {
-      if (isChecked ?? false) {
+      if (isChecked) {
         return true;
       } else {
         return false;
@@ -1647,21 +1758,23 @@ class ServiceCategory {
 }
 
 class AddedBy {
-  String? username;
+  SharedCartMemberModel? user;
   int? quantity;
 
   AddedBy({
-    this.username,
+    this.user,
     this.quantity,
   });
 
   factory AddedBy.fromJson(Map<String, dynamic> json) => AddedBy(
-        username: json["username"],
+        user: json["user"] == null
+            ? null
+            : SharedCartMemberModel.fromJson(json["user"]),
         quantity: json["quantity"],
       );
 
   Map<String, dynamic> toJson() => {
-        "username": username,
+        "user": user?.toJson(),
         "quantity": quantity,
       };
 }
