@@ -51,13 +51,19 @@ Widget buildImage(String urlImage, String fullName) {
   if (urlImage == "" ||
       urlImage ==
           "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
-    return CircleAvatar(
-      backgroundColor: navyBlue,
-      radius: 10,
-      child: Text(
-        getInitials(fullName).toUpperCase(),
-        style:
-            TextStyle(color: white, fontWeight: FontWeight.w600, fontSize: 10),
+    return ClipOval(
+      child: Container(
+        padding: EdgeInsets.all(borderSize),
+        color: Colors.white,
+        child: CircleAvatar(
+          backgroundColor: navyBlue,
+          radius: 10,
+          child: Text(
+            getInitials(fullName).toUpperCase(),
+            style: TextStyle(
+                color: white, fontWeight: FontWeight.w600, fontSize: 10),
+          ),
+        ),
       ),
     );
   } else {

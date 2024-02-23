@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -33,6 +34,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
+  bool isMemberChange = false;
 
   @override
   void initState() {
@@ -42,8 +44,13 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      isLoading = true;
+      if (mounted) setState(() {});
       getCartDetails();
+      cartDetails = sharedCartBloc.getSharedCartModel();
+      isLoading = false;
+      if (mounted) setState(() {});
     });
   }
 
@@ -68,6 +75,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
           .getCartDetails(sharedCartBloc.getSharedCartModel().id)
           .then((value) {
         cartDetails = value;
+        sharedCartBloc.updateCartModel(value);
         if (mounted) {
           isLoading = false;
           setState(() {});
@@ -89,7 +97,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
+        Navigator.of(context).pop(isMemberChange);
         return true;
       },
       child: ScaffoldMessenger(
@@ -113,7 +121,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.of(context).pop(isMemberChange);
         },
       ),
       title: Text(
@@ -130,11 +138,16 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
             size: 16,
             color: blackFont,
           ),
-          onTap: () {
-            Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
-                arguments: {
-                  "create": "addMember"
-                }).whenComplete(() => getCartDetails());
+          onTap: () async {
+            var result = await Navigator.of(context).pushNamed(
+                Routes.SELECT_USER_FOR_GROUP,
+                arguments: {"create": "addMember"});
+            if (result != null && result is bool && result == true) {
+              isMemberChange = result;
+              setState(() {
+                _onRefresh();
+              });
+            }
           },
           backgroundColor: iconBtnGrey,
           enableMargin: true,
@@ -166,7 +179,6 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
         ),
       ),
     );
-    ;
   }
 
   Widget _buildCartMembers() {
@@ -181,24 +193,19 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
               )
             : ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                //+1 for progressbar
                 itemCount: cartDetails.members?.length,
                 itemBuilder: (BuildContext context, int index) {
-                  if (index == cartDetails.members?.length) {
-                    return buildLoadingIndicator(isLoading: isLoading);
-                  } else {
-                    return _getSlidableWithLists(
-                      context,
-                      cartMemberTile(
-                          members: cartDetails.members?[index], index: index),
-                      cartDetails.members?[index],
-                    );
-                  }
+                  return _getSlidableWithLists(
+                    context,
+                    cartMemberTile(
+                        member: cartDetails.members?[index], index: index),
+                    cartDetails.members?[index],
+                  );
                 },
               );
   }
 
-  Widget cartMemberTile({required SharedCartMemberModel? members, int? index}) {
+  Widget cartMemberTile({required SharedCartMemberModel? member, int? index}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -207,20 +214,9 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          leading: ClipOval(
-            child: CachedNetworkImage(
-              height: 45,
-              width: 45,
-              imageUrl:
-                  members?.avatar == "" ? defaultImage : members?.avatar ?? "",
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
-              errorWidget: imageErrorWidget,
-              filterQuality: FilterQuality.high,
-            ),
-          ),
+          leading: getUserLeading(member),
           title: Text(
-            members?.fullName ?? "",
+            member?.fullName ?? "",
             maxLines: 1,
             style: TextStyle(
                 color: blackFont,
@@ -229,7 +225,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
                 fontFamily: "Inter"),
           ),
           subtitle: Text(
-            '@${members?.userName}',
+            '@${member?.userName}',
             maxLines: 1,
             style: TextStyle(
                 color: darkGrey,
@@ -240,6 +236,43 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
         ),
       ),
     );
+  }
+
+  Widget getUserLeading(SharedCartMemberModel? member) {
+    if (member?.avatar == "" ||
+        member?.avatar ==
+            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 22,
+        child: Text(
+          getInitials(member?.fullName ?? "").toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return Container(
+        height: 45,
+        width: 45,
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl:
+                member?.avatar == "" ? defaultImage : member?.avatar! ?? "",
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+            height: double.infinity,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, _) => CachedNetworkImage(
+              imageUrl: defaultImage,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fitWidth,
+              filterQuality: FilterQuality.high,
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   Widget _getSlidableWithLists(BuildContext context, Widget cartMemberTile,
@@ -277,7 +310,10 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
       if (value == true) {
         showToast(
             message: AppLocalization.of(context)!.memberDeletedSuccessfully);
-        _onRefresh();
+        isMemberChange = true;
+        setState(() {
+          _onRefresh();
+        });
       } else {
         showToast(message: AppLocalization.of(context)!.memberIsNotDeleted);
       }
@@ -287,10 +323,11 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
+    Connectivity().checkConnectivity().then((value) async {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
+        if (mounted) setState(() {});
         getCartDetails();
         setState(() {
           // Call the callback function with the updated list

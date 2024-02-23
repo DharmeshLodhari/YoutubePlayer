@@ -17,7 +17,7 @@ class UserPostAuth extends AuthService {
       required SlydoBlogsMenu slydoBlogsMenu}) async {
     String slydoBlogsMenuString = slydoBlogsMenu.name.toLowerCase();
 
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -55,7 +55,10 @@ class UserPostAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> listUserPosts(
-      {String? next = "", String? pageSize, required String? userName, String? channelUserName}) async {
+      {String? next = "",
+      String? pageSize,
+      required String? userName,
+      String? channelUserName}) async {
     var url = AppConfig.baseUrl;
     if (next == null) {
       return null;
@@ -63,19 +66,16 @@ class UserPostAuth extends AuthService {
 
     if (next == "") {
       if (pageSize != null) {
-        url = url+"/api/v1/social/posts/user/$userName/?page_size=$pageSize";
-      }
-      else {
-        if(channelUserName != ''){
-          url = "${AppConfig.baseUrl}/api/v1/social/posts/channel/$channelUserName/";
-        }
-        else if (channelUserName == ''){
+        url = url + "/api/v1/social/posts/user/$userName/?page_size=$pageSize";
+      } else {
+        if (channelUserName != '') {
+          url =
+              "${AppConfig.baseUrl}/api/v1/social/posts/channel/$channelUserName/";
+        } else if (channelUserName == '') {
           url = "${AppConfig.baseUrl}/api/v1/social/posts/user/$userName/";
         }
-
       }
-    }
-    else {
+    } else {
       url = getSecureUrl(url: next);
     }
 
@@ -214,15 +214,16 @@ class UserPostAuth extends AuthService {
     String? channelUsername,
   }) async {
     var urlToPostBlog = AppConfig.baseUrl + "/api/v1/social/posts/";
-    if(channelUsername!.isNotEmpty){
-      urlToPostBlog = "${AppConfig.baseUrl}/api/v1/social/posts/channel/$channelUsername/";
+    if (channelUsername!.isNotEmpty) {
+      urlToPostBlog =
+          "${AppConfig.baseUrl}/api/v1/social/posts/channel/$channelUsername/";
     }
 
     var urlToUpdateBlog = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
-    if(channelUsername.isNotEmpty){
-      urlToUpdateBlog = "${AppConfig.baseUrl}/api/v1/social/posts/channel/$blogId/";
+    if (channelUsername.isNotEmpty) {
+      urlToUpdateBlog =
+          "${AppConfig.baseUrl}/api/v1/social/posts/channel/$blogId/";
     }
-
 
     String url = isUpdating ? urlToUpdateBlog : urlToPostBlog;
     var headers = await getAuthHeaders();

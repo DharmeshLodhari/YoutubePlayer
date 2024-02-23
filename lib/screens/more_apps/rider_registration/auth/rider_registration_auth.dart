@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 class RiderRegistrationAuthService extends AuthService {
   Future<RiderModel> riderRegister(
       {RiderRegistrationModel? registrationModel}) async {
-    var url = "${AppConfig.baseUrl}/api/v1/user/rider-kyc/";
+    String url = "${AppConfig.baseUrl}/api/v1/user/rider-kyc/";
     var headers = await getAuthHeaders();
 
     if (registrationModel != null) {
@@ -53,7 +53,7 @@ class RiderRegistrationAuthService extends AuthService {
 
   // Status of KYC
   Future<KYCDataModel> getKYCStatus(String? username) async {
-    var url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
+    String url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     print('Status of KYC...${response.body} and ${response.statusCode}');
@@ -68,7 +68,7 @@ class RiderRegistrationAuthService extends AuthService {
 
   Future<KYCDataModel> kycStatus(
       {RiderRegistrationModel? registrationModel, String? username}) async {
-    var url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
+    String url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
     var headers = await getAuthHeaders();
 
     if (registrationModel != null) {

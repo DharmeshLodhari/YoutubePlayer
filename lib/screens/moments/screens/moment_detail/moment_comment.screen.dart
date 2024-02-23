@@ -5,6 +5,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../more_apps/messaging/chat/models/gif_model/GIFModel.dart';
@@ -18,22 +19,24 @@ import '../../models/moments_model.dart';
 import '../../tiles/moment_comment_tile.dart';
 import '../moments_service.dart';
 
-
 //reply to comment for moment, full screen
 class MomentCommentScreen extends StatefulWidget {
   MomentCommentScreen(
-      {Key? key, this.yarnComment, this.momentId,
-        this.addedSelectedMedia, this.minusComment,
-        this.callbackUpdateCommentCount,
-        this.onDeleteComment})
+      {Key? key,
+      this.yarnComment,
+      this.momentId,
+      this.addedSelectedMedia,
+      this.minusComment,
+      this.callbackUpdateCommentCount,
+      this.onDeleteComment})
       : super(key: key);
-  YarnComment? yarnComment;
-  String? momentId;
-  Function(List<MomentMedia>)? addedSelectedMedia;
-  Function(bool)? minusComment;
+
+  final YarnComment? yarnComment;
+  final String? momentId;
+  final Function(List<MomentMedia>)? addedSelectedMedia;
+  final Function(bool)? minusComment;
   final Function(YarnComment)? onDeleteComment;
   final Function(bool)? callbackUpdateCommentCount;
-
 
   @override
   State<MomentCommentScreen> createState() => _MomentCommentScreenState();
@@ -115,7 +118,6 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
 
   // this is the main comment at the top of the comment detail screen
   Widget _buildCommentDescriptionMain() {
-
     return Column(
       children: [
         Container(
@@ -125,25 +127,25 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
             momentId: widget.momentId,
             openReply: false,
             isCommentDetail: false,
-            minusComment: (bool value){
-              if(value == false){
+            minusComment: (bool value) {
+              if (value == false) {
                 //if false add 1 to comment count
                 widget.yarnComment!.replyCount! + 1;
-                if(mounted)setState(() {});
-              }else if(value == true){
+                if (mounted) setState(() {});
+              } else if (value == true) {
                 //if true subtract 1 to comment count
-                widget.yarnComment!.replyCount != 0 ? widget.yarnComment!.replyCount! - 1 : 0;
-                if(mounted)setState(() {});
+                widget.yarnComment!.replyCount != 0
+                    ? widget.yarnComment!.replyCount! - 1
+                    : 0;
+                if (mounted) setState(() {});
               }
             },
             onDeleteComment: (YarnComment yarnCmt) {
-
               // widget.onDeleteComment!(yarnCmt);
               // Navigator.pop(context);
               // Navigator.pop(context);
               // if(mounted)setState(() {});
             },
-
           ),
         ),
         const SizedBox(
@@ -174,45 +176,46 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
                           isCommentDetail: false,
                           onDeleteComment: (YarnComment yarnCmt) {
                             //delete the comment from the list and reduce comment count at the top
-                            yarnComments.removeWhere((comment) => comment.id == yarnCmt.id);
+                            yarnComments.removeWhere(
+                                (comment) => comment.id == yarnCmt.id);
 
                             //this reduces the count on the 3/4 comment screen and the page is updated silently
                             widget.minusComment!(true);
                             if (mounted) setState(() {});
                           },
-                          minusComment: (bool value){
-                            if(value == false){
+                          minusComment: (bool value) {
+                            if (value == false) {
                               //if false add 1 to comment count
                               yarnComment.replyCount! + 1;
                               widget.minusComment!(false);
 
-                              if(mounted)setState(() {});
-                            }
-                            else if(value == true){
+                              if (mounted) setState(() {});
+                            } else if (value == true) {
                               //if true subtract 1 to comment count
-                              yarnComment.replyCount != 0 ? yarnComment.replyCount! - 1 : 0;
+                              yarnComment.replyCount != 0
+                                  ? yarnComment.replyCount! - 1
+                                  : 0;
                               widget.minusComment!(true);
 
-                              if(mounted)setState(() {});
+                              if (mounted) setState(() {});
                             }
                           },
                           onCommentUpdate: (YarnComment yarnCmt, bool val) {
                             //this will update the list of comments and set the selected comment to pinned
-                            final modelIndex = yarnComments.indexWhere((model) => model.id == yarnCmt.id);
+                            final modelIndex = yarnComments
+                                .indexWhere((model) => model.id == yarnCmt.id);
                             if (modelIndex != -1) {
                               final model = yarnComments.removeAt(modelIndex);
                               model.pinned = val;
                               yarnComments.insert(0, model);
                               if (mounted) setState(() {});
                             }
-
                           },
-                          callbackUpdateCommentCount: (value){
-                            if(value == true){
+                          callbackUpdateCommentCount: (value) {
+                            if (value == true) {
                               //increase the count by for the single moment detail + 1
                               widget.callbackUpdateCommentCount!(true);
                             }
-
                           },
                         ),
                       ),
@@ -435,10 +438,11 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
         selectedMedia = value;
         setState(() {});
       },
-      addedSelectedGif: (value){
+      addedSelectedGif: (value) {
         //retrieve the selected gif
         selectedGif = value;
-        debugPrint('Fola gif full view:::: ${selectedGif!.images!.original!.url}');
+        debugPrint(
+            'Fola gif full view:::: ${selectedGif!.images!.original!.url}');
 
         setState(() {});
       },

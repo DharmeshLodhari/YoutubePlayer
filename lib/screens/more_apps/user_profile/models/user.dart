@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/models/rider_model.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/util.dart';
 
@@ -280,6 +281,21 @@ class User {
     map["url"] = url;
     map["rating"] = rating;
     return map;
+  }
+
+  UserFollowers toUserFollowerModel() {
+    UserFollowers userFollowers = UserFollowers();
+    userFollowers.avatar = avatar;
+    return userFollowers;
+  }
+
+  SharedCartMemberModel convertToUser() {
+    SharedCartMemberModel user = SharedCartMemberModel();
+
+    user.userName = userName;
+    user.avatar = avatar;
+    user.fullName = fullName;
+    return user;
   }
 
   String? displayName() {

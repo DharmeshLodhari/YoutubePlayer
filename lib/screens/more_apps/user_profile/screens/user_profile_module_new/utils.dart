@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
+import 'package:flutter/material.dart';
+
 import '../../../yarn/models/Topics/yarn_model.dart';
 
 Widget getFollowersWidget(widget,
@@ -30,6 +31,30 @@ Widget followersWidget(
     double radiusShift: 10,
     double radiusHeight: 32,
     double radiusWidth: 32}) {
+  int count = userImages!.length;
+  if (count == 0) {
+    return SizedBox();
+  } else if (4 > count) {
+    return buildStackedFollowersWidget(
+        images: userImages, radiusSize: radiusSize, radiusShift: radiusShift);
+  } else if (4 <= count) {
+    return buildMultipleFollowersWidget(
+        userImages: userImages,
+        radiusSize: radiusSize,
+        radiusShift: radiusShift,
+        radiusHeight: radiusHeight,
+        radiusWidth: radiusWidth);
+  } else {
+    return SizedBox();
+  }
+}
+
+Widget getMembersWidget(
+    {List<UserFollowers>? userImages,
+    double radiusSize: 20,
+    double radiusShift: 10,
+    double radiusHeight: 20,
+    double radiusWidth: 20}) {
   int count = userImages!.length;
   if (count == 0) {
     return SizedBox();

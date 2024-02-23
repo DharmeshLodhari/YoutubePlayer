@@ -177,9 +177,15 @@ class SharedCartScreenState extends State<SharedCartScreen> {
                       userImages: sharedCartBloc.cartList[index]
                           .convertToUserFollowersList()),
                   trailing: getTrailing(index),
-                  onTap: () {
+                  onTap: () async {
                     sharedCartBloc.currentSelectedIndex = index;
-                    Navigator.of(context).pushNamed(Routes.SHARED_CARD_DETAILS);
+
+                    var result = await Navigator.of(context)
+                        .pushNamed(Routes.SHARED_CARD_DETAILS);
+
+                    if (result != null && result is bool && result == true) {
+                      _onRefresh();
+                    }
                   },
                 ),
               ),
@@ -208,7 +214,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
 
   Widget getTrailing(int index) {
     return Container(
-      width: 100,
+      width: 120,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

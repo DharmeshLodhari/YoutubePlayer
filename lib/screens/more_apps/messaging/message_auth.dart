@@ -21,7 +21,7 @@ import 'chat/models/channel_model.dart';
 class MessageAuth extends AuthService {
   // Send email to user.
   Future<bool> sendMessage(Map data) async {
-    var url = AppConfig.baseUrl + "/api/v1/messaging/send/";
+    String url = AppConfig.baseUrl + "/api/v1/messaging/send/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, body: _data, headers: headers);
@@ -36,7 +36,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> sendSocketMessage(Map data, File media, {File? poster}) async {
-    var url = AppConfig.chatUrl + "/api/v1/chat/create/";
+    String url = AppConfig.chatUrl + "/api/v1/chat/create/";
     var headers = await getAuthHeaders();
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -85,7 +85,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> sendReplyMessage(
       {String? messageId, String? data, String? conversationId}) async {
-    var url = AppConfig.chatUrl +
+    String url = AppConfig.chatUrl +
         "/api/v1/chat/reply-chat-message/$messageId/$conversationId/";
     var headers = await getAuthHeaders();
     debugPrint(
@@ -102,7 +102,7 @@ class MessageAuth extends AuthService {
 
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
   Future<bool> updateMessage(String id, String action) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/messaging/update/" +
         id +
         "/" +
@@ -122,7 +122,7 @@ class MessageAuth extends AuthService {
 
   // it will delete the message
   Future<bool> deleteMessage(String id) async {
-    var url = AppConfig.baseUrl + "/api/v1/messaging/delete/" + id + "/";
+    String url = AppConfig.baseUrl + "/api/v1/messaging/delete/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
     if (response.statusCode == 204) {
@@ -136,7 +136,7 @@ class MessageAuth extends AuthService {
 
   // Get single message
   Future<Message> getMessage(String id) async {
-    var url = AppConfig.baseUrl + "/api/v1/messaging/read/" + id + "/";
+    String url = AppConfig.baseUrl + "/api/v1/messaging/read/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -169,7 +169,7 @@ class MessageAuth extends AuthService {
 
   // Get single message
   Future<int> getUnreadMessageCount() async {
-    var url = AppConfig.baseUrl + "/api/v1/messaging/unread-count/";
+    String url = AppConfig.baseUrl + "/api/v1/messaging/unread-count/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -184,7 +184,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<int> getUnreadNotificationCount() async {
-    var url = AppConfig.baseUrl + "/api/v1/social/ask/notifications-count/";
+    String url = AppConfig.baseUrl + "/api/v1/social/ask/notifications-count/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -201,7 +201,7 @@ class MessageAuth extends AuthService {
   // List messages filters: [archived,sent,starred,all]
   Future<Map<String, dynamic>?> listMessages(String? next, String? previous,
       {String? filter}) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -264,7 +264,7 @@ class MessageAuth extends AuthService {
   // List messages filters: [archived,sent,starred,all]
   Future<Map<String, dynamic>?> getChatMessages(String? next, String? previous,
       {String? conversionId}) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -308,7 +308,7 @@ class MessageAuth extends AuthService {
 
   // Get status of the user you are chatting with
   Future<Map?> getChatUserStatus(String id) async {
-    var url = AppConfig.chatUrl +
+    String url = AppConfig.chatUrl +
         "/api/v1/chat/retrieve-user-chat-status/" +
         id +
         "/";
@@ -359,7 +359,7 @@ class MessageAuth extends AuthService {
 
   Future<ChatConversation> createGroupChat(
       {required AddGroupModel group, required String type}) async {
-    var url = AppConfig.baseUrl + "/api/v1/user/group-conversation/";
+    String url = AppConfig.baseUrl + "/api/v1/user/group-conversation/";
     var headers = await getAuthHeaders();
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -439,7 +439,7 @@ class MessageAuth extends AuthService {
 
   Future<Map<String, dynamic>?> updateGroupChat(
       {required AddGroupModel group}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/${group.groupConversationId}/";
     var headers = await getAuthHeaders();
 
@@ -505,7 +505,7 @@ class MessageAuth extends AuthService {
   // Get status of the user you are chatting with
   Future<GroupDetailModel> getGroupConversationDetail(
       String conversationID) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/detail/" +
         conversationID +
         "/";
@@ -527,7 +527,7 @@ class MessageAuth extends AuthService {
 
   // Get status of the user you are chatting with
   Future<dynamic> fetchChannels() async {
-    var url = AppConfig.baseUrl + "/api/v1/chat/conversation/channels/";
+    String url = AppConfig.baseUrl + "/api/v1/chat/conversation/channels/";
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers)
@@ -548,7 +548,7 @@ class MessageAuth extends AuthService {
   Future<bool> addParticipantToGroup(
       {required String conversationId,
       required List<CustomerProfile> users}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/add-user/" +
         conversationId +
         "/";
@@ -574,7 +574,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> joinChannel(
       {required String channelId, required String userName}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/join-channel/" +
         channelId +
         "/";
@@ -605,7 +605,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> removeParticipantFromAdmin(
       {required String conversationId, String? userName}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/remove-admin-user/" +
         conversationId +
         "/";
@@ -627,7 +627,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> makeParticipantAdmin(
       {required String conversationId, String? userName}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/add-admin-user/" +
         conversationId +
         "/";
@@ -649,7 +649,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> muteParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/mute-participant/" +
         conversationId +
         "/";
@@ -671,7 +671,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> unMuteParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/unmute-participant/" +
         conversationId +
         "/";
@@ -693,7 +693,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> blockParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/block-participants/" +
         conversationId +
         "/";
@@ -715,7 +715,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> unBlockParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/unblock-participants/" +
         conversationId +
         "/";
@@ -737,7 +737,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> removeParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/remove-user/" +
         conversationId +
         "/";
@@ -758,7 +758,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> exitFromGroup({required String conversationId}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/exit-group/" +
         conversationId +
         "/";
@@ -776,7 +776,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> deleteGroup({required String conversationId}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/delete-group/" +
         conversationId +
         "/";
@@ -801,7 +801,7 @@ class MessageAuth extends AuthService {
   Future<Map<String, dynamic>?> searchParticipantInGroup(
       String? next, String? previous,
       {String? conversationId, String? query}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/search-participants/$conversationId";
     if (query != "") {
       url = url + "?q=$query/";
@@ -832,7 +832,7 @@ class MessageAuth extends AuthService {
   }
 
   void sendStopNudge({Map<String, dynamic>? dataToSend}) async {
-    var url = AppConfig.chatUrl + "/api/v1/chat/conversation/stop-nudge/";
+    String url = AppConfig.chatUrl + "/api/v1/chat/conversation/stop-nudge/";
     var headers = await getAuthHeaders();
 
     var response =
@@ -848,7 +848,7 @@ class MessageAuth extends AuthService {
 
   Future<Map<String, dynamic>?> fetchMissedMessages(
       {String? next, String? previous}) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -888,7 +888,7 @@ class MessageAuth extends AuthService {
 
   Future<Map<String, dynamic>?> acknowledgeMessagesToServer(
       {List? dataToBeSent}) async {
-    var url = AppConfig.chatUrl + "/api/v1/chat/acknowledge-messages/";
+    String url = AppConfig.chatUrl + "/api/v1/chat/acknowledge-messages/";
 
     var headers = await getAuthHeaders();
 
@@ -933,7 +933,7 @@ class MessageAuth extends AuthService {
 
   Future<Map<String, dynamic>?> readByRecipientToServer(
       {Map<String, dynamic>? dataToBeSent}) async {
-    var url = AppConfig.chatUrl +
+    String url = AppConfig.chatUrl +
         "/api/v1/chat/acknowledge-message-read-by-recipient/";
 
     var headers = await getAuthHeaders();
@@ -959,7 +959,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> sendEnvelope(
       {required bool isEmpty, Map<String, dynamic>? data}) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/magic-envelop/";
+    String url = AppConfig.baseUrl + "/api/v1/transactions/magic-envelop/";
 
     if (isEmpty) {
       url = AppConfig.baseUrl + "/api/v1/transactions/empty-envelop/";
@@ -983,7 +983,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> putMoneyInEnvelope(
       {Map<String, dynamic>? data, required Envelope envelope}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/transactions/empty-envelop/${envelope.id}/";
 
     var headers = await getAuthHeaders();
@@ -1005,7 +1005,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<Envelope> getEnvelope({required Envelope envelope, String? id}) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/transactions/magic-envelop/${envelope.id.toString()}/?message_id=$id";
 
     var headers = await getAuthHeaders();
@@ -1031,7 +1031,7 @@ class MessageAuth extends AuthService {
 
     // debugPrint("Message DATA:- $data");
 
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/transactions/cancel-envelop/$type/${envelope.id}/";
 
     var headers = await getAuthHeaders();
@@ -1058,7 +1058,7 @@ class MessageAuth extends AuthService {
 
   Future<List<GIFModel>> searchGIF(
       {String? query, bool isRandom = false, bool isSticker = false}) async {
-    var url = "";
+    String url = "";
 
     url =
         "https://api.giphy.com/v1/${isSticker ? "stickers" : "gifs"}/search?api_key=${AppConfig.gifApiKey}&q=$query&limit=50";
@@ -1100,7 +1100,7 @@ class MessageAuth extends AuthService {
       {String? filter}) async {
     await Future.delayed(Duration(seconds: 1));
 
-    var url = "";
+    String url = "";
 
     // if (next == null) {
     //   return null;
@@ -1153,7 +1153,7 @@ class MessageAuth extends AuthService {
 
   Future<BasePaginationModel<List<ChannelModel>>> getChannels(
       {required String? nextUrl, String? searchText, String? ownerName}) async {
-    var url = AppConfig.baseUrl + "/api/v1/user/channels/";
+    String url = AppConfig.baseUrl + "/api/v1/user/channels/";
 
     if (searchText != null && searchText.isNotEmpty) {
       url = url + "?search=$searchText";
@@ -1188,7 +1188,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> getSingleChannel({String? channelId}) async {
-    var url = AppConfig.baseUrl + "/api/v1/user/get-channel/";
+    String url = AppConfig.baseUrl + "/api/v1/user/get-channel/";
 
     if (channelId != null && channelId.isNotEmpty) {
       url = url + "$channelId" + "/";

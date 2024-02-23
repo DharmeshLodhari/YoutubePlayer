@@ -6,7 +6,6 @@ import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
@@ -34,13 +33,9 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   late UserBloc userBloc;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _sharedScrollController = new ScrollController();
   AppConfigurationModel? appConfigurationModel;
   bool isLoading = false;
-  int? count = 0;
-  bool noDataInList = false;
-  String? next = "";
-  String? previous = "";
+  bool isQtyChange = false;
 
   final GlobalKey<ScaffoldMessengerState> _cartItemScaffoldMessengerKey =
       new GlobalKey<ScaffoldMessengerState>();
@@ -57,121 +52,14 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
 
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getCartItemsList();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      isLoading = true;
+      if (mounted) setState(() {});
+      await sharedCartBloc.refreshSharedCart(
+          context, sharedCartBloc.getSharedCartModel());
+      isLoading = false;
+      if (mounted) setState(() {});
     });
-
-    _sharedScrollController.addListener(() {
-      if (_sharedScrollController.position.pixels ==
-              _sharedScrollController.position.maxScrollExtent &&
-          _sharedScrollController.position.pixels != 0) {
-        getCartItemsList();
-      }
-    });
-  }
-
-  Future<void> getCartItemsList() async {
-    sharedCartBloc.getSharedCartModel().basketItems.clear();
-    if (!isLoading) {
-      if (next != null && !isLoading) {
-        isLoading = true;
-        if (mounted) setState(() {});
-
-        Map<String, dynamic>? result = await SharedCartAuthService()
-            .getCartItemDetails(
-                sharedCartBloc.getSharedCartModel().id, next, previous);
-
-        if (result == null) {
-          noDataInList = true;
-
-          isLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
-          return;
-        }
-
-        count = result['count'];
-        next = result['next'];
-        previous = result['previous'];
-        var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            noDataInList = false;
-            isLoading = false;
-            String? currentUser = userBloc.user.userName;
-
-            for (var element in tempList) {
-              String type = element is Product ? "product" : "service";
-
-              // debugPrint('Variant Data element: $element');
-
-              if (element is Product) {
-                /// varient
-                List<Variant>? variantList = element.variantModels;
-
-                /// adds on
-                List<AddOns>? convertedList = element.addOnsModels;
-
-                if (variantList != null && variantList.isNotEmpty) {
-                  for (var variant in variantList) {
-                    sharedCartBloc.addItemToSharedCart(
-                        cart: sharedCartBloc.getSharedCartModel(),
-                        item: element,
-                        type: type,
-                        variant: variant,
-                        currentUser: currentUser,
-                        withApiCall: false);
-                  }
-                } else if (convertedList != null && convertedList.isNotEmpty) {
-                  sharedCartBloc.addItemToSharedCart(
-                      cart: sharedCartBloc.getSharedCartModel(),
-                      item: element,
-                      type: type,
-                      variant: null,
-                      addOns: convertedList,
-                      currentUser: currentUser,
-                      withApiCall: false);
-                } else {
-                  sharedCartBloc.addItemToSharedCart(
-                      cart: sharedCartBloc.getSharedCartModel(),
-                      item: element,
-                      type: type,
-                      currentUser: currentUser,
-                      withApiCall: false);
-                }
-              } else {
-                sharedCartBloc.addItemToSharedCart(
-                    cart: sharedCartBloc.getSharedCartModel(),
-                    item: element,
-                    type: type,
-                    variant: null,
-                    addOns: null,
-                    currentUser: currentUser,
-                    withApiCall: false);
-              }
-            }
-            if (tempList.isEmpty) {
-              sharedCartBloc.getSharedCartModel().basketItems.clear();
-            }
-          });
-        }
-      }
-      if (sharedCartBloc.getSharedCartModel().basketItems.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noDataInList = true;
-          });
-        }
-      } else if (next == null &&
-          sharedCartBloc.getSharedCartModel().basketItems.length > 6) {
-        _cartItemScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
-        ));
-      }
-    }
   }
 
   @override
@@ -184,6 +72,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       color: white,
       child: WillPopScope(
         onWillPop: () async {
+          Navigator.of(context).pop(isQtyChange);
           return true;
         },
         child: ScaffoldMessenger(
@@ -210,7 +99,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.of(context).pop(isQtyChange);
         },
       ),
       title: Text(
@@ -225,8 +114,13 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       ),
       actions: [
         InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed(Routes.SHARED_CART_MEMBERS);
+          onTap: () async {
+            var result = await Navigator.of(context)
+                .pushNamed(Routes.SHARED_CART_MEMBERS);
+
+            if (result != null && result is bool && result == true) {
+              _onRefresh();
+            }
           },
           child: Center(
             child: followersWidget(
@@ -264,23 +158,21 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   }
 
   Widget _buildListOfCartItems() {
-    if (isLoading) {
-      return Center(
-        child: CircularLoadingIndicator(),
-      );
-    }
-
-    return sharedCartBloc.getSharedCartModel().basketItems.isEmpty &&
-            isLoading == false
+    return isLoading
         ? Center(
-            child: NoItemInList(
-                msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
+            child: CircularLoadingIndicator(),
           )
-        : ListView.builder(
-            itemCount: sharedCartBloc.getSharedCartModel().basketItems.length,
-            itemBuilder: (BuildContext context, int index) =>
-                getItemTile(index),
-          );
+        : sharedCartBloc.getSharedCartModel().basketItems.isEmpty
+            ? Center(
+                child: NoItemInList(
+                    msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
+              )
+            : ListView.builder(
+                itemCount:
+                    sharedCartBloc.getSharedCartModel().basketItems.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    getItemTile(index),
+              );
   }
 
   Widget getItemTile(int index) {
@@ -297,14 +189,20 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
             confirmAddOnsDialog(data);
           } else {
             sharedCartBloc.increaseItemToSharedCart(
-                sharedCartBloc.getSharedCartModel(),
-                data: data);
+              sharedCartBloc.getSharedCartModel(),
+              data: data,
+              currentUser: userBloc.user.convertToUser(),
+            );
+            isQtyChange = true;
           }
         },
         onDecreaseQty: () {
           sharedCartBloc.decreaseItemToSharedCart(
-              sharedCartBloc.getSharedCartModel(),
-              data: data);
+            sharedCartBloc.getSharedCartModel(),
+            data: data,
+            currentUser: userBloc.user.convertToUser(),
+          );
+          isQtyChange = true;
         },
       );
     }
@@ -408,24 +306,24 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         ),
       ),
       onPressed: () {
-        // if (appConfigurationModel?.enableCheckout == true &&
-        //     sharedCartBloc.getSharedCartModel().customerUsername ==
-        //         userBloc.user.userName &&
-        //     sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice() !=
-        //         0) {
-        ShippingProcessBloc shippingProcessBloc =
-            Provider.of<ShippingProcessBloc>(context, listen: false);
-        shippingProcessBloc.currentSelectedIndex = null;
+        if (appConfigurationModel?.enableCheckout == true &&
+            sharedCartBloc.getSharedCartModel().customerUsername ==
+                userBloc.user.userName &&
+            sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice() !=
+                0) {
+          ShippingProcessBloc shippingProcessBloc =
+              Provider.of<ShippingProcessBloc>(context, listen: false);
+          shippingProcessBloc.currentSelectedIndex = null;
 
-        Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
-          'isSharedCart': true,
-          'sharedCartId': sharedCartBloc.getSharedCartModel().id
-        });
+          Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
+            'isSharedCart': true,
+            'sharedCartId': sharedCartBloc.getSharedCartModel().id
+          });
 
-        // Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
-        // } else {
-        //   showToast(message: 'Checkout not available now');
-        // }
+          Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+        } else {
+          showToast(message: 'Checkout not available now');
+        }
         // _buildCartPaymentRequestDialog(context);
       },
     );
@@ -503,20 +401,13 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
+    Connectivity().checkConnectivity().then((value) async {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        //clear old items
-        // sharedCartBloc.getSharedCartModel().basketItems.clear();
-        // basketBloc.total = 0;
-        //fetch items again
-        count = 0;
-        next = "";
-        previous = "";
-        noDataInList = false;
-        getCartItemsList();
-        // basketBloc.getTotalPrice();
+        if (mounted) setState(() {});
+        await sharedCartBloc.refreshSharedCart(
+            context, sharedCartBloc.getSharedCartModel());
         setState(() {
           // Call the callback function with the updated list
           //to pass the list back to edit product page
@@ -550,8 +441,11 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       },
       rightButtonOnPressed: () {
         sharedCartBloc.increaseItemToSharedCart(
-            sharedCartBloc.getSharedCartModel(),
-            data: data);
+          sharedCartBloc.getSharedCartModel(),
+          data: data,
+          currentUser: userBloc.user.convertToUser(),
+        );
+        isQtyChange = true;
       },
     );
   }

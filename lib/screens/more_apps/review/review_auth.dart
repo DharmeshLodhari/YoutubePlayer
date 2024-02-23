@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class ReviewAuth extends AuthService {
   // Fetch User Review Details
   Future<Map<String, dynamic>> fetchUserReviews({String? userName}) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
+    String url = AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     debugPrint(
@@ -25,7 +25,7 @@ class ReviewAuth extends AuthService {
 
   // Write User Reviews
   Future<bool> addUserReview(String userName, Map<String, dynamic> data) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
+    String url = AppConfig.baseUrl + "/api/v1/social/review/users/$userName/";
     Map<String, String> headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     debugPrint("Data:- $_data");
@@ -53,7 +53,7 @@ class ReviewAuth extends AuthService {
   // Write User Reviews
   Future<Review> updateUserReview(
       Review review, Map<String, dynamic> data) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
+    String url = AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
     Map<String, String> headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, body: _data, headers: headers);
@@ -81,7 +81,7 @@ class ReviewAuth extends AuthService {
 
   Future<Review> updateProductReview(
       Review review, Map<String, dynamic> data) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
+    String url = AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
     Map<String, String> headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, body: _data, headers: headers);
@@ -109,7 +109,7 @@ class ReviewAuth extends AuthService {
 
   Future<Review> updateServiceReview(
       Review review, Map<String, dynamic> data) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
+    String url = AppConfig.baseUrl + "/api/v1/social/reviews/${review.id}/";
     Map<String, String> headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, body: _data, headers: headers);
@@ -136,7 +136,8 @@ class ReviewAuth extends AuthService {
   }
 
   Future<Review> likeReview(Review review) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/reviews/like/${review.id}/";
+    String url =
+        AppConfig.baseUrl + "/api/v1/social/reviews/like/${review.id}/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers);
 
@@ -162,7 +163,7 @@ class ReviewAuth extends AuthService {
   }
 
   Future<Review> dislikeReview(Review review) async {
-    var url =
+    String url =
         AppConfig.baseUrl + "/api/v1/social/reviews/dislike/${review.id}/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers);
@@ -190,7 +191,7 @@ class ReviewAuth extends AuthService {
 
   // Write Product Reviews
   Future<bool> addProductReview(String id, Map<String, dynamic> data) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/review/products/$id/";
+    String url = AppConfig.baseUrl + "/api/v1/social/review/products/$id/";
     Map<String, String> headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     debugPrint("Data:- $_data");
@@ -217,7 +218,7 @@ class ReviewAuth extends AuthService {
 
   // Write Service Reviews
   Future<bool> addServiceReview(String id, Map<String, dynamic> data) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/review/services/$id/";
+    String url = AppConfig.baseUrl + "/api/v1/social/review/services/$id/";
     Map<String, String> headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     debugPrint("Data:- $_data");
@@ -244,7 +245,7 @@ class ReviewAuth extends AuthService {
 
   // Fetch Product Reviews
   Future<Map<String, dynamic>> fetchProductReviews({Product? product}) async {
-    var url =
+    String url =
         AppConfig.baseUrl + "/api/v1/social/review/products/${product?.id}/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -262,7 +263,7 @@ class ReviewAuth extends AuthService {
 
   Future<bool> checkIfCanReviewProductOrService(
       Map<String, dynamic> data) async {
-    var url = AppConfig.baseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/social/reviews/check-if-user-can-review-product-or-service/";
 
     var headers = await getAuthHeaders();
@@ -281,7 +282,7 @@ class ReviewAuth extends AuthService {
 
   // Fetch Service Reviews
   Future<Map<String, dynamic>> fetchServiceReviews({Service? service}) async {
-    var url =
+    String url =
         AppConfig.baseUrl + "/api/v1/social/review/services/${service?.id}/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);

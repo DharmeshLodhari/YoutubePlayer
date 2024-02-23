@@ -525,7 +525,7 @@ class YarnAuth extends AuthService {
   //edit Yarn and Question
   Future editYarnAndQuestion(Yarn yarn) async {
     var headers = await getAuthHeaders();
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/social/ask/${yarn.id}/edit-yarn-or-question/";
 
     //create multipart request for POST or PATCH method
@@ -746,7 +746,7 @@ class YarnAuth extends AuthService {
     log('ppppppp${addYarnAndQuestion.toJson().toString()}');
     debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
     var headers = await getAuthHeaders();
-    var url = "${AppConfig.baseUrl}/api/v1/social/ask/";
+    String url = "${AppConfig.baseUrl}/api/v1/social/ask/";
 
     if (channelUsername.isNotEmpty) {
       url = "${AppConfig.baseUrl}/api/v1/social/ask/channel/$channelUsername/";
@@ -867,7 +867,7 @@ class YarnAuth extends AuthService {
   }
 
   Future<bool> deleteYarnMedia(String mediaId) async {
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/social/ask/delete-yarn-media/$mediaId/";
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);

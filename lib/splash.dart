@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
@@ -46,6 +47,7 @@ class _SplashScreenState extends State<SplashScreen>
   String? userPassword;
   late SharedPreferences _sharedPreferences;
   late BasketBloc basketBloc;
+  late SharedCartBloc sharedCartBloc;
 
   // bool for to check if internet connection is available or not
   var hasConnection = true;
@@ -216,6 +218,7 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     precacheImage(AssetImage("assets/images/app_logo.png"), context);
     basketBloc = Provider.of<BasketBloc>(context);
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
 
     return WillPopScope(
       onWillPop: () async => Future.value(false),
@@ -531,6 +534,7 @@ class _SplashScreenState extends State<SplashScreen>
         String type = element is Product ? "product" : "service";
         basketBloc.addItemToCart(item: element, type: type, withApiCall: false);
       });
+      await sharedCartBloc.refreshAllCart(context);
     } catch (e) {
       errorText += "ERROR:- while loading shopping cart ITEM\n";
       debugPrint("ERROR:- while loading shopping cart ITEM");

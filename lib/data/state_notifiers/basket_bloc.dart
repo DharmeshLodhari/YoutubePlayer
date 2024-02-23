@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
@@ -88,21 +89,26 @@ class BasketBloc extends ChangeNotifier {
   }
 
   // this will add the product or service in the cart;
-  void addItemToCart(
-      {required PurchasableItem item,
-      required String type,
-      Variant? variant,
-      List<AddOns>? addOns,
-      bool withApiCall = true}) {
+  void addItemToCart({
+    required PurchasableItem item,
+    required String type,
+    Variant? variant,
+    List<AddOns>? addOns,
+    bool withApiCall = true,
+    SharedCartMemberModel? currentUser,
+  }) {
     if (variant != null) {
-      addItemInBasketWithVariants(item, type, variant,
+      addItemInBasketWithVariants(item, type, variant, currentUser,
           withApiCall: withApiCall);
     } else if (addOns != null && addOns.isNotEmpty) {
-      addItemInBasketWithAddOns(item, type, addOns, withApiCall: withApiCall);
+      addItemInBasketWithAddOns(item, type, addOns, currentUser,
+          withApiCall: withApiCall);
     } else if (variant != null && addOns != null && addOns.isEmpty) {
-      addItemInBasketWithQtyService(item, type, withApiCall: withApiCall);
+      addItemInBasketWithQtyService(item, type, currentUser,
+          withApiCall: withApiCall);
     } else {
-      addItemInBasketWithQtyService(item, type, withApiCall: withApiCall);
+      addItemInBasketWithQtyService(item, type, currentUser,
+          withApiCall: withApiCall);
     }
 
     addMerchantName(item);
@@ -158,8 +164,8 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMapCopy.remove(merchantFullName);
   }
 
-  void addItemInBasketWithVariants(
-      PurchasableItem item, String type, Variant variant,
+  void addItemInBasketWithVariants(PurchasableItem item, String type,
+      Variant variant, SharedCartMemberModel? currentUser,
       {bool withApiCall = true}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -212,7 +218,11 @@ class BasketBloc extends ChangeNotifier {
       /// if same item is not present then we will add new basket item with qty 1
       if (isSameItemPresent == false) {
         BasketItem basketItem = BasketItem(
-            type: type, item: item, qty: variant.quantity, variants: [variant]);
+          type: type,
+          item: item,
+          qty: variant.quantity,
+          variants: [variant],
+        );
         addedOrUpdatedItem = basketItem;
         _basketItems.add(basketItem);
       }
@@ -327,8 +337,8 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addItemInBasketWithAddOns(
-      PurchasableItem item, String type, List<AddOns>? addOns,
+  void addItemInBasketWithAddOns(PurchasableItem item, String type,
+      List<AddOns>? addOns, SharedCartMemberModel? currentUser,
       {bool withApiCall = true}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -494,7 +504,8 @@ class BasketBloc extends ChangeNotifier {
     return itemPriceValue * 1 + optionTotalPrice;
   }
 
-  void addItemInBasketWithQtyService(var item, String type,
+  void addItemInBasketWithQtyService(
+      var item, String type, SharedCartMemberModel? currentUser,
       {bool withApiCall = true}) {
     /// if we create or update existing basket item we will store that item to this variable
     /// for sending to server
@@ -506,6 +517,7 @@ class BasketBloc extends ChangeNotifier {
       if (element.item?.id == item.id) {
         flag = true;
         element.qty = int.parse(element.qty.toString()) + 1;
+
         addedOrUpdatedItem = element;
         debugPrint("Exising Item Added");
         return;
@@ -513,7 +525,11 @@ class BasketBloc extends ChangeNotifier {
     });
 
     if (!flag) {
-      BasketItem basketItem = BasketItem(item: item, qty: item.qty, type: type);
+      BasketItem basketItem = BasketItem(
+        item: item,
+        qty: (item as Product).qty,
+        type: type,
+      );
 
       _basketItems.add(basketItem);
 
@@ -760,7 +776,10 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void increaseQty(
-      {Product? currentProduct, BasketItem? data, bool withApiCall = true}) {
+      {Product? currentProduct,
+      BasketItem? data,
+      SharedCartMemberModel? currentUser,
+      bool withApiCall = true}) {
     if (currentProduct != null) {
       for (BasketItem item in _basketItems) {
         if (item.item?.id == currentProduct.id) {
@@ -836,7 +855,10 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void decreaseQty(
-      {Product? currentProduct, BasketItem? data, bool withApiCall = true}) {
+      {Product? currentProduct,
+      BasketItem? data,
+      SharedCartMemberModel? currentUser,
+      bool withApiCall = true}) {
     if (currentProduct != null) {
       for (BasketItem item in _basketItems) {
         if (item.item?.id == currentProduct.id) {
@@ -859,6 +881,7 @@ class BasketBloc extends ChangeNotifier {
               if (variant.id == data?.variants?.first.id) {
                 variant.quantity = (variant.quantity ?? 0) - 1;
                 basketItem.qty = (basketItem.qty ?? 0) - 1;
+
                 addedOrUpdatedItem = basketItem;
                 break;
               }

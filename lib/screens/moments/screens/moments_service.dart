@@ -5,8 +5,8 @@ import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-
 import "package:http/http.dart" as http;
+
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
 import '../../more_apps/yarn/models/Topics/CommentDetails.dart';
@@ -15,7 +15,7 @@ import '../models/comment_model.dart';
 class MomentsService extends AuthService {
   Future getExploreMoments(String? next, String? previous,
       {num? page_size}) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -62,7 +62,7 @@ class MomentsService extends AuthService {
   }
 
   Future getContactMoments({String? next, String? previous}) async {
-    var url = "";
+    String url = "";
     if (next == null) {
       return null;
     }
@@ -561,7 +561,7 @@ class MomentsService extends AuthService {
       {required String momentId,
       required Map<String, dynamic> data,
       String? channelUsername}) async {
-    var url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
+    String url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
 
     if (channelUsername!.isNotEmpty) {
       url =
@@ -599,7 +599,7 @@ class MomentsService extends AuthService {
   }
 
   Future<MomentsModel> likeMoment(String momentId) async {
-    var url = "${AppConfig.baseUrl}/api/v1/social/moments/like/$momentId/";
+    String url = "${AppConfig.baseUrl}/api/v1/social/moments/like/$momentId/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers);
 
@@ -628,7 +628,7 @@ class MomentsService extends AuthService {
   }
 
   Future<bool> updateMomentView(String momentId) async {
-    var url =
+    String url =
         "${AppConfig.baseUrl}/api/v1/social/moments/update-moment-view/$momentId/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -654,7 +654,8 @@ class MomentsService extends AuthService {
   }
 
   Future<MomentsModel> dislikeMoment(String momentId) async {
-    var url = "${AppConfig.baseUrl}/api/v1/social/moments/dislike/$momentId/";
+    String url =
+        "${AppConfig.baseUrl}/api/v1/social/moments/dislike/$momentId/";
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers);
 
@@ -683,7 +684,7 @@ class MomentsService extends AuthService {
   }
 
   Future<bool> deleteMoment(String momentId, String? channelUsername) async {
-    var url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
+    String url = "${AppConfig.baseUrl}/api/v1/social/moments/$momentId/";
 
     if (channelUsername!.isNotEmpty) {
       url =
@@ -706,7 +707,7 @@ class MomentsService extends AuthService {
   Future<BasePaginationModel<List<SearchMomentModel>>> searchMoment(
       {required String? nextPage, required String? searchText}) async {
     debugPrint('SEARCHED TEXT ---> $searchText');
-    var url;
+    String url;
 
     if (nextPage != null) {
       url = getSecureUrl(url: nextPage);

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
@@ -48,7 +49,7 @@ import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
 
 class ProductDetailPage extends StatefulWidget {
-  var arguments;
+  final arguments;
 
   ProductDetailPage({required this.arguments});
 
@@ -100,9 +101,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Map<String, List<Variant>> colorGroups = {};
   Map<String, List<Variant>> sizeGroups = {};
 
-  // List addOnList = [];
-  ScrollController scrollControllerAddOn = ScrollController();
-  bool isLoading = false;
+  final GlobalKey<ScaffoldMessengerState> _cartScaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -119,14 +119,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     if (mounted) setState(() {});
     fetchProduct(productId!);
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        if (!isOtherItemFetched) {
-          getOtherItems();
+
+    if ((window.physicalSize.longestSide / window.devicePixelRatio) >= 870) {
+      getOtherItems();
+    } else {
+      _scrollController.addListener(() {
+        if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
+          if (!isOtherItemFetched) {
+            getOtherItems();
+          }
         }
-      }
-    });
+      });
+    }
+
     canReviewProduct();
 
     fetchReviewList();
@@ -549,65 +555,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget addToCartWidget() {
     return GestureDetector(
-      onLongPress: () {
-        // if (product?.isProductAvailableNow() ?? false) {
-        if (isValidCustomer) {
-          if (product?.variantModels?.isNotEmpty ?? false) {
-            if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-              // print("Both color and size lists are showing.");
-              if (selectedVariant != null) {
-                showBottomSheetDialog();
-              } else {
-                showToast(
-                    message:
-                        AppLocalization.of(context)!.selectVariantColorSize);
-              }
-            } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-              // print("color list is showing.");
-              if (selectedVariant != null) {
-                showBottomSheetDialog();
-              } else {
-                showToast(
-                    message: AppLocalization.of(context)!.selectVariantSize);
-              }
-            } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-              // print("size list is showing.");
-              if (selectedVariant != null) {
-                showBottomSheetDialog();
-              } else {
-                showToast(
-                    message: AppLocalization.of(context)!.selectVariantColor);
-              }
-            }
-          } else if (product?.addOnsModels?.isNotEmpty ?? false) {
-            bool isRequired = product?.isAllRequiredProductSelected() ?? false;
-            if (isRequired == true) {
-              showBottomSheetDialog();
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!.selectRequiredAddons);
-            }
-          } else {
-            //product has no variant or is a service
-            showBottomSheetDialog();
-          }
-        } else {
-          showToast(
-              message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
-        }
-        // } else {
-        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
-        // }
-      },
-      child: RoundedBackgroundIcon(
-        onTap: () {
-          // if (product?.isProductAvailableNow() ?? false) {
+      onLongPress: () async {
+        if (product?.isProductAvailableNow() ?? false) {
           if (isValidCustomer) {
             if (product?.variantModels?.isNotEmpty ?? false) {
               if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
                 // print("Both color and size lists are showing.");
                 if (selectedVariant != null) {
-                  addToCart();
+                  showBottomSheetDialog();
                 } else {
                   showToast(
                       message:
@@ -616,7 +571,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
                 // print("color list is showing.");
                 if (selectedVariant != null) {
-                  addToCart();
+                  showBottomSheetDialog();
                 } else {
                   showToast(
                       message: AppLocalization.of(context)!.selectVariantSize);
@@ -624,7 +579,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
                 // print("size list is showing.");
                 if (selectedVariant != null) {
-                  addToCart();
+                  showBottomSheetDialog();
                 } else {
                   showToast(
                       message: AppLocalization.of(context)!.selectVariantColor);
@@ -634,23 +589,79 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               bool isRequired =
                   product?.isAllRequiredProductSelected() ?? false;
               if (isRequired == true) {
-                addToCart();
+                showBottomSheetDialog();
               } else {
                 showToast(
                     message: AppLocalization.of(context)!.selectRequiredAddons);
               }
             } else {
               //product has no variant or is a service
-              addToCart();
+              showBottomSheetDialog();
             }
           } else {
             showToast(
                 message:
                     AppLocalization.of(context)!.youCanNotPurchaseThisItem);
           }
-          // } else {
-          //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
-          // }
+        } else {
+          showToast(message: AppLocalization.of(context)!.productOutOfStock);
+        }
+      },
+      child: RoundedBackgroundIcon(
+        onTap: () {
+          if (product?.isProductAvailableNow() ?? false) {
+            if (isValidCustomer) {
+              if (product?.variantModels?.isNotEmpty ?? false) {
+                if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+                  // print("Both color and size lists are showing.");
+                  if (selectedVariant != null) {
+                    addToCart();
+                  } else {
+                    showToast(
+                        message: AppLocalization.of(context)!
+                            .selectVariantColorSize);
+                  }
+                } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+                  // print("color list is showing.");
+                  if (selectedVariant != null) {
+                    addToCart();
+                  } else {
+                    showToast(
+                        message:
+                            AppLocalization.of(context)!.selectVariantSize);
+                  }
+                } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+                  // print("size list is showing.");
+                  if (selectedVariant != null) {
+                    addToCart();
+                  } else {
+                    showToast(
+                        message:
+                            AppLocalization.of(context)!.selectVariantColor);
+                  }
+                }
+              } else if (product?.addOnsModels?.isNotEmpty ?? false) {
+                bool isRequired =
+                    product?.isAllRequiredProductSelected() ?? false;
+                if (isRequired == true) {
+                  addToCart();
+                } else {
+                  showToast(
+                      message:
+                          AppLocalization.of(context)!.selectRequiredAddons);
+                }
+              } else {
+                //product has no variant or is a service
+                addToCart();
+              }
+            } else {
+              showToast(
+                  message:
+                      AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+            }
+          } else {
+            showToast(message: AppLocalization.of(context)!.productOutOfStock);
+          }
         },
         borderRadius: 16,
         height: 44,
@@ -676,6 +687,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (result.id == 'my-cart') {
         addToCart();
       } else {
+        await sharedCartBloc.refreshSharedCart(context, result);
         addToSharedCart(result);
       }
     }
@@ -701,12 +713,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     Product products = product!.copyWith(qty: 1, withSelectedAddOn: true);
 
     sharedCartBloc.addItemToSharedCart(
-        cart: result,
-        item: products,
-        type: type,
-        variant: selectedVariant?.copyWith(quantity: 1),
-        addOns: products.addOnsModels,
-        currentUser: userBloc?.user.userName);
+      cart: result,
+      item: products,
+      type: type,
+      variant: selectedVariant?.copyWith(quantity: 1),
+      addOns: products.addOnsModels,
+      currentUser: userBloc?.user.convertToUser(),
+    );
   }
 
   Future<void> addToCartOld() async {

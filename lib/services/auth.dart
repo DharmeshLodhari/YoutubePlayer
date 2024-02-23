@@ -378,7 +378,7 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>?> listOfIndustries() async {
-    var url =
+    String url =
         AppConfig.baseUrl + "/api/v1/user/profile-industries/?page_size=200";
 
     debugPrint(url);
@@ -426,7 +426,7 @@ class AuthService {
 
   //register device
   Future<bool> registerDevice(Map data) async {
-    var url = AppConfig.baseUrl + "/api/v1/notification/register-device/";
+    String url = AppConfig.baseUrl + "/api/v1/notification/register-device/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
 
@@ -461,7 +461,7 @@ class AuthService {
 
   // it will tell the server our app is in which state
   Future<bool> updateAppState(Map data) async {
-    var url = AppConfig.baseUrl + "/api/v1/notification/update-app-state/";
+    String url = AppConfig.baseUrl + "/api/v1/notification/update-app-state/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response;
@@ -610,7 +610,7 @@ class AuthService {
     int count = API_CALL_RETRY_COUNT,
   }) async {
     Uri uri = Uri.parse(url);
-    debugPrint("URL:- $uri");
+    debugPrint("URL [GET]:- $uri");
 
     var response = await http
         .get(uri, headers: headers as Map<String, String>?)
@@ -640,6 +640,7 @@ class AuthService {
     int count = API_CALL_RETRY_COUNT,
   }) async {
     Uri uri = Uri.parse(url);
+    debugPrint("URL [POST]:- $uri");
     var response = await http
         .post(uri, headers: headers as Map<String, String>?, body: body)
         .timeout(newTimeOutDuration ?? timeOutDuration,
@@ -669,6 +670,7 @@ class AuthService {
     int count = API_CALL_RETRY_COUNT,
   }) async {
     Uri uri = Uri.parse(url);
+    debugPrint("URL [PATCH]:- $uri");
     var response = await http
         .patch(uri, headers: headers as Map<String, String>?, body: body)
         .timeout(newTimeOutDuration ?? timeOutDuration,
@@ -702,6 +704,7 @@ class AuthService {
       Duration? newTimeOutDuration,
       int count = API_CALL_RETRY_COUNT}) async {
     Uri uri = Uri.parse(url);
+    debugPrint("URL [DELETE]:- $uri");
     var response =
         await http.delete(uri, headers: headers as Map<String, String>?);
 
