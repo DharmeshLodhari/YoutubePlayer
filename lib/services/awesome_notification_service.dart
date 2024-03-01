@@ -21,10 +21,10 @@ class AwesomeNotificationService {
 
   AwesomeNotificationService._internal();
 
-  void init() {
+  Future<void> init() async {
     debugPrint("INITIALIZING AWESOME NOTIFICATION !!!");
     try {
-      awesomeNotifications.initialize(
+      await awesomeNotifications.initialize(
         'resource://drawable/app_icon',
         [
           NotificationChannel(
@@ -33,6 +33,8 @@ class AwesomeNotificationService {
             channelDescription: 'Notification channel for basic tests',
             defaultColor: Color(0xFF3F61DB),
             ledColor: Colors.white,
+            importance: NotificationImportance.Max,
+            channelShowBadge: true,
           ),
           // NotificationChannel(
           //     channelKey: 'badge_channel',

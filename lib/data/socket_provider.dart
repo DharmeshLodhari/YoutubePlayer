@@ -211,9 +211,6 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// for connecting the user socket
   Future<void> connect() async {
-    /// Todo: Uncomment code
-    return;
-
     _isConnected = false;
 
     /// change socket url according to recipient user url

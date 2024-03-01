@@ -355,6 +355,13 @@ class AppLocalization {
     );
   }
 
+  String get newCartAlert {
+    return Intl.message(
+      "New Cart Alert",
+      name: "newCartAlert",
+    );
+  }
+
   String get cartPaymentRequest {
     return Intl.message(
       "Cart Payment Request",
@@ -528,6 +535,13 @@ class AppLocalization {
     return Intl.message(
       "CANCEL",
       name: "cancel",
+    );
+  }
+
+  String get viewCart {
+    return Intl.message(
+      "View Cart",
+      name: "viewCart",
     );
   }
 

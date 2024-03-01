@@ -152,49 +152,46 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
           actionOneText: "Cancel",
           actionTwoText: "Create Cart",
           firstActionPrimary: false,
-          content: Padding(
-            padding: const EdgeInsets.only(left: 0.0, right: 0, top: 20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 10),
-                    child: Row(
-                      children: [
-                        Spacer(),
-                        Text("Name Cart",
-                            style: TextStyle(
-                                color: blackFont,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0),
-                            textAlign: TextAlign.center),
-                        Spacer(),
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: Icon(Icons.highlight_off_rounded))
-                      ],
-                    ),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                // Container(
+                //   margin: EdgeInsets.only(right: 10),
+                // child: Row(
+                //   children: [
+                // Spacer(),
+                Text("Name Cart",
+                    style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
+                    textAlign: TextAlign.center),
+                // Spacer(),
+                // IconButton(
+                //     onPressed: () {
+                //       Navigator.pop(context);
+                //     },
+                //     icon: Icon(Icons.highlight_off_rounded))
+                // ],
+                // ),
+                // ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  child: CustomizedTextFormField(
+                    labelText: "Name",
+                    validator: (val) {
+                      if (val.isNotEmpty) {
+                        return null;
+                      }
+                      return AppLocalization.of(context)!.pleaseEnterCartName;
+                    },
+                    onChanged: (val) {
+                      cartName = val;
+                    },
                   ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    child: CustomizedTextFormField(
-                      labelText: "Name",
-                      validator: (val) {
-                        if (val.isNotEmpty) {
-                          return null;
-                        }
-                        return AppLocalization.of(context)!.pleaseEnterCartName;
-                      },
-                      onChanged: (val) {
-                        cartName = val;
-                      },
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           leftButtonOnPressed: () async {

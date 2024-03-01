@@ -86,7 +86,7 @@ class _SearchProductTileState extends State<SearchProductTile> {
                             TextSpan(
                                 // text: widget.product.price.toString(),
                                 text: moneyDisplayNormalizer(
-                                    int.parse(widget.product.price.toString())),
+                                    widget.product.price),
                                 style: TextStyle(
                                   color: navyBlue,
                                   fontSize: 14,

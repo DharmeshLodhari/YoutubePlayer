@@ -144,7 +144,7 @@ class SharedCartModel {
         if (replaceUpdatedBy == true) {
           (element.item as Product).itemAddedBy = item.itemAddedBy;
           element.itemAddedBy = item.itemAddedBy;
-          element.qty = item.qty;
+          element.qty = (item as Product).quantity;
         }
 
         if (withApiCall == true) {
@@ -166,7 +166,7 @@ class SharedCartModel {
 
       BasketItem basketItem = BasketItem(
         item: item,
-        qty: (item as Product).qty,
+        qty: (item as Product).quantity,
         type: type,
         itemAddedBy: item.itemAddedBy,
       );
@@ -362,7 +362,7 @@ class SharedCartModel {
             if (replaceUpdatedBy == true) {
               (basketItem.item as Product).itemAddedBy = item.itemAddedBy;
               basketItem.itemAddedBy = item.itemAddedBy;
-              basketItem.qty = item.qty;
+              basketItem.qty = item.quantity;
             }
 
             if (withApiCall == true) {
@@ -436,7 +436,7 @@ class SharedCartModel {
       BasketItem basketItem = BasketItem(
           type: type,
           item: item,
-          qty: (item as Product).qty,
+          qty: (item as Product).quantity,
           addOns: addOns,
           itemAddedBy: item.itemAddedBy);
 
@@ -508,7 +508,7 @@ class SharedCartModel {
               }
             }
             basketItem.qty = (basketItem.qty ?? 0) + 1;
-            product.qty = (product.qty ?? 0) + 1;
+            product.quantity = (product.quantity ?? 0) + 1;
 
             if (withApiCall == true) {
               (basketItem.item as Product).getItemAddedByDetails(currentUser,
@@ -532,7 +532,7 @@ class SharedCartModel {
             Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) + 1;
-            product.qty = (product.qty ?? 0) + 1;
+            product.quantity = (product.quantity ?? 0) + 1;
 
             if (withApiCall == true) {
               (basketItem.item as Product).getItemAddedByDetails(currentUser,
@@ -608,7 +608,7 @@ class SharedCartModel {
             //   }
             // }
             basketItem.qty = (basketItem.qty ?? 0) - 1;
-            product.qty = (product.qty ?? 0) - 1;
+            product.quantity = (product.quantity ?? 0) - 1;
 
             if (withApiCall == true) {
               (basketItem.item as Product).getItemAddedByDetails(currentUser,
@@ -624,7 +624,7 @@ class SharedCartModel {
             Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) - 1;
-            product.qty = (product.qty ?? 0) - 1;
+            product.quantity = (product.quantity ?? 0) - 1;
 
             if (withApiCall == true) {
               (basketItem.item as Product).getItemAddedByDetails(currentUser,
@@ -676,15 +676,15 @@ class SharedCartModel {
                   int.parse(option.price.toString()) * option.quantity;
             }
           }
-          normalTotal = int.parse(product.price.toString()) *
-              int.parse(product.qty.toString());
+          normalTotal = product.getProductRealPrice() *
+              int.parse(product.quantity.toString());
           AddOnTotal = AddOnOptionTotal + normalTotal;
           totalPrice += AddOnTotal;
         } else {
           Product product = item.item as Product;
 
-          normalTotal = int.parse(product.price.toString()) *
-              int.parse(product.qty.toString());
+          normalTotal = product.getProductRealPrice() *
+              int.parse(product.quantity.toString());
           totalPrice += normalTotal;
         }
       }
@@ -806,9 +806,11 @@ class SharedCartMemberModel {
 
 class SharedMetaData {
   List<UserData>? userData;
+  List<PaymentDatum>? paymentData;
 
   SharedMetaData({
     this.userData,
+    this.paymentData,
   });
 
   factory SharedMetaData.fromJson(Map<String, dynamic> json) => SharedMetaData(
@@ -816,13 +818,29 @@ class SharedMetaData {
             ? []
             : List<UserData>.from(
                 json["user-data"]!.map((x) => UserData.fromJson(x))),
+        paymentData: json["payment-data"] == null
+            ? []
+            : List<PaymentDatum>.from(
+                json["payment-data"]!.map((x) => PaymentDatum.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "user-data": userData == null
             ? []
             : List<dynamic>.from(userData!.map((x) => x.toJson())),
+        "payment-data": paymentData == null
+            ? []
+            : List<dynamic>.from(paymentData!.map((x) => x.toJson())),
       };
+
+  bool isUserPaymentDone(String? userName) {
+    for (PaymentDatum paymentDoneUser in paymentData ?? []) {
+      if (userName == paymentDoneUser.fromCustomer) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 class CartItem {
@@ -896,5 +914,79 @@ class UserData {
         "currency": currency,
         "username": username,
         "percentage": percentage,
+      };
+}
+
+class PaymentDatum {
+  int? id;
+  dynamic slug;
+  String? notes;
+  int? amount;
+  String? status;
+  String? category;
+  String? currency;
+  DateTime? createdAt;
+  dynamic settledAt;
+  String? description;
+  String? toCustomer;
+  bool? isAnonymous;
+  String? fromCustomer;
+  bool? madeFromChat;
+  String? transactionId;
+
+  PaymentDatum({
+    this.id,
+    this.slug,
+    this.notes,
+    this.amount,
+    this.status,
+    this.category,
+    this.currency,
+    this.createdAt,
+    this.settledAt,
+    this.description,
+    this.toCustomer,
+    this.isAnonymous,
+    this.fromCustomer,
+    this.madeFromChat,
+    this.transactionId,
+  });
+
+  factory PaymentDatum.fromJson(Map<String, dynamic> json) => PaymentDatum(
+        id: json["id"],
+        slug: json["slug"],
+        notes: json["notes"],
+        amount: json["amount"],
+        status: json["status"],
+        category: json["category"],
+        currency: json["currency"],
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        settledAt: json["settled_at"],
+        description: json["description"],
+        toCustomer: json["to_customer"],
+        isAnonymous: json["is_anonymous"],
+        fromCustomer: json["from_customer"],
+        madeFromChat: json["made_from_chat"],
+        transactionId: json["transaction_id"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "slug": slug,
+        "notes": notes,
+        "amount": amount,
+        "status": status,
+        "category": category,
+        "currency": currency,
+        "created_at": createdAt?.toIso8601String(),
+        "settled_at": settledAt,
+        "description": description,
+        "to_customer": toCustomer,
+        "is_anonymous": isAnonymous,
+        "from_customer": fromCustomer,
+        "made_from_chat": madeFromChat,
+        "transaction_id": transactionId,
       };
 }

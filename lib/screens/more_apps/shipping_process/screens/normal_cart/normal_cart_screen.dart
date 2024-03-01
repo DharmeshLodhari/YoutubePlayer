@@ -110,8 +110,8 @@ class NormalCartScreenState extends State<NormalCartScreen> {
             child: _buildCartItemList()),
         Positioned(
           bottom: 40, // Adjust the distance from the bottom as needed
-          right: 20,
-          left: 20,
+          right: 0,
+          left: 0,
           child: checkoutWidget(),
         ),
       ],
@@ -356,7 +356,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
                 AddOnTotal += AddOnOptionPrice * quantity;
               }
 
-              int price = int.parse(product.price.toString());
+              int? price = product.getProductRealPrice();
               int quantity = item['qty'] ?? 0;
               int priceQuantity = price * quantity;
               totalPrice += AddOnTotal + priceQuantity;
@@ -382,15 +382,15 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
         if (product.addOnsModels != null && product.variantModels != null) {
           int normalTotal = 0;
-          normalTotal = int.parse(product.price.toString()) *
-              int.parse(item['qty'].toString());
+          normalTotal =
+              product.getProductRealPrice() * int.parse(item['qty'].toString());
           totalPrice += normalTotal;
         }
       } else if (product is Service) {
         itemTotal = int.parse(product.price.toString());
         totalPrice += itemTotal;
       } else {
-        itemTotal = int.parse(product.price.toString()) *
+        itemTotal = int.parse(product.getProductRealPrice()) *
             int.parse(product?.quantity?.toString() ?? "1");
         totalPrice += itemTotal;
       }

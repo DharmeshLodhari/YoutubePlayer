@@ -398,7 +398,7 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           Container(height: 10),
           Container(
-              padding: const EdgeInsets.only(left: 8.0), child: _appBar()),
+              padding: const EdgeInsets.only(left: 5.0), child: _appBar()),
           const SizedBox(
             height: 15,
           ),
@@ -979,7 +979,7 @@ class _HomeState extends State<Home> {
                   width: 3,
                 ),
                 userNameWithVerifiedIcon(
-                  name: appendStringDot(userBloc.user.displayName() ?? "", 15),
+                  name: appendStringDot(userBloc.user.displayName() ?? "", 8),
                   isVerified: userBloc.user.isVerified,
                   verifiedIconColor: verifyGreen,
                   textStyle: TextStyle(
@@ -993,54 +993,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           SizedBox(height: 5.0),
-          InkWell(
-            onTap: () {
-              if (!isEmpty) {
-                showChangeAddressDialog(context);
-              } else {
-                showNoAddressFoundDialog(context);
-              }
-            },
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 2.0, horizontal: 5.0),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: navyBlue)),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.location_pin,
-                        color: Colors.black,
-                        size: 18.0,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Text(
-                          isEmpty
-                              ? 'Select Location'
-                              : "${defaultAddress?.city}, ${defaultAddress?.stateName}",
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: 'Inter',
-                              color: black,
-                              fontWeight: FontWeight.w300),
-                        ),
-                      ),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Colors.black,
-                        size: 15.0,
-                      ),
-                    ],
-                  ),
-                ),
-                Container(),
-              ],
-            ),
-          ),
+          _buildCurrentLocation(),
         ],
       ),
       actions: <Widget>[
@@ -1064,7 +1017,7 @@ class _HomeState extends State<Home> {
         _cartBtn(),
         // const SizedBox(width: 8.0),
         // _settingBtn(),
-        const SizedBox(width: 8.0),
+        const SizedBox(width: 5.0),
       ],
     );
   }
@@ -1098,6 +1051,56 @@ class _HomeState extends State<Home> {
             .whenComplete(() => getAddressList());
         setState(() {});
       },
+    );
+  }
+
+  Widget _buildCurrentLocation() {
+    return InkWell(
+      onTap: () {
+        if (!isEmpty) {
+          showChangeAddressDialog(context);
+        } else {
+          showNoAddressFoundDialog(context);
+        }
+      },
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                border: Border.all(color: navyBlue)),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.location_pin,
+                  color: Colors.black,
+                  size: 18.0,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Text(
+                    isEmpty
+                        ? 'Select Location'
+                        : "${defaultAddress?.city}, ${defaultAddress?.stateName}",
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Inter',
+                        color: black,
+                        fontWeight: FontWeight.w300),
+                  ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.black,
+                  size: 15.0,
+                ),
+              ],
+            ),
+          ),
+          Container(),
+        ],
+      ),
     );
   }
 

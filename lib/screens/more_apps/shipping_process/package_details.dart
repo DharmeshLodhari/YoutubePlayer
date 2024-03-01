@@ -417,7 +417,7 @@ class _PackageDetailsState extends State<PackageDetails> {
 
   Widget getAddRemoveItems() {
     return Container(
-      width: 100,
+      width: 110,
       color: Colors.transparent,
       child: Center(
         child: Row(

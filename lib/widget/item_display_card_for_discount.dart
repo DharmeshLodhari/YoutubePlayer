@@ -116,7 +116,7 @@ class DisplayProductForDiscount extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    moneyDisplayNormalizer(int.parse(product.price!)),
+                    moneyDisplayNormalizer(product.price!),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,

@@ -556,56 +556,54 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget addToCartWidget() {
     return GestureDetector(
       onLongPress: () async {
-        if (product?.isProductAvailableNow() ?? false) {
-          if (isValidCustomer) {
-            if (product?.variantModels?.isNotEmpty ?? false) {
-              if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-                // print("Both color and size lists are showing.");
-                if (selectedVariant != null) {
-                  showBottomSheetDialog();
-                } else {
-                  showToast(
-                      message:
-                          AppLocalization.of(context)!.selectVariantColorSize);
-                }
-              } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-                // print("color list is showing.");
-                if (selectedVariant != null) {
-                  showBottomSheetDialog();
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantSize);
-                }
-              } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-                // print("size list is showing.");
-                if (selectedVariant != null) {
-                  showBottomSheetDialog();
-                } else {
-                  showToast(
-                      message: AppLocalization.of(context)!.selectVariantColor);
-                }
-              }
-            } else if (product?.addOnsModels?.isNotEmpty ?? false) {
-              bool isRequired =
-                  product?.isAllRequiredProductSelected() ?? false;
-              if (isRequired == true) {
+        // if (product?.isProductAvailableNow() ?? false) {
+        if (isValidCustomer) {
+          if (product?.variantModels?.isNotEmpty ?? false) {
+            if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+              // print("Both color and size lists are showing.");
+              if (selectedVariant != null) {
                 showBottomSheetDialog();
               } else {
                 showToast(
-                    message: AppLocalization.of(context)!.selectRequiredAddons);
+                    message:
+                        AppLocalization.of(context)!.selectVariantColorSize);
               }
-            } else {
-              //product has no variant or is a service
+            } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+              // print("color list is showing.");
+              if (selectedVariant != null) {
+                showBottomSheetDialog();
+              } else {
+                showToast(
+                    message: AppLocalization.of(context)!.selectVariantSize);
+              }
+            } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+              // print("size list is showing.");
+              if (selectedVariant != null) {
+                showBottomSheetDialog();
+              } else {
+                showToast(
+                    message: AppLocalization.of(context)!.selectVariantColor);
+              }
+            }
+          } else if (product?.addOnsModels?.isNotEmpty ?? false) {
+            bool isRequired = product?.isAllRequiredProductSelected() ?? false;
+            if (isRequired == true) {
               showBottomSheetDialog();
+            } else {
+              showToast(
+                  message: AppLocalization.of(context)!.selectRequiredAddons);
             }
           } else {
-            showToast(
-                message:
-                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+            //product has no variant or is a service
+            showBottomSheetDialog();
           }
         } else {
-          showToast(message: AppLocalization.of(context)!.productOutOfStock);
+          showToast(
+              message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
         }
+        // } else {
+        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
+        // }
       },
       child: RoundedBackgroundIcon(
         onTap: () {
@@ -1284,7 +1282,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                     if (checkDiscount(
                                         product!.discountIsActive!,
                                         product!.discountedPrice!,
-                                        num.parse(product!.price!)))
+                                        product!.price!))
                                       Positioned(
                                         top: 20,
                                         right: 10,
@@ -1587,12 +1585,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          moneyDisplayNormalizer(int.parse(((checkDiscount(
+                          moneyDisplayNormalizer((checkDiscount(
                                   product!.discountIsActive!,
                                   product!.discountedPrice!,
-                                  num.parse(product!.price!)))
-                              ? product!.discountedPrice.toString()
-                              : product!.price!))),
+                                  product!.price!))
+                              ? product!.discountedPrice
+                              : product!.price!),
                           style: TextStyle(
                               fontSize: 18.0,
                               color: navyBlue,
@@ -1603,10 +1601,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                   Row(
                     children: [
-                      if (checkDiscount(
-                          product!.discountIsActive!,
-                          product!.discountedPrice!,
-                          num.parse(product!.price!)))
+                      if (checkDiscount(product!.discountIsActive!,
+                          product!.discountedPrice!, product!.price!))
                         Row(
                           children: [
                             Text(
@@ -1620,8 +1616,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               ),
                             ),
                             Text(
-                              moneyDisplayNormalizer(
-                                  int.parse(product!.price!)),
+                              moneyDisplayNormalizer(product!.price!),
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,

@@ -74,7 +74,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     selectedCategory = "Shopping";
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getSharedCartListing();
+      // getSharedCartListing();
 
       amountController.text = moneyDisplayNormalizer(
           int.parse(shippingProcessBloc.getTotalOrder().toString()));
@@ -506,7 +506,14 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
   Widget buildMemberTile(int index) {
     SharedCartMemberModel? member =
         sharedCartBloc.getSharedCartModel().members?[index];
-    return member?.userName == userBloc.user.userName
+    return member?.userName == userBloc.user.userName &&
+            member?.userName !=
+                sharedCartBloc.getSharedCartModel().customerUsername &&
+            sharedCartBloc
+                    .getSharedCartModel()
+                    .metaData
+                    ?.isUserPaymentDone(member?.userName) ==
+                false
         ? _getSlidableWithLists(
             context,
             MemberPaymentTile(
@@ -518,7 +525,10 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
         : MemberPaymentTile(
             member: member,
             index: index,
-          );
+            isUserPaymentDone: sharedCartBloc
+                .getSharedCartModel()
+                .metaData
+                ?.isUserPaymentDone(member?.userName));
   }
 
   Widget _buildSplitEvenly() {
@@ -556,7 +566,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
             ),
           ),
           trailing: Container(
-            width: 100,
+            width: 110,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -621,8 +631,9 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
       child: CurvedButton(
         onPressed: () {
           if (sharedCartBloc.getSharedCartModel().splitBill == true) {
-            if (sharedCartBloc.getSharedCartModel().getTotalOfPercentage() ==
-                100) {
+            if (sharedCartBloc.getSharedCartModel().getSplitBillTotalPayment(
+                    shippingProcessBloc.getTotalOrder()) ==
+                shippingProcessBloc.getTotalOrder()) {
               requestForPayment();
             } else {
               showToast(message: "Total payment is not 100%");
@@ -703,13 +714,15 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     List<Map<String, dynamic>> dataList = [];
     for (SharedCartMemberModel member
         in sharedCartBloc.getSharedCartModel().members ?? []) {
-      Map<String, dynamic> data = {
-        "username": member.userName,
-        "currency": "NGN",
-        "amount": member.paymentValue,
-        "percentage": member.percentageValue,
-      };
-      dataList.add(data);
+      if (member.userName != userBloc.user.userName) {
+        Map<String, dynamic> data = {
+          "username": member.userName,
+          "currency": "NGN",
+          "amount": member.paymentValue,
+          "percentage": member.percentageValue,
+        };
+        dataList.add(data);
+      }
     }
     Map<String, dynamic> metaData = {
       "meta_data": {
@@ -775,8 +788,9 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
                   textAlign: TextAlign.center),
               Container(
                 margin:
-                    EdgeInsets.only(top: 25, bottom: 15, left: 20, right: 20),
+                    EdgeInsets.only(top: 25, bottom: 15, left: 30, right: 30),
                 child: RichText(
+                  textAlign: TextAlign.center,
                   text: TextSpan(
                     style: const TextStyle(
                       fontSize: 14.0,
@@ -793,7 +807,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
                           )),
                       TextSpan(
                           text:
-                              '${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(getAmountForDialog())} ',
+                              '${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(getUserCartAmount())} ',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: blackFont,
@@ -825,20 +839,13 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
   }
 
   Future<void> sendPayment() async {
-    int? amount = 0;
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
 
     await Future.delayed(const Duration(milliseconds: 500));
 
-    for (UserData user
-        in sharedCartBloc.getSharedCartModel().metaData?.userData ?? []) {
-      if (userBloc.user.userName == user.username) {
-        amount = user.amount;
-      }
-    }
-    if (userBloc.user.userName ==
+    if (userBloc.user.userName !=
         sharedCartBloc.getSharedCartModel().customerUsername) {
       var userLocation;
       Map deviceData;
@@ -886,7 +893,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
                   "to_customer":
                       sharedCartBloc.getSharedCartModel().customerUsername,
                   "currency": userBloc.user.currency,
-                  "amount": moneyInputNormalizer(amount.toString()),
+                  "amount": getUserCartAmount().toString(),
                   "category": "Shopping",
                   "notes": "Merchandise Payment in Shared cart",
                   "description": "Merchandise Payment in Shared cart",
@@ -905,9 +912,8 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
 
                   response = value;
                   if (response.statusCode == 200) {
-                    // popFromShoppingCart(product);
-                    //Pop Circular Progress Indicator
-
+                    debugPrint("Send Payment Successfully..");
+                    Navigator.pop(context);
                   } else if (response.statusCode == 400) {
                     Navigator.pop(context);
                     setState(() {
@@ -968,7 +974,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
   //   }
   // }
 
-  int getAmountForDialog() {
+  int getUserCartAmount() {
     int amount = 0;
     for (UserData user
         in sharedCartBloc.getSharedCartModel().metaData?.userData ?? []) {

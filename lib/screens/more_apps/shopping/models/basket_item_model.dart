@@ -56,7 +56,7 @@ class BasketItem {
       } else if (hasAddOns) {
         qty = this.qty ?? 0;
       } else {
-        qty = (item as Product).qty ?? 0;
+        qty = (item as Product).quantity ?? 0;
       }
     }
     return qty;

@@ -15,6 +15,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_m
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
@@ -139,8 +140,17 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
       }
 
       AwesomeNotificationService().showNotification(message: data);
-    }
+    } else if (notification["data"] != null &&
+        notification["data"]["alert_type"] != null &&
+        (notification["data"]["alert_type"] ==
+                "payment_request_in_shared_cart" ||
+            notification["data"]["alert_type"] == "added_to_new_shared_cart")) {
+      data['data'] = dataOfNotification['data'] is Map
+          ? dataOfNotification['data']
+          : jsonDecode(dataOfNotification['data']);
 
+      AwesomeNotificationService().showNotification(message: data);
+    }
     // Here is the push notification.
     else {
       data['notification'] = notification;
@@ -167,6 +177,10 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
         data['data'] = {"type": "orders-list"};
       } else if (action.toString().contains("/order-detail-page/")) {
         data['data'] = {"type": "order-detail-page"};
+      } else if (action.toString().contains("/shared-cart/")) {
+        data['data'] = {"type": "accounts"};
+      } else if (action.toString().contains("[/shared-cart/")) {
+        data['data'] = {"type": "shopping-cart"};
       } else {
         debugPrint("UNKNOWN NOTIFICATION TYPE $remoteMessage");
         return;
@@ -239,7 +253,7 @@ class PushNotificationService {
     /// "body":"User Updated Order Status","title":"Order Update",
     /// "priority":"normal","actions":"\/orders\/52"}}
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print("onMessage: ${message.data}");
       // creating notification from server payload
       Map<String, dynamic> notification = Platform.isIOS
@@ -270,6 +284,56 @@ class PushNotificationService {
             MainSocketMessageHandler(
                 message: jsonEncode(decodeMessage), isFCMMessage: true);
           }
+        }
+      } else if (notification["data"] != null &&
+          notification["data"]["alert_type"] != null &&
+          (notification["data"]["alert_type"] ==
+                  "payment_request_in_shared_cart" ||
+              notification["data"]["alert_type"] ==
+                  "added_to_new_shared_cart")) {
+        ///notification from android {body: You have been added to shared cart, title: Cart Update, actions: [/shared-cart/1b4dd92b-faa5-4ece-ae74-450013884347], image: http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg, data: {cart_id: 1b4dd92b-faa5-4ece-ae74-450013884347, cart_name: Testttt, alert_type: added_to_new_shared_cart}}
+        ///notification from android {body: You have a payment request for your cart., title: Cart Update, actions: /shared-cart/3bb7ee85-b5f9-48d8-affa-cf193ed66361, image: http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg, data: {cart_id: 3bb7ee85-b5f9-48d8-affa-cf193ed66361, amount: 480.0, cart_name: Test Cart, currency: ₦, alert_type: payment_request_in_shared_cart}}
+
+        switch (notification["data"]["alert_type"]) {
+          case 'payment_request_in_shared_cart':
+            if (isDialogueOpen) {
+              Navigator.pop(myGlobals.scaffoldKey.currentContext!);
+              isDialogueOpen = false;
+            }
+            if (!isDialogueOpen) {
+              isDialogueOpen = true;
+              // dialog for shared cart payment request
+              var result = await buildCartPaymentRequestDialog(
+                  context: myGlobals.scaffoldKey.currentContext!,
+                  notification: notification);
+
+              if (result != null && result as bool && result == true) {
+                isDialogueOpen = false;
+              } else {
+                isDialogueOpen = false;
+              }
+            }
+            break;
+          case 'added_to_new_shared_cart':
+            if (isDialogueOpen) {
+              Navigator.pop(myGlobals.scaffoldKey.currentContext!);
+              isDialogueOpen = false;
+            }
+            if (!isDialogueOpen) {
+              isDialogueOpen = true;
+              // dialog for new shared cart created
+              var result = await buildNewCartAlertDialog(
+                  context: myGlobals.scaffoldKey.currentContext!,
+                  notification: notification);
+
+              if (result != null && result as bool && result == true) {
+                isDialogueOpen = false;
+              } else {
+                isDialogueOpen = false;
+              }
+            }
+            break;
+          default:
         }
       } else {
         debugPrint('FRANK ELSE BLOCK LINE 265 ---> ${notification}');
@@ -422,6 +486,12 @@ class PushNotificationService {
               yarn: Yarn(),
               yarnId: yarnId,
             ));
+      } else if (payload.toString().contains('/shared-cart/')) {
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context).pushNamed(Routes.ACCOUNTS);
+      } else if (payload.toString().contains('[/shared-cart/')) {
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context).pushNamed(Routes.SHOPPING_CART);
       }
     } catch (error) {
       print("new error:- $error");

@@ -1065,8 +1065,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                           fontWeight: FontWeight.w400),
                     ),
                     Text(
-                      moneyDisplayNormalizer(
-                          int.parse(product.price.toString())),
+                      moneyDisplayNormalizer(product.price),
                       style: TextStyle(
                           color: getDescriptionColor(
                               isSend: isSend, isRepliedSend: isRepliedSend),

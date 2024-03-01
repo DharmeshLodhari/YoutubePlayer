@@ -61,11 +61,10 @@ class ModifiedCustomizedAlert {
         child: Center(
           child: SingleChildScrollView(
             child: AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20),
+              insetPadding: EdgeInsets.all(20),
               backgroundColor: style.backgroundColor ??
                   Theme.of(context).dialogBackgroundColor,
               shape: style.alertBorder ?? _defaultShape(),
-              titlePadding: EdgeInsets.all(0.0),
               title: Container(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Center(
@@ -123,7 +122,7 @@ class ModifiedCustomizedAlert {
                   children: _getButtons(),
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 )
               ]),
             ),

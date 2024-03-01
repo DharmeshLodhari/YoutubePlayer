@@ -192,7 +192,7 @@ class _ShoppingCartTileForProductState
     }
 
     return Container(
-      width: 100,
+      width: 110,
       color: Colors.transparent,
       child: Center(
         child: Row(
@@ -255,7 +255,7 @@ class _ShoppingCartTileForProductState
   }
 
   String getProductPrice() {
-    var totalPrice = int.parse(widget.item!.price!);
+    var totalPrice = widget.item!.price!;
 
     if (widget.variant != null) {
       totalPrice = 0;
@@ -266,8 +266,8 @@ class _ShoppingCartTileForProductState
   }
 
   String getTotalPrice() {
-    var totalPrice = (basketBloc.basketItems[widget.index!].qty ?? 0) *
-        int.parse(widget.item!.price!);
+    var totalPrice =
+        (basketBloc.basketItems[widget.index!].qty ?? 0) * widget.item!.price!;
 
     // Check if the item has a variant and is not empty
     if (widget.variant != null) {
@@ -279,7 +279,7 @@ class _ShoppingCartTileForProductState
     if (widget.addOn != null && widget.addOn!.isNotEmpty) {
       totalPrice = 0;
       totalPrice = (basketBloc.basketItems[widget.index!].qty ?? 0) *
-          int.parse(widget.item!.price!);
+          widget.item!.price!;
 
       var totalPrices = 0;
 
@@ -582,7 +582,7 @@ class _ShoppingCartTileForServiceState
         ? basketBloc.items[widget.index!]["qty"]
         : 0;
     return Container(
-      width: 100,
+      width: 110,
       color: Colors.transparent,
       child: Center(
         child: Row(

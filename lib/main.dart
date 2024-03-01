@@ -26,6 +26,7 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
+import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/local_notification_service.dart';
 import 'package:Slydo/services/route_observer.dart';
 import 'package:Slydo/services/route_provider.dart';
@@ -35,6 +36,7 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -72,16 +74,20 @@ void main() async {
   AppConfig();
 
   /// ENABLE and DISABLE Logs
-  AppConfig.enableLogs.value = false;
+  AppConfig.enableLogs.value = true;
 
   getAppFeaturesFromServer();
   await FlutterDownloader.initialize();
 
-  await LocalNotificationService().init();
-
-  await Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase
+      .initializeApp(); // initialize firebase before actual app get start.
 
   AwesomeNotificationService().init();
+
+  FirebaseMessaging.onBackgroundMessage(fcmBackgroundMessageHandler);
+
+  await LocalNotificationService().init();
 
   if (kDebugMode) {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);

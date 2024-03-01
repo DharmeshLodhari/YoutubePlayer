@@ -214,7 +214,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
 
   Widget getTrailing(int index) {
     return Container(
-      width: 120,
+      width: 110,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

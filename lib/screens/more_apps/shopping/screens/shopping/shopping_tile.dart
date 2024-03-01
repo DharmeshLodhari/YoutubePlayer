@@ -310,8 +310,7 @@ class _ShoppingTileWithHeartWithProductState
                                   fontSize: 14),
                             ),
                             Text(
-                              moneyDisplayNormalizer(
-                                  int.parse(widget.product!.price!)),
+                              moneyDisplayNormalizer(widget.product!.price!),
                               style: TextStyle(
                                 color: navyBlue,
                                 fontWeight: FontWeight.bold,

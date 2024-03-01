@@ -11,10 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MemberPaymentTile extends StatefulWidget {
-  MemberPaymentTile({this.member, this.index, super.key});
+  MemberPaymentTile(
+      {this.member, this.index, this.isUserPaymentDone, super.key});
 
   final int? index;
   final SharedCartMemberModel? member;
+  final bool? isUserPaymentDone;
 
   @override
   State<MemberPaymentTile> createState() => _MemberPaymentTileState();
@@ -118,7 +120,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
 
   Widget getTrailing() {
     return Container(
-      width: 100,
+      width: 110,
       padding: EdgeInsets.symmetric(vertical: 3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -145,12 +147,14 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                     fontSize: 14,
                     fontFamily: "Inter"),
               ),
-              // Image.asset(
-              //   height: 15,
-              //   width: 15,
-              //   "assets/images/check_mark.jpeg",
-              //   fit: BoxFit.fitWidth,
-              // ),
+              SizedBox(width: 3),
+              if (widget.isUserPaymentDone == true)
+                Image.asset(
+                  height: 15,
+                  width: 15,
+                  "assets/images/check_mark.jpeg",
+                  fit: BoxFit.fitWidth,
+                ),
             ],
           ),
         ],
@@ -222,6 +226,9 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                         labelColor: darkGrey,
                         validator: (val) {
                           if (val.isNotEmpty) {
+                            // if (int.parse(val) > 100) {
+                            //   return "Set percentage blow 100";
+                            // }
                             return null;
                           }
                           return AppLocalization.of(context)!
@@ -230,7 +237,10 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                         onChanged: (val) {
                           setState(() {
                             // _controller.text = val;
+
+                            // if (int.parse(val) <= 100) {
                             percentageValue = double.parse(val);
+                            // }
                           });
                         },
                       ),
@@ -249,11 +259,15 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                           max: 100,
                           inactiveColor: greyBorderColor,
                           activeColor: richPink,
-                          value: percentageValue,
+                          value: percentageValue <= 100 ? percentageValue : 0,
                           onChanged: (newValue) {
                             setState(() {
+                              // if (newValue > 100) {
+                              // showToast(message: "Set percentage blow 100");
+                              // } else {
                               _controller.text = newValue.floor().toString();
                               percentageValue = newValue;
+                              // }
                             });
                           },
                         ),
@@ -266,14 +280,16 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
           );
         }),
         ButtonOnPressed: () async {
-          sharedCartBloc.updatePercentageAndPrice(
-              cart: sharedCartBloc.getSharedCartModel(),
-              val: double.parse(_controller.text.trim()),
-              index: widget.index ?? 0,
-              context: context);
-          percentageValue = 0.0;
-          _controller.clear();
-          setState(() {});
+          if (_formKey.currentState!.validate()) {
+            sharedCartBloc.updatePercentageAndPrice(
+                cart: sharedCartBloc.getSharedCartModel(),
+                val: double.parse(_controller.text.trim()),
+                index: widget.index ?? 0,
+                context: context);
+            percentageValue = 0.0;
+            _controller.clear();
+            setState(() {});
+          }
         });
   }
 }

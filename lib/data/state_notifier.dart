@@ -194,8 +194,8 @@ class DashboardBloc extends ChangeNotifier {
       // unsecureScreen();
     }
     _index = value;
-    _pageController.animateToPage(_index,
-        duration: Duration(milliseconds: 1), curve: Curves.linear);
+    // _pageController.animateToPage(_index,
+    //     duration: Duration(milliseconds: 1), curve: Curves.linear);
     notifyListeners();
   }
 }

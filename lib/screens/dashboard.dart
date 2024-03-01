@@ -364,6 +364,12 @@ class _DashboardState extends State<Dashboard> {
         debugPrint('ERROR M -> $e');
         showToast(message: 'ERROR -> $e');
       });
+    } else if (notification['type'].toString().contains("accounts")) {
+      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.pushNamed(context, Routes.ACCOUNTS);
+    } else if (notification['type'].toString().contains("shopping-cart")) {
+      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.pushNamed(context, Routes.SHOPPING_CART);
     }
   }
 

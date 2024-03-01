@@ -72,15 +72,15 @@ class BasketBloc extends ChangeNotifier {
                   int.parse(option.price.toString()) * option.quantity;
             }
           }
-          normalTotal = int.parse(product.price.toString()) *
-              int.parse(product.qty.toString());
+          normalTotal = product.getProductRealPrice() *
+              int.parse(product.quantity.toString());
           AddOnTotal = AddOnOptionTotal + normalTotal;
           totalPrice += AddOnTotal;
         } else {
           Product product = item.item as Product;
 
-          normalTotal = int.parse(product.price.toString()) *
-              int.parse(product.qty.toString());
+          normalTotal = product.getProductRealPrice() *
+              int.parse(product.quantity.toString());
           totalPrice += normalTotal;
         }
       }
@@ -241,101 +241,101 @@ class BasketBloc extends ChangeNotifier {
     }
   }
 
-  void addItemInBasketWithVariantsOld(var item, String type, Variant variant) {
-    bool itemExists = false;
-
-    for (var element in _items) {
-      if (element["item"].id == item.id) {
-        // Check if the variant ID already exists in the item's variants list
-        bool variantIdExists = false;
-
-        Product product = element["item"];
-
-        if (product.variantModels!.isNotEmpty &&
-            product.variantModels != null) {
-          for (var existingVariant in product.variantModels!) {
-            if (existingVariant.id == variant.id) {
-              // Update the existing variant
-              int existingQuantity =
-                  int.tryParse(existingVariant.quantity.toString()) ?? 0;
-              int variantQuantity =
-                  int.tryParse(variant.quantity.toString()) ?? 0;
-              existingVariant.quantity = existingQuantity + variantQuantity;
-              existingVariant.localImages = variant.localImages;
-
-              variantIdExists = true;
-              break;
-            }
-          }
-        }
-
-        // If the variant doesn't exist, add it to the product's variants
-        if (!variantIdExists) {
-          // product.variant.add(variant);
-          (element["item"] as Product).variantModels?.add(variant);
-          notifyListeners();
-        }
-
-        // Increase the total quantity and exit the loop
-        element["qty"] = (int.tryParse(element["qty"].toString()) ?? 0) + 1;
-
-        if (variant.id != null) {
-          // The variant has a non-empty "id" key
-          String? price = variant.price;
-          // Subtract the previous variant price and add the updated variant price
-          _total = _total -
-              (int.tryParse(item.price)! *
-                  int.parse(variant.quantity.toString())) +
-              int.parse(price!);
-          itemExists = true;
-        } else {
-          // The variant does not have a valid "id" key
-          _total = _total + int.parse(item.price);
-          itemExists = true;
-        }
-
-        continue;
-      }
-    }
-
-    if (!itemExists) {
-      // Item doesn't exist in the basket, so create a new entry
-      var product = Product();
-      if (item is Product) {
-        product.quantity = variant.quantity;
-        product.id = item.id;
-        product.name = item.name;
-        product.price = item.price;
-        product.currency = item.currency;
-        product.seller = item.seller;
-        product.sellerFullName = item.sellerFullName;
-        product.sellerAvatar = item.sellerAvatar;
-        product.serverImages = item.serverImages;
-        product.description = item.description;
-        product.variantModels = item.variantModels;
-      }
-      var newItem = {
-        "type": type,
-        "item": product,
-        "qty": 1,
-        "variants": [variant]
-      };
-
-      _items.add(newItem);
-
-      if (variant.id != null) {
-        // The variant has a non-empty "id" key
-        String? price = variant.price;
-        _total = _total + int.parse(price!);
-        itemExists = true;
-      } else {
-        // The variant does not have a valid "id" key
-        _total = _total + int.parse(item.price);
-      }
-    }
-
-    notifyListeners();
-  }
+  // void addItemInBasketWithVariantsOld(var item, String type, Variant variant) {
+  //   bool itemExists = false;
+  //
+  //   for (var element in _items) {
+  //     if (element["item"].id == item.id) {
+  //       // Check if the variant ID already exists in the item's variants list
+  //       bool variantIdExists = false;
+  //
+  //       Product product = element["item"];
+  //
+  //       if (product.variantModels!.isNotEmpty &&
+  //           product.variantModels != null) {
+  //         for (var existingVariant in product.variantModels!) {
+  //           if (existingVariant.id == variant.id) {
+  //             // Update the existing variant
+  //             int existingQuantity =
+  //                 int.tryParse(existingVariant.quantity.toString()) ?? 0;
+  //             int variantQuantity =
+  //                 int.tryParse(variant.quantity.toString()) ?? 0;
+  //             existingVariant.quantity = existingQuantity + variantQuantity;
+  //             existingVariant.localImages = variant.localImages;
+  //
+  //             variantIdExists = true;
+  //             break;
+  //           }
+  //         }
+  //       }
+  //
+  //       // If the variant doesn't exist, add it to the product's variants
+  //       if (!variantIdExists) {
+  //         // product.variant.add(variant);
+  //         (element["item"] as Product).variantModels?.add(variant);
+  //         notifyListeners();
+  //       }
+  //
+  //       // Increase the total quantity and exit the loop
+  //       element["qty"] = (int.tryParse(element["qty"].toString()) ?? 0) + 1;
+  //
+  //       if (variant.id != null) {
+  //         // The variant has a non-empty "id" key
+  //         String? price = variant.price;
+  //         // Subtract the previous variant price and add the updated variant price
+  //         _total = _total -
+  //             (int.tryParse(item.getProductRealPrice())! *
+  //                 int.parse(variant.quantity.toString())) +
+  //             int.parse(price!);
+  //         itemExists = true;
+  //       } else {
+  //         // The variant does not have a valid "id" key
+  //         _total = _total + int.parse(item.getProductRealPrice());
+  //         itemExists = true;
+  //       }
+  //
+  //       continue;
+  //     }
+  //   }
+  //
+  //   if (!itemExists) {
+  //     // Item doesn't exist in the basket, so create a new entry
+  //     var product = Product();
+  //     if (item is Product) {
+  //       product.quantity = variant.quantity;
+  //       product.id = item.id;
+  //       product.name = item.name;
+  //       product.price = item.price;
+  //       product.currency = item.currency;
+  //       product.seller = item.seller;
+  //       product.sellerFullName = item.sellerFullName;
+  //       product.sellerAvatar = item.sellerAvatar;
+  //       product.serverImages = item.serverImages;
+  //       product.description = item.description;
+  //       product.variantModels = item.variantModels;
+  //     }
+  //     var newItem = {
+  //       "type": type,
+  //       "item": product,
+  //       "qty": 1,
+  //       "variants": [variant]
+  //     };
+  //
+  //     _items.add(newItem);
+  //
+  //     if (variant.id != null) {
+  //       // The variant has a non-empty "id" key
+  //       String? price = variant.price;
+  //       _total = _total + int.parse(price!);
+  //       itemExists = true;
+  //     } else {
+  //       // The variant does not have a valid "id" key
+  //       _total = _total + int.parse(item.getProductRealPrice());
+  //     }
+  //   }
+  //
+  //   notifyListeners();
+  // }
 
   void addItemInBasketWithAddOns(PurchasableItem item, String type,
       List<AddOns>? addOns, SharedCartMemberModel? currentUser,
@@ -410,7 +410,10 @@ class BasketBloc extends ChangeNotifier {
     /// if same item is not present then we will add new basket item with qty 1
     if (isSameItemPresent == false) {
       BasketItem basketItem = BasketItem(
-          type: type, item: item, qty: (item as Product).qty, addOns: addOns);
+          type: type,
+          item: item,
+          qty: (item as Product).quantity,
+          addOns: addOns);
       addedOrUpdatedItem = basketItem;
       _basketItems.add(basketItem);
     }
@@ -428,69 +431,68 @@ class BasketBloc extends ChangeNotifier {
     }
   }
 
-  void addItemInBasketWithAddOnsOld(var item, String type, List<AddOns>? addOns,
-      {bool withApiCall = true}) {
-    /// if we create or update existing basket item we will store that item to this variable
-    /// for sending to server
-    BasketItem? addedOrUpdatedItem;
-
-    bool itemExists = false;
-
-    _items.forEach((element) {
-      if (element["item"].id == item.id) {
-        itemExists = true;
-        element["qty"] = int.parse(element["qty"].toString()) + 1;
-        _total = _total + int.parse(item.price);
-        debugPrint("Exising Item Added");
-        return;
-      }
-    });
-
-    if (!itemExists) {
-      // Item doesn't exist in the basket, so create a new entry
-      var product = Product();
-      if (item is Product) {
-        product.quantity = item.quantity;
-        // product.quantity = addOn['quantity'];
-        product.id = item.id;
-        product.name = item.name;
-        product.price = item.price;
-        product.currency = item.currency;
-        product.seller = item.seller;
-        product.sellerFullName = item.sellerFullName;
-        product.sellerAvatar = item.sellerAvatar;
-        product.serverImages = item.serverImages;
-        product.description = item.description;
-        product.addOnsModels = addOns;
-      }
-      var newItem = {
-        "type": type,
-        "item": product,
-        "qty": item.quantity,
-        "add_ons": addOns
-      };
-
-      _items.add(newItem);
-
-      // Calculate the total price based on the add-on quantity and options
-      // int totalPrice = calculateTotalPrice(item.price, addOn);
-      _total = _total +
-          int.parse(product.price!) * int.parse(item.quantity.toString());
-      // _total += totalPrice;
-    }
-
-    notifyListeners();
-
-    /// add or update this item to the server
-    if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
-          addedOrUpdatedItem,
-          actionType: BasketListModifierAction.increaseQty);
-      if (data.payload.isNotEmpty) {
-        ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
-      }
-    }
-  }
+  // void addItemInBasketWithAddOnsOld(var item, String type, List<AddOns>? addOns,
+  //     {bool withApiCall = true}) {
+  //   /// if we create or update existing basket item we will store that item to this variable
+  //   /// for sending to server
+  //   BasketItem? addedOrUpdatedItem;
+  //
+  //   bool itemExists = false;
+  //
+  //   _items.forEach((element) {
+  //     if (element["item"].id == item.id) {
+  //       itemExists = true;
+  //       element["qty"] = int.parse(element["qty"].toString()) + 1;
+  //       _total = _total + int.parse(item.price);
+  //       debugPrint("Exising Item Added");
+  //       return;
+  //     }
+  //   });
+  //
+  //   if (!itemExists) {
+  //     // Item doesn't exist in the basket, so create a new entry
+  //     var product = Product();
+  //     if (item is Product) {
+  //       product.quantity = item.quantity;
+  //       // product.quantity = addOn['quantity'];
+  //       product.id = item.id;
+  //       product.name = item.name;
+  //       product.price = item.price;
+  //       product.currency = item.currency;
+  //       product.seller = item.seller;
+  //       product.sellerFullName = item.sellerFullName;
+  //       product.sellerAvatar = item.sellerAvatar;
+  //       product.serverImages = item.serverImages;
+  //       product.description = item.description;
+  //       product.addOnsModels = addOns;
+  //     }
+  //     var newItem = {
+  //       "type": type,
+  //       "item": product,
+  //       "qty": item.quantity,
+  //       "add_ons": addOns
+  //     };
+  //
+  //     _items.add(newItem);
+  //
+  //     // Calculate the total price based on the add-on quantity and options
+  //     // int totalPrice = calculateTotalPrice(item.price, addOn);
+  //     _total = _total + product.price! * int.parse(item.quantity.toString());
+  //     // _total += totalPrice;
+  //   }
+  //
+  //   notifyListeners();
+  //
+  //   /// add or update this item to the server
+  //   if (withApiCall && addedOrUpdatedItem != null) {
+  //     BasketListModifierPayload data = _basketItems.toPayload(
+  //         addedOrUpdatedItem,
+  //         actionType: BasketListModifierAction.increaseQty);
+  //     if (data.payload.isNotEmpty) {
+  //       ShoppingAuthService().addOrUpdateItemToShoppingCart(data.payload);
+  //     }
+  //   }
+  // }
 
   int calculateTotalPrice(String itemPrice, Map<String, dynamic> addOn) {
     int itemPriceValue = int.tryParse(itemPrice) ?? 0;
@@ -527,7 +529,7 @@ class BasketBloc extends ChangeNotifier {
     if (!flag) {
       BasketItem basketItem = BasketItem(
         item: item,
-        qty: (item as Product).qty,
+        qty: (item as Product).quantity,
         type: type,
       );
 
@@ -548,31 +550,31 @@ class BasketBloc extends ChangeNotifier {
     }
   }
 
-  void addItemInBasketWithQtyServiceOld(var item, String type) {
-    bool flag = false;
-
-    _items.forEach((element) {
-      if (element["item"].id == item.id) {
-        flag = true;
-        element["qty"] = int.parse(element["qty"].toString()) + 1;
-        _total = _total + int.parse(item.price);
-        debugPrint("Exising Item Added");
-        return;
-      }
-    });
-
-    if (!flag) {
-      if (item is Product) {
-        _items.add({"type": type, "item": item, "qty": 1});
-      } else {
-        _items.add({"type": type, "item": item, "qty": 1});
-      }
-
-      _total = _total + int.parse(item.price);
-      debugPrint("New Item Added");
-    }
-    notifyListeners();
-  }
+  // void addItemInBasketWithQtyServiceOld(var item, String type) {
+  //   bool flag = false;
+  //
+  //   _items.forEach((element) {
+  //     if (element["item"].id == item.id) {
+  //       flag = true;
+  //       element["qty"] = int.parse(element["qty"].toString()) + 1;
+  //       _total = _total + int.parse(item.price);
+  //       debugPrint("Exising Item Added");
+  //       return;
+  //     }
+  //   });
+  //
+  //   if (!flag) {
+  //     if (item is Product) {
+  //       _items.add({"type": type, "item": item, "qty": 1});
+  //     } else {
+  //       _items.add({"type": type, "item": item, "qty": 1});
+  //     }
+  //
+  //     _total = _total + int.parse(item.price);
+  //     debugPrint("New Item Added");
+  //   }
+  //   notifyListeners();
+  // }
 
   void increaseVariantQuantity(String selectedProductId, int variantId) {
     bool itemExists = false;
@@ -684,14 +686,14 @@ class BasketBloc extends ChangeNotifier {
       if (foundItem != null) {
         if (foundItem["qty"] > 1) {
           foundItem["qty"] = foundItem["qty"] - 1;
-          _total = _total - int.parse(item.price);
+          _total = _total - int.parse(item.getProductRealPrice());
         } else if (foundItem["qty"] == 1) {
           _items.remove(foundItem);
-          _total = _total - int.parse(item.price);
+          _total = _total - int.parse(item.getProductRealPrice());
           removeMerchantName(item);
         } else if (foundItem["qty"] == 0) {
           _items.remove(foundItem);
-          _total = _total - int.parse(item.price);
+          _total = _total - int.parse(item.getProductRealPrice());
           removeMerchantName(item);
         } else {
           debugPrint("ERROR while removing element");
@@ -822,7 +824,7 @@ class BasketBloc extends ChangeNotifier {
               }
             }
             basketItem.qty = (basketItem.qty ?? 0) + 1;
-            product.qty = (product.qty ?? 0) + 1;
+            product.quantity = (product.quantity ?? 0) + 1;
             addedOrUpdatedItem = basketItem;
             break;
           }
@@ -833,7 +835,7 @@ class BasketBloc extends ChangeNotifier {
             Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) + 1;
-            product.qty = (product.qty ?? 0) + 1;
+            product.quantity = (product.quantity ?? 0) + 1;
 
             addedOrUpdatedItem = basketItem;
             break;
@@ -901,7 +903,7 @@ class BasketBloc extends ChangeNotifier {
             //   }
             // }
             basketItem.qty = (basketItem.qty ?? 0) - 1;
-            product.qty = (product.qty ?? 0) - 1;
+            product.quantity = (product.quantity ?? 0) - 1;
             addedOrUpdatedItem = basketItem;
             break;
           }
@@ -912,7 +914,7 @@ class BasketBloc extends ChangeNotifier {
             Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) - 1;
-            product.qty = (product.qty ?? 0) - 1;
+            product.quantity = (product.quantity ?? 0) - 1;
 
             addedOrUpdatedItem = basketItem;
             break;
@@ -949,8 +951,8 @@ class BasketBloc extends ChangeNotifier {
         if (element['variants'] != null) {
           variants = element['variants'];
         } else {
-          subTotal +=
-              int.parse(element['qty'].toString()) * int.parse(item.price);
+          subTotal += int.parse(element['qty'].toString()) *
+              int.parse(item.getProductRealPrice());
         }
 
         if (variants.isEmpty) {
