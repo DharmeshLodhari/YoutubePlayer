@@ -179,7 +179,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
         data['data'] = {"type": "order-detail-page"};
       } else if (action.toString().contains("/shared-cart/")) {
         data['data'] = {"type": "accounts"};
-      } else if (action.toString().contains("[/shared-cart/")) {
+      } else if (action.toString().contains("/new-shared-cart/")) {
         data['data'] = {"type": "shopping-cart"};
       } else {
         debugPrint("UNKNOWN NOTIFICATION TYPE $remoteMessage");
@@ -291,9 +291,10 @@ class PushNotificationService {
                   "payment_request_in_shared_cart" ||
               notification["data"]["alert_type"] ==
                   "added_to_new_shared_cart")) {
-        ///notification from android {body: You have been added to shared cart, title: Cart Update, actions: [/shared-cart/1b4dd92b-faa5-4ece-ae74-450013884347], image: http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg, data: {cart_id: 1b4dd92b-faa5-4ece-ae74-450013884347, cart_name: Testttt, alert_type: added_to_new_shared_cart}}
+        ///{notification: {"image":"http:\/\/cdn.slydo.co.global.prod.fastly.net\/media\/customer\/avatar\/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg","body":"Received \u20A61.00","title":"Payment Received","priority":"normal","actions":"\/transaction"}}
+        ///notification from android {body: You have been added to shared cart, title: Cart Update, actions: /new-shared-cart/f581604c-dcfb-45e7-a2e4-82e91d25e133, image: http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg, data: {cart_id: f581604c-dcfb-45e7-a2e4-82e91d25e133, cart_name: new cart 1, alert_type: added_to_new_shared_cart}}
         ///notification from android {body: You have a payment request for your cart., title: Cart Update, actions: /shared-cart/3bb7ee85-b5f9-48d8-affa-cf193ed66361, image: http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg, data: {cart_id: 3bb7ee85-b5f9-48d8-affa-cf193ed66361, amount: 480.0, cart_name: Test Cart, currency: ₦, alert_type: payment_request_in_shared_cart}}
-
+        ///{notification: {"image":"http:\/\/cdn.slydo.co.global.prod.fastly.net\/media\/customer\/avatar\/ca75f781-3615-4e3c-9e65-803ebcf7eb4b.jpg","body":"User Placed An Order.","title":"Order Created","priority":"normal","actions":"\/orders-list"}}
         switch (notification["data"]["alert_type"]) {
           case 'payment_request_in_shared_cart':
             if (isDialogueOpen) {
@@ -410,7 +411,8 @@ class PushNotificationService {
         Navigator.of(context).pushNamed(Routes.CONTRACT_SCREEN);
       } else if (payload == "/transaction") {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.of(context).pushNamed(Routes.TRANSACTIONS);
+        Navigator.of(context)
+            .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
       } else if (payload == "/connection-request") {
         DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
             context ?? myGlobals.navigationKey.currentContext!,
@@ -489,7 +491,7 @@ class PushNotificationService {
       } else if (payload.toString().contains('/shared-cart/')) {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed(Routes.ACCOUNTS);
-      } else if (payload.toString().contains('[/shared-cart/')) {
+      } else if (payload.toString().contains('/new-shared-cart/')) {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed(Routes.SHOPPING_CART);
       }

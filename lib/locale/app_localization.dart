@@ -679,6 +679,13 @@ class AppLocalization {
     );
   }
 
+  String get sendPaymentSuccess {
+    return Intl.message(
+      "Send Payment Successfully !",
+      name: "sendPaymentSuccess",
+    );
+  }
+
   String get couldNotPlaceTheOrder {
     return Intl.message(
       "Could Not Place The Order",

@@ -578,7 +578,8 @@ class Product extends PurchasableItem {
 
   int getProductRealPrice() {
     if (discountedPrice != null || discountedPrice != 0) {
-      if (checkDiscount(discountIsActive!, discountedPrice!, price!)) {
+      if (checkDiscount(
+          discountIsActive ?? false, discountedPrice ?? 0, price ?? 0)) {
         return discountedPrice ?? 0;
       }
     }
@@ -653,7 +654,7 @@ class Product extends PurchasableItem {
     return imageLinks;
   }
 
-  Product copyWith({int? qty, bool withSelectedAddOn = false}) {
+  Product copyWith({int? quantity, bool withSelectedAddOn = false}) {
     Product product = Product(
       id: this.id,
       name: this.name ?? "",
@@ -691,7 +692,7 @@ class Product extends PurchasableItem {
       heightSiUnit: this.heightSiUnit,
       widthSiUnit: this.widthSiUnit,
       trackInventory: this.trackInventory,
-      quantity: this.quantity,
+      quantity: quantity ?? this.quantity,
       pricePercentageChange: this.pricePercentageChange ?? 0.0,
       // isSelected: this.isSelected ?? 0.0,
       // discountedPrice: object["discounted_price"],

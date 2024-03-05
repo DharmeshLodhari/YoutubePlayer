@@ -2002,7 +2002,9 @@ class RouteGenerator {
         );
       case Routes.SHARED_CARD_DETAILS:
         return PageTransition(
-          child: SharedCartDetails(),
+          child: SharedCartDetails(
+              // arguments: settings.arguments,
+              ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

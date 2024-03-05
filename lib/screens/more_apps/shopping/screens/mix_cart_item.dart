@@ -72,7 +72,11 @@ class _MixCartItemState extends State<MixCartItem> {
     List items = await ShoppingAuthService().getShoppingCart();
     items.forEach((element) {
       String type = element is Product ? "product" : "service";
-      basketBloc.addItemToCart(item: element, type: type);
+      basketBloc.addItemToCart(
+        item: element,
+        type: type,
+        currentUser: userBloc.user.convertToUser(),
+      );
     });
   }
 
@@ -393,7 +397,11 @@ class _MixCartItemState extends State<MixCartItem> {
   void addItem(int index) async {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
-    basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
+    basketBloc.addItemToCart(
+      item: basketBloc.items[index]["item"],
+      type: type,
+      currentUser: userBloc.user.convertToUser(),
+    );
     late var mapData;
     basketBloc.items.forEach((element) {
       if (element["item"].conversationID ==

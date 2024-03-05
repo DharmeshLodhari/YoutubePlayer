@@ -24,6 +24,10 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SharedCartDetails extends StatefulWidget {
+  // var arguments;
+  //
+  // SharedCartDetails({Key? key, this.arguments}) : super(key: key);
+
   @override
   State<SharedCartDetails> createState() => _SharedCartDetailsState();
 }
@@ -36,6 +40,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   AppConfigurationModel? appConfigurationModel;
   bool isLoading = false;
   bool isQtyChange = false;
+  // SharedCartModel sharedCartModel = SharedCartModel();
 
   final GlobalKey<ScaffoldMessengerState> _cartItemScaffoldMessengerKey =
       new GlobalKey<ScaffoldMessengerState>();
@@ -50,6 +55,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   void initState() {
     super.initState();
 
+    // sharedCartModel = widget.arguments["cart_details"];
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -288,10 +294,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   Widget _buildCheckoutButton(BuildContext context) {
     return MaterialButton(
       height: 40,
-      color: appConfigurationModel?.enableCheckout == true &&
-              sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice() != 0
-          ? navyBlue
-          : darkGrey,
+      color: navyBlue,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: const SizedBox(
         width: 66,
@@ -320,11 +323,58 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
               'sharedCartId': sharedCartBloc.getSharedCartModel().id
             });
           } else {
-            Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+            if (sharedCartBloc.getSharedCartModel().metaData?.userData !=
+                    null &&
+                sharedCartBloc
+                        .getSharedCartModel()
+                        .metaData
+                        ?.userData
+                        ?.isNotEmpty ==
+                    true) {
+              Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+            } else {
+              showToast(message: 'Checkout not available now');
+            }
           }
-        } else {
-          showToast(message: 'Checkout not available now');
         }
+        //   if (sharedCartBloc.getSharedCartModel().customerUsername ==
+        //       userBloc.user.userName) {
+        //     if (sharedCartBloc.getSharedCartModel().metaData?.userData ==
+        //             null &&
+        //         sharedCartBloc
+        //                 .getSharedCartModel()
+        //                 .metaData
+        //                 ?.userData
+        //                 ?.isEmpty ==
+        //             true) {
+        //       ShippingProcessBloc shippingProcessBloc =
+        //           Provider.of<ShippingProcessBloc>(context, listen: false);
+        //       shippingProcessBloc.currentSelectedIndex = null;
+        //
+        //       Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
+        //         'isSharedCart': true,
+        //         'sharedCartId': sharedCartBloc.getSharedCartModel().id
+        //       });
+        //     } else {
+        //       Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+        //     }
+        //   } else {
+        //     if (sharedCartBloc.getSharedCartModel().metaData?.userData !=
+        //             null &&
+        //         sharedCartBloc
+        //                 .getSharedCartModel()
+        //                 .metaData
+        //                 ?.userData
+        //                 ?.isNotEmpty ==
+        //             true) {
+        //       Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+        //     } else {
+        //       showToast(message: 'Checkout not available now');
+        //     }
+        //   }
+        // } else {
+        //   showToast(message: 'Checkout not available now');
+        // }
       },
     );
   }

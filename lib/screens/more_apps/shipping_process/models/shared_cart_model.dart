@@ -104,6 +104,43 @@ class SharedCartModel {
     return map;
   }
 
+  bool? splitBillStatus(bool userCartOwner) {
+    if (!userCartOwner || (metaData?.userData?.isNotEmpty ?? false)) {
+      splitBill = true;
+    } else {
+      splitBill;
+    }
+    return splitBill;
+  }
+
+  bool isUserPaymentDone(String? userName) {
+    for (PaymentDatum paymentDoneUser in metaData?.paymentData ?? []) {
+      if (userName == paymentDoneUser.fromCustomer) {
+        return true;
+      }
+    }
+    for (UserData user in metaData?.userData ?? []) {
+      if (userName == user.username &&
+          user.percentage == 0.0 &&
+          userName != customerUsername) {
+        return true;
+      }
+      if (userName == customerUsername) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool isAllCartPaymentDone() {
+    for (SharedCartMemberModel member in members ?? []) {
+      if (isUserPaymentDone(member.userName) == true) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // this will add the product or service in the cart;
   void addItemToCart(
       {required PurchasableItem item,
@@ -780,7 +817,9 @@ class SharedCartMemberModel {
               ?.where((element) => element.username == userName)
               .toList() ??
           [];
-      if (userData != null && userData.isNotEmpty) {
+      if (userData != null &&
+          userData.isNotEmpty &&
+          userData.isNotEmpty == true) {
         percentageValue = double.parse(userData.first.percentage.toString());
         paymentValue = userData.first.amount;
       }
@@ -832,15 +871,6 @@ class SharedMetaData {
             ? []
             : List<dynamic>.from(paymentData!.map((x) => x.toJson())),
       };
-
-  bool isUserPaymentDone(String? userName) {
-    for (PaymentDatum paymentDoneUser in paymentData ?? []) {
-      if (userName == paymentDoneUser.fromCustomer) {
-        return true;
-      }
-    }
-    return false;
-  }
 }
 
 class CartItem {

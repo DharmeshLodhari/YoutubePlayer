@@ -75,7 +75,7 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
   Future<void> initializeShoppingCart() async {
     isLoading = true;
-    await basketBloc.resetShoppingCart();
+    await basketBloc.resetShoppingCart(context);
     isLoading = false;
   }
 
@@ -229,11 +229,17 @@ class NormalCartScreenState extends State<NormalCartScreen> {
           if (data.hasAddOns) {
             confirmAddOnsDialog(data);
           } else {
-            basketBloc.increaseQty(data: data);
+            basketBloc.increaseQty(
+              data: data,
+              currentUser: userBloc.user.convertToUser(),
+            );
           }
         },
         onDecreaseQty: () {
-          basketBloc.decreaseQty(data: data);
+          basketBloc.decreaseQty(
+            data: data,
+            currentUser: userBloc.user.convertToUser(),
+          );
         },
       );
     }
@@ -512,7 +518,11 @@ class NormalCartScreenState extends State<NormalCartScreen> {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
-    basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
+    basketBloc.addItemToCart(
+      item: basketBloc.items[index]["item"],
+      type: type,
+      currentUser: userBloc.user.convertToUser(),
+    );
 
     late var mapData;
     basketBloc.items.forEach((element) {
@@ -698,7 +708,10 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         });
       },
       rightButtonOnPressed: () {
-        basketBloc.increaseQty(data: data);
+        basketBloc.increaseQty(
+          data: data,
+          currentUser: userBloc.user.convertToUser(),
+        );
       },
     );
   }

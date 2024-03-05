@@ -105,7 +105,7 @@ class SharedCartScreenState extends State<SharedCartScreen> {
           });
         }
       } else if (listNext == null && sharedCartBloc.cartList.length > 6) {
-        _sharedCartScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _sharedCartScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
@@ -161,7 +161,6 @@ class SharedCartScreenState extends State<SharedCartScreen> {
       color: Colors.white,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         shadowColor: boxShadowTwo,
         elevation: 0,
         child: Container(
@@ -182,6 +181,11 @@ class SharedCartScreenState extends State<SharedCartScreen> {
 
                     var result = await Navigator.of(context)
                         .pushNamed(Routes.SHARED_CARD_DETAILS);
+
+                    // var result = await Navigator.of(context)
+                    //     .pushNamed(Routes.SHARED_CARD_DETAILS, arguments: {
+                    //   "cart_details": sharedCartBloc.cartList[index]
+                    // });
 
                     if (result != null && result is bool && result == true) {
                       _onRefresh();

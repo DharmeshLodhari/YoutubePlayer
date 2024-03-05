@@ -430,8 +430,9 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product});
       } else {
         basketBloc.addItemToCart(
-          item: widget.product.copyWith(qty: 1),
+          item: widget.product.copyWith(quantity: 1),
           type: type,
+          currentUser: userBloc.user.convertToUser(),
         );
       }
     } else {
@@ -442,7 +443,8 @@ class _DisplayProductState extends State<DisplayProduct> {
   Future<void> addToSharedCart(SharedCartModel result) async {
     String type = "product";
 
-    Product products = widget.product.copyWith(qty: 1, withSelectedAddOn: true);
+    Product products =
+        widget.product.copyWith(quantity: 1, withSelectedAddOn: true);
 
     sharedCartBloc.addItemToSharedCart(
       cart: result,
@@ -471,7 +473,10 @@ class _DisplayProductState extends State<DisplayProduct> {
                       if (widget.product.addOnsModels?.isNotEmpty ?? false) {
                         confirmAddOnsDialog();
                       } else {
-                        basketBloc.increaseQty(currentProduct: widget.product);
+                        basketBloc.increaseQty(
+                          currentProduct: widget.product,
+                          currentUser: userBloc.user.convertToUser(),
+                        );
                       }
                     },
                     child: SvgPicture.asset(
@@ -497,7 +502,10 @@ class _DisplayProductState extends State<DisplayProduct> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      basketBloc.decreaseQty(currentProduct: widget.product);
+                      basketBloc.decreaseQty(
+                        currentProduct: widget.product,
+                        currentUser: userBloc.user.convertToUser(),
+                      );
                     },
                     child: SvgPicture.asset('assets/images/minus.svg',
                         height: 17, width: 17),
@@ -530,7 +538,10 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product, "type": "changeAddons"});
       },
       rightButtonOnPressed: () {
-        basketBloc.increaseQty(currentProduct: widget.product);
+        basketBloc.increaseQty(
+          currentProduct: widget.product,
+          currentUser: userBloc.user.convertToUser(),
+        );
       },
     );
   }

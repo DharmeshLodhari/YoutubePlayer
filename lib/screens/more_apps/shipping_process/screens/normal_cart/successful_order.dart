@@ -106,7 +106,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
         },
         backgroundColor: navyBlue,
         textColor: white,
-        text: 'View Order',
+        text: 'Track Order',
       ),
     );
   }

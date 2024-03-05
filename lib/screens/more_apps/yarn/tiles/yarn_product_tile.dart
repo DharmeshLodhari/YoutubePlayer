@@ -288,7 +288,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
       onTap: () async {
         String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
-        basketBloc.addItemToCart(item: item, type: type);
+        basketBloc.addItemToCart(
+            item: item, type: type, currentUser: userBloc.user.convertToUser());
         late var mapData;
         basketBloc.items.forEach((element) {
           if (element["item"].id == item.id) {

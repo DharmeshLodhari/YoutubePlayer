@@ -100,6 +100,7 @@ class _AllActiveCartState extends State<AllActiveCart> {
                     );
                   },
                 ),
+          const SizedBox(height: 100),
         ],
       ),
     );

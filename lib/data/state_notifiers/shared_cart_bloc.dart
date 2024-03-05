@@ -112,7 +112,8 @@ class SharedCartBloc extends ChangeNotifier {
       if (sh.id == cart?.id) {
         sh.members?[index].percentageValue = val;
         sh.members?[index].paymentValue =
-            (((shippingProcessBloc.getTotalOrder() ?? 0) * val) / 100).floor();
+            (((getSharedCartModel().getSharedCartTotalPrice()) * val) / 100)
+                .floor();
         ;
         notifyListeners();
         break;

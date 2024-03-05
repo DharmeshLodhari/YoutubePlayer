@@ -24,7 +24,7 @@ class MemberPaymentTile extends StatefulWidget {
 
 class _MemberPaymentTileState extends State<MemberPaymentTile> {
   double percentageValue = 0.0;
-  final _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _controller = TextEditingController();
   late SharedCartBloc sharedCartBloc;
   late UserBloc userBloc;
@@ -176,6 +176,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
   }
 
   void _buildPaymentPercentageDialog(BuildContext context) {
+    String errorMessage = "";
     showDialogBoxWithTitle(
         context: context,
         actionTextColor: white,
@@ -224,11 +225,9 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                         controller: _controller,
                         labelText: "Percentage",
                         labelColor: darkGrey,
+                        keyboardType: TextInputType.number,
                         validator: (val) {
                           if (val.isNotEmpty) {
-                            // if (int.parse(val) > 100) {
-                            //   return "Set percentage blow 100";
-                            // }
                             return null;
                           }
                           return AppLocalization.of(context)!
@@ -236,11 +235,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                         },
                         onChanged: (val) {
                           setState(() {
-                            // _controller.text = val;
-
-                            // if (int.parse(val) <= 100) {
                             percentageValue = double.parse(val);
-                            // }
                           });
                         },
                       ),
@@ -259,19 +254,24 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                           max: 100,
                           inactiveColor: greyBorderColor,
                           activeColor: richPink,
-                          value: percentageValue <= 100 ? percentageValue : 0,
+                          value: percentageValue <= 100 ? percentageValue : 100,
                           onChanged: (newValue) {
                             setState(() {
-                              // if (newValue > 100) {
-                              // showToast(message: "Set percentage blow 100");
-                              // } else {
                               _controller.text = newValue.floor().toString();
                               percentageValue = newValue;
-                              // }
                             });
                           },
                         ),
                       ),
+                      if (errorMessage.isNotEmpty)
+                        Text(
+                          errorMessage,
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: "Inter",
+                              fontSize: 16.0),
+                        ),
                     ],
                   ),
                 ),
@@ -281,14 +281,21 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
         }),
         ButtonOnPressed: () async {
           if (_formKey.currentState!.validate()) {
-            sharedCartBloc.updatePercentageAndPrice(
-                cart: sharedCartBloc.getSharedCartModel(),
-                val: double.parse(_controller.text.trim()),
-                index: widget.index ?? 0,
-                context: context);
-            percentageValue = 0.0;
-            _controller.clear();
-            setState(() {});
+            if (percentageValue <= 100) {
+              errorMessage =
+                  ""; // Clear the error message on successful validation
+              sharedCartBloc.updatePercentageAndPrice(
+                  cart: sharedCartBloc.getSharedCartModel(),
+                  val: double.parse(_controller.text.trim()),
+                  index: widget.index ?? 0,
+                  context: context);
+              percentageValue = 0.0;
+              _controller.clear();
+              setState(() {});
+            } else {
+              errorMessage =
+                  "Percentage cannot be greater than 100"; // Set the error message
+            }
           }
         });
   }

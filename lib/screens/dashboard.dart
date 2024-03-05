@@ -307,7 +307,7 @@ class _DashboardState extends State<Dashboard> {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed(Routes.TRANSACTIONS);
+          .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
     } else if (notification['type'] == "connection-request") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
