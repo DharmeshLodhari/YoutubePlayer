@@ -608,6 +608,7 @@ class _DisplayProductState extends State<DisplayProduct> {
 
   showBottomSheetDialog() async {
     var result = await androidBottomSheet(
+      enableDrag: true,
       context: context,
       child: AllActiveCart(),
     );
@@ -618,7 +619,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         });
         addProductToCart();
       } else {
-        await sharedCartBloc.refreshSharedCart(context, result);
+        await sharedCartBloc.refreshSharedCartProduct(context, result);
         addToSharedCart(result);
       }
     }

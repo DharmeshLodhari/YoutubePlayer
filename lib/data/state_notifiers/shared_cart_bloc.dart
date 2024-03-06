@@ -136,9 +136,9 @@ class SharedCartBloc extends ChangeNotifier {
     return;
   }
 
-  Future<void> refreshSharedCart(
+  Future<void> refreshSharedCartProduct(
       BuildContext context, SharedCartModel cart) async {
-    await getSharedCartDetail(context, cart);
+    await getSharedCartProductDetail(context, cart);
     notifyListeners();
     return;
   }
@@ -158,14 +158,14 @@ class SharedCartBloc extends ChangeNotifier {
       cartList = sharedCartList;
 
       for (SharedCartModel sharedCartModel in cartList) {
-        await getSharedCartDetail(context, sharedCartModel);
+        await getSharedCartProductDetail(context, sharedCartModel);
       }
 
       print("CART LIST:- ${cartList.length} ");
     }
   }
 
-  Future<void> getSharedCartDetail(
+  Future<void> getSharedCartProductDetail(
       BuildContext context, SharedCartModel cart) async {
     Map<String, dynamic>? result =
         await SharedCartAuthService().getCartItemDetails(cart.id, "", "");
@@ -237,5 +237,27 @@ class SharedCartBloc extends ChangeNotifier {
       }
     }
     print("CART DETAIL ID:- ${cart.id} ");
+  }
+
+  Future<SharedCartModel> refreshCartDetail(String? cartId,
+      {required bool isUpdate}) async {
+    SharedCartModel sharedCartModel = await getCartDetails(cartId, isUpdate);
+    notifyListeners();
+    return sharedCartModel;
+  }
+
+  Future<SharedCartModel> getCartDetails(String? cartId, bool isUpdate) async {
+    SharedCartModel sharedCartModel = SharedCartModel();
+    await SharedCartAuthService().getCartDetails(cartId).then((value) {
+      sharedCartModel = value;
+      if (isUpdate == true) {
+        updateCartModel(value);
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+      debugPrint("Product check variant::: ${error.toString()}");
+      // showToast(message: error.toString());
+    });
+    return sharedCartModel;
   }
 }

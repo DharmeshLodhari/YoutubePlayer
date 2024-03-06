@@ -30,7 +30,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
-  SharedCartModel cartDetails = SharedCartModel();
+  // SharedCartModel cartDetails = SharedCartModel();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
@@ -44,14 +44,14 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      isLoading = true;
-      if (mounted) setState(() {});
-      getCartDetails();
-      cartDetails = sharedCartBloc.getSharedCartModel();
-      isLoading = false;
-      if (mounted) setState(() {});
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    //   isLoading = true;
+    //   if (mounted) setState(() {});
+    //   sharedCartBloc.refreshCartDetail();
+    //   cartDetails = sharedCartBloc.getSharedCartModel();
+    //   isLoading = false;
+    //   if (mounted) setState(() {});
+    // });
   }
 
   @override
@@ -63,34 +63,6 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
-
-  Future<void> getCartDetails() async {
-    if (!isLoading) {
-      if (mounted) {
-        isLoading = true;
-        setState(() {});
-      }
-
-      await SharedCartAuthService()
-          .getCartDetails(sharedCartBloc.getSharedCartModel().id)
-          .then((value) {
-        cartDetails = value;
-        sharedCartBloc.updateCartModel(value);
-        if (mounted) {
-          isLoading = false;
-          setState(() {});
-        }
-      }).catchError((error) {
-        if (mounted) {
-          isLoading = false;
-          setState(() {});
-        }
-        debugPrint(error.toString());
-        debugPrint("Product check variant::: ${error.toString()}");
-        // showToast(message: error.toString());
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +97,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
         },
       ),
       title: Text(
-        cartDetails.name ?? "",
+        sharedCartBloc.getSharedCartModel().name ?? "",
         style: TextStyle(
             color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
       ),
@@ -182,6 +154,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
   }
 
   Widget _buildCartMembers() {
+    SharedCartModel cartDetails = sharedCartBloc.getSharedCartModel();
     return isLoading
         ? Center(
             child: CircularLoadingIndicator(),
@@ -305,7 +278,8 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
       "members": [member?.userName]
     };
     await SharedCartAuthService()
-        .removeMemberFromSharedCart(cartDetails.id, data)
+        .removeMemberFromSharedCart(
+            sharedCartBloc.getSharedCartModel().id, data)
         .then((value) {
       if (value == true) {
         showToast(
@@ -328,7 +302,9 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         if (mounted) setState(() {});
-        getCartDetails();
+        await sharedCartBloc.refreshCartDetail(
+            sharedCartBloc.getSharedCartModel().id,
+            isUpdate: true);
         setState(() {
           // Call the callback function with the updated list
           //to pass the list back to edit product page

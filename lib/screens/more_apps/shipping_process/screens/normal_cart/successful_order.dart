@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
@@ -7,6 +8,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 class SuccessfulOrder extends StatefulWidget {
   const SuccessfulOrder({Key? key}) : super(key: key);
@@ -16,8 +18,19 @@ class SuccessfulOrder extends StatefulWidget {
 }
 
 class _SuccessfulOrderState extends State<SuccessfulOrder> {
+  late SharedCartBloc sharedCartBloc;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      sharedCartBloc.refreshAllCart(context);
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,

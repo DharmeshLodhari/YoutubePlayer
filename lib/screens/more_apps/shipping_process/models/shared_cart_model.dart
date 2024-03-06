@@ -21,7 +21,7 @@ class SharedCartModel {
   // List<Product>? cartItems;
   SharedMetaData? metaData;
   List<SharedCartMemberModel>? members;
-  bool? splitBill = false;
+  // bool? splitBill;
   bool? splitBillEvenly = false;
 
   List<BasketItem> _basketItems = [];
@@ -38,7 +38,7 @@ class SharedCartModel {
     // this.cartItems,
     this.metaData,
     this.members,
-    this.splitBill,
+    // this.splitBill,
     this.splitBillEvenly,
   });
 
@@ -104,15 +104,6 @@ class SharedCartModel {
     return map;
   }
 
-  bool? splitBillStatus(bool userCartOwner) {
-    if (!userCartOwner || (metaData?.userData?.isNotEmpty ?? false)) {
-      splitBill = true;
-    } else {
-      splitBill;
-    }
-    return splitBill;
-  }
-
   bool isUserPaymentDone(String? userName) {
     for (PaymentDatum paymentDoneUser in metaData?.paymentData ?? []) {
       if (userName == paymentDoneUser.fromCustomer) {
@@ -133,12 +124,14 @@ class SharedCartModel {
   }
 
   bool isAllCartPaymentDone() {
+    bool isAllPaymentDone = true;
     for (SharedCartMemberModel member in members ?? []) {
-      if (isUserPaymentDone(member.userName) == true) {
-        return true;
+      if (isUserPaymentDone(member.userName) == false) {
+        isAllPaymentDone = false;
+        break;
       }
     }
-    return false;
+    return isAllPaymentDone;
   }
 
   // this will add the product or service in the cart;
@@ -846,10 +839,14 @@ class SharedCartMemberModel {
 class SharedMetaData {
   List<UserData>? userData;
   List<PaymentDatum>? paymentData;
+  ShippingData? shippingData;
+  bool? spitBill;
 
   SharedMetaData({
     this.userData,
     this.paymentData,
+    this.shippingData,
+    this.spitBill,
   });
 
   factory SharedMetaData.fromJson(Map<String, dynamic> json) => SharedMetaData(
@@ -861,6 +858,10 @@ class SharedMetaData {
             ? []
             : List<PaymentDatum>.from(
                 json["payment-data"]!.map((x) => PaymentDatum.fromJson(x))),
+        shippingData: json["shipping_data"] == null
+            ? null
+            : ShippingData.fromJson(json["shipping_data"]),
+        spitBill: json["spit_bill"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -870,6 +871,8 @@ class SharedMetaData {
         "payment-data": paymentData == null
             ? []
             : List<dynamic>.from(paymentData!.map((x) => x.toJson())),
+        "shipping_data": shippingData?.toJson(),
+        "spit_bill": spitBill,
       };
 }
 
@@ -1018,5 +1021,58 @@ class PaymentDatum {
         "from_customer": fromCustomer,
         "made_from_chat": madeFromChat,
         "transaction_id": transactionId,
+      };
+}
+
+class ShippingData {
+  String? paymentType;
+  List<ShippingDetail>? shippingDetails;
+
+  ShippingData({
+    this.paymentType,
+    this.shippingDetails,
+  });
+
+  factory ShippingData.fromJson(Map<String, dynamic> json) => ShippingData(
+        paymentType: json["payment_type"],
+        shippingDetails: json["shipping_details"] == null
+            ? []
+            : List<ShippingDetail>.from(json["shipping_details"]!
+                .map((x) => ShippingDetail.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "payment_type": paymentType,
+        "shipping_details": shippingDetails == null
+            ? []
+            : List<dynamic>.from(shippingDetails!.map((x) => x.toJson())),
+      };
+}
+
+class ShippingDetail {
+  String? note;
+  String? merchant;
+  String? pickupAddressId;
+  int? shippingOptionId;
+
+  ShippingDetail({
+    this.note,
+    this.merchant,
+    this.pickupAddressId,
+    this.shippingOptionId,
+  });
+
+  factory ShippingDetail.fromJson(Map<String, dynamic> json) => ShippingDetail(
+        note: json["note"],
+        merchant: json["merchant"],
+        pickupAddressId: json["pickup_address_id"],
+        shippingOptionId: json["shipping_option_id"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "note": note,
+        "merchant": merchant,
+        "pickup_address_id": pickupAddressId,
+        "shipping_option_id": shippingOptionId,
       };
 }

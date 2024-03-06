@@ -61,7 +61,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       isLoading = true;
       if (mounted) setState(() {});
-      await sharedCartBloc.refreshSharedCart(
+      await sharedCartBloc.refreshSharedCartProduct(
           context, sharedCartBloc.getSharedCartModel());
       isLoading = false;
       if (mounted) setState(() {});
@@ -312,26 +312,25 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         if (appConfigurationModel?.enableCheckout == true &&
             sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice() !=
                 0) {
-          if (sharedCartBloc.getSharedCartModel().customerUsername ==
-              userBloc.user.userName) {
-            ShippingProcessBloc shippingProcessBloc =
-                Provider.of<ShippingProcessBloc>(context, listen: false);
-            shippingProcessBloc.currentSelectedIndex = null;
-
-            Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
-              'isSharedCart': true,
-              'sharedCartId': sharedCartBloc.getSharedCartModel().id
-            });
+          if (sharedCartBloc.getSharedCartModel().metaData?.userData != null &&
+              sharedCartBloc
+                      .getSharedCartModel()
+                      .metaData
+                      ?.userData
+                      ?.isNotEmpty ==
+                  true) {
+            Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
           } else {
-            if (sharedCartBloc.getSharedCartModel().metaData?.userData !=
-                    null &&
-                sharedCartBloc
-                        .getSharedCartModel()
-                        .metaData
-                        ?.userData
-                        ?.isNotEmpty ==
-                    true) {
-              Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+            if (sharedCartBloc.getSharedCartModel().customerUsername ==
+                userBloc.user.userName) {
+              ShippingProcessBloc shippingProcessBloc =
+                  Provider.of<ShippingProcessBloc>(context, listen: false);
+              shippingProcessBloc.currentSelectedIndex = null;
+
+              Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
+                'isSharedCart': true,
+                'sharedCartId': sharedCartBloc.getSharedCartModel().id,
+              });
             } else {
               showToast(message: 'Checkout not available now');
             }
@@ -385,7 +384,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         if (mounted) setState(() {});
-        await sharedCartBloc.refreshSharedCart(
+        await sharedCartBloc.refreshSharedCartProduct(
             context, sharedCartBloc.getSharedCartModel());
         setState(() {
           // Call the callback function with the updated list

@@ -682,7 +682,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (result.id == 'my-cart') {
         addToCart();
       } else {
-        await sharedCartBloc.refreshSharedCart(context, result);
+        await sharedCartBloc.refreshSharedCartProduct(context, result);
         addToSharedCart(result);
       }
     }
