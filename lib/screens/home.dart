@@ -503,17 +503,18 @@ class _HomeState extends State<Home> {
 
           InkWell(
             onTap: () {
-              showSnackbar(context, message: "Coming soon");
-              return;
-              if (userBloc.user.rider == null) {
-                Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
-              } else {
-                if (userBloc.user.rider?.isStatusApproved() == false) {
-                  getKYCStatus();
-                } else {
-                  Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
-                }
-              }
+              // showSnackbar(context, message: "Coming soon");
+              // return;
+              // if (userBloc.user.rider == null) {
+              //   Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
+              // } else {
+              //   if (userBloc.user.rider?.isStatusApproved() == false) {
+              //     getKYCStatus();
+              //   } else {
+              //     Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
+              //   }
+              // }
+              Navigator.of(context).pushNamed(Routes.RIDER_DASHBOARD);
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 16),
