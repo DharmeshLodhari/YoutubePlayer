@@ -556,64 +556,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget addToCartWidget() {
     return GestureDetector(
       onLongPress: () async {
-        // if (product?.isProductAvailableNow() ?? false) {
-        if (isValidCustomer) {
-          if (product?.variantModels?.isNotEmpty ?? false) {
-            if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
-              // print("Both color and size lists are showing.");
-              if (selectedVariant != null) {
-                showBottomSheetDialog();
-              } else {
-                showToast(
-                    message:
-                        AppLocalization.of(context)!.selectVariantColorSize);
-              }
-            } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
-              // print("color list is showing.");
-              if (selectedVariant != null) {
-                showBottomSheetDialog();
-              } else {
-                showToast(
-                    message: AppLocalization.of(context)!.selectVariantSize);
-              }
-            } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
-              // print("size list is showing.");
-              if (selectedVariant != null) {
-                showBottomSheetDialog();
-              } else {
-                showToast(
-                    message: AppLocalization.of(context)!.selectVariantColor);
-              }
-            }
-          } else if (product?.addOnsModels?.isNotEmpty ?? false) {
-            bool isRequired = product?.isAllRequiredProductSelected() ?? false;
-            if (isRequired == true) {
-              showBottomSheetDialog();
-            } else {
-              showToast(
-                  message: AppLocalization.of(context)!.selectRequiredAddons);
-            }
-          } else {
-            //product has no variant or is a service
-            showBottomSheetDialog();
-          }
-        } else {
-          showToast(
-              message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
-        }
-        // } else {
-        //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
-        // }
-      },
-      child: RoundedBackgroundIcon(
-        onTap: () {
-          // if (product?.isProductAvailableNow() ?? false) {
+        if (product?.isProductAvailableNow() ?? false) {
           if (isValidCustomer) {
             if (product?.variantModels?.isNotEmpty ?? false) {
               if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
                 // print("Both color and size lists are showing.");
                 if (selectedVariant != null) {
-                  addToCart();
+                  showBottomSheetDialog();
                 } else {
                   showToast(
                       message:
@@ -622,7 +571,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
                 // print("color list is showing.");
                 if (selectedVariant != null) {
-                  addToCart();
+                  showBottomSheetDialog();
                 } else {
                   showToast(
                       message: AppLocalization.of(context)!.selectVariantSize);
@@ -630,7 +579,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
                 // print("size list is showing.");
                 if (selectedVariant != null) {
-                  addToCart();
+                  showBottomSheetDialog();
                 } else {
                   showToast(
                       message: AppLocalization.of(context)!.selectVariantColor);
@@ -640,23 +589,79 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               bool isRequired =
                   product?.isAllRequiredProductSelected() ?? false;
               if (isRequired == true) {
-                addToCart();
+                showBottomSheetDialog();
               } else {
                 showToast(
                     message: AppLocalization.of(context)!.selectRequiredAddons);
               }
             } else {
               //product has no variant or is a service
-              addToCart();
+              showBottomSheetDialog();
             }
           } else {
             showToast(
                 message:
                     AppLocalization.of(context)!.youCanNotPurchaseThisItem);
           }
-          // } else {
-          //   showToast(message: AppLocalization.of(context)!.productOutOfStock);
-          // }
+        } else {
+          showToast(message: AppLocalization.of(context)!.productOutOfStock);
+        }
+      },
+      child: RoundedBackgroundIcon(
+        onTap: () {
+          if (product?.isProductAvailableNow() ?? false) {
+            if (isValidCustomer) {
+              if (product?.variantModels?.isNotEmpty ?? false) {
+                if (colorGroups.isNotEmpty && sizeGroups.isNotEmpty) {
+                  // print("Both color and size lists are showing.");
+                  if (selectedVariant != null) {
+                    addToCart();
+                  } else {
+                    showToast(
+                        message: AppLocalization.of(context)!
+                            .selectVariantColorSize);
+                  }
+                } else if (sizeGroups.isNotEmpty && colorGroups.isEmpty) {
+                  // print("color list is showing.");
+                  if (selectedVariant != null) {
+                    addToCart();
+                  } else {
+                    showToast(
+                        message:
+                            AppLocalization.of(context)!.selectVariantSize);
+                  }
+                } else if (sizeGroups.isEmpty && colorGroups.isNotEmpty) {
+                  // print("size list is showing.");
+                  if (selectedVariant != null) {
+                    addToCart();
+                  } else {
+                    showToast(
+                        message:
+                            AppLocalization.of(context)!.selectVariantColor);
+                  }
+                }
+              } else if (product?.addOnsModels?.isNotEmpty ?? false) {
+                bool isRequired =
+                    product?.isAllRequiredProductSelected() ?? false;
+                if (isRequired == true) {
+                  addToCart();
+                } else {
+                  showToast(
+                      message:
+                          AppLocalization.of(context)!.selectRequiredAddons);
+                }
+              } else {
+                //product has no variant or is a service
+                addToCart();
+              }
+            } else {
+              showToast(
+                  message:
+                      AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+            }
+          } else {
+            showToast(message: AppLocalization.of(context)!.productOutOfStock);
+          }
         },
         borderRadius: 16,
         height: 44,

@@ -9,6 +9,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 Future<List<ShippingAddress>> getAddressListing(
@@ -219,4 +220,27 @@ Future<bool?> buildCartPaymentRequestDialog(
         Navigator.pushNamed(context, Routes.ACCOUNTS);
       });
   return result;
+}
+
+class RangeInputFormatter extends TextInputFormatter {
+  final double min;
+  final double max;
+
+  RangeInputFormatter({required this.min, required this.max});
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    final doubleValue = double.tryParse(newValue.text);
+    if (doubleValue == null || doubleValue < min || doubleValue > max) {
+      // Return the old value if the input is not a valid number in the range.
+      return oldValue;
+    }
+
+    return newValue;
+  }
 }
