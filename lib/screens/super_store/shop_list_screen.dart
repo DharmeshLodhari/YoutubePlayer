@@ -521,12 +521,12 @@ class ShopListScreenState extends State<ShopListScreen> {
                   product: Product(
                       id: shoppingProduct.id,
                       name: shoppingProduct.name,
-                      price: shoppingProduct.price.toString(),
+                      price: shoppingProduct.price,
                       currency: shoppingProduct.currency,
                       cover: shoppingProduct.cover,
                       isAvailable: shoppingProduct.isAvailable,
                       seller: shoppingProduct.seller,
-                      sellerFullName: shoppingProduct.sellerFullname,
+                      sellerFullName: shoppingProduct.sellerFullName,
                       shortDescription: shoppingProduct.shortDescription),
                 );
               }

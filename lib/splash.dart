@@ -48,6 +48,7 @@ class _SplashScreenState extends State<SplashScreen>
   late SharedPreferences _sharedPreferences;
   late BasketBloc basketBloc;
   late SharedCartBloc sharedCartBloc;
+  late UserBloc userBloc;
 
   // bool for to check if internet connection is available or not
   var hasConnection = true;
@@ -219,6 +220,7 @@ class _SplashScreenState extends State<SplashScreen>
     precacheImage(AssetImage("assets/images/app_logo.png"), context);
     basketBloc = Provider.of<BasketBloc>(context);
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
 
     return WillPopScope(
       onWillPop: () async => Future.value(false),
@@ -532,7 +534,11 @@ class _SplashScreenState extends State<SplashScreen>
       List items = await ShoppingAuthService().getShoppingCart();
       items.forEach((element) {
         String type = element is Product ? "product" : "service";
-        basketBloc.addItemToCart(item: element, type: type, withApiCall: false);
+        basketBloc.addItemToCart(
+            item: element,
+            type: type,
+            currentUser: userBloc.user.convertToUser(),
+            withApiCall: false);
       });
       await sharedCartBloc.refreshAllCart(context);
     } catch (e) {

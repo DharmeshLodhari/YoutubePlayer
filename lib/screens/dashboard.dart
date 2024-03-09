@@ -307,7 +307,7 @@ class _DashboardState extends State<Dashboard> {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed(Routes.TRANSACTIONS);
+          .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
     } else if (notification['type'] == "connection-request") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
@@ -364,6 +364,12 @@ class _DashboardState extends State<Dashboard> {
         debugPrint('ERROR M -> $e');
         showToast(message: 'ERROR -> $e');
       });
+    } else if (notification['type'].toString().contains("accounts")) {
+      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.pushNamed(context, Routes.ACCOUNTS);
+    } else if (notification['type'].toString().contains("shopping-cart")) {
+      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.pushNamed(context, Routes.SHOPPING_CART);
     }
   }
 

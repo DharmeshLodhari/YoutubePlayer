@@ -41,7 +41,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         child: Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          margin: EdgeInsets.symmetric(vertical: 5),
           shadowColor: boxShadowTwo,
           elevation: 0,
           child: Container(
@@ -172,7 +172,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
 
   Widget getTrailing() {
     return Container(
-      width: 100,
+      width: 110,
       color: Colors.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -180,6 +180,8 @@ class ShoppingCartTileForProduct extends StatelessWidget {
         children: [
           Expanded(child: getProductPriceWidget()),
           Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               RoundedBackgroundIcon(
                 backgroundColor: iconBtnGrey,
@@ -227,7 +229,7 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       if (basketItem.variants != null) {
         totalPrice = int.parse(basketItem.variants?.first.price ?? "0");
       } else {
-        totalPrice = int.parse(product.price ?? "0");
+        totalPrice = product.getProductRealPrice();
       }
     }
 
@@ -532,7 +534,7 @@ class _ShoppingCartTileForServiceState
         ? basketBloc.items[widget.index!]["qty"]
         : 0;
     return Container(
-      width: 100,
+      width: 110,
       color: Colors.transparent,
       child: Center(
         child: Row(

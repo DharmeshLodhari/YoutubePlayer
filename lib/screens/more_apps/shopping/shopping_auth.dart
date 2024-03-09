@@ -300,7 +300,7 @@ class ShoppingAuthService extends AuthService {
     product.seller = item['seller'];
     product.sellerFullName = item['seller_fullname'] ?? "";
     product.sellerAvatar = item["seller_avatar"];
-    product.price = item['price'].toString();
+    product.price = item['price'];
     product.currency = item["currency"];
     product.rating = formatRating(item['rating'] ?? 0.0);
     product.canRate = item["can_rate"] ?? false;
@@ -327,7 +327,7 @@ class ShoppingAuthService extends AuthService {
         ? []
         : (item['add_ons'] as List).map((i) => AddOns.fromJson(i)).toList();
     product.addressId = item['address_id'];
-    product.qty = item['qty'];
+    // product.qty = item['qty'];
     return product;
   }
 

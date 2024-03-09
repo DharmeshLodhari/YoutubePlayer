@@ -1,6 +1,7 @@
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
@@ -53,6 +54,8 @@ class _UserLoginState extends State<UserLogin> {
   TextEditingController? passwordController;
   late SharedPreferences _sharedPreferences;
   late BasketBloc basketBloc;
+  late SharedCartBloc sharedCartBloc;
+  late UserBloc userBloc;
 
   final FocusNode _pinPutFocusNode = FocusNode();
 
@@ -104,6 +107,8 @@ class _UserLoginState extends State<UserLogin> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    sharedCartBloc = Provider.of<SharedCartBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
 
     return WillPopScope(
       onWillPop: () {
@@ -634,8 +639,13 @@ class _UserLoginState extends State<UserLogin> {
     List items = await ShoppingAuthService().getShoppingCart();
     items.forEach((element) {
       String type = element is Product ? "product" : "service";
-      basketBloc.addItemToCart(item: element, type: type);
+      basketBloc.addItemToCart(
+          item: element,
+          type: type,
+          currentUser: userBloc.user.convertToUser(),
+          withApiCall: false);
     });
+    await sharedCartBloc.refreshAllCart(context);
   }
 
   Future<void> clearDBMessages() async {

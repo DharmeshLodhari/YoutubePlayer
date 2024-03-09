@@ -3,18 +3,22 @@ import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
+import 'package:Slydo/screens/more_apps/shipping_process/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class MemberPaymentTile extends StatefulWidget {
-  MemberPaymentTile({this.member, this.index, super.key});
+  MemberPaymentTile(
+      {this.member, this.index, this.isUserPaymentDone, super.key});
 
   final int? index;
   final SharedCartMemberModel? member;
+  final bool? isUserPaymentDone;
 
   @override
   State<MemberPaymentTile> createState() => _MemberPaymentTileState();
@@ -22,10 +26,16 @@ class MemberPaymentTile extends StatefulWidget {
 
 class _MemberPaymentTileState extends State<MemberPaymentTile> {
   double percentageValue = 0.0;
-  final _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _controller = TextEditingController();
   late SharedCartBloc sharedCartBloc;
   late UserBloc userBloc;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +128,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
 
   Widget getTrailing() {
     return Container(
-      width: 100,
+      width: 110,
       padding: EdgeInsets.symmetric(vertical: 3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -145,12 +155,14 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                     fontSize: 14,
                     fontFamily: "Inter"),
               ),
-              // Image.asset(
-              //   height: 15,
-              //   width: 15,
-              //   "assets/images/check_mark.jpeg",
-              //   fit: BoxFit.fitWidth,
-              // ),
+              SizedBox(width: 3),
+              if (widget.isUserPaymentDone == true)
+                Image.asset(
+                  height: 15,
+                  width: 15,
+                  "assets/images/check_mark.jpeg",
+                  fit: BoxFit.fitWidth,
+                ),
             ],
           ),
         ],
@@ -172,6 +184,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
   }
 
   void _buildPaymentPercentageDialog(BuildContext context) {
+    String errorMessage = "";
     showDialogBoxWithTitle(
         context: context,
         actionTextColor: white,
@@ -220,6 +233,12 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                         controller: _controller,
                         labelText: "Percentage",
                         labelColor: darkGrey,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d*\.?\d{0,2}')),
+                          RangeInputFormatter(min: 1.0, max: 100.0),
+                        ],
                         validator: (val) {
                           if (val.isNotEmpty) {
                             return null;
@@ -227,11 +246,12 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                           return AppLocalization.of(context)!
                               .pleaseEnterCartName;
                         },
-                        onChanged: (val) {
-                          setState(() {
-                            // _controller.text = val;
-                            percentageValue = double.parse(val);
-                          });
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            setState(() {
+                              percentageValue = double.parse(value);
+                            });
+                          }
                         },
                       ),
                       SizedBox(height: 15),
@@ -249,7 +269,7 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                           max: 100,
                           inactiveColor: greyBorderColor,
                           activeColor: richPink,
-                          value: percentageValue,
+                          value: percentageValue <= 100 ? percentageValue : 100,
                           onChanged: (newValue) {
                             setState(() {
                               _controller.text = newValue.floor().toString();
@@ -258,6 +278,15 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
                           },
                         ),
                       ),
+                      if (errorMessage.isNotEmpty)
+                        Text(
+                          errorMessage,
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: "Inter",
+                              fontSize: 16.0),
+                        ),
                     ],
                   ),
                 ),
@@ -266,14 +295,23 @@ class _MemberPaymentTileState extends State<MemberPaymentTile> {
           );
         }),
         ButtonOnPressed: () async {
-          sharedCartBloc.updatePercentageAndPrice(
-              cart: sharedCartBloc.getSharedCartModel(),
-              val: double.parse(_controller.text.trim()),
-              index: widget.index ?? 0,
-              context: context);
-          percentageValue = 0.0;
-          _controller.clear();
-          setState(() {});
+          if (_formKey.currentState!.validate()) {
+            if (percentageValue <= 100) {
+              errorMessage =
+                  ""; // Clear the error message on successful validation
+              sharedCartBloc.updatePercentageAndPrice(
+                  cart: sharedCartBloc.getSharedCartModel(),
+                  val: double.parse(_controller.text.trim()),
+                  index: widget.index ?? 0,
+                  context: context);
+              percentageValue = 0.0;
+              _controller.clear();
+              setState(() {});
+            } else {
+              errorMessage =
+                  "Percentage cannot be greater than 100"; // Set the error message
+            }
+          }
         });
   }
 }

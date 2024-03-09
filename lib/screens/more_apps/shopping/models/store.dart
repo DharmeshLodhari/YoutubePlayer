@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/Picture.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/basket_item_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/discount/discount_model.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -246,7 +247,7 @@ class Product extends PurchasableItem {
   String? webUrl;
   String? description;
   String? shortDescription;
-  String? price;
+  int? price;
   List<File>? localImages;
   List<String?>? serverImages;
   String? cover;
@@ -303,7 +304,7 @@ class Product extends PurchasableItem {
   // String? updatedByAvatar;
   List<AddedBy>? itemAddedBy;
   // UserFollowers? itemUpdatedBy;
-  int? qty;
+  // int? qty;
 
   List<UserFollowers> convertToUserFollowersList() {
     List<UserFollowers> userList = [];
@@ -368,7 +369,7 @@ class Product extends PurchasableItem {
     this.addressId,
     this.itemAddedBy,
     // this.itemUpdatedBy,
-    this.qty,
+    // this.qty,
   });
 
   Map toMap() {
@@ -412,7 +413,7 @@ class Product extends PurchasableItem {
       'address_id': addressId,
       'added_by': itemAddedBy,
       // 'item_updated_by': itemUpdatedBy,
-      'qty': qty,
+      // 'qty': qty,
     };
     if (preparationTime != null && preparationTime! != 0) {
       data["preparation_time"] = preparationTime;
@@ -465,13 +466,13 @@ class Product extends PurchasableItem {
       'address_id': addressId,
       "added_by": itemAddedBy!.map((v) => v.toJson()).toList(),
       // "item_updated_by": itemUpdatedBy?.toJson(),
-      'qty': qty,
+      // 'qty': qty,
     };
   }
 
-  int getBuyNowProductPrice() {
-    int totalPrice = 0;
-    totalPrice = int.parse(price!);
+  int? getBuyNowProductPrice() {
+    int? totalPrice = 0;
+    totalPrice = getProductRealPrice();
     return totalPrice;
   }
 
@@ -510,7 +511,7 @@ class Product extends PurchasableItem {
       name: object["name"] ?? "",
       description: object["description"] ?? "",
       shortDescription: object["short_description"] ?? "",
-      price: object["price"].toString(),
+      price: object["price"],
       enableInSuperStore: object["enable_in_superstore"] ?? false,
       localImages: object["localImages"] ?? [],
       serverImages: getProductImages(object["pictures"]),
@@ -571,8 +572,18 @@ class Product extends PurchasableItem {
       // itemUpdatedBy: object["item_updated_by"] == null
       //     ? null
       //     : UserFollowers.fromJson(object["item_updated_by"]),
-      qty: object["qty"],
+      // qty: object["qty"],
     );
+  }
+
+  int getProductRealPrice() {
+    if (discountedPrice != null || discountedPrice != 0) {
+      if (checkDiscount(
+          discountIsActive ?? false, discountedPrice ?? 0, price ?? 0)) {
+        return discountedPrice ?? 0;
+      }
+    }
+    return price ?? 0;
   }
 
   bool isProductAvailableNow() {
@@ -643,7 +654,7 @@ class Product extends PurchasableItem {
     return imageLinks;
   }
 
-  Product copyWith({int? qty, bool withSelectedAddOn = false}) {
+  Product copyWith({int? quantity, bool withSelectedAddOn = false}) {
     Product product = Product(
       id: this.id,
       name: this.name ?? "",
@@ -681,7 +692,7 @@ class Product extends PurchasableItem {
       heightSiUnit: this.heightSiUnit,
       widthSiUnit: this.widthSiUnit,
       trackInventory: this.trackInventory,
-      quantity: this.quantity,
+      quantity: quantity ?? this.quantity,
       pricePercentageChange: this.pricePercentageChange ?? 0.0,
       // isSelected: this.isSelected ?? 0.0,
       // discountedPrice: object["discounted_price"],
@@ -693,7 +704,7 @@ class Product extends PurchasableItem {
       addressId: this.addressId,
       itemAddedBy: this.itemAddedBy,
       // itemUpdatedBy: this.itemUpdatedBy,
-      qty: qty ?? this.qty,
+      // qty: qty ?? this.qty,
     );
     if (withSelectedAddOn) {
       product.addOnsModels =

@@ -1139,7 +1139,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                             showToast(message: 'Unable to update yarn payment');
                           } else {
                             widget.callback!(true);
-                            Navigator.pop(context);
+                            // Navigator.pop(context);
                             //Pop send payment page
                             Navigator.pop(context);
                             return;

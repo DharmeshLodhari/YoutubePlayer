@@ -194,8 +194,7 @@ class _EditProductState extends State<EditProduct> {
           productDescriptionController.text =
               messageDecoderWithEmoji(currentProduct.description!)!;
 
-          productPriceController.text =
-              moneyNormalizer(int.parse(currentProduct.price!)).toString();
+          productPriceController.text = moneyNormalizer(currentProduct.price!);
 
           if (currentProduct.manufacturer != null) {
             productManufacturerController.text = currentProduct.manufacturer!;
@@ -209,7 +208,7 @@ class _EditProductState extends State<EditProduct> {
           productName = currentProduct.name;
           productCategory = currentProduct.category!.name;
           productCondition = currentProduct.condition;
-          productPrice = moneyNormalizer(int.parse(currentProduct.price!));
+          productPrice = moneyNormalizer(currentProduct.price!);
           productDescription =
               messageDecoderWithEmoji(currentProduct.description);
           productManufacturer = currentProduct.manufacturer;
@@ -2251,7 +2250,7 @@ class _EditProductState extends State<EditProduct> {
                 int.parse(selectedPreparationCondition!.name);
           }
           currentProduct.condition = productCondition;
-          currentProduct.price = moneyInputNormalizer(productPrice!).toString();
+          currentProduct.price = moneyInputNormalizer(productPrice!);
           currentProduct.localImages =
               productLocalImages.map((file) => File(file.path)).toList();
           currentProduct.serverImages = productImagesFromServer;

@@ -108,6 +108,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       });
 
     getRecipientProfileAndGetCategory();
+
     super.initState();
   }
 
@@ -776,86 +777,100 @@ class _RequestPaymentState extends State<RequestPayment> {
                 isValidCallback: () async {
                   showDialog(
                       context: context,
-                      builder: (context) =>
-                          Center(child: CircularLoadingIndicator()));
+                      builder: (context) => const Center(child: SizedBox()));
+                  //     builder: (context) =>
+                  //         Center(child: CircularLoadingIndicator()));
 
-                  if (Platform.isIOS) {
-                    userLocation = await locationService.getLocation();
-                  }
-
-                  var data = {
-                    "from_customer": userBloc.user.userName!.trim(),
-                    "to_customer": _recipientController.text.trim(),
-                    "currency": userBloc.user.currency,
-                    "amount": moneyInputNormalizer(amount!.toString()),
-                    "category": selectedCategory!.trim(),
-                    "notes": reference.trim(),
-                    "description": reference.trim(),
-                    "latitude": Platform.isIOS ? userLocation.latitude : "",
-                    "longitude": Platform.isIOS ? userLocation.longitude : "",
-                    "made_from_chat": isFromChat ?? false,
-                  };
-                  if (conversationId != null) {
-                    data["conversation_id"] = conversationId;
-                  }
-                  //show loading screen
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PaymentLoadingScreen(
-                              text: 'Requesting Payment...',
-                              imagePath: 'assets/images/app_logo.png',
-                            )),
-                  );
-
-                  await _auth.createPaymentRequests(data).then((value) {
-                    Navigator.pop(context);
-                    response = value;
-                    if (response.statusCode == 201) {
-                      if (!isFromChat!) {
-                        _dashboardBloc.index = 0;
-                        showToast(message: 'Payment request sent');
-                        RefreshBlocForRequestPayment
-                            refreshBlocForRequestPayment =
-                            Provider.of<RefreshBlocForRequestPayment>(context,
-                                listen: false);
-                        refreshBlocForRequestPayment.isRefresh = true;
-                        Navigator.popUntil(
-                            context, ModalRoute.withName(Routes.DASHBOARD));
-                      } else {
-                        //Pop Circular Progress Indicator
+                  try {
+                    if (Platform.isIOS) {
+                      try {
+                        userLocation =
+                            await locationService.getLocationEndless();
+                      } catch (e) {
                         Navigator.pop(context);
-                        //Pop request payment page
-                        Navigator.pop(context);
-                      }
-                    } else if (response.statusCode == 500) {
-                      Navigator.pop(context);
-                      if (mounted) {
-                        setState(() {
-                          errorMessage =
-                              AppLocalization.of(context)!.serverError;
-                          showToast(message: errorMessage);
-                        });
-                      }
-                    } else {
-                      Navigator.pop(context);
-                      if (mounted) {
-                        if (response.statusCode == 406) {
-                          errorMessage = jsonDecode(value.body)[0];
-                          showToast(message: "$errorMessage");
-                          setState(() {});
-                        } else {
-                          debugPrint("ERROR:- ${response.body}");
-                          setState(() {
-                            errorMessage =
-                                AppLocalization.of(context)!.somethingWentWrong;
-                            showToast(message: "$errorMessage");
-                          });
-                        }
+                        debugPrint(e.toString());
+                        showToast(message: e.toString());
+                        return;
                       }
                     }
-                  });
+
+                    var data = {
+                      "from_customer": userBloc.user.userName!.trim(),
+                      "to_customer": _recipientController.text.trim(),
+                      "currency": userBloc.user.currency,
+                      "amount": moneyInputNormalizer(amount!.toString()),
+                      "category": selectedCategory!.trim(),
+                      "notes": reference.trim(),
+                      "description": reference.trim(),
+                      "latitude": Platform.isIOS ? userLocation.latitude : "",
+                      "longitude": Platform.isIOS ? userLocation.longitude : "",
+                      "made_from_chat": isFromChat ?? false,
+                    };
+                    if (conversationId != null) {
+                      data["conversation_id"] = conversationId;
+                    }
+                    //show loading screen
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PaymentLoadingScreen(
+                                text: 'Requesting Payment...',
+                                imagePath: 'assets/images/app_logo.png',
+                              )),
+                    );
+
+                    await _auth.createPaymentRequests(data).then((value) {
+                      response = value;
+                      if (response.statusCode == 201) {
+                        Navigator.pop(context);
+                        if (!isFromChat!) {
+                          _dashboardBloc.index = 0;
+                          showToast(message: 'Payment request sent');
+                          RefreshBlocForRequestPayment
+                              refreshBlocForRequestPayment =
+                              Provider.of<RefreshBlocForRequestPayment>(context,
+                                  listen: false);
+                          refreshBlocForRequestPayment.isRefresh = true;
+                          Navigator.popUntil(
+                              context, ModalRoute.withName(Routes.DASHBOARD));
+                        } else {
+                          //Pop Circular Progress Indicator
+                          // Navigator.pop(context);
+                          //Pop request payment page
+                          Navigator.pop(context);
+                        }
+                      } else if (response.statusCode == 500) {
+                        Navigator.pop(context);
+                        if (mounted) {
+                          setState(() {
+                            errorMessage =
+                                AppLocalization.of(context)!.serverError;
+                            showToast(message: errorMessage);
+                          });
+                        }
+                      } else {
+                        Navigator.pop(context);
+                        if (mounted) {
+                          if (response.statusCode == 406) {
+                            errorMessage = jsonDecode(value.body)[0];
+                            showToast(message: "$errorMessage");
+                            setState(() {});
+                          } else {
+                            debugPrint("ERROR:- ${response.body}");
+                            setState(() {
+                              errorMessage = AppLocalization.of(context)!
+                                  .somethingWentWrong;
+                              showToast(message: "$errorMessage");
+                            });
+                          }
+                        }
+                      }
+                    });
+                  } catch (e) {
+                    debugPrint(e.toString());
+                    showToast(message: e.toString());
+                  }
                 },
                 cancelCallBack: () async {
                   Navigator.pop(context);

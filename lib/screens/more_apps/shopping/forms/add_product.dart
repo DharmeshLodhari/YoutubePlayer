@@ -2042,7 +2042,7 @@ class _AddProductState extends State<AddProduct> {
                 int.parse(selectedDeliveryTimeCondition!.name);
           }
           product.condition = productCondition;
-          product.price = moneyInputNormalizer(productPrice).toString();
+          product.price = moneyInputNormalizer(productPrice);
           product.isAvailable = productIsAvailable;
           product.manufacturer = productManufacturer;
           product.availableFrom = productAvailableFrom;

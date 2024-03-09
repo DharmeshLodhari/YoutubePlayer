@@ -791,7 +791,7 @@ class _SearchModuleState extends State<SearchModule> {
     product.description = "";
     product.condition = object['condition'];
     product.currency = object['currency'];
-    product.price = object['price'].toString();
+    product.price = object['price'];
     product.availableFrom = DateTime.parse(object['available_from']);
     product.isAvailable = object['is_available'];
     product.qrCode = object['qr_code'];

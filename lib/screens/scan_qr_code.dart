@@ -530,7 +530,7 @@ class _QRCodeViewState extends State<QRCodeView> {
     product.description = "";
     product.condition = "";
     product.currency = userBloc.user.currency;
-    product.price = "0";
+    product.price = 0;
     product.availableFrom = DateTime.now();
     product.isAvailable = false;
     product.qrCode = "";

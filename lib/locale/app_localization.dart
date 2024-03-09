@@ -355,6 +355,13 @@ class AppLocalization {
     );
   }
 
+  String get newCartAlert {
+    return Intl.message(
+      "New Cart Alert",
+      name: "newCartAlert",
+    );
+  }
+
   String get cartPaymentRequest {
     return Intl.message(
       "Cart Payment Request",
@@ -531,6 +538,13 @@ class AppLocalization {
     );
   }
 
+  String get viewCart {
+    return Intl.message(
+      "View Cart",
+      name: "viewCart",
+    );
+  }
+
   String get viewNow {
     return Intl.message(
       "View Now",
@@ -662,6 +676,13 @@ class AppLocalization {
     return Intl.message(
       "Server Error Please try again after some time !",
       name: "serverError",
+    );
+  }
+
+  String get sendPaymentSuccess {
+    return Intl.message(
+      "Send Payment Successfully !",
+      name: "sendPaymentSuccess",
     );
   }
 

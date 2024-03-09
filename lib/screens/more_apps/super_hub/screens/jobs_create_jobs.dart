@@ -783,7 +783,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           product.shortDescription = productShortDescription;
           product.category = ProductCategory(productCategory);
           product.condition = productCondition;
-          product.price = moneyInputNormalizer(productPrice).toString();
+          product.price = moneyInputNormalizer(productPrice);
           product.isAvailable = productIsAvailable;
           product.manufacturer = productManufacturer;
           product.availableFrom = productAvailableFrom;

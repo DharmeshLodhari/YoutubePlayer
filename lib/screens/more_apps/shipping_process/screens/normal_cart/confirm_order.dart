@@ -304,6 +304,8 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
 
             if (response.statusCode == 200) {
               shippingProcessBloc.isPaymentSuccessfully(true);
+              showToast(
+                  message: AppLocalization.of(context)!.sendPaymentSuccess);
             } else if (response.statusCode == 500) {
               showToast(message: AppLocalization.of(context)!.serverError);
             } else {

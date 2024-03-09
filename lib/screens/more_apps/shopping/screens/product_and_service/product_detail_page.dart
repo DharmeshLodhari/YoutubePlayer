@@ -64,7 +64,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   final _auth = ShoppingAuthService();
   Product? product;
   late CustomerProfileBloc customerProfileBloc;
-  late UserBloc? userBloc;
+  late UserBloc userBloc;
   late BasketBloc basketBloc;
   late SharedCartBloc sharedCartBloc;
   late ShippingProcessBloc shippingProcessBloc;
@@ -687,7 +687,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       if (result.id == 'my-cart') {
         addToCart();
       } else {
-        await sharedCartBloc.refreshSharedCart(context, result);
+        await sharedCartBloc.refreshSharedCartProduct(context, result);
         addToSharedCart(result);
       }
     }
@@ -697,20 +697,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     String type = "product";
 
     print("BASKETBLOC:- ${basketBloc.basketItems}");
-    Product products = product!.copyWith(qty: 1, withSelectedAddOn: true);
+    Product products = product!.copyWith(quantity: 1, withSelectedAddOn: true);
 
     basketBloc.addItemToCart(
       item: products,
       type: type,
       variant: selectedVariant?.copyWith(quantity: 1),
       addOns: products.addOnsModels,
+      currentUser: userBloc.user.convertToUser(),
     );
   }
 
   Future<void> addToSharedCart(SharedCartModel result) async {
     String type = "product";
 
-    Product products = product!.copyWith(qty: 1, withSelectedAddOn: true);
+    Product products = product!.copyWith(quantity: 1, withSelectedAddOn: true);
 
     sharedCartBloc.addItemToSharedCart(
       cart: result,
@@ -718,140 +719,144 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       type: type,
       variant: selectedVariant?.copyWith(quantity: 1),
       addOns: products.addOnsModels,
-      currentUser: userBloc?.user.convertToUser(),
+      currentUser: userBloc.user.convertToUser(),
     );
   }
 
-  Future<void> addToCartOld() async {
-    // Todo check this call
-    String type = product is Product ? "product" : "service";
-    Map<String, dynamic> addOnPayLoad = {};
-    List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
-    List<AddOns> selectedAddOnsList = [];
-
-    Product productSend = product!;
-    productSend = productSend.copyWith(qty: 1);
-
-    /// TODO:BRIJESH CHECK ADDON
-    // product?.addOnsModels?.forEach((addOn) {
-    //   final options = addOn.options;
-    //   if (options != null) {
-    //     // Filter the options to include only those with option.isChecked == true
-    //     // List<AddOnOption> selectedOptions =
-    //     //     addOn.options!.where((option) => option.isChecked == true).toList();
-    //     //
-    //     // if (selectedOptions.isNotEmpty) {
-    //     //   Map<String, dynamic> selectedAddOn = {
-    //     //     "id": addOn.id,
-    //     //     "options": selectedOptions
-    //     //         .map((option) => {
-    //     //               "id": option.id,
-    //     //               "quantity": 1,
-    //     //               "name": option.name,
-    //     //               "price": option.price,
-    //     //               "currency": option.currency,
-    //     //             })
-    //     //         .toList(),
-    //     //   }; // Todo check this call
-    //
-    //     Map<String, dynamic> selectedAddOnServer = {
-    //       "id": addOn.id,
-    //       "options": options
-    //           .map((option) => {
-    //                 "id": option.id,
-    //                 "quantity": 1,
-    //               })
-    //           .toList(),
-    //     }; // Todo check this call
-    //
-    //     selectedAddOnsList.add(addOn);
-    //     selectedAddOnsCartServerList.add(selectedAddOnServer);
-    //     // }
-    //   }
-    // });
-    selectedVariant?.quantity = 1;
-
-    if (selectedAddOnsList.isNotEmpty &&
-        product?.addOnsModels?.isNotEmpty == true) {
-      addOnPayLoad = {
-        "id": productId,
-        "qty": 1,
-        "type": type,
-        "add_ons": selectedAddOnsList,
-      };
-
-      // basketBloc.addItemInBasketWithAddOns(product, type, selectedAddOnsCartServerList);
-      basketBloc.addItemToCart(
-          item: productSend,
-          type: type,
-          variant: null,
-          addOns: selectedAddOnsList);
-
-      // await _auth.addItemToShoppingCart(addOnPayLoad);
-      return;
-    }
-    if (basketBloc.items.isEmpty) {
-      basketBloc.addItemToCart(
-          item: productSend,
-          type: type,
-          variant: selectedVariant,
-          addOns: null);
-    } else {
-      for (var item in basketBloc.items) {
-        Product productInCart = item['item'];
-
-        if (productInCart.id.toString() == productId) {
-          List<Variant>? variantList = productInCart.variantModels;
-
-          for (var variant in variantList!) {
-            if (variant.id.toString() == selectedVariant?.id) {
-              int currentQuantity = int.parse(variant.quantity.toString());
-              variant.quantity = currentQuantity + 1;
-
-              Map<String, dynamic> dataInfo =
-                  getUpdatedCartItem(productId!, type);
-              // await _auth.addItemToShoppingCart(addOnPayLoad);
-              return;
-            }
-          }
-
-          basketBloc.addItemToCart(
-              item: productSend,
-              type: type,
-              variant: selectedVariant,
-              addOns: null);
-
-          // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
-          // debugPrint("Data From Product Page v-id 3 : $variantList");
-
-          Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
-          debugPrint("Data From Product Page exist : $dataInfo");
-
-          // await _auth.addItemToShoppingCart(addOnPayLoad);
-
-          // for(var item in basketBloc.items){
-          //   // Product productInCart = item['item'];
-          //   List variantList = item['item'].variant;
-          //   debugPrint('fola chat one twoo::: ${variantList.length}');
-          //   debugPrint('fola chat one twoo::: ${item['item'].variant}');
-          // }
-          return;
-        }
-      }
-
-      // Product ID doesn't exist in the cart, add it with the variant
-      basketBloc.addItemToCart(
-          item: productSend,
-          type: type,
-          variant: selectedVariant,
-          addOns: null);
-    }
-
-    Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
-    debugPrint("Data From Product Page : $dataInfo");
-
-    // await _auth.addItemToShoppingCart(dataInfo);
-  }
+  // Future<void> addToCartOld() async {
+  //   // Todo check this call
+  //   String type = product is Product ? "product" : "service";
+  //   Map<String, dynamic> addOnPayLoad = {};
+  //   List<Map<String, dynamic>> selectedAddOnsCartServerList = [];
+  //   List<AddOns> selectedAddOnsList = [];
+  //
+  //   Product productSend = product!;
+  //   productSend = productSend.copyWith(quantity: 1);
+  //
+  //   /// TODO:BRIJESH CHECK ADDON
+  //   // product?.addOnsModels?.forEach((addOn) {
+  //   //   final options = addOn.options;
+  //   //   if (options != null) {
+  //   //     // Filter the options to include only those with option.isChecked == true
+  //   //     // List<AddOnOption> selectedOptions =
+  //   //     //     addOn.options!.where((option) => option.isChecked == true).toList();
+  //   //     //
+  //   //     // if (selectedOptions.isNotEmpty) {
+  //   //     //   Map<String, dynamic> selectedAddOn = {
+  //   //     //     "id": addOn.id,
+  //   //     //     "options": selectedOptions
+  //   //     //         .map((option) => {
+  //   //     //               "id": option.id,
+  //   //     //               "quantity": 1,
+  //   //     //               "name": option.name,
+  //   //     //               "price": option.price,
+  //   //     //               "currency": option.currency,
+  //   //     //             })
+  //   //     //         .toList(),
+  //   //     //   }; // Todo check this call
+  //   //
+  //   //     Map<String, dynamic> selectedAddOnServer = {
+  //   //       "id": addOn.id,
+  //   //       "options": options
+  //   //           .map((option) => {
+  //   //                 "id": option.id,
+  //   //                 "quantity": 1,
+  //   //               })
+  //   //           .toList(),
+  //   //     }; // Todo check this call
+  //   //
+  //   //     selectedAddOnsList.add(addOn);
+  //   //     selectedAddOnsCartServerList.add(selectedAddOnServer);
+  //   //     // }
+  //   //   }
+  //   // });
+  //   selectedVariant?.quantity = 1;
+  //
+  //   if (selectedAddOnsList.isNotEmpty &&
+  //       product?.addOnsModels?.isNotEmpty == true) {
+  //     addOnPayLoad = {
+  //       "id": productId,
+  //       "qty": 1,
+  //       "type": type,
+  //       "add_ons": selectedAddOnsList,
+  //     };
+  //
+  //     // basketBloc.addItemInBasketWithAddOns(product, type, selectedAddOnsCartServerList);
+  //     basketBloc.addItemToCart(
+  //       item: productSend,
+  //       type: type,
+  //       variant: null,
+  //       addOns: selectedAddOnsList,
+  //     );
+  //
+  //     // await _auth.addItemToShoppingCart(addOnPayLoad);
+  //     return;
+  //   }
+  //   if (basketBloc.items.isEmpty) {
+  //     basketBloc.addItemToCart(
+  //       item: productSend,
+  //       type: type,
+  //       variant: selectedVariant,
+  //       addOns: null,
+  //     );
+  //   } else {
+  //     for (var item in basketBloc.items) {
+  //       Product productInCart = item['item'];
+  //
+  //       if (productInCart.id.toString() == productId) {
+  //         List<Variant>? variantList = productInCart.variantModels;
+  //
+  //         for (var variant in variantList!) {
+  //           if (variant.id.toString() == selectedVariant?.id) {
+  //             int currentQuantity = int.parse(variant.quantity.toString());
+  //             variant.quantity = currentQuantity + 1;
+  //
+  //             Map<String, dynamic> dataInfo =
+  //                 getUpdatedCartItem(productId!, type);
+  //             // await _auth.addItemToShoppingCart(addOnPayLoad);
+  //             return;
+  //           }
+  //         }
+  //
+  //         basketBloc.addItemToCart(
+  //           item: productSend,
+  //           type: type,
+  //           variant: selectedVariant,
+  //           addOns: null,
+  //         );
+  //
+  //         // debugPrint("Data From Product Page v-id 2 : $variantPayLoad");
+  //         // debugPrint("Data From Product Page v-id 3 : $variantList");
+  //
+  //         Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
+  //         debugPrint("Data From Product Page exist : $dataInfo");
+  //
+  //         // await _auth.addItemToShoppingCart(addOnPayLoad);
+  //
+  //         // for(var item in basketBloc.items){
+  //         //   // Product productInCart = item['item'];
+  //         //   List variantList = item['item'].variant;
+  //         //   debugPrint('fola chat one twoo::: ${variantList.length}');
+  //         //   debugPrint('fola chat one twoo::: ${item['item'].variant}');
+  //         // }
+  //         return;
+  //       }
+  //     }
+  //
+  //     // Product ID doesn't exist in the cart, add it with the variant
+  //     basketBloc.addItemToCart(
+  //       item: productSend,
+  //       type: type,
+  //       variant: selectedVariant,
+  //       addOns: null,
+  //     );
+  //   }
+  //
+  //   Map<String, dynamic> dataInfo = getUpdatedCartItem(productId!, type);
+  //   debugPrint("Data From Product Page : $dataInfo");
+  //
+  //   // await _auth.addItemToShoppingCart(dataInfo);
+  // }
 
   Map<String, dynamic> getUpdatedCartItem(String productId, String type) {
     Map<String, dynamic> dataInfo = {};
@@ -1284,7 +1289,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                     if (checkDiscount(
                                         product!.discountIsActive!,
                                         product!.discountedPrice!,
-                                        num.parse(product!.price!)))
+                                        product!.price!))
                                       Positioned(
                                         top: 20,
                                         right: 10,
@@ -1587,12 +1592,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          moneyDisplayNormalizer(int.parse(((checkDiscount(
+                          moneyDisplayNormalizer((checkDiscount(
                                   product!.discountIsActive!,
                                   product!.discountedPrice!,
-                                  num.parse(product!.price!)))
-                              ? product!.discountedPrice.toString()
-                              : product!.price!))),
+                                  product!.price!))
+                              ? product!.discountedPrice
+                              : product!.price!),
                           style: TextStyle(
                               fontSize: 18.0,
                               color: navyBlue,
@@ -1603,10 +1608,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                   Row(
                     children: [
-                      if (checkDiscount(
-                          product!.discountIsActive!,
-                          product!.discountedPrice!,
-                          num.parse(product!.price!)))
+                      if (checkDiscount(product!.discountIsActive!,
+                          product!.discountedPrice!, product!.price!))
                         Row(
                           children: [
                             Text(
@@ -1620,8 +1623,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                               ),
                             ),
                             Text(
-                              moneyDisplayNormalizer(
-                                  int.parse(product!.price!)),
+                              moneyDisplayNormalizer(product!.price!),
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,
@@ -2377,7 +2379,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future<void> processCartBuyNow(BuildContext context) async {
-    Product products = product!.copyWith(qty: 1, withSelectedAddOn: true);
+    Product products = product!.copyWith(quantity: 1, withSelectedAddOn: true);
 
     Variant? variant = selectedVariant?.copyWith(quantity: 1);
     List<AddOns> addOns = products.addOnsModels ?? [];

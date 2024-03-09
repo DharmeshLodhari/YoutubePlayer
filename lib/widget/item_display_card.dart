@@ -93,201 +93,195 @@ class _DisplayProductState extends State<DisplayProduct> {
           child: Padding(
             padding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: 6.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Stack(
-                    children: [
-                      Container(
-                        height: 155,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          child: CachedNetworkImage(
-                            imageUrl: widget.product.cover!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            errorWidget: productAndServiceBigErrorWidget,
-                          ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Stack(
+                  children: [
+                    Container(
+                      height: 155,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.product.cover!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          errorWidget: productAndServiceBigErrorWidget,
                         ),
                       ),
+                    ),
+                    Positioned(
+                      left: 10,
+                      bottom: 10,
+                      child: getRating(
+                          numberOfRating: widget.product.rating?.toInt()),
+                    ),
+                    widget.product.discountedPrice != null
+                        ? (checkDiscount(
+                                widget.product.discountIsActive!,
+                                widget.product.discountedPrice!,
+                                widget.product.price!))
+                            ? Positioned(
+                                top: 10,
+                                right: 10,
+                                child: showDiscountValue(
+                                    widget.product.discountType!,
+                                    widget.product.discountValue!,
+                                    widget.product.currency))
+                            : SizedBox()
+                        : SizedBox(),
+
+                    if ((widget.product.pricePercentageChange != null) &
+                        (widget.product.pricePercentageChange != 0.0)) ...[
                       Positioned(
-                        left: 10,
-                        bottom: 10,
-                        child: getRating(
-                            numberOfRating: widget.product.rating?.toInt()),
-                      ),
-                      widget.product.discountedPrice != null
-                          ? (checkDiscount(
-                                  widget.product.discountIsActive!,
-                                  widget.product.discountedPrice!,
-                                  num.parse(widget.product.price!)))
-                              ? Positioned(
-                                  top: 10,
-                                  right: 10,
-                                  child: showDiscountValue(
-                                      widget.product.discountType!,
-                                      widget.product.discountValue!,
-                                      widget.product.currency))
-                              : SizedBox()
-                          : SizedBox(),
-
-                      if ((widget.product.pricePercentageChange != null) &
-                          (widget.product.pricePercentageChange != 0.0)) ...[
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: EdgeInsets.only(
-                                left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
-                            decoration: BoxDecoration(
-                              color: naturalGreen,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                            ),
-                            child: Text(
-                              "${widget.product.pricePercentageChange!.toString()}% off",
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
+                          decoration: BoxDecoration(
+                            color: naturalGreen,
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                          child: Text(
+                            "${widget.product.pricePercentageChange!.toString()}% off",
+                            style: TextStyle(
+                              color: Colors.white,
                             ),
                           ),
                         ),
-                      ],
+                      ),
+                    ],
 
-                      displayShoppingCartControls(),
-                      // TODO: to be added in future
-                      // Positioned(right: 10, top: 10, child: favouriteIcon())
+                    displayShoppingCartControls(),
+                    // TODO: to be added in future
+                    // Positioned(right: 10, top: 10, child: favouriteIcon())
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        truncateString(
+                          str: widget.product.name!,
+                          lengthToTruncateAt: 16,
+                          showEllipsis: false,
+                        ),
+                        style: TextStyle(
+                          color: blackFont,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        truncateString(
+                          str: widget.product.shortDescription!,
+                          lengthToTruncateAt: 60,
+                          showEllipsis: true,
+                        ),
+                        style: TextStyle(
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.w400,
+                          fontSize: 10,
+                          color: yarnBlack,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 6,
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      worldCurrencies[
+                                          widget.product.currency!]!,
+                                      style: TextStyle(
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14.8,
+                                        color: navyBlue,
+                                      ),
+                                    ),
+                                    Text(
+                                      moneyDisplayNormalizer(
+                                          widget.product.discountedPrice != null
+                                              ? ((checkDiscount(
+                                                      widget.product
+                                                          .discountIsActive!,
+                                                      widget.product
+                                                          .discountedPrice!,
+                                                      widget.product.price!))
+                                                  ? widget
+                                                      .product.discountedPrice
+                                                  : widget.product.price!)
+                                              : widget.product.price!),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: navyBlue,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                widget.product.discountedPrice != null
+                                    ? (checkDiscount(
+                                            widget.product.discountIsActive!,
+                                            widget.product.discountedPrice!,
+                                            widget.product.price!))
+                                        ? Row(
+                                            children: [
+                                              Text(
+                                                worldCurrencies[
+                                                    widget.product.currency!]!,
+                                                style: TextStyle(
+                                                  fontFamily: "Inter",
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 12.8,
+                                                  color: navyBlue,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                ),
+                                              ),
+                                              Text(
+                                                moneyDisplayNormalizer(
+                                                    widget.product.price!),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 12,
+                                                  color: navyBlue,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : SizedBox()
+                                    : SizedBox(),
+                              ],
+                            ),
+                            const Expanded(child: SizedBox(width: 40)),
+                            displayShoppingAddingToCartControl()
+                          ]),
                     ],
                   ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          truncateString(
-                            str: widget.product.name!,
-                            lengthToTruncateAt: 16,
-                            showEllipsis: false,
-                          ),
-                          style: TextStyle(
-                            color: blackFont,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          truncateString(
-                            str: widget.product.shortDescription!,
-                            lengthToTruncateAt: 60,
-                            showEllipsis: true,
-                          ),
-                          style: TextStyle(
-                            fontFamily: "Inter",
-                            fontWeight: FontWeight.w400,
-                            fontSize: 10,
-                            color: yarnBlack,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 6,
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        worldCurrencies[
-                                            widget.product.currency!]!,
-                                        style: TextStyle(
-                                          fontFamily: "Inter",
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14.8,
-                                          color: navyBlue,
-                                        ),
-                                      ),
-                                      Text(
-                                        moneyDisplayNormalizer(int.parse(widget
-                                                    .product.discountedPrice !=
-                                                null
-                                            ? ((checkDiscount(
-                                                    widget.product
-                                                        .discountIsActive!,
-                                                    widget.product
-                                                        .discountedPrice!,
-                                                    num.parse(
-                                                        widget.product.price!)))
-                                                ? widget.product.discountedPrice
-                                                    .toString()
-                                                : widget.product.price!)
-                                            : widget.product.price!)),
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: navyBlue,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-                                  widget.product.discountedPrice != null
-                                      ? (checkDiscount(
-                                              widget.product.discountIsActive!,
-                                              widget.product.discountedPrice!,
-                                              num.parse(widget.product.price!)))
-                                          ? Row(
-                                              children: [
-                                                Text(
-                                                  worldCurrencies[widget
-                                                      .product.currency!]!,
-                                                  style: TextStyle(
-                                                    fontFamily: "Inter",
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12.8,
-                                                    color: navyBlue,
-                                                    decoration: TextDecoration
-                                                        .lineThrough,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  moneyDisplayNormalizer(
-                                                      int.parse(widget
-                                                          .product.price!)),
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12,
-                                                    color: navyBlue,
-                                                    decoration: TextDecoration
-                                                        .lineThrough,
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : SizedBox()
-                                      : SizedBox(),
-                                ],
-                              ),
-                              const Expanded(child: SizedBox(width: 40)),
-                              displayShoppingAddingToCartControl()
-                            ]),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -436,8 +430,9 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product});
       } else {
         basketBloc.addItemToCart(
-          item: widget.product.copyWith(qty: 1),
+          item: widget.product.copyWith(quantity: 1),
           type: type,
+          currentUser: userBloc.user.convertToUser(),
         );
       }
     } else {
@@ -448,7 +443,8 @@ class _DisplayProductState extends State<DisplayProduct> {
   Future<void> addToSharedCart(SharedCartModel result) async {
     String type = "product";
 
-    Product products = widget.product.copyWith(qty: 1, withSelectedAddOn: true);
+    Product products =
+        widget.product.copyWith(quantity: 1, withSelectedAddOn: true);
 
     sharedCartBloc.addItemToSharedCart(
       cart: result,
@@ -477,7 +473,10 @@ class _DisplayProductState extends State<DisplayProduct> {
                       if (widget.product.addOnsModels?.isNotEmpty ?? false) {
                         confirmAddOnsDialog();
                       } else {
-                        basketBloc.increaseQty(currentProduct: widget.product);
+                        basketBloc.increaseQty(
+                          currentProduct: widget.product,
+                          currentUser: userBloc.user.convertToUser(),
+                        );
                       }
                     },
                     child: SvgPicture.asset(
@@ -503,7 +502,10 @@ class _DisplayProductState extends State<DisplayProduct> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      basketBloc.decreaseQty(currentProduct: widget.product);
+                      basketBloc.decreaseQty(
+                        currentProduct: widget.product,
+                        currentUser: userBloc.user.convertToUser(),
+                      );
                     },
                     child: SvgPicture.asset('assets/images/minus.svg',
                         height: 17, width: 17),
@@ -536,7 +538,10 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product, "type": "changeAddons"});
       },
       rightButtonOnPressed: () {
-        basketBloc.increaseQty(currentProduct: widget.product);
+        basketBloc.increaseQty(
+          currentProduct: widget.product,
+          currentUser: userBloc.user.convertToUser(),
+        );
       },
     );
   }
@@ -603,6 +608,7 @@ class _DisplayProductState extends State<DisplayProduct> {
 
   showBottomSheetDialog() async {
     var result = await androidBottomSheet(
+      enableDrag: true,
       context: context,
       child: AllActiveCart(),
     );
@@ -613,7 +619,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         });
         addProductToCart();
       } else {
-        await sharedCartBloc.refreshSharedCart(context, result);
+        await sharedCartBloc.refreshSharedCartProduct(context, result);
         addToSharedCart(result);
       }
     }

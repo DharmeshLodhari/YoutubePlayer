@@ -17,7 +17,7 @@ class ShoppingProduct {
   String? qrCode;
   String? seller;
   String? sellerAvatar;
-  String? sellerFullname;
+  String? sellerFullName;
   String? shortDescription;
   String? type;
   int? discountValue;
@@ -42,7 +42,7 @@ class ShoppingProduct {
     this.qrCode,
     this.seller,
     this.sellerAvatar,
-    this.sellerFullname,
+    this.sellerFullName,
     this.shortDescription,
     this.type,
     this.discountValue,
@@ -71,7 +71,7 @@ class ShoppingProduct {
       qrCode: json['qr_code'],
       seller: json['seller'],
       sellerAvatar: json['seller_avatar'],
-      sellerFullname: json['seller_fullname'],
+      sellerFullName: json['seller_fullname'],
       shortDescription: json['short_description'],
       type: json['type'],
       discountValue: json['discount_value'],

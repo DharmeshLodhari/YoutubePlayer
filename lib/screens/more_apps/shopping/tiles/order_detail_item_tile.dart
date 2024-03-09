@@ -152,7 +152,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
   }
 
   String getTotalPrice() {
-    var price = qty! * int.parse(product!.price!);
+    var price = qty! * product!.price!;
     return price.toString();
   }
 

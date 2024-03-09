@@ -1,19 +1,16 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shared_cart_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/auth/shipping_process_auth.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/tiles/members_payment_tile.dart';
-import 'package:Slydo/services/device_info.dart';
-import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -27,7 +24,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -46,23 +42,15 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
   late ShippingProcessBloc shippingProcessBloc;
   SlidableController? _slideController;
   TextEditingController amountController = TextEditingController();
-  bool isCategoryLoading = false;
   String? selectedCategory;
   List<String?> paymentCategories = [];
 
   bool isOrderLoading = false;
   List<int?> orders = [];
-  bool isLoading = false;
-  int? listCount = 0;
-  bool noDataInList = false;
-  String? listNext = "";
-  String? listPrevious = "";
-  late http.Response response;
-  String errorMessage = "";
+  // String errorMessage = "";
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  final GlobalKey<ScaffoldMessengerState> _sharedCartScaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+  bool splitSwitch = false;
 
   @override
   void initState() {
@@ -74,10 +62,11 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     selectedCategory = "Shopping";
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getSharedCartListing();
-
-      amountController.text = moneyDisplayNormalizer(
-          int.parse(shippingProcessBloc.getTotalOrder().toString()));
+      amountController.text = moneyDisplayNormalizer(int.parse(sharedCartBloc
+          .getSharedCartModel()
+          .getSharedCartTotalPrice()
+          .toString()));
+      _onRefresh();
     });
     fetchCategory();
     super.initState();
@@ -106,56 +95,6 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     });
   }
 
-  Future<void> getSharedCartListing() async {
-    if (!isLoading) {
-      if (listNext != null && !isLoading) {
-        isLoading = true;
-        if (mounted) setState(() {});
-
-        Map<String, dynamic>? result = await SharedCartAuthService()
-            .getSharedCartList(listNext, listPrevious);
-
-        if (result == null) {
-          noDataInList = true;
-
-          isLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
-          return;
-        }
-
-        sharedCartBloc.cartList = [];
-        listCount = result['count'];
-        listNext = result['next'];
-        listPrevious = result['previous'];
-        var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            noDataInList = false;
-            isLoading = false;
-            // cartGroupDetails.addAll(tempList!);
-            sharedCartBloc.cartList.addAll(tempList);
-            // sharedCartBloc.cartList = tempList;
-          });
-        }
-      }
-      if (sharedCartBloc.cartList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noDataInList = true;
-          });
-        }
-      } else if (listNext == null && sharedCartBloc.cartList.length > 6) {
-        _sharedCartScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
-        ));
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ColorfulSafeArea(
@@ -167,9 +106,9 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
           return true;
         },
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: white,
           appBar: _buildAppBar() as PreferredSizeWidget?,
-          // body: _buildBody(),
           body: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -180,9 +119,16 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
             onRefresh: _onRefresh,
             child: _buildBody(),
           ),
+          floatingActionButton: _buildFloatingButton(),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
         ),
       ),
     );
+  }
+
+  _buildFloatingButton() {
+    if (sharedCartBloc.isUserCartOwner(context)) return _buildPaymentButton();
   }
 
   Widget _buildAppBar() {
@@ -219,66 +165,59 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
-    return SafeArea(
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+    return ListView(
+      physics: AlwaysScrollableScrollPhysics(),
+      children: [
+        if (sharedCartBloc.isUserCartOwner(context))
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: selectedListItemBackgroundBlue),
+                  borderRadius: BorderRadius.circular(10)),
+              margin: EdgeInsets.zero,
+              shadowColor: boxShadowTwo,
+              color: white,
+              child: Container(
+                decoration: decorateBox(),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (sharedCartBloc.isUserCartOwner(context))
-                      Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                                color: selectedListItemBackgroundBlue),
-                            borderRadius: BorderRadius.circular(10)),
-                        margin: EdgeInsets.zero,
-                        shadowColor: boxShadowTwo,
-                        color: white,
-                        child: Container(
-                          decoration: decorateBox(),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildAmount(),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                getCategoryDropDown(),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                _buildReference(),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                    _buildAmount(),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    getCategoryDropDown(),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    _buildReference(),
                     const SizedBox(
                       height: 10,
                     ),
-                    _buildSplitBill(),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    if (sharedCartBloc.getSharedCartModel().splitBill == true)
-                      _buildMemberList(),
                   ],
                 ),
               ),
             ),
           ),
-          if (sharedCartBloc.isUserCartOwner(context)) _buildPaymentButton(),
-        ],
-      ),
+        Padding(
+          padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+          child: Column(
+            children: [
+              _buildSplitBill(),
+              const SizedBox(
+                height: 10,
+              ),
+              if (splitSwitch == true) _buildMemberList(),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -459,18 +398,10 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
         Transform.scale(
           scale: .8,
           child: CupertinoSwitch(
-            value: !sharedCartBloc.isUserCartOwner(context) ||
-                    (sharedCartBloc
-                            .getSharedCartModel()
-                            .metaData
-                            ?.userData
-                            ?.isNotEmpty ??
-                        false)
-                ? sharedCartBloc.getSharedCartModel().splitBill = true
-                : sharedCartBloc.getSharedCartModel().splitBill ?? false,
+            value: splitSwitch,
             onChanged: (value) {
               if (sharedCartBloc.isUserCartOwner(context)) {
-                sharedCartBloc.getSharedCartModel().splitBill = value;
+                splitSwitch = !splitSwitch;
                 setState(() {});
               }
             },
@@ -484,18 +415,30 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
   Widget _buildMemberList() {
     return Column(
       children: [
-        ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: sharedCartBloc.getSharedCartModel().members?.length,
-          itemBuilder: (BuildContext context, int index) {
-            if (index == sharedCartBloc.getSharedCartModel().members?.length) {
-              return buildLoadingIndicator(isLoading: isLoading);
-            } else {
-              return buildMemberTile(index);
-            }
-          },
-        ),
+        ...sharedCartBloc
+                .getSharedCartModel()
+                .members
+                ?.asMap()
+                .entries
+                .map((e) {
+              final int index = e.key;
+              final SharedCartMemberModel member = e.value;
+
+              return buildMemberTile(member, index);
+            }).toList() ??
+            [],
+        // ListView.builder(
+        //   physics: NeverScrollableScrollPhysics(),
+        //   shrinkWrap: true,
+        //   itemCount: sharedCartBloc.getSharedCartModel().members?.length,
+        //   itemBuilder: (BuildContext context, int index) {
+        //     if (index == sharedCartBloc.getSharedCartModel().members?.length) {
+        //       return buildLoadingIndicator(isLoading: isLoading);
+        //     } else {
+        //       return buildMemberTile(index);
+        //     }
+        //   },
+        // ),
         const SizedBox(height: 10),
         if (sharedCartBloc.isUserCartOwner(context)) _buildSplitEvenly(),
         _buildTotalAmount(),
@@ -503,10 +446,14 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     );
   }
 
-  Widget buildMemberTile(int index) {
-    SharedCartMemberModel? member =
-        sharedCartBloc.getSharedCartModel().members?[index];
-    return member?.userName == userBloc.user.userName
+  Widget buildMemberTile(SharedCartMemberModel member, int index) {
+    return member.userName == userBloc.user.userName &&
+            member.userName !=
+                sharedCartBloc.getSharedCartModel().customerUsername &&
+            sharedCartBloc
+                    .getSharedCartModel()
+                    .isUserPaymentDone(member.userName) ==
+                false
         ? _getSlidableWithLists(
             context,
             MemberPaymentTile(
@@ -518,6 +465,9 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
         : MemberPaymentTile(
             member: member,
             index: index,
+            isUserPaymentDone: sharedCartBloc
+                .getSharedCartModel()
+                .isUserPaymentDone(member.userName),
           );
   }
 
@@ -556,7 +506,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
             ),
           ),
           trailing: Container(
-            width: 100,
+            width: 110,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -620,14 +570,8 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
       padding: const EdgeInsets.all(16.0),
       child: CurvedButton(
         onPressed: () {
-          if (sharedCartBloc.getSharedCartModel().splitBill == true) {
-            if (sharedCartBloc.getSharedCartModel().getTotalOfPercentage() ==
-                100) {
-              requestForPayment();
-            } else {
-              showToast(message: "Total payment is not 100%");
-            }
-          } else {
+          if (splitSwitch == false ||
+              sharedCartBloc.getSharedCartModel().isAllCartPaymentDone()) {
             BottomSheetPassCode(
                 context: context,
                 isValidCallback: () async {
@@ -639,25 +583,58 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
                 cancelCallBack: () {
                   Navigator.pop(context);
                 });
+          } else {
+            if (sharedCartBloc.getSharedCartModel().getSplitBillTotalPayment(
+                    shippingProcessBloc.getTotalOrder()) ==
+                sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice()) {
+              requestForPayment();
+            } else {
+              showToast(message: "Total payment is not 100%");
+            }
           }
         },
         backgroundColor: navyBlue,
         textColor: white,
-        text: sharedCartBloc.getSharedCartModel().splitBill == true
-            ? 'Request Payment'
-            : 'Send Payment',
+        text: paymentBtnText(),
         isLoading: isOrderLoading,
       ),
     );
   }
 
+  String paymentBtnText() {
+    String btnText = "";
+    if (splitSwitch == false ||
+        sharedCartBloc.getSharedCartModel().isAllCartPaymentDone()) {
+      btnText = 'Send Payment';
+    } else {
+      btnText = 'Request Payment';
+    }
+    return btnText;
+  }
+
   Future<void> placeOrder() async {
+    // debugPrint(
+    //     "place order ${shippingProcessBloc.toPlaceOrder(userBloc.user.userName)}");
+    // place order {payment_type: Slydo, shipping_details: []}
+    Map<String, dynamic> shippingData =
+        shippingProcessBloc.toPlaceOrder(userBloc.user.userName);
+    List<ShippingDetail>? shippingDetailsList = sharedCartBloc
+        .getSharedCartModel()
+        .metaData
+        ?.shippingData
+        ?.shippingDetails;
+    if ((shippingData['shipping_details'] == null ||
+            (shippingData['shipping_details'] as List).isEmpty) &&
+        shippingDetailsList?.isNotEmpty == true) {
+      shippingData['shipping_details'] =
+          shippingDetailsList?.map((e) => e.toJson()).toList();
+    }
     if (!isOrderLoading) {
       isOrderLoading = true;
       if (mounted) setState(() {});
       await ShippingProcessAuthService()
           .placeOrder(
-              data: shippingProcessBloc.toPlaceOrder(userBloc.user.userName),
+              data: shippingData,
               isCartProcess: false,
               isSharedCart: true,
               sharedCartId: sharedCartBloc.getSharedCartModel().id)
@@ -672,16 +649,20 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
                 .makePaymentForCartOrder({"orders": orders});
 
             if (response.statusCode == 200) {
-              shippingProcessBloc.isPaymentSuccessfully(true);
+              Navigator.popUntil(
+                  context, ModalRoute.withName(Routes.DASHBOARD));
+              Navigator.of(context).pushNamed(Routes.SUCCESSFUL_ORDER);
+              showToast(
+                  message: AppLocalization.of(context)!.sendPaymentSuccess);
             } else if (response.statusCode == 500) {
               showToast(message: AppLocalization.of(context)!.serverError);
             } else {
+              showToast(message: 'Error');
               debugPrint(
                 "MakePaymentForCartOrder Unsuccessful",
               );
             }
           } else {
-            shippingProcessBloc.isPaymentSuccessfully(false);
             showToast(message: 'Error');
             debugPrint(
               "Could Not Place The Order",
@@ -703,6 +684,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     List<Map<String, dynamic>> dataList = [];
     for (SharedCartMemberModel member
         in sharedCartBloc.getSharedCartModel().members ?? []) {
+      // if (member.userName != userBloc.user.userName) {
       Map<String, dynamic> data = {
         "username": member.userName,
         "currency": "NGN",
@@ -710,36 +692,49 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
         "percentage": member.percentageValue,
       };
       dataList.add(data);
+      // }
     }
     Map<String, dynamic> metaData = {
       "meta_data": {
+        "spit_bill": splitSwitch,
+        "shipping_data":
+            shippingProcessBloc.toPlaceOrder(userBloc.user.userName),
         "user_data": dataList,
       }
     };
-    await SharedCartAuthService()
-        .requestPayment(sharedCartBloc.getSharedCartModel().id, metaData)
-        .then((value) {
-      if (value == true) {
-        showToast(
-            message: AppLocalization.of(context)!.requestPaymentSuccessfully);
-      } else {
-        showToast(message: AppLocalization.of(context)!.requestFailed);
-      }
-    }).catchError((error) {
-      showToast(message: error.toString());
-    });
+    if (!isOrderLoading) {
+      isOrderLoading = true;
+      await SharedCartAuthService()
+          .requestPayment(sharedCartBloc.getSharedCartModel().id, metaData)
+          .then((value) async {
+        if (value == true) {
+          await sharedCartBloc.refreshAllCart(context);
+          Navigator.of(context)
+              .popUntil(ModalRoute.withName(Routes.SHOPPING_CART));
+          showToast(
+              message: AppLocalization.of(context)!.requestPaymentSuccessfully);
+        } else {
+          showToast(message: AppLocalization.of(context)!.requestFailed);
+        }
+        isOrderLoading = false;
+      }).catchError((error) {
+        showToast(message: error.toString());
+        isOrderLoading = false;
+      });
+    }
   }
 
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
+    Connectivity().checkConnectivity().then((value) async {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        listCount = 0;
-        listNext = "";
-        listPrevious = "";
-        noDataInList = false;
-        getSharedCartListing();
+        await sharedCartBloc.refreshSharedCartProduct(
+            context, sharedCartBloc.getSharedCartModel());
+        SharedCartModel sharedCartModel = await sharedCartBloc
+            .refreshCartDetail(sharedCartBloc.getSharedCartModel().id,
+                isUpdate: false);
+        splitSwitch = sharedCartModel.metaData?.spitBill ?? false;
         setState(() {
           _refreshController.refreshCompleted();
         });
@@ -762,213 +757,70 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
         actionOneText: AppLocalization.of(context)!.cancel,
         actionTwoText: AppLocalization.of(context)!.accept,
         firstActionPrimary: false,
-        content: Padding(
-          padding: const EdgeInsets.only(left: 10, right: 10, top: 25),
-          child: Column(
-            children: [
-              Text(AppLocalization.of(context)!.confirmPayment,
-                  style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "Inter",
-                      fontSize: 16.0),
-                  textAlign: TextAlign.center),
-              Container(
-                margin:
-                    EdgeInsets.only(top: 25, bottom: 15, left: 20, right: 20),
-                child: RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black,
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(
-                          text: 'A Sum of ',
-                          style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: "Inter",
-                            fontSize: 14.0,
-                          )),
-                      TextSpan(
-                          text:
-                              '${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(getAmountForDialog())} ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: blackFont,
-                            fontFamily: "Inter",
-                            fontSize: 14.0,
-                          )),
-                      TextSpan(
-                          text: 'will be deducted from your account ?',
-                          style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: "Inter",
-                            fontSize: 14.0,
-                          )),
-                    ],
+        content: Column(
+          children: [
+            Text(AppLocalization.of(context)!.confirmPayment,
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Inter",
+                    fontSize: 16.0),
+                textAlign: TextAlign.center),
+            Container(
+              margin: EdgeInsets.only(top: 25, bottom: 15, left: 10, right: 10),
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.black,
                   ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'A Sum of ',
+                      style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Inter",
+                        fontSize: 14.0,
+                      ),
+                    ),
+                    TextSpan(
+                      text:
+                          '${worldCurrencies[userBloc.user.currency]}${moneyDisplayNormalizer(getUserCartAmount())} ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: blackFont,
+                        fontFamily: "Inter",
+                        fontSize: 14.0,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'will be deducted from your account ?',
+                      style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: "Inter",
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         leftButtonOnPressed: () async {
           Navigator.pop(context);
         },
         rightButtonOnPressed: () async {
-          sendPayment();
           Navigator.pop(context);
+          Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+          Navigator.of(context).pushNamed(Routes.ACCOUNTS);
         });
   }
 
-  Future<void> sendPayment() async {
-    int? amount = 0;
-    if (FocusScope.of(context).hasFocus) {
-      FocusScope.of(context).unfocus();
-    }
-
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    for (UserData user
-        in sharedCartBloc.getSharedCartModel().metaData?.userData ?? []) {
-      if (userBloc.user.userName == user.username) {
-        amount = user.amount;
-      }
-    }
-    if (userBloc.user.userName ==
-        sharedCartBloc.getSharedCartModel().customerUsername) {
-      var userLocation;
-      Map deviceData;
-      try {
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () async {
-              showDialog(
-                  context: context,
-                  builder: (context) => const Center(child: SizedBox()));
-              // Center(child: CircularLoadingIndicator()));
-
-              try {
-                if (Platform.isIOS) {
-                  try {
-                    userLocation = await LocationService().getLocationEndless();
-                  } catch (e) {
-                    Navigator.pop(context);
-                    debugPrint(e.toString());
-                    showToast(message: e.toString());
-                    return;
-                  }
-                }
-
-                // double currentBalance = await getAccountBalance();
-                // double transactionalAmount = double.parse(amount.toString());
-
-                //show loading screen
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PaymentLoadingScreen(
-                            text: 'Sending Payment...',
-                            imagePath: 'assets/images/app_logo.png',
-                          )),
-                );
-
-                await Future.delayed(const Duration(seconds: 3));
-
-                deviceData = await getDeviceInfo();
-
-                var data = {
-                  "from_customer": userBloc.user.userName,
-                  "to_customer":
-                      sharedCartBloc.getSharedCartModel().customerUsername,
-                  "currency": userBloc.user.currency,
-                  "amount": moneyInputNormalizer(amount.toString()),
-                  "category": "Shopping",
-                  "notes": "Merchandise Payment in Shared cart",
-                  "description": "Merchandise Payment in Shared cart",
-                  "latitude": Platform.isIOS ? userLocation.latitude : "",
-                  "longitude": Platform.isIOS ? userLocation.longitude : "",
-                  "deviceData": deviceData,
-                  "is_anonymous": false,
-                  "made_from_chat": false,
-                };
-
-                await PaymentAndBankingAuth()
-                    .makePayment(data)
-                    .then((value) async {
-                  debugPrint(
-                      "status code:- ${value.statusCode}  body:- ${value.body}");
-
-                  response = value;
-                  if (response.statusCode == 200) {
-                    // popFromShoppingCart(product);
-                    //Pop Circular Progress Indicator
-
-                  } else if (response.statusCode == 400) {
-                    Navigator.pop(context);
-                    setState(() {
-                      errorMessage = "${jsonDecode(value.body)["errors"]}";
-
-                      showToast(message: errorMessage);
-                    });
-                  } else if (response.statusCode == 500) {
-                    Navigator.pop(context);
-                    setState(() {
-                      errorMessage = AppLocalization.of(context)!.serverError;
-                      showToast(message: errorMessage);
-                    });
-                  } else {
-                    Navigator.pop(context);
-                    if (response.statusCode == 406) {
-                      errorMessage = jsonDecode(value.body)[0];
-                      showToast(message: "$errorMessage");
-                      setState(() {});
-                    } else {
-                      debugPrint("ERROR:- ${response.body}");
-                      setState(() {
-                        errorMessage =
-                            AppLocalization.of(context)!.somethingWentWrong;
-                        showToast(message: "$errorMessage");
-                      });
-                    }
-                  }
-                });
-              } catch (e) {
-                debugPrint(e.toString());
-                showToast(message: e.toString());
-              }
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-              _sharedCartScaffoldMessengerKey.currentState!
-                  .showSnackBar(SnackBar(
-                content: Text(AppLocalization.of(context)!.invalidPassword),
-              ));
-            });
-      } catch (e) {
-        debugPrint(e.toString());
-        showToast(message: e.toString());
-      }
-    } else {
-      showToast(message: AppLocalization.of(context)!.invalidRecipient);
-    }
-  }
-
-  // void popFromShoppingCart(Product? product) {
-  //   if (itemIndex != null) {
-  //     try {
-  //       basketBloc.removeItemFromCart(basketBloc.items[itemIndex!]);
-  //     } catch (e) {
-  //       debugPrint("SendPayment PopFromShopping cart : " + e.toString());
-  //     }
-  //   }
-  // }
-
-  int getAmountForDialog() {
+  int getUserCartAmount() {
     int amount = 0;
     for (UserData user
         in sharedCartBloc.getSharedCartModel().metaData?.userData ?? []) {

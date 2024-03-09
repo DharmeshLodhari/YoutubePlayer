@@ -158,7 +158,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
 
   List<Widget> _buildCircles() {
     var list = <Widget>[];
-    var extraSize = animation.value;
+    var extraSize = animation.value ?? 0;
     for (int i = 0; i < widget.passwordDigits; i++) {
       list.add(
         Container(

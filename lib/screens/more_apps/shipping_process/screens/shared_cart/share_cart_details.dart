@@ -24,6 +24,10 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SharedCartDetails extends StatefulWidget {
+  // var arguments;
+  //
+  // SharedCartDetails({Key? key, this.arguments}) : super(key: key);
+
   @override
   State<SharedCartDetails> createState() => _SharedCartDetailsState();
 }
@@ -36,6 +40,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   AppConfigurationModel? appConfigurationModel;
   bool isLoading = false;
   bool isQtyChange = false;
+  // SharedCartModel sharedCartModel = SharedCartModel();
 
   final GlobalKey<ScaffoldMessengerState> _cartItemScaffoldMessengerKey =
       new GlobalKey<ScaffoldMessengerState>();
@@ -50,12 +55,13 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   void initState() {
     super.initState();
 
+    // sharedCartModel = widget.arguments["cart_details"];
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       isLoading = true;
       if (mounted) setState(() {});
-      await sharedCartBloc.refreshSharedCart(
+      await sharedCartBloc.refreshSharedCartProduct(
           context, sharedCartBloc.getSharedCartModel());
       isLoading = false;
       if (mounted) setState(() {});
@@ -142,7 +148,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   Widget _buildBody() {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
@@ -288,10 +294,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
   Widget _buildCheckoutButton(BuildContext context) {
     return MaterialButton(
       height: 40,
-      color: sharedCartBloc.getSharedCartModel().customerUsername ==
-              userBloc.user.userName
-          ? navyBlue
-          : darkGrey,
+      color: navyBlue,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: const SizedBox(
         width: 66,
@@ -307,97 +310,72 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       ),
       onPressed: () {
         if (appConfigurationModel?.enableCheckout == true &&
-            sharedCartBloc.getSharedCartModel().customerUsername ==
-                userBloc.user.userName &&
             sharedCartBloc.getSharedCartModel().getSharedCartTotalPrice() !=
                 0) {
-          ShippingProcessBloc shippingProcessBloc =
-              Provider.of<ShippingProcessBloc>(context, listen: false);
-          shippingProcessBloc.currentSelectedIndex = null;
+          if (sharedCartBloc.getSharedCartModel().metaData?.userData != null &&
+              sharedCartBloc
+                      .getSharedCartModel()
+                      .metaData
+                      ?.userData
+                      ?.isNotEmpty ==
+                  true) {
+            Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+          } else {
+            if (sharedCartBloc.getSharedCartModel().customerUsername ==
+                userBloc.user.userName) {
+              ShippingProcessBloc shippingProcessBloc =
+                  Provider.of<ShippingProcessBloc>(context, listen: false);
+              shippingProcessBloc.currentSelectedIndex = null;
 
-          Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
-            'isSharedCart': true,
-            'sharedCartId': sharedCartBloc.getSharedCartModel().id
-          });
-
-          Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
-        } else {
-          showToast(message: 'Checkout not available now');
+              Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
+                'isSharedCart': true,
+                'sharedCartId': sharedCartBloc.getSharedCartModel().id,
+              });
+            } else {
+              showToast(message: 'Checkout not available now');
+            }
+          }
         }
-        // _buildCartPaymentRequestDialog(context);
+        //   if (sharedCartBloc.getSharedCartModel().customerUsername ==
+        //       userBloc.user.userName) {
+        //     if (sharedCartBloc.getSharedCartModel().metaData?.userData ==
+        //             null &&
+        //         sharedCartBloc
+        //                 .getSharedCartModel()
+        //                 .metaData
+        //                 ?.userData
+        //                 ?.isEmpty ==
+        //             true) {
+        //       ShippingProcessBloc shippingProcessBloc =
+        //           Provider.of<ShippingProcessBloc>(context, listen: false);
+        //       shippingProcessBloc.currentSelectedIndex = null;
+        //
+        //       Navigator.of(context).pushNamed(Routes.CONFIRM_ORDER, arguments: {
+        //         'isSharedCart': true,
+        //         'sharedCartId': sharedCartBloc.getSharedCartModel().id
+        //       });
+        //     } else {
+        //       Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+        //     }
+        //   } else {
+        //     if (sharedCartBloc.getSharedCartModel().metaData?.userData !=
+        //             null &&
+        //         sharedCartBloc
+        //                 .getSharedCartModel()
+        //                 .metaData
+        //                 ?.userData
+        //                 ?.isNotEmpty ==
+        //             true) {
+        //       Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
+        //     } else {
+        //       showToast(message: 'Checkout not available now');
+        //     }
+        //   }
+        // } else {
+        //   showToast(message: 'Checkout not available now');
+        // }
       },
     );
-  }
-
-  void _buildCartPaymentRequestDialog(BuildContext context) {
-    showDialogBoxWithInput(
-        context: context,
-        actionOneTextColor: blackFont,
-        actionOneBgColor: greyBorderColor,
-        actionTwoTextColor: white,
-        actionTwoBgColor: navyBlue,
-        actionOneText: AppLocalization.of(context)!.cancel,
-        actionTwoText: AppLocalization.of(context)!.viewNow,
-        firstActionPrimary: false,
-        content: Padding(
-          padding: const EdgeInsets.only(left: 10, right: 10, top: 25),
-          child: Column(
-            children: [
-              Text(AppLocalization.of(context)!.cartPaymentRequest,
-                  style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "Inter",
-                      fontSize: 16.0),
-                  textAlign: TextAlign.center),
-              Container(
-                margin:
-                    EdgeInsets.only(top: 25, bottom: 15, left: 20, right: 20),
-                child: RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black,
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(
-                          text: 'A payment request of ₦0.00 from ',
-                          style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: "Inter",
-                            fontSize: 14.0,
-                          )),
-                      TextSpan(
-                          text: '${sharedCartBloc.getSharedCartModel().name} ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: blackFont,
-                            fontFamily: "Inter",
-                            fontSize: 14.0,
-                          )),
-                      TextSpan(
-                          text: 'shared cart?',
-                          style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: "Inter",
-                            fontSize: 14.0,
-                          )),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        leftButtonOnPressed: () async {
-          Navigator.pop(context);
-        },
-        rightButtonOnPressed: () async {
-          Navigator.pop(context);
-          Navigator.of(context).pushNamed(Routes.SHARED_CART_PAYMENT);
-        });
   }
 
   void _onRefresh() async {
@@ -406,7 +384,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         if (mounted) setState(() {});
-        await sharedCartBloc.refreshSharedCart(
+        await sharedCartBloc.refreshSharedCartProduct(
             context, sharedCartBloc.getSharedCartModel());
         setState(() {
           // Call the callback function with the updated list
