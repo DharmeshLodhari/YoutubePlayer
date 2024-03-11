@@ -1407,7 +1407,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             await Navigator.of(context).pushNamed('/add-edit-user-bio',
                 arguments: {"searchedUser": searchedUser});
 
-            getSearchedUser();
+            getSearchedUser(load: false);
           },
         ),
       );

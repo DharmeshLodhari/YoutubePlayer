@@ -377,15 +377,15 @@ class ShoppingAuthService extends AuthService {
     if (channel == true) {
       url = AppConfig.baseUrl + "/api/v1/channels-merchandise/$userName";
     }
-    if (page_size != "") {
-      if (url.contains("page_size")) {
-        url = url;
-      } else if (url.contains("?")) {
-        url = url + "&page_size=$page_size";
-      } else {
-        url = url + "?page_size=$page_size";
-      }
-    }
+    // if (page_size != "") {
+    //   if (url.contains("page_size")) {
+    //     url = url;
+    //   } else if (url.contains("?")) {
+    //     url = url + "&page_size=$page_size";
+    //   } else {
+    //     url = url + "?page_size=$page_size";
+    //   }
+    // }
     debugPrint("product list url _______________________" + url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -1910,30 +1910,55 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
-  Future<List<Tags>> getProductTags(id) async {
-    String url = AppConfig.baseUrl + "/api/v1/products/tags";
-    // "/api/v1/products/tags/?industries/${id}&search=${val}";
+  Future<Map<String, dynamic>?> getProductTags(
+      id, String? next, String? previous) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/products/tags";
+      // "/api/v1/products/tags/?industries/${id}&search=${val}";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
     debugPrint(
         "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
     if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-
-      List<dynamic> results = jsonData["results"];
-
       List<Tags> categories = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        Tags customerProfile = Tags.fromJson(item);
 
-      for (int i = 0; i < results.length; i++) {
-        categories.add(Tags(name: results[i]['name']!, id: results[i]['id']));
+        debugPrint('SEARCH FILTER BODY ---> ${customerProfile.toJson()}');
+
+        categories.add(customerProfile);
       }
 
-      return categories;
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": categories
+      };
+      debugPrint("result:- $result");
+      return result;
     } else {
       debugPrint(
           "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
-      return Future.value(<Tags>[]);
+      List<CustomerProfile> customerProfileList = [];
+      Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": customerProfileList
+      };
+      return result;
     }
   }
 
