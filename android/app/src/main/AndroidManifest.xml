@@ -16,6 +16,9 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 
     <application android:allowBackup="false"
@@ -75,6 +78,8 @@
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY"/>
+
+        <meta-data android:name="flutterEmbedding" android:value="2"/>
 
         <provider
             android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"

@@ -37,6 +37,8 @@
 	<string>Can we access your camera in order to scan barcodes?</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app requires access to your location.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+    <string>This app requires access to your location.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app requires access to your microphone to send audio messages.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

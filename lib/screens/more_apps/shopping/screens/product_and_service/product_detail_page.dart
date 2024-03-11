@@ -172,7 +172,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future canReviewProduct() async {
     Map<String, String> data = {};
     data['provider'] = product!.seller!.toString();
-    data['buyer'] = userBloc!.user.userName!;
+    data['buyer'] = userBloc.user.userName!;
     data['type'] = 'products';
     data['id'] = product!.id!;
 
@@ -231,7 +231,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       );
     }
 
-    isValidCustomer = userBloc?.user.userName != product!.seller;
+    isValidCustomer = userBloc.user.userName != product!.seller;
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -462,7 +462,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       "meta_data": jsonEncode(itemData),
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
-      "author": userBloc?.user.userName,
+      "author": userBloc.user.userName,
       "message": url,
       "kind": item is Product ? "product" : "service",
       "created_at": DateTime.now().toUtc().toString(),
@@ -1209,7 +1209,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _buildWriteReview() {
     debugPrint('CAN RATE :: $canRate');
-    if (product?.seller == userBloc?.user.userName) {
+    if (product?.seller == userBloc.user.userName) {
       return Container();
     }
 

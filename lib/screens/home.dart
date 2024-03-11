@@ -514,7 +514,7 @@ class _HomeState extends State<Home> {
               //     Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
               //   }
               // }
-              Navigator.of(context).pushNamed(Routes.RIDER_DASHBOARD);
+              Navigator.of(context).pushNamed(Routes.LIVE_MAP);
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 16),

@@ -145,17 +145,78 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
       actionTwoTextColor: blackFont,
       actionTwoBgColor: greyBorderColor,
       actionOneText: "Save",
-      content: Padding(
-        padding: const EdgeInsets.only(left: 0.0, right: 0, top: 20),
-        child: Column(
+      content: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(right: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Spacer(),
+                Text("Add Custom Category",
+                    style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
+                    textAlign: TextAlign.center),
+                Spacer(),
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.highlight_off_rounded))
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: CustomizedTextFormField(
+              labelText: "Name",
+              controller: _controller,
+              validator: (val) {
+                if (val.isNotEmpty) {
+                  return null;
+                }
+                return AppLocalization.of(context)!.pleaseEnterManufacturerName;
+              },
+              onChanged: (val) {
+                // productManufacturer = val;
+              },
+            ),
+          ),
+        ],
+      ),
+      leftButtonOnPressed: () async {
+        if (_controller.text.isNotEmpty) {
+          bool result = await ShoppingAuthService()
+              .createCustomCategory(_controller.text);
+          _onProductRefresh();
+          _controller.clear();
+          Navigator.pop(context);
+        }
+      },
+    );
+  }
+
+  deleteOrEditCategory(ProductCategory prod) {
+    _controller.text = prod.name;
+    showDialogBoxWithInput(
+        context: context,
+        actionOneTextColor: white,
+        actionOneBgColor: mateRed,
+        actionTwoTextColor: white,
+        actionTwoBgColor: navyBlue,
+        actionOneText: "Delete",
+        actionTwoText: "Update",
+        firstActionPrimary: false,
+        content: Column(
           children: [
             Container(
               margin: EdgeInsets.only(right: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Spacer(),
-                  Text("Add Custom Category",
+                  Text("Edit Custom Category",
                       style: TextStyle(
                           color: blackFont,
                           fontWeight: FontWeight.bold,
@@ -187,76 +248,8 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
                 },
               ),
             ),
+            SizedBox(height: 5)
           ],
-        ),
-      ),
-      leftButtonOnPressed: () async {
-        if (_controller.text.isNotEmpty) {
-          bool result = await ShoppingAuthService()
-              .createCustomCategory(_controller.text);
-          _onProductRefresh();
-          _controller.clear();
-          Navigator.pop(context);
-        }
-      },
-    );
-  }
-
-  deleteOrEditCategory(ProductCategory prod) {
-    _controller.text = prod.name;
-    showDialogBoxWithInput(
-        context: context,
-        actionOneTextColor: white,
-        actionOneBgColor: mateRed,
-        actionTwoTextColor: white,
-        actionTwoBgColor: navyBlue,
-        actionOneText: "Delete",
-        actionTwoText: "Update",
-        firstActionPrimary: false,
-        content: Padding(
-          padding: const EdgeInsets.only(left: 0.0, right: 0, top: 20),
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(right: 10),
-                child: Row(
-                  children: [
-                    Spacer(),
-                    Text("Edit Custom Category",
-                        style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.0),
-                        textAlign: TextAlign.center),
-                    Spacer(),
-                    IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(Icons.highlight_off_rounded))
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: CustomizedTextFormField(
-                  labelText: "Name",
-                  controller: _controller,
-                  validator: (val) {
-                    if (val.isNotEmpty) {
-                      return null;
-                    }
-                    return AppLocalization.of(context)!
-                        .pleaseEnterManufacturerName;
-                  },
-                  onChanged: (val) {
-                    // productManufacturer = val;
-                  },
-                ),
-              ),
-              SizedBox(height: 5)
-            ],
-          ),
         ),
         leftButtonOnPressed: () async {
           bool result =
@@ -439,8 +432,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
         deleteOrEditCategory(itemList[index]);
       },
       child: Container(
-        height: 90,
-        margin: const EdgeInsets.symmetric(vertical: 10.0),
+        margin: const EdgeInsets.symmetric(vertical: 5.0),
         child: Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -448,26 +440,19 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
               borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.zero,
           color: white,
-          child: Container(
-            padding: EdgeInsets.only(top: 23, left: 15),
-            child: Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    messageDecoderWithEmoji(itemList[index].name) ??
-                        itemList[index].name,
-                    maxLines: 1,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        fontFamily: "Inter",
-                        color: blackFont),
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+          child: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Text(
+              messageDecoderWithEmoji(itemList[index].name) ??
+                  itemList[index].name,
+              maxLines: 1,
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                  color: blackFont),
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
