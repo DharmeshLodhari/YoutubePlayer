@@ -868,12 +868,12 @@ class _SearchUsersProductAndServiceState
   Widget getLeading(Product product) {
     var imageUrl = "";
     try {
-      imageUrl = product.cover ?? defaultImage;
+      imageUrl = product.cover ?? defaultProductAndServiceImage;
     } catch (e) {
       imageUrl = "";
     }
     if (imageUrl == "") {
-      imageUrl = defaultImage;
+      imageUrl = defaultProductAndServiceImage;
     }
     return ClipOval(
       child: CachedNetworkImage(

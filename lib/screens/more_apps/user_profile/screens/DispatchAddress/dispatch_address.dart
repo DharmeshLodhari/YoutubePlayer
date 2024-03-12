@@ -430,21 +430,23 @@ class _DispatchAddressState extends State<DispatchAddress> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Spacer(),
-                    Radio<ShippingAddress>(
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        visualDensity: const VisualDensity(
-                          horizontal: VisualDensity.minimumDensity,
-                          vertical: VisualDensity.minimumDensity,
-                        ),
-                        value: itemList[index],
-                        activeColor: navyBlue,
-                        groupValue: selectedShippingAddress,
-                        onChanged: (val) {
-                          if (isForSelection) {
-                            selectedShippingAddress = val;
-                            if (mounted) setState(() {});
-                          }
-                        })
+                    if (isForSelection)
+                      Radio<ShippingAddress>(
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: const VisualDensity(
+                            horizontal: VisualDensity.minimumDensity,
+                            vertical: VisualDensity.minimumDensity,
+                          ),
+                          value: itemList[index],
+                          activeColor: navyBlue,
+                          groupValue: selectedShippingAddress,
+                          onChanged: (val) {
+                            if (isForSelection) {
+                              selectedShippingAddress = val;
+                              if (mounted) setState(() {});
+                            }
+                          })
                   ],
                 ),
                 SizedBox(

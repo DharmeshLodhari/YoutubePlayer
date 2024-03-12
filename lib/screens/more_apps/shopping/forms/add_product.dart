@@ -2012,15 +2012,15 @@ class _AddProductState extends State<AddProduct> {
     if (_formKey.currentState!.validate()) {
       if (productImages.length >= 1) {
         if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
-          showToast(message: AppLocalization.of(context)!.pleaseFillWeight);
+          showToast(message: AppLocalization.of(context)?.pleaseFillWeight);
           return;
         }
         if (containsHeight() && selectedHeight.isEmpty && height != 0.0) {
-          showToast(message: AppLocalization.of(context)!.pleaseFillHeight);
+          showToast(message: AppLocalization.of(context)?.pleaseFillHeight);
           return;
         }
         if (containsWidth() && selectedWidth.isEmpty && width != 0.0) {
-          showToast(message: AppLocalization.of(context)!.pleaseFillWidth);
+          showToast(message: AppLocalization.of(context)?.pleaseFillWidth);
           return;
         }
 
@@ -2032,14 +2032,14 @@ class _AddProductState extends State<AddProduct> {
           product.description = messageDecoderWithEmoji(productDescription);
           product.shortDescription =
               messageDecoderWithEmoji(productShortDescription);
-          product.category = selectedProductCategory!;
-          product.subCategory = selectedSubCategory!;
+          product.category = selectedProductCategory;
+          product.subCategory = selectedSubCategory;
           product.customCategory = selectedCustomCategory;
           // product.tags = userTags.map((i) => Tags.fromJson(i)).toList();
           product.tags = userTags;
           if (selectedDeliveryTimeCondition != null) {
             product.preparationTime =
-                int.parse(selectedDeliveryTimeCondition!.name);
+                int.parse(selectedDeliveryTimeCondition?.name ?? "");
           }
           product.condition = productCondition;
           product.price = moneyInputNormalizer(productPrice);

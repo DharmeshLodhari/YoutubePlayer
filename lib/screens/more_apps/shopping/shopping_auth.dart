@@ -1526,7 +1526,8 @@ class ShoppingAuthService extends AuthService {
         url = url + "category=${filterOptions.category}";
       }
       if (filterOptions.searchedText!.trim() != "") {
-        url = url + "&name__icontains=${filterOptions.searchedText}";
+        // url = url + "&name__icontains=${filterOptions.searchedText}";
+        url = url + "&search=${filterOptions.searchedText}";
       }
       if (filterOptions.minAmount != null) {
         url = url + "&price__gte=${filterOptions.minAmount}";
@@ -1911,14 +1912,18 @@ class ShoppingAuthService extends AuthService {
   }
 
   Future<Map<String, dynamic>?> getProductTags(
-      id, String? next, String? previous) async {
+      id, String? next, String? previous, searchText) async {
     String url = "";
     if (next == null) {
       return null;
     }
 
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/products/tags";
+      if (searchText != null || searchText != "") {
+        url = AppConfig.baseUrl + "/api/v1/products/tags/?search=$searchText";
+      } else {
+        url = AppConfig.baseUrl + "/api/v1/products/tags";
+      }
       // "/api/v1/products/tags/?industries/${id}&search=${val}";
     } else {
       url = getSecureUrl(url: next);

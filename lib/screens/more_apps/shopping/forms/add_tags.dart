@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -29,10 +30,11 @@ class _AddTagsState extends State<AddTags> {
   String? previous = "";
   bool noCategoryInList = false;
   List<Tags> tagList = [];
-  List<Tags>? tagListCopy;
+  // List<Tags>? tagListCopy;
   final GlobalKey<ScaffoldMessengerState> _addTagsScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
   final ScrollController _scrollController = ScrollController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -44,13 +46,13 @@ class _AddTagsState extends State<AddTags> {
     //   (timeStamp) async {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    getProductTags(userBloc.userAbout!.industry!.id!);
+    getProductTags(userBloc.userAbout?.industry?.id!, "");
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        getProductTags(userBloc.userAbout!.industry!.id!);
+        getProductTags(userBloc.userAbout?.industry?.id!, "");
       }
     });
 
@@ -169,20 +171,22 @@ class _AddTagsState extends State<AddTags> {
       child: Column(
         children: [
           CustomizedTextFormField(
+            controller: searchController,
+            suffixIcon: searchIcon(),
             hintText: 'Search tags',
-            onChanged: (value) {
-              if (value.toString().isNotEmpty) {
-                tagList = tagListCopy!
-                    .where((element) => element.name!
-                        .toLowerCase()
-                        .startsWith(value.toString().toLowerCase()))
-                    .toList();
-                if (mounted) setState(() {});
-              } else {
-                tagList = tagListCopy ?? [];
-                if (mounted) setState(() {});
-              }
-            },
+            // onChanged: (value) {
+            // if (value.toString().isNotEmpty) {
+            //   tagList = tagListCopy!
+            //       .where((element) => element.name!
+            //           .toLowerCase()
+            //           .startsWith(value.toString().toLowerCase()))
+            //       .toList();
+            //   if (mounted) setState(() {});
+            // } else {
+            //   tagList = tagListCopy ?? [];
+            //   if (mounted) setState(() {});
+            // }
+            // },
           ),
           const SizedBox(height: 10),
           Expanded(
@@ -222,14 +226,39 @@ class _AddTagsState extends State<AddTags> {
     );
   }
 
-  Future<void> getProductTags(id) async {
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: searchItems,
+    );
+  }
+
+  void searchItems() {
+    if (mounted) {
+      count = 0;
+      next = "";
+      previous = "";
+      tagList.clear();
+      noCategoryInList = false;
+      if (mounted) setState(() {});
+      FocusScope.of(context).unfocus();
+      getProductTags(
+          userBloc?.userAbout!.industry!.id!, searchController.text.trim());
+    }
+  }
+
+  Future<void> getProductTags(id, searchText) async {
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
-            await ShoppingAuthService().getProductTags(id, next, previous);
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .getProductTags(id, next, previous, searchText);
 
         if (result == null) {
           noCategoryInList = true;
@@ -250,7 +279,7 @@ class _AddTagsState extends State<AddTags> {
             noCategoryInList = false;
             isLoading = false;
             tagList.addAll(tempList);
-            tagListCopy = tagList;
+            // tagListCopy = tagList;
           });
         }
       }
