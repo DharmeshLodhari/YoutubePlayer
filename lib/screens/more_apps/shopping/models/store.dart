@@ -946,21 +946,26 @@ class Variant {
   });
 
   Map toMap() {
-    return {
-      "id": id,
+    Map<String, dynamic> data = {};
+
+    if (id != null && id != "") {
+      data.addAll({"id": id});
+    }
+    data.addAll({
       "title": title,
       "size": size,
       "colour": colour,
       "price": price,
-      "type": type,
+      "type": type?.toName(),
       "value": value,
       "quantity": quantity,
       "is_available": isAvailable,
       "available_from": availableFrom,
       "track_inventory": trackInventory,
       "currency": currency,
-      "added_by": addedBy
-    };
+      "added_by": "blackstriker"
+    });
+    return data;
   }
 
   Map toJson() {

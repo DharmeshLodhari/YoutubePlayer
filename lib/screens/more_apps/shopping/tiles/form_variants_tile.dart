@@ -98,7 +98,10 @@ class FormVariantsTile extends StatelessWidget {
       }
       sercerUrl = sercerUrl!.replaceAll('https//', 'https://');
     } else {
-      localUrl = productVariant.localImages?[0].path;
+      if (productVariant.localImages != null &&
+          (productVariant.localImages?.isNotEmpty ?? false)) {
+        localUrl = productVariant.localImages?[0].path;
+      }
     }
 
     if (sercerUrl == "" && localUrl == "") {

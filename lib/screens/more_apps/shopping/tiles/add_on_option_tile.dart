@@ -91,7 +91,7 @@ class AddOnOptionTile extends StatelessWidget {
 
     url = addOnOption.picture;
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    String? imageUrl = url?.replaceAll('https//', 'https://');
     if (url == "") {
       return CircleAvatar(
         backgroundColor: navyBlue,
@@ -107,12 +107,25 @@ class AddOnOptionTile extends StatelessWidget {
           width: 60,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            image: DecorationImage(
-                image: NetworkImage(
-                  imageUrl,
-                ),
-                fit: BoxFit.cover),
+            color: imageUrl != null ? white : darkGrey.withOpacity(0.50),
+            // image: DecorationImage(
+            //     image: NetworkImage(
+            //       imageUrl ?? "",
+            //     ),
+            //     fit: BoxFit.cover),
           ),
+          child: imageUrl != null
+              ? Image.network(
+                  "$imageUrl",
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                )
+              : Image.asset(
+                  defaultProductAndServiceImage,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  colorBlendMode: BlendMode.darken,
+                ),
         ),
       );
     }

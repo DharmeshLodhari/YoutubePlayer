@@ -139,6 +139,7 @@ dependencies:
   text_scroll: ^0.2.0
   get: ^4.6.5
   flutter_osm_plugin: ^0.37.0
+  dropdown_search: 5.0.5
 
 flutter_icons:
   android: "launcher_icon"

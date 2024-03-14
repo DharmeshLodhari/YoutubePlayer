@@ -8,6 +8,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -212,7 +213,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
                 SizedBox(height: 6),
-                stateDropdown(),
+                stateDropdownSearch(),
                 const SizedBox(
                   height: 16,
                 ),
@@ -221,7 +222,7 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
                 SizedBox(height: 6),
-                cityDropdown(),
+                cityDropdownSearch(),
                 const SizedBox(
                   height: 16,
                 ),
@@ -488,7 +489,307 @@ class _AddEditShippingAddressState extends State<AddEditShippingAddress> {
     );
   }
 
-  Widget cityDropdown() {
+  Widget stateDropdownSearch() {
+    return DropdownSearch<String>(
+      popupProps: PopupProps.dialog(
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            cursorColor: navyBlue,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+            ),
+          )),
+      items: itemList.map((StatesModel item) {
+        return item.name ?? "";
+      }).toList(),
+      dropdownDecoratorProps: DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+        ),
+        baseStyle: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      onChanged: (String? value) async {
+        StatesModel picked =
+            itemList.firstWhere((element) => element.name == value);
+        selectedCity = null;
+        await getShippingCities(picked.isoCode);
+        shippingAddress.stateName = picked.name;
+        setState(() {
+          selectedState = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a state';
+        }
+      },
+      selectedItem: selectedState,
+    );
+
+    return DropdownButtonFormField2(
+      buttonHeight: 50,
+      isExpanded: true,
+      value: selectedCity,
+      style: TextStyle(
+        fontSize: 16,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+      ),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+      items: cityList.map((Cities item) {
+        return DropdownMenuItem<String>(
+          value: item.name,
+          child: Text(item.name!),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        shippingAddress.city = value;
+        setState(() {
+          selectedCity = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a city';
+        }
+      },
+    );
+  }
+
+  // Widget cityDropdown() {
+  //   return DropdownButtonFormField2(
+  //     buttonHeight: 50,
+  //     isExpanded: true,
+  //     value: selectedCity,
+  //     style: TextStyle(
+  //       fontSize: 16,
+  //       color: blackFont,
+  //       fontWeight: FontWeight.w600,
+  //     ),
+  //     decoration: InputDecoration(
+  //       contentPadding: EdgeInsets.symmetric(horizontal: 0),
+  //       enabledBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       focusedBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       errorBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //         borderSide: BorderSide(
+  //           color: greyBorderColor,
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //     ),
+  //     items: cityList.map((Cities item) {
+  //       return DropdownMenuItem<String>(
+  //         value: item.name,
+  //         child: Text(item.name!),
+  //       );
+  //     }).toList(),
+  //     onChanged: (String? value) {
+  //       shippingAddress.city = value;
+  //       setState(() {
+  //         selectedCity = value!;
+  //       });
+  //     },
+  //     validator: (String? value) {
+  //       if (value != null && value.isNotEmpty) {
+  //         return null;
+  //       } else {
+  //         return 'Pick a city';
+  //       }
+  //     },
+  //   );
+  // }
+
+  Widget cityDropdownSearch() {
+    return DropdownSearch<String>(
+      popupProps: PopupProps.dialog(
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            cursorColor: navyBlue,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+            ),
+          )),
+      items: cityList.map((Cities item) {
+        return item.name ?? "";
+      }).toList(),
+      dropdownDecoratorProps: DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+        ),
+        baseStyle: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      onChanged: (String? value) {
+        shippingAddress.city = value;
+        setState(() {
+          selectedCity = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a city';
+        }
+      },
+      selectedItem: selectedCity,
+    );
+
     return DropdownButtonFormField2(
       buttonHeight: 50,
       isExpanded: true,

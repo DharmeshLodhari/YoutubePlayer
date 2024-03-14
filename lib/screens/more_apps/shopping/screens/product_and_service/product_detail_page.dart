@@ -195,7 +195,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
     _auth
         .ownersOrderProductsAndServices(
-            type: "products", userId: product!.seller, exclude: product!.id)
+            type: "products", userId: product?.seller, exclude: product?.id)
         .then((value) {
       if (value.isNotEmpty) {
         if (mounted) {

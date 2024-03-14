@@ -392,27 +392,25 @@ class _ProductAddOnOptionCreateState extends State<ProductAddOnOptionCreate> {
 
   Future<void> createAddOnOption() async {
     if (_formKey.currentState!.validate()) {
-      if (productImages.length >= 1) {
-        addOnOption.name = name;
-        addOnOption.description = description;
-        addOnOption.price = moneyInputNormalizer(price).toString();
-        addOnOption.isAvailable = isAvailable;
+      addOnOption.name = name;
+      addOnOption.description = description;
+      addOnOption.price = moneyInputNormalizer(price).toString();
+      addOnOption.isAvailable = isAvailable;
 
-        await _auth
-            .createAddOnOption(addOnOption, widget.arguments["productId"])
-            .then((value) async {
-          Navigator.pop(context, value);
-        }).catchError((error) {
-          debugPrint("ERROR While createAddOnOption :- $error");
-          isAPILoading = false;
-          if (mounted) setState(() {});
-          showToast(message: "$error");
-        });
-      } else {
+      await _auth
+          .createAddOnOption(addOnOption, widget.arguments["productId"])
+          .then((value) async {
+        Navigator.pop(context, value);
+      }).catchError((error) {
+        debugPrint("ERROR While createAddOnOption :- $error");
         isAPILoading = false;
         if (mounted) setState(() {});
-        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
-      }
+        showToast(message: "$error");
+      });
+    } else {
+      isAPILoading = false;
+      if (mounted) setState(() {});
+      showToast(message: AppLocalization.of(context)!.pleaseAddImage);
     }
   }
 

@@ -286,24 +286,24 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             fontFamily: "Inter",
           ),
         ),
-        // const SizedBox(
-        //   height: 16,
-        // ),
-        // GestureDetector(
-        //   onTap: () async {
-        //     if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
-        //         null) {
-        //       shippingProcessBloc.updateShippingOptionType(ShippingTypes.slydo);
-        //       await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
-        //     } else {
-        //       showToast(message: "Please select delivery address.");
-        //     }
-        //   },
-        //   child: ShippingOptionalWid(
-        //     title: "Ship with Slydo",
-        //     subTitle: "Use slydo dispatch rider to get your orders.",
-        //   ),
-        // ),
+        const SizedBox(
+          height: 16,
+        ),
+        GestureDetector(
+          onTap: () async {
+            if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+                null) {
+              shippingProcessBloc.updateShippingOptionType(ShippingTypes.slydo);
+              await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            } else {
+              showToast(message: "Please select delivery address.");
+            }
+          },
+          child: ShippingOptionalWid(
+            title: "Ship with Slydo",
+            subTitle: "Use slydo dispatch rider to get your orders.",
+          ),
+        ),
         const SizedBox(
           height: 16,
         ),

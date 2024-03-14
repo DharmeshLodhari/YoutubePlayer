@@ -134,15 +134,15 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
                       addTitleField(),
                       const SizedBox(height: 10),
                       getTypeField(),
-                      if (selectedType == 'Size') ...[
+                      if (selectedType == VariantTypes.Size) ...[
                         const SizedBox(height: 10),
                         addSizeField(),
                       ],
-                      if (selectedType == 'Color') ...[
+                      if (selectedType == VariantTypes.Color) ...[
                         const SizedBox(height: 10),
                         getColorField(),
                       ],
-                      if (selectedType == 'Color n Size') ...[
+                      if (selectedType == VariantTypes.ColorAndSize) ...[
                         const SizedBox(height: 10),
                         getColorField(),
                         const SizedBox(height: 10),
@@ -704,40 +704,40 @@ class _ProductAddNewOptionState extends State<ProductAddNewOption> {
 
   Future<void> addVariant() async {
     if (_formKey.currentState!.validate()) {
-      if (croppedImageList.length >= 1) {
-        // if (productImages.length >= 1) {
-        if (validateDropdown()) {
-          Variant variant = Variant();
-          // variant.localImages = productImages.map((file) => File(file.path)).toList();
-          variant.localImages =
-              croppedImageList.map((filePath) => File(filePath)).toList();
-          variant.title = title;
-          variant.colour = color;
-          variant.value = value;
-          variant.quantity = inventoryCount;
-          variant.type = selectedType;
-          variant.price = moneyInputNormalizer(variantPrice).toString();
-          variant.isAvailable = productIsAvailable;
-          variant.availableFrom = productAvailableFrom;
-          variant.trackInventory = trackInventory;
-          variant.currency = 'NGN';
-          if (optionOnWhatToDo == 'new') {
-            //send the variant detail back to the previous page
-            debugPrint('file path::: ${variant.localImages}');
+      // if (croppedImageList.length >= 1) {
+      // if (productImages.length >= 1) {
+      if (validateDropdown()) {
+        Variant variant = Variant();
+        // variant.localImages = productImages.map((file) => File(file.path)).toList();
+        variant.localImages =
+            croppedImageList.map((filePath) => File(filePath)).toList();
+        variant.title = title;
+        variant.colour = color;
+        variant.value = value;
+        variant.quantity = inventoryCount;
+        variant.type = selectedType;
+        variant.price = moneyInputNormalizer(variantPrice).toString();
+        variant.isAvailable = productIsAvailable;
+        variant.availableFrom = productAvailableFrom;
+        variant.trackInventory = trackInventory;
+        variant.currency = 'NGN';
+        if (optionOnWhatToDo == 'new') {
+          //send the variant detail back to the previous page
+          debugPrint('file path::: ${variant.localImages}');
 
-            Navigator.pop(context, variant);
-          } else if (optionOnWhatToDo == 'edit') {
-            String productId = widget.arguments["productId"];
-            //make api call to save the variant details
-            saveVariant(productId, variant);
-          }
+          Navigator.pop(context, variant);
+        } else if (optionOnWhatToDo == 'edit') {
+          String productId = widget.arguments["productId"];
+          //make api call to save the variant details
+          saveVariant(productId, variant);
         }
-      } else {
-        isAPILoading = false;
-        if (mounted) setState(() {});
-        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
+    } else {
+      isAPILoading = false;
+      if (mounted) setState(() {});
+      // showToast(message: AppLocalization.of(context)!.pleaseAddImage);
     }
+    // }
   }
 
   Future<void> saveVariant(String productId, Variant item) async {

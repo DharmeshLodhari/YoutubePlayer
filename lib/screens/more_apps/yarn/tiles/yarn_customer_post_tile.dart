@@ -253,7 +253,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
       user = await UserAuth()
           .fetchCustomerProfileWithAuth(widget.customerProfile!.userName);
     } catch (e) {
-      Navigator.pop(context);
+      // Navigator.pop(context);
       showToast(message: 'User not found');
     }
 
