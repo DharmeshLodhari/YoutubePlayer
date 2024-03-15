@@ -1,9 +1,8 @@
-import 'dart:developer';
-import 'dart:io';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/state_notifier.dart';
 import '../../../more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import '../../../more_apps/shopping/models/store.dart';
@@ -29,7 +28,7 @@ class CommentListWidget extends StatefulWidget {
       required this.index,
       required this.momentID,
       required this.username,
-        this.callbackUpdateCommentCount,
+      this.callbackUpdateCommentCount,
       this.moment})
       : super(key: key);
 
@@ -205,7 +204,6 @@ class _CommentListWidgetState extends State<CommentListWidget> {
   }
 
   Widget _buildCommentDescriptionMain(YarnComment yarnComment) {
-
     return Column(
       children: [
         Container(
@@ -246,12 +244,14 @@ class _CommentListWidgetState extends State<CommentListWidget> {
               yarnComment.replyCount != 0 ? yarnComment.replyCount! - 1 : 0;
 
               // update comment count by subtracting -1
-              widget.callbackUpdateCommentCount!(false, yarnComment.replyCount!.toInt());
+              widget.callbackUpdateCommentCount!(
+                  false, yarnComment.replyCount!.toInt());
               if (mounted) setState(() {});
             },
             onCommentUpdate: (YarnComment yarnCmt, bool val) {
               //this will update the list of comments and set the selected comment to pinned
-              final modelIndex = yarnComments.indexWhere((model) => model.id == yarnCmt.id);
+              final modelIndex =
+                  yarnComments.indexWhere((model) => model.id == yarnCmt.id);
               if (modelIndex != -1) {
                 final model = yarnComments.removeAt(modelIndex);
                 model.pinned = val;
@@ -260,17 +260,13 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                 Navigator.pop(context);
                 if (mounted) setState(() {});
               }
-
-
             },
-            callbackUpdateCommentCount: (value){
-              if(value == true){
+            callbackUpdateCommentCount: (value) {
+              if (value == true) {
                 //increase the count by for the single moment detail + 1
                 widget.callbackUpdateCommentCount!(true, 1);
               }
-
             },
-
           ),
         ),
         const SizedBox(

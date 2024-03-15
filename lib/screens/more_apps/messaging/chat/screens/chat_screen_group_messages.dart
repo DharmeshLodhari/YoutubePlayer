@@ -50,6 +50,7 @@ import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
@@ -71,7 +72,6 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:images_picker/images_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:path_provider/path_provider.dart';
@@ -2329,7 +2329,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         size: 18,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: addMediaToMessage,
+      onTap: () async {
+        bool isPermissionGranted = await requestGalleryPermission();
+        if (isPermissionGranted) {
+          await addMediaToMessage;
+        } else {
+          bool isPermissionIsDenied = await isPermanentlyDeniedPermission();
+          if (isPermissionIsDenied) {
+            await openAppSettings();
+          } else {
+            await openAppSettings();
+          }
+        }
+      },
     );
   }
 
@@ -2888,20 +2900,22 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     //     type: FileType.custom,
     //     allowedExtensions: allowedExtensions);
 
-    List<Media>? res = await ImagesPicker.pick(
-      count: 1,
-      pickType: PickType.all,
-      language: Language.System,
-      maxTime: 900,
-      cropOpt: CropOption(
-        // aspectRatio: CropAspectRatio.wh16x9,
-        cropType: CropType.rect,
-      ),
-    );
+    // List<Media>? res = await ImagesPicker.pick(
+    //   count: 1,
+    //   pickType: PickType.all,
+    //   language: Language.System,
+    //   maxTime: 900,
+    //   cropOpt: CropOption(
+    //     // aspectRatio: CropAspectRatio.wh16x9,
+    //     cropType: CropType.rect,
+    //   ),
+    // );
 
-    if (res == null || res.isEmpty) return;
+    XFile? res = await selectSingleImageVideo();
+
+    if (res == null) return;
     File? file;
-    file = File(res.first.path);
+    file = File(res.path);
     String? mediaType = getFileTypeByPath(path: file.path);
 
     if (mediaType == null) {

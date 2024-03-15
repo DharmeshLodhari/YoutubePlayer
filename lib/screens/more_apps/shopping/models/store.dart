@@ -430,9 +430,9 @@ class Product extends PurchasableItem {
           getShortDescription(shortDescription ?? '', description ?? ''),
       "price": price,
       "condition": condition,
-      "category": category!,
-      "sub_category": subCategory!,
-      "custom_category": customCategory!,
+      "category": category,
+      "sub_category": subCategory,
+      "custom_category": customCategory,
       "tags": tags!.map((v) => v.toJson()).toList(),
       "preparation_time": preparationTime,
       "manufacturer": manufacturer,
@@ -464,7 +464,7 @@ class Product extends PurchasableItem {
       'old_price': oldPrice,
       'is_shippable': isShippable,
       'address_id': addressId,
-      "added_by": itemAddedBy!.map((v) => v.toJson()).toList(),
+      "added_by": itemAddedBy?.map((v) => v.toJson()).toList(),
       // "item_updated_by": itemUpdatedBy?.toJson(),
       // 'qty': qty,
     };
@@ -1765,7 +1765,30 @@ class ProductCategory {
 
   final String name;
   final dynamic id;
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "id": id,
+      };
 }
+
+// class ProductCategory {
+//   String? name;
+//   dynamic id;
+//
+//   ProductCategory(
+//     this.name, {this.id = ""});
+//
+//   ProductCategory.fromJson(object) {
+//     id = object["id"];
+//     name = object["name"];
+//   }
+//
+//   Map<String, dynamic> toJson() => {
+//     "name": name,
+//     "id": id,
+//   };
+// }
 
 class ServiceCategory {
   const ServiceCategory(this.name);

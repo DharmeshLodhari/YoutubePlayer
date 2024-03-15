@@ -2856,15 +2856,15 @@ class ShoppingAuthService extends AuthService {
 
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    request.fields["name"] = addOnOption.name!;
-    request.fields["description"] = addOnOption.description!;
+    request.fields["name"] = addOnOption.name ?? "";
+    request.fields["description"] = addOnOption.description ?? "";
     request.fields["is_available"] = jsonEncode(addOnOption.isAvailable);
-    request.fields["price"] = addOnOption.price!;
+    request.fields["price"] = addOnOption.price ?? "";
 
     if (addOnOption.picture != null && !addOnOption.picture!.contains("http")) {
       // Create multipart using filepath, string or bytes
-      var multipartFile =
-          await http.MultipartFile.fromPath("picture", addOnOption.picture!);
+      http.MultipartFile? multipartFile = await http.MultipartFile.fromPath(
+          "picture", addOnOption.picture ?? "");
 
       // Add multipart to request
       request.files.add(multipartFile);

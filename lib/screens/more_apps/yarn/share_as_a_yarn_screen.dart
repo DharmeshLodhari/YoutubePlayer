@@ -13,11 +13,13 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/storage_permission.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:images_picker/images_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -554,7 +556,19 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                 InkWell(
                     onTap: () async {
                       if (await checkStoragePermission()) {
-                        pickFileFromMedia();
+                        bool isPermissionGranted =
+                            await requestGalleryPermission();
+                        if (isPermissionGranted) {
+                          await pickFileFromMedia();
+                        } else {
+                          bool isPermissionIsDenied =
+                              await isPermanentlyDeniedPermission();
+                          if (isPermissionIsDenied) {
+                            await openAppSettings();
+                          } else {
+                            await openAppSettings();
+                          }
+                        }
                       }
                     },
                     child: SvgPicture.asset("yarn/images".toSVG())),
@@ -816,12 +830,23 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                 ),
               ],
             ),
-            onTap: () {
+            onTap: () async {
               if (existingMediaList.length + newMediaList.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
                 // pickImage();
-                pickFileFromMedia();
+                bool isPermissionGranted = await requestGalleryPermission();
+                if (isPermissionGranted) {
+                  await pickFileFromMedia();
+                } else {
+                  bool isPermissionIsDenied =
+                      await isPermanentlyDeniedPermission();
+                  if (isPermissionIsDenied) {
+                    await openAppSettings();
+                  } else {
+                    await openAppSettings();
+                  }
+                }
               }
             },
           ),
@@ -1097,19 +1122,21 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     );
   }
 
-  void pickFileFromMedia() async {
-    List<Media>? res = await ImagesPicker.pick(
-      count: 1,
-      pickType: PickType.all,
-      language: Language.System,
-      maxTime: 900,
-      cropOpt: CropOption(
-        cropType: CropType.rect,
-      ),
-    );
+  Future<void> pickFileFromMedia() async {
+    // List<Media>? res = await ImagesPicker.pick(
+    //   count: 1,
+    //   pickType: PickType.all,
+    //   language: Language.System,
+    //   maxTime: 900,
+    //   cropOpt: CropOption(
+    //     cropType: CropType.rect,
+    //   ),
+    // );
 
-    if (res == null || res.isEmpty) return;
-    File file = File(res.first.path);
+    XFile? res = await selectSingleImageVideo();
+
+    if (res == null) return;
+    File file = File(res.path);
     String? mediaType = getFileTypeByPath(path: file.path);
 
     if (mediaType == null) return;

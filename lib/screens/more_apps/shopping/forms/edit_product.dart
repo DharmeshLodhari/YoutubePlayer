@@ -199,7 +199,8 @@ class _EditProductState extends State<EditProduct> {
           if (currentProduct.manufacturer != null) {
             productManufacturerController.text = currentProduct.manufacturer!;
           }
-          customProductController.text = currentProduct.customCategory!.name;
+          customProductController.text =
+              currentProduct.customCategory?.name ?? "";
 
           productShortDescriptionController.text =
               messageDecoderWithEmoji(currentProduct.shortDescription!)!;

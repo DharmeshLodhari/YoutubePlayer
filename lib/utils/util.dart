@@ -2580,3 +2580,19 @@ Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
   }
   return null;
 }
+
+Future<XFile?> selectSingleImageVideo() async {
+  XFile? file = await ImagePicker().pickMedia(
+    maxWidth: 1800,
+    maxHeight: 1800,
+  );
+  return file;
+}
+
+Future<List<XFile>> selectMultipleImageVideo() async {
+  List<XFile> file = await ImagePicker().pickMultipleMedia(
+    maxWidth: 1800,
+    maxHeight: 1800,
+  );
+  return file;
+}

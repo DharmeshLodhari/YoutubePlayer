@@ -20,6 +20,7 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/create_media_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
@@ -29,7 +30,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:images_picker/images_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:video_player/video_player.dart';
@@ -171,9 +173,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     }
 
     if (yarn?['body'].toString() == 'null') {
-      textController!.text = '';
+      textController?.text = '';
     } else {
-      textController!.text = messageDecoderWithEmoji(yarn?['body']) ?? '';
+      textController?.text = messageDecoderWithEmoji(yarn?['body']) ?? '';
     }
 
     Future.microtask(() => context.read<YarnDashboardBloc>().init());
@@ -1083,8 +1085,21 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     return Column(
       children: [
         GestureDetector(
-          onTap: () {
-            title == 'Take Photo...' ? openCamera() : pickFileFromMedia();
+          onTap: () async {
+            bool isPermissionGranted = await requestGalleryPermission();
+            if (isPermissionGranted) {
+              title == 'Take Photo...'
+                  ? await openCamera()
+                  : await pickFileFromMedia();
+            } else {
+              bool isPermissionIsDenied = await isPermanentlyDeniedPermission();
+              if (isPermissionIsDenied) {
+                await openAppSettings();
+              } else {
+                await openAppSettings();
+              }
+            }
+
             Navigator.pop(context);
           },
           child: Container(
@@ -1103,21 +1118,23 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Future<void> openCamera() async {
-    List<Media>? res = await ImagesPicker.openCamera(
-      // pickType: PickType.video,
-      pickType: PickType.image,
-      quality: 0.8,
-      maxSize: 800,
-      // cropOpt: CropOption(
-      //   aspectRatio: CropAspectRatio.wh16x9,
-      // ),
-      maxTime: 15,
-    );
-    print(res);
+    // List<Media>? res = await ImagesPicker.openCamera(
+    //   // pickType: PickType.video,
+    //   pickType: PickType.image,
+    //   quality: 0.8,
+    //   maxSize: 800,
+    //   // cropOpt: CropOption(
+    //   //   aspectRatio: CropAspectRatio.wh16x9,
+    //   // ),
+    //   maxTime: 15,
+    // );
+    // print(res);
 
-    if (res == null || res.isEmpty) return;
+    XFile? res = await selectSingleImageVideo();
 
-    File file = File(res[0].path);
+    if (res == null) return;
+
+    File file = File(res.path);
     String? mediaType = getFileTypeByPath(path: file.path);
 
     if (mediaType == null) return;
@@ -1157,16 +1174,18 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     // });
   }
 
-  void pickFileFromMedia() async {
-    List<Media>? res = await ImagesPicker.pick(
-      count: 4,
-      pickType: PickType.all,
-      language: Language.System,
-      maxTime: 900,
-      cropOpt: CropOption(
-        cropType: CropType.rect,
-      ),
-    );
+  Future<void> pickFileFromMedia() async {
+    // List<Media>? res = await ImagesPicker.pick(
+    //   count: 4,
+    //   pickType: PickType.all,
+    //   language: Language.System,
+    //   maxTime: 900,
+    //   cropOpt: CropOption(
+    //     cropType: CropType.rect,
+    //   ),
+    // );
+
+    List<XFile> res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 
