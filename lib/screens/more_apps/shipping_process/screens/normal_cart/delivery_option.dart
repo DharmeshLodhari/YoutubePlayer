@@ -28,6 +28,21 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   TextEditingController userNoteController = TextEditingController();
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ShippingProcessBloc shippingProcessBloc =
+          Provider.of<ShippingProcessBloc>(context);
+
+      if (shippingProcessBloc.getPackageDetailModel().hasShippingAvailable() ==
+          false) {
+        deliveryOption.removeAt(0);
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     return ColorfulSafeArea(
