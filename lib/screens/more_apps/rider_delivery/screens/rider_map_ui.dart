@@ -15,9 +15,15 @@ class RiderMapUI extends StatefulWidget {
   RiderMapUI({
     Key? key,
     this.deliveryDetails,
+    this.startRide = false,
+    this.showRideToStartingPointPolyline = false,
+    this.showStartingPointToDestinationPolyline = false,
   }) : super(key: key);
 
   final DeliveryModel? deliveryDetails;
+  final bool startRide;
+  final bool showStartingPointToDestinationPolyline;
+  final bool showRideToStartingPointPolyline;
 
   @override
   _RiderMapUIState createState() => _RiderMapUIState();
@@ -47,7 +53,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
         listen: false);
 
     _initialCameraPosition =
-        CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 12);
+        CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 10);
 
     _startingLocation = Marker(
       markerId: MarkerId('Starting Point'),
@@ -134,10 +140,10 @@ class _RiderMapUIState extends State<RiderMapUI> {
         zoom: 12);
     // }
 
-    // if (widget.startRide) {
-    //   debugPrint("====>startRide ${widget.startRide}");
-    //   getCurrentLocation();
-    // }
+    if (widget.startRide) {
+      debugPrint("====>startRide ${widget.startRide}");
+      getCurrentLocation();
+    }
 
     super.initState();
   }
@@ -160,7 +166,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
 
   Set<Marker> getMarkers() {
     return {
-      // if (_rideMarker != null) _rideMarker,
+      // if (_rideMarker != null) _rideMarker!,
       if (_startingLocation != null) _startingLocation!,
       if (_destinationLocation != null) _destinationLocation!,
       if (_riderMarker != null) _riderMarker!,
@@ -185,7 +191,8 @@ class _RiderMapUIState extends State<RiderMapUI> {
       //         .map((e) => LatLng(e.latitude, e.longitude))
       //         .toList(),
       //   ),
-      if (riderDeliveryBloc.driverToStartingPointDirections != null)
+      if (riderDeliveryBloc.driverToStartingPointDirections != null &&
+          widget.showStartingPointToDestinationPolyline)
         Polyline(
           polylineId: PolylineId('driverToStartingPoint'),
           color: naturalGreen,
@@ -209,21 +216,23 @@ class _RiderMapUIState extends State<RiderMapUI> {
     LatLng latlng = LatLng(newLocalData.latitude!, newLocalData.longitude!);
     this.setState(() {
       _riderMarker = Marker(
-          markerId: MarkerId("home"),
-          position: latlng,
-          rotation: newLocalData.heading! + 40,
-          draggable: false,
-          zIndex: 2,
-          flat: true,
-          anchor: Offset(0.5, 0.5),
-          icon: BitmapDescriptor.fromBytes(imageData));
+        markerId: MarkerId("home"),
+        position: latlng,
+        rotation: newLocalData.heading! + 40,
+        draggable: false,
+        zIndex: 2,
+        flat: true,
+        anchor: Offset(0.5, 0.5),
+        icon: BitmapDescriptor.fromBytes(imageData),
+      );
       _rideAccuracyCircle = Circle(
-          circleId: CircleId("car"),
-          radius: newLocalData.accuracy!,
-          zIndex: 1,
-          strokeColor: Colors.blue,
-          center: latlng,
-          fillColor: Colors.blue.withAlpha(70));
+        circleId: CircleId("car"),
+        radius: newLocalData.accuracy!,
+        zIndex: 1,
+        strokeColor: Colors.blue,
+        center: latlng,
+        fillColor: Colors.blue.withAlpha(70),
+      );
     });
   }
 
@@ -250,7 +259,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
                   bearing: newLocalData.heading!,
                   target:
                       LatLng(newLocalData.latitude!, newLocalData.longitude!),
-                  zoom: 12.00)));
+                  zoom: 10.00)));
           updateMarkerAndCircle(newLocalData, imageData);
         }
       });

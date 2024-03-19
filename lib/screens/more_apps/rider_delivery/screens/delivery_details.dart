@@ -158,6 +158,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             : RiderMapUI(
                 key: UniqueKey(),
                 deliveryDetails: deliveryDetails,
+                startRide: startRide,
+                showStartingPointToDestinationPolyline: true,
+                showRideToStartingPointPolyline: false,
               ),
         isShowDetails ? _buildShowDetails() : Container(),
         isDeliveryAccepted ? _buildAccepted() : Container(),
