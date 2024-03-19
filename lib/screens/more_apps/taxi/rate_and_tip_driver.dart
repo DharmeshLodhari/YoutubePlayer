@@ -42,6 +42,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
+      centerTitle: false,
       leading: IconButton(
         icon: Icon(
           Icons.close,
@@ -66,23 +67,15 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            height: 100,
-          ),
+          SizedBox(height: 100),
           getRatingUI(),
-          SizedBox(
-            height: 40,
-          ),
+          SizedBox(height: 40),
           getTipUI(),
           Expanded(
-            child: SizedBox(
-              height: 30,
-            ),
+            child: SizedBox(height: 30),
           ),
           getDriverActions(),
-          SizedBox(
-            height: 30,
-          ),
+          SizedBox(height: 30),
         ],
       ),
     );
@@ -95,72 +88,67 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
-                onTap: () {
-                  rating = 1;
-                  if (mounted) setState(() {});
-                },
-                child: Icon(
-                  SlydoAppIcon.star,
-                  size: 38,
-                  color: rating >= 1 ? navyBlue : dividerColor,
-                )),
-            SizedBox(
-              width: 10,
+              onTap: () {
+                rating = 1;
+                if (mounted) setState(() {});
+              },
+              child: Icon(
+                SlydoAppIcon.star,
+                size: 38,
+                color: rating >= 1 ? navyBlue : dividerColor,
+              ),
             ),
+            SizedBox(width: 10),
             GestureDetector(
-                onTap: () {
-                  rating = 2;
-                  if (mounted) setState(() {});
-                },
-                child: Icon(
-                  SlydoAppIcon.star,
-                  size: 38,
-                  color: rating >= 2 ? navyBlue : dividerColor,
-                )),
-            SizedBox(
-              width: 10,
+              onTap: () {
+                rating = 2;
+                if (mounted) setState(() {});
+              },
+              child: Icon(
+                SlydoAppIcon.star,
+                size: 38,
+                color: rating >= 2 ? navyBlue : dividerColor,
+              ),
             ),
+            SizedBox(width: 10),
             GestureDetector(
-                onTap: () {
-                  rating = 3;
-                  if (mounted) setState(() {});
-                },
-                child: Icon(
-                  SlydoAppIcon.star,
-                  size: 38,
-                  color: rating >= 3 ? navyBlue : dividerColor,
-                )),
-            SizedBox(
-              width: 10,
+              onTap: () {
+                rating = 3;
+                if (mounted) setState(() {});
+              },
+              child: Icon(
+                SlydoAppIcon.star,
+                size: 38,
+                color: rating >= 3 ? navyBlue : dividerColor,
+              ),
             ),
+            SizedBox(width: 10),
             GestureDetector(
-                onTap: () {
-                  rating = 4;
-                  if (mounted) setState(() {});
-                },
-                child: Icon(
-                  SlydoAppIcon.star,
-                  size: 38,
-                  color: rating >= 4 ? navyBlue : dividerColor,
-                )),
-            SizedBox(
-              width: 10,
+              onTap: () {
+                rating = 4;
+                if (mounted) setState(() {});
+              },
+              child: Icon(
+                SlydoAppIcon.star,
+                size: 38,
+                color: rating >= 4 ? navyBlue : dividerColor,
+              ),
             ),
+            SizedBox(width: 10),
             GestureDetector(
-                onTap: () {
-                  rating = 5;
-                  if (mounted) setState(() {});
-                },
-                child: Icon(
-                  SlydoAppIcon.star,
-                  size: 38,
-                  color: rating >= 5 ? navyBlue : dividerColor,
-                )),
+              onTap: () {
+                rating = 5;
+                if (mounted) setState(() {});
+              },
+              child: Icon(
+                SlydoAppIcon.star,
+                size: 38,
+                color: rating >= 5 ? navyBlue : dividerColor,
+              ),
+            ),
           ],
         ),
-        SizedBox(
-          height: 8,
-        ),
+        SizedBox(height: 8),
         Text(
           "Excellent",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
@@ -183,17 +171,13 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
             fit: BoxFit.fill,
           ),
         ),
-        SizedBox(
-          height: 40,
-        ),
+        SizedBox(height: 40),
         Text(
           "Add a tip?",
           style: TextStyle(
               fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
-          height: 30,
-        ),
+        SizedBox(height: 30),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -216,7 +200,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                       Text(
                         "₦",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: selectedTip == 1 ? Colors.white : blackFont,
                             fontFamily: "Inter"),
@@ -224,7 +208,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                       Text(
                         "50",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: selectedTip == 1 ? Colors.white : blackFont,
                         ),
@@ -253,7 +237,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                       Text(
                         "₦",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: selectedTip == 2 ? Colors.white : blackFont,
                             fontFamily: "Inter"),
@@ -261,7 +245,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                       Text(
                         "100",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: selectedTip == 2 ? Colors.white : blackFont,
                         ),
@@ -290,7 +274,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                       Text(
                         "₦",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: selectedTip == 3 ? Colors.white : blackFont,
                             fontFamily: "Inter"),
@@ -298,7 +282,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                       Text(
                         "150",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: selectedTip == 3 ? Colors.white : blackFont,
                         ),
@@ -327,7 +311,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                       Text(
                         "₦",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: selectedTip == 4 ? Colors.white : blackFont,
                             fontFamily: "Inter"),
@@ -335,7 +319,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                       Text(
                         "200",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: selectedTip == 4 ? Colors.white : blackFont,
                         ),
@@ -347,9 +331,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
             ),
           ],
         ),
-        SizedBox(
-          height: 30,
-        ),
+        SizedBox(height: 30),
         Text(
           "Tipping is welcome, but not required.\nThe amount is always up to you.",
           textAlign: TextAlign.center,
@@ -399,32 +381,28 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                 Text(
                   "11:24",
                   style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      color: blackFont),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: blackFont,
+                  ),
                 ),
-                SizedBox(
-                  height: 40,
-                ),
+                SizedBox(height: 40),
                 Text(
                   "11:38",
                   style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      color: blackFont),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: blackFont,
+                  ),
                 ),
               ],
             ),
-            SizedBox(
-              width: 12,
-            ),
+            SizedBox(width: 12),
             Image.asset(
               "assets/images/taxi/route.png",
               height: 80,
             ),
-            SizedBox(
-              width: 12,
-            ),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,19 +410,19 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
                   Text(
                     "1 Bola Dada Avenue, Victoria Island, Lagos",
                     style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: blackFont),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: blackFont,
+                    ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   Text(
                     "Tafawa Balewa Square, Lagos Island, Lagos",
                     style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: blackFont),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: blackFont,
+                    ),
                   ),
                 ],
               ),

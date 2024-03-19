@@ -1,0 +1,1683 @@
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:flutter/material.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:sizer/sizer.dart';
+import 'package:badges/badges.dart' as badges;
+
+class DispatchScreen extends StatefulWidget {
+  const DispatchScreen({super.key});
+
+  @override
+  State<DispatchScreen> createState() => _DispatchScreenState();
+}
+
+class _DispatchScreenState extends State<DispatchScreen> {
+  double _initialSheetChildSize = 0.0;
+
+  bool isPackageReview = false;
+
+  @override
+  void initState() {
+    isPackageReview = true;
+    _initialSheetChildSize = 0.45;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ColorfulSafeArea(
+      child: Scaffold(
+        backgroundColor: white,
+        appBar: _buildAppBar() as PreferredSizeWidget?,
+        body: _buildBody(),
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      backgroundColor: white,
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      titleSpacing: 16,
+      title: Text(
+        'Dispatch',
+        style: TextStyle(
+          fontSize: 16,
+          fontFamily: "Inter",
+          fontWeight: FontWeight.w700,
+          color: yarnBlack,
+          height: 1.3,
+        ),
+      ),
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context, "back pressed");
+        },
+      ),
+      elevation: 0,
+      actions: <Widget>[
+        historyIcon(),
+        infoIcon(),
+        GestureDetector(
+          onTap: () {},
+          child: Image.asset(
+            "assets/images/cross_icon.png",
+            height: 34,
+            width: 34,
+          ),
+        ),
+        SizedBox(width: 10.0),
+      ],
+    );
+  }
+
+  Widget historyIcon() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: IconButton(
+        icon: Icon(
+          Icons.history,
+          color: Colors.black,
+          size: 20,
+        ),
+        onPressed: () async {},
+      ),
+    );
+  }
+
+  Widget infoIcon() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: IconButton(
+        icon: Icon(
+          Icons.info_outlined,
+          color: Colors.black,
+          size: 20,
+        ),
+        onPressed: () async {},
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return Stack(
+      children: [
+        // MapUI(),
+        Image.asset(
+          "assets/images/map.png",
+          height: double.infinity,
+          width: double.infinity,
+          fit: BoxFit.fill,
+        ),
+        Padding(
+          padding: EdgeInsets.all(50.0),
+          child: Image.asset(
+            "assets/images/taxi/route_map_image.png",
+            fit: BoxFit.fill,
+          ),
+        ),
+        // _buildPackageReview(),
+        // _buildSelectDestination(),
+        // _buildNoVehicles(),
+        // _buildSelectOption(),
+        // _buildDestinationLocation(),
+        // _buildRiderOption(),
+        // _buildYouFare(),
+        // _buildPaymentFailed(),
+        // _buildPaymentRetryProcess(),
+        // _buildArriving(),
+        // _buildPartnerArrivingDetails(),
+        // _buildArrivedRider(),
+        // _buildOnTripRider(),
+        _buildOnTripMiles(),
+      ],
+    );
+  }
+
+  Widget _buildPackageReview() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getPackageReviewDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getPackageReviewDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildPackageLogo(),
+                _buildPackageReviewText(),
+                SizedBox(height: 15),
+                _buildContent(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPackageLogo() {
+    return Row(
+      children: [
+        _buildLogo(),
+      ],
+    );
+  }
+
+  Widget _buildLogo() {
+    return Image.asset(
+      "assets/images/package.png",
+      fit: BoxFit.fill,
+      height: 100,
+      width: 100,
+      filterQuality: FilterQuality.high,
+      cacheHeight: 100,
+      cacheWidth: 100,
+      frameBuilder: imageFrameBuilder,
+      errorBuilder: (context, error, stackTrace) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.network(
+            defaultImage,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPackageReviewText() {
+    return Text(
+      "Package Review",
+      style: TextStyle(
+        color: black,
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "For a successful delivery, make sure your package is :",
+          style: TextStyle(
+            color: black,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Row(
+            children: [
+              Text(
+                '\u2022',
+                style: TextStyle(
+                  color: black,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
+                ),
+              ),
+              SizedBox(width: 10),
+              Text(
+                "20kg or less",
+                style: TextStyle(
+                  color: black,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: "Inter",
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Row(
+            children: [
+              Text(
+                '\u2022',
+                style: TextStyle(
+                  color: black,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Inter",
+                ),
+              ),
+              SizedBox(width: 10),
+              Text(
+                "Securely sealed and ready for pickup.",
+                style: TextStyle(
+                  color: black,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: "Inter",
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 15),
+        Text(
+          "Note : We don't deliver goods prohibited by law.",
+          style: TextStyle(
+            color: black,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSelectDestination() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getSelectDestinationDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getSelectDestinationDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSelectDestinationText(),
+                _buildSearchBar(),
+                SizedBox(height: 15),
+                _buildShowOnMapTextAndIcon(),
+                SizedBox(height: 15),
+                _buildRecent(),
+                _buildLocationData(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectDestinationText() {
+    return Text(
+      "Select Destination",
+      style: TextStyle(
+        color: black,
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return CustomizedTextFormField(
+      hintText: 'Search...',
+      suffixIcon: Icon(
+        Icons.search,
+      ),
+      onChanged: (value) {},
+    );
+  }
+
+  Widget _buildShowOnMapTextAndIcon() {
+    return Row(
+      children: [
+        Image.asset(
+          "assets/images/location_pin.png",
+          width: 30,
+          height: 30,
+        ),
+        Text(
+          "Show on a map",
+          style: TextStyle(
+            color: navyBlue,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecent() {
+    return Text(
+      "Recent",
+      style: TextStyle(
+        color: darkGrey,
+        fontSize: 13,
+        fontWeight: FontWeight.w400,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildLocationData() {
+    return GestureDetector(
+      onTap: () {},
+      child: ListTile(
+        horizontalTitleGap: 0,
+        leading: Image.asset(
+          "assets/images/location_icon.png",
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Agege Post Office, Agege,",
+              style: TextStyle(
+                color: black,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                fontFamily: "Inter",
+              ),
+            ),
+            Text(
+              "Lagos",
+              style: TextStyle(
+                color: darkGrey,
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoVehicles() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getVehiclesDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getVehiclesDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              children: [
+                _buildWarningLogo(),
+                SizedBox(height: 25),
+                _buildNoVehiclesText(),
+                SizedBox(height: 40),
+                _buildChooseAnotherLocation(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWarningLogo() {
+    return Center(
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        elevation: 5,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: 60,
+            height: 60,
+            color: red.withOpacity(0.1),
+            child: Image.asset(
+              "assets/images/warning_icon.png",
+              width: 24,
+              height: 24,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoVehiclesText() {
+    return Text(
+      "Sorry, there are no vehicles in this area.",
+      style: TextStyle(
+        color: black,
+        fontSize: 13,
+        fontFamily: "Inter",
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+
+  Widget _buildChooseAnotherLocation() {
+    return CurvedButton(
+      onPressed: () {},
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+      text: "Choose another location",
+    );
+  }
+
+  Widget _buildSelectOption() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getSelectOption(),
+        ),
+      ),
+    );
+  }
+
+  Widget getSelectOption() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSelectOptionText(),
+                SizedBox(height: 20),
+                _buildSelectOptionList(),
+                SizedBox(height: 20),
+                _buildSelectPackageButton(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectOptionText() {
+    return Text(
+      "Select Option",
+      style: TextStyle(
+        color: black,
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildSelectOptionList() {
+    return ListView.builder(
+      itemCount: 1,
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Card(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    Image.asset("assets/images/bike_icon.png"),
+                    SizedBox(height: 5),
+                    Text(
+                      "Bike",
+                      style: TextStyle(
+                        color: black,
+                        fontSize: 13,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    Text(
+                      "₦ 1000",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: black,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    Text(
+                      "22 mins",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: black,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: "Inter",
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSelectPackageButton() {
+    return CurvedButton(
+      onPressed: () {},
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+      text: "Select Package",
+    );
+  }
+
+  Widget _buildDestinationLocation() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getDestinationLocation(),
+        ),
+      ),
+    );
+  }
+
+  Widget getDestinationLocation() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDestinationLocationText(),
+                SizedBox(height: 20),
+                _buildDestinationLocationData(),
+                SizedBox(height: 30),
+                _buildConfirmDestinationButton(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDestinationLocationText() {
+    return Text(
+      "Destination location",
+      style: TextStyle(
+        color: black,
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildDestinationLocationData() {
+    return ListTile(
+      horizontalTitleGap: 0,
+      leading: Image.asset(
+        "assets/images/location_icon.png",
+      ),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "20, Pedro Street, Alausa, Ikeja",
+            style: TextStyle(
+              color: black,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              fontFamily: "Inter",
+            ),
+          ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Lagos",
+                style: TextStyle(
+                  color: darkGrey,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: "Inter",
+                ),
+              ),
+              Text(
+                "Select",
+                style: TextStyle(
+                  color: black,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConfirmDestinationButton() {
+    return CurvedButton(
+      onPressed: () {},
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+      text: "Confirm Destination",
+    );
+  }
+
+  Widget _buildRiderOption() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getRiderOptionDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getRiderOptionDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTextFiled(),
+                  SizedBox(height: 15),
+                  _buildMobileTextFiled(),
+                  _buildItemDescription(),
+                  SizedBox(height: 15),
+                  _buildSelectOptionList(),
+                  SizedBox(height: 15),
+                  _buildProceedToPayment(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextFiled() {
+    return Row(
+      children: [
+        Image.asset(
+          "assets/images/thermometer_icon.png",
+          height: 24,
+          width: 24,
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: TextFormField(
+            decoration: InputDecoration(
+              hintText: "Weight",
+              hintStyle: TextStyle(
+                fontSize: 13,
+                color: darkGrey,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: TextFormField(
+            decoration: InputDecoration(
+              hintText: "Height",
+              hintStyle: TextStyle(
+                fontSize: 13,
+                color: darkGrey,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: TextFormField(
+            decoration: InputDecoration(
+              hintText: "Width",
+              hintStyle: TextStyle(
+                fontSize: 13,
+                color: darkGrey,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileTextFiled() {
+    return Row(
+      children: [
+        Image.asset("assets/images/phone_icon.png"),
+        SizedBox(width: 10),
+        Expanded(
+          child: TextFormField(
+            decoration: InputDecoration(
+              hintText: "Recipient Number",
+              hintStyle: TextStyle(
+                fontSize: 13,
+                color: darkGrey,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildItemDescription() {
+    return Row(
+      children: [
+        Image.asset("assets/images/item_icon.png"),
+        SizedBox(width: 10),
+        Expanded(
+          child: CustomizedTextFormField(
+            hintText: 'Item Description / Delivery Note',
+            maxLines: 3,
+            onChanged: (value) {},
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProceedToPayment() {
+    return CurvedButton(
+      onPressed: () {},
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+      text: "Proceed to Payment",
+    );
+  }
+
+  Widget _buildYouFare() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getYouFareDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getYouFareDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildYouFareText(),
+                SizedBox(height: 45),
+                _buildPay(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildYouFareText() {
+    return Column(
+      children: [
+        Text(
+          "Your fare is",
+          style: TextStyle(
+            color: black,
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        ),
+        SizedBox(height: 17),
+        Text(
+          "₦ 1000",
+          style: TextStyle(
+            fontSize: 20,
+            color: black,
+            fontWeight: FontWeight.w700,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPay() {
+    return CurvedButton(
+      onPressed: () {},
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+      text: "Pay",
+    );
+  }
+
+  Widget _buildPaymentFailed() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getPaymentFailedDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getPaymentFailedDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildPaymentFailedText(),
+                SizedBox(height: 17),
+                _buildPaymentRetry(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentFailedText() {
+    return Column(
+      children: [
+        Text(
+          "Sorry, you have an unpaid order. Order amount:",
+          style: TextStyle(
+            color: black,
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        ),
+        SizedBox(height: 17),
+        Text(
+          "₦ 1000",
+          style: TextStyle(
+            fontSize: 20,
+            color: black,
+            fontWeight: FontWeight.w700,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPaymentRetry() {
+    return CurvedButton(
+      onPressed: () {},
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+      text: "Retry payment",
+    );
+  }
+
+  Widget _buildPaymentRetryProcess() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getPaymentRetryProcessDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getPaymentRetryProcessDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildLoadingIndicator(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(),
+        SizedBox(height: 24),
+        Text(
+          "Retrying payment.",
+          style: TextStyle(
+            color: black,
+            fontWeight: FontWeight.w400,
+            fontSize: 13,
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          "It may take a few seconds...",
+          style: TextStyle(
+            color: black,
+            fontWeight: FontWeight.w400,
+            fontSize: 13,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildArriving() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getArrivingDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getArrivingDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildArrivingPartner(),
+                SizedBox(height: 30),
+                _buildPartnerContactIcon(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArrivingPartner() {
+    return Row(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(100),
+          child: Image.asset(
+            "assets/images/avatar.png",
+          ),
+        ),
+        SizedBox(width: 20),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Ahmad Aminoff",
+              style: TextStyle(
+                color: black,
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+                fontFamily: "Inter",
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              "Volkswagen Jetta",
+              style: TextStyle(
+                color: black,
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPartnerContactIcon() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
+          elevation: 3,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: Container(
+              width: 60,
+              height: 60,
+              color: white,
+              child: Image.asset(
+                "assets/images/phone_call_icon.png",
+                width: 24,
+                height: 24,
+              ),
+            ),
+          ),
+        ),
+        badges.Badge(
+          position: badges.BadgePosition.topEnd(top: 0, end: 0),
+          badgeStyle: badges.BadgeStyle(
+            badgeColor: navyBlue,
+          ),
+          badgeContent: Text(
+            "2",
+            style: TextStyle(
+              color: white,
+              fontSize: 13,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50),
+            ),
+            elevation: 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                width: 60,
+                height: 60,
+                color: white,
+                child: Image.asset(
+                  "assets/images/message_icon.png",
+                  width: 24,
+                  height: 24,
+                ),
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, Routes.CANCELLATION);
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50),
+            ),
+            elevation: 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                width: 60,
+                height: 60,
+                color: white,
+                child: Image.asset(
+                  "assets/images/close_icon.png",
+                  width: 24,
+                  height: 24,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPartnerArrivingDetails() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getArrivingDetailsData(),
+        ),
+      ),
+    );
+  }
+
+  Widget getArrivingDetailsData() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildArrivingPartner(),
+                  SizedBox(height: 15),
+                  Text(
+                    "₦ 1000",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: black,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: "Inter",
+                    ),
+                  ),
+                  _buildAddressDetails(),
+                  SizedBox(height: 26),
+                  _buildPartnerContactIcon(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddressDetails() {
+    return Card(
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: Image.asset(
+              "assets/images/ic_route_icon.png",
+              width: 16,
+              height: 65,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "24 Bashir Musa Road, Agege",
+                style: TextStyle(
+                  color: black,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                  fontSize: 13,
+                ),
+              ),
+              SizedBox(height: 25),
+              Text(
+                "20, Pedro Street, Alausa, Ikeja",
+                style: TextStyle(
+                  color: black,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Inter",
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArrivedRider() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getArrivedRiderDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getArrivedRiderDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildArrivingPartner(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOnTripRider() {
+    return DraggableScrollableSheet(
+      initialChildSize: _initialSheetChildSize,
+      maxChildSize: _initialSheetChildSize,
+      minChildSize: _initialSheetChildSize,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getOnTripDetails(),
+        ),
+      ),
+    );
+  }
+
+  Widget getOnTripDetails() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildArrivingPartner(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOnTripMiles() {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.20,
+      maxChildSize: 0.20,
+      minChildSize: 0.20,
+      builder: (context, scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        child: Container(
+          color: white,
+          child: getRiderMiles(),
+        ),
+      ),
+    );
+  }
+
+  Widget getRiderMiles() {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 2,
+            width: 12.0.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: greyBorderColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildMilesText(),
+                SizedBox(height: 12),
+                _buildAddressText(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMilesText() {
+    return Row(
+      children: [
+        Text(
+          "18 mins / 2.2km",
+          style: TextStyle(
+            color: black,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            fontFamily: "Inter",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddressText() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "20, Pedro Street, Alausa,...",
+          style: TextStyle(
+            color: black,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            fontFamily: "Inter",
+          ),
+        ),
+        Row(
+          children: [
+            _buildSplitTrip(),
+            _buildExitButton(),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _buildSplitTrip() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, Routes.YOU_TRIP_END);
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+        elevation: 0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: Container(
+            width: 36,
+            height: 36,
+            color: greyTagColor,
+            child: Image.asset(
+              "assets/images/split_icon.png",
+              width: 16,
+              height: 16,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExitButton() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 25),
+      child: CurvedButton(
+        onPressed: () {},
+        width: 64,
+        borderRadius: 10,
+        height: 36,
+        textColor: white,
+        backgroundColor: mateRed,
+        text: "Exit",
+      ),
+    );
+  }
+}

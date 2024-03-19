@@ -575,6 +575,10 @@ class _HomeState extends State<Home> {
         'imagePath': 'home/request',
         'title': 'Request',
       },
+      // {
+      //   'imagePath': 'home/request',
+      //   'title': 'Dispatch',
+      // },
       {
         'imagePath': 'home/yarn',
         'title': 'Yarn',
@@ -656,6 +660,10 @@ class _HomeState extends State<Home> {
         hideBalance();
         Navigator.pushNamed(context, Routes.ACCOUNTS);
         break;
+      // case 'Dispatch':
+      //   hideBalance();
+      //   Navigator.pushNamed(context, Routes.DISPATCH);
+      //   break;
       case 'Yarn':
         hideBalance();
         NavigationUtil.push(context, screen: YarnDashboard());

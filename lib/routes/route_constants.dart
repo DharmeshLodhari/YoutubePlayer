@@ -220,4 +220,8 @@ class Routes {
   static const String SHARED_CARD_DETAILS = "/shared-card-details";
   static const String SHARED_CART_MEMBERS = "/shared-card-members";
   static const String SHARED_CART_PAYMENT = "/send-cart-payment";
+
+  static const String DISPATCH = "/dispatch";
+  static const String CANCELLATION = "/cancellation";
+  static const String YOU_TRIP_END = "/your-trip-end";
 }

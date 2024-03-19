@@ -82,6 +82,9 @@ import 'package:Slydo/screens/more_apps/review/forms/edit_user_review.dart';
 import 'package:Slydo/screens/more_apps/review/main_review.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/cancellation_screen.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/dispatch_screen.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/your_trip_end_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_dashboard.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/completed_upload_photo.dart';
@@ -2019,6 +2022,27 @@ class RouteGenerator {
       case Routes.SHARED_CART_PAYMENT:
         return PageTransition(
           child: SharedCartPayment(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.DISPATCH:
+        return PageTransition(
+          child: DispatchScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.CANCELLATION:
+        return PageTransition(
+          child: CancellationScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.YOU_TRIP_END:
+        return PageTransition(
+          child: YourTripEndScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
