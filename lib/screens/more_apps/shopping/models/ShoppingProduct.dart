@@ -2,7 +2,7 @@ import 'Picture.dart';
 
 class ShoppingProduct {
   String? availableFrom;
-  String? category;
+  // String? category;
   String? condition;
   String? cover;
   String? createdAt;
@@ -27,7 +27,7 @@ class ShoppingProduct {
 
   ShoppingProduct({
     this.availableFrom,
-    this.category,
+    // this.category,
     this.condition,
     this.cover,
     this.createdAt,
@@ -54,7 +54,7 @@ class ShoppingProduct {
   factory ShoppingProduct.fromJson(Map<String, dynamic> json) {
     return ShoppingProduct(
       availableFrom: json['available_from'],
-      category: json['category'],
+      // category: json['category'],
       condition: json['condition'],
       cover: json['cover'],
       createdAt: json['created_at'],
@@ -84,7 +84,7 @@ class ShoppingProduct {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['available_from'] = this.availableFrom;
-    data['category'] = this.category;
+    // data['category'] = this.category;
     data['condition'] = this.condition;
     data['cover'] = this.cover;
     data['created_at'] = this.createdAt;

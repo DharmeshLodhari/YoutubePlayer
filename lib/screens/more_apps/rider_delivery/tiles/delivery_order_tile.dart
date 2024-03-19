@@ -1,10 +1,6 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -17,37 +13,19 @@ class DeliveryOrderTile extends StatefulWidget {
 }
 
 class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
-  bool isRejectAPILoading = false;
-  bool isAcceptAPILoading = false;
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: greyBorderColor,
-            ),
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Padding(
-            padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildLogoAndDeliveryAndAmount(),
-                _buildItemsAndKg(),
-                SizedBox(height: 10.0),
-                _buildIconAndAddressAndPickup(),
-                SizedBox(height: 10.0),
-                _buildButtonCancelAndPickup(),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(height: 10.0),
-      ],
+    return Padding(
+      padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildLogoAndDeliveryAndAmount(),
+          _buildItemsAndKg(),
+          SizedBox(height: 10.0),
+          _buildIconAndAddressAndPickup(),
+        ],
+      ),
     );
   }
 
@@ -228,89 +206,5 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
         ),
       ],
     );
-  }
-
-  Widget _buildButtonCancelAndPickup() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 7.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: CurvedButton(
-              onPressed: isRejectAPILoading
-                  ? null
-                  : () {
-                      FocusScope.of(context).unfocus();
-                      isRejectAPILoading = true;
-                      if (mounted) setState(() {});
-                      rejectJob();
-                      showToast(
-                          message: AppLocalization.of(context)!
-                              .jobRemovedFromListing);
-
-                      isRejectAPILoading = false;
-                      if (mounted) setState(() {});
-                    },
-              backgroundColor: redBtn,
-              textColor: white,
-              text: 'Reject',
-              fontSize: 15,
-              isLoading: isRejectAPILoading,
-            ),
-          ),
-          SizedBox(width: 15),
-          Expanded(
-            child: CurvedButton(
-              onPressed: isAcceptAPILoading
-                  ? null
-                  : () async {
-                      FocusScope.of(context).unfocus();
-                      isAcceptAPILoading = true;
-                      if (mounted) setState(() {});
-                      await acceptJob();
-
-                      isAcceptAPILoading = false;
-                      if (mounted) setState(() {});
-                    },
-              backgroundColor: navyBlue,
-              textColor: white,
-              text: 'Accept(4:49)',
-              fontSize: 15,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> rejectJob() async {
-    await RiderDeliveryAuthService()
-        .rejectOffer(widget.jobListing.id)
-        .then((value) {
-      showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);
-      setState(() {});
-    }).catchError((error) {
-      debugPrint(error.toString());
-      showToast(message: error.toString());
-    });
-  }
-
-  Future<void> acceptJob() async {
-    await RiderDeliveryAuthService()
-        .acceptOffer(widget.jobListing.id)
-        .then((value) {
-      if (value == true) {
-        showToast(message: AppLocalization.of(context)!.jobAcceptedFromListing);
-        Navigator.of(context).pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
-          'showDetails': false,
-          'deliveryDetail': widget.jobListing,
-        });
-      } else {
-        showToast(message: 'Offer already accepted by a dispatcher');
-      }
-    }).catchError((error) {
-      debugPrint(error.toString());
-      showToast(message: error.toString());
-    });
   }
 }

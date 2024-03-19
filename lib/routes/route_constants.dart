@@ -228,5 +228,4 @@ class Routes {
   static const String DISPATCH = "/dispatch";
   static const String CANCELLATION = "/cancellation";
   static const String YOU_TRIP_END = "/your-trip-end";
-  static const String LIVE_MAP = "/live-map";
 }

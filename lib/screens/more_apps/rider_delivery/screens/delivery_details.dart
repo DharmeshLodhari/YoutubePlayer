@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -37,18 +38,15 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   bool isStartAPILoading = false;
   bool isEndedAPILoading = false;
   bool isCancelAPILoading = false;
-  double _initialSheetChildSize = 0.0;
-  bool isShowDetails = false;
-  bool isDeliveryAccepted = false;
-  bool isDeliveryStarted = false;
-  bool isDeliveryEnded = false;
-  bool isDeliveryCancel = false;
-  bool isChecked = false;
+  // double _initialSheetChildSize = 0.0;
 
   bool startRide = false;
   bool isMapLoading = false;
 
   Key key = Key("map");
+  bool? isDeliveryCancel = false;
+  bool? isChecked = false;
+  late UserBloc userBloc;
 
   List<String> reasons = [
     "Wrong destination",
@@ -64,14 +62,15 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   @override
   void initState() {
     deliveryDetails = widget.arguments['deliveryDetail'];
-    isShowDetails = widget.arguments['showDetails'];
-    if (isShowDetails) {
-      isDeliveryAccepted = false;
-      _initialSheetChildSize = 0.38;
-    } else {
-      isDeliveryAccepted = true;
-      _initialSheetChildSize = 0.45;
-    }
+    // deliveryDetails?.isShowDetails = widget.arguments['showDetails'];
+    // if (deliveryDetails?.isShowDetails != null &&
+    //     deliveryDetails?.isShowDetails == true) {
+    //   deliveryDetails?.isDeliveryAccepted = false;
+    //   _initialSheetChildSize = 0.38;
+    // } else {
+    //   deliveryDetails?.isDeliveryAccepted = true;
+    //   _initialSheetChildSize = 0.45;
+    // }
 
     Future.delayed(Duration(seconds: 5)).then((value) {
       getExistingMapStatus();
@@ -89,6 +88,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -158,12 +158,19 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             : RiderMapUI(
                 key: UniqueKey(),
                 deliveryDetails: deliveryDetails,
+                showRideToStartingPointPolyline: false,
+                showStartingPointToDestinationPolyline: true,
+                startRide: startRide,
               ),
-        isShowDetails ? _buildShowDetails() : Container(),
-        isDeliveryAccepted ? _buildAccepted() : Container(),
-        isDeliveryStarted ? _buildStarted() : Container(),
-        isDeliveryEnded ? _buildEnded() : Container(),
-        isDeliveryCancel ? _buildCancel() : Container(),
+        deliveryDetails?.isOfferAccepted(userBloc.user.userName) == false
+            ? _buildShowDetails()
+            : Container(),
+        deliveryDetails?.isOfferAccepted(userBloc.user.userName) == true
+            ? _buildAccepted()
+            : Container(),
+        deliveryDetails?.isInProgress == true ? _buildStarted() : Container(),
+        deliveryDetails?.hasEnded == true ? _buildEnded() : Container(),
+        isDeliveryCancel == true ? _buildCancel() : Container(),
       ],
     );
   }
@@ -180,6 +187,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     )
         .then((value) {
       riderDeliveryBloc.driverToStartingPointDirections = value;
+      riderDeliveryBloc.startingPointToDestinationDirections = value;
       isMapLoading = false;
       if (mounted) setState(() {});
     }).catchError((error) {
@@ -190,9 +198,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildShowDetails() {
     return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
+      initialChildSize: 0.38,
+      maxChildSize: 0.38,
+      minChildSize: 0.38,
       builder: (context, scrollController) => ClipRRect(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -208,9 +216,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildAccepted() {
     return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
+      initialChildSize: 0.45,
+      maxChildSize: 0.45,
+      minChildSize: 0.45,
       builder: (context, scrollController) => ClipRRect(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -226,9 +234,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildStarted() {
     return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
+      initialChildSize: 0.35,
+      maxChildSize: 0.35,
+      minChildSize: 0.35,
       builder: (context, scrollController) => ClipRRect(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -244,9 +252,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildEnded() {
     return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
+      initialChildSize: 0.3,
+      maxChildSize: 0.3,
+      minChildSize: 0.3,
       builder: (context, scrollController) => ClipRRect(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -262,9 +270,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildCancel() {
     return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
+      initialChildSize: 0.73,
+      maxChildSize: 0.73,
+      minChildSize: 0.73,
       builder: (context, scrollController) => ClipRRect(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -652,7 +660,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                       isRejectAPILoading = true;
                       if (mounted) setState(() {});
                       rejectOffer();
-
                       isRejectAPILoading = false;
                       if (mounted) setState(() {});
                     },
@@ -703,9 +710,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         .then((value) {
       if (value == true) {
         showToast(message: AppLocalization.of(context)!.jobAcceptedFromListing);
-        isShowDetails = false;
-        isDeliveryAccepted = true;
-        _initialSheetChildSize = 0.45;
+        // deliveryDetails?.isShowDetails = false;
+        // deliveryDetails?.isDeliveryAccepted = true;
+        // _initialSheetChildSize = 0.45;
         setState(() {});
       } else {
         showToast(message: 'Offer already accepted by a dispatcher');
@@ -816,7 +823,10 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             '${deliveryDetails?.deliveryAddress?.addressLineOne}, ${deliveryDetails?.deliveryAddress?.addressLineTwo}',
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: isDeliveryStarted ? darkGrey : blackFont,
+              color: deliveryDetails?.isOfferAccepted(userBloc.user.userName) ==
+                      true
+                  ? darkGrey
+                  : blackFont,
               fontSize: 12,
               fontFamily: "Inter",
             ),
@@ -826,7 +836,10 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             'Festus street ,Agege',
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: isDeliveryStarted ? blackFont : darkGrey,
+              color: deliveryDetails?.isOfferAccepted(userBloc.user.userName) ==
+                      true
+                  ? blackFont
+                  : darkGrey,
               fontSize: 12,
               fontFamily: "Inter",
             ),
@@ -858,7 +871,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: isChecked ? blackFont : darkGrey,
+            color: isChecked == true ? blackFont : darkGrey,
             fontFamily: "Inter",
           ),
         )
@@ -885,9 +898,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildStartDelivery() {
     return CurvedButton(
       text: 'Start Delivery',
-      backgroundColor: isChecked ? navyBlue : greyBorderColor,
+      backgroundColor: isChecked == true ? navyBlue : greyBorderColor,
       textColor: white,
-      onPressed: isChecked
+      onPressed: isChecked == true
           ? () {
               if (isStartAPILoading == false) {
                 FocusScope.of(context).unfocus();
@@ -906,12 +919,12 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildCancelDelivery() {
     return OutlineCurvedButton(
       text: "Cancel Delivery",
-      textColor: isChecked ? navyBlue : greyBorderColor,
-      onPressed: isChecked
+      textColor: isChecked == true ? navyBlue : greyBorderColor,
+      onPressed: isChecked == true
           ? () {
-              isDeliveryAccepted = false;
+              // deliveryDetails?.isDeliveryAccepted = false;
               isDeliveryCancel = true;
-              _initialSheetChildSize = 0.73;
+              // _initialSheetChildSize = 0.73;
               setState(() {});
             }
           : null,
@@ -950,9 +963,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         .then((value) {
       showToast(
           message: AppLocalization.of(context)!.journyStartedSuccessfully);
-      isDeliveryAccepted = false;
-      isDeliveryStarted = true;
-      _initialSheetChildSize = 0.35;
+      // deliveryDetails?.isDeliveryAccepted = false;
+      // deliveryDetails?.isDeliveryStarted = true;
+      // _initialSheetChildSize = 0.35;
       setState(() {});
     }).catchError((error) {
       debugPrint(error.toString());
@@ -985,9 +998,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         .endJourney(deliveryDetails?.id)
         .then((value) {
       showToast(message: AppLocalization.of(context)!.endJob);
-      isDeliveryStarted = false;
-      isDeliveryEnded = true;
-      _initialSheetChildSize = 0.3;
+      // deliveryDetails?.isDeliveryStarted = false;
+      // deliveryDetails?.isDeliveryEnded = true;
+      // _initialSheetChildSize = 0.3;
       setState(() {});
     }).catchError((error) {
       debugPrint(error.toString());

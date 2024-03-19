@@ -31,6 +31,12 @@ class DeliveryModel {
   bool? hasEnded;
   int? totalWeight;
   int? totalNoOfItems;
+  // bool? isShowDetails;
+  // bool? isDeliveryAccepted;
+  // bool? isDeliveryStarted;
+  // bool? isDeliveryEnded;
+  // bool? isDeliveryCancel;
+  // bool? isChecked;
 
   DeliveryModel({
     this.id,
@@ -63,6 +69,12 @@ class DeliveryModel {
     this.hasEnded,
     this.totalWeight,
     this.totalNoOfItems,
+    // this.isShowDetails = true,
+    // this.isDeliveryAccepted = false,
+    // this.isDeliveryStarted = false,
+    // this.isDeliveryEnded = false,
+    // this.isDeliveryCancel = false,
+    // this.isChecked = false,
   });
 
   factory DeliveryModel.fromJson(Map<String, dynamic> json) => DeliveryModel(
@@ -140,4 +152,13 @@ class DeliveryModel {
         "total_weight": totalWeight,
         "total_no_of_items": totalNoOfItems,
       };
+
+  bool isOfferAccepted(String? userName) {
+    if (acceptedBy != null) {
+      if (acceptedBy == userName) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

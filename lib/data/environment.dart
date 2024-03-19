@@ -43,7 +43,8 @@ class AppConfig {
       gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
       socketUrl = "wss://devchat.slydo.co/ws/main";
       chatUrl = "https://devchat.slydo.co";
-      googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      // googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      googleMapApiKey = "AIzaSyAs0AD96236ASgq_7l8u4q9OHW0bOuESV8";
       termsAndCondition = "https://slydo.co/terms";
       privacyPolicy = "https://slydo.co/privacy-policy";
     } else if (appType == AppType.PRODUCTION) {
@@ -53,7 +54,8 @@ class AppConfig {
       gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
       socketUrl = "wss://chat.slydo.co/ws/main";
       chatUrl = "https://chat.slydo.co";
-      googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      // googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      googleMapApiKey = "AIzaSyAs0AD96236ASgq_7l8u4q9OHW0bOuESV8";
       termsAndCondition = "https://slydo.co/terms";
       privacyPolicy = "https://slydo.co/privacy-policy";
     }
