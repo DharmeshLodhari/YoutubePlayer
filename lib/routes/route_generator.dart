@@ -85,8 +85,13 @@ import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/cancellation_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/dispatch_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/your_trip_end_screen.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_completed.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_history.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/live_map.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/response_received.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_dashboard.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/share_experience.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/completed_upload_photo.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/preview_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/require_steps.dart';
@@ -1987,6 +1992,34 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      case Routes.DELIVERY_COMPLETED:
+        return PageTransition(
+          child: DeliveryCompleted(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.RESPONSE_RECEIVED:
+        return PageTransition(
+          child: ResponseReceived(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.SHARE_EXPERIENCE:
+        return PageTransition(
+          child: ShareExperience(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.DELIVERY_HISTORY:
+        return PageTransition(
+          child: DeliveryHistory(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
       case Routes.RIDERS_UPDATE:
         return PageTransition(
           child: RidersUpdate(),
@@ -2005,9 +2038,7 @@ class RouteGenerator {
         );
       case Routes.SHARED_CARD_DETAILS:
         return PageTransition(
-          child: SharedCartDetails(
-              // arguments: settings.arguments,
-              ),
+          child: SharedCartDetails(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -2043,6 +2074,13 @@ class RouteGenerator {
       case Routes.YOU_TRIP_END:
         return PageTransition(
           child: YourTripEndScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.LIVE_MAP:
+        return PageTransition(
+          child: LiveMap(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

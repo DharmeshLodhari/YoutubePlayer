@@ -441,7 +441,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
           ),
         ];
       },
-      body: getTabViewLayout(),
+      body: _getTabViewLayout(),
     );
   }
 
@@ -556,7 +556,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     return [];
   }
 
-  getTabViewLayout() {
+  Widget _getTabViewLayout() {
     return Column(
       children: [
         if (customCategories.isNotEmpty &&
@@ -569,21 +569,26 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               ? PageStorage(
                   key: PageStorageKey(selectedCategory),
                   bucket: _bucket,
-                  child: FutureBuilder(
-                    future: getData(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return productTab(widget.searchedUser, isOwner!, false,
-                            next: selectedCategory == "main"
-                                ? "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/"
-                                : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory",
-                            type:
-                                selectedCategory == "main" ? "section" : null);
-                      } else {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                    },
-                  ),
+                  child: productTab(widget.searchedUser, isOwner!, false,
+                      next: selectedCategory == "main"
+                          ? "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/"
+                          : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory",
+                      type: selectedCategory == "main" ? "section" : null),
+                  // child: FutureBuilder(
+                  //   future: getData(),
+                  //   builder: (context, snapshot) {
+                  //     if (snapshot.hasData) {
+                  //       return productTab(widget.searchedUser, isOwner!, false,
+                  //           next: selectedCategory == "main"
+                  //               ? "https://api.slydo.co/api/v1/products/seller-products-by-custom-category/${widget.searchedUser!.userName}/"
+                  //               : "https://api.slydo.co/api/v1/products/by-seller/${widget.searchedUser!.userName}/?custom_category=$selectedCategory",
+                  //           type:
+                  //               selectedCategory == "main" ? "section" : null);
+                  //     } else {
+                  //       return Center(child: CircularProgressIndicator());
+                  //     }
+                  //   },
+                  // ),
                 )
               : TabBarView(
                   controller: _tabController,

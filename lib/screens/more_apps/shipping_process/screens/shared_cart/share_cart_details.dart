@@ -335,6 +335,8 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
               showToast(message: 'Checkout not available now');
             }
           }
+        } else {
+          showToast(message: 'Checkout not available now');
         }
         //   if (sharedCartBloc.getSharedCartModel().customerUsername ==
         //       userBloc.user.userName) {

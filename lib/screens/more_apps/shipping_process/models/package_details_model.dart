@@ -22,6 +22,9 @@ class PackageDetailsModel {
   Product? buyNow;
   Variant? variants;
   List<AddOns>? addOns;
+  bool? hasSlydoDispatch;
+  bool? hasMerchantDispatch;
+  bool? hasCourierDispatch;
 
   PackageDetailsModel({
     this.addressId,
@@ -39,6 +42,9 @@ class PackageDetailsModel {
     this.buyNow,
     this.variants,
     this.addOns,
+    this.hasSlydoDispatch,
+    this.hasMerchantDispatch,
+    this.hasCourierDispatch,
   });
 
   factory PackageDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -47,6 +53,9 @@ class PackageDetailsModel {
       merchant: json["merchant"],
       totalItems: json["total_items"],
       totalPrice: json["total_price"],
+      hasSlydoDispatch: json["has_slydo_dispatch"],
+      hasMerchantDispatch: json["has_merchant_dispatch"],
+      hasCourierDispatch: json["has_courier_dispatch"],
       merchantAddress: json["address"] != null
           ? ShippingAddress.fromJson(json["address"])
           : null,
@@ -58,6 +67,9 @@ class PackageDetailsModel {
         "merchant": merchant,
         "total_items": totalItems,
         "total_price": totalPrice,
+        "has_slydo_dispatch": hasSlydoDispatch,
+        "has_merchant_dispatch": hasMerchantDispatch,
+        "has_courier_dispatch": hasCourierDispatch,
       };
 
   bool requireNote() {
@@ -77,12 +89,15 @@ class PackageDetailsModel {
       "pickup_address_id": addressId ?? "",
       "note": shippingNote,
     };
-    int shippingId = 0;
+    dynamic shippingId = 0;
     if (deliveryOption == DeliveryOptions.shipping) {
       if (shippingType == ShippingTypes.slydo) {
         shippingId = 5;
-        data.addAll(
-            {"rate_id": shippingOption?.rateId ?? "", "insurance": false});
+        data.addAll({
+          "rate_id": shippingOption?.id ?? "",
+          "insurance": false,
+          "price": shippingOption?.price
+        });
       } else if (shippingType == ShippingTypes.merchant) {
         shippingId = shippingOption?.id ?? 0;
       } else if (shippingType == ShippingTypes.courier) {
@@ -182,7 +197,7 @@ class PackageDetailsModel {
   String? getShippingLogo() {
     switch (shippingType!) {
       case ShippingTypes.slydo:
-        return "assets/images/slydo.svg";
+        return "assets/images/slydo.png";
       case ShippingTypes.merchant:
         return "assets/images/merchant_logo.png";
       case ShippingTypes.courier:
@@ -196,5 +211,11 @@ class PackageDetailsModel {
 
   void updateShippingNote(String? note) {
     shippingNote = note;
+  }
+
+  bool hasShippingAvailable() {
+    return (hasCourierDispatch ?? false) ||
+        (hasMerchantDispatch ?? false) ||
+        (hasSlydoDispatch ?? false);
   }
 }

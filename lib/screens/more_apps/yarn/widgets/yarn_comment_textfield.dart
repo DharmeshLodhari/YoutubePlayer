@@ -18,6 +18,7 @@ import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -25,7 +26,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:images_picker/images_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -313,7 +314,19 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                                       message:
                                           "You can select only 4 images or videos");
                                 } else {
-                                  pickFileFromMedia();
+                                  bool isPermissionGranted =
+                                      await requestGalleryPermission();
+                                  if (isPermissionGranted) {
+                                    await pickFileFromMedia();
+                                  } else {
+                                    bool isPermissionIsDenied =
+                                        await isPermanentlyDeniedPermission();
+                                    if (isPermissionIsDenied) {
+                                      await openAppSettings();
+                                    } else {
+                                      await openAppSettings();
+                                    }
+                                  }
                                 }
                               },
                               child: Padding(
@@ -933,7 +946,18 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
               if (selectedImages.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
-                pickFileFromMedia();
+                bool isPermissionGranted = await requestGalleryPermission();
+                if (isPermissionGranted) {
+                  await pickFileFromMedia();
+                } else {
+                  bool isPermissionIsDenied =
+                      await isPermanentlyDeniedPermission();
+                  if (isPermissionIsDenied) {
+                    await openAppSettings();
+                  } else {
+                    await openAppSettings();
+                  }
+                }
               }
             },
           ),
@@ -1005,15 +1029,17 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   }
 
   pickFileFromMedia() async {
-    List<Media>? res = await ImagesPicker.pick(
-      count: 4,
-      pickType: PickType.all,
-      language: Language.System,
-      maxTime: 900,
-      cropOpt: CropOption(
-        cropType: CropType.rect,
-      ),
-    );
+    // List<Media>? res = await ImagesPicker.pick(
+    //   count: 4,
+    //   pickType: PickType.all,
+    //   language: Language.System,
+    //   maxTime: 900,
+    //   cropOpt: CropOption(
+    //     cropType: CropType.rect,
+    //   ),
+    // );
+
+    List<XFile> res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 

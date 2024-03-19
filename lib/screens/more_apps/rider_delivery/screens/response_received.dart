@@ -10,14 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-class SuccessfulOrder extends StatefulWidget {
-  const SuccessfulOrder({Key? key}) : super(key: key);
+class ResponseReceived extends StatefulWidget {
+  const ResponseReceived({Key? key}) : super(key: key);
 
   @override
-  State<SuccessfulOrder> createState() => _SuccessfulOrderState();
+  State<ResponseReceived> createState() => _ResponseReceivedState();
 }
 
-class _SuccessfulOrderState extends State<SuccessfulOrder> {
+class _ResponseReceivedState extends State<ResponseReceived> {
   late SharedCartBloc sharedCartBloc;
 
   @override
@@ -60,6 +60,8 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
                 children: [
                   _buildSuccessImage(),
                   _buildText(),
+                  SizedBox(height: 10.0),
+                  _buildSubText(),
                 ],
               ),
             ),
@@ -101,26 +103,43 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
 
   Widget _buildText() {
     return Text(
-      "Order Placed Successfully",
+      "Response Received",
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: black,
+        color: blackFont,
         fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildSubText() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Text(
+        "Thank you for taking out your time to fill this. We will look into this to improve our system to serve you better.",
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: blackFont,
+          fontFamily: "Inter",
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }
 
   Widget _buildViewOrderButton() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(10.0),
       child: CurvedButton(
         onPressed: () {
-          Navigator.of(context).popAndPushNamed(Routes.ORDERS_LIST);
+          Navigator.of(context).popAndPushNamed(Routes.DELIVERY_HISTORY);
         },
         backgroundColor: navyBlue,
         textColor: white,
-        text: 'Track Order',
+        fontSize: 15,
+        text: 'Done',
       ),
     );
   }

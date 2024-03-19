@@ -1,18 +1,20 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:images_picker/images_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
 class CreateMediaScreen extends StatefulWidget {
@@ -124,12 +126,24 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
                 InkWell(
                   onTap: mediaCaptured()
                       ? null
-                      : () {
+                      : () async {
                           if (!(cameraController?.value.isTakingPicture ??
                                   false) &&
                               !(cameraController?.value.isRecordingVideo ??
                                   false)) {
-                            pickFileFromMedia();
+                            bool isPermissionGranted =
+                                await requestGalleryPermission();
+                            if (isPermissionGranted) {
+                              await pickFileFromMedia();
+                            } else {
+                              bool isPermissionIsDenied =
+                                  await isPermanentlyDeniedPermission();
+                              if (isPermissionIsDenied) {
+                                await openAppSettings();
+                              } else {
+                                await openAppSettings();
+                              }
+                            }
                           }
                         },
                   child: Container(
@@ -419,15 +433,17 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
       countMedia = 4 - widget.imageCount!;
     }
 
-    List<Media>? res = await ImagesPicker.pick(
-      count: countMedia,
-      pickType: PickType.all,
-      language: Language.System,
-      maxTime: 900,
-      cropOpt: CropOption(
-        cropType: CropType.rect,
-      ),
-    );
+    // List<Media>? res = await ImagesPicker.pick(
+    //   count: countMedia,
+    //   pickType: PickType.all,
+    //   language: Language.System,
+    //   maxTime: 900,
+    //   cropOpt: CropOption(
+    //     cropType: CropType.rect,
+    //   ),
+    // );
+
+    List<XFile> res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 

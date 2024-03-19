@@ -83,15 +83,6 @@ class _MyProductsState extends State<MyProducts> {
   List<Widget> _buildAppBarActions() {
     return [
       RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            copyProductLink();
-          },
-          icon: SvgPicture.asset(
-            "link_icon".toSVG(),
-          )),
-      SizedBox(width: 10),
-      RoundedBackgroundIcon(
         backgroundColor: Colors.transparent,
         onTap: () {
           Navigator.of(context)
@@ -109,7 +100,16 @@ class _MyProductsState extends State<MyProducts> {
           width: 12,
         ),
       ),
-      SizedBox(width: 20),
+      SizedBox(width: 10),
+      RoundedBackgroundIcon(
+          backgroundColor: Colors.transparent,
+          onTap: () {
+            copyProductLink();
+          },
+          icon: SvgPicture.asset(
+            "link_icon".toSVG(),
+          )),
+      SizedBox(width: 10),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {

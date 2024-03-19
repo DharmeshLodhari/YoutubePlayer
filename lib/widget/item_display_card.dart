@@ -79,7 +79,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": widget.product});
       },
       child: SizedBox(
-        width: 200,
+        width: 250,
         child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -91,8 +91,7 @@ class _DisplayProductState extends State<DisplayProduct> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           shadowColor: boxShadow,
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 6.0),
+            padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -160,7 +159,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                   ],
                 ),
                 const SizedBox(
-                  height: 15,
+                  height: 10,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),

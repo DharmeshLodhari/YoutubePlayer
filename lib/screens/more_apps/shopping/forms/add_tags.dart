@@ -1,10 +1,12 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,8 +25,16 @@ class AddTags extends StatefulWidget {
 class _AddTagsState extends State<AddTags> {
   UserBloc? userBloc;
   bool isLoading = false;
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
+  bool noCategoryInList = false;
   List<Tags> tagList = [];
-  List<Tags>? tagListCopy;
+  // List<Tags>? tagListCopy;
+  final GlobalKey<ScaffoldMessengerState> _addTagsScaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+  final ScrollController _scrollController = ScrollController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -32,21 +42,28 @@ class _AddTagsState extends State<AddTags> {
     // tagList.add(Tags(name: 'Java', id: 102));
     // tagList.add(Tags(name: 'PHP', id: 103));
     // tagList.add(Tags(name: 'React', id: 104));
-    isLoading = true;
-    WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) async {
-        UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    // WidgetsBinding.instance.addPostFrameCallback(
+    //   (timeStamp) async {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-        await getProductTags(userBloc.userAbout!.industry!.id!);
+    getProductTags(userBloc.userAbout?.industry?.id!, "");
 
-        if (widget.arguments["tagList"] != null)
-          for (Tags tags in tagList) {
-            if (widget.arguments["tagList"].any((e) => e.id == tags.id)) {
-              tags.isSelected = true;
-            }
-          }
-      },
-    );
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getProductTags(userBloc.userAbout?.industry?.id!, "");
+      }
+    });
+
+    if (widget.arguments["tagList"] != null)
+      for (Tags tags in tagList) {
+        if (widget.arguments["tagList"].any((e) => e.id == tags.id)) {
+          tags.isSelected = true;
+        }
+      }
+    // },
+    // );
     super.initState();
   }
 
@@ -149,72 +166,137 @@ class _AddTagsState extends State<AddTags> {
   // }
 
   Widget _buildBody() {
-    return isLoading
-        ? Center(
-            child: CircularLoadingIndicator(),
-          )
-        : Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              children: [
-                CustomizedTextFormField(
-                  hintText: 'Search tags',
-                  onChanged: (value) {
-                    if (value.toString().isNotEmpty) {
-                      tagList = tagListCopy!
-                          .where((element) => element.name!
-                              .toLowerCase()
-                              .startsWith(value.toString().toLowerCase()))
-                          .toList();
-                      if (mounted) setState(() {});
-                    } else {
-                      tagList = tagListCopy ?? [];
-                      if (mounted) setState(() {});
-                    }
-                  },
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: ListView.builder(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        children: [
+          CustomizedTextFormField(
+            controller: searchController,
+            suffixIcon: searchIcon(),
+            hintText: 'Search tags',
+            // onChanged: (value) {
+            // if (value.toString().isNotEmpty) {
+            //   tagList = tagListCopy!
+            //       .where((element) => element.name!
+            //           .toLowerCase()
+            //           .startsWith(value.toString().toLowerCase()))
+            //       .toList();
+            //   if (mounted) setState(() {});
+            // } else {
+            //   tagList = tagListCopy ?? [];
+            //   if (mounted) setState(() {});
+            // }
+            // },
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+              child: noCategoryInList
+                  ? NoItemInList(
+                      msg: AppLocalization.of(context)!.noTransaction,
+                    )
+                  : ListView.builder(
+                      controller: _scrollController,
                       shrinkWrap: true,
-                      itemCount: tagList.length,
+                      itemCount: tagList.length + 1,
                       itemBuilder: (context, index) {
-                        return Card(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                  color: selectedListItemBackgroundBlue),
-                              borderRadius: BorderRadius.circular(10)),
-                          margin: EdgeInsets.symmetric(vertical: 2),
-                          shadowColor: boxShadowTwo,
-                          color: white,
-                          child: Container(
-                            decoration: decorateBox(),
-                            child: Padding(
-                              padding: EdgeInsets.all(5.0),
-                              child: _buildTagList(index),
+                        if (index == tagList.length) {
+                          return SizedBox.shrink();
+                        } else {
+                          return Card(
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                    color: selectedListItemBackgroundBlue),
+                                borderRadius: BorderRadius.circular(10)),
+                            margin: EdgeInsets.symmetric(vertical: 2),
+                            shadowColor: boxShadowTwo,
+                            color: white,
+                            child: Container(
+                              decoration: decorateBox(),
+                              child: Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: _buildTagList(index),
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                ),
-              ],
-            ),
-          );
+                          );
+                        }
+                      })),
+        ],
+      ),
+    );
   }
 
-  Future<void> getProductTags(id) async {
-    if (mounted) setState(() {});
-    try {
-      List<Tags> result = await ShoppingAuthService().getProductTags(id);
-      tagList = result;
-      tagListCopy = tagList;
-    } catch (e) {
-      tagList = [];
-      tagListCopy = [];
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: searchItems,
+    );
+  }
+
+  void searchItems() {
+    if (mounted) {
+      count = 0;
+      next = "";
+      previous = "";
+      tagList.clear();
+      noCategoryInList = false;
+      if (mounted) setState(() {});
+      FocusScope.of(context).unfocus();
+      getProductTags(
+          userBloc?.userAbout!.industry!.id!, searchController.text.trim());
     }
-    isLoading = false;
-    if (mounted) setState(() {});
+  }
+
+  Future<void> getProductTags(id, searchText) async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .getProductTags(id, next, previous, searchText);
+
+        if (result == null) {
+          noCategoryInList = true;
+
+          isLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noCategoryInList = false;
+            isLoading = false;
+            tagList.addAll(tempList);
+            // tagListCopy = tagList;
+          });
+        }
+      }
+      if (tagList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noCategoryInList = true;
+          });
+        }
+      } else if (next == null && tagList.length > 6) {
+        _addTagsScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
   Widget _buildTagList(int index) {

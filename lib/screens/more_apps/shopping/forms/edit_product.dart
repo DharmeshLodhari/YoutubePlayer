@@ -199,7 +199,8 @@ class _EditProductState extends State<EditProduct> {
           if (currentProduct.manufacturer != null) {
             productManufacturerController.text = currentProduct.manufacturer!;
           }
-          customProductController.text = currentProduct.customCategory!.name;
+          customProductController.text =
+              currentProduct.customCategory?.name ?? "";
 
           productShortDescriptionController.text =
               messageDecoderWithEmoji(currentProduct.shortDescription!)!;
@@ -1842,7 +1843,7 @@ class _EditProductState extends State<EditProduct> {
             child: Column(
               children: [
                 CustomizedTextFormField(
-                  hintText: 'Search  custom category',
+                  hintText: 'Search custom category',
                   onChanged: (value) {
                     if (value.toString().isNotEmpty) {
                       customCategories = productCustomCategoriesCopy!

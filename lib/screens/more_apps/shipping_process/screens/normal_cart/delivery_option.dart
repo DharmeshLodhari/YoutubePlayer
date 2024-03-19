@@ -28,6 +28,18 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   TextEditingController userNoteController = TextEditingController();
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (shippingProcessBloc.getPackageDetailModel().hasShippingAvailable() ==
+          false) {
+        deliveryOption.removeAt(0);
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     return ColorfulSafeArea(
@@ -286,24 +298,24 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             fontFamily: "Inter",
           ),
         ),
-        // const SizedBox(
-        //   height: 16,
-        // ),
-        // GestureDetector(
-        //   onTap: () async {
-        //     if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
-        //         null) {
-        //       shippingProcessBloc.updateShippingOptionType(ShippingTypes.slydo);
-        //       await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
-        //     } else {
-        //       showToast(message: "Please select delivery address.");
-        //     }
-        //   },
-        //   child: ShippingOptionalWid(
-        //     title: "Ship with Slydo",
-        //     subTitle: "Use slydo dispatch rider to get your orders.",
-        //   ),
-        // ),
+        const SizedBox(
+          height: 16,
+        ),
+        GestureDetector(
+          onTap: () async {
+            if (shippingProcessBloc.getPackageDetailModel().deliveryAddress !=
+                null) {
+              shippingProcessBloc.updateShippingOptionType(ShippingTypes.slydo);
+              await Navigator.of(context).pushNamed(Routes.SHIPPING_OPTION);
+            } else {
+              showToast(message: "Please select delivery address.");
+            }
+          },
+          child: ShippingOptionalWid(
+            title: "Ship with Slydo",
+            subTitle: "Use slydo dispatch rider to get your orders.",
+          ),
+        ),
         const SizedBox(
           height: 16,
         ),
@@ -498,11 +510,14 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                shippingProcessBloc
-                        .getPackageDetailModel()
-                        .shippingOption
-                        ?.name ??
-                    "",
+                shippingProcessBloc.getPackageDetailModel().shippingType ==
+                        ShippingTypes.slydo
+                    ? 'Slydo'
+                    : shippingProcessBloc
+                            .getPackageDetailModel()
+                            .shippingOption
+                            ?.name ??
+                        "",
                 style: TextStyle(
                   color: blackFont,
                   fontSize: 14,

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -44,6 +45,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   late TextEditingController _fullNameController;
   late TextEditingController _userNameController;
   TextEditingController? _nicknameController;
+  ShippingAddress? defaultAddress;
 
   List<String> openingHoursDays = [
     "Monday",
@@ -118,22 +120,27 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     _nicknameController = TextEditingController();
     _fullNameController = TextEditingController();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((timestamp) async {
+      await getAddress();
       userBioDetail = userBloc.userAbout;
-      bioController!.text = messageDecoderWithEmoji(userBloc.user.bio!)!;
+      bioController?.text = messageDecoderWithEmoji(userBloc.user.bio!)!;
       if (userBioDetail?.userAddress?.addressLine1 != null) {
-        addressLine1Controller!.text =
-            userBioDetail!.userAddress!.addressLine1!;
+        addressLine1Controller?.text =
+            userBioDetail?.userAddress?.addressLine1 ?? "";
+      } else {
+        addressLine1Controller?.text = defaultAddress?.addressLineOne ?? "";
       }
-
       if (userBioDetail?.userAddress?.addressLine2 != null) {
-        addressLine2Controller!.text =
-            userBioDetail!.userAddress!.addressLine2!;
+        addressLine2Controller?.text =
+            userBioDetail?.userAddress?.addressLine2 ?? "";
+      } else {
+        addressLine2Controller?.text = defaultAddress?.addressLineTwo ?? "";
       }
       if (userBioDetail?.userAddress?.city != null) {
-        cityController!.text = userBioDetail!.userAddress!.city!;
+        cityController?.text = userBioDetail?.userAddress?.city ?? "";
+      } else {
+        cityController?.text = defaultAddress?.city ?? "";
       }
-
       if (userBioDetail?.userAddress?.state != null) {
         pickedStateId = userBioDetail?.userAddress?.state;
       }
@@ -158,6 +165,30 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     });
 
     super.initState();
+  }
+
+  Future<void> getAddress() async {
+    // if (mounted) setState(() {});
+
+    Map<String, dynamic>? result =
+        await ShoppingAuthService().listOfDispatchAddress("", null);
+
+    // if (mounted) setState(() {});
+    if (result == null) {
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+
+    List<ShippingAddress> tempList = result['results'];
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        defaultAddress = tempList.firstWhere((element) => element.is_default!);
+      });
+    }
   }
 
   void addUserAddedOpeningHour() {
@@ -513,13 +544,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                             height: 88,
                             width: 88,
                             child: Center(child: CircularLoadingIndicator()))
-                        : CachedNetworkImage(
-                            height: 88,
-                            width: 88,
-                            fit: BoxFit.fill,
-                            filterQuality: FilterQuality.high,
-                            imageUrl: userBloc.user.avatar!,
-                          ),
+                        : userImageUserInitialsPic(userBloc.user.avatar ?? "",
+                            userBloc.user.fullName ?? "", 44, 88),
                   ),
                 ),
               ),

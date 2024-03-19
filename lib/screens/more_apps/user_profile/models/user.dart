@@ -30,30 +30,35 @@ class ShippingAddress {
   String? zip;
   bool? is_default;
   String? name;
+  double? latitude;
+  double? longitude;
 
-  ShippingAddress(
-      {this.id,
-      this.addressLineOne,
-      this.addressLineTwo,
-      this.city,
-      this.stateName,
-      this.postCode,
-      this.userState,
-      this.country,
-      this.shippingNote,
-      this.countryIsoCode,
-      this.created_at,
-      this.updated_at,
-      this.email,
-      this.is_residential = false,
-      this.first_name,
-      this.last_name,
-      this.line_1,
-      this.line_2,
-      this.phone,
-      this.zip,
-      this.is_default,
-      this.name});
+  ShippingAddress({
+    this.id,
+    this.addressLineOne,
+    this.addressLineTwo,
+    this.city,
+    this.stateName,
+    this.postCode,
+    this.userState,
+    this.country,
+    this.shippingNote,
+    this.countryIsoCode,
+    this.created_at,
+    this.updated_at,
+    this.email,
+    this.is_residential = false,
+    this.first_name,
+    this.last_name,
+    this.line_1,
+    this.line_2,
+    this.phone,
+    this.zip,
+    this.is_default,
+    this.name,
+    this.latitude,
+    this.longitude,
+  });
 
   ShippingAddress.fromJson(var object) {
     id = object['id'] ?? "";
@@ -82,6 +87,8 @@ class ShippingAddress {
     is_default = object['is_default'];
     id = object['id'];
     name = object["name"];
+    latitude = object["latitude"]?.toDouble();
+    longitude = object["longitude"]?.toDouble();
 
     // location: json["location"],
     // metadata: json["metadata"] == null
@@ -107,6 +114,8 @@ class ShippingAddress {
       'address_line_1': addressLineOne,
       'address_line_2': addressLineTwo,
       'country_iso_code': countryIsoCode,
+      "latitude": latitude,
+      "longitude": longitude,
     };
   }
 
@@ -135,39 +144,45 @@ class ShippingAddress {
     };
   }
 
-  ShippingAddress copyWith(
-      {String? addressLineOne,
-      dynamic id,
-      String? addressLineTwo,
-      String? city,
-      String? country,
-      String? postCode,
-      String? stateName,
-      String? email,
-      bool? is_residential,
-      String? first_name,
-      String? last_name,
-      String? line_1,
-      String? line_2,
-      String? phone,
-      String? zip,
-      bool? is_default,
-      String? name}) {
+  ShippingAddress copyWith({
+    String? addressLineOne,
+    dynamic id,
+    String? addressLineTwo,
+    String? city,
+    String? country,
+    String? postCode,
+    String? stateName,
+    String? email,
+    bool? is_residential,
+    String? first_name,
+    String? last_name,
+    String? line_1,
+    String? line_2,
+    String? phone,
+    String? zip,
+    bool? is_default,
+    String? name,
+    double? latitude,
+    double? longitude,
+  }) {
     return ShippingAddress(
-        id: id ?? this.id,
-        line_1: line_1 ?? this.line_1,
-        line_2: line_2 ?? this.line_2,
-        city: city ?? this.city,
-        country: country ?? this.country,
-        postCode: postCode ?? this.postCode,
-        stateName: stateName ?? this.stateName,
-        email: email ?? this.email,
-        first_name: first_name ?? this.first_name,
-        last_name: last_name ?? this.last_name,
-        phone: phone ?? this.phone,
-        zip: zip ?? this.zip,
-        name: name ?? this.name,
-        is_residential: is_residential ?? this.is_residential);
+      id: id ?? this.id,
+      line_1: line_1 ?? this.line_1,
+      line_2: line_2 ?? this.line_2,
+      city: city ?? this.city,
+      country: country ?? this.country,
+      postCode: postCode ?? this.postCode,
+      stateName: stateName ?? this.stateName,
+      email: email ?? this.email,
+      first_name: first_name ?? this.first_name,
+      last_name: last_name ?? this.last_name,
+      phone: phone ?? this.phone,
+      zip: zip ?? this.zip,
+      name: name ?? this.name,
+      is_residential: is_residential ?? this.is_residential,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+    );
   }
 }
 

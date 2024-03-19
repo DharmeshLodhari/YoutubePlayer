@@ -5,8 +5,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 class ContactDriver extends StatefulWidget {
@@ -15,10 +13,6 @@ class ContactDriver extends StatefulWidget {
 }
 
 class _ContactDriverState extends State<ContactDriver> {
-  MapController? mapController;
-
-  LatLng mapPoint = LatLng(6.605874, 3.349149);
-
   @override
   void initState() {
     super.initState();

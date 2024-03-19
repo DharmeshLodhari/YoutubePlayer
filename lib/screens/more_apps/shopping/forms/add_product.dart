@@ -84,7 +84,7 @@ class _AddProductState extends State<AddProduct> {
   bool isLoading = false;
   bool isDiscountLoading = false;
   bool isAPILoading = false;
-  int inventoryCount = 0;
+  int inventoryCount = 1;
   List<Variant> productVariantList = [];
   List<AddOns> productAddOnsList = [];
   var weightSi = ['Grams', 'Kilograms'];
@@ -100,7 +100,7 @@ class _AddProductState extends State<AddProduct> {
   String selectedHeight = "";
   String selectedWidth = "";
   bool trackInventory = false;
-  bool trackInventoryView = false;
+  // bool trackInventoryView = false;
   bool measurementView = false;
   bool discountView = false;
   List<Tags> userTags = [];
@@ -424,7 +424,7 @@ class _AddProductState extends State<AddProduct> {
                         const SizedBox(height: 16),
                       ],
                       getTrackInventoryViewField(),
-                      if (trackInventoryView == true) ...[
+                      if (trackInventory == true) ...[
                         const SizedBox(height: 16),
                         getInventoryFormField(),
                         const SizedBox(height: 16),
@@ -2012,15 +2012,15 @@ class _AddProductState extends State<AddProduct> {
     if (_formKey.currentState!.validate()) {
       if (productImages.length >= 1) {
         if (containsWeight() && selectedWeight.isEmpty && weight != 0.0) {
-          showToast(message: AppLocalization.of(context)!.pleaseFillWeight);
+          showToast(message: AppLocalization.of(context)?.pleaseFillWeight);
           return;
         }
         if (containsHeight() && selectedHeight.isEmpty && height != 0.0) {
-          showToast(message: AppLocalization.of(context)!.pleaseFillHeight);
+          showToast(message: AppLocalization.of(context)?.pleaseFillHeight);
           return;
         }
         if (containsWidth() && selectedWidth.isEmpty && width != 0.0) {
-          showToast(message: AppLocalization.of(context)!.pleaseFillWidth);
+          showToast(message: AppLocalization.of(context)?.pleaseFillWidth);
           return;
         }
 
@@ -2032,14 +2032,14 @@ class _AddProductState extends State<AddProduct> {
           product.description = messageDecoderWithEmoji(productDescription);
           product.shortDescription =
               messageDecoderWithEmoji(productShortDescription);
-          product.category = selectedProductCategory!;
-          product.subCategory = selectedSubCategory!;
+          product.category = selectedProductCategory;
+          product.subCategory = selectedSubCategory;
           product.customCategory = selectedCustomCategory;
           // product.tags = userTags.map((i) => Tags.fromJson(i)).toList();
           product.tags = userTags;
           if (selectedDeliveryTimeCondition != null) {
             product.preparationTime =
-                int.parse(selectedDeliveryTimeCondition!.name);
+                int.parse(selectedDeliveryTimeCondition?.name ?? "");
           }
           product.condition = productCondition;
           product.price = moneyInputNormalizer(productPrice);
@@ -2213,10 +2213,10 @@ class _AddProductState extends State<AddProduct> {
   Widget getTrackInventoryViewField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        trackInventoryView = !trackInventoryView;
+        trackInventory = !trackInventory;
         setState(() {});
       },
-      isChecked: trackInventoryView,
+      isChecked: trackInventory,
       title: AppLocalization.of(context)!.trackInventoryView,
     );
   }
@@ -2504,77 +2504,79 @@ class _AddProductState extends State<AddProduct> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: discountList.length,
-                    itemBuilder: (context, index) {
-                      DiscountModel discount = discountList[index];
-                      if (selectedDiscount == discount) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              messageDecoderWithEmoji(discount.name) ??
-                                  discount.merchant ??
-                                  "",
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontFamily: "Inter",
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedDiscount = discount;
-                              Navigator.pop(context);
-                              if (pressedDiscount != null) {
-                                selectedDiscount = pressedDiscount;
-                                discountName = messageDecoderWithEmoji(
-                                        selectedDiscount?.name) ??
-                                    selectedDiscount?.merchant ??
-                                    "";
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          messageDecoderWithEmoji(discount.name) ??
-                              discount.merchant ??
-                              "",
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.w400),
-                        ),
-                        dense: true,
-                        onTap: () {
-                          pressedDiscount = discount;
-                          Navigator.pop(context);
-                          if (pressedDiscount != null) {
-                            selectedDiscount = pressedDiscount;
-                            discountName = messageDecoderWithEmoji(
-                                    selectedDiscount?.name) ??
-                                selectedDiscount?.merchant ??
-                                "";
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
+                  child: discountList.isNotEmpty
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: discountList.length,
+                          itemBuilder: (context, index) {
+                            DiscountModel discount = discountList[index];
+                            if (selectedDiscount == discount) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    messageDecoderWithEmoji(discount.name) ??
+                                        discount.merchant ??
+                                        "",
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontFamily: "Inter",
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedDiscount = discount;
+                                    Navigator.pop(context);
+                                    if (pressedDiscount != null) {
+                                      selectedDiscount = pressedDiscount;
+                                      discountName = messageDecoderWithEmoji(
+                                              selectedDiscount?.name) ??
+                                          selectedDiscount?.merchant ??
+                                          "";
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                messageDecoderWithEmoji(discount.name) ??
+                                    discount.merchant ??
+                                    "",
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedDiscount = discount;
+                                Navigator.pop(context);
+                                if (pressedDiscount != null) {
+                                  selectedDiscount = pressedDiscount;
+                                  discountName = messageDecoderWithEmoji(
+                                          selectedDiscount?.name) ??
+                                      selectedDiscount?.merchant ??
+                                      "";
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : Text("No Found Discount Data"),
                 ),
               ],
             ),

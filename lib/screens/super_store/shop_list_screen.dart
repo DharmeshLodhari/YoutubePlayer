@@ -54,6 +54,7 @@ class ShopListScreenState extends State<ShopListScreen> {
   String? productPrevious = "";
   late BasketBloc basketBloc;
   List rowHeaders = [];
+  bool _isSnackBarShowing = false;
 
   final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -181,12 +182,20 @@ class ShopListScreenState extends State<ShopListScreen> {
             noProductInList = true;
           });
         }
-      } else if (productNext == null && productList.length > 6) {
-        _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: const Duration(milliseconds: 500),
-        ));
+      } else if (productNext == null &&
+          productList.length > 6 &&
+          !_isSnackBarShowing) {
+        _isSnackBarShowing = true;
+        _productScaffoldMessengerKey.currentState!
+            .showSnackBar(SnackBar(
+              content: Text(
+                  AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+              duration: Duration(milliseconds: 500),
+            ))
+            .closed
+            .then((_) {
+          _isSnackBarShowing = false;
+        });
       }
     }
   }
@@ -303,9 +312,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                 child: ListView(
                   children: [
                     SizedBox(height: todaysDealsSizeBox),
-                    todaysDealsEmpty
-                        ? const SizedBox.shrink()
-                        : getTodaysDealList(),
+                    if (todaysDealList.isNotEmpty) getTodaysDealList(),
                     // const SizedBox(
                     //   height: 20,
                     // ),

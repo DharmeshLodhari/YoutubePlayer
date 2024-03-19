@@ -1,5 +1,5 @@
 class ShippingOptionModel {
-  int? id;
+  dynamic id;
   String? currency;
   int? price;
   String? name;

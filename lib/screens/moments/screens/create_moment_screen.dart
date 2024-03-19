@@ -5,10 +5,12 @@ import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:images_picker/images_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../main.dart';
@@ -153,12 +155,24 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                 InkWell(
                   onTap: mediaCaptured()
                       ? null
-                      : () {
+                      : () async {
                           if (!(cameraController?.value.isTakingPicture ??
                                   false) &&
                               !(cameraController?.value.isRecordingVideo ??
                                   false)) {
-                            pickFileFromMedia();
+                            bool isPermissionGranted =
+                                await requestGalleryPermission();
+                            if (isPermissionGranted) {
+                              await pickFileFromMedia();
+                            } else {
+                              bool isPermissionIsDenied =
+                                  await isPermanentlyDeniedPermission();
+                              if (isPermissionIsDenied) {
+                                await openAppSettings();
+                              } else {
+                                await openAppSettings();
+                              }
+                            }
                           }
                         },
                   child: Container(
@@ -459,19 +473,21 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
     //     type: FileType.custom,
     //     allowedExtensions: imageExtensions);
 
-    List<Media>? res = await ImagesPicker.pick(
-      count: 1,
-      pickType: PickType.all,
-      language: Language.System,
-      maxTime: 900,
-      cropOpt: CropOption(
-        // aspectRatio: CropAspectRatio.wh16x9,
-        cropType: CropType.rect,
-      ),
-    );
+    // List<Media>? res = await ImagesPicker.pick(
+    //   count: 1,
+    //   pickType: PickType.all,
+    //   language: Language.System,
+    //   maxTime: 900,
+    //   cropOpt: CropOption(
+    //     // aspectRatio: CropAspectRatio.wh16x9,
+    //     cropType: CropType.rect,
+    //   ),
+    // );
 
-    if (res == null || res.isEmpty) return;
-    File file = File(res.first.path);
+    XFile? res = await selectSingleImageVideo();
+
+    if (res == null) return;
+    File file = File(res.path);
     String? mediaType = getFileTypeByPath(path: file.path);
 
     if (mediaType == null) return;

@@ -184,7 +184,9 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
             fontSize: 12,
             fontFamily: "Inter",
           ),
+          overflow: TextOverflow.ellipsis,
         ),
+        SizedBox(height: 3),
         Text(widget.jobListing.expectedPickupTime.toString(),
             style: TextStyle(
               color: navyBlue,
@@ -201,6 +203,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
             fontSize: 12,
             fontFamily: "Inter",
           ),
+          overflow: TextOverflow.ellipsis,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -215,9 +218,10 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(right: 15.0),
+              padding: EdgeInsets.only(right: 10.0),
               child: Icon(
                 Icons.keyboard_arrow_right_outlined,
+                size: 20,
               ),
             ),
           ],

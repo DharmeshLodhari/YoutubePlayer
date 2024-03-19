@@ -66,7 +66,8 @@ class _ReYarnTileState extends State<ReYarnTile> {
     if ((widget.yarn.media.isNotEmpty)) {
       isMediaPresent = true;
     }
-    if (widget.yarn.attachment != null) {
+    if (widget.yarn.attachment != null &&
+        (widget.yarn.attachment?.isNotEmpty ?? false)) {
       isAttachmentPresent = true;
     }
     super.initState();

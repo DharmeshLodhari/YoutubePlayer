@@ -1,14 +1,22 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_map_ui.dart';
+import 'package:Slydo/screens/more_apps/taxi/taxi_auth.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 class DeliveryDetails extends StatefulWidget {
@@ -21,7 +29,7 @@ class DeliveryDetails extends StatefulWidget {
 }
 
 class _DeliveryDetailsState extends State<DeliveryDetails> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   DeliveryModel? deliveryDetails;
   bool isRejectAPILoading = false;
@@ -36,6 +44,11 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   bool isDeliveryEnded = false;
   bool isDeliveryCancel = false;
   bool isChecked = false;
+
+  bool startRide = false;
+  bool isMapLoading = false;
+
+  Key key = Key("map");
 
   List<String> reasons = [
     "Wrong destination",
@@ -59,6 +72,18 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       isDeliveryAccepted = true;
       _initialSheetChildSize = 0.45;
     }
+
+    Future.delayed(Duration(seconds: 5)).then((value) {
+      getExistingMapStatus();
+
+      // isDriverStartedMoving = false;
+      // isDriverArrived = false;
+      // isTripStarted = false;
+      // isNavigationStarted = true;
+      startRide = true;
+      if (mounted) setState(() {});
+      debugPrint("startRide :- $startRide");
+    });
     super.initState();
   }
 
@@ -115,19 +140,25 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     return Stack(
       children: [
         // MapUI(),
-        Image.asset(
-          "assets/images/map.png",
-          height: double.infinity,
-          width: double.infinity,
-          fit: BoxFit.fill,
-        ),
-        Padding(
-          padding: EdgeInsets.all(50.0),
-          child: Image.asset(
-            "assets/images/taxi/route_map_image.png",
-            fit: BoxFit.fill,
-          ),
-        ),
+        // Image.asset(
+        //   "assets/images/map.png",
+        //   height: double.infinity,
+        //   width: double.infinity,
+        //   fit: BoxFit.fill,
+        // ),
+        // Padding(
+        //   padding: EdgeInsets.all(50.0),
+        //   child: Image.asset(
+        //     "assets/images/taxi/route_map_image.png",
+        //     fit: BoxFit.fill,
+        //   ),
+        // ),
+        isMapLoading
+            ? Center(child: CircularLoadingIndicator())
+            : RiderMapUI(
+                key: UniqueKey(),
+                deliveryDetails: deliveryDetails,
+              ),
         isShowDetails ? _buildShowDetails() : Container(),
         isDeliveryAccepted ? _buildAccepted() : Container(),
         isDeliveryStarted ? _buildStarted() : Container(),
@@ -135,6 +166,26 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         isDeliveryCancel ? _buildCancel() : Container(),
       ],
     );
+  }
+
+  void getExistingMapStatus() {
+    RiderDeliveryBloc riderDeliveryBloc =
+        Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
+    TaxiAuth()
+        .getDirections(
+      origin: LatLng((deliveryDetails?.pickupAddress?.latitude ?? 0.0) - 0.0015,
+          (deliveryDetails?.pickupAddress?.longitude ?? 0.0)),
+      destination: LatLng((deliveryDetails?.deliveryAddress?.latitude ?? 0.0),
+          (deliveryDetails?.deliveryAddress?.longitude ?? 0.0)),
+    )
+        .then((value) {
+      riderDeliveryBloc.driverToStartingPointDirections = value;
+      isMapLoading = false;
+      if (mounted) setState(() {});
+    }).catchError((error) {
+      isMapLoading = false;
+      if (mounted) setState(() {});
+    });
   }
 
   Widget _buildShowDetails() {
@@ -474,7 +525,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildCurrencySymbols() {
     return Text(
-      "₦ ",
+      worldCurrencies[deliveryDetails?.currency]!,
       style: TextStyle(
         color: yarnBlack,
         fontSize: 13,
@@ -486,7 +537,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildAmount() {
     return Text(
-      deliveryDetails?.currency ?? "",
+      "0",
       style: TextStyle(
         color: yarnBlack,
         fontSize: 26,
@@ -514,7 +565,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       children: [
         _buildIconImage(),
         SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-        _buildMainAddressColumn()
+        Expanded(child: _buildMainAddressColumn())
       ],
     );
   }
@@ -541,6 +592,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 fontSize: 12,
                 fontFamily: "Inter",
               ),
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
               deliveryDetails?.expectedPickupTime.toString() ?? "",
@@ -565,6 +617,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 fontSize: 12,
                 fontFamily: "Inter",
               ),
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
               deliveryDetails?.expectedDeliveryTime.toString() ?? "",

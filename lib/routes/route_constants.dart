@@ -203,7 +203,7 @@ class Routes {
   static const String CUSTOM_CATEGORY = "/custom-Category";
   static const String DISPATCH_ADDRESS = "/dispatch-address";
   static const String RIDER_DASHBOARD = "/rider-dashboard";
-  static const String RIDER_JOB_DETAILS = "/job-details";
+  static const String RIDER_JOB_DETAILS = "/rider-job-details";
   // static const String TAKE_PICTURE = "/take-picture";
   static const String CONFIRM_ORDER = "/confirm-order";
   static const String DELIVERY_OPTION = "/delivery-option";
@@ -215,6 +215,10 @@ class Routes {
   static const String TAKE_PROOF_PHOTO = "/take-proof-photo";
   static const String PREVIEW_SCREEN = "/preview-screen";
   static const String COMPLETED_UPLOAD_PHOTO = "/completed-upload-photo";
+  static const String DELIVERY_COMPLETED = "/delivery-completed";
+  static const String RESPONSE_RECEIVED = "/response-received";
+  static const String SHARE_EXPERIENCE = "/share-experience";
+  static const String DELIVERY_HISTORY = "/delivery-history";
   static const String RIDERS_UPDATE = "/riders-update";
   static const String ADD_TAGS = "/add-tags";
   static const String SHARED_CARD_DETAILS = "/shared-card-details";
@@ -224,4 +228,5 @@ class Routes {
   static const String DISPATCH = "/dispatch";
   static const String CANCELLATION = "/cancellation";
   static const String YOU_TRIP_END = "/your-trip-end";
+  static const String LIVE_MAP = "/live-map";
 }
