@@ -15,15 +15,15 @@ class RiderMapUI extends StatefulWidget {
   RiderMapUI({
     Key? key,
     this.deliveryDetails,
-    this.startRide = false,
     this.showRideToStartingPointPolyline = false,
     this.showStartingPointToDestinationPolyline = false,
+    this.startRide = false,
   }) : super(key: key);
 
   final DeliveryModel? deliveryDetails;
-  final bool startRide;
   final bool showStartingPointToDestinationPolyline;
   final bool showRideToStartingPointPolyline;
+  final bool startRide;
 
   @override
   _RiderMapUIState createState() => _RiderMapUIState();
@@ -44,7 +44,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
   Marker? _riderMarker;
   Circle? _rideAccuracyCircle;
 
-  String rideMarkerImage = "assets/images/car_top.png";
+  String rideMarkerImage = "assets/images/bike_top.png";
 
   @override
   void initState() {
@@ -53,7 +53,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
         listen: false);
 
     _initialCameraPosition =
-        CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 10);
+        CameraPosition(target: LatLng(6.605874, 3.349149), zoom: 14);
 
     _startingLocation = Marker(
       markerId: MarkerId('Starting Point'),
@@ -104,40 +104,40 @@ class _RiderMapUIState extends State<RiderMapUI> {
     //   // );
     // }
 
-    // if (widget.showStartingPointToDestinationPolyline) {
-    //   _initialCameraPosition = CameraPosition(
-    //       target: LatLng(
-    //         widget.deliveryDetails?.pickupAddress?.latitude ?? 0.0,
-    //         widget.deliveryDetails?.pickupAddress?.longitude ?? 0.0,
-    //       ),
-    //       zoom: 10);
-    //
-    //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //     Future.delayed(Duration(seconds: 1)).then((value) {
-    //       if (mounted) {
-    //         googleMapController!.animateCamera(CameraUpdate.newLatLngBounds(
-    //             LatLngBounds(
-    //                 southwest: LatLng(
-    //                   widget.deliveryDetails?.pickupAddress?.latitude ?? 0.0,
-    //                   widget.deliveryDetails?.pickupAddress?.longitude ?? 0.0,
-    //                 ),
-    //                 northeast: LatLng(
-    //                   widget.deliveryDetails?.deliveryAddress?.latitude ?? 0.0,
-    //                   widget.deliveryDetails?.deliveryAddress?.longitude ?? 0.0,
-    //                 )),
-    //             50));
-    //       }
-    //     });
-    //   });
-    // }
+    if (widget.showStartingPointToDestinationPolyline) {
+      _initialCameraPosition = CameraPosition(
+          target: LatLng(
+            widget.deliveryDetails?.pickupAddress?.latitude ?? 0.0,
+            widget.deliveryDetails?.pickupAddress?.longitude ?? 0.0,
+          ),
+          zoom: 10);
+
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Future.delayed(Duration(seconds: 1)).then((value) {
+          if (mounted) {
+            googleMapController!.animateCamera(CameraUpdate.newLatLngBounds(
+                LatLngBounds(
+                    southwest: LatLng(
+                      widget.deliveryDetails?.pickupAddress?.latitude ?? 0.0,
+                      widget.deliveryDetails?.pickupAddress?.longitude ?? 0.0,
+                    ),
+                    northeast: LatLng(
+                      widget.deliveryDetails?.deliveryAddress?.latitude ?? 0.0,
+                      widget.deliveryDetails?.deliveryAddress?.longitude ?? 0.0,
+                    )),
+                50));
+          }
+        });
+      });
+    }
 
     // if (widget.showRideToStartingPointPolyline) {
-    _initialCameraPosition = CameraPosition(
-        target: LatLng(
-          widget.deliveryDetails?.pickupAddress?.latitude ?? 0.0,
-          widget.deliveryDetails?.pickupAddress?.longitude ?? 0.0,
-        ),
-        zoom: 12);
+    // _initialCameraPosition = CameraPosition(
+    //     target: LatLng(
+    //       widget.deliveryDetails?.pickupAddress?.latitude ?? 0.0,
+    //       widget.deliveryDetails?.pickupAddress?.longitude ?? 0.0,
+    //     ),
+    //     zoom: 13);
     // }
 
     if (widget.startRide) {
@@ -181,27 +181,28 @@ class _RiderMapUIState extends State<RiderMapUI> {
 
   Set<Polyline> getPolylines() {
     return {
-      // if (riderDeliveryBloc.startingPointToDestinationDirections != null &&
-      //     widget.showStartingPointToDestinationPolyline)
-      //   Polyline(
-      //     polylineId: PolylineId('startingPointToDestination'),
-      //     color: navyBlue,
-      //     width: 5,
-      //     points: riderDeliveryBloc.startingPointToDestinationDirections!.polylinePoints
-      //         .map((e) => LatLng(e.latitude, e.longitude))
-      //         .toList(),
-      //   ),
-      if (riderDeliveryBloc.driverToStartingPointDirections != null &&
+      if (riderDeliveryBloc.startingPointToDestinationDirections != null &&
           widget.showStartingPointToDestinationPolyline)
         Polyline(
-          polylineId: PolylineId('driverToStartingPoint'),
-          color: naturalGreen,
+          polylineId: PolylineId('startingPointToDestination'),
+          color: navyBlue,
           width: 5,
           points: riderDeliveryBloc
-              .driverToStartingPointDirections!.polylinePoints
+              .startingPointToDestinationDirections!.polylinePoints
               .map((e) => LatLng(e.latitude, e.longitude))
               .toList(),
         ),
+      //   if (riderDeliveryBloc.driverToStartingPointDirections != null &&
+      //           widget.showRideToStartingPointPolyline)
+      //     Polyline(
+      //       polylineId: PolylineId('driverToStartingPoint'),
+      //       color: naturalGreen,
+      //       width: 5,
+      //       points: riderDeliveryBloc
+      //           .driverToStartingPointDirections!.polylinePoints
+      //           .map((e) => LatLng(e.latitude, e.longitude))
+      //           .toList(),
+      //     ),
     };
   }
 
@@ -250,7 +251,8 @@ class _RiderMapUIState extends State<RiderMapUI> {
       _locationSubscription =
           _locationTracker.onLocationChanged.listen((newLocalData) {
         debugPrint("==>altitude ${newLocalData.altitude}");
-        debugPrint("==>${newLocalData.latitude}");
+        debugPrint("==>latitude ${newLocalData.latitude}");
+        debugPrint("==>longitude ${newLocalData.longitude}");
         debugPrint("==>heading ${newLocalData.heading}");
 
         if (googleMapController != null) {
@@ -259,7 +261,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
                   bearing: newLocalData.heading!,
                   target:
                       LatLng(newLocalData.latitude!, newLocalData.longitude!),
-                  zoom: 10.00)));
+                  zoom: 14.00)));
           updateMarkerAndCircle(newLocalData, imageData);
         }
       });

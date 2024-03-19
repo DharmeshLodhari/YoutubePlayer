@@ -46,10 +46,9 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
     isLoading = true;
     if (mounted) setState(() {});
     var result = await ShoppingAuthService().listOfIndustries();
-    setState(() {
-      industries = result!["product"];
-      isLoading = false;
-    });
+    industries = result!["product"];
+    isLoading = false;
+    setState(() {});
   }
 
   void _showTabs(bool visible) {

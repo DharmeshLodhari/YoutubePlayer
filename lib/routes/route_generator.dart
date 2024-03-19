@@ -88,7 +88,6 @@ import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/your_tri
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_completed.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_history.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/screens/live_map.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/response_received.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_dashboard.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/share_experience.dart';
@@ -2074,13 +2073,6 @@ class RouteGenerator {
       case Routes.YOU_TRIP_END:
         return PageTransition(
           child: YourTripEndScreen(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-      case Routes.LIVE_MAP:
-        return PageTransition(
-          child: LiveMap(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
