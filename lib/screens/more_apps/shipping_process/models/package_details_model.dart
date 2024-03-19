@@ -93,8 +93,11 @@ class PackageDetailsModel {
     if (deliveryOption == DeliveryOptions.shipping) {
       if (shippingType == ShippingTypes.slydo) {
         shippingId = 5;
-        data.addAll(
-            {"rate_id": shippingOption?.rateId ?? "", "insurance": false});
+        data.addAll({
+          "rate_id": shippingOption?.id ?? "",
+          "insurance": false,
+          "price": shippingOption?.price
+        });
       } else if (shippingType == ShippingTypes.merchant) {
         shippingId = shippingOption?.id ?? 0;
       } else if (shippingType == ShippingTypes.courier) {

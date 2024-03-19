@@ -208,7 +208,12 @@ class _ShippingOptionState extends State<ShippingOption> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      shippingList[index].name ?? "",
+                      shippingProcessBloc
+                                  .getPackageDetailModel()
+                                  .shippingType ==
+                              ShippingTypes.slydo
+                          ? 'Slydo'
+                          : shippingList[index].name ?? "",
                       style: TextStyle(
                         color: blackFont,
                         fontSize: 14,

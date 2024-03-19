@@ -196,7 +196,6 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
           apiCall: () async => await fetchChannelData(searchedUserName),
         ));
         break;
-
       // case "reviews":
       //   userTabs.add(UserTab(
       //     label: label,

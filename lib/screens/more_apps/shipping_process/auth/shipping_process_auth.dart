@@ -56,7 +56,7 @@ class ShippingProcessAuthService extends AuthService {
     if (packageDetailsModel.shippingType == ShippingTypes.slydo) {
       url +=
           "/api/v1/shipping/get-rates/slydo/?delivery_address_id=${packageDetailsModel.deliveryAddress?.id}&pickup_address_id=${packageDetailsModel.addressId}"
-          "&anonymous=true&cart_id=$cartId&currency=NGN&merchant=${packageDetailsModel.merchant}/";
+          "&anonymous=false&cart_id=$cartId&currency=NGN&merchant=${packageDetailsModel.merchant}";
     } else if (packageDetailsModel.shippingType == ShippingTypes.merchant) {
       url +=
           "/api/v1/shipping-options/public-list/${packageDetailsModel.merchant}/";

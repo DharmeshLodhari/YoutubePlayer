@@ -203,7 +203,7 @@ class Routes {
   static const String CUSTOM_CATEGORY = "/custom-Category";
   static const String DISPATCH_ADDRESS = "/dispatch-address";
   static const String RIDER_DASHBOARD = "/rider-dashboard";
-  static const String RIDER_JOB_DETAILS = "/job-details";
+  static const String RIDER_JOB_DETAILS = "/rider-job-details";
   // static const String TAKE_PICTURE = "/take-picture";
   static const String CONFIRM_ORDER = "/confirm-order";
   static const String DELIVERY_OPTION = "/delivery-option";

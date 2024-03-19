@@ -16,7 +16,7 @@ class RiderDeliveryAuthService extends AuthService {
     }
     if (next == "") {
       url =
-          "${AppConfig.baseUrl}/api/v1/shipping/journeys/active-jobs/?user_current_location=7.471104,9.060352";
+          "${AppConfig.baseUrl}/api/v1/shipping/journeys/active-jobs/?user_current_location=6.6616402,3.6470794";
     } else {
       url = getSecureUrl(url: next);
     }

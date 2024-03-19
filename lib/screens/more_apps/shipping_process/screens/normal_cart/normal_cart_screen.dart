@@ -203,7 +203,8 @@ class NormalCartScreenState extends State<NormalCartScreen> {
         ),
       ),
       onPressed: () {
-        if (appConfigurationModel?.enableCheckout == true) {
+        if (appConfigurationModel?.enableCheckout == true &&
+            basketBloc.getTotalPrice() != 0) {
           ShippingProcessBloc shippingProcessBloc =
               Provider.of<ShippingProcessBloc>(context, listen: false);
           shippingProcessBloc.currentSelectedIndex = null;

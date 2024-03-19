@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/data/state_notifiers/shared_cart_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/routes/route_generator.dart';
@@ -249,6 +250,9 @@ List<ChangeNotifierProvider> providersList = [
   ),
   ChangeNotifierProvider<RiderRegistrationBloc>.value(
     value: RiderRegistrationBloc(),
+  ),
+  ChangeNotifierProvider<RiderDeliveryBloc>.value(
+    value: RiderDeliveryBloc(),
   ),
   ChangeNotifierProvider<SharedCartBloc>.value(
     value: SharedCartBloc(),

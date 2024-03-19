@@ -30,9 +30,6 @@ class _DeliveryOptionState extends State<DeliveryOption> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ShippingProcessBloc shippingProcessBloc =
-          Provider.of<ShippingProcessBloc>(context);
-
       if (shippingProcessBloc.getPackageDetailModel().hasShippingAvailable() ==
           false) {
         deliveryOption.removeAt(0);
@@ -513,11 +510,14 @@ class _DeliveryOptionState extends State<DeliveryOption> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                shippingProcessBloc
-                        .getPackageDetailModel()
-                        .shippingOption
-                        ?.name ??
-                    "",
+                shippingProcessBloc.getPackageDetailModel().shippingType ==
+                        ShippingTypes.slydo
+                    ? 'Slydo'
+                    : shippingProcessBloc
+                            .getPackageDetailModel()
+                            .shippingOption
+                            ?.name ??
+                        "",
                 style: TextStyle(
                   color: blackFont,
                   fontSize: 14,
