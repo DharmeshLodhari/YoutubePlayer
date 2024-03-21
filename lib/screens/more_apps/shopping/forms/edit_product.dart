@@ -1694,7 +1694,9 @@ class _EditProductState extends State<EditProduct> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedCustomCategory != null ? selectedCustomCategory!.name : "",
+          selectedCustomCategory?.name != null
+              ? selectedCustomCategory?.name ?? ""
+              : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -1760,12 +1762,11 @@ class _EditProductState extends State<EditProduct> {
                   },
                 ),
                 const SizedBox(height: 20),
-                subCategories == null
-                    ? SizedBox()
-                    : Expanded(
-                        child: ListView.builder(
+                Expanded(
+                  child: subCategories?.isNotEmpty ?? false
+                      ? ListView.builder(
                           shrinkWrap: true,
-                          itemCount: subCategories!.length,
+                          itemCount: subCategories?.length,
                           itemBuilder: (context, index) {
                             ProductCategory category = subCategories![index];
                             if (selectedSubCategory == category) {
@@ -1822,8 +1823,13 @@ class _EditProductState extends State<EditProduct> {
                               },
                             );
                           },
+                        )
+                      : Center(
+                          child: Text(
+                            "No Data",
+                          ),
                         ),
-                      ),
+                ),
               ],
             ),
           );
@@ -1861,67 +1867,75 @@ class _EditProductState extends State<EditProduct> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: customCategories!.length,
-                    itemBuilder: (context, index) {
-                      ProductCategory category = customCategories![index];
-                      if (selectedCustomCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedCustomCategory = category;
-                              Navigator.pop(context);
-                              if (pressedSubCategory != null) {
-                                selectedCustomCategory = pressedCustomCategory;
-                                productCustomCategory =
-                                    selectedCustomCategory!.name;
-                                setState(() {});
-                              }
-                            },
+                  child: customCategories?.isNotEmpty ?? false
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: customCategories?.length,
+                          itemBuilder: (context, index) {
+                            ProductCategory category = customCategories![index];
+                            if (selectedCustomCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedCustomCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedSubCategory != null) {
+                                      selectedCustomCategory =
+                                          pressedCustomCategory;
+                                      productCustomCategory =
+                                          selectedCustomCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCustomCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCustomCategory != null) {
+                                  selectedCustomCategory =
+                                      pressedCustomCategory;
+                                  productCustomCategory =
+                                      selectedCustomCategory!.name;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : Center(
+                          child: Text(
+                            "No Data",
                           ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
                         ),
-                        dense: true,
-                        onTap: () {
-                          pressedCustomCategory = category;
-                          Navigator.pop(context);
-                          if (pressedCustomCategory != null) {
-                            selectedCustomCategory = pressedCustomCategory;
-                            productCustomCategory =
-                                selectedCustomCategory!.name;
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
                 ),
               ],
             ),
@@ -1960,68 +1974,77 @@ class _EditProductState extends State<EditProduct> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: productCategories!.length,
-                    itemBuilder: (context, index) {
-                      ProductCategory category = productCategories![index];
-                      if (selectedProductCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedCategory = category;
-                              Navigator.pop(context);
-                              if (pressedCategory != null) {
-                                selectedProductCategory = pressedCategory;
-                                productCategory = selectedProductCategory!.name;
-                                setState(() {});
-                              }
-                            },
+                  child: productCategories?.isNotEmpty ?? false
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: productCategories?.length,
+                          itemBuilder: (context, index) {
+                            ProductCategory category =
+                                productCategories![index];
+                            if (selectedProductCategory == category) {
+                              return Container(
+                                color: selectedListItemBackgroundBlue,
+                                child: ListTile(
+                                  dense: true,
+                                  title: Text(
+                                    category.name,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: navyBlue,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: Icon(
+                                    SlydoAppIcon.checked,
+                                    color: navyBlue,
+                                    size: 12,
+                                  ),
+                                  onTap: () {
+                                    pressedCategory = category;
+                                    Navigator.pop(context);
+                                    if (pressedCategory != null) {
+                                      selectedProductCategory = pressedCategory;
+                                      productCategory =
+                                          selectedProductCategory!.name;
+                                      setState(() {});
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                            return ListTile(
+                              title: Text(
+                                category.name,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              dense: true,
+                              onTap: () {
+                                pressedCategory = category;
+                                Navigator.pop(context);
+                                if (pressedCategory != null) {
+                                  getSubCategories(category.id);
+                                  selectedProductCategory = pressedCategory;
+                                  productCategory =
+                                      selectedProductCategory!.name;
+                                  productSubCategory = "";
+                                  selectedSubCategory = null;
+                                  setState(() {});
+                                }
+                              },
+                            );
+                          },
+                        )
+                      : Center(
+                          child: Text(
+                            "No Data",
                           ),
-                        );
-                      }
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
                         ),
-                        dense: true,
-                        onTap: () {
-                          pressedCategory = category;
-                          Navigator.pop(context);
-                          if (pressedCategory != null) {
-                            getSubCategories(category.id);
-                            selectedProductCategory = pressedCategory;
-                            productCategory = selectedProductCategory!.name;
-                            productSubCategory = "";
-                            selectedSubCategory = null;
-                            setState(() {});
-                          }
-                        },
-                      );
-                    },
-                  ),
                 ),
               ],
             ),
@@ -2302,7 +2325,8 @@ class _EditProductState extends State<EditProduct> {
   }
 
   bool validateDropdown() {
-    if (selectedProductCategory != null && selectedProductCondition != null) {
+    if (selectedProductCategory?.name != "" &&
+        selectedProductCondition != null) {
       return true;
     } else {
       showToast(
