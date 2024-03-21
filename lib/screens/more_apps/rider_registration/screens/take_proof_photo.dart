@@ -1,13 +1,17 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/rider_registration/screens/preview_screen.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:camera/camera.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:Slydo/utils/util.dart';
 
 class TakeProofPhoto extends StatefulWidget {
   TakeProofPhoto({Key? key}) : super(key: key);
@@ -21,6 +25,13 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
   bool _isRearCameraSelected = true;
   late RiderRegistrationBloc riderRegistrationBloc;
 
+  Timer? timer;
+  String? videoPath;
+
+  String? imagePath;
+
+  int videoTimer = 30;
+
   @override
   void dispose() {
     _cameraController?.dispose();
@@ -30,7 +41,15 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
   @override
   void initState() {
     super.initState();
-    checkCameraAvailable();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (cameras.isNotEmpty) {
+        // checkCameraAvailable();
+        _initCameraController(newCameraDescription: cameras[0]);
+      } else {
+        showToast(message: "You don't have any Camera !!");
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   Future<void> checkCameraAvailable() async {
@@ -44,6 +63,28 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
     }).catchError((err) {
       // 3
       print('Error: $err.code\nError Message: $err.message');
+    });
+  }
+
+  void _initCameraController(
+      {required CameraDescription newCameraDescription}) {
+    _cameraController =
+        CameraController(newCameraDescription, ResolutionPreset.max);
+    _cameraController?.initialize().then((_) {
+      _cameraController?.setFlashMode(FlashMode.off);
+
+      if (mounted) setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            print('User denied camera access.');
+            break;
+          default:
+            print('Handle other errors.');
+            break;
+        }
+      }
     });
   }
 
@@ -134,19 +175,50 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
                   color: Colors.black,
                   child: Center(child: CircularProgressIndicator())),
           Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                height: 100,
-                decoration: const BoxDecoration(color: Colors.black),
-                child: Center(
-                  child: InkWell(
-                    onTap: takePhoto,
-                    child: SvgPicture.asset(
-                      'assets/images/rider/camera_btn.svg',
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 125,
+              decoration: const BoxDecoration(color: Colors.black),
+              child: Center(
+                child: Column(
+                  children: [
+                    videoTimer != 30
+                        ? Text(
+                            videoTimer.toString(),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600),
+                          )
+                        : SizedBox.shrink(),
+                    SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: takePhoto,
+                      onLongPressStart: mediaCaptured()
+                          ? null
+                          : (longPressDownDetails) async {
+                              debugPrint("Details :- $longPressDownDetails");
+                              takePictureOrVideo(mediaType: MediaType.video);
+                            },
+                      onLongPressUp: mediaCaptured()
+                          ? null
+                          : () {
+                              timer?.cancel();
+                              videoTimer = 30;
+                              if (_cameraController?.value.isRecordingVideo ??
+                                  false) {
+                                stopVideoRecording();
+                              }
+                            },
+                      child: SvgPicture.asset(
+                        'assets/images/rider/camera_btn.svg',
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -168,5 +240,58 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
       debugPrint('Error occurred while taking picture: $e');
       return null;
     }
+  }
+
+  Future<XFile?> takePictureOrVideo({required MediaType mediaType}) async {
+    if (!(_cameraController?.value.isInitialized ?? false)) {
+      showToast(message: 'Error: select a camera first.');
+      return null;
+    }
+
+    if (_cameraController?.value.isRecordingVideo ?? false) {
+      return null;
+    }
+
+    try {
+      _cameraController?.startVideoRecording();
+      timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        if (mounted) {
+          setState(() {
+            videoTimer--;
+          });
+
+          if (videoTimer == 0) {
+            timer.cancel();
+            videoTimer = 30;
+            stopVideoRecording();
+          }
+        }
+      });
+
+      return null;
+    } on CameraException catch (e) {
+      showToast(message: 'Error: ${e.code}\n${e.description}');
+      return null;
+    }
+  }
+
+  bool mediaCaptured() {
+    return videoPath != null;
+  }
+
+  void stopVideoRecording() {
+    _cameraController?.stopVideoRecording().then((xfile) {
+      if (mounted) {
+        setState(() {
+          videoPath = xfile.path;
+          NavigationUtil.push(
+            context,
+            screen: PreviewScreen(
+              filePath: videoPath ?? "",
+            ),
+          );
+        });
+      }
+    });
   }
 }

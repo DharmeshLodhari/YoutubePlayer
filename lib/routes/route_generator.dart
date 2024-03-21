@@ -1979,7 +1979,7 @@ class RouteGenerator {
         );
       case Routes.PREVIEW_SCREEN:
         return PageTransition(
-          child: PreviewScreen(),
+          child: PreviewScreen(filePath: ""),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
