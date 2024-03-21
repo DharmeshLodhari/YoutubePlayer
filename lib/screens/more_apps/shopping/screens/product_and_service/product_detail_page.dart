@@ -171,7 +171,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Future canReviewProduct() async {
     Map<String, String> data = {};
-    data['provider'] = product!.seller!.toString();
+    data['provider'] = product?.seller?.toString() ?? "";
     data['buyer'] = userBloc.user.userName!;
     data['type'] = 'products';
     data['id'] = product!.id!;

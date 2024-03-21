@@ -1694,7 +1694,9 @@ class _EditProductState extends State<EditProduct> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedCustomCategory != null ? selectedCustomCategory!.name : "",
+          selectedCustomCategory?.name != null
+              ? selectedCustomCategory?.name ?? ""
+              : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -2323,7 +2325,8 @@ class _EditProductState extends State<EditProduct> {
   }
 
   bool validateDropdown() {
-    if (selectedProductCategory != null && selectedProductCondition != null) {
+    if (selectedProductCategory?.name != "" &&
+        selectedProductCondition != null) {
       return true;
     } else {
       showToast(
