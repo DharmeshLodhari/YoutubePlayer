@@ -1,3 +1,4 @@
+import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -46,17 +47,21 @@ class FindJobsTabState extends State<FindJobsTab> {
   bool isStartAPILoading = false;
   bool isEndedAPILoading = false;
   late UserBloc userBloc;
+  late RiderDeliveryBloc riderDeliveryBloc;
 
   @override
   void initState() {
     super.initState();
-    getRiderJobListing();
-    _findJobScrollController.addListener(() {
-      if (_findJobScrollController.position.pixels ==
-              _findJobScrollController.position.maxScrollExtent &&
-          _findJobScrollController.position.pixels != 0) {
-        getRiderJobListing();
-      }
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      getRiderJobListing();
+      _findJobScrollController.addListener(() {
+        if (_findJobScrollController.position.pixels ==
+                _findJobScrollController.position.maxScrollExtent &&
+            _findJobScrollController.position.pixels != 0) {
+          getRiderJobListing();
+        }
+      });
     });
   }
 
@@ -117,6 +122,7 @@ class FindJobsTabState extends State<FindJobsTab> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
     return ScaffoldMessenger(
       key: _findJobScaffoldMessengerKey,
       child: SafeArea(
@@ -193,7 +199,7 @@ class FindJobsTabState extends State<FindJobsTab> {
                         Navigator.of(context)
                             .pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
                           // 'showDetails': true,
-                          'deliveryDetail': jobListing[index]
+                          'journeyId': jobListing[index].id
                         });
                       },
                       child: Column(
@@ -214,10 +220,15 @@ class FindJobsTabState extends State<FindJobsTab> {
                                     false)
                                   _buildAcceptRejectButton(jobListing[index]),
                                 if (jobListing[index].isOfferAccepted(
-                                        userBloc.user.userName) ==
-                                    true)
+                                            userBloc.user.userName) ==
+                                        true &&
+                                    jobListing[index].isInProgress == false &&
+                                    jobListing[index].hasEnded == false)
                                   _buildStartDeliveryButton(jobListing[index]),
-                                if (jobListing[index].isInProgress == true)
+                                if (jobListing[index].isOfferAccepted(
+                                            userBloc.user.userName) ==
+                                        true &&
+                                    jobListing[index].isInProgress == true)
                                   _buildEndDeliveryButton(jobListing[index]),
                                 SizedBox(height: 10.0),
                               ],
@@ -340,9 +351,11 @@ class FindJobsTabState extends State<FindJobsTab> {
 
   Future<void> rejectJob(DeliveryModel jobListing) async {
     await RiderDeliveryAuthService().rejectOffer(jobListing.id).then((value) {
-      showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);
-      _onRefresh();
-      setState(() {});
+      if (value == true) {
+        showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);
+        _onRefresh();
+        setState(() {});
+      }
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
@@ -355,6 +368,7 @@ class FindJobsTabState extends State<FindJobsTab> {
         showToast(message: AppLocalization.of(context)!.jobAcceptedFromListing);
         // jobListing.isShowDetails = false;
         // jobListing.isDeliveryAccepted = true;
+        _onRefresh();
         setState(() {});
       } else {
         showToast(message: 'Offer already accepted by a dispatcher');
@@ -367,11 +381,14 @@ class FindJobsTabState extends State<FindJobsTab> {
 
   Future<void> startOffer(DeliveryModel jobListing) async {
     await RiderDeliveryAuthService().startJourney(jobListing.id).then((value) {
-      showToast(
-          message: AppLocalization.of(context)!.journyStartedSuccessfully);
-      // jobListing.isDeliveryAccepted = false;
-      // jobListing.isDeliveryStarted = true;
-      setState(() {});
+      if (value == true) {
+        showToast(
+            message: AppLocalization.of(context)!.journyStartedSuccessfully);
+        // jobListing.isDeliveryAccepted = false;
+        // jobListing.isDeliveryStarted = true;
+        _onRefresh();
+        setState(() {});
+      }
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
@@ -380,12 +397,14 @@ class FindJobsTabState extends State<FindJobsTab> {
 
   Future<void> endOffer(DeliveryModel jobListing) async {
     await RiderDeliveryAuthService().endJourney(jobListing.id).then((value) {
-      showToast(message: AppLocalization.of(context)!.endJob);
-      // jobListing.isDeliveryStarted = false;
-      // jobListing.isDeliveryEnded = true;
-      Navigator.of(context).pushNamed(Routes.RIDER_JOB_DETAILS,
-          arguments: {'showDetails': true, 'deliveryDetail': jobListing});
-      setState(() {});
+      if (value == true) {
+        showToast(message: AppLocalization.of(context)!.endJob);
+        // jobListing.isDeliveryStarted = false;
+        // jobListing.isDeliveryEnded = true;
+        Navigator.of(context).pushNamed(Routes.RIDER_JOB_DETAILS,
+            arguments: {'showDetails': true, 'deliveryDetail': jobListing});
+        setState(() {});
+      }
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());

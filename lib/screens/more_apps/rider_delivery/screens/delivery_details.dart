@@ -6,17 +6,12 @@ import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_map_ui.dart';
-import 'package:Slydo/screens/more_apps/taxi/taxi_auth.dart';
-import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -32,7 +27,7 @@ class DeliveryDetails extends StatefulWidget {
 class _DeliveryDetailsState extends State<DeliveryDetails> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  DeliveryModel? deliveryDetails;
+  String? journeyId;
   bool isRejectAPILoading = false;
   bool isAcceptAPILoading = false;
   bool isStartAPILoading = false;
@@ -40,13 +35,16 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   bool isCancelAPILoading = false;
   // double _initialSheetChildSize = 0.0;
 
-  bool startRide = false;
-  bool isMapLoading = false;
+  // bool startRide = false;
+  // bool isMapLoading = false;
 
   Key key = Key("map");
   bool? isDeliveryCancel = false;
   bool? isChecked = false;
   late UserBloc userBloc;
+  late RiderDeliveryBloc riderDeliveryBloc;
+  String? username = "";
+  // Location _locationTracker = Location();
 
   List<String> reasons = [
     "Wrong destination",
@@ -61,7 +59,16 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   @override
   void initState() {
-    deliveryDetails = widget.arguments['deliveryDetail'];
+    journeyId = widget.arguments['journeyId'];
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      fetchJobData();
+    });
+
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   riderDeliveryBloc.deliveryDetails = deliveryDetails;
+    // });
+
     // deliveryDetails?.isShowDetails = widget.arguments['showDetails'];
     // if (deliveryDetails?.isShowDetails != null &&
     //     deliveryDetails?.isShowDetails == true) {
@@ -72,23 +79,36 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     //   _initialSheetChildSize = 0.45;
     // }
 
-    Future.delayed(Duration(seconds: 5)).then((value) {
-      getExistingMapStatus();
-
-      // isDriverStartedMoving = false;
-      // isDriverArrived = false;
-      // isTripStarted = false;
-      // isNavigationStarted = true;
-      startRide = true;
-      if (mounted) setState(() {});
-      debugPrint("startRide :- $startRide");
-    });
+    // Future.delayed(Duration(seconds: 5)).then((value) {
+    //   getExistingMapStatus();
+    //   getDriverToStartingMapStatus();
+    //   // isDriverStartedMoving = false;
+    //   // isDriverArrived = false;
+    //   // isTripStarted = false;
+    //   // isNavigationStarted = true;
+    //   // startRide = true;
+    //   // if (mounted) setState(() {});
+    //   // debugPrint("startRide :- $startRide");
+    // });
     super.initState();
+  }
+
+  fetchJobData() async {
+    await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
+      if (value != null) {
+        riderDeliveryBloc.updateDeliveryModel(value);
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    username = userBloc.user.userName;
+    riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -153,48 +173,92 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         //     fit: BoxFit.fill,
         //   ),
         // ),
-        isMapLoading
-            ? Center(child: CircularLoadingIndicator())
-            : RiderMapUI(
+        Column(
+          children: [
+            Expanded(
+              child: RiderMapUI(
                 key: UniqueKey(),
-                deliveryDetails: deliveryDetails,
-                showRideToStartingPointPolyline: false,
-                showStartingPointToDestinationPolyline: true,
-                startRide: startRide,
+                // deliveryDetails: deliveryDetails,
+                // showRideToStartingPointPolyline: true,
+                // showStartingPointToDestinationPolyline: false,
+                // startRide: startRide,
               ),
-        deliveryDetails?.isOfferAccepted(userBloc.user.userName) == false
-            ? _buildShowDetails()
-            : Container(),
-        deliveryDetails?.isOfferAccepted(userBloc.user.userName) == true
-            ? _buildAccepted()
-            : Container(),
-        deliveryDetails?.isInProgress == true ? _buildStarted() : Container(),
-        deliveryDetails?.hasEnded == true ? _buildEnded() : Container(),
-        isDeliveryCancel == true ? _buildCancel() : Container(),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.3,
+            ),
+          ],
+        ),
+        _buildJobAction(),
       ],
     );
   }
 
-  void getExistingMapStatus() {
-    RiderDeliveryBloc riderDeliveryBloc =
-        Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
-    TaxiAuth()
-        .getDirections(
-      origin: LatLng((deliveryDetails?.pickupAddress?.latitude ?? 0.0) - 0.0015,
-          (deliveryDetails?.pickupAddress?.longitude ?? 0.0)),
-      destination: LatLng((deliveryDetails?.deliveryAddress?.latitude ?? 0.0),
-          (deliveryDetails?.deliveryAddress?.longitude ?? 0.0)),
-    )
-        .then((value) {
-      riderDeliveryBloc.driverToStartingPointDirections = value;
-      riderDeliveryBloc.startingPointToDestinationDirections = value;
-      isMapLoading = false;
-      if (mounted) setState(() {});
-    }).catchError((error) {
-      isMapLoading = false;
-      if (mounted) setState(() {});
-    });
+  Widget _buildJobAction() {
+    if (riderDeliveryBloc.deliveryDetails?.isOfferAccepted(username) == false) {
+      return _buildShowDetails();
+    } else if (riderDeliveryBloc.deliveryDetails
+                ?.isOfferAccepted(userBloc.user.userName) ==
+            true &&
+        riderDeliveryBloc.deliveryDetails?.isInProgress == false &&
+        riderDeliveryBloc.deliveryDetails?.hasEnded == false) {
+      return _buildAccepted();
+    } else if (riderDeliveryBloc.deliveryDetails
+                ?.isOfferAccepted(userBloc.user.userName) ==
+            true &&
+        riderDeliveryBloc.deliveryDetails?.isInProgress == true) {
+      return _buildStarted();
+    } else if (riderDeliveryBloc.deliveryDetails
+                ?.isOfferAccepted(userBloc.user.userName) ==
+            true &&
+        riderDeliveryBloc.deliveryDetails?.hasEnded == true) {
+      return _buildEnded();
+    } else if (isDeliveryCancel == true) {
+      return _buildCancel();
+    } else {
+      return Container();
+    }
   }
+
+  // void getExistingMapStatus() {
+  //   RiderDeliveryBloc riderDeliveryBloc =
+  //       Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
+  //   TaxiAuth()
+  //       .getDirections(
+  //     origin: LatLng((deliveryDetails?.pickupAddress?.latitude ?? 0.0) - 0.0015,
+  //         (deliveryDetails?.pickupAddress?.longitude ?? 0.0)),
+  //     destination: LatLng((deliveryDetails?.deliveryAddress?.latitude ?? 0.0),
+  //         (deliveryDetails?.deliveryAddress?.longitude ?? 0.0)),
+  //   )
+  //       .then((value) {
+  //     riderDeliveryBloc.driverToStartingPointDirections = value;
+  //     isMapLoading = false;
+  //     if (mounted) setState(() {});
+  //   }).catchError((error) {
+  //     isMapLoading = false;
+  //     if (mounted) setState(() {});
+  //   });
+  // }
+  //
+  // Future<void> getDriverToStartingMapStatus() async {
+  //   RiderDeliveryBloc riderDeliveryBloc =
+  //       Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
+  //   LocationData location = await _locationTracker.getLocation();
+  //   TaxiAuth()
+  //       .getDirections(
+  //     origin: LatLng(location.latitude! - 0.0015, location.longitude!),
+  //     destination: LatLng((deliveryDetails?.deliveryAddress?.latitude ?? 0.0),
+  //         (deliveryDetails?.deliveryAddress?.longitude ?? 0.0)),
+  //   )
+  //       .then((value) {
+  //     riderDeliveryBloc.startingPointToDestinationDirections = value;
+  //     isMapLoading = false;
+  //     if (mounted) setState(() {});
+  //   }).catchError((error) {
+  //     isMapLoading = false;
+  //     if (mounted) setState(() {});
+  //   });
+  // }
 
   Widget _buildShowDetails() {
     return DraggableScrollableSheet(
@@ -484,7 +548,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildLogo() {
     return Image.network(
-      deliveryDetails?.merchantAvatar ?? "",
+      riderDeliveryBloc.deliveryDetails?.merchantAvatar ?? "",
       height: 24,
       width: 24,
       fit: BoxFit.fill,
@@ -521,7 +585,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildDelivery() {
     return Text(
-      deliveryDetails?.merchantFullName ?? "",
+      riderDeliveryBloc.deliveryDetails?.merchantFullName ?? "",
       style: TextStyle(
         color: black,
         fontSize: 12,
@@ -533,7 +597,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildCurrencySymbols() {
     return Text(
-      worldCurrencies[deliveryDetails?.currency]!,
+      worldCurrencies[riderDeliveryBloc.deliveryDetails?.currency]!,
       style: TextStyle(
         color: yarnBlack,
         fontSize: 13,
@@ -557,7 +621,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildItemsAndKg() {
     return Text(
-      "${deliveryDetails?.totalNoOfItems} Items (${deliveryDetails?.totalWeight}Kg)",
+      "${riderDeliveryBloc.deliveryDetails?.totalNoOfItems} Items (${riderDeliveryBloc.deliveryDetails?.totalWeight}Kg)",
       style: TextStyle(
         color: black,
         fontSize: 13,
@@ -593,7 +657,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${deliveryDetails?.pickupAddress?.addressLineOne}, ${deliveryDetails?.pickupAddress?.addressLineTwo}',
+              '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: darkGrey,
@@ -603,7 +667,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              deliveryDetails?.expectedPickupTime.toString() ?? "",
+              riderDeliveryBloc.deliveryDetails?.expectedPickupTime
+                      .toString() ??
+                  "",
               style: TextStyle(
                 color: navyBlue,
                 fontSize: 12,
@@ -618,7 +684,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${deliveryDetails?.deliveryAddress?.addressLineOne}, ${deliveryDetails?.deliveryAddress?.addressLineTwo}',
+              '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: darkGrey,
@@ -628,7 +694,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              deliveryDetails?.expectedDeliveryTime.toString() ?? "",
+              riderDeliveryBloc.deliveryDetails?.expectedDeliveryTime
+                      .toString() ??
+                  "",
               style: TextStyle(
                 color: navyBlue,
                 fontSize: 12,
@@ -669,7 +737,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           SizedBox(width: 20),
           Expanded(
             child: CurvedButton(
-              text: 'Accept(4:49)',
+              text: 'Accept',
               textColor: white,
               backgroundColor: navyBlue,
               fontSize: 15,
@@ -680,7 +748,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                       isAcceptAPILoading = true;
                       if (mounted) setState(() {});
                       await acceptOffer();
-
                       isAcceptAPILoading = false;
                       if (mounted) setState(() {});
                     },
@@ -694,10 +761,12 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Future<void> rejectOffer() async {
     await RiderDeliveryAuthService()
-        .rejectOffer(deliveryDetails?.id)
+        .rejectOffer(riderDeliveryBloc.deliveryDetails?.id)
         .then((value) {
-      showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);
-      Navigator.pop(context, 'HomeScreen');
+      if (value == true) {
+        showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);
+        Navigator.pop(context, 'HomeScreen');
+      }
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
@@ -706,13 +775,15 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Future<void> acceptOffer() async {
     await RiderDeliveryAuthService()
-        .acceptOffer(deliveryDetails?.id)
-        .then((value) {
+        .acceptOffer(riderDeliveryBloc.deliveryDetails?.id)
+        .then((value) async {
       if (value == true) {
         showToast(message: AppLocalization.of(context)!.jobAcceptedFromListing);
-        // deliveryDetails?.isShowDetails = false;
-        // deliveryDetails?.isDeliveryAccepted = true;
+        // riderDeliveryBloc.deliveryDetails?.isShowDetails = false;
+        // riderDeliveryBloc.deliveryDetails?.isDeliveryAccepted = true;
         // _initialSheetChildSize = 0.45;
+        await riderDeliveryBloc
+            .refreshJobDetail(riderDeliveryBloc.deliveryDetails?.id);
         setState(() {});
       } else {
         showToast(message: 'Offer already accepted by a dispatcher');
@@ -820,29 +891,35 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${deliveryDetails?.deliveryAddress?.addressLineOne}, ${deliveryDetails?.deliveryAddress?.addressLineTwo}',
+            '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: deliveryDetails?.isOfferAccepted(userBloc.user.userName) ==
+              color: riderDeliveryBloc.deliveryDetails
+                          ?.isOfferAccepted(username) ==
                       true
                   ? darkGrey
                   : blackFont,
               fontSize: 12,
               fontFamily: "Inter",
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 25),
           Text(
-            'Festus street ,Agege',
+            '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: deliveryDetails?.isOfferAccepted(userBloc.user.userName) ==
+              color: riderDeliveryBloc.deliveryDetails
+                          ?.isOfferAccepted(username) ==
                       true
                   ? blackFont
                   : darkGrey,
               fontSize: 12,
               fontFamily: "Inter",
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -867,7 +944,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               });
             }),
         Text(
-          "I have picked up - ${deliveryDetails?.totalNoOfItems} Items (${deliveryDetails?.totalWeight}kg)",
+          "I have picked up - ${riderDeliveryBloc.deliveryDetails?.totalNoOfItems} Items (${riderDeliveryBloc.deliveryDetails?.totalWeight}kg)",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -883,7 +960,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     return Row(
       children: [
         Text(
-          "${deliveryDetails?.totalNoOfItems} Items (${deliveryDetails?.totalWeight}kg)",
+          "${riderDeliveryBloc.deliveryDetails?.totalNoOfItems} Items (${riderDeliveryBloc.deliveryDetails?.totalWeight}kg)",
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -922,7 +999,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       textColor: isChecked == true ? navyBlue : greyBorderColor,
       onPressed: isChecked == true
           ? () {
-              // deliveryDetails?.isDeliveryAccepted = false;
+              // riderDeliveryBloc.deliveryDetails?.isDeliveryAccepted = false;
               isDeliveryCancel = true;
               // _initialSheetChildSize = 0.73;
               setState(() {});
@@ -959,14 +1036,18 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Future<void> startOffer() async {
     await RiderDeliveryAuthService()
-        .startJourney(deliveryDetails?.id)
-        .then((value) {
-      showToast(
-          message: AppLocalization.of(context)!.journyStartedSuccessfully);
-      // deliveryDetails?.isDeliveryAccepted = false;
-      // deliveryDetails?.isDeliveryStarted = true;
-      // _initialSheetChildSize = 0.35;
-      setState(() {});
+        .startJourney(riderDeliveryBloc.deliveryDetails?.id)
+        .then((value) async {
+      if (value == true) {
+        showToast(
+            message: AppLocalization.of(context)!.journyStartedSuccessfully);
+        // riderDeliveryBloc.deliveryDetails?.isDeliveryAccepted = false;
+        // riderDeliveryBloc.deliveryDetails?.isDeliveryStarted = true;
+        // _initialSheetChildSize = 0.35;
+        await riderDeliveryBloc
+            .refreshJobDetail(riderDeliveryBloc.deliveryDetails?.id);
+        setState(() {});
+      }
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
@@ -995,13 +1076,17 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Future<void> endOffer() async {
     await RiderDeliveryAuthService()
-        .endJourney(deliveryDetails?.id)
-        .then((value) {
-      showToast(message: AppLocalization.of(context)!.endJob);
-      // deliveryDetails?.isDeliveryStarted = false;
-      // deliveryDetails?.isDeliveryEnded = true;
-      // _initialSheetChildSize = 0.3;
-      setState(() {});
+        .endJourney(riderDeliveryBloc.deliveryDetails?.id)
+        .then((value) async {
+      if (value == true) {
+        showToast(message: AppLocalization.of(context)!.endJob);
+        // riderDeliveryBloc.deliveryDetails?.isDeliveryStarted = false;
+        // riderDeliveryBloc.deliveryDetails?.isDeliveryEnded = true;
+        // _initialSheetChildSize = 0.3;
+        await riderDeliveryBloc
+            .refreshJobDetail(riderDeliveryBloc.deliveryDetails?.id);
+        if (mounted) setState(() {});
+      }
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
@@ -1082,26 +1167,27 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           FocusScope.of(context).unfocus();
           isCancelAPILoading = true;
           if (mounted) setState(() {});
-          // cancelOffer();
+          cancelOffer(userChecked ?? "");
           isDeliveryCancel = false;
           Navigator.pop(context, 'HomeScreen');
           isCancelAPILoading = false;
           if (mounted) setState(() {});
         }
-        ;
       }
     }
   }
 
-  Future<void> cancelOffer() async {
+  Future<void> cancelOffer(String userChecked) async {
     await RiderDeliveryAuthService()
-        .cancelJourney(deliveryDetails?.id)
+        .cancelJourney(riderDeliveryBloc.deliveryDetails?.id, userChecked)
         .then((value) {
-      showToast(
-          message: AppLocalization.of(context)!
-              .cancelledApplicactionForJobSuccessfully);
-      isDeliveryCancel = false;
-      Navigator.pop(context, 'HomeScreen');
+      if (value == true) {
+        showToast(
+            message: AppLocalization.of(context)!
+                .cancelledApplicactionForJobSuccessfully);
+        isDeliveryCancel = false;
+        Navigator.pop(context, 'HomeScreen');
+      }
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());

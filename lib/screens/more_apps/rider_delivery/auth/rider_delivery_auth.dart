@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dar
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class RiderDeliveryAuthService extends AuthService {
   //get rider job list
@@ -53,9 +54,9 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   // Fetch a job
-  Future<DeliveryModel?> fetchJob(String? jobId) async {
+  Future<DeliveryModel?> fetchJob(String? journeyId) async {
     try {
-      String url = "${AppConfig.baseUrl}/api/v1/shipping/journeys/$jobId/";
+      String url = "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/";
 
       debugPrint('Fetch Job URL ---> $url');
 
@@ -65,7 +66,8 @@ class RiderDeliveryAuthService extends AuthService {
 
       print(response.statusCode);
       if (response.statusCode == 200) {
-        return DeliveryModel.fromJson(json.decode(response.body));
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+        return DeliveryModel.fromJson(jsonData);
       } else {
         showToast(message: response.body.toString());
         throw response.body;
@@ -81,12 +83,12 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   // Accept Offer
-  Future<bool> acceptOffer(String? jobId) async {
-    if (jobId == null) {
+  Future<bool> acceptOffer(String? journeyId) async {
+    if (journeyId == null) {
       return false;
     }
-    String url =
-        AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/accept-offer/";
+    String url = AppConfig.baseUrl +
+        "/api/v1/shipping/journeys/$journeyId/accept-offer/";
     var headers = await getAuthHeaders();
 
     try {
@@ -104,12 +106,12 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   // Reject Offer
-  Future<bool> rejectOffer(String? jobId) async {
-    if (jobId == null) {
+  Future<bool> rejectOffer(String? journeyId) async {
+    if (journeyId == null) {
       return false;
     }
-    String url =
-        AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/reject-offer/";
+    String url = AppConfig.baseUrl +
+        "/api/v1/shipping/journeys/$journeyId/reject-offer/";
     var headers = await getAuthHeaders();
 
     try {
@@ -127,12 +129,12 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   // Start Journey
-  Future<bool> startJourney(String? jobId) async {
-    if (jobId == null) {
+  Future<bool> startJourney(String? journeyId) async {
+    if (journeyId == null) {
       return false;
     }
-    String url =
-        AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/start-offer/";
+    String url = AppConfig.baseUrl +
+        "/api/v1/shipping/journeys/$journeyId/start-journey/";
     var headers = await getAuthHeaders();
 
     try {
@@ -150,12 +152,12 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   // End Journey
-  Future<bool> endJourney(String? jobId) async {
-    if (jobId == null) {
+  Future<bool> endJourney(String? journeyId) async {
+    if (journeyId == null) {
       return false;
     }
     String url =
-        AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/end-offer/";
+        AppConfig.baseUrl + "/api/v1/shipping/journeys/$journeyId/end-journey/";
     var headers = await getAuthHeaders();
 
     try {
@@ -173,17 +175,23 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   // Cancel Journey
-  Future<bool> cancelJourney(String? jobId) async {
-    if (jobId == null) {
+  Future<bool> cancelJourney(String? journeyId, String userChecked) async {
+    if (journeyId == null) {
       return false;
     }
-    String url =
-        AppConfig.baseUrl + "/api/v1/shipping/journeys/$jobId/cancel-offer/";
+    String url = AppConfig.baseUrl +
+        "/api/v1/shipping/journeys/$journeyId/cancel-offer/";
     var headers = await getAuthHeaders();
 
-    try {
-      var response = await httpPatch(url, headers: headers);
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
+    request.fields["cancellation_reason"] = userChecked;
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+
+    try {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
@@ -191,6 +199,119 @@ class RiderDeliveryAuthService extends AuthService {
       }
     } catch (e) {
       print("Error: $e");
+      return false;
+    }
+  }
+
+  //Update Current Location
+  Future<bool> updateCurrentLocation(
+      String? journeyId, String userChecked) async {
+    if (journeyId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/shipping/journeys/$journeyId/update-current-location/";
+    var headers = await getAuthHeaders();
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    request.fields["location"] = userChecked;
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+
+    try {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
+  }
+
+  //Update Journey Route
+  Future<bool> updateJourneyRoute(String? journeyId, String userChecked) async {
+    if (journeyId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/shipping/journeys/$journeyId/update-journey-route/";
+    var headers = await getAuthHeaders();
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    request.fields["route"] = userChecked;
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+
+    try {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
+  }
+
+  // Send Delivery Evidence
+  Future<bool> sendDeliveryEvidence(
+      String? journeyId, String userChecked) async {
+    if (journeyId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/shipping/journeys/$journeyId/send-delivery-evidence/";
+    var headers = await getAuthHeaders();
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+
+    // http.MultipartFile? filePath = await http.MultipartFile.fromPath(
+    //     "delivery_evidence", mRiderPhoto!.path);
+
+    //add multipart to request
+    // request.files.add(filePath);
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+
+    try {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
+  }
+
+  //Share Rider Experience
+  Future<bool> shareExperience(String? journeyId, {Map? data}) async {
+    String url =
+        "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/send-journey-experience/";
+    var _data = jsonEncode(data);
+    debugPrint('Order details ::: $_data');
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _data);
+    var jsonData = jsonDecode(response.body);
+
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
       return false;
     }
   }

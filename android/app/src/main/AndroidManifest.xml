@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
 
     <application android:allowBackup="false"
@@ -57,10 +58,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.android.camera.CropImage"
-            android:exported="false"/>
-        <activity android:name="com.yalantis.ucrop.UCropActivity"
-            android:exported="false"/>
+        <activity android:name="com.android.camera.CropImage"/>
+        <activity android:name="com.yalantis.ucrop.UCropActivity"/>
 
         <!-- notification icon-->
         <meta-data

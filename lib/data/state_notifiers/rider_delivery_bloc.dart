@@ -1,7 +1,11 @@
+import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:flutter/material.dart';
 
 class RiderDeliveryBloc extends ChangeNotifier {
+  DeliveryModel? deliveryDetails;
+
   Directions? _driverToStartingPointDirections;
 
   Directions? _startingPointToDestinationDirections;
@@ -20,5 +24,26 @@ class RiderDeliveryBloc extends ChangeNotifier {
   set startingPointToDestinationDirections(Directions? value) {
     _startingPointToDestinationDirections = value;
     notifyListeners();
+  }
+
+  void updateDeliveryModel(DeliveryModel data) {
+    deliveryDetails = data;
+    notifyListeners();
+  }
+
+  Future<DeliveryModel> refreshJobDetail(String? journeyId) async {
+    DeliveryModel deliveryModel = await getJobDetail(journeyId);
+    notifyListeners();
+    return deliveryModel;
+  }
+
+  getJobDetail(String? journeyId) async {
+    await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
+      if (value != null) {
+        updateDeliveryModel(value);
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
   }
 }

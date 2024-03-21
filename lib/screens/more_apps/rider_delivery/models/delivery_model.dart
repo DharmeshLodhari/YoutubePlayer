@@ -2,14 +2,14 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 
 class DeliveryModel {
   String? id;
-  double? deliveryDistance;
-  double? pickupDistance;
+  // double? deliveryDistance;
+  // double? pickupDistance;
   String? merchantAvatar;
   String? merchantFullName;
   String? merchant;
   String? dispatcherAvatar;
-  dynamic dispatcherFullName;
-  dynamic dispatcher;
+  String? dispatcherFullName;
+  String? dispatcher;
   ShippingAddress? pickupAddress;
   ShippingAddress? deliveryAddress;
   dynamic location;
@@ -25,7 +25,7 @@ class DeliveryModel {
   int? tip;
   String? currency;
   dynamic route;
-  dynamic acceptedBy;
+  String? acceptedBy;
   String? customer;
   bool? isInProgress;
   bool? hasEnded;
@@ -40,8 +40,8 @@ class DeliveryModel {
 
   DeliveryModel({
     this.id,
-    this.deliveryDistance,
-    this.pickupDistance,
+    // this.deliveryDistance,
+    // this.pickupDistance,
     this.merchantAvatar,
     this.merchantFullName,
     this.merchant,
@@ -79,8 +79,8 @@ class DeliveryModel {
 
   factory DeliveryModel.fromJson(Map<String, dynamic> json) => DeliveryModel(
         id: json["id"],
-        deliveryDistance: json["delivery_distance"],
-        pickupDistance: json["pickup_distance"]?.toDouble(),
+        // deliveryDistance: json["delivery_distance"],
+        // pickupDistance: json["pickup_distance"],
         merchantAvatar: json["merchant_avatar"],
         merchantFullName: json["merchant_full_name"],
         merchant: json["merchant"],
@@ -122,8 +122,8 @@ class DeliveryModel {
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "delivery_distance": deliveryDistance,
-        "pickup_distance": pickupDistance,
+        // "delivery_distance": deliveryDistance,
+        // "pickup_distance": pickupDistance,
         "merchant_avatar": merchantAvatar,
         "merchant_full_name": merchantFullName,
         "merchant": merchant,

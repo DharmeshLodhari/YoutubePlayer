@@ -1,10 +1,14 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ShareExperience extends StatefulWidget {
   @override
@@ -13,9 +17,12 @@ class ShareExperience extends StatefulWidget {
 
 class _ShareExperienceState extends State<ShareExperience> {
   TextEditingController feedbackController = TextEditingController();
+  late RiderDeliveryBloc riderDeliveryBloc;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -26,6 +33,7 @@ class _ShareExperienceState extends State<ShareExperience> {
         },
         child: ScaffoldMessenger(
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
             backgroundColor: Colors.white,
             appBar: _buildAppBar() as PreferredSizeWidget?,
             body: _buildBody(),
@@ -142,10 +150,40 @@ class _ShareExperienceState extends State<ShareExperience> {
         textColor: white,
         backgroundColor: navyBlue,
         fontSize: 15,
-        onPressed: () {
-          Navigator.of(context).popAndPushNamed(Routes.RESPONSE_RECEIVED);
+        onPressed: () async {
+          if (isLoading == false) {
+            FocusScope.of(context).unfocus();
+            isLoading = true;
+            if (mounted) setState(() {});
+            shareRiserExperience();
+            isLoading = false;
+            Navigator.pop(context, 'HomeScreen');
+            isLoading = false;
+            if (mounted) setState(() {});
+          }
         },
+        isLoading: isLoading,
       ),
     );
+  }
+
+  Future<void> shareRiserExperience() async {
+    Map<String, dynamic> data = {
+      "send-journey-experience": feedbackController.text.trim().toString(),
+    };
+    await RiderDeliveryAuthService()
+        .shareExperience(riderDeliveryBloc.deliveryDetails?.id, data: data)
+        .then(
+      (value) async {
+        if (value == true) {
+          Navigator.of(context).popAndPushNamed(Routes.RESPONSE_RECEIVED);
+        } else {
+          showToast(message: 'Error');
+        }
+      },
+    ).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
   }
 }
