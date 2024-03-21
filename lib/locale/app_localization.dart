@@ -2734,6 +2734,20 @@ class AppLocalization {
     );
   }
 
+  String get responseSendSuccessfully {
+    return Intl.message(
+      "Response Send Successfully",
+      name: "responseSendSuccessfully",
+    );
+  }
+
+  String get fileUploadedSuccessfully {
+    return Intl.message(
+      "File Uploaded Successfully",
+      name: "fileUploadedSuccessfully",
+    );
+  }
+
   String get journyStartedSuccessfully {
     return Intl.message(
       "Job Started Successfully",

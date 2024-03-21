@@ -134,7 +134,7 @@ class _ResponseReceivedState extends State<ResponseReceived> {
       padding: const EdgeInsets.all(10.0),
       child: CurvedButton(
         onPressed: () {
-          Navigator.of(context).popAndPushNamed(Routes.DELIVERY_HISTORY);
+          Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
         },
         backgroundColor: navyBlue,
         textColor: white,

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -31,11 +32,11 @@ class _ShareExperienceState extends State<ShareExperience> {
         onWillPop: () async {
           return true;
         },
-        child: ScaffoldMessenger(
+        child: SafeArea(
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: Colors.white,
-            appBar: _buildAppBar() as PreferredSizeWidget?,
+            // appBar: _buildAppBar() as PreferredSizeWidget?,
             body: _buildBody(),
             floatingActionButton: _buildSubmitButton(),
             floatingActionButtonLocation:
@@ -63,6 +64,7 @@ class _ShareExperienceState extends State<ShareExperience> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                SizedBox(height: 20),
                 _buildTitle(),
                 SizedBox(height: 20),
                 _buildNote(),
@@ -157,8 +159,6 @@ class _ShareExperienceState extends State<ShareExperience> {
             if (mounted) setState(() {});
             shareRiserExperience();
             isLoading = false;
-            Navigator.pop(context, 'HomeScreen');
-            isLoading = false;
             if (mounted) setState(() {});
           }
         },
@@ -169,13 +169,15 @@ class _ShareExperienceState extends State<ShareExperience> {
 
   Future<void> shareRiserExperience() async {
     Map<String, dynamic> data = {
-      "send-journey-experience": feedbackController.text.trim().toString(),
+      "experience": feedbackController.text.trim().toString(),
     };
     await RiderDeliveryAuthService()
         .shareExperience(riderDeliveryBloc.deliveryDetails?.id, data: data)
         .then(
       (value) async {
         if (value == true) {
+          showToast(
+              message: AppLocalization.of(context)!.responseSendSuccessfully);
           Navigator.of(context).popAndPushNamed(Routes.RESPONSE_RECEIVED);
         } else {
           showToast(message: 'Error');

@@ -26,14 +26,11 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
         onWillPop: () async {
           return true;
         },
-        child: ScaffoldMessenger(
+        child: SafeArea(
           child: Scaffold(
             backgroundColor: Colors.white,
-            appBar: _buildAppBar() as PreferredSizeWidget?,
+            // appBar: _buildAppBar() as PreferredSizeWidget?,
             body: _buildBody(),
-            floatingActionButton: _buildShareYourExperience(),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
           ),
         ),
       ),
@@ -50,32 +47,30 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
   Widget _buildBody() {
     return Padding(
       padding: EdgeInsets.all(16.0),
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildDeliveryText(),
-                _buildImageOrderComplete(),
-                _buildRideNumber(),
-                SizedBox(height: 18),
-                _buildEarningText(),
-                SizedBox(height: 7),
-                _buildEarningAmount(),
-                _buildDivider(),
-                _buildIconAndAddressAndPickup(),
-                _buildDivider(),
-                _buildCircleImageAndName(),
-                _buildDivider1(),
-                _buildDistance(),
-                SizedBox(height: 15),
-                _buildDuration(),
-                SizedBox(height: 15),
-                _buildItems(),
-              ],
-            ),
-          ),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildDeliveryText(),
+            _buildImageOrderComplete(),
+            _buildRideNumber(),
+            SizedBox(height: 15),
+            _buildEarningText(),
+            SizedBox(height: 7),
+            _buildEarningAmount(),
+            _buildDivider(),
+            _buildIconAndAddressAndPickup(),
+            _buildDivider(),
+            _buildCircleImageAndName(),
+            _buildDivider1(),
+            _buildDistance(),
+            SizedBox(height: 15),
+            _buildDuration(),
+            SizedBox(height: 15),
+            _buildItems(),
+            SizedBox(height: 25),
+            _buildShareYourExperience(),
+          ],
+        ),
       ),
     );
   }

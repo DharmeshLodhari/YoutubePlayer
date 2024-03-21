@@ -204,6 +204,9 @@ class Routes {
   static const String DISPATCH_ADDRESS = "/dispatch-address";
   static const String RIDER_DASHBOARD = "/rider-dashboard";
   static const String RIDER_JOB_DETAILS = "/rider-job-details";
+  static const String TAKE_DELIVERY_PROOF = "/take-delivery-proof";
+  static const String PREVIEW_DELIVERY_PROOF_SCREEN =
+      "/preview-delivery-proof-screen";
   // static const String TAKE_PICTURE = "/take-picture";
   static const String CONFIRM_ORDER = "/confirm-order";
   static const String DELIVERY_OPTION = "/delivery-option";

@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dar
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class RiderDeliveryAuthService extends AuthService {
@@ -204,8 +205,7 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   //Update Current Location
-  Future<bool> updateCurrentLocation(
-      String? journeyId, String userChecked) async {
+  Future<bool> updateCurrentLocation(String? journeyId, LatLng currentP) async {
     if (journeyId == null) {
       return false;
     }
@@ -216,21 +216,21 @@ class RiderDeliveryAuthService extends AuthService {
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    request.fields["location"] = userChecked;
+    request.fields["location"] = "${currentP.latitude},${currentP.latitude}";
 
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
 
-    try {
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      print("Error: $e");
+    // try {
+    //   if (response.statusCode == 200 || response.statusCode == 201) {
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // } catch (e) {
+    //   print("Error: $e");
       return false;
-    }
+    // }
   }
 
   //Update Journey Route
@@ -263,8 +263,7 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   // Send Delivery Evidence
-  Future<bool> sendDeliveryEvidence(
-      String? journeyId, String userChecked) async {
+  Future<bool> sendDeliveryEvidence(String? journeyId, argument) async {
     if (journeyId == null) {
       return false;
     }
@@ -275,14 +274,19 @@ class RiderDeliveryAuthService extends AuthService {
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    // http.MultipartFile? filePath = await http.MultipartFile.fromPath(
-    //     "delivery_evidence", mRiderPhoto!.path);
+    http.MultipartFile? filePath =
+        await http.MultipartFile.fromPath("delivery_evidence", argument);
 
     //add multipart to request
-    // request.files.add(filePath);
+    request.files.add(filePath);
 
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
+
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller image, This image is too large.");
+    }
 
     try {
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -305,7 +309,6 @@ class RiderDeliveryAuthService extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
-    var jsonData = jsonDecode(response.body);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");

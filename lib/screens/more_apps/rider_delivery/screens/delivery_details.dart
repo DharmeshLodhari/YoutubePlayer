@@ -201,7 +201,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 ?.isOfferAccepted(userBloc.user.userName) ==
             true &&
         riderDeliveryBloc.deliveryDetails?.isInProgress == false &&
-        riderDeliveryBloc.deliveryDetails?.hasEnded == false) {
+        riderDeliveryBloc.deliveryDetails?.hasEnded == false &&
+        isDeliveryCancel == false) {
       return _buildAccepted();
     } else if (riderDeliveryBloc.deliveryDetails
                 ?.isOfferAccepted(userBloc.user.userName) ==
@@ -280,9 +281,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildAccepted() {
     return DraggableScrollableSheet(
-      initialChildSize: 0.45,
-      maxChildSize: 0.45,
-      minChildSize: 0.45,
+      initialChildSize: 0.47,
+      maxChildSize: 0.47,
+      minChildSize: 0.47,
       builder: (context, scrollController) => ClipRRect(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -367,16 +368,18 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               height: 20,
             ),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildLogoAndDeliveryAndAmount(),
-                  _buildItemsAndKg(),
-                  SizedBox(height: 10.0),
-                  _buildIconAndAddressAndPickup(),
-                  SizedBox(height: 10.0),
-                  _buildButtonCancelAndPickup(),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLogoAndDeliveryAndAmount(),
+                    _buildItemsAndKg(),
+                    SizedBox(height: 10.0),
+                    _buildIconAndAddressAndPickup(),
+                    SizedBox(height: 10.0),
+                    _buildButtonCancelAndPickup(),
+                  ],
+                ),
               ),
             ),
           ],
@@ -400,20 +403,22 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               height: 20,
             ),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildDrivingToPickupLocation(),
-                  SizedBox(height: 15.0),
-                  _buildDistanceAndHoursAndImageAndAddress(),
-                  SizedBox(height: 10.0),
-                  _buildCheckBoxAndItems(),
-                  _buildStartDelivery(),
-                  SizedBox(height: 15.0),
-                  _buildCancelDelivery(),
-                  SizedBox(height: 15.0),
-                  _buildCallButton(),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDrivingToPickupLocation(),
+                    SizedBox(height: 15.0),
+                    _buildDistanceAndHoursAndImageAndAddress(),
+                    SizedBox(height: 10.0),
+                    _buildCheckBoxAndItems(),
+                    _buildStartDelivery(),
+                    SizedBox(height: 15.0),
+                    _buildCancelDelivery(),
+                    SizedBox(height: 15.0),
+                    _buildCallButton(),
+                  ],
+                ),
               ),
             ),
           ],
@@ -437,19 +442,21 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               height: 20,
             ),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildDrivingToDestination(),
-                  SizedBox(height: 10.0),
-                  _buildDistanceAndHoursAndImageAndAddress(),
-                  SizedBox(height: 10.0),
-                  _buildItems(),
-                  SizedBox(height: 15.0),
-                  _buildEndDelivery(),
-                  SizedBox(height: 15.0),
-                  _buildCallButton(),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDrivingToDestination(),
+                    SizedBox(height: 10.0),
+                    _buildDistanceAndHoursAndImageAndAddress(),
+                    SizedBox(height: 10.0),
+                    _buildItems(),
+                    SizedBox(height: 15.0),
+                    _buildEndDelivery(),
+                    SizedBox(height: 15.0),
+                    _buildCallButton(),
+                  ],
+                ),
               ),
             ),
           ],
@@ -473,15 +480,17 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             height: 20,
           ),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildDeliveryProofTitle(),
-                SizedBox(height: 20.0),
-                _buildQRCode(),
-                SizedBox(height: 20.0),
-                _buildTakePicture(),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildDeliveryProofTitle(),
+                  SizedBox(height: 20.0),
+                  _buildQRCode(),
+                  SizedBox(height: 20.0),
+                  _buildTakePicture(),
+                ],
+              ),
             ),
           ),
         ],
@@ -508,15 +517,17 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 height: 20,
               ),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTitle(),
-                    SizedBox(height: 10.0),
-                    _buildCancelDeliveryReason(),
-                    SizedBox(height: 10.0),
-                    _buildSubmitButton(),
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTitle(),
+                      SizedBox(height: 10.0),
+                      _buildCancelDeliveryReason(),
+                      SizedBox(height: 10.0),
+                      _buildSubmitButton(),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -764,8 +775,11 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         .rejectOffer(riderDeliveryBloc.deliveryDetails?.id)
         .then((value) {
       if (value == true) {
-        showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);
-        Navigator.pop(context, 'HomeScreen');
+        Future.delayed(Duration(seconds: 2)).then((value) => () {
+              showToast(
+                  message: AppLocalization.of(context)!.jobRemovedFromListing);
+              Navigator.pop(context, 'HomeScreen');
+            });
       }
     }).catchError((error) {
       debugPrint(error.toString());
@@ -1107,6 +1121,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildCancelDeliveryReason() {
     return ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: reasons.length,
         itemBuilder: (context, i) {
@@ -1168,8 +1183,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           isCancelAPILoading = true;
           if (mounted) setState(() {});
           cancelOffer(userChecked ?? "");
-          isDeliveryCancel = false;
-          Navigator.pop(context, 'HomeScreen');
           isCancelAPILoading = false;
           if (mounted) setState(() {});
         }
@@ -1182,11 +1195,13 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         .cancelJourney(riderDeliveryBloc.deliveryDetails?.id, userChecked)
         .then((value) {
       if (value == true) {
-        showToast(
-            message: AppLocalization.of(context)!
-                .cancelledApplicactionForJobSuccessfully);
-        isDeliveryCancel = false;
-        Navigator.pop(context, 'HomeScreen');
+        Future.delayed(Duration(seconds: 2)).then((value) => () {
+              showToast(
+                  message: AppLocalization.of(context)!
+                      .cancelledApplicactionForJobSuccessfully);
+              isDeliveryCancel = false;
+              Navigator.pop(context, 'HomeScreen');
+            });
       }
     }).catchError((error) {
       debugPrint(error.toString());
@@ -1246,7 +1261,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildTakePicture() {
     return GestureDetector(
       onTap: () async {
-        Navigator.of(context).pushNamed(Routes.TAKE_PROOF_PHOTO);
+        Navigator.of(context).popAndPushNamed(Routes.TAKE_DELIVERY_PROOF);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

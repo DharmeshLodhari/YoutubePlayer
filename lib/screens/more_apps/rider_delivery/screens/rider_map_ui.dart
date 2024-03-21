@@ -3,9 +3,11 @@ import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/utils.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -255,11 +257,24 @@ class _RiderMapUIState extends State<RiderMapUI> {
             setState(() {
               _currentP =
                   LatLng(currentLocation.latitude!, currentLocation.longitude!);
-              _cameraToPosition(_currentP!);
+              _cameraToPosition(_currentP ?? LatLng(0.0, 0.0));
+              updateCurrentLocation(_currentP ?? LatLng(0.0, 0.0));
             });
         }
       });
     }
+  }
+
+  Future<void> updateCurrentLocation(LatLng currentP) async {
+    await RiderDeliveryAuthService()
+        .updateCurrentLocation(riderDeliveryBloc.deliveryDetails?.id, currentP)
+        .then((value) {
+      if (value == true) {
+        print('Location updated successfully in the background');
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
   }
 
   Future<List<LatLng>> getPolylinePoints() async {

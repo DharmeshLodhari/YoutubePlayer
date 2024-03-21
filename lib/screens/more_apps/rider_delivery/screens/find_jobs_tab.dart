@@ -200,7 +200,7 @@ class FindJobsTabState extends State<FindJobsTab> {
                             .pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
                           // 'showDetails': true,
                           'journeyId': jobListing[index].id
-                        });
+                        }).whenComplete(() => _onRefresh());
                       },
                       child: Column(
                         children: [
@@ -401,8 +401,10 @@ class FindJobsTabState extends State<FindJobsTab> {
         showToast(message: AppLocalization.of(context)!.endJob);
         // jobListing.isDeliveryStarted = false;
         // jobListing.isDeliveryEnded = true;
-        Navigator.of(context).pushNamed(Routes.RIDER_JOB_DETAILS,
-            arguments: {'showDetails': true, 'deliveryDetail': jobListing});
+        Navigator.of(context).pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
+          'showDetails': true,
+          'deliveryDetail': jobListing
+        }).whenComplete(() => _onRefresh());
         setState(() {});
       }
     }).catchError((error) {

@@ -88,9 +88,11 @@ import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/your_tri
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_completed.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_history.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/preview_delivery_proof_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/response_received.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_dashboard.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/share_experience.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/take_delivery_proof.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/completed_upload_photo.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/preview_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/require_steps.dart';
@@ -1908,6 +1910,22 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      case Routes.TAKE_DELIVERY_PROOF:
+        return PageTransition(
+          child: TakeDeliveryProof(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case Routes.PREVIEW_DELIVERY_PROOF_SCREEN:
+        return PageTransition(
+          child: PreviewDeliveryProofScreen(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
       // case Routes.TAKE_PICTURE:
       //   return PageTransition(
       //     child: TakePicture(),
@@ -1979,7 +1997,7 @@ class RouteGenerator {
         );
       case Routes.PREVIEW_SCREEN:
         return PageTransition(
-          child: PreviewScreen(filePath: ""),
+          child: PreviewScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
