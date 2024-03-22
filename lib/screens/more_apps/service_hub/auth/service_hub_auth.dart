@@ -54,7 +54,7 @@ class ServiceHubAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-      url = "${AppConfig.baseUrl}/api/v1/job-service/categories/?search=$text}";
+      url = "${AppConfig.baseUrl}/api/v1/job-service/categories/?search=$text";
     } else {
       url = getSecureUrl(url: next);
     }
