@@ -110,7 +110,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
         initialCameraPosition: CameraPosition(
           target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
               deliveryModel?.pickupAddress?.longitude ?? 0.0),
-          zoom: 13,
+          zoom: 11,
         ),
         markers: {
           Marker(
@@ -147,7 +147,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
               initialCameraPosition: CameraPosition(
                 target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                     deliveryModel?.pickupAddress?.longitude ?? 0.0),
-                zoom: 13,
+                zoom: 11,
               ),
               markers: {
                 Marker(
@@ -184,7 +184,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
               initialCameraPosition: CameraPosition(
                 target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                     deliveryModel?.pickupAddress?.longitude ?? 0.0),
-                zoom: 13,
+                zoom: 11,
               ),
               markers: {
                 Marker(
@@ -219,7 +219,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
     controller = await _mapController.future;
     CameraPosition _newCameraPosition = CameraPosition(
       target: pos,
-      zoom: 13,
+      zoom: 11,
     );
     await controller?.animateCamera(
       CameraUpdate.newCameraPosition(_newCameraPosition),

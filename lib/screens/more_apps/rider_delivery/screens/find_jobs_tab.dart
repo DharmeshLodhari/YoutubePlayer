@@ -5,7 +5,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/tiles/delivery_order_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
@@ -164,13 +163,6 @@ class FindJobsTabState extends State<FindJobsTab> {
     });
   }
 
-  Widget _buildReviewIndicator() {
-    return new Opacity(
-      opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? YarnShimmer() : Container(),
-    );
-  }
-
   Widget _buildJobList() {
     if (isLoading) {
       return Center(
@@ -191,9 +183,6 @@ class FindJobsTabState extends State<FindJobsTab> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (BuildContext context, int index) {
-                    if (index == jobListing.length) {
-                      return _buildReviewIndicator();
-                    }
                     return InkWell(
                       onTap: () {
                         Navigator.of(context)
@@ -215,21 +204,7 @@ class FindJobsTabState extends State<FindJobsTab> {
                               children: [
                                 DeliveryOrderTile(
                                     jobListing: jobListing[index]),
-                                if (jobListing[index].isOfferAccepted(
-                                        userBloc.user.userName) ==
-                                    false)
-                                  _buildAcceptRejectButton(jobListing[index]),
-                                if (jobListing[index].isOfferAccepted(
-                                            userBloc.user.userName) ==
-                                        true &&
-                                    jobListing[index].isInProgress == false &&
-                                    jobListing[index].hasEnded == false)
-                                  _buildStartDeliveryButton(jobListing[index]),
-                                if (jobListing[index].isOfferAccepted(
-                                            userBloc.user.userName) ==
-                                        true &&
-                                    jobListing[index].isInProgress == true)
-                                  _buildEndDeliveryButton(jobListing[index]),
+                                _buildJobAction(index),
                                 SizedBox(height: 10.0),
                               ],
                             ),
@@ -248,6 +223,23 @@ class FindJobsTabState extends State<FindJobsTab> {
       return NoItemInList(
         msg: AppLocalization.of(context)!.noResultFound,
       );
+    }
+  }
+
+  Widget _buildJobAction(int index) {
+    if (jobListing[index].isOfferAccepted(userBloc.user.userName) == false) {
+      return _buildAcceptRejectButton(jobListing[index]);
+    } else if (jobListing[index].isOfferAccepted(userBloc.user.userName) ==
+            true &&
+        jobListing[index].isInProgress == false &&
+        jobListing[index].hasEnded == false) {
+      return _buildStartDeliveryButton(jobListing[index]);
+    } else if (jobListing[index].isOfferAccepted(userBloc.user.userName) ==
+            true &&
+        jobListing[index].isInProgress == true) {
+      return _buildEndDeliveryButton(jobListing[index]);
+    } else {
+      return Container();
     }
   }
 

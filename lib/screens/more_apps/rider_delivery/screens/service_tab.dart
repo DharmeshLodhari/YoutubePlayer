@@ -178,12 +178,12 @@ class ServiceTabState extends State<ServiceTab> {
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: lightOrangeColor,
+        color: lightGreyYarn,
       ),
       child: Text(
         'Awaiting Pickup',
         style: TextStyle(
-          color: darkOrangeColor,
+          color: darkGrey,
           fontSize: 8,
           fontWeight: FontWeight.w600,
           fontFamily: "Inter",

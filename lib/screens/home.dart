@@ -56,6 +56,8 @@ import 'more_apps/user_profile/user_auth.dart';
 import 'more_apps/yarn/yarn_dashboard.dart';
 
 class Home extends StatefulWidget {
+  Home({Key? key}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -505,16 +507,15 @@ class _HomeState extends State<Home> {
             onTap: () {
               // showSnackbar(context, message: "Coming soon");
               // return;
-              // if (userBloc.user.rider == null) {
-              //   Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
-              // } else {
-              //   if (userBloc.user.rider?.isStatusApproved() == false) {
-              //     getKYCStatus();
-              //   } else {
-              //     // Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
-              Navigator.of(context).pushNamed(Routes.RIDER_DASHBOARD);
-              // }
-              // }
+              if (userBloc.user.rider == null) {
+                Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
+              } else {
+                if (userBloc.user.rider?.isStatusApproved() == false) {
+                  getKYCStatus();
+                } else {
+                  Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
+                }
+              }
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 16),
@@ -1089,9 +1090,7 @@ class _HomeState extends State<Home> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.0),
                   child: Text(
-                    isEmpty
-                        ? 'Select Location'
-                        : "${defaultAddress?.city}, ${defaultAddress?.stateName}",
+                    _buildLocationText(),
                     style: TextStyle(
                         fontSize: 12,
                         fontFamily: 'Inter',
@@ -1111,6 +1110,18 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
+  }
+
+  String _buildLocationText() {
+    if (isEmpty) {
+      return 'Select Location';
+    } else {
+      if (defaultAddress?.city == null) {
+        return 'Select Location';
+      } else {
+        return "${defaultAddress?.city}, ${defaultAddress?.stateName}";
+      }
+    }
   }
 
   void getAddressList() async {

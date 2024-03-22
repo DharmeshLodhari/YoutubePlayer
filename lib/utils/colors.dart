@@ -37,6 +37,7 @@ Color mateRedLight = HexColor("#FFECEA");
 Color redBtn = HexColor("#FE5151");
 Color eyeGrey = HexColor("#A5ADB6");
 Color starYellow = HexColor("#FFAB00");
+Color starYellowDark = HexColor("#FFA500");
 Color graphWitheBackground = HexColor("#F3F3F3");
 Color selectedListItemBackgroundBlue = HexColor("#F8F9FF");
 Color yarnBlack = HexColor("#151515");
@@ -51,9 +52,7 @@ Color verifyGreen = HexColor("#46CE7C");
 Color red = HexColor("#FF3F3F");
 Color deepBlue = HexColor("#4060DB");
 Color orange = HexColor("#F08770");
+Color darkRed = HexColor("#33FF0000");
 
 Color boxShadow = Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);
-
-Color lightOrangeColor = Color(0xC7FFE2A9);
-Color darkOrangeColor = Color(0xFFFFA500);

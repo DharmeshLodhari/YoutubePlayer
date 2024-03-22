@@ -19,9 +19,9 @@ class DeliveryModel {
   String? type;
   String? dispatchId;
   DateTime? expectedPickupTime;
-  dynamic expectedDeliveryTime;
-  dynamic actualPickupTime;
-  dynamic actualDeliveryTime;
+  DateTime? expectedDeliveryTime;
+  DateTime? actualPickupTime;
+  DateTime? actualDeliveryTime;
   int? tip;
   String? currency;
   dynamic route;
@@ -106,9 +106,15 @@ class DeliveryModel {
         expectedPickupTime: json["expected_pickup_time"] == null
             ? null
             : DateTime.parse(json["expected_pickup_time"]),
-        expectedDeliveryTime: json["expected_delivery_time"],
-        actualPickupTime: json["actual_pickup_time"],
-        actualDeliveryTime: json["actual_delivery_time"],
+        expectedDeliveryTime: json["expected_delivery_time"] == null
+            ? null
+            : DateTime.parse(json["expected_delivery_time"]),
+        actualPickupTime: json["actual_pickup_time"] == null
+            ? null
+            : DateTime.parse(json["actual_pickup_time"]),
+        actualDeliveryTime: json["actual_delivery_time"] == null
+            ? null
+            : DateTime.parse(json["actual_delivery_time"]),
         tip: json["tip"],
         currency: json["currency"],
         route: json["route"],

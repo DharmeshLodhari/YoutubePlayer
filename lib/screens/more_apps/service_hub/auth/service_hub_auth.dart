@@ -48,12 +48,14 @@ class ServiceHubAuthService extends AuthService {
 
   // List the search category item with pagination
   Future<Map<String, dynamic>?> getSearchCategoryList(
-      String url, String? next, String? previous) async {
-    debugPrint("URl:- $url");
+      String? next, String? previous, String text) async {
+    String url = "";
     if (next == null) {
       return null;
     }
-    if (next != "") {
+    if (next == "") {
+      url = "${AppConfig.baseUrl}/api/v1/job-service/categories/?search=$text}";
+    } else {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();

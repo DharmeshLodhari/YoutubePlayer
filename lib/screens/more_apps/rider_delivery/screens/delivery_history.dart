@@ -1,10 +1,19 @@
 import 'dart:io';
 
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/tiles/delivery_order_tile.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DeliveryHistory extends StatefulWidget {
   const DeliveryHistory({super.key});
@@ -14,23 +23,83 @@ class DeliveryHistory extends StatefulWidget {
 }
 
 class _DeliveryHistoryState extends State<DeliveryHistory> {
-  String? TodayDate;
-  String? Amount = "3000";
-  int? km = 2;
-  int? items = 5;
-  int? kg = 38;
-
-  void myDate() {
-    var now = DateTime.now();
-    var formatter = DateFormat('d MMMM,y');
-    String formattedDate = formatter.format(now);
-    TodayDate = formattedDate;
-  }
+  final GlobalKey<ScaffoldMessengerState> _historyScaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
+  ScrollController _historyScrollController = new ScrollController();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  int? listCount = 0;
+  bool isLoading = false;
+  String? listNext = "";
+  String? listPrevious = "";
+  List<DeliveryModel> jobListing = [];
+  bool noJobsInList = false;
 
   @override
   void initState() {
-    myDate();
+    getRiderJobListing();
+    _historyScrollController.addListener(() {
+      if (_historyScrollController.position.pixels ==
+              _historyScrollController.position.maxScrollExtent &&
+          _historyScrollController.position.pixels != 0) {
+        getRiderJobListing();
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _historyScrollController.dispose();
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  void getRiderJobListing() async {
+    if (!isLoading) {
+      if (listNext != null && !isLoading) {
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await RiderDeliveryAuthService()
+            .getRiderHistory(listNext, listPrevious);
+
+        if (result == null) {
+          noJobsInList = true;
+
+          isLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        listCount = result['count'];
+        listNext = result['next'];
+        listPrevious = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noJobsInList = false;
+            isLoading = false;
+            jobListing.addAll(tempList!);
+          });
+        }
+      }
+      if (jobListing.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noJobsInList = true;
+          });
+        }
+      } else if (listNext == null && jobListing.length > 6) {
+        _historyScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: const Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
   @override
@@ -43,10 +112,12 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
         onWillPop: () async {
           return true;
         },
-        child: Scaffold(
-          backgroundColor: white,
-          appBar: _buildAppBar() as PreferredSizeWidget?,
-          body: _buildBody(),
+        child: ScaffoldMessenger(
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: _buildAppBar() as PreferredSizeWidget?,
+            body: _buildBody(),
+          ),
         ),
       ),
     );
@@ -83,69 +154,102 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
   }
 
   Widget _buildBody() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHistoryList(),
-          ],
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
         ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: _buildHistoryList(),
       ),
     );
   }
 
   Widget _buildHistoryList() {
-    return ListView.builder(
-      itemCount: 10,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (BuildContext context, int index) {
-        return Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: greyBorderColor,
+    if (isLoading) {
+      return Center(
+        child: CircularLoadingIndicator(),
+      );
+    } else {
+      if (!noJobsInList) {
+        return SingleChildScrollView(
+          controller: _historyScrollController,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                fit: FlexFit.loose,
+                child: ListView.builder(
+                  itemCount: jobListing.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return InkWell(
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
+                          // 'showDetails': true,
+                          'journeyId': jobListing[index].id
+                        }).whenComplete(() => _onRefresh());
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: greyBorderColor,
+                              ),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 10.0, right: 10.0, top: 12.0),
+                                  child: _buildDateAndWaitingButton(index),
+                                ),
+                                DeliveryOrderTile(
+                                    jobListing: jobListing[index]),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-                borderRadius: BorderRadius.circular(5),
               ),
-              child: Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildDateAndWaitingButton(),
-                    _buildLogoAndDeliveryAndAmount(),
-                    _buildItemsAndKg(),
-                    SizedBox(height: 10.0),
-                    _buildIconAndAddressAndPickup(),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 10.0),
-          ],
+            ],
+          ),
         );
-      },
-    );
+      }
+      return NoItemInList(
+        msg: AppLocalization.of(context)!.noResultFound,
+      );
+    }
   }
 
-  Widget _buildDateAndWaitingButton() {
+  Widget _buildDateAndWaitingButton(int index) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(child: _buildDate()),
-        _buildWaitingButton(),
+        Expanded(child: _buildDate(index)),
+        _buildWaitingButton(index),
       ],
     );
   }
 
-  Widget _buildDate() {
+  Widget _buildDate(int index) {
+    String date =
+        DateFormat("dd MMMM,yyyy").format(jobListing[index].createdAt!);
     return Text(
-      TodayDate.toString(),
+      date,
       style: TextStyle(
         fontWeight: FontWeight.w700,
         color: darkGrey,
@@ -155,17 +259,19 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
     );
   }
 
-  Widget _buildWaitingButton() {
+  Widget _buildWaitingButton(int index) {
+    Color color = getStatusColor(index);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: naturalGreenLight,
+        color: color.withOpacity(0.1),
       ),
       child: Text(
-        'Completed',
+        jobListing[index].status ?? "",
         style: TextStyle(
-          color: naturalGreen,
+          color: color,
           fontSize: 8,
           fontWeight: FontWeight.w600,
           fontFamily: "Inter",
@@ -174,122 +280,41 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
     );
   }
 
-  Widget _buildLogoAndDeliveryAndAmount() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            _buildLogo(),
-            _buildVerticalDivider(),
-            _buildDelivery(),
-          ],
-        ),
-        _buildAmount()
-      ],
-    );
+  getStatusColor(int index) {
+    switch (jobListing[index].status) {
+      case 'Awaiting Pickup':
+        return starYellow;
+      case 'Pending':
+        return darkGrey;
+      case 'Ongoing':
+        return navyBlue;
+      case 'Completed':
+        return naturalGreen;
+      case 'Canceled':
+        return mateRed;
+      default:
+        return navyBlue;
+    }
   }
 
-  Widget _buildLogo() {
-    return Image.asset(
-      'assets/images/rider/kfc.png',
-      height: 24,
-      width: 24,
-      fit: BoxFit.fill,
-    );
-  }
-
-  Widget _buildVerticalDivider() {
-    return Container(
-      height: 50,
-      child: VerticalDivider(
-        color: greySecondaryYarn,
-        thickness: 1,
-        indent: 10,
-        endIndent: 10,
-        width: 20,
-      ),
-    );
-  }
-
-  Widget _buildDelivery() {
-    return Text(
-      'Delivery',
-      style: TextStyle(
-        color: black,
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  Widget _buildAmount() {
-    return Text(
-      "₦${Amount}",
-      style: TextStyle(
-        color: yarnBlack,
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  Widget _buildItemsAndKg() {
-    return Text(
-      "${items} Items (${kg}Kg)",
-      style: TextStyle(
-        color: black,
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        fontFamily: "Inter",
-      ),
-    );
-  }
-
-  Widget _buildIconAndAddressAndPickup() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildIconImage(),
-        SizedBox(width: 7.0),
-        Expanded(child: _buildMainAddressColumn())
-      ],
-    );
-  }
-
-  Widget _buildIconImage() {
-    return SvgPicture.asset(
-      'assets/images/rider/ic_route.svg',
-      height: 45,
-    );
-  }
-
-  Widget _buildMainAddressColumn() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'KFC, O&O Filling station berger expressway',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: darkGrey,
-            fontSize: 12,
-            fontFamily: "Inter",
-          ),
-        ),
-        SizedBox(height: 20),
-        Text(
-          'Festus street ,Agege',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: darkGrey,
-            fontSize: 12,
-            fontFamily: "Inter",
-          ),
-        ),
-      ],
-    );
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        listNext = "";
+        listPrevious = "";
+        listCount = 0;
+        isLoading = false;
+        jobListing = [];
+        getRiderJobListing();
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _refreshController.refreshCompleted();
+      }
+    });
   }
 }

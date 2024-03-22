@@ -29,6 +29,7 @@ class _CategoriesListState extends State<CategoriesList> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   ScrollController _categoryScrollController = ScrollController();
+
   void getCategoriesList() async {
     if (!isCategoryLoading) {
       if (categoryNext != null && !isCategoryLoading) {

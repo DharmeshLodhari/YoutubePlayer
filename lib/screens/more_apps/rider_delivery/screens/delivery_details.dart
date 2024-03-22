@@ -377,7 +377,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                     SizedBox(height: 10.0),
                     _buildIconAndAddressAndPickup(),
                     SizedBox(height: 10.0),
-                    _buildButtonCancelAndPickup(),
+                    _buildButtonAcceptReject(),
                   ],
                 ),
               ),
@@ -721,7 +721,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     );
   }
 
-  Widget _buildButtonCancelAndPickup() {
+  Widget _buildButtonAcceptReject() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: Row(

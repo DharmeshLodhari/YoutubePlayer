@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/find_jobs_tab.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/service_tab.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
@@ -97,10 +98,10 @@ class _RiderDashboardState extends State<RiderDashboard> {
 
   List<Widget> _buildAppBarActions() {
     return [
-      _searchBtn(),
-      const SizedBox(
-        width: 10,
-      ),
+      // _searchBtn(),
+      // const SizedBox(
+      //   width: 10,
+      // ),
       _moreOptionsBtn(),
       const SizedBox(
         width: 6,
@@ -135,7 +136,7 @@ class _RiderDashboardState extends State<RiderDashboard> {
               child: StatefulBuilder(
                 builder: (context, changeState) {
                   return SizedBox(
-                    height: 100,
+                    height: 80,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: Column(
@@ -144,31 +145,8 @@ class _RiderDashboardState extends State<RiderDashboard> {
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              // Navigator.pushNamed(context, Routes.JOBS_CREATE);
-                            },
-                            child: Row(
-                              children: [
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  'Create Job',
-                                  style: TextStyle(
-                                      fontSize: 14.8,
-                                      fontFamily: "Inter",
-                                      color: black,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              // Navigator.pushNamed(context, Routes.MY_JOBS);
+                              Navigator.of(context)
+                                  .pushNamed(Routes.DELIVERY_HISTORY);
                             },
                             child: Row(
                               children: [

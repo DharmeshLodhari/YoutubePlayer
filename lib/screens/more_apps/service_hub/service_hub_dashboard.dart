@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/find_jobs_tab.dart';
 import 'package:Slydo/screens/more_apps/service_hub/screens/jobs_dashboard.dart';
 import 'package:Slydo/screens/more_apps/service_hub/service_hub.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -24,6 +25,7 @@ class ServiceHubDashboard extends StatefulWidget {
 
 class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   late BasketBloc basketBloc;
+  late UserBloc userBloc;
   int currentIndex = 0;
   late AppLocalization appLocalization;
   bool isSelected = false;
@@ -177,6 +179,48 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
                               ],
                             ),
                           ),
+                          const SizedBox(
+                            height: 18,
+                          ),
+                          if (userBloc.user.rider != null &&
+                              userBloc.user.rider?.isStatusApproved() == true)
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.pushNamed(
+                                    context, Routes.DELIVERY_HISTORY);
+                              },
+                              child: Row(
+                                children: [
+                                  // Container(
+                                  //     height: 34,
+                                  //     width: 34,
+                                  //     alignment: Alignment.center,
+                                  //     decoration: const BoxDecoration(
+                                  //       borderRadius: BorderRadius.all(
+                                  //         Radius.circular(10),
+                                  //       ),
+                                  //       color: Color(0xfffafbff),
+                                  //     ),
+                                  //     child: SvgPicture.asset(
+                                  //         "assets/images/Document.svg")),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'Rider History',
+                                    style: TextStyle(
+                                        fontSize: 14.8,
+                                        fontFamily: "Inter",
+                                        color: black,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -298,13 +342,23 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   Widget tabViews() {
     return IndexedStack(
       index: currentIndex,
-      children: const [SuperHub(), JobsDashboard()],
+      children: [SuperHub(), getJobList()],
     );
+  }
+
+  Widget getJobList() {
+    if (userBloc.user.rider != null &&
+        userBloc.user.rider?.isStatusApproved() == true) {
+      return FindJobsTab();
+    } else {
+      return JobsDashboard();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,

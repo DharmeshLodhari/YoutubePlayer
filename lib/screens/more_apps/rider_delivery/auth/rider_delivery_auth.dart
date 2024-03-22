@@ -9,7 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class RiderDeliveryAuthService extends AuthService {
-  //get rider job list
+  //get all dispatch job list
   Future<Map<String, dynamic>?> getJobListing(
       String? next, String? previous) async {
     String url = "";
@@ -19,6 +19,50 @@ class RiderDeliveryAuthService extends AuthService {
     if (next == "") {
       url =
           "${AppConfig.baseUrl}/api/v1/shipping/journeys/active-jobs/?user_current_location=6.6616402,3.6470794";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint('ALL Job URL ---> $url');
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      List<DeliveryModel> askCategories = [];
+      var jsonData = json.decode(response.body);
+
+      for (var item in jsonData["results"]) {
+        DeliveryModel categories = DeliveryModel.fromJson(item);
+        askCategories.add(categories);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": askCategories
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  //get job history
+  Future<Map<String, dynamic>?> getRiderHistory(
+      String? next, String? previous) async {
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = "${AppConfig.baseUrl}/api/v1/shipping/journeys/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -229,7 +273,7 @@ class RiderDeliveryAuthService extends AuthService {
     //   }
     // } catch (e) {
     //   print("Error: $e");
-      return false;
+    return false;
     // }
   }
 

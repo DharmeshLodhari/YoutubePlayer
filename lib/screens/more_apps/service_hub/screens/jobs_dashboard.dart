@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../../data/environment.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../widget/customized_dropdown_field.dart';
 import '../../../../widget/debouncer_widget.dart';
@@ -595,8 +594,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
   }
 
   void getCategorySearchedList() async {
-    String url = getSearchUrl();
-
     if (!isItemLoading) {
       if (categoryNext != null && !isItemLoading) {
         isItemLoading = true;
@@ -606,7 +603,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ServiceHubAuthService()
-            .getSearchCategoryList(url, categoryNext, categoryPrevious);
+            .getSearchCategoryList(
+                categoryNext, categoryPrevious, searchItemTextController!.text);
         if (result == null) {
           isItemLoading = false;
           return;
@@ -639,10 +637,6 @@ class _JobsDashboardState extends State<JobsDashboard> {
       }
       if (mounted) setState(() {});
     }
-  }
-
-  String getSearchUrl() {
-    return "${AppConfig.baseUrl}/api/v1/job-service/categories/?search=${searchItemTextController!.text}";
   }
 
   Widget bottomSheetTabBar() {

@@ -25,7 +25,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../../data/environment.dart';
 import '../../../../widget/debouncer_widget.dart';
 import '../../../../widget/no_item_in_list.dart';
 import '../models/job_location_model.dart';
@@ -149,8 +148,6 @@ class _EditJobState extends State<EditJob> {
   bool isItemLoading = false;
 
   void getCategorySearchedList() async {
-    String url = getSearchUrl();
-
     if (!isItemLoading) {
       if (categoryNext != null && !isItemLoading) {
         isItemLoading = true;
@@ -161,7 +158,8 @@ class _EditJobState extends State<EditJob> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ServiceHubAuthService()
-            .getSearchCategoryList(url, categoryNext, categoryPrevious);
+            .getSearchCategoryList(
+                categoryNext, categoryPrevious, searchItemTextController!.text);
         if (result == null) {
           isItemLoading = false;
           return;
@@ -191,10 +189,6 @@ class _EditJobState extends State<EditJob> {
       }
       if (mounted) setState(() {});
     }
-  }
-
-  String getSearchUrl() {
-    return "${AppConfig.baseUrl}/api/v1/job-service/categories/?search=${searchItemTextController!.text}";
   }
 
   void clearSearchedListItems() {
