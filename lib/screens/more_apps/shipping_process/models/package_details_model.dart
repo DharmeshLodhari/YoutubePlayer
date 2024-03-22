@@ -213,6 +213,10 @@ class PackageDetailsModel {
     shippingNote = note;
   }
 
+  bool hasSlydoDispatchAvailable() {
+    return (hasSlydoDispatch ?? false);
+  }
+
   bool hasShippingAvailable() {
     return (hasCourierDispatch ?? false) ||
         (hasMerchantDispatch ?? false) ||

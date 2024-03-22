@@ -29,12 +29,12 @@ class _DeliveryOptionState extends State<DeliveryOption> {
 
   @override
   void initState() {
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   if (shippingProcessBloc.getPackageDetailModel().hasShippingAvailable() ==
-    //       false) {
-    //     deliveryOption.removeAt(0);
-    //   }
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (shippingProcessBloc.getPackageDetailModel().hasShippingAvailable() ==
+          false) {
+        deliveryOption.removeAt(0);
+      }
+    });
 
     super.initState();
   }
