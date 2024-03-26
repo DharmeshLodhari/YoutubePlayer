@@ -102,7 +102,7 @@ class ShippingProcessBloc extends ChangeNotifier {
 
   void updateBuyNowProduct(Product? value, Variant? variant,
       List<AddOns> addOns, ShippingAddress addressListing) {
-    getPackageDetailModel().buyNow = value;
+    getPackageDetailModel().buyNow = value?.copyWith(quantity: 1);
     getPackageDetailModel().variants = variant;
     getPackageDetailModel().addOns = addOns;
     getPackageDetailModel().merchant = value?.seller;

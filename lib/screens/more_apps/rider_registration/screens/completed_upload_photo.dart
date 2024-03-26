@@ -24,7 +24,9 @@ class _CompletedUploadPhotoState extends State<CompletedUploadPhoto>
     _controller.addListener(() {
       if (_controller.isCompleted) {
         Future.delayed(Duration(seconds: 1)).then((value) {
-          if (mounted) Navigator.of(context).popUntil(ModalRoute.withName(Routes.REQUIRE_STEPS));
+          if (mounted)
+            Navigator.of(context)
+                .popUntil(ModalRoute.withName(Routes.REQUIRE_STEPS));
         });
       }
     });
@@ -48,7 +50,7 @@ class _CompletedUploadPhotoState extends State<CompletedUploadPhoto>
           return true;
         },
         child: Scaffold(
-          backgroundColor: white,
+          backgroundColor: lightGrey,
           appBar: _buildAppBar() as PreferredSizeWidget?,
           body: _buildBody(),
         ),

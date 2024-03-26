@@ -72,7 +72,7 @@ class _PreviewDeliveryProofScreenState
           return true;
         },
         child: Scaffold(
-          backgroundColor: white,
+          backgroundColor: lightGrey,
           appBar: _buildAppBar() as PreferredSizeWidget?,
           body: _buildBody(),
         ),

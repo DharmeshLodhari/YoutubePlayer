@@ -46,43 +46,41 @@ class ShoppingCartTileForProduct extends StatelessWidget {
           elevation: 0,
           child: Container(
             decoration: decorateBox(),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Column(
-                children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: getLeading(),
-                    title: getTitle(),
-                    subtitle: getSubtitle(context),
-                    trailing: getTrailing(),
-                    onTap: () {
-                      Navigator.pushNamed(context, Routes.PRODUCT,
-                          arguments: {"product": product});
-                    },
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(),
-                      Text(
-                        "Subtotal",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: darkGrey,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: "Inter",
-                        ),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Column(
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: getLeading(),
+                  title: getTitle(),
+                  subtitle: getSubtitle(context),
+                  trailing: getTrailing(),
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.PRODUCT,
+                        arguments: {"product": product});
+                  },
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(),
+                    Text(
+                      "Subtotal",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: darkGrey,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: "Inter",
                       ),
-                      SizedBox(width: 60),
-                      getSubTotalPriceWidget(),
-                    ],
-                  )
-                ],
-              ),
+                    ),
+                    SizedBox(width: 60),
+                    getSubTotalPriceWidget(),
+                  ],
+                )
+              ],
             ),
           ),
         ),

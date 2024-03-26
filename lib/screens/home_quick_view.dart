@@ -598,7 +598,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         NavigationUtil.push(context, screen: SuperStoreHome());
         break;
       case 'Services Hub':
-        Navigator.pushNamed(context, Routes.SUPER_HUB);
+        Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
         break;
       default:
         // Handle the default case (if any)

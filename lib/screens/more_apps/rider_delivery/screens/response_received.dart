@@ -40,7 +40,7 @@ class _ResponseReceivedState extends State<ResponseReceived> {
           return true;
         },
         child: Scaffold(
-          backgroundColor: white,
+          backgroundColor: lightGrey,
           body: _buildBody(),
         ),
       ),

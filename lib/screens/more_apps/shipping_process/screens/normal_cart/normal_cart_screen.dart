@@ -87,10 +87,13 @@ class NormalCartScreenState extends State<NormalCartScreen> {
 
     return ScaffoldMessenger(
       key: _normalCartScaffoldMessengerKey,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: _buildBodyOfCart(),
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: _buildBodyOfCart(),
+          ),
         ),
       ),
     );

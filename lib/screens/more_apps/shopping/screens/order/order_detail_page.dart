@@ -228,10 +228,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         return true;
       },
       child: Scaffold(
-          key: scaffoldKey,
-          backgroundColor: Colors.white,
-          appBar: appBar() as PreferredSizeWidget?,
-          body: SingleChildScrollView(child: scaffoldBody())),
+        key: scaffoldKey,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: SingleChildScrollView(child: _buildBody()),
+      ),
     );
   }
 
@@ -358,7 +359,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return const SizedBox.shrink();
   }
 
-  Widget scaffoldBody() {
+  Widget _buildBody() {
     bool canPay = order!.status == 'Awaiting Payment' &&
         userBloc.user.userName != order!.merchant;
 
@@ -377,50 +378,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 borderRadius: BorderRadius.circular(10)),
             child: Column(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 30.0, top: 20),
-                  child: GestureDetector(
-                    onTap: () => Navigator.pushNamed(
-                        myGlobals.navigationKey.currentContext!,
-                        Routes.USER_PROFILE,
-                        arguments: {
-                          "searchedUserName":
-                              order!.customerName == userBloc.user.userName
-                                  ? order!.merchant
-                                  : order!.customerName
-                        }),
-                    child: Row(
-                      children: [
-                        getLeading(),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              getCustomerOrMerchant() ?? '',
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 17.4,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: 6,
-                            ),
-                            Text(
-                              getCustomerOrMerchant() ?? '',
-                              style: TextStyle(
-                                  color: greyBorderColor,
-                                  fontSize: 13.4,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+                _buildUserProfile(),
                 SizedBox(
                   height: 10,
                 ),
@@ -428,219 +386,264 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   color: greyBackground,
                   thickness: 1,
                 ),
-                !onTap
-                    ? Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border:
-                                Border.all(color: blackFont.withOpacity(.12)),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Order Summary",
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 17.4,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                IconButton(
-                                    onPressed: () => setState(() {
-                                          onTap = !onTap;
-                                        }),
-                                    icon: Icon(
-                                      Icons.keyboard_arrow_up_rounded,
-                                      color: navyBlue,
-                                    ))
-                              ]),
-                        ),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: blackFont.withOpacity(.12))),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Order Summary",
-                                        style: TextStyle(
-                                            color: blackFont,
-                                            fontSize: 17.4,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      IconButton(
-                                          onPressed: () => setState(() {
-                                                onTap = !onTap;
-                                              }),
-                                          icon: Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            color: navyBlue,
-                                          ))
-                                    ]),
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                itemCount: items.length,
-                                itemBuilder:
-                                    (BuildContext context, int index) =>
-                                        getItemTile(index),
-                              ),
-                              Divider(color: blackFont.withOpacity(.12)),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              getOrderDetail(),
-                              SizedBox(
-                                height: 10,
-                              ),
-
-                              // canPay
-                              //     ? Expanded(
-                              //         child: Align(
-                              //           alignment: Alignment.bottomCenter,
-                              //           child: Padding(
-                              //             padding: const EdgeInsets.all(16.0),
-                              //             child: CurvedButton(
-                              //               onPressed: () {
-                              //                 showDialog(
-                              //                     context: context,
-                              //                     builder:
-                              //                         (dialogLoadingContext) =>
-                              //                             LoadingIndicator());
-
-                              //                 var data = {
-                              //                   "orders": [order!.id]
-                              //                 };
-                              //                 PaymentAndBankingAuth()
-                              //                     .makePaymentForCartOrder(data)
-                              //                     .then(
-                              //                   (response) {
-                              //                     Navigator.pop(context);
-                              //                     if (response.statusCode ==
-                              //                         200) {
-                              //                       Navigator.pop(context, true);
-
-                              //                       showToast(
-                              //                           message:
-                              //                               'Payment successful');
-                              //                     } else if (response
-                              //                             .statusCode ==
-                              //                         500) {
-                              //                       showToast(
-                              //                           message:
-                              //                               AppLocalization.of(
-                              //                                       context)!
-                              //                                   .serverError);
-                              //                     } else {
-                              //                       showToast(
-                              //                           message: jsonDecode(
-                              //                                   response.body)[0]
-                              //                               ['errors']);
-                              //                     }
-                              //                   },
-                              //                 );
-                              //               },
-                              //               text: 'Pay Now',
-                              //             ),
-                              //           ),
-                              //         ),
-                              //       )
-                              //     : const SizedBox.shrink(),
-                            ],
-                          ),
-                        ),
-                      ),
-                !onTapStatus
-                    ? Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border:
-                                Border.all(color: blackFont.withOpacity(.12)),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Track Status",
-                                  style: TextStyle(
-                                      color: blackFont,
-                                      fontSize: 17.4,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                IconButton(
-                                    onPressed: () => setState(() {
-                                          onTapStatus = !onTapStatus;
-                                        }),
-                                    icon: Icon(
-                                      Icons.keyboard_arrow_up_rounded,
-                                      color: navyBlue,
-                                    ))
-                              ]),
-                        ),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: blackFont.withOpacity(.12))),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Track Status",
-                                        style: TextStyle(
-                                            color: blackFont,
-                                            fontSize: 17.4,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      IconButton(
-                                          onPressed: () => setState(() {
-                                                onTapStatus = !onTapStatus;
-                                              }),
-                                          icon: Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            color: navyBlue,
-                                          ))
-                                    ]),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              stepperBody()
-                            ],
-                          ),
-                        ),
-                      ),
+                _buildOrderSummary(),
+                _buildTrackStatus(),
               ],
             ),
           );
+  }
+
+  Widget _buildUserProfile() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 30.0, top: 20),
+      child: GestureDetector(
+        onTap: () => Navigator.pushNamed(
+            myGlobals.navigationKey.currentContext!, Routes.USER_PROFILE,
+            arguments: {
+              "searchedUserName": order!.customerName == userBloc.user.userName
+                  ? order!.merchant
+                  : order!.customerName
+            }),
+        child: Row(
+          children: [
+            getLeading(),
+            SizedBox(
+              width: 20,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getCustomerOrMerchant() ?? '',
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 17.4,
+                      fontWeight: FontWeight.w600),
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+                Text(
+                  getCustomerOrMerchant() ?? '',
+                  style: TextStyle(
+                      color: greyBorderColor,
+                      fontSize: 13.4,
+                      fontWeight: FontWeight.w600),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderSummary() {
+    if (!onTap) {
+      return Padding(
+        padding: EdgeInsets.all(20),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: blackFont.withOpacity(.12)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text(
+              "Order Summary",
+              style: TextStyle(
+                  color: blackFont,
+                  fontSize: 17.4,
+                  fontWeight: FontWeight.w600),
+            ),
+            IconButton(
+                onPressed: () => setState(() {
+                      onTap = !onTap;
+                    }),
+                icon: Icon(
+                  Icons.keyboard_arrow_up_rounded,
+                  color: navyBlue,
+                ))
+          ]),
+        ),
+      );
+    } else {
+      return Padding(
+        padding: EdgeInsets.all(20),
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: blackFont.withOpacity(.12))),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Order Summary",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 17.4,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      IconButton(
+                          onPressed: () => setState(() {
+                                onTap = !onTap;
+                              }),
+                          icon: Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: navyBlue,
+                          ))
+                    ]),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                itemCount: items.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    getItemTile(index),
+              ),
+              Divider(color: blackFont.withOpacity(.12)),
+              SizedBox(
+                height: 20,
+              ),
+              getOrderDetail(),
+              SizedBox(
+                height: 10,
+              ),
+
+              // canPay
+              //     ? Expanded(
+              //         child: Align(
+              //           alignment: Alignment.bottomCenter,
+              //           child: Padding(
+              //             padding: const EdgeInsets.all(16.0),
+              //             child: CurvedButton(
+              //               onPressed: () {
+              //                 showDialog(
+              //                     context: context,
+              //                     builder:
+              //                         (dialogLoadingContext) =>
+              //                             LoadingIndicator());
+
+              //                 var data = {
+              //                   "orders": [order!.id]
+              //                 };
+              //                 PaymentAndBankingAuth()
+              //                     .makePaymentForCartOrder(data)
+              //                     .then(
+              //                   (response) {
+              //                     Navigator.pop(context);
+              //                     if (response.statusCode ==
+              //                         200) {
+              //                       Navigator.pop(context, true);
+
+              //                       showToast(
+              //                           message:
+              //                               'Payment successful');
+              //                     } else if (response
+              //                             .statusCode ==
+              //                         500) {
+              //                       showToast(
+              //                           message:
+              //                               AppLocalization.of(
+              //                                       context)!
+              //                                   .serverError);
+              //                     } else {
+              //                       showToast(
+              //                           message: jsonDecode(
+              //                                   response.body)[0]
+              //                               ['errors']);
+              //                     }
+              //                   },
+              //                 );
+              //               },
+              //               text: 'Pay Now',
+              //             ),
+              //           ),
+              //         ),
+              //       )
+              //     : const SizedBox.shrink(),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildTrackStatus() {
+    if (!onTapStatus) {
+      return Padding(
+        padding: EdgeInsets.all(20),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: blackFont.withOpacity(.12)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text(
+              "Track Status",
+              style: TextStyle(
+                  color: blackFont,
+                  fontSize: 17.4,
+                  fontWeight: FontWeight.w600),
+            ),
+            IconButton(
+                onPressed: () => setState(() {
+                      onTapStatus = !onTapStatus;
+                    }),
+                icon: Icon(
+                  Icons.keyboard_arrow_up_rounded,
+                  color: navyBlue,
+                ))
+          ]),
+        ),
+      );
+    } else {
+      return Padding(
+        padding: EdgeInsets.all(20),
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: blackFont.withOpacity(.12))),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Track Status",
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 17.4,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      IconButton(
+                          onPressed: () => setState(() {
+                                onTapStatus = !onTapStatus;
+                              }),
+                          icon: Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: navyBlue,
+                          ))
+                    ]),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              stepperBody()
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   Widget statusIconButton() {
@@ -1341,14 +1344,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               fontSize: 14,
                               fontWeight: FontWeight.w500)),
                       Text(
-                          getActiveOrderStatus(order, "Payment Successfully")
+                          getActiveOrderStatus(order, "Payment Received")
                               ? 'Payment has been receive sucessfully.'
                               : "",
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
-                      new Text(getOrderStatusTime(order, "Payment Successful"),
+                      new Text(getOrderStatusTime(order, "Payment Received"),
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 10,
@@ -1356,8 +1359,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     ],
                   ),
                   content: SizedBox.shrink(),
-                  isActive: getActiveOrderStatus(order, "Payment Successful"),
-                  state: getActiveOrderStatus(order, "Payment Successful")
+                  isActive: getActiveOrderStatus(order, "Payment Received"),
+                  state: getActiveOrderStatus(order, "Payment Received")
                       ? track.StepState.complete
                       : track.StepState.disabled,
                 ),

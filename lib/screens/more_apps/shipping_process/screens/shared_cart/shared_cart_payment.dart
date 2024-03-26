@@ -107,7 +107,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
         },
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          backgroundColor: white,
+          backgroundColor: lightGrey,
           appBar: _buildAppBar() as PreferredSizeWidget?,
           body: SmartRefresher(
             enablePullDown: true,

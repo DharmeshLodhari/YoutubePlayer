@@ -58,7 +58,7 @@ class _ShippingOptionState extends State<ShippingOption> {
           return true;
         },
         child: Scaffold(
-          backgroundColor: white,
+          backgroundColor: lightGrey,
           appBar: _buildAppBar() as PreferredSizeWidget?,
           body: _buildBody(),
         ),

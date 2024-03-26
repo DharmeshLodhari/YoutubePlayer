@@ -40,7 +40,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
           return true;
         },
         child: Scaffold(
-          backgroundColor: white,
+          backgroundColor: lightGrey,
           body: _buildBody(),
         ),
       ),

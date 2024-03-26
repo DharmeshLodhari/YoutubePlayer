@@ -130,7 +130,8 @@ class _RidersUpdateState extends State<RidersUpdate> {
   Widget _buildButton() {
     return CurvedButton(
       onPressed: () {
-        Navigator.of(context).popAndPushNamed(Routes.RIDER_DASHBOARD);
+        Navigator.of(context)
+            .popAndPushNamed(Routes.SUPER_HUB, arguments: {'page': 1});
       },
       backgroundColor: navyBlue,
       textColor: white,

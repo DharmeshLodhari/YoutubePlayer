@@ -19,24 +19,27 @@ class PackageDetailTile extends StatelessWidget {
   Widget build(BuildContext context) {
     shippingProcessBloc = Provider.of<ShippingProcessBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
-    return Container(
-      margin: EdgeInsets.all(7.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: shippingProcessBloc.currentSelectedIndex == index &&
+    return GestureDetector(
+      onTap: () {
+        shippingProcessBloc.currentSelectedIndex = index;
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadowTwo,
+        elevation: 0,
+        child: Container(
+          decoration: shippingProcessBloc.currentSelectedIndex == index &&
                   shippingProcessBloc.isPaymentSuccessful == false
-              ? navyBlue
-              : white,
-          width: 1,
-        ),
-      ),
-      child: GestureDetector(
-        onTap: () {
-          shippingProcessBloc.currentSelectedIndex = index;
-        },
-        child: Padding(
-          padding: EdgeInsets.all(10.0),
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: navyBlue,
+                    width: 1,
+                  ),
+                )
+              : decorateBox(),
+          // decoration: decorateBox(),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Column(
             children: [
               _buildPackageDetail(context),
@@ -107,7 +110,7 @@ class PackageDetailTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  moneyDisplayNormalizer(packageDetailsModel.totalPrice),
+                  moneyDisplayNormalizer(packageDetailsModel.totalPrice ?? 0),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

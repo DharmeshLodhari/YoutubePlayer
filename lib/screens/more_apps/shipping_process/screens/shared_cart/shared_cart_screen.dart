@@ -120,18 +120,21 @@ class SharedCartScreenState extends State<SharedCartScreen> {
     userBloc = Provider.of<UserBloc>(context);
     return ScaffoldMessenger(
       key: _sharedCartScaffoldMessengerKey,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: _buildBodyOfCart(),
             ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildBodyOfCart(),
           ),
         ),
       ),

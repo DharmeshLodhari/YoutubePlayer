@@ -17,7 +17,9 @@ import '../../../utils/util.dart';
 import '../yarn/widgets/yarn_tab_selection.dart';
 
 class ServiceHubDashboard extends StatefulWidget {
-  const ServiceHubDashboard({Key? key}) : super(key: key);
+  var arguments;
+
+  ServiceHubDashboard({Key? key, this.arguments}) : super(key: key);
 
   @override
   State<ServiceHubDashboard> createState() => _ServiceHubDashboardState();
@@ -32,6 +34,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   String selected = "";
 
   bool _tabsVisible = true;
+  late PageController _pageViewController;
 
   void _showTabs(bool visible) {
     if (_tabsVisible != visible) {
@@ -39,6 +42,16 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         _tabsVisible = visible;
       });
     }
+  }
+
+  @override
+  void initState() {
+    _pageViewController =
+        PageController(initialPage: widget.arguments['page'] ?? 0);
+
+    currentIndex = widget.arguments['page'] ?? 0;
+
+    super.initState();
   }
 
   AppBar appBar() {
@@ -82,14 +95,32 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           const SizedBox(
             width: 10,
           ),
-          _moreOptionsBtn(),
+          _buildRiderOption(),
           const SizedBox(
-            width: 6,
+            width: 10,
           ),
         ],
       ],
-      bottom: tabBar() as PreferredSizeWidget,
+      // bottom: tabBar() as PreferredSizeWidget,
     );
+  }
+
+  _buildRiderOption() {
+    if (userBloc.user.rider != null &&
+        userBloc.user.rider?.isStatusApproved() == true) {
+      return GestureDetector(
+        child: Icon(
+          Icons.history,
+          size: 24,
+          color: blackFont,
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, Routes.DELIVERY_HISTORY);
+        },
+      );
+    } else {
+      return _moreOptionsBtn();
+    }
   }
 
   Widget _moreOptionsBtn() {
@@ -107,122 +138,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
                     height: 100,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(context, Routes.JOBS_CREATE);
-                            },
-                            child: Row(
-                              children: [
-                                // Container(
-                                //     height: 34,
-                                //     width: 34,
-                                //     alignment: Alignment.center,
-                                //     decoration: const BoxDecoration(
-                                //       borderRadius: BorderRadius.all(
-                                //         Radius.circular(10),
-                                //       ),
-                                //       color: Color(0xfffafbff),
-                                //     ),
-                                //     child: SvgPicture.asset(
-                                //         "assets/images/Edit.svg")),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  'Create Job',
-                                  style: TextStyle(
-                                      fontSize: 14.8,
-                                      fontFamily: "Inter",
-                                      color: black,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(context, Routes.MY_JOBS);
-                            },
-                            child: Row(
-                              children: [
-                                // Container(
-                                //     height: 34,
-                                //     width: 34,
-                                //     alignment: Alignment.center,
-                                //     decoration: const BoxDecoration(
-                                //       borderRadius: BorderRadius.all(
-                                //         Radius.circular(10),
-                                //       ),
-                                //       color: Color(0xfffafbff),
-                                //     ),
-                                //     child: SvgPicture.asset(
-                                //         "assets/images/Document.svg")),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  'My Jobs',
-                                  style: TextStyle(
-                                      fontSize: 14.8,
-                                      fontFamily: "Inter",
-                                      color: black,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 18,
-                          ),
-                          if (userBloc.user.rider != null &&
-                              userBloc.user.rider?.isStatusApproved() == true)
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.pushNamed(
-                                    context, Routes.DELIVERY_HISTORY);
-                              },
-                              child: Row(
-                                children: [
-                                  // Container(
-                                  //     height: 34,
-                                  //     width: 34,
-                                  //     alignment: Alignment.center,
-                                  //     decoration: const BoxDecoration(
-                                  //       borderRadius: BorderRadius.all(
-                                  //         Radius.circular(10),
-                                  //       ),
-                                  //       color: Color(0xfffafbff),
-                                  //     ),
-                                  //     child: SvgPicture.asset(
-                                  //         "assets/images/Document.svg")),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'Rider History',
-                                    style: TextStyle(
-                                        fontSize: 14.8,
-                                        fontFamily: "Inter",
-                                        color: black,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
+                      child: _buildOptionList(),
                     ),
                   );
                 },
@@ -236,7 +152,46 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
     );
   }
 
-  Widget tabBar() {
+  Widget _buildOptionList() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, Routes.JOBS_CREATE);
+          },
+          child: Text(
+            'Create Job',
+            style: TextStyle(
+                fontSize: 14.8,
+                fontFamily: "Inter",
+                color: black,
+                fontWeight: FontWeight.w500),
+          ),
+        ),
+        const SizedBox(
+          height: 18,
+        ),
+        InkWell(
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, Routes.MY_JOBS);
+          },
+          child: Text(
+            'My Jobs',
+            style: TextStyle(
+                fontSize: 14.8,
+                fontFamily: "Inter",
+                color: black,
+                fontWeight: FontWeight.w500),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTabs() {
     return PreferredSize(
       preferredSize: const Size.fromHeight(80),
       child: Column(
@@ -247,6 +202,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           YarnTabSelection(
             onTap: (index) {
               currentIndex = index;
+              _pageViewController.jumpToPage(currentIndex);
               _showTabs(true);
               if (mounted) setState(() {});
             },
@@ -339,12 +295,33 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
     );
   }
 
-  Widget tabViews() {
-    return IndexedStack(
-      index: currentIndex,
-      children: [SuperHub(), getJobList()],
+  Widget _buildPageView() {
+    return Expanded(
+      child: PageView(
+        onPageChanged: (currentPage) {
+          updateCurrentAskTapOnHome(index: currentPage);
+        },
+        controller: _pageViewController,
+        children: [
+          SuperHub(),
+          getJobList(),
+        ],
+      ),
     );
   }
+
+  void updateCurrentAskTapOnHome({required int index}) {
+    setState(() {
+      currentIndex = index;
+    });
+  }
+
+  // Widget tabViews() {
+  //   return IndexedStack(
+  //     index: currentIndex,
+  //     children: [SuperHub(), getJobList()],
+  //   );
+  // }
 
   Widget getJobList() {
     if (userBloc.user.rider != null &&
@@ -373,7 +350,13 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           child: Scaffold(
             backgroundColor: Colors.white,
             appBar: appBar() as PreferredSizeWidget?,
-            body: tabViews(),
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildTabs(),
+                _buildPageView(),
+              ],
+            ),
           ),
         ),
       ),

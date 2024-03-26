@@ -76,7 +76,7 @@ class _SharedCartMembersState extends State<SharedCartMembers> {
         key: _scaffoldMessengerKey,
         child: Scaffold(
           key: _scaffoldKey,
-          backgroundColor: Colors.white,
+          backgroundColor: lightGrey,
           appBar: _buildAppBar() as PreferredSizeWidget?,
           body: _buildBody(),
         ),

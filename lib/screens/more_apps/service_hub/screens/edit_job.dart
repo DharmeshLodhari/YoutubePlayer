@@ -1787,7 +1787,8 @@ class _EditJobState extends State<EditJob> {
             showToast(
                 message: AppLocalization.of(context)!.jobEditedSuccessfully);
 
-            Navigator.pushNamed(context, Routes.SUPER_HUB);
+            Navigator.pushNamed(context, Routes.SUPER_HUB,
+                arguments: {'page': 0});
           }).catchError((error) {
             debugPrint(error.toString());
             showToast(message: error.toString());

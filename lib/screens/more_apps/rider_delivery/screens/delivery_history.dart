@@ -114,7 +114,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
         },
         child: ScaffoldMessenger(
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: lightGrey,
             appBar: _buildAppBar() as PreferredSizeWidget?,
             body: _buildBody(),
           ),
@@ -201,6 +201,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
                         children: [
                           Container(
                             decoration: BoxDecoration(
+                              color: Colors.white,
                               border: Border.all(
                                 color: greyBorderColor,
                               ),

@@ -28,7 +28,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
         },
         child: SafeArea(
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: lightGrey,
             // appBar: _buildAppBar() as PreferredSizeWidget?,
             body: _buildBody(),
           ),

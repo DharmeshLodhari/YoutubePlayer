@@ -45,7 +45,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
         },
         child: ScaffoldMessenger(
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: lightGrey,
             appBar: _buildAppBar() as PreferredSizeWidget?,
             body: _buildBody(),
           ),

@@ -675,7 +675,7 @@ class _HomeState extends State<Home> {
         break;
       case 'Services':
         hideBalance();
-        Navigator.pushNamed(context, Routes.SUPER_HUB);
+        Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
         break;
       case 'Blog':
         hideBalance();
@@ -1590,7 +1590,8 @@ class _HomeState extends State<Home> {
                     //   showToast(message: 'Coming soon.');
                     // }
                     hideBalance();
-                    Navigator.pushNamed(context, Routes.SUPER_HUB);
+                    Navigator.pushNamed(context, Routes.SUPER_HUB,
+                        arguments: {'page': 0});
                   },
                   iconColor: HexColor("#9B51E0"),
                 ),
@@ -1712,7 +1713,8 @@ class _HomeState extends State<Home> {
                     //   showToast(message: 'Coming soon.');
                     // }
                     hideBalance();
-                    Navigator.pushNamed(context, Routes.SUPER_HUB);
+                    Navigator.pushNamed(context, Routes.SUPER_HUB,
+                        arguments: {'page': 0});
                   },
                   iconColor: HexColor("#9B51E0"),
                 ),

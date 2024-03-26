@@ -35,7 +35,7 @@ class _ShareExperienceState extends State<ShareExperience> {
         child: SafeArea(
           child: Scaffold(
             resizeToAvoidBottomInset: false,
-            backgroundColor: Colors.white,
+            backgroundColor: lightGrey,
             // appBar: _buildAppBar() as PreferredSizeWidget?,
             body: _buildBody(),
             floatingActionButton: _buildSubmitButton(),

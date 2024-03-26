@@ -85,23 +85,23 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
       bottom: Platform.isIOS ? true : false,
       top: false,
       color: white,
-      child: WillPopScope(
-        onWillPop: () async {
-          if (shippingProcessBloc.isPaymentSuccessful) {
-            shippingProcessBloc.clearBuyNowData();
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
-          } else {
-            Navigator.of(context).pop();
-          }
-          return false;
-        },
-        child: Scaffold(
-          backgroundColor: white,
-          appBar: _buildAppBar() as PreferredSizeWidget?,
-          body: _buildBody(),
-        ),
+      // child: WillPopScope(
+      // onWillPop: () async {
+      //   if (shippingProcessBloc.isPaymentSuccessful) {
+      //     shippingProcessBloc.clearBuyNowData();
+      //     Navigator.of(context).pop();
+      //     Navigator.of(context).pop();
+      //   } else {
+      //     Navigator.of(context).pop();
+      //   }
+      //   return false;
+      // },
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        appBar: _buildAppBar() as PreferredSizeWidget?,
+        body: _buildBody(),
       ),
+      // ),
     );
   }
 
@@ -121,22 +121,22 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
           height: 1.3,
         ),
       ),
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          if (shippingProcessBloc.isPaymentSuccessful) {
-            shippingProcessBloc.clearBuyNowData();
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
-          } else {
-            Navigator.of(context).pop();
-          }
-        },
-      ),
+      // leading: IconButton(
+      // icon: Icon(
+      //   Icons.keyboard_arrow_left,
+      //   color: navyBlue,
+      //   size: 24,
+      // ),
+      // onPressed: () {
+      //   if (shippingProcessBloc.isPaymentSuccessful) {
+      //     shippingProcessBloc.clearBuyNowData();
+      //     Navigator.of(context).pop();
+      //     Navigator.of(context).pop();
+      //   } else {
+      //     Navigator.of(context).pop();
+      //   }
+      // },
+      // ),
       elevation: 0,
     );
   }

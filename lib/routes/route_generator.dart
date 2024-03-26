@@ -90,7 +90,6 @@ import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_history.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/preview_delivery_proof_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/response_received.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_dashboard.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/share_experience.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/take_delivery_proof.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/completed_upload_photo.dart';
@@ -988,10 +987,13 @@ class RouteGenerator {
 
       case Routes.SUPER_HUB:
         return PageTransition(
-            child: const ServiceHubDashboard(),
-            type: PageTransitionType.bottomToTop,
-            curve: Curves.ease,
-            settings: settings);
+          child: ServiceHubDashboard(
+            arguments: settings.arguments,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
 
       case Routes.SEARCH_MY_JOBS:
         return PageTransition(
@@ -1894,13 +1896,6 @@ class RouteGenerator {
         );
 
       /// Rider Dileviry
-      case Routes.RIDER_DASHBOARD:
-        return PageTransition(
-          child: RiderDashboard(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
       case Routes.RIDER_JOB_DETAILS:
         return PageTransition(
           child: DeliveryDetails(

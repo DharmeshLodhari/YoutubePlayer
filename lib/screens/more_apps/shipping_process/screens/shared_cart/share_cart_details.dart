@@ -84,7 +84,7 @@ class _SharedCartDetailsState extends State<SharedCartDetails> {
         child: ScaffoldMessenger(
           key: _cartItemScaffoldMessengerKey,
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: lightGrey,
             appBar: _buildAppBar() as PreferredSizeWidget?,
             body: _buildBody(),
             floatingActionButton: checkoutWidget(),

@@ -124,18 +124,21 @@ class FindJobsTabState extends State<FindJobsTab> {
     riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
     return ScaffoldMessenger(
       key: _findJobScaffoldMessengerKey,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: _buildJobList(),
             ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildJobList(),
           ),
         ),
       ),
@@ -195,6 +198,7 @@ class FindJobsTabState extends State<FindJobsTab> {
                         children: [
                           Container(
                             decoration: BoxDecoration(
+                              color: Colors.white,
                               border: Border.all(
                                 color: greyBorderColor,
                               ),

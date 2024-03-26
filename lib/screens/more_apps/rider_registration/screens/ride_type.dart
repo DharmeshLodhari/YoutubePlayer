@@ -48,7 +48,7 @@ class _RideTypeState extends State<RideType> {
           return true;
         },
         child: Scaffold(
-          backgroundColor: white,
+          backgroundColor: lightGrey,
           appBar: _buildAppBar() as PreferredSizeWidget?,
           body: _buildBody(),
         ),
