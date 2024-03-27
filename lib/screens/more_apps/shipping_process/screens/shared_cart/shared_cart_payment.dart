@@ -62,10 +62,8 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
     selectedCategory = "Shopping";
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      amountController.text = moneyDisplayNormalizer(int.parse(sharedCartBloc
-          .getSharedCartModel()
-          .getSharedCartTotalPrice()
-          .toString()));
+      amountController.text = moneyDisplayNormalizer(
+          int.parse(shippingProcessBloc.getTotalOrder().toString()));
       _onRefresh();
     });
     fetchCategory();
@@ -108,6 +106,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: lightGrey,
+          persistentFooterButtons: [],
           appBar: _buildAppBar() as PreferredSizeWidget?,
           body: SmartRefresher(
             enablePullDown: true,
@@ -211,9 +210,7 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
                 height: 10,
               ),
               if (splitSwitch == true) _buildMemberList(),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 80),
             ],
           ),
         ),
