@@ -83,16 +83,6 @@ class _SuperStoreHomeState extends State<SuperStoreHome> {
           height: 1.3,
         ),
       ),
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
       centerTitle: false,
       titleSpacing: 16,
       shadowColor: greySecondaryYarn,

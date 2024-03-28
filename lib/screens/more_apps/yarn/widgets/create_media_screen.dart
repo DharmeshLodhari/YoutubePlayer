@@ -444,11 +444,11 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
     // );
 
     List<XFile> res = await selectMultipleImageVideo();
-
+    print("imageCount = ${widget.imageCount}");
     if (res == null || res.isEmpty) return;
-    if (selectedMedia.length + res.length > 4) {
+    if ((widget.imageCount ?? 0) + res.length > 4) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('You can select up to 4 images'),
+        content: Text('You can select only 4 images or videos'),
       ));
       return;
     }
