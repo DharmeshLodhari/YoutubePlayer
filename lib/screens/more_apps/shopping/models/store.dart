@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/shipping_process/models/shared_cart_model.dart';
@@ -468,6 +469,20 @@ class Product extends PurchasableItem {
       // "item_updated_by": itemUpdatedBy?.toJson(),
       // 'qty': qty,
     };
+  }
+
+  String getName() {
+    if (name == null || name == "") {
+      return "";
+    }
+    // The encoded string
+    String encodedString = name!;
+
+    // Decoding the string using utf8 decoding
+    String decodedString = utf8.decode(encodedString.runes.toList());
+
+    // Printing the decoded string
+    return decodedString;
   }
 
   int? getBuyNowProductPrice() {

@@ -196,11 +196,13 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
           ),
           leftButtonOnPressed: () async {
             Navigator.pop(context);
+            return;
           },
           rightButtonOnPressed: () async {
             if (_formKey.currentState!.validate()) {
               await createCartGroup();
             }
+            return;
           });
       if (result != null && result == true) {
         Navigator.of(context).pop(true);

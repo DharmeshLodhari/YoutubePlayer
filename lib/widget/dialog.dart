@@ -3,6 +3,7 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/cutomized_alert/alert_style.dart';
 import 'package:Slydo/widget/cutomized_alert/customized_alert.dart';
+import 'package:Slydo/widget/cutomized_alert/dailog_button_stateful.dart';
 import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/cutomized_alert/modified_customized_alert.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -280,6 +281,7 @@ Future<bool?> showDialogBoxWithInput(
     Color? actionOneBgColor,
     Color? actionOneTextColor,
     Color? actionTwoBgColor,
+    bool? isLoading,
     Color? actionTwoTextColor,
     Function()? leftButtonOnPressed,
     Function()? rightButtonOnPressed,
@@ -298,18 +300,20 @@ Future<bool?> showDialogBoxWithInput(
     ),
     buttons: [
       if (leftButtonOnPressed != null)
-        DialogButton(
-          onPressed: () {
-            leftButtonOnPressed();
+        DialogButtonStateFul(
+          onPressed: () async {
+            await leftButtonOnPressed();
+            return;
           },
           textColor: actionOneTextColor,
           text: actionOneText,
           backgroundColor: actionOneBgColor,
         ),
       if (rightButtonOnPressed != null)
-        DialogButton(
-          onPressed: () {
-            rightButtonOnPressed();
+        DialogButtonStateFul(
+          onPressed: () async {
+            await rightButtonOnPressed();
+            return;
           },
           textColor: actionTwoTextColor,
           text: actionTwoText ?? "",

@@ -2,7 +2,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/cutomized_alert/alert_style.dart';
 import 'package:Slydo/widget/cutomized_alert/animation_transition.dart';
 import 'package:Slydo/widget/cutomized_alert/constants.dart';
-import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
+import 'package:Slydo/widget/cutomized_alert/dailog_button_stateful.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,7 @@ class ModifiedCustomizedAlert {
   final String? title;
   final String? desc;
   final Widget? content;
-  final List<DialogButton>? buttons;
+  final List<DialogButtonStateFul>? buttons;
   final Function? closeFunction;
   final RoundedBackgroundIcon? roundedBackgroundIcon;
 
