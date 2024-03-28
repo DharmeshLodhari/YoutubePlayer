@@ -91,7 +91,7 @@ class _CompletedUploadPhotoState extends State<CompletedUploadPhoto>
 
   Widget _buildSuccessImage() {
     return Lottie.asset(
-      'assets/lottie/successful.json',
+      'assets/lottie/completed.json',
       controller: _controller,
       onLoaded: (composition) {
         _controller

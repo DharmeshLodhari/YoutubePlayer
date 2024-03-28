@@ -255,8 +255,22 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                     return _getSlidableWithLists(
                         context,
                         GestureDetector(
-                          onTap: () {
-                            toggleAddOnCheckedState(index);
+                          onTap: () async {
+                            // toggleAddOnCheckedState(index);
+                            final data = await Navigator.of(context).pushNamed(
+                                Routes.PRODUCT_ADD_ON_OPTION_UPDATE,
+                                arguments: {
+                                  'addOnOption': addOnOptionList[index],
+                                  'productId': productId,
+                                });
+
+                            // Handle the result (map) received from PRODUCT_ADD_ON_OPTION_UPDATE
+                            if (data != null && data is AddOnOption) {
+                              //save the add-on option details for later use
+                              // _onRefresh();
+                              updateItemById(data.id!, data);
+                              if (mounted) setState(() {});
+                            }
                           },
                           child: addOnOptionTile(
                               addOnOption: addOnOptionList[index],
@@ -285,7 +299,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 20),
+        padding: EdgeInsets.symmetric(vertical: 10),
         decoration: decorateBox(),
         child: ListTile(
           // dense: variant.isDefault! ? true : false,
@@ -297,16 +311,22 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                 appendStringDot(addOnOption.name!, 14),
                 maxLines: 1,
                 style: TextStyle(
-                    color: blackFont,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
+                  color: blackFont,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  fontFamily: "Inter",
+                ),
               ),
               SizedBox(height: 10.0),
               Text(
                 'Created: ${addOnOption.createdAt} ',
                 maxLines: 1,
                 style: TextStyle(
-                    color: darkGrey, fontWeight: FontWeight.w400, fontSize: 12),
+                  color: darkGrey,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  fontFamily: "Inter",
+                ),
               ),
             ],
           ),
@@ -329,6 +349,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
                     moneyDisplayNormalizer(
                         int.parse(addOnOption.price.toString())),
                     style: TextStyle(
+                        fontFamily: "Inter",
                         fontSize: 14.0,
                         color: darkGrey,
                         fontWeight: FontWeight.w700),
@@ -410,7 +431,8 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
     } else {
       return CustomBoxShadow(
         child: Container(
-          width: 60,
+          width: 45,
+          height: 45,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
@@ -433,7 +455,7 @@ class _AddOnOptionListState extends State<AddOnOptionList> {
       actionExtentRatio: 0.25,
       child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(addOnOption: addOnOption),
-      secondaryActions: listSecondaryActions(addOnOption: addOnOption),
+      // secondaryActions: listSecondaryActions(addOnOption: addOnOption),
     );
   }
 

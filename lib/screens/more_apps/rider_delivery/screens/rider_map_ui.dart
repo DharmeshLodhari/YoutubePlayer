@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
@@ -50,6 +51,35 @@ class _RiderMapUIState extends State<RiderMapUI> {
   late UserBloc userBloc;
   late RiderDeliveryBloc riderDeliveryBloc;
   String? username;
+
+  static const double earthRadius = 6371; // in kilometers
+
+  static double degreesToRadians(double degrees) {
+    return degrees * (pi / 180);
+  }
+
+  double threshold = 200;
+
+  static double distanceBetween(LatLng from, LatLng to) {
+    double fromLatRadians = degreesToRadians(from.latitude);
+    double fromLongRadians = degreesToRadians(from.longitude);
+    double toLatRadians = degreesToRadians(to.latitude);
+    double toLongRadians = degreesToRadians(to.longitude);
+
+    double latDiff = toLatRadians - fromLatRadians;
+    double longDiff = toLongRadians - fromLongRadians;
+
+    double a = pow(sin(latDiff / 2), 2) +
+        cos(fromLatRadians) * cos(toLatRadians) * pow(sin(longDiff / 2), 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return earthRadius * c;
+  }
+
+  static bool isBelowThreshold(LatLng from, LatLng to, double threshold) {
+    double distance = distanceBetween(from, to);
+    return distance < threshold;
+  }
 
   @override
   void initState() {
@@ -110,7 +140,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
         initialCameraPosition: CameraPosition(
           target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
               deliveryModel?.pickupAddress?.longitude ?? 0.0),
-          zoom: 11,
+          zoom: 12,
         ),
         markers: {
           Marker(
@@ -147,7 +177,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
               initialCameraPosition: CameraPosition(
                 target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                     deliveryModel?.pickupAddress?.longitude ?? 0.0),
-                zoom: 11,
+                zoom: 12,
               ),
               markers: {
                 Marker(
@@ -184,7 +214,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
               initialCameraPosition: CameraPosition(
                 target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                     deliveryModel?.pickupAddress?.longitude ?? 0.0),
-                zoom: 11,
+                zoom: 12,
               ),
               markers: {
                 Marker(
@@ -219,7 +249,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
     controller = await _mapController.future;
     CameraPosition _newCameraPosition = CameraPosition(
       target: pos,
-      zoom: 11,
+      zoom: 12,
     );
     await controller?.animateCamera(
       CameraUpdate.newCameraPosition(_newCameraPosition),
@@ -258,6 +288,24 @@ class _RiderMapUIState extends State<RiderMapUI> {
               _currentP =
                   LatLng(currentLocation.latitude!, currentLocation.longitude!);
               _cameraToPosition(_currentP ?? LatLng(0.0, 0.0));
+
+              if (isBelowThreshold(
+                  _currentP!,
+                  LatLng(
+                      riderDeliveryBloc
+                              .deliveryDetails?.pickupAddress?.latitude ??
+                          0.0,
+                      riderDeliveryBloc
+                              .deliveryDetails?.pickupAddress?.longitude ??
+                          0.0),
+                  threshold)) {
+                debugPrint(
+                    'The distance between the locations is below $threshold kilometers.');
+              } else {
+                debugPrint(
+                    'The distance between the locations exceeds $threshold kilometers.');
+              }
+
               updateCurrentLocation(_currentP ?? LatLng(0.0, 0.0));
             });
         }

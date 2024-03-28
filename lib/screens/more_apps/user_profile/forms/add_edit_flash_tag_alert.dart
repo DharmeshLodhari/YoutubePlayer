@@ -414,6 +414,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
           lastDate: DateTime(2101),
         ).then((value) {
           startFrom = DateTime(value!.year, value.month, value.day);
+          flashTagAlertModel.startDate = startFrom;
           setState(() {});
         }).catchError((error) {});
       },
@@ -454,6 +455,7 @@ class _AddEditFlashTagAlertState extends State<AddEditFlashTagAlert> {
           lastDate: DateTime(2101),
         ).then((value) {
           endFrom = DateTime(value!.year, value.month, value.day);
+          flashTagAlertModel.endDate = endFrom;
           setState(() {});
         }).catchError((error) {});
       },

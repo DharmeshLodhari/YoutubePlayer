@@ -296,6 +296,7 @@ class _SearchModuleState extends State<SearchModule> {
             controller: searchItemTextController,
             style: TextStyle(
               fontSize: 16,
+              fontFamily: "Inter",
               color: blackFont,
               fontWeight: FontWeight.w600,
             ),

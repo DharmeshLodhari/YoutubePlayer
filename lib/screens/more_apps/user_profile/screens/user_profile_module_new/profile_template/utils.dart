@@ -56,7 +56,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     // } else {
     //   height = 400;
     // }
-    height = 330;
+    height = 350;
   } else if (bioLength <= 200) {
     // if (hasAddress && hasContact) {
     //   height = 460;
@@ -65,7 +65,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     // } else {
     //   height = 460;
     // }
-    height = 350;
+    height = 375;
   }
 
   debugPrint('GET HEIGHT -> $height');

@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/active_job_listing.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/list_of_categories.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/debouncer_widget.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -15,7 +16,6 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../widget/customized_dropdown_field.dart';
-import '../../../../widget/debouncer_widget.dart';
 import '../../../../widget/no_item_in_list.dart';
 import '../tiles/jos_description_card.dart';
 
@@ -457,7 +457,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
             bottomSheetMounted = true;
 
             searchItemTextController!.addListener(() {
-              if (searchItemTextController!.text.length >= 3) {
+              if (searchItemTextController!.text.length >= 2) {
                 _debouncer.run(() {
                   onRefresh();
                 });
@@ -598,8 +598,9 @@ class _JobsDashboardState extends State<JobsDashboard> {
       if (categoryNext != null && !isItemLoading) {
         isItemLoading = true;
 
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ServiceHubAuthService()
@@ -615,17 +616,16 @@ class _JobsDashboardState extends State<JobsDashboard> {
         List tempList = result['results'];
 
         isItemLoading = false;
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+        searchedCategoryList.clear();
+
+        if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
           bottomSheetStateSetterGlobal!(() {});
+        }
         if (mounted) setState(() {});
 
         tempList.forEach((item) {
           searchedCategoryList.add(CategoryListData.fromJson(item));
         });
-
-        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
-          bottomSheetStateSetterGlobal!(() {});
-        if (mounted) setState(() {});
       }
       if (searchedCategoryList.isEmpty) {
         noSearchedItem = true;
@@ -650,74 +650,74 @@ class _JobsDashboardState extends State<JobsDashboard> {
     );
   }
 
-  Widget bottomSheetTabBars() {
-    return PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
-        child: Row(
-          children: [
-            GestureDetector(
-              onTap: () {
-                bottomSheetSearchIndex = 0;
-                clearSearchedListItems();
-                bottomSheetStateSetterGlobal!(() {});
-                setState(() {});
-                searchCategory();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  shape: BoxShape.rectangle,
-                  color: bottomSheetSearchIndex == 0
-                      ? navyBlue.withOpacity(0.1)
-                      : Colors.white,
-                ),
-                child: Text(
-                  "From partner",
-                  style: TextStyle(
-                    color: bottomSheetSearchIndex == 0 ? navyBlue : blackFont,
-                    fontSize: 14,
-                    fontFamily: "Inter",
-                    fontWeight: bottomSheetSearchIndex == 0
-                        ? FontWeight.w600
-                        : FontWeight.w400,
-                  ),
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                bottomSheetSearchIndex = 1;
-                clearSearchedListItems();
-                bottomSheetStateSetterGlobal!(() {});
-                setState(() {});
-                searchCategory();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  shape: BoxShape.rectangle,
-                  color: bottomSheetSearchIndex == 1
-                      ? navyBlue.withOpacity(0.1)
-                      : Colors.white,
-                ),
-                child: Text(
-                  "From Mine",
-                  style: TextStyle(
-                    color: bottomSheetSearchIndex == 1 ? navyBlue : blackFont,
-                    fontSize: 14,
-                    fontFamily: "Inter",
-                    fontWeight: bottomSheetSearchIndex == 1
-                        ? FontWeight.w600
-                        : FontWeight.w400,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ));
-  }
+  // Widget bottomSheetTabBars() {
+  //   return PreferredSize(
+  //       preferredSize: Size.fromHeight(50.0),
+  //       child: Row(
+  //         children: [
+  //           GestureDetector(
+  //             onTap: () {
+  //               bottomSheetSearchIndex = 0;
+  //               clearSearchedListItems();
+  //               bottomSheetStateSetterGlobal!(() {});
+  //               setState(() {});
+  //               searchCategory();
+  //             },
+  //             child: Container(
+  //               padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+  //               decoration: BoxDecoration(
+  //                 borderRadius: BorderRadius.circular(20),
+  //                 shape: BoxShape.rectangle,
+  //                 color: bottomSheetSearchIndex == 0
+  //                     ? navyBlue.withOpacity(0.1)
+  //                     : Colors.white,
+  //               ),
+  //               child: Text(
+  //                 "From partner",
+  //                 style: TextStyle(
+  //                   color: bottomSheetSearchIndex == 0 ? navyBlue : blackFont,
+  //                   fontSize: 14,
+  //                   fontFamily: "Inter",
+  //                   fontWeight: bottomSheetSearchIndex == 0
+  //                       ? FontWeight.w600
+  //                       : FontWeight.w400,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //           GestureDetector(
+  //             onTap: () {
+  //               bottomSheetSearchIndex = 1;
+  //               clearSearchedListItems();
+  //               bottomSheetStateSetterGlobal!(() {});
+  //               setState(() {});
+  //               searchCategory();
+  //             },
+  //             child: Container(
+  //               padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+  //               decoration: BoxDecoration(
+  //                 borderRadius: BorderRadius.circular(20),
+  //                 shape: BoxShape.rectangle,
+  //                 color: bottomSheetSearchIndex == 1
+  //                     ? navyBlue.withOpacity(0.1)
+  //                     : Colors.white,
+  //               ),
+  //               child: Text(
+  //                 "From Mine",
+  //                 style: TextStyle(
+  //                   color: bottomSheetSearchIndex == 1 ? navyBlue : blackFont,
+  //                   fontSize: 14,
+  //                   fontFamily: "Inter",
+  //                   fontWeight: bottomSheetSearchIndex == 1
+  //                       ? FontWeight.w600
+  //                       : FontWeight.w400,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ));
+  // }
 
   Widget bottomSheetTabViews() {
     return pullToRefresh();
@@ -732,6 +732,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         categoryNext = "";
         categoryPrevious = "";
         searchedCategoryList = [];
+        isItemLoading = false;
         noSearchedItem = false;
         getCategorySearchedList();
         refreshController.refreshCompleted();
@@ -784,7 +785,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
                       selectedCategory = picked.name!;
 
                       //refresh the active job listing with selected category
-                      _refreshPage();
+                      // _refreshPage();
                       if (mounted) setState(() {});
                       Navigator.pop(context);
 

@@ -276,9 +276,21 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
                     return _getSlidableWithLists(
                       context,
                       GestureDetector(
-                        onTap: () {
-                          if (isForCheckboxSelection == true)
-                            toggleAddOnCheckedState(index);
+                        onTap: () async {
+                          // if (isForCheckboxSelection == true)
+                          //   toggleAddOnCheckedState(index);
+                          final data = await Navigator.of(context)
+                              .pushNamed(Routes.UPDATE_ADD_ON, arguments: {
+                            'addOns': productAddOnList[index],
+                            'productId': productId,
+                          });
+
+                          // Handle the result (map) received from PRODUCT_VARIANT_UPDATE
+                          if (data != null && data is AddOns) {
+                            //save the variant details for later use
+                            _onRefresh();
+                            if (mounted) setState(() {});
+                          }
                         },
                         child: productAddOnTile(
                             addOns: productAddOnList[index], index: index),
@@ -395,7 +407,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
       actionExtentRatio: 0.25,
       child: VerticalListItem(bankAccountTile),
       actions: listActionSlideActions(addOns: addOns),
-      secondaryActions: listSecondaryActions(addOns: addOns),
+      // secondaryActions: listSecondaryActions(addOns: addOns),
     );
   }
 

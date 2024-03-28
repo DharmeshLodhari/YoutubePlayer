@@ -185,7 +185,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.3,
+              height: MediaQuery.of(context).size.height * 0.2,
             ),
           ],
         ),
@@ -264,90 +264,120 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildShowDetails() {
     return DraggableScrollableSheet(
       initialChildSize: 0.38,
-      maxChildSize: 0.38,
-      minChildSize: 0.38,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: getDeliveryDetails(),
-        ),
-      ),
+      // maxChildSize: 0.38,
+      // minChildSize: 0.38,
+      builder: (BuildContext context, scrollController) {
+        return Container(
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: Theme.of(context).canvasColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: getDeliveryDetails(),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildAccepted() {
     return DraggableScrollableSheet(
       initialChildSize: 0.47,
-      maxChildSize: 0.47,
-      minChildSize: 0.47,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: startDelivery(),
-        ),
-      ),
+      // maxChildSize: 0.47,
+      // minChildSize: 0.47,
+      builder: (context, scrollController) {
+        return Container(
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: Theme.of(context).canvasColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: startDelivery(),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildStarted() {
     return DraggableScrollableSheet(
       initialChildSize: 0.35,
-      maxChildSize: 0.35,
-      minChildSize: 0.35,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: endDelivery(),
-        ),
-      ),
+      // maxChildSize: 0.35,
+      // minChildSize: 0.35,
+      builder: (context, scrollController) {
+        return Container(
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: Theme.of(context).canvasColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: endDelivery(),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildEnded() {
     return DraggableScrollableSheet(
       initialChildSize: 0.3,
-      maxChildSize: 0.3,
-      minChildSize: 0.3,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: deliveryProof(),
-        ),
-      ),
+      // maxChildSize: 0.3,
+      // minChildSize: 0.3,
+      builder: (context, scrollController) {
+        return Container(
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: Theme.of(context).canvasColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: deliveryProof(),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildCancel() {
     return DraggableScrollableSheet(
       initialChildSize: 0.73,
-      maxChildSize: 0.73,
-      minChildSize: 0.73,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          color: white,
-          child: cancelDelivery(),
-        ),
-      ),
+      // maxChildSize: 0.73,
+      // minChildSize: 0.73,
+      builder: (context, scrollController) {
+        return Container(
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: Theme.of(context).canvasColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: cancelDelivery(),
+          ),
+        );
+      },
     );
   }
 
@@ -367,20 +397,16 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             SizedBox(
               height: 20,
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLogoAndDeliveryAndAmount(),
-                    _buildItemsAndKg(),
-                    SizedBox(height: 10.0),
-                    _buildIconAndAddressAndPickup(),
-                    SizedBox(height: 10.0),
-                    _buildButtonAcceptReject(),
-                  ],
-                ),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildLogoAndDeliveryAndAmount(),
+                _buildItemsAndKg(),
+                SizedBox(height: 10.0),
+                _buildIconAndAddressAndPickup(),
+                SizedBox(height: 10.0),
+                _buildButtonAcceptReject(),
+              ],
             ),
           ],
         ));
@@ -402,24 +428,20 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             SizedBox(
               height: 20,
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildDrivingToPickupLocation(),
-                    SizedBox(height: 15.0),
-                    _buildDistanceAndHoursAndImageAndAddress(),
-                    SizedBox(height: 10.0),
-                    _buildCheckBoxAndItems(),
-                    _buildStartDelivery(),
-                    SizedBox(height: 15.0),
-                    _buildCancelDelivery(),
-                    SizedBox(height: 15.0),
-                    _buildCallButton(),
-                  ],
-                ),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDrivingToPickupLocation(),
+                SizedBox(height: 15.0),
+                _buildDistanceAndHoursAndImageAndAddress(),
+                SizedBox(height: 10.0),
+                _buildCheckBoxAndItems(),
+                _buildStartDelivery(),
+                SizedBox(height: 15.0),
+                _buildCancelDelivery(),
+                SizedBox(height: 15.0),
+                _buildCallButton(),
+              ],
             ),
           ],
         ));
@@ -441,23 +463,19 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             SizedBox(
               height: 20,
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildDrivingToDestination(),
-                    SizedBox(height: 10.0),
-                    _buildDistanceAndHoursAndImageAndAddress(),
-                    SizedBox(height: 10.0),
-                    _buildItems(),
-                    SizedBox(height: 15.0),
-                    _buildEndDelivery(),
-                    SizedBox(height: 15.0),
-                    _buildCallButton(),
-                  ],
-                ),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDrivingToDestination(),
+                SizedBox(height: 10.0),
+                _buildDistanceAndHoursAndImageAndAddress(),
+                SizedBox(height: 10.0),
+                _buildItems(),
+                SizedBox(height: 15.0),
+                _buildEndDelivery(),
+                SizedBox(height: 15.0),
+                _buildCallButton(),
+              ],
             ),
           ],
         ));
@@ -479,19 +497,15 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           SizedBox(
             height: 20,
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildDeliveryProofTitle(),
-                  SizedBox(height: 20.0),
-                  _buildQRCode(),
-                  SizedBox(height: 20.0),
-                  _buildTakePicture(),
-                ],
-              ),
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildDeliveryProofTitle(),
+              SizedBox(height: 20.0),
+              _buildQRCode(),
+              SizedBox(height: 20.0),
+              _buildTakePicture(),
+            ],
           ),
         ],
       ),
@@ -516,19 +530,15 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               SizedBox(
                 height: 20,
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTitle(),
-                      SizedBox(height: 10.0),
-                      _buildCancelDeliveryReason(),
-                      SizedBox(height: 10.0),
-                      _buildSubmitButton(),
-                    ],
-                  ),
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTitle(),
+                  SizedBox(height: 10.0),
+                  _buildCancelDeliveryReason(),
+                  SizedBox(height: 10.0),
+                  _buildSubmitButton(),
+                ],
               ),
             ],
           )),

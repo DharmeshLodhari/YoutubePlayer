@@ -93,7 +93,7 @@ class _SuccessfulOrderState extends State<SuccessfulOrder> {
 
   Widget _buildSuccessImage() {
     return Lottie.asset(
-      'assets/lottie/successful.json',
+      'assets/lottie/completed.json',
       height: 250,
       width: 250,
     );

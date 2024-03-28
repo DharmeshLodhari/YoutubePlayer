@@ -1259,8 +1259,12 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     if (selectedCategory != null && locationSelected != null) {
       return true;
     } else {
-      showToast(
-          message: AppLocalization.of(context)!.categoryAndLocationSelection);
+      if (selectedCategory == null) {
+        showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
+      } else if (locationSelected == null) {
+        showToast(message: AppLocalization.of(context)!.locationSelection);
+      }
+
       return false;
     }
   }
@@ -1532,7 +1536,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             bottomSheetMounted = true;
 
             searchItemTextController!.addListener(() {
-              if (searchItemTextController!.text.length >= 3) {
+              if (searchItemTextController!.text.length >= 2) {
                 _debouncer.run(() {
                   onRefresh();
                 });

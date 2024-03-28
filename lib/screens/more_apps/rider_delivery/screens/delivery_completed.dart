@@ -88,8 +88,11 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
   }
 
   Widget _buildImageOrderComplete() {
-    return Lottie.asset('assets/lottie/successful.json',
-        height: 180, width: 180);
+    return Lottie.asset(
+      'assets/lottie/completed.json',
+      height: 180,
+      width: 180,
+    );
   }
 
   Widget _buildRideNumber() {

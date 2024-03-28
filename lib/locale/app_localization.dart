@@ -2762,10 +2762,10 @@ class AppLocalization {
     );
   }
 
-  String get categoryAndLocationSelection {
+  String get locationSelection {
     return Intl.message(
-      "Please select Location and Category",
-      name: "categoryAndLocationSelection",
+      "Please select Location",
+      name: "locationSelection",
     );
   }
 

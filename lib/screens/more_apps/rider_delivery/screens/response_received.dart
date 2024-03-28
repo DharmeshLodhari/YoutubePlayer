@@ -95,7 +95,7 @@ class _ResponseReceivedState extends State<ResponseReceived> {
 
   Widget _buildSuccessImage() {
     return Lottie.asset(
-      'assets/lottie/successful.json',
+      'assets/lottie/completed.json',
       height: 250,
       width: 250,
     );
