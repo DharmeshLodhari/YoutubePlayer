@@ -19,28 +19,34 @@ class CreateJobModel {
   String? description;
   String? dueDate;
   String? creationDate;
-  String? location;
+  // String? location;
 
-  CreateJobModel(
-      {this.id,
-      this.tags,
-      this.pictures,
-      this.video,
-      this.category,
-      this.ownerAvatar,
-      this.ownerName,
-      this.applicantsCount,
-      this.title,
-      this.pay,
-      this.status,
-      this.owner,
-      this.isListed,
-      this.applicants,
-      this.assignee,
-      this.description,
-      this.dueDate,
-      this.creationDate,
-      this.location});
+  String? state;
+  String? city;
+
+  CreateJobModel({
+    this.id,
+    this.tags,
+    this.pictures,
+    this.video,
+    this.category,
+    this.ownerAvatar,
+    this.ownerName,
+    this.applicantsCount,
+    this.title,
+    this.pay,
+    this.status,
+    this.owner,
+    this.isListed,
+    this.applicants,
+    this.assignee,
+    this.description,
+    this.dueDate,
+    this.creationDate,
+    this.city,
+    this.state,
+    // this.location,
+  });
 
   CreateJobModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -68,7 +74,9 @@ class CreateJobModel {
     description = json['description'];
     dueDate = json['due_date'];
     creationDate = json['creation_date'];
-    location = json['location'];
+    city = json["city"];
+    state = json["state"];
+    // location = json['location'];
   }
 
   Map<String, dynamic> toJson() {
@@ -95,7 +103,9 @@ class CreateJobModel {
     data['description'] = this.description;
     data['due_date'] = this.dueDate;
     data['creation_date'] = this.creationDate;
-    data['location'] = this.location;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    // data['location'] = this.location;
     return data;
   }
 }
