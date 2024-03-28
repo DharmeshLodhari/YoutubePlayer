@@ -169,7 +169,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                     children: [
                       Text(
                         truncateString(
-                          str: widget.product.name!,
+                          str: widget.product.getName(),
                           lengthToTruncateAt: 16,
                           showEllipsis: false,
                         ),
