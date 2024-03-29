@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -23,6 +24,7 @@ import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/storage_permission.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
@@ -151,6 +153,12 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   YarnDashboardBloc? yarnDashboardBloc;
   bool editMode = false;
 
+  bool _isGIFLoading = false;
+
+  TextEditingController _gifController = TextEditingController();
+
+  List<GIFModel> _gifs = [];
+
   @override
   void initState() {
     shareAsYarnModelCopy = widget.shareAsYarnModel;
@@ -182,6 +190,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
     fillExistingYarnMedia();
+    getGIFs(isRandom: true);
     super.initState();
   }
 
@@ -192,6 +201,35 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       });
     }
     if (mounted) setState(() {});
+  }
+
+  void getGIFs({bool isRandom = false}) async {
+    _isGIFLoading = true;
+    if (mounted) setState(() {});
+
+    List<GIFModel> results;
+    if (isRandom) {
+      results = await MessageAuth()
+          .searchGIF(isRandom: true, isSticker: true)
+          .catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
+    } else {
+      results = await MessageAuth()
+          .searchGIF(query: _gifController.text.trim(), isSticker: true)
+          .catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
+    }
+
+    _isGIFLoading = false;
+    if (mounted) setState(() {});
+
+    if (results.isNotEmpty) {
+      _gifs.clear();
+      _gifs = results;
+      if (mounted) setState(() {});
+    }
   }
 
   @override
@@ -267,7 +305,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         appBar: _buildAppBar(),
         body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
           return Column(
-            children: [_buildYarnForm(model)],
+            children: [
+              _buildYarnForm(model),
+            ],
           );
         }),
       ),
@@ -330,6 +370,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             checkIfProductService(),
           ],
 
+          if (showMoreAction) messageActionBar(),
           _buildRowForMedia(),
         ],
       ),
@@ -434,7 +475,26 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
               width: 8,
             ),
             InkWell(
-                onTap: () {}, child: SvgPicture.asset("yarn/yarn_gif".toSVG())),
+              onTap: () {
+                if (FocusScope.of(context).hasFocus) {
+                  FocusScope.of(context).unfocus();
+                  Future.delayed(Duration(milliseconds: 100)).then((value) {
+                    showMoreAction = !showMoreAction;
+                    if (mounted) setState(() {});
+                  });
+                } else {
+                  showMoreAction = !showMoreAction;
+                  if (mounted) setState(() {});
+                }
+                // showMoreAction = false;
+                // _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+                // getGIFs(isRandom: true);
+                // if (mounted) setState(() {});
+              },
+              child: SvgPicture.asset(
+                "yarn/yarn_gif".toSVG(),
+              ),
+            ),
             SizedBox(
               width: 8,
             ),
@@ -460,6 +520,190 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget messageActionBar() {
+    return Card(
+      elevation: 10,
+      margin: EdgeInsets.zero,
+      shadowColor: boxShadowTwo,
+      child: getSearchBarLayout(),
+    );
+  }
+
+  Widget getSearchBarLayout() {
+    return Column(
+      children: getSearchBarItems(),
+    );
+  }
+
+  List<Widget> getSearchBarItems() {
+    List<Widget> items = [];
+
+    items.add(Container(
+      constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+      child: Row(
+        children: <Widget>[
+          getSearchGIFCancelBtn(),
+          Expanded(
+            child: searchGIFTextField(),
+          ),
+          searchGIFBtn(),
+        ],
+      ),
+    ));
+    items.add(gifPreviewList());
+    return items;
+  }
+
+  Widget searchGIFBtn() {
+    return InkWell(
+      onTap: getGIFs,
+      child: Container(
+        padding: EdgeInsets.all(2),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 10,
+            ),
+            Icon(
+              SlydoAppIcon.search,
+              color: navyBlue,
+              size: 22,
+            ),
+            SizedBox(
+              width: 12,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget searchGIFTextField() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(3),
+      child: Container(
+        color: chatBackgroundColor,
+        child: Theme(
+            data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
+            child: Scrollbar(
+              radius: Radius.circular(12),
+              thickness: 2.5,
+              child: TextFormField(
+                controller: _gifController,
+                textInputAction: TextInputAction.search,
+                keyboardType: TextInputType.multiline,
+                onFieldSubmitted: (value) {
+                  getGIFs();
+                },
+                cursorColor: blackFont,
+                cursorWidth: 1,
+                cursorHeight: 20,
+                maxLines: null,
+                cursorRadius: Radius.circular(16),
+                decoration: InputDecoration(
+                  hintText: "Search GIF",
+                  hintStyle: TextStyle(
+                    color: darkGrey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  prefix: Padding(
+                    padding: EdgeInsets.only(left: 16),
+                  ),
+                  suffix: Padding(
+                    padding: EdgeInsets.only(right: 36),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  isDense: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            )),
+      ),
+    );
+  }
+
+  Widget getSearchGIFCancelBtn() {
+    return IconButton(
+        icon: Icon(
+          SlydoAppIcon.close_2,
+          color: navyBlue,
+          size: 20,
+        ),
+        onPressed: () async {
+          _gifController.clear();
+          showMoreAction = false;
+          if (mounted) setState(() {});
+        });
+  }
+
+  Widget gifPreviewList() {
+    return Container(
+      height: MediaQuery.of(context).size.height / 3,
+      child: _isGIFLoading
+          ? Center(child: CircularLoadingIndicator())
+          : GridView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 2,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+              ),
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    // sendGIFToSocket(
+                    //     urlOfGIF: _gifs[index].images!.original!.url);
+                    _gifController.clear();
+                    if (mounted) setState(() {});
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: CachedNetworkImage(
+                      width: MediaQuery.of(context).size.width / 2,
+                      imageUrl: _gifs[index].images!.previewGif!.url!,
+                      fit: BoxFit.fill,
+                      errorWidget: imageErrorWidget,
+                      placeholder: (context, url) => Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: Center(child: CircularLoadingIndicator())),
+                    ),
+                  ),
+                );
+              },
+              itemCount: _gifs.length,
+            ),
     );
   }
 

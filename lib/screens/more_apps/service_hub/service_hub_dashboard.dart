@@ -11,6 +11,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/util.dart';
@@ -161,30 +162,68 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
             Navigator.pop(context);
             Navigator.pushNamed(context, Routes.JOBS_CREATE);
           },
-          child: Text(
-            'Create Job',
-            style: TextStyle(
-                fontSize: 14.8,
-                fontFamily: "Inter",
-                color: black,
-                fontWeight: FontWeight.w500),
+          child: Row(
+            children: [
+              Container(
+                height: 34,
+                width: 34,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                  color: Color(0xfffafbff),
+                ),
+                child: SvgPicture.asset(
+                  "assets/images/Edit.svg",
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'Create Job',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                  color: black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(
-          height: 18,
-        ),
+        const SizedBox(height: 18),
         InkWell(
           onTap: () {
             Navigator.pop(context);
             Navigator.pushNamed(context, Routes.MY_JOBS);
           },
-          child: Text(
-            'My Jobs',
-            style: TextStyle(
-                fontSize: 14.8,
-                fontFamily: "Inter",
-                color: black,
-                fontWeight: FontWeight.w500),
+          child: Row(
+            children: [
+              Container(
+                height: 34,
+                width: 34,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                  color: Color(0xfffafbff),
+                ),
+                child: SvgPicture.asset(
+                  "assets/images/Document.svg",
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'My Jobs',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                  color: black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
       ],

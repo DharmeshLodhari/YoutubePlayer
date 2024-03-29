@@ -7,6 +7,9 @@ import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/list_of_categories.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/states_model.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -17,6 +20,7 @@ import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -50,6 +54,15 @@ class _EditJobState extends State<EditJob> {
   String? jobId;
   // JobModel? job;
   JobModel? currentJob;
+  ShippingAddress? shippingAddress;
+  String? selectedState;
+  String? selectedCity;
+
+  bool isLoader = false;
+
+  List<StatesModel> stateList = [];
+
+  List<Cities> cityList = [];
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
@@ -495,7 +508,9 @@ class _EditJobState extends State<EditJob> {
             descriptionController.text = currentJob!.description!;
             checkedValue = currentJob!.isListed!;
             priceController.text = moneyNormalizer(currentJob!.pay).toString();
-            locationState = currentJob!.location!;
+            // locationState = currentJob!.location!;
+            selectedState = currentJob?.state;
+            selectedCity = currentJob?.city;
             jobImagesFromServer.addAll(currentJob!.pictures!);
             selectedCategory = currentJob!.category!.slug;
             selectedCategoryName = currentJob!.category!.name;
@@ -523,6 +538,10 @@ class _EditJobState extends State<EditJob> {
     jobId = widget.job!.id;
     getJobDetail();
     getLocationList();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      userBloc = Provider.of<UserBloc>(context, listen: false);
+      getShippingStates();
+    });
     _locationScrollController.addListener(() {
       if (_locationScrollController.position.pixels ==
               _locationScrollController.position.maxScrollExtent &&
@@ -533,6 +552,82 @@ class _EditJobState extends State<EditJob> {
     searchItemTextController = TextEditingController();
 
     super.initState();
+  }
+
+  void getShippingStates() async {
+    selectedState = shippingAddress?.stateName;
+    selectedCity = shippingAddress?.city;
+    if (mounted) setState(() {});
+
+    if (!isLoader) {
+      isLoader = true;
+      if (mounted) setState(() {});
+
+      Map<String, dynamic>? result =
+          await ShoppingAuthService().getShippingStates();
+
+      if (result == null) {
+        isLoader = false;
+        if (mounted) {
+          setState(() {});
+        }
+        return;
+      }
+
+      List<StatesModel> tempList = result['results'];
+      // tempList.forEach((element) {
+      //   states.add(element.name!);
+      // });
+      if (mounted) {
+        setState(() {
+          isLoader = false;
+          stateList.addAll(tempList);
+        });
+      }
+
+      StatesModel? selectedStateModel;
+
+      for (StatesModel statesModel in tempList) {
+        if (statesModel.name == shippingAddress?.stateName) {
+          selectedStateModel = statesModel;
+          break;
+        }
+      }
+      if (selectedStateModel != null) {
+        String? code = selectedStateModel.isoCode;
+        if (code != null) {
+          getShippingCities(code);
+        }
+      }
+    }
+  }
+
+  Future<void> getShippingCities(code) async {
+    if (mounted) setState(() {});
+    if (!isLoader) {
+      isLoader = true;
+      if (mounted) setState(() {});
+
+      Map<String, dynamic>? result =
+          await ShoppingAuthService().getShippingCities(code);
+
+      if (result == null) {
+        isLoader = false;
+        if (mounted) {
+          setState(() {});
+        }
+        return;
+      }
+
+      List<Cities> tempList = result['results'];
+      cityList = [];
+      if (mounted) {
+        setState(() {
+          isLoader = false;
+          cityList.addAll(tempList);
+        });
+      }
+    }
   }
 
   @override
@@ -673,7 +768,31 @@ class _EditJobState extends State<EditJob> {
                 ),
                 getAmountField(),
                 const SizedBox(height: 20),
-                getLocationField(),
+                Text(
+                  'State',
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Inter",
+                  ),
+                ),
+                SizedBox(height: 6),
+                stateDropdownSearch(),
+                const SizedBox(height: 20),
+                Text(
+                  'City',
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Inter",
+                  ),
+                ),
+                SizedBox(height: 6),
+                cityDropdownSearch(),
+                // const SizedBox(height: 20),
+                // getLocationField(),
                 const SizedBox(height: 20),
                 getPreviewButton(),
                 const SizedBox(height: 40),
@@ -1326,6 +1445,199 @@ class _EditJobState extends State<EditJob> {
       onChanged: (val) {
         jobTitle = val;
       },
+    );
+  }
+
+  Widget stateDropdownSearch() {
+    return DropdownSearch<String>(
+      popupProps: PopupProps.dialog(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          cursorColor: navyBlue,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+        ),
+      ),
+      items: stateList.map((StatesModel item) {
+        return item.name ?? "";
+      }).toList(),
+      dropdownDecoratorProps: DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+        ),
+        baseStyle: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      onChanged: (String? value) async {
+        StatesModel picked =
+            stateList.firstWhere((element) => element.name == value);
+        selectedCity = null;
+        await getShippingCities(picked.isoCode);
+        shippingAddress?.stateName = picked.name;
+        setState(() {
+          selectedState = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a state';
+        }
+      },
+      selectedItem: selectedState,
+    );
+  }
+
+  Widget cityDropdownSearch() {
+    return DropdownSearch<String>(
+      popupProps: PopupProps.dialog(
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            cursorColor: navyBlue,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: greyBorderColor,
+                  width: 1.0,
+                ),
+              ),
+            ),
+          )),
+      items: cityList.map((Cities item) {
+        return item.name ?? "";
+      }).toList(),
+      dropdownDecoratorProps: DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+        ),
+        baseStyle: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      onChanged: (String? value) {
+        shippingAddress?.city = value;
+        setState(() {
+          selectedCity = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick a city';
+        }
+      },
+      selectedItem: selectedCity,
     );
   }
 

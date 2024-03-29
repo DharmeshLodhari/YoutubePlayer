@@ -2832,6 +2832,20 @@ class AppLocalization {
     );
   }
 
+  String get pleaseSelectState {
+    return Intl.message(
+      "Please Select State",
+      name: "pleaseSelectCategory",
+    );
+  }
+
+  String get pleaseSelectCity {
+    return Intl.message(
+      "Please Select City",
+      name: "pleaseSelectCategory",
+    );
+  }
+
   String get manufacturer {
     return Intl.message(
       "Manufacturer",
