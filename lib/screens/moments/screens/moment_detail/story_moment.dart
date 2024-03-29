@@ -1192,6 +1192,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
           },
         ),
       ),
-    );
+    ).then((value) {
+      widget.controller!.play();
+    });
   }
 }

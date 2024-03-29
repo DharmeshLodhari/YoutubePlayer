@@ -20,41 +20,46 @@ class JobModel {
   String? description;
   String? dueDate;
   String? creationDate;
-  String? location;
+  // String? location;
+  String? city;
+  String? state;
   bool? isNegotiable;
   bool? isVerified;
   String? currency;
   int? transactionId;
   String? referenceNumber;
 
-  JobModel(
-      {this.id,
-      this.tags,
-      this.pictures,
-      this.video,
-      this.category,
-      this.ownerAvatar,
-      this.ownerName,
-      this.applicantsCount,
-      this.activeListing,
-      this.title,
-      this.pay,
-      this.status,
-      this.owner,
-      this.isListed,
-      this.isOnline,
-      this.applicants,
-      this.assignee,
-      this.assigneeAvatar,
-      this.description,
-      this.dueDate,
-      this.creationDate,
-      this.location,
-      this.isVerified,
-      this.isNegotiable,
-      this.transactionId,
-      this.currency,
-      this.referenceNumber});
+  JobModel({
+    this.id,
+    this.tags,
+    this.pictures,
+    this.video,
+    this.category,
+    this.ownerAvatar,
+    this.ownerName,
+    this.applicantsCount,
+    this.activeListing,
+    this.title,
+    this.pay,
+    this.status,
+    this.owner,
+    this.isListed,
+    this.isOnline,
+    this.applicants,
+    this.assignee,
+    this.assigneeAvatar,
+    this.description,
+    this.dueDate,
+    this.creationDate,
+    // this.location,
+    this.city,
+    this.state,
+    this.isVerified,
+    this.isNegotiable,
+    this.transactionId,
+    this.currency,
+    this.referenceNumber,
+  });
 
   JobModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -87,7 +92,9 @@ class JobModel {
     dueDate = json['due_date'];
     referenceNumber = json['reference_number'];
     creationDate = json['creation_date'];
-    location = json['location'];
+    // location = json['location'];
+    city = json['city'];
+    state = json['state'];
     transactionId = json['transaction_id'];
     isNegotiable =
         json.containsKey('is_negotiable') ? json['is_negotiable'] : false;
@@ -124,7 +131,9 @@ class JobModel {
     data['due_date'] = this.dueDate;
     data['creation_date'] = this.creationDate;
     data['reference_number'] = this.referenceNumber;
-    data['location'] = this.location;
+    // data['location'] = this.location;
+    data['city'] = this.city;
+    data['state'] = this.state;
     data['transaction_id'] = this.transactionId;
     data['is_verified'] = this.isVerified;
     return data;

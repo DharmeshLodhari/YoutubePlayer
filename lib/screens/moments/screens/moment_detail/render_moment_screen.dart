@@ -47,6 +47,8 @@ class RenderMomentState extends State<RenderMoment>
   GlobalKey<MomentVideoPlayerState> _momentVideoPlayerKey =
       GlobalKey<MomentVideoPlayerState>();
   PhotoViewController photoViewController = PhotoViewController();
+  AnimationController? controller;
+
   double? value;
 
   @override
@@ -56,6 +58,7 @@ class RenderMomentState extends State<RenderMoment>
       MomentsService().updateMomentView(widget.momentsModel.id!);
     });
     widget.photoViewController.add(photoViewController);
+    controller = widget.controller;
   }
 
   void toggleMediaPlayingState() {

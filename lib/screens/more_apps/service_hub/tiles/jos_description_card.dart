@@ -93,16 +93,16 @@ class JobDescriptionCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: const Color(0xfffafbff),
+          color: const Color(0xffD9D9D9),
           width: 1,
         ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0c31378c),
-            blurRadius: 20,
-            offset: Offset(0, 8),
-          ),
-        ],
+        // boxShadow: const [
+        //   BoxShadow(
+        //     color: Color(0x0c31378c),
+        //     blurRadius: 20,
+        //     offset: Offset(0, 8),
+        //   ),
+        // ],
         color: Colors.white,
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -121,43 +121,45 @@ class JobDescriptionCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                job?.assignee != null && user != job?.assignee &&
-                      job!.isListed == false &&
-                      job!.applicants!.contains(user)
-                  ? Container(
-                      width: 54,
-                      // height: 20,
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: red),
-                        color: red.withOpacity(0.1),
-                      ),
-                      child: Text(
-                        'closed',
-                        style: TextStyle(
-                          color: red,
-                          fontSize: 10.80,
-                          fontFamily: "Inter",
-                          fontWeight: FontWeight.w600,
+                job?.assignee != null &&
+                        user != job?.assignee &&
+                        job!.isListed == false &&
+                        job!.applicants!.contains(user)
+                    ? Container(
+                        width: 54,
+                        // height: 20,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: red),
+                          color: red.withOpacity(0.1),
+                        ),
+                        child: Text(
+                          'closed',
+                          style: TextStyle(
+                            color: red,
+                            fontSize: 10.80,
+                            fontFamily: "Inter",
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: colorStatus(job!.status!).withOpacity(.4)),
+                        child: Text(
+                          textStatus(job!.status!),
+                          style: TextStyle(
+                            color: colorStatus(job!.status!),
+                            fontSize: 12,
+                            fontFamily: "Inter",
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                    ):Container(
-                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: colorStatus(job!.status!).withOpacity(.4)),
-                  child: Text(
-                    textStatus(job!.status!),
-                    style: TextStyle(
-                      color: colorStatus(job!.status!),
-                      fontSize: 12,
-                      fontFamily: "Inter",
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
               ],
             ),
             const SizedBox(
@@ -214,7 +216,7 @@ class JobDescriptionCard extends StatelessWidget {
                   width: 6,
                 ),
                 Text(
-                  job!.location!.toCapitalized(),
+                  "${job?.state}, ${job?.city}".toCapitalized(),
                   style: TextStyle(
                     color: darkGrey,
                     fontSize: 10,

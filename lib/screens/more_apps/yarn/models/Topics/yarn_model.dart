@@ -125,8 +125,7 @@ class Yarn extends Equatable {
       } else if (item['job'] != null) {
         attachmentType = 'job';
         attachment = item['job'];
-      }
-      else if (item['blog'] != null) {
+      } else if (item['blog'] != null) {
         attachmentType = 'blog';
         attachment = item['blog'];
       } else if (item['product'] != null) {

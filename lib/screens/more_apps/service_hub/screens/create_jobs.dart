@@ -1566,13 +1566,13 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   bool validateDropdown() {
-    if (selectedCategory != null && locationSelected != null) {
+    if (selectedState != null && selectedCity != null) {
       return true;
     } else {
-      if (selectedCategory == null) {
-        showToast(message: AppLocalization.of(context)!.pleaseSelectCategory);
-      } else if (locationSelected == null) {
-        showToast(message: AppLocalization.of(context)!.locationSelection);
+      if (selectedState == null) {
+        showToast(message: AppLocalization.of(context)!.pleaseSelectState);
+      } else if (selectedCity == null) {
+        showToast(message: AppLocalization.of(context)!.pleaseSelectCity);
       }
 
       return false;

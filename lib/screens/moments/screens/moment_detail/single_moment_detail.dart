@@ -7,6 +7,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
+import 'package:Slydo/screens/moments/screens/moment_detail/custom_story_view.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_comment_list.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/render_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
@@ -508,11 +509,18 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                   text:
                       commentingEnabled() ? getCommentCount(widget.index) : '',
                   onPressed: commentingEnabled()
-                      ? () {
-                          commentSheet(context, widget.currentMoment.id!,
-                              widget.currentMoment.ownerName!,
-                              index: widget.index,
-                              currentMoment: widget.currentMoment);
+                      ? () async {
+                          await widget.videoPlayerControllers[widget.index]
+                              .pause();
+                          _renderMomentStateKey.currentState?.controller
+                              ?.stop();
+                          commentSheet(
+                            context,
+                            widget.currentMoment.id!,
+                            widget.currentMoment.ownerName!,
+                            index: widget.index,
+                            currentMoment: widget.currentMoment,
+                          );
                         }
                       : null,
                 ),
@@ -1373,7 +1381,10 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
           },
         ),
       ),
-    );
+    ).then((value) async {
+      await widget.videoPlayerControllers[widget.index].play();
+      _renderMomentStateKey.currentState?.controller?.forward();
+    });
   }
 
   Color checkColor() {

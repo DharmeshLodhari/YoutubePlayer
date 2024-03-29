@@ -362,7 +362,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              "${job!.location}".toCapitalized(),
+                              "${job?.state}, ${job?.city}".toCapitalized(),
                               style: TextStyle(
                                 color: blackFont.withOpacity(.6),
                                 fontSize: 14,

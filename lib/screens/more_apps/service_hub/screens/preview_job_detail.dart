@@ -401,7 +401,7 @@ class _JobsPreviewJobDetailState extends State<JobsPreviewJobDetail> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              "${job!.location}",
+                              "${job!.state}",
                               style: TextStyle(
                                 color: blackFont.withOpacity(.6),
                                 fontSize: 14,
