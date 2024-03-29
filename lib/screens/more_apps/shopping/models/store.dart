@@ -1849,23 +1849,50 @@ class Order {
   int? totalPrice;
   String? currency;
   List<dynamic>? statusTimeStamp;
+  String? customer;
+  // ShippingAddress? deliveryAddress;
+  String? deliveryAddressId;
+  String? journeyId;
+  String? paymentType;
+  String? pickupAddressId;
+  int? price;
+  String? rateId;
+  int? shippingOption;
+  int? shippingPrice;
+  DateTime? updatedAt;
+  DateTime? date;
+  String? qty;
 
-  Order(
-      {this.id,
-      this.status,
-      this.customerName,
-      this.merchant,
-      this.customerAvatar,
-      this.customerType = "User",
-      this.merchantAvatar,
-      this.merchantType = "Business",
-      this.isPaid,
-      this.transactionId,
-      this.note,
-      this.createdAt,
-      this.totalPrice,
-      this.currency,
-      this.statusTimeStamp});
+  Order({
+    this.id,
+    this.status,
+    this.customerName,
+    this.merchant,
+    this.customerAvatar,
+    this.customerType = "User",
+    this.merchantAvatar,
+    this.merchantType = "Business",
+    this.isPaid,
+    this.transactionId,
+    this.note,
+    this.createdAt,
+    this.totalPrice,
+    this.currency,
+    this.statusTimeStamp,
+    this.customer,
+    // this.deliveryAddress,
+    this.deliveryAddressId,
+    this.journeyId,
+    this.paymentType,
+    this.pickupAddressId,
+    this.price,
+    this.rateId,
+    this.shippingOption,
+    this.shippingPrice,
+    this.updatedAt,
+    this.date,
+    this.qty,
+  });
 
   Order.fromJson(object) {
     id = object["id"].toString();
@@ -1883,5 +1910,23 @@ class Order {
     totalPrice = object["total_price"];
     currency = object["currency"] ?? "NGN";
     statusTimeStamp = object["status_time_stamps"];
+
+    customer = object["customer"];
+    // deliveryAddress = object["delivery_address"] == null
+    //     ? null
+    //     : ShippingAddress.fromJson(object["delivery_address"]);
+    deliveryAddressId = object["delivery_address_id"];
+    journeyId = object["journey_id"];
+    paymentType = object["payment_type"];
+    pickupAddressId = object["pickup_address_id"];
+    price = object["price"];
+    rateId = object["rate_id"];
+    shippingOption = object["shipping_option"];
+    shippingPrice = object["shipping_price"];
+    updatedAt = object["updated_at"] == null
+        ? null
+        : DateTime.parse(object["updated_at"]);
+    date = object["date"] == null ? null : DateTime.parse(object["date"]);
+    qty = object["qty"];
   }
 }

@@ -1,3 +1,4 @@
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DeliveryOrderTile extends StatefulWidget {
-  DeliveryModel jobListing;
+  DeliveryModel? jobListing;
   DeliveryOrderTile({required this.jobListing, super.key});
 
   @override
@@ -43,6 +44,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
         Row(
           children: [
             _buildEst(),
+            _buildCurrency(),
             _buildAmount(),
           ],
         )
@@ -52,7 +54,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
 
   Widget _buildLogo() {
     return Image.network(
-      widget.jobListing.merchantAvatar ?? "",
+      widget.jobListing?.merchantAvatar ?? "",
       height: 24,
       width: 24,
       fit: BoxFit.fill,
@@ -86,7 +88,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
 
   Widget _buildDelivery() {
     return Text(
-      widget.jobListing.merchantFullName ?? "",
+      widget.jobListing?.merchantFullName ?? "",
       style: TextStyle(
         color: black,
         fontSize: 12,
@@ -108,9 +110,21 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
     );
   }
 
+  Widget _buildCurrency() {
+    return Text(
+      worldCurrencies[widget.jobListing?.currency] ?? "NGN",
+      style: TextStyle(
+        color: yarnBlack,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
   Widget _buildAmount() {
     return Text(
-      widget.jobListing.currency ?? "",
+      moneyDisplayNormalizer(widget.jobListing?.riderPayment),
       style: TextStyle(
         color: yarnBlack,
         fontSize: 16,
@@ -122,7 +136,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
 
   Widget _buildItemsAndKg() {
     return Text(
-      "${widget.jobListing.totalNoOfItems} Items (${widget.jobListing.totalWeight}Kg)",
+      "${widget.jobListing?.totalNoOfItems} Items (${widget.jobListing?.totalWeight}Kg)",
       style: TextStyle(
         color: black,
         fontSize: 13,
@@ -155,7 +169,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${widget.jobListing.pickupAddress?.addressLineOne}, ${widget.jobListing.pickupAddress?.addressLineTwo}',
+          '${widget.jobListing?.pickupAddress?.addressLineOne}, ${widget.jobListing?.pickupAddress?.addressLineTwo}',
           style: TextStyle(
             fontWeight: FontWeight.w500,
             color: darkGrey,
@@ -165,7 +179,8 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
           overflow: TextOverflow.ellipsis,
         ),
         SizedBox(height: 3),
-        Text(widget.jobListing.expectedPickupTime.toString(),
+        Text(
+            'Pickup by ${widget.jobListing?.convertDateFormat(widget.jobListing?.expectedPickupTime.toString() ?? "")}',
             style: TextStyle(
               color: navyBlue,
               fontSize: 12,
@@ -174,7 +189,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
             )),
         SizedBox(height: 20),
         Text(
-          '${widget.jobListing.deliveryAddress?.addressLineOne}, ${widget.jobListing.deliveryAddress?.addressLineTwo}',
+          '${widget.jobListing?.deliveryAddress?.addressLineOne}, ${widget.jobListing?.deliveryAddress?.addressLineTwo}',
           style: TextStyle(
             fontWeight: FontWeight.w500,
             color: darkGrey,
@@ -187,7 +202,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              widget.jobListing.expectedDeliveryTime.toString(),
+              'Deliver by ${widget.jobListing?.convertDateFormat(widget.jobListing?.expectedDeliveryTime.toString() ?? "")}',
               style: TextStyle(
                 color: navyBlue,
                 fontSize: 12,

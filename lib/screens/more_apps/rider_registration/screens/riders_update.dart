@@ -74,39 +74,34 @@ class _RidersUpdateState extends State<RidersUpdate> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // if (userBloc.user.rider?.isStatusApproved() == true)
-            Text(
-              'Welcome, ${userBloc.user.nickName}',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: blackFont,
-                fontFamily: "Inter",
+            if (userBloc.user.rider?.isStatusApproved() == true)
+              Text(
+                'Welcome, ${userBloc.user.nickName}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: blackFont,
+                  fontFamily: "Inter",
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'assets/images/rider_status_approve.png',
-                    fit: BoxFit.fill,
-                  ),
-                  // userBloc.user.rider?.isStatusApproved() == true
-                  //     ? Image.asset(
-                  //         'assets/images/rider_status_approve.png',
-                  //         fit: BoxFit.fill,
-                  //       )
-                  //     : Image.asset(
-                  //         'assets/images/rider_status_pending.png',
-                  //         fit: BoxFit.fill,
-                  //       ),
+                  userBloc.user.rider?.isStatusApproved() == true
+                      ? Image.asset(
+                          'assets/images/rider_status_approve.png',
+                          fit: BoxFit.fill,
+                        )
+                      : Image.asset(
+                          'assets/images/rider_status_pending.png',
+                          fit: BoxFit.fill,
+                        ),
                   Text(
-                    'Your account has been verified to be a slydo rider, you can now start accepting request for delivery in service hub.',
-                    // userBloc.user.rider?.isStatusApproved() == true
-                    //     ? 'Your account has been verified to be a slydo rider, you can now start accepting request for delivery in service hub.'
-                    //     : 'You can visit one of our outlet for credentials verification.',
+                    userBloc.user.rider?.isStatusApproved() == true
+                        ? 'Your account has been verified to be a slydo rider, you can now start accepting request for delivery in service hub.'
+                        : 'You can visit one of our outlet for credentials verification.',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,

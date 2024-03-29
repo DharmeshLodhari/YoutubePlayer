@@ -210,8 +210,8 @@ class _PreviewDeliveryProofScreenState
 
   Future<void> sendDeliveryEvidence() async {
     await RiderDeliveryAuthService()
-        .sendDeliveryEvidence(
-            riderDeliveryBloc.deliveryDetails?.id, widget.arguments["filePath"])
+        .sendDeliveryEvidence(riderDeliveryBloc.deliveryDetails?.id,
+            widget.arguments["filePath"], context)
         .then((value) {
       if (value == true) {
         showToast(

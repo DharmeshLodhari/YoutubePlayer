@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
@@ -15,23 +14,23 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
-class RiderMapUI extends StatefulWidget {
-  RiderMapUI({
-    Key? key,
+class RiderDeliveryMap extends StatefulWidget {
+  RiderDeliveryMap({
+    super.key,
     // this.deliveryDetails,
     // this.showRideToStartingPointPolyline = false,
     // this.showStartingPointToDestinationPolyline = false,
-  }) : super(key: key);
+  });
 
   // final DeliveryModel? deliveryDetails;
   // final bool showStartingPointToDestinationPolyline;
   // final bool showRideToStartingPointPolyline;
 
   @override
-  _RiderMapUIState createState() => _RiderMapUIState();
+  _RiderDeliveryMapState createState() => _RiderDeliveryMapState();
 }
 
-class _RiderMapUIState extends State<RiderMapUI> {
+class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   Location _locationController = new Location();
 
   final Completer<GoogleMapController> _mapController =
@@ -52,34 +51,34 @@ class _RiderMapUIState extends State<RiderMapUI> {
   late RiderDeliveryBloc riderDeliveryBloc;
   String? username;
 
-  static const double earthRadius = 6371; // in kilometers
-
-  static double degreesToRadians(double degrees) {
-    return degrees * (pi / 180);
-  }
-
-  double threshold = 200;
-
-  static double distanceBetween(LatLng from, LatLng to) {
-    double fromLatRadians = degreesToRadians(from.latitude);
-    double fromLongRadians = degreesToRadians(from.longitude);
-    double toLatRadians = degreesToRadians(to.latitude);
-    double toLongRadians = degreesToRadians(to.longitude);
-
-    double latDiff = toLatRadians - fromLatRadians;
-    double longDiff = toLongRadians - fromLongRadians;
-
-    double a = pow(sin(latDiff / 2), 2) +
-        cos(fromLatRadians) * cos(toLatRadians) * pow(sin(longDiff / 2), 2);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-
-    return earthRadius * c;
-  }
-
-  static bool isBelowThreshold(LatLng from, LatLng to, double threshold) {
-    double distance = distanceBetween(from, to);
-    return distance < threshold;
-  }
+  // static const double earthRadius = 6371; // in kilometers
+  //
+  // static double degreesToRadians(double degrees) {
+  //   return degrees * (pi / 180);
+  // }
+  //
+  // double threshold = 200;
+  //
+  // static double distanceBetween(LatLng from, LatLng to) {
+  //   double fromLatRadians = degreesToRadians(from.latitude);
+  //   double fromLongRadians = degreesToRadians(from.longitude);
+  //   double toLatRadians = degreesToRadians(to.latitude);
+  //   double toLongRadians = degreesToRadians(to.longitude);
+  //
+  //   double latDiff = toLatRadians - fromLatRadians;
+  //   double longDiff = toLongRadians - fromLongRadians;
+  //
+  //   double a = pow(sin(latDiff / 2), 2) +
+  //       cos(fromLatRadians) * cos(toLatRadians) * pow(sin(longDiff / 2), 2);
+  //   double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+  //
+  //   return earthRadius * c;
+  // }
+  //
+  // static bool isBelowThreshold(LatLng from, LatLng to, double threshold) {
+  //   double distance = distanceBetween(from, to);
+  //   return distance < threshold;
+  // }
 
   @override
   void initState() {
@@ -161,8 +160,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
         },
         polylines: Set<Polyline>.of(polylines.values),
       );
-    } else if (deliveryModel?.isOfferAccepted(userBloc.user.userName) == true &&
-        deliveryModel?.isInProgress == false) {
+    } else if (deliveryModel?.isAfterOfferAccepted(username) == true) {
       return FutureBuilder<Uint8List>(
         future: _markerImageData,
         builder: (context, snapshot) {
@@ -198,8 +196,85 @@ class _RiderMapUIState extends State<RiderMapUI> {
           }
         },
       );
-    } else if (deliveryModel?.isOfferAccepted(userBloc.user.userName) == true &&
-        deliveryModel?.isInProgress == true) {
+    } else if (deliveryModel?.isOfferStarted(username) == true) {
+      return FutureBuilder<Uint8List>(
+        future: _markerImageData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return GoogleMap(
+              onMapCreated: ((GoogleMapController controller) =>
+                  _mapController.complete(controller)),
+              initialCameraPosition: CameraPosition(
+                target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
+                    deliveryModel?.pickupAddress?.longitude ?? 0.0),
+                zoom: 12,
+              ),
+              markers: {
+                Marker(
+                  markerId: MarkerId("_currentLocation"),
+                  icon: BitmapDescriptor.fromBytes(snapshot.data!),
+                  rotation: 130,
+                  position: _currentP!,
+                ),
+                Marker(
+                    markerId: MarkerId("_sourceLocation"),
+                    icon: BitmapDescriptor.defaultMarkerWithHue(0),
+                    position: LatLng(
+                        deliveryModel?.pickupAddress?.latitude ?? 0.0,
+                        deliveryModel?.pickupAddress?.longitude ?? 0.0)),
+                Marker(
+                    markerId: MarkerId("_destinationLocation"),
+                    icon: BitmapDescriptor.defaultMarkerWithHue(250),
+                    position: LatLng(
+                        deliveryModel?.deliveryAddress?.latitude ?? 0.0,
+                        deliveryModel?.deliveryAddress?.longitude ?? 0.0))
+              },
+              polylines: Set<Polyline>.of(polylines.values),
+            );
+          }
+        },
+      );
+    } else if (deliveryModel?.isOfferEnded(username) == true) {
+      return FutureBuilder<Uint8List>(
+        future: _markerImageData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return GoogleMap(
+              onMapCreated: ((GoogleMapController controller) =>
+                  _mapController.complete(controller)),
+              initialCameraPosition: CameraPosition(
+                target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
+                    deliveryModel?.pickupAddress?.longitude ?? 0.0),
+                zoom: 12,
+              ),
+              markers: {
+                Marker(
+                  markerId: MarkerId("_currentLocation"),
+                  icon: BitmapDescriptor.fromBytes(snapshot.data!),
+                  rotation: 130,
+                  position: _currentP!,
+                ),
+                Marker(
+                    markerId: MarkerId("_destinationLocation"),
+                    icon: BitmapDescriptor.defaultMarkerWithHue(250),
+                    position: LatLng(
+                        deliveryModel?.deliveryAddress?.latitude ?? 0.0,
+                        deliveryModel?.deliveryAddress?.longitude ?? 0.0))
+              },
+              polylines: Set<Polyline>.of(polylines.values),
+            );
+          }
+        },
+      );
+    } else {
       return FutureBuilder<Uint8List>(
         future: _markerImageData,
         builder: (context, snapshot) {
@@ -242,7 +317,6 @@ class _RiderMapUIState extends State<RiderMapUI> {
         },
       );
     }
-    return Container();
   }
 
   Future<void> _cameraToPosition(LatLng pos) async {
@@ -275,10 +349,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
       }
     }
 
-    if (riderDeliveryBloc.deliveryDetails
-                ?.isOfferAccepted(userBloc.user.userName) ==
-            true &&
-        riderDeliveryBloc.deliveryDetails?.isInProgress == true) {
+    if (riderDeliveryBloc.deliveryDetails?.isOfferStarted(username) == true) {
       _locationController.onLocationChanged
           .listen((LocationData currentLocation) {
         if (currentLocation.latitude != null &&
@@ -289,22 +360,22 @@ class _RiderMapUIState extends State<RiderMapUI> {
                   LatLng(currentLocation.latitude!, currentLocation.longitude!);
               _cameraToPosition(_currentP ?? LatLng(0.0, 0.0));
 
-              if (isBelowThreshold(
-                  _currentP!,
-                  LatLng(
-                      riderDeliveryBloc
-                              .deliveryDetails?.pickupAddress?.latitude ??
-                          0.0,
-                      riderDeliveryBloc
-                              .deliveryDetails?.pickupAddress?.longitude ??
-                          0.0),
-                  threshold)) {
-                debugPrint(
-                    'The distance between the locations is below $threshold kilometers.');
-              } else {
-                debugPrint(
-                    'The distance between the locations exceeds $threshold kilometers.');
-              }
+              // if (isBelowThreshold(
+              //     _currentP!,
+              //     LatLng(
+              //         riderDeliveryBloc
+              //                 .deliveryDetails?.pickupAddress?.latitude ??
+              //             0.0,
+              //         riderDeliveryBloc
+              //                 .deliveryDetails?.pickupAddress?.longitude ??
+              //             0.0),
+              //     threshold)) {
+              //   debugPrint(
+              //       'The distance between the locations is below $threshold kilometers.');
+              // } else {
+              //   debugPrint(
+              //       'The distance between the locations exceeds $threshold kilometers.');
+              // }
 
               updateCurrentLocation(_currentP ?? LatLng(0.0, 0.0));
             });
@@ -330,8 +401,17 @@ class _RiderMapUIState extends State<RiderMapUI> {
     List<LatLng> polylineCoordinates = [];
     PolylinePoints polylinePoints = PolylinePoints();
     PolylineResult result = PolylineResult();
-    if (deliveryModel?.isOfferAccepted(userBloc.user.userName) == true &&
-        deliveryModel?.isInProgress == false) {
+
+    if (deliveryModel?.isOfferAccepted(username) == false) {
+      result = await polylinePoints.getRouteBetweenCoordinates(
+        GOOGLE_MAPS_API_KEY,
+        PointLatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
+            deliveryModel?.pickupAddress?.longitude ?? 0.0),
+        PointLatLng(deliveryModel?.deliveryAddress?.latitude ?? 0.0,
+            deliveryModel?.deliveryAddress?.longitude ?? 0.0),
+        travelMode: TravelMode.driving,
+      );
+    } else if (deliveryModel?.isAfterOfferAccepted(username) == true) {
       result = await polylinePoints.getRouteBetweenCoordinates(
         GOOGLE_MAPS_API_KEY,
         PointLatLng(localData.latitude!, localData.longitude!),
@@ -339,8 +419,7 @@ class _RiderMapUIState extends State<RiderMapUI> {
             deliveryModel?.pickupAddress?.longitude ?? 0.0),
         travelMode: TravelMode.bicycling,
       );
-    } else if (deliveryModel?.isOfferAccepted(username) == false ||
-        deliveryModel?.isInProgress == true) {
+    } else if (deliveryModel?.isOfferStarted(username) == true) {
       result = await polylinePoints.getRouteBetweenCoordinates(
         GOOGLE_MAPS_API_KEY,
         PointLatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,

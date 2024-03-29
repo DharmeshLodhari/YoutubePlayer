@@ -9,6 +9,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:provider/provider.dart';
 
 class ShareExperience extends StatefulWidget {
@@ -20,6 +21,24 @@ class _ShareExperienceState extends State<ShareExperience> {
   TextEditingController feedbackController = TextEditingController();
   late RiderDeliveryBloc riderDeliveryBloc;
   bool isLoading = false;
+  final FocusNode _nodeText1 = FocusNode();
+
+  KeyboardActionsConfig _buildConfig(BuildContext context) {
+    return KeyboardActionsConfig(
+      keyboardActionsPlatform: KeyboardActionsPlatform.IOS,
+      keyboardBarColor: Color(0xFFC5C9D1),
+      nextFocus: false,
+      defaultDoneWidget: Text(
+        'Done',
+        style: TextStyle(fontWeight: FontWeight.w500),
+      ),
+      actions: [
+        KeyboardActionsItem(
+          focusNode: _nodeText1,
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +55,7 @@ class _ShareExperienceState extends State<ShareExperience> {
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: lightGrey,
-            // appBar: _buildAppBar() as PreferredSizeWidget?,
-            body: _buildBody(),
+            body: _buildBody(context),
             floatingActionButton: _buildSubmitButton(),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
@@ -47,30 +65,26 @@ class _ShareExperienceState extends State<ShareExperience> {
     );
   }
 
-  Widget _buildAppBar() {
-    return AppBar(
-      backgroundColor: white,
-      elevation: 0,
-    );
-  }
-
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(height: 20),
-                _buildTitle(),
-                SizedBox(height: 20),
-                _buildNote(),
-                SizedBox(height: 50),
-                _buildFeedbackTextField(),
-              ],
+      body: KeyboardActions(
+        config: _buildConfig(context),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  _buildTitle(),
+                  SizedBox(height: 20),
+                  _buildNote(),
+                  SizedBox(height: 50),
+                  _buildFeedbackTextField(),
+                ],
+              ),
             ),
           ),
         ),
@@ -106,6 +120,7 @@ class _ShareExperienceState extends State<ShareExperience> {
   Widget _buildFeedbackTextField() {
     return TextField(
       controller: feedbackController,
+      focusNode: _nodeText1,
       maxLines: 10,
       decoration: InputDecoration(
         hintText: "Type here",

@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
+import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
@@ -9,6 +12,7 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 class DeliveryCompleted extends StatefulWidget {
   @override
@@ -16,8 +20,13 @@ class DeliveryCompleted extends StatefulWidget {
 }
 
 class _DeliveryCompletedState extends State<DeliveryCompleted> {
+  late RiderDeliveryBloc riderDeliveryBloc;
+  late UserBloc userBloc;
+
   @override
   Widget build(BuildContext context) {
+    riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -29,7 +38,6 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
         child: SafeArea(
           child: Scaffold(
             backgroundColor: lightGrey,
-            // appBar: _buildAppBar() as PreferredSizeWidget?,
             body: _buildBody(),
           ),
         ),
@@ -37,16 +45,9 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
     );
   }
 
-  Widget _buildAppBar() {
-    return AppBar(
-      backgroundColor: white,
-      elevation: 0,
-    );
-  }
-
   Widget _buildBody() {
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(20.0),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -61,14 +62,16 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
             _buildIconAndAddressAndPickup(),
             _buildDivider(),
             _buildCircleImageAndName(),
-            _buildDivider1(),
+            _buildDivider(),
             _buildDistance(),
             SizedBox(height: 15),
             _buildDuration(),
             SizedBox(height: 15),
             _buildItems(),
-            SizedBox(height: 25),
+            SizedBox(height: 30),
             _buildShareYourExperience(),
+            SizedBox(height: 15),
+            _buildShareLater(),
           ],
         ),
       ),
@@ -97,7 +100,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
 
   Widget _buildRideNumber() {
     return Text(
-      'Ride #267',
+      'Ride #${riderDeliveryBloc.deliveryDetails?.orderId}',
       style: TextStyle(
         fontSize: 18,
         fontFamily: "Inter",
@@ -124,7 +127,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "₦",
+          worldCurrencies[riderDeliveryBloc.deliveryDetails?.currency] ?? 'NGN',
           style: TextStyle(
             fontSize: 20,
             fontFamily: "Inter",
@@ -133,7 +136,8 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
           ),
         ),
         Text(
-          "3,000.00",
+          moneyDisplayNormalizer(
+              riderDeliveryBloc.deliveryDetails?.riderPayment),
           style: TextStyle(
             fontSize: 20,
             fontFamily: "Inter",
@@ -182,11 +186,20 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
             child: ClipOval(
               child: defaultImage != null
                   ? CachedNetworkImage(
-                      imageUrl: defaultImage,
+                      imageUrl: userBloc.user.avatar == ""
+                          ? defaultImage
+                          : userBloc.user.avatar!,
                       colorBlendMode: BlendMode.darken,
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.high,
+                      fit: BoxFit.cover,
                       errorWidget: imageErrorWidget,
+                      height: double.infinity,
+                      filterQuality: FilterQuality.high,
+                      placeholder: (context, _) => CachedNetworkImage(
+                        imageUrl: defaultImage,
+                        colorBlendMode: BlendMode.darken,
+                        fit: BoxFit.fitWidth,
+                        filterQuality: FilterQuality.high,
+                      ),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -194,9 +207,9 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
         ),
         SizedBox(width: 10),
         Text(
-          'Tolani James',
+          userBloc.user.nickName ?? "",
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: "Inter",
             fontWeight: FontWeight.w500,
             color: blackFont,
@@ -211,23 +224,55 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'KFC, O&O Filling station berger  expressway',
+          '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: blackFont,
+            color: darkGrey,
             fontSize: 14,
             fontFamily: "Inter",
           ),
+          overflow: TextOverflow.ellipsis,
         ),
-        SizedBox(height: 25),
+        SizedBox(height: 3),
         Text(
-          '46  Musa Johnson Road, Agege',
+            'Pickup by ${riderDeliveryBloc.deliveryDetails?.convertDateFormat(riderDeliveryBloc.deliveryDetails?.expectedPickupTime.toString() ?? "")}',
+            style: TextStyle(
+              color: navyBlue,
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              fontFamily: "Inter",
+            )),
+        SizedBox(height: 20),
+        Text(
+          '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: blackFont,
+            color: darkGrey,
             fontSize: 14,
             fontFamily: "Inter",
           ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Deliver by ${riderDeliveryBloc.deliveryDetails?.convertDateFormat(riderDeliveryBloc.deliveryDetails?.expectedDeliveryTime.toString() ?? "")}',
+              style: TextStyle(
+                color: navyBlue,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 10.0),
+              child: Icon(
+                Icons.keyboard_arrow_right_outlined,
+                size: 20,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -241,38 +286,30 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
           "Distance Covered",
           style: TextStyle(
             color: blackFont,
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             fontFamily: "Inter",
           ),
         ),
-        Row(
-          children: [
-            Text(
-              "23",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-            ),
-            Text(
-              "km",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-            ),
-          ],
+        Text(
+          "23 km",
+          style: TextStyle(
+            color: navyBlue,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
         )
       ],
     );
   }
 
   Widget _buildDuration() {
+    DateTime? pickupTime =
+        riderDeliveryBloc.deliveryDetails?.actualDeliveryTime;
+    DateTime? deliveryTime =
+        riderDeliveryBloc.deliveryDetails?.actualPickupTime;
+    Duration? duration = deliveryTime?.difference(pickupTime!);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -280,50 +317,19 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
           "Duration",
           style: TextStyle(
             color: blackFont,
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             fontFamily: "Inter",
           ),
         ),
-        Row(
-          children: [
-            Text(
-              "1",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-            ),
-            Text(
-              "hr",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-            ),
-            Text(
-              " 30",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-            ),
-            Text(
-              "mins",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-            ),
-          ],
+        Text(
+          "${duration?.inHours}hr ${(duration?.inMinutes ?? 0) % 60}mins",
+          style: TextStyle(
+            color: black,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
         )
       ],
     );
@@ -334,68 +340,53 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "8 items",
+          "Items (${riderDeliveryBloc.deliveryDetails?.totalNoOfItems})",
           style: TextStyle(
             color: blackFont,
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             fontFamily: "Inter",
           ),
         ),
-        Row(
-          children: [
-            Text(
-              "36",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-            ),
-            Text(
-              "kg",
-              style: TextStyle(
-                color: navyBlue,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Inter",
-              ),
-            )
-          ],
+        Text(
+          "${riderDeliveryBloc.deliveryDetails?.totalWeight} kg",
+          style: TextStyle(
+            color: black,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Inter",
+          ),
         ),
       ],
     );
   }
 
   Widget _buildShareYourExperience() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: CurvedButton(
-        text: 'Share your experience',
-        textColor: white,
-        backgroundColor: navyBlue,
-        fontSize: 15,
-        onPressed: () {
-          Navigator.of(context).popAndPushNamed(Routes.SHARE_EXPERIENCE);
-        },
-      ),
+    return CurvedButton(
+      text: 'Share your experience',
+      textColor: white,
+      backgroundColor: navyBlue,
+      fontSize: 15,
+      onPressed: () {
+        Navigator.of(context).popAndPushNamed(Routes.SHARE_EXPERIENCE);
+      },
+    );
+  }
+
+  Widget _buildShareLater() {
+    return OutlineCurvedButton(
+      text: "Share Later",
+      textColor: navyBlue,
+      onPressed: () {
+        Navigator.of(context).popUntil(ModalRoute.withName(Routes.SUPER_HUB));
+      },
+      backgroundColor: white,
     );
   }
 
   Widget _buildDivider() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 5.0),
-      child: Divider(
-        color: greyBorderColor,
-        thickness: 0.8,
-      ),
-    );
-  }
-
-  Widget _buildDivider1() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 5.0),
       child: Divider(
         color: greyBorderColor,
         thickness: 0.8,

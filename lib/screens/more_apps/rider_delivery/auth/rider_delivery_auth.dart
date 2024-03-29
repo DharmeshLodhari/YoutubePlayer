@@ -101,7 +101,8 @@ class RiderDeliveryAuthService extends AuthService {
   // Fetch a job
   Future<DeliveryModel?> fetchJob(String? journeyId) async {
     try {
-      String url = "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/";
+      String url =
+          "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/?user_current_location=6.6616402,3.6470794";
 
       debugPrint('Fetch Job URL ---> $url');
 
@@ -141,9 +142,14 @@ class RiderDeliveryAuthService extends AuthService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else {
-        return false;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
       }
+      return false;
     } catch (e) {
       print("Error: $e");
       return false;
@@ -164,9 +170,14 @@ class RiderDeliveryAuthService extends AuthService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else {
-        return false;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
       }
+      return false;
     } catch (e) {
       print("Error: $e");
       return false;
@@ -187,9 +198,14 @@ class RiderDeliveryAuthService extends AuthService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else {
-        return false;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
       }
+      return false;
     } catch (e) {
       print("Error: $e");
       return false;
@@ -210,9 +226,14 @@ class RiderDeliveryAuthService extends AuthService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else {
-        return false;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
       }
+      return false;
     } catch (e) {
       print("Error: $e");
       return false;
@@ -239,9 +260,15 @@ class RiderDeliveryAuthService extends AuthService {
     try {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else {
-        return false;
+      } else if (response.statusCode == 400) {
+        var responseBody = await response.stream.bytesToString();
+        var jsonResponse = jsonDecode(responseBody);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
       }
+      return false;
     } catch (e) {
       print("Error: $e");
       return false;
@@ -265,16 +292,22 @@ class RiderDeliveryAuthService extends AuthService {
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
 
-    // try {
-    //   if (response.statusCode == 200 || response.statusCode == 201) {
-    //     return true;
-    //   } else {
-    //     return false;
-    //   }
-    // } catch (e) {
-    //   print("Error: $e");
-    return false;
-    // }
+    try {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else if (response.statusCode == 400) {
+        var responseBody = await response.stream.bytesToString();
+        var jsonResponse = jsonDecode(responseBody);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
+      }
+      return false;
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
   }
 
   //Update Journey Route
@@ -297,9 +330,15 @@ class RiderDeliveryAuthService extends AuthService {
     try {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else {
-        return false;
+      } else if (response.statusCode == 400) {
+        var responseBody = await response.stream.bytesToString();
+        var jsonResponse = jsonDecode(responseBody);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
       }
+      return false;
     } catch (e) {
       print("Error: $e");
       return false;
@@ -307,7 +346,8 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   // Send Delivery Evidence
-  Future<bool> sendDeliveryEvidence(String? journeyId, argument) async {
+  Future<bool> sendDeliveryEvidence(
+      String? journeyId, argument, BuildContext context) async {
     if (journeyId == null) {
       return false;
     }
@@ -335,9 +375,15 @@ class RiderDeliveryAuthService extends AuthService {
     try {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else {
-        return false;
+      } else if (response.statusCode == 400) {
+        var responseBody = await response.stream.bytesToString();
+        var jsonResponse = jsonDecode(responseBody);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
       }
+      return false;
     } catch (e) {
       print("Error: $e");
       return false;
@@ -358,8 +404,43 @@ class RiderDeliveryAuthService extends AuthService {
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
-    } else {
-      return false;
+    } else if (response.statusCode == 400) {
+      var jsonResponse = jsonDecode(response.body);
+      if (jsonResponse.containsKey("error")) {
+        showToast(message: jsonResponse['error']);
+        return false;
+      }
     }
+    return false;
+  }
+
+  // Fetch a rider location
+  Future<Map<String, dynamic>?> fetchRiderLocation(String? journeyId) async {
+    try {
+      String url =
+          "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId?location_only=true";
+
+      debugPrint('Fetch rider location URL ---> $url');
+
+      var headers = await getAuthHeaders();
+      var response = await httpGet(url, headers: headers);
+      debugPrint('Fetch rider location URL BODY ---> ${response.body}');
+
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        showToast(message: response.body.toString());
+        throw response.body;
+      }
+    } on Exception catch (e) {
+      showToast(message: e.toString());
+      print(e);
+    } catch (err) {
+      showToast(message: err.toString());
+      print(err);
+    }
+    return null;
   }
 }

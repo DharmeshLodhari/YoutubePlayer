@@ -1261,7 +1261,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget stepperBody() {
     return track.OrderTrackerStepper(
         type: track.StepperType.vertical,
-        physics: AlwaysScrollableScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         currentStep: _currentStep,
         onStepTapped: (step) => tapped(step),
         onStepContinue: continued,
@@ -1376,7 +1376,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       children: [
         GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, Routes.CANCELLATION);
+            Navigator.pushNamed(context, Routes.RIDER_MAP_STATUS,
+                arguments: {"journey_id": order?.journeyId});
           },
           child:
               RoundedElevatedButton(svgImg: 'assets/images/location_icon.svg'),

@@ -6,7 +6,8 @@ import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_map_ui.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/tiles/delivery_order_tile.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/tiles/rider_delivery_map.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
@@ -130,7 +131,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     return AppBar(
       backgroundColor: white,
       title: Text(
-        'Ride #267',
+        'Ride #${riderDeliveryBloc.deliveryDetails?.orderId}',
         style: TextStyle(
           fontSize: 20,
           fontFamily: "Inter",
@@ -176,16 +177,13 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         Column(
           children: [
             Expanded(
-              child: RiderMapUI(
-                key: UniqueKey(),
-                // deliveryDetails: deliveryDetails,
-                // showRideToStartingPointPolyline: true,
-                // showStartingPointToDestinationPolyline: false,
-                // startRide: startRide,
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.2,
+              child: RiderDeliveryMap(
+                  // key: UniqueKey(),
+                  // deliveryDetails: deliveryDetails,
+                  // showRideToStartingPointPolyline: true,
+                  // showStartingPointToDestinationPolyline: false,
+                  // startRide: startRide,
+                  ),
             ),
           ],
         ),
@@ -198,21 +196,15 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     if (riderDeliveryBloc.deliveryDetails?.isOfferAccepted(username) == false) {
       return _buildShowDetails();
     } else if (riderDeliveryBloc.deliveryDetails
-                ?.isOfferAccepted(userBloc.user.userName) ==
+                ?.isAfterOfferAccepted(username) ==
             true &&
-        riderDeliveryBloc.deliveryDetails?.isInProgress == false &&
-        riderDeliveryBloc.deliveryDetails?.hasEnded == false &&
         isDeliveryCancel == false) {
       return _buildAccepted();
-    } else if (riderDeliveryBloc.deliveryDetails
-                ?.isOfferAccepted(userBloc.user.userName) ==
-            true &&
-        riderDeliveryBloc.deliveryDetails?.isInProgress == true) {
+    } else if (riderDeliveryBloc.deliveryDetails?.isOfferStarted(username) ==
+        true) {
       return _buildStarted();
-    } else if (riderDeliveryBloc.deliveryDetails
-                ?.isOfferAccepted(userBloc.user.userName) ==
-            true &&
-        riderDeliveryBloc.deliveryDetails?.hasEnded == true) {
+    } else if (riderDeliveryBloc.deliveryDetails?.isOfferEnded(username) ==
+        true) {
       return _buildEnded();
     } else if (isDeliveryCancel == true) {
       return _buildCancel();
@@ -264,8 +256,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildShowDetails() {
     return DraggableScrollableSheet(
       initialChildSize: 0.38,
-      // maxChildSize: 0.38,
-      // minChildSize: 0.38,
+      maxChildSize: 0.38,
+      minChildSize: 0.15,
       builder: (BuildContext context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
@@ -400,10 +392,13 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildLogoAndDeliveryAndAmount(),
-                _buildItemsAndKg(),
-                SizedBox(height: 10.0),
-                _buildIconAndAddressAndPickup(),
+                // _buildLogoAndDeliveryAndAmount(),
+                // _buildItemsAndKg(),
+                // SizedBox(height: 10.0),
+                // _buildIconAndAddressAndPickup(),
+
+                DeliveryOrderTile(
+                    jobListing: riderDeliveryBloc.deliveryDetails),
                 SizedBox(height: 10.0),
                 _buildButtonAcceptReject(),
               ],

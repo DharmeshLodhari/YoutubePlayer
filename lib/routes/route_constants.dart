@@ -227,7 +227,7 @@ class Routes {
   static const String SHARED_CART_MEMBERS = "/shared-card-members";
   static const String SHARED_CART_PAYMENT = "/send-cart-payment";
 
-  static const String DISPATCH = "/dispatch";
+  static const String RIDER_MAP_STATUS = "/rider-map-status";
   static const String CANCELLATION = "/cancellation";
   static const String YOU_TRIP_END = "/your-trip-end";
 }

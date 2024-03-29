@@ -83,13 +83,13 @@ import 'package:Slydo/screens/more_apps/review/main_review.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/cancellation_screen.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/dispatch_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/dispatch/screens/your_trip_end_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_completed.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_details.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/delivery_history.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/preview_delivery_proof_screen.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/response_received.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/screens/rider_map_status.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/share_experience.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/take_delivery_proof.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/screens/completed_upload_photo.dart';
@@ -2069,9 +2069,11 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.DISPATCH:
+      case Routes.RIDER_MAP_STATUS:
         return PageTransition(
-          child: DispatchScreen(),
+          child: RiderMapStatus(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

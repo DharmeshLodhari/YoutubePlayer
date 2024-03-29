@@ -1,9 +1,10 @@
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:intl/intl.dart';
 
 class DeliveryModel {
   String? id;
-  // double? deliveryDistance;
-  // double? pickupDistance;
+  dynamic deliveryDistance;
+  dynamic pickupDistance;
   String? merchantAvatar;
   String? merchantFullName;
   String? merchant;
@@ -12,7 +13,8 @@ class DeliveryModel {
   String? dispatcher;
   ShippingAddress? pickupAddress;
   ShippingAddress? deliveryAddress;
-  dynamic location;
+  RiderLocation? location;
+  List<dynamic>? route;
   DateTime? createdAt;
   DateTime? updatedAt;
   String? status;
@@ -23,14 +25,15 @@ class DeliveryModel {
   DateTime? actualPickupTime;
   DateTime? actualDeliveryTime;
   int? tip;
+  int? riderPayment;
   String? currency;
-  dynamic route;
   String? acceptedBy;
   String? customer;
   bool? isInProgress;
   bool? hasEnded;
   int? totalWeight;
   int? totalNoOfItems;
+  int? orderId;
   // bool? isShowDetails;
   // bool? isDeliveryAccepted;
   // bool? isDeliveryStarted;
@@ -40,8 +43,8 @@ class DeliveryModel {
 
   DeliveryModel({
     this.id,
-    // this.deliveryDistance,
-    // this.pickupDistance,
+    this.deliveryDistance,
+    this.pickupDistance,
     this.merchantAvatar,
     this.merchantFullName,
     this.merchant,
@@ -51,6 +54,7 @@ class DeliveryModel {
     this.pickupAddress,
     this.deliveryAddress,
     this.location,
+    this.route,
     this.createdAt,
     this.updatedAt,
     this.status,
@@ -61,14 +65,15 @@ class DeliveryModel {
     this.actualPickupTime,
     this.actualDeliveryTime,
     this.tip,
+    this.riderPayment,
     this.currency,
-    this.route,
     this.acceptedBy,
     this.customer,
     this.isInProgress,
     this.hasEnded,
     this.totalWeight,
     this.totalNoOfItems,
+    this.orderId,
     // this.isShowDetails = true,
     // this.isDeliveryAccepted = false,
     // this.isDeliveryStarted = false,
@@ -79,8 +84,8 @@ class DeliveryModel {
 
   factory DeliveryModel.fromJson(Map<String, dynamic> json) => DeliveryModel(
         id: json["id"],
-        // deliveryDistance: json["delivery_distance"],
-        // pickupDistance: json["pickup_distance"],
+        deliveryDistance: json["delivery_distance"],
+        pickupDistance: json["pickup_distance"],
         merchantAvatar: json["merchant_avatar"],
         merchantFullName: json["merchant_full_name"],
         merchant: json["merchant"],
@@ -93,7 +98,12 @@ class DeliveryModel {
         deliveryAddress: json["delivery_address"] == null
             ? null
             : ShippingAddress.fromJson(json["delivery_address"]),
-        location: json["location"],
+        location: json["location"] == null
+            ? null
+            : RiderLocation.fromJson(json["location"]),
+        route: json["route"] == null
+            ? []
+            : List<dynamic>.from(json["route"]!.map((x) => x)),
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
@@ -116,20 +126,21 @@ class DeliveryModel {
             ? null
             : DateTime.parse(json["actual_delivery_time"]),
         tip: json["tip"],
+        riderPayment: json["rider_payment"],
         currency: json["currency"],
-        route: json["route"],
         acceptedBy: json["accepted_by"],
         customer: json["customer"],
         isInProgress: json["is_in_progress"],
         hasEnded: json["has_ended"],
         totalWeight: json["total_weight"],
         totalNoOfItems: json["total_no_of_items"],
+        orderId: json["order_id"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        // "delivery_distance": deliveryDistance,
-        // "pickup_distance": pickupDistance,
+        "delivery_distance": deliveryDistance,
+        "pickup_distance": pickupDistance,
         "merchant_avatar": merchantAvatar,
         "merchant_full_name": merchantFullName,
         "merchant": merchant,
@@ -138,7 +149,8 @@ class DeliveryModel {
         "dispatcher": dispatcher,
         "pickup_address": pickupAddress?.toJson(),
         "delivery_address": deliveryAddress?.toJson(),
-        "location": location,
+        "location": location?.toJson(),
+        "route": route == null ? [] : List<dynamic>.from(route!.map((x) => x)),
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt?.toIso8601String(),
         "status": status,
@@ -149,6 +161,7 @@ class DeliveryModel {
         "actual_pickup_time": actualPickupTime,
         "actual_delivery_time": actualDeliveryTime,
         "tip": tip,
+        "rider_payment": riderPayment,
         "currency": currency,
         "route": route,
         "accepted_by": acceptedBy,
@@ -167,4 +180,56 @@ class DeliveryModel {
     }
     return false;
   }
+
+  bool isAfterOfferAccepted(String? userName) {
+    if (isOfferAccepted(userName) == true &&
+        isInProgress == false &&
+        hasEnded == false) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isOfferStarted(String? userName) {
+    if (isOfferAccepted(userName) == true && isInProgress == true) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isOfferEnded(String? userName) {
+    if (isOfferAccepted(userName) == true && hasEnded == true) {
+      return true;
+    }
+    return false;
+  }
+
+  String convertDateFormat(String time) {
+    if (time != null && time != "null") {
+      DateTime pickupTime = DateTime.parse(time);
+      // Format into AM/PM time
+      return DateFormat('h:mm a').format(pickupTime.toLocal());
+    }
+    return "";
+  }
+}
+
+class RiderLocation {
+  double? longitude;
+  double? latitude;
+
+  RiderLocation({
+    this.longitude,
+    this.latitude,
+  });
+
+  factory RiderLocation.fromJson(Map<String, dynamic> json) => RiderLocation(
+        longitude: json["longitude"]?.toDouble(),
+        latitude: json["latitude"]?.toDouble(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "longitude": longitude,
+        "latitude": latitude,
+      };
 }

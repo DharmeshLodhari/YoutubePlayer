@@ -177,8 +177,20 @@ class FindJobsTabState extends State<FindJobsTab> {
           controller: _findJobScrollController,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                child: Text(
+                  'Delivery Request around you',
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: "Inter",
+                  ),
+                ),
+              ),
               Flexible(
                 fit: FlexFit.loose,
                 child: ListView.builder(

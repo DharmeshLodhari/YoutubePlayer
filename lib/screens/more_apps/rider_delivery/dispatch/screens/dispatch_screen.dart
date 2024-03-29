@@ -1,13 +1,11 @@
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
-import 'package:Slydo/utils/util.dart';
 import 'package:sizer/sizer.dart';
-import 'package:badges/badges.dart' as badges;
 
 class DispatchScreen extends StatefulWidget {
   const DispatchScreen({super.key});
