@@ -14,9 +14,13 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/rounded_elevated_button.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -1255,6 +1259,206 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget stepperBody() {
+    return track.OrderTrackerStepper(
+        type: track.StepperType.vertical,
+        physics: AlwaysScrollableScrollPhysics(),
+        currentStep: _currentStep,
+        onStepTapped: (step) => tapped(step),
+        onStepContinue: continued,
+        onStepCancel: cancel,
+        controlsBuilder: (context, details) {
+          return Container(
+            color: navyBlue,
+            child: Container(),
+          );
+        },
+        steps: order?.statusTimeStamp?.map(
+              (element) {
+                String statusTitle =
+                    element.keys.first; // Get the key (status title)
+                String statusTimeStamp =
+                    element.values.first; // Get the value (timestamp)
+                return track.Step(
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          new Text(statusTitle,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500)),
+                          SizedBox(width: 10),
+                          if (statusTitle == 'Rider Assigned')
+                            SvgPicture.asset(
+                              'assets/images/bike_front.svg',
+                            ),
+                        ],
+                      ),
+                      Text(getOrderStatus(statusTitle)[0],
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w400)),
+                      new Text(statusTimeStamp,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w400)),
+                      SizedBox(height: 5),
+                      if (statusTitle == 'Rider Assigned')
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildCircleImageAndName(),
+                            SizedBox(width: 10),
+                            _buildPartnerContactIcon(),
+                          ],
+                        ),
+                    ],
+                  ),
+                  content: SizedBox.shrink(),
+                  isActive: true,
+                  state: getOrderStatus(statusTitle)[1],
+                  // state: getActiveOrderStatus(order, "New Order")
+                  //     ? track.StepState.editing
+                  //     : track.StepState.disabled,
+                );
+              },
+            ).toList() ??
+            []);
+  }
+
+  Widget _buildCircleImageAndName() {
+    return Row(
+      children: [
+        Container(
+          height: 30,
+          width: 30,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                15,
+              ),
+              border: Border.all(color: white, width: 2)),
+          child: ClipOval(
+            child: defaultImage != null
+                ? CachedNetworkImage(
+                    imageUrl: defaultImage,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    errorWidget: imageErrorWidget,
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
+        SizedBox(width: 5),
+        Text(
+          appendStringDot('@tolani.james hjdfhj vjdj' ?? "", 12),
+          style: TextStyle(
+            fontSize: 12,
+            fontFamily: "Inter",
+            fontWeight: FontWeight.w500,
+            color: blackFont,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPartnerContactIcon() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, Routes.CANCELLATION);
+          },
+          child:
+              RoundedElevatedButton(svgImg: 'assets/images/location_icon.svg'),
+        ),
+        SizedBox(width: 5),
+        RoundedElevatedButton(svgImg: 'assets/images/call_icon.svg'),
+        SizedBox(width: 5),
+        badges.Badge(
+          position: badges.BadgePosition.topEnd(top: 0, end: 0),
+          badgeStyle: badges.BadgeStyle(
+            badgeColor: navyBlue,
+          ),
+          badgeContent: Text(
+            "2",
+            style: TextStyle(
+              color: white,
+              fontSize: 8,
+              fontFamily: "Inter",
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          child: RoundedElevatedButton(svgImg: 'assets/images/chat_icon.svg'),
+        ),
+      ],
+    );
+  }
+
+  List getOrderStatus(String statusTitle) {
+    switch (statusTitle) {
+      case 'Order Placed':
+        return [
+          'This order has been placed successfully.',
+          track.StepState.complete
+        ];
+      case 'Awaiting Payment':
+        return [
+          'Your order is onhold till payment is being confirmed.',
+          track.StepState.editing
+        ];
+      case 'Payment Successful':
+        return [
+          'Payment has been receive successfully.',
+          track.StepState.complete
+        ];
+      case 'Processing':
+        return [
+          'Your order is being prepared for shipment',
+          track.StepState.complete
+        ];
+      case 'Order Picked Up':
+        return [
+          'Your order has been shipped and is in transit',
+          track.StepState.complete
+        ];
+      case 'On Hold':
+        return [
+          'Your order is onHold till the product is restocked.',
+          track.StepState.editing
+        ];
+      case 'Out For Delivery':
+        return [
+          'Your order is out for delivery and  will arrive soon',
+          track.StepState.complete
+        ];
+      case 'Canceled':
+        return ['This order has been cancelled', track.StepState.error];
+      case 'Complete':
+        return [
+          'Your order has been delivered successfully, thank you for shopping from us',
+          track.StepState.complete
+        ];
+      case 'Rider Assigned':
+        return [
+          'Tolani has been assigned to your order and he is on his way to pickup.',
+          track.StepState.complete
+        ];
+      default:
+        return ["", track.StepState.disabled];
+    }
+  }
+
+  Widget stepperBodyOld() {
     return Container(
       child: SingleChildScrollView(
         child: Column(

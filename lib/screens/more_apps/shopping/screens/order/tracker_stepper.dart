@@ -262,7 +262,7 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
   Widget _buildLine(bool visible) {
     return Container(
       width: visible ? 1.0 : 0.0,
-      height: 20.0,
+      height: 30.0,
       color: navyBlue,
     );
   }
@@ -305,9 +305,7 @@ class _OrderTrackerStepperState extends State<OrderTrackerStepper>
           ? navyBlue
           : colorScheme.onSurface.withOpacity(0.38);
     } else {
-      return widget.steps[index].isActive
-          ? navyBlue
-          : colorScheme.background;
+      return widget.steps[index].isActive ? navyBlue : colorScheme.background;
     }
   }
 
