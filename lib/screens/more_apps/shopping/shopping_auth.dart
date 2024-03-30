@@ -1232,7 +1232,6 @@ class ShoppingAuthService extends AuthService {
 
       for (int i = 0; i < data.length; i++) {
         var order = Order.fromJson(data[i]);
-
         items.add(order);
       }
 
@@ -1273,7 +1272,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Get single Order
-  Future<dynamic> getOrder(String id) async {
+  Future<Order> getOrder(String id) async {
     String url = AppConfig.baseUrl + "/api/v1/order/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -1284,27 +1283,11 @@ class ShoppingAuthService extends AuthService {
       List items = [];
       var data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {
-        if (data[i]["item"].containsKey("manufacturer")) {
-          var product = Product.fromJson(data[i]["item"]);
-          items.add({
-            "type": "product",
-            "item": product,
-            "qty": int.parse(data[i]["qty"]),
-          });
-        }
-        if (!data[i]["item"].containsKey("manufacturer")) {
-          var service = Service.fromJson(data[i]["item"]);
-          items.add({
-            "type": "service",
-            "item": service,
-            "qty": int.parse(data[i]["qty"]),
-          });
-        }
+        Order order = Order.fromJson(data[i]);
+        return order;
       }
-      return items;
-    } else {
-      throw jsonData;
     }
+    throw jsonData;
   }
 
   //ShoppingCart

@@ -230,7 +230,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
             ),
             SizedBox(height: 5),
             Text(
-              deliveryModel?.acceptedBy ?? "",
+              deliveryModel?.dispatcher ?? "",
               style: TextStyle(
                 color: black,
                 fontWeight: FontWeight.w500,
@@ -281,21 +281,27 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
               fontWeight: FontWeight.w700,
             ),
           ),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
-            ),
-            elevation: 3,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: Container(
-                width: 60,
-                height: 60,
-                color: white,
-                child: Image.asset(
-                  "assets/images/message_icon.png",
-                  width: 24,
-                  height: 24,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/chat-screen',
+                  arguments: {"recipientUserName": deliveryModel?.dispatcher});
+            },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              elevation: 3,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  color: white,
+                  child: Image.asset(
+                    "assets/images/message_icon.png",
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
               ),
             ),
