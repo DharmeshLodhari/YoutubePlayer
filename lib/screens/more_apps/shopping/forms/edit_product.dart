@@ -89,6 +89,7 @@ class _EditProductState extends State<EditProduct> {
   bool productEnableInSuperStore = false;
   TextfieldTagsController _myController = TextfieldTagsController();
   List<Tags> userTags = [];
+
   // List<Tags> allTags = [];
 
   //text editing controllers for the edit fields
@@ -377,7 +378,7 @@ class _EditProductState extends State<EditProduct> {
   void obtainCategories() async {
     try {
       productCategories = await ShoppingAuthService()
-          .obtainProductCategories(userBloc!.userAbout!.industry!.id!);
+          .obtainProductCategories(userBloc?.userAbout?.industry?.id ?? "");
 
       productCategoriesCopy = productCategories;
     } catch (e) {
@@ -2325,8 +2326,7 @@ class _EditProductState extends State<EditProduct> {
   }
 
   bool validateDropdown() {
-    if (selectedProductCategory?.name != "" &&
-        selectedProductCondition != null) {
+    if (selectedProductCategory != null && selectedProductCondition != null) {
       return true;
     } else {
       showToast(

@@ -1689,7 +1689,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarn.media = newMediaList;
     yarn.tags = userTags;
     yarn.title = yarnController.text;
-    yarn.body = textController!.text;
+    yarn.body = textController?.text;
     yarn.category = selectedAskCategory;
     yarn.isQuestion = widget.isYarn == true ? false : true;
     yarn.author = userBloc.user.userName;
@@ -1700,7 +1700,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarn.isSensitiveContent = isSensitiveContent;
 
     if (yarnDashboardBloc!.productService != null) {
-      yarn.attachment = yarnDashboardBloc!.productService;
+      yarn.attachment = yarnDashboardBloc?.productService;
     }
 
     logger.d(yarn.toAddMap());
