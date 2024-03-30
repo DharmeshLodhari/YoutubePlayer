@@ -4,6 +4,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -11,10 +12,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class DeliveryCompleted extends StatefulWidget {
+  var arguments;
+
+  DeliveryCompleted({Key? key, this.arguments}) : super(key: key);
+
   @override
   State<DeliveryCompleted> createState() => _DeliveryCompletedState();
 }
@@ -22,6 +28,37 @@ class DeliveryCompleted extends StatefulWidget {
 class _DeliveryCompletedState extends State<DeliveryCompleted> {
   late RiderDeliveryBloc riderDeliveryBloc;
   late UserBloc userBloc;
+  String? journeyId;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    if (widget.arguments['isCallAPI'] == true) {
+      journeyId = widget.arguments['journeyId'];
+
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+        fetchJobData();
+      });
+    }
+    super.initState();
+  }
+
+  fetchJobData() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+    await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
+      if (value != null) {
+        riderDeliveryBloc.updateDeliveryModel(value);
+        isLoading = false;
+        if (mounted) setState(() {});
+      }
+    }).catchError((error) {
+      isLoading = false;
+      if (mounted) setState(() {});
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,36 +83,38 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
   }
 
   Widget _buildBody() {
-    return Padding(
-      padding: EdgeInsets.all(20.0),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildDeliveryText(),
-            _buildImageOrderComplete(),
-            _buildRideNumber(),
-            SizedBox(height: 15),
-            _buildEarningText(),
-            SizedBox(height: 7),
-            _buildEarningAmount(),
-            _buildDivider(),
-            _buildIconAndAddressAndPickup(),
-            _buildDivider(),
-            _buildCircleImageAndName(),
-            _buildDivider(),
-            _buildDistance(),
-            SizedBox(height: 15),
-            _buildDuration(),
-            SizedBox(height: 15),
-            _buildItems(),
-            SizedBox(height: 30),
-            _buildShareYourExperience(),
-            SizedBox(height: 15),
-            _buildShareLater(),
-          ],
-        ),
-      ),
-    );
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : Padding(
+            padding: EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildDeliveryText(),
+                  _buildImageOrderComplete(),
+                  _buildRideNumber(),
+                  SizedBox(height: 15),
+                  _buildEarningText(),
+                  SizedBox(height: 7),
+                  _buildEarningAmount(),
+                  _buildDivider(),
+                  _buildIconAndAddressAndPickup(),
+                  _buildDivider(),
+                  _buildCircleImageAndName(),
+                  _buildDivider(),
+                  _buildDistance(),
+                  SizedBox(height: 15),
+                  _buildDuration(),
+                  SizedBox(height: 15),
+                  _buildItems(),
+                  SizedBox(height: 30),
+                  _buildShareYourExperience(),
+                  SizedBox(height: 15),
+                  _buildShareLater(),
+                ],
+              ),
+            ),
+          );
   }
 
   Widget _buildDeliveryText() {
@@ -279,6 +318,16 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
   }
 
   Widget _buildDistance() {
+    // var _distanceInMeters = Geolocator.distanceBetween(
+    //   riderDeliveryBloc.deliveryDetails?.pickupAddress?.latitude ?? 0.0,
+    //   riderDeliveryBloc.deliveryDetails?.pickupAddress?.longitude ?? 0.0,
+    //   riderDeliveryBloc.deliveryDetails?.deliveryAddress?.latitude ?? 0.0,
+    //   riderDeliveryBloc.deliveryDetails?.deliveryAddress?.longitude ?? 0.0,
+    // );
+    var _distanceInMeters = 00;
+    double distanceInKiloMeters = _distanceInMeters / 1000;
+    double roundDistanceInKM =
+        double.parse((distanceInKiloMeters).toStringAsFixed(2));
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -292,7 +341,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
           ),
         ),
         Text(
-          "23 km",
+          "$roundDistanceInKM km",
           style: TextStyle(
             color: navyBlue,
             fontSize: 14,
@@ -309,7 +358,8 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
         riderDeliveryBloc.deliveryDetails?.actualDeliveryTime;
     DateTime? deliveryTime =
         riderDeliveryBloc.deliveryDetails?.actualPickupTime;
-    Duration? duration = deliveryTime?.difference(pickupTime!);
+    Duration? duration = pickupTime?.difference(deliveryTime!);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

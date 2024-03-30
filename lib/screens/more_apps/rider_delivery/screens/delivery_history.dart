@@ -191,11 +191,19 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
                   itemBuilder: (BuildContext context, int index) {
                     return InkWell(
                       onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
-                          // 'showDetails': true,
-                          'journeyId': jobListing[index].id
-                        }).whenComplete(() => _onRefresh());
+                        if (jobListing[index].deliveryEvidence != null) {
+                          Navigator.of(context)
+                              .pushNamed(Routes.DELIVERY_COMPLETED, arguments: {
+                            'journeyId': jobListing[index].id,
+                            'isCallAPI': true,
+                          });
+                        } else {
+                          Navigator.of(context)
+                              .pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
+                            // 'showDetails': true,
+                            'journeyId': jobListing[index].id
+                          }).whenComplete(() => _onRefresh());
+                        }
                       },
                       child: Column(
                         children: [

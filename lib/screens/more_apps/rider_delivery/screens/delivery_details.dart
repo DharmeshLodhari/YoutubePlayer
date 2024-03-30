@@ -57,6 +57,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     "Traffic",
   ];
   String? userChecked;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -95,11 +96,17 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   fetchJobData() async {
+    isLoading = true;
+    if (mounted) setState(() {});
     await RiderDeliveryAuthService().fetchJob(journeyId).then((value) {
       if (value != null) {
         riderDeliveryBloc.updateDeliveryModel(value);
+        isLoading = false;
+        if (mounted) setState(() {});
       }
     }).catchError((error) {
+      isLoading = false;
+      if (mounted) setState(() {});
       debugPrint(error.toString());
       showToast(message: error.toString());
     });
@@ -158,38 +165,36 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   Widget _buildBody() {
-    return Stack(
-      children: [
-        // MapUI(),
-        // Image.asset(
-        //   "assets/images/map.png",
-        //   height: double.infinity,
-        //   width: double.infinity,
-        //   fit: BoxFit.fill,
-        // ),
-        // Padding(
-        //   padding: EdgeInsets.all(50.0),
-        //   child: Image.asset(
-        //     "assets/images/taxi/route_map_image.png",
-        //     fit: BoxFit.fill,
-        //   ),
-        // ),
-        Column(
-          children: [
-            Expanded(
-              child: RiderDeliveryMap(
-                  // key: UniqueKey(),
-                  // deliveryDetails: deliveryDetails,
-                  // showRideToStartingPointPolyline: true,
-                  // showStartingPointToDestinationPolyline: false,
-                  // startRide: startRide,
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : Stack(
+            children: [
+              // MapUI(),
+              // Image.asset(
+              //   "assets/images/map.png",
+              //   height: double.infinity,
+              //   width: double.infinity,
+              //   fit: BoxFit.fill,
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.all(50.0),
+              //   child: Image.asset(
+              //     "assets/images/taxi/route_map_image.png",
+              //     fit: BoxFit.fill,
+              //   ),
+              // ),
+              Column(
+                children: [
+                  Expanded(
+                    flex: 7,
+                    child: RiderDeliveryMap(),
                   ),
-            ),
-          ],
-        ),
-        _buildJobAction(),
-      ],
-    );
+                  Expanded(child: Container())
+                ],
+              ),
+              _buildJobAction(),
+            ],
+          );
   }
 
   Widget _buildJobAction() {
@@ -280,8 +285,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildAccepted() {
     return DraggableScrollableSheet(
       initialChildSize: 0.47,
-      // maxChildSize: 0.47,
-      // minChildSize: 0.47,
+      maxChildSize: 0.47,
+      minChildSize: 0.20,
       builder: (context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
@@ -304,8 +309,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildStarted() {
     return DraggableScrollableSheet(
       initialChildSize: 0.35,
-      // maxChildSize: 0.35,
-      // minChildSize: 0.35,
+      maxChildSize: 0.35,
+      minChildSize: 0.15,
       builder: (context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
@@ -328,8 +333,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildEnded() {
     return DraggableScrollableSheet(
       initialChildSize: 0.3,
-      // maxChildSize: 0.3,
-      // minChildSize: 0.3,
+      maxChildSize: 0.3,
+      minChildSize: 0.15,
       builder: (context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,
@@ -352,8 +357,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildCancel() {
     return DraggableScrollableSheet(
       initialChildSize: 0.73,
-      // maxChildSize: 0.73,
-      // minChildSize: 0.73,
+      maxChildSize: 0.73,
+      minChildSize: 0.3,
       builder: (context, scrollController) {
         return Container(
           clipBehavior: Clip.hardEdge,

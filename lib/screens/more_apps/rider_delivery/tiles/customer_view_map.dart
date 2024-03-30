@@ -1,17 +1,16 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/utils.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:provider/provider.dart';
 
 class CustomerViewMap extends StatefulWidget {
   CustomerViewMap({
@@ -36,7 +35,6 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   Map<PolylineId, Polyline> polylines = {};
   late Future<Uint8List> _markerImageData;
 
-  late RiderDeliveryBloc riderDeliveryBloc;
   RiderLocation? riderLocation;
   Timer? _timer;
 
@@ -49,18 +47,21 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
       _timer = Timer.periodic(Duration(seconds: 2), (timer) async {
         location = await RiderDeliveryAuthService()
             .fetchRiderLocation(widget.journeyDetail?.id);
-        ;
-      });
-      riderLocation = location?["location"];
-      if (mounted) setState(() {});
 
-      getLocationUpdates().then(
-        (_) => {
-          getPolylinePoints().then((coordinates) => {
-                generatePolyLineFromPoints(coordinates),
-              }),
-        },
-      );
+        LatLng latLng = LatLng(location?["location"]["latitude"],
+            location?["location"]["longitude"]);
+
+        riderLocation = RiderLocation(
+            latitude: latLng.latitude, longitude: latLng.longitude);
+
+        _cameraToPosition(latLng);
+
+        if (mounted) setState(() {});
+      });
+
+      getPolylinePoints().then((coordinates) => {
+            generatePolyLineFromPoints(coordinates),
+          });
     });
   }
 
@@ -78,7 +79,6 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
 
   @override
   Widget build(BuildContext context) {
-    riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
     return Scaffold(
       body: _buildShowRoute(),
     );
@@ -93,6 +93,7 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
+          debugPrint("riderLocation $riderLocation");
           return GoogleMap(
             onMapCreated: ((GoogleMapController controller) =>
                 _mapController.complete(controller)),
@@ -131,9 +132,10 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
 
   Future<void> _cameraToPosition(LatLng pos) async {
     controller = await _mapController.future;
+    double zoomLevel = await controller?.getZoomLevel() ?? 13;
     CameraPosition _newCameraPosition = CameraPosition(
       target: pos,
-      zoom: 12,
+      zoom: zoomLevel,
     );
     await controller?.animateCamera(
       CameraUpdate.newCameraPosition(_newCameraPosition),
@@ -177,21 +179,19 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   }
 
   Future<List<LatLng>> getPolylinePoints() async {
-    DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
+    ShippingAddress? deliveryModel = widget.journeyDetail?.deliveryAddress;
+    ShippingAddress? pickupModel = widget.journeyDetail?.pickupAddress;
     List<LatLng> polylineCoordinates = [];
     PolylinePoints polylinePoints = PolylinePoints();
     PolylineResult result = PolylineResult();
 
-    if (deliveryModel?.isInProgress == true) {
-      result = await polylinePoints.getRouteBetweenCoordinates(
-        GOOGLE_MAPS_API_KEY,
-        PointLatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
-            deliveryModel?.pickupAddress?.longitude ?? 0.0),
-        PointLatLng(deliveryModel?.deliveryAddress?.latitude ?? 0.0,
-            deliveryModel?.deliveryAddress?.longitude ?? 0.0),
-        travelMode: TravelMode.driving,
-      );
-    }
+    result = await polylinePoints.getRouteBetweenCoordinates(
+      GOOGLE_MAPS_API_KEY,
+      PointLatLng(pickupModel?.latitude ?? 0.0, pickupModel?.longitude ?? 0.0),
+      PointLatLng(
+          deliveryModel?.latitude ?? 0.0, deliveryModel?.longitude ?? 0.0),
+      travelMode: TravelMode.driving,
+    );
     if (result.points.isNotEmpty) {
       result.points.forEach((PointLatLng point) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));

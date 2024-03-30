@@ -38,12 +38,12 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
 
   // static const LatLng _pGooglePlex = LatLng(37.4223, -122.0848);
   // static const LatLng _pApplePark = LatLng(37.3346, -122.0090);
-  LatLng? _currentP = null;
+  LocationData? _currentP;
   String rideMarkerImage = "assets/images/bike_top.png";
   GoogleMapController? controller;
 
   Map<PolylineId, Polyline> polylines = {};
-  late Future<Uint8List> _markerImageData;
+  Uint8List? _markerImageData;
   Location _locationTracker = Location();
   late LocationData localData;
 
@@ -51,44 +51,29 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   late RiderDeliveryBloc riderDeliveryBloc;
   String? username;
 
-  // static const double earthRadius = 6371; // in kilometers
-  //
-  // static double degreesToRadians(double degrees) {
-  //   return degrees * (pi / 180);
-  // }
-  //
-  // double threshold = 200;
-  //
-  // static double distanceBetween(LatLng from, LatLng to) {
-  //   double fromLatRadians = degreesToRadians(from.latitude);
-  //   double fromLongRadians = degreesToRadians(from.longitude);
-  //   double toLatRadians = degreesToRadians(to.latitude);
-  //   double toLongRadians = degreesToRadians(to.longitude);
-  //
-  //   double latDiff = toLatRadians - fromLatRadians;
-  //   double longDiff = toLongRadians - fromLongRadians;
-  //
-  //   double a = pow(sin(latDiff / 2), 2) +
-  //       cos(fromLatRadians) * cos(toLatRadians) * pow(sin(longDiff / 2), 2);
-  //   double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-  //
-  //   return earthRadius * c;
-  // }
-  //
-  // static bool isBelowThreshold(LatLng from, LatLng to, double threshold) {
-  //   double distance = distanceBetween(from, to);
-  //   return distance < threshold;
-  // }
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _markerImageData = getMarkerImage();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      username = userBloc.user.userName;
-      localData = await getCurrentLocation();
 
-      _currentP = LatLng(localData.latitude!, localData.longitude!);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (mounted) {
+        setState(() {
+          isLoading = true;
+        });
+      }
+
+      _markerImageData = await getMarkerImage();
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      username = userBloc.user.userName;
+
+      localData = await getCurrentLocation();
+      _currentP = localData;
 
       getLocationUpdates().then(
         (_) => {
@@ -100,7 +85,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     });
   }
 
-  getCurrentLocation() async {
+  Future<LocationData> getCurrentLocation() async {
     LocationData location = await _locationTracker.getLocation();
     return location;
   }
@@ -117,16 +102,26 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     return imageData;
   }
 
+  Marker _buildRiderMarker() {
+    return Marker(
+      markerId: MarkerId("_currentLocation"),
+      icon: BitmapDescriptor.fromBytes(_markerImageData!),
+      rotation: _currentP?.heading ?? 0,
+      position: LatLng(_currentP!.latitude!, _currentP!.longitude!),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context, listen: false);
     riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
     return Scaffold(
-      body: _currentP == null
-          ? const Center(
-              child: Text("Loading..."),
-            )
-          : _buildShowRoute(),
+      body: _buildShowRoute(),
+      // body: _currentP == null
+      //     ? const Center(
+      //         child: Text("Loading..."),
+      //       )
+      //     : _buildShowRoute(),
     );
   }
 
@@ -139,9 +134,11 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
         initialCameraPosition: CameraPosition(
           target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
               deliveryModel?.pickupAddress?.longitude ?? 0.0),
-          zoom: 12,
+          zoom: 13,
         ),
         markers: {
+          if (_currentP != null && _markerImageData != null)
+            _buildRiderMarker(),
           Marker(
               markerId: MarkerId("_sourceLocation"),
               icon: BitmapDescriptor.defaultMarkerWithHue(0),
@@ -161,29 +158,19 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
         polylines: Set<Polyline>.of(polylines.values),
       );
     } else if (deliveryModel?.isAfterOfferAccepted(username) == true) {
-      return FutureBuilder<Uint8List>(
-        future: _markerImageData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return GoogleMap(
+      return isLoading
+          ? Center(child: CircularProgressIndicator())
+          : GoogleMap(
               onMapCreated: ((GoogleMapController controller) =>
                   _mapController.complete(controller)),
               initialCameraPosition: CameraPosition(
                 target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                     deliveryModel?.pickupAddress?.longitude ?? 0.0),
-                zoom: 12,
+                zoom: 13,
               ),
               markers: {
-                Marker(
-                  markerId: MarkerId("_currentLocation"),
-                  icon: BitmapDescriptor.fromBytes(snapshot.data!),
-                  rotation: 90,
-                  position: _currentP!,
-                ),
+                if (_currentP != null && _markerImageData != null)
+                  _buildRiderMarker(),
                 Marker(
                     markerId: MarkerId("_sourceLocation"),
                     icon: BitmapDescriptor.defaultMarkerWithHue(0),
@@ -193,19 +180,10 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
               },
               polylines: Set<Polyline>.of(polylines.values),
             );
-          }
-        },
-      );
     } else if (deliveryModel?.isOfferStarted(username) == true) {
-      return FutureBuilder<Uint8List>(
-        future: _markerImageData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return GoogleMap(
+      return isLoading
+          ? Center(child: CircularProgressIndicator())
+          : GoogleMap(
               onMapCreated: ((GoogleMapController controller) =>
                   _mapController.complete(controller)),
               initialCameraPosition: CameraPosition(
@@ -214,12 +192,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
                 zoom: 12,
               ),
               markers: {
-                Marker(
-                  markerId: MarkerId("_currentLocation"),
-                  icon: BitmapDescriptor.fromBytes(snapshot.data!),
-                  rotation: 130,
-                  position: _currentP!,
-                ),
+                if (_currentP != null && _markerImageData != null)
+                  _buildRiderMarker(),
                 Marker(
                     markerId: MarkerId("_sourceLocation"),
                     icon: BitmapDescriptor.defaultMarkerWithHue(0),
@@ -235,19 +209,10 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
               },
               polylines: Set<Polyline>.of(polylines.values),
             );
-          }
-        },
-      );
     } else if (deliveryModel?.isOfferEnded(username) == true) {
-      return FutureBuilder<Uint8List>(
-        future: _markerImageData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return GoogleMap(
+      return isLoading
+          ? Center(child: CircularProgressIndicator())
+          : GoogleMap(
               onMapCreated: ((GoogleMapController controller) =>
                   _mapController.complete(controller)),
               initialCameraPosition: CameraPosition(
@@ -256,12 +221,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
                 zoom: 12,
               ),
               markers: {
-                Marker(
-                  markerId: MarkerId("_currentLocation"),
-                  icon: BitmapDescriptor.fromBytes(snapshot.data!),
-                  rotation: 130,
-                  position: _currentP!,
-                ),
+                if (_currentP != null && _markerImageData != null)
+                  _buildRiderMarker(),
                 Marker(
                     markerId: MarkerId("_destinationLocation"),
                     icon: BitmapDescriptor.defaultMarkerWithHue(250),
@@ -271,19 +232,10 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
               },
               polylines: Set<Polyline>.of(polylines.values),
             );
-          }
-        },
-      );
     } else {
-      return FutureBuilder<Uint8List>(
-        future: _markerImageData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return GoogleMap(
+      return isLoading
+          ? Center(child: CircularProgressIndicator())
+          : GoogleMap(
               onMapCreated: ((GoogleMapController controller) =>
                   _mapController.complete(controller)),
               initialCameraPosition: CameraPosition(
@@ -292,12 +244,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
                 zoom: 12,
               ),
               markers: {
-                Marker(
-                  markerId: MarkerId("_currentLocation"),
-                  icon: BitmapDescriptor.fromBytes(snapshot.data!),
-                  rotation: 130,
-                  position: _currentP!,
-                ),
+                if (_currentP != null && _markerImageData != null)
+                  _buildRiderMarker(),
                 Marker(
                     markerId: MarkerId("_sourceLocation"),
                     icon: BitmapDescriptor.defaultMarkerWithHue(0),
@@ -313,17 +261,15 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
               },
               polylines: Set<Polyline>.of(polylines.values),
             );
-          }
-        },
-      );
     }
   }
 
-  Future<void> _cameraToPosition(LatLng pos) async {
+  Future<void> _cameraToPosition(LocationData pos) async {
     controller = await _mapController.future;
+    double zoomLevel = await controller?.getZoomLevel() ?? 13;
     CameraPosition _newCameraPosition = CameraPosition(
-      target: pos,
-      zoom: 12,
+      target: LatLng(pos.latitude!, pos.longitude!),
+      zoom: zoomLevel,
     );
     await controller?.animateCamera(
       CameraUpdate.newCameraPosition(_newCameraPosition),
@@ -356,44 +302,29 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
             currentLocation.longitude != null) {
           if (mounted)
             setState(() {
-              _currentP =
-                  LatLng(currentLocation.latitude!, currentLocation.longitude!);
-              _cameraToPosition(_currentP ?? LatLng(0.0, 0.0));
+              _currentP = currentLocation;
 
-              // if (isBelowThreshold(
-              //     _currentP!,
-              //     LatLng(
-              //         riderDeliveryBloc
-              //                 .deliveryDetails?.pickupAddress?.latitude ??
-              //             0.0,
-              //         riderDeliveryBloc
-              //                 .deliveryDetails?.pickupAddress?.longitude ??
-              //             0.0),
-              //     threshold)) {
-              //   debugPrint(
-              //       'The distance between the locations is below $threshold kilometers.');
-              // } else {
-              //   debugPrint(
-              //       'The distance between the locations exceeds $threshold kilometers.');
-              // }
-
-              updateCurrentLocation(_currentP ?? LatLng(0.0, 0.0));
+              _cameraToPosition(currentLocation);
+              updateCurrentLocation(currentLocation);
             });
         }
       });
     }
   }
 
-  Future<void> updateCurrentLocation(LatLng currentP) async {
-    await RiderDeliveryAuthService()
-        .updateCurrentLocation(riderDeliveryBloc.deliveryDetails?.id, currentP)
-        .then((value) {
-      if (value == true) {
-        print('Location updated successfully in the background');
-      }
-    }).catchError((error) {
-      debugPrint(error.toString());
-    });
+  Future<void> updateCurrentLocation(LocationData currentP) async {
+    if (riderDeliveryBloc.deliveryDetails?.isOfferStarted(username) ?? false) {
+      await RiderDeliveryAuthService()
+          .updateCurrentLocation(riderDeliveryBloc.deliveryDetails?.id,
+              LatLng(currentP.latitude!, currentP.longitude!))
+          .then((value) {
+        if (value == true) {
+          print('Location updated successfully in the background');
+        }
+      }).catchError((error) {
+        debugPrint(error.toString());
+      });
+    }
   }
 
   Future<List<LatLng>> getPolylinePoints() async {

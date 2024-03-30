@@ -33,6 +33,7 @@ class DeliveryModel {
   bool? hasEnded;
   int? totalWeight;
   int? totalNoOfItems;
+  String? deliveryEvidence;
   int? orderId;
   // bool? isShowDetails;
   // bool? isDeliveryAccepted;
@@ -73,6 +74,7 @@ class DeliveryModel {
     this.hasEnded,
     this.totalWeight,
     this.totalNoOfItems,
+    this.deliveryEvidence,
     this.orderId,
     // this.isShowDetails = true,
     // this.isDeliveryAccepted = false,
@@ -134,6 +136,7 @@ class DeliveryModel {
         hasEnded: json["has_ended"],
         totalWeight: json["total_weight"],
         totalNoOfItems: json["total_no_of_items"],
+        deliveryEvidence: json["delivery_evidence"],
         orderId: json["order_id"],
       );
 
@@ -169,6 +172,7 @@ class DeliveryModel {
         "is_in_progress": isInProgress,
         "has_ended": hasEnded,
         "total_weight": totalWeight,
+        "delivery_evidence": deliveryEvidence,
         "total_no_of_items": totalNoOfItems,
       };
 
