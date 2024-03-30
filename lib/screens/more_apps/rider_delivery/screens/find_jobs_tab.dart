@@ -311,7 +311,7 @@ class FindJobsTabState extends State<FindJobsTab> {
                     },
               backgroundColor: navyBlue,
               textColor: white,
-              text: 'Accept(4:49)',
+              text: 'Accept',
               fontSize: 15,
             ),
           ),

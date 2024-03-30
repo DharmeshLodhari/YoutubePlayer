@@ -35,6 +35,7 @@ class DeliveryModel {
   int? totalNoOfItems;
   String? deliveryEvidence;
   int? orderId;
+  int? distaneTravel;
   // bool? isShowDetails;
   // bool? isDeliveryAccepted;
   // bool? isDeliveryStarted;
