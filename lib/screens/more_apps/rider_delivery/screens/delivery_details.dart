@@ -793,7 +793,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 
@@ -815,7 +814,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 
@@ -1074,7 +1072,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 
@@ -1113,7 +1110,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 
@@ -1215,7 +1211,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 
