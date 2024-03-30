@@ -1,11 +1,8 @@
 import 'dart:io';
 
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/tiles/customer_view_map.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:badges/badges.dart' as badges;
@@ -23,50 +20,38 @@ class RiderMapStatus extends StatefulWidget {
 }
 
 class _RiderMapStatusState extends State<RiderMapStatus> {
-  double _initialSheetChildSize = 0.0;
-  // late RiderDeliveryBloc riderDeliveryBloc;
   DeliveryModel? deliveryModel;
-  CustomerProfile? customerProfile;
   bool isLoading = false;
 
   @override
   void initState() {
-    _initialSheetChildSize = 0.35;
-
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    fetchJobData();
-    // });
+    deliveryModel = widget.arguments["journey_details"];
     super.initState();
   }
 
-  Future<void> fetchJobData() async {
-    isLoading = true;
-    if (mounted) setState(() {});
-
-    await RiderDeliveryAuthService()
-        .fetchJob(widget.arguments["journey_id"])
-        .then((value) async {
-      if (value != null) {
-        deliveryModel = value;
-
-        if (deliveryModel?.acceptedBy != null) {
-          customerProfile =
-              await UserAuth().fetchCustomerProfile(deliveryModel?.acceptedBy);
-        }
-        isLoading = false;
-        if (mounted) setState(() {});
-      }
-    }).catchError((error) {
-      isLoading = false;
-      if (mounted) setState(() {});
-      debugPrint(error.toString());
-      showToast(message: error.toString());
-    });
-  }
+  // Future<void> fetchJobData() async {
+  //   isLoading = true;
+  //   if (mounted) setState(() {});
+  //
+  //   await RiderDeliveryAuthService()
+  //       .fetchJob(widget.arguments["journey_id"])
+  //       .then((value) async {
+  //     if (value != null) {
+  //       deliveryModel = value;
+  //
+  //       isLoading = false;
+  //       if (mounted) setState(() {});
+  //     }
+  //   }).catchError((error) {
+  //     isLoading = false;
+  //     if (mounted) setState(() {});
+  //     debugPrint(error.toString());
+  //     showToast(message: error.toString());
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
-    // riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
       top: false,
@@ -124,10 +109,12 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
               Column(
                 children: [
                   Expanded(
+                    flex: 8,
                     child: CustomerViewMap(
                       journeyDetail: deliveryModel,
                     ),
                   ),
+                  Expanded(child: Container())
                 ],
               ),
               _buildArriving(),
@@ -136,17 +123,42 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
   }
 
   Widget _buildArriving() {
+    // return DraggableScrollableSheet(
+    //   initialChildSize: 0.35,
+    //   maxChildSize: 0.35,
+    //   minChildSize: 0.15,
+    //   builder: (context, scrollController) {
+    //     return Container(
+    //       clipBehavior: Clip.hardEdge,
+    //       decoration: BoxDecoration(
+    //         color: Theme.of(context).canvasColor,
+    //         borderRadius: const BorderRadius.only(
+    //           topLeft: Radius.circular(25),
+    //           topRight: Radius.circular(25),
+    //         ),
+    //       ),
+    //       child: SingleChildScrollView(
+    //         controller: scrollController,
+    //         child: getArrivingDetails(),
+    //       ),
+    //     );
+    //   },
+    // );
     return DraggableScrollableSheet(
-      initialChildSize: _initialSheetChildSize,
-      maxChildSize: _initialSheetChildSize,
-      minChildSize: _initialSheetChildSize,
-      builder: (context, scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
+      initialChildSize: 0.3,
+      maxChildSize: 0.3,
+      minChildSize: 0.15,
+      builder: (context, scrollController) => Container(
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          color: Theme.of(context).canvasColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
         ),
-        child: Container(
-          color: white,
+        child: SingleChildScrollView(
+          controller: scrollController,
           child: getArrivingDetails(),
         ),
       ),
@@ -167,15 +179,13 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
             ),
           ),
           SizedBox(height: 20),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildArrivingPartner(),
-                SizedBox(height: 30),
-                _buildPartnerContactIcon(),
-              ],
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildArrivingPartner(),
+              SizedBox(height: 30),
+              _buildPartnerContactIcon(),
+            ],
           ),
         ],
       ),
@@ -190,7 +200,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
           child: GestureDetector(
             onTap: () {
               Navigator.of(context).pushNamed("/photo-viewer",
-                  arguments: customerProfile?.avatar);
+                  arguments: deliveryModel?.dispatcherAvatar);
             },
             child: Container(
               color: Colors.white,
@@ -199,7 +209,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
                 width: 70,
                 fit: BoxFit.fill,
                 filterQuality: FilterQuality.high,
-                imageUrl: customerProfile?.avatar ?? "",
+                imageUrl: deliveryModel?.dispatcherAvatar ?? "",
                 errorWidget: imageErrorWidget,
               ),
             ),
@@ -210,7 +220,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              customerProfile?.nickName ?? "",
+              deliveryModel?.dispatcherFullName ?? "",
               style: TextStyle(
                 color: black,
                 fontWeight: FontWeight.w600,
@@ -220,7 +230,7 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
             ),
             SizedBox(height: 5),
             Text(
-              customerProfile?.userName ?? "",
+              deliveryModel?.acceptedBy ?? "",
               style: TextStyle(
                 color: black,
                 fontWeight: FontWeight.w500,

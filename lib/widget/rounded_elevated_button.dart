@@ -20,8 +20,8 @@ class RoundedElevatedButton extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
         child: Container(
-          width: 32,
-          height: 32,
+          width: 30,
+          height: 30,
           color: white,
           child: Center(
             child: SizedBox(

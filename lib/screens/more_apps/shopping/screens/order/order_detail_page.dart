@@ -4,6 +4,8 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/tracker_stepper.dart'
     as track;
@@ -70,6 +72,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   bool isPopMenuOpen = false;
   bool onTap = false;
   bool onTapStatus = false;
+  DeliveryModel? deliveryModel;
 
   String? getCustomerOrMerchant() {
     var customerOrMerchant = order!.customerName == userBloc.user.userName
@@ -127,7 +130,29 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
     fetchOrder(order!.id.toString());
+    fetchJobData();
     super.initState();
+  }
+
+  Future<void> fetchJobData() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    await RiderDeliveryAuthService()
+        .fetchJob(order?.journeyId)
+        .then((value) async {
+      if (value != null) {
+        deliveryModel = value;
+
+        isLoading = false;
+        if (mounted) setState(() {});
+      }
+    }).catchError((error) {
+      isLoading = false;
+      if (mounted) setState(() {});
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
   }
 
   getOrderStatusTime(Order? order, String? status) {
@@ -466,7 +491,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       onTap = !onTap;
                     }),
                 icon: Icon(
-                  Icons.keyboard_arrow_up_rounded,
+                  Icons.keyboard_arrow_down_rounded,
                   color: navyBlue,
                 ))
           ]),
@@ -498,7 +523,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 onTap = !onTap;
                               }),
                           icon: Icon(
-                            Icons.keyboard_arrow_down_rounded,
+                            Icons.keyboard_arrow_up_rounded,
                             color: navyBlue,
                           ))
                     ]),
@@ -602,7 +627,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       onTapStatus = !onTapStatus;
                     }),
                 icon: Icon(
-                  Icons.keyboard_arrow_up_rounded,
+                  Icons.keyboard_arrow_down_rounded,
                   color: navyBlue,
                 ))
           ]),
@@ -634,7 +659,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 onTapStatus = !onTapStatus;
                               }),
                           icon: Icon(
-                            Icons.keyboard_arrow_down_rounded,
+                            Icons.keyboard_arrow_up_rounded,
                             color: navyBlue,
                           ))
                     ]),
@@ -1292,7 +1317,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500)),
                           SizedBox(width: 10),
-                          if (statusTitle == 'Rider Assigned')
+                          if (statusTitle == 'Order Picked Up')
                             SvgPicture.asset(
                               'assets/images/bike_front.svg',
                             ),
@@ -1309,7 +1334,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                       SizedBox(height: 5),
-                      if (statusTitle == 'Rider Assigned')
+                      if (statusTitle == 'Order Picked Up' &&
+                          deliveryModel?.isInProgress == true)
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -1335,29 +1361,29 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   Widget _buildCircleImageAndName() {
     return Row(
       children: [
-        Container(
-          height: 30,
-          width: 30,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                15,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(80),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pushNamed("/photo-viewer",
+                  arguments: deliveryModel?.dispatcherAvatar);
+            },
+            child: Container(
+              color: Colors.white,
+              child: CachedNetworkImage(
+                height: 30,
+                width: 30,
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.high,
+                imageUrl: deliveryModel?.dispatcherAvatar ?? "",
+                errorWidget: imageErrorWidget,
               ),
-              border: Border.all(color: white, width: 2)),
-          child: ClipOval(
-            child: defaultImage != null
-                ? CachedNetworkImage(
-                    imageUrl: defaultImage,
-                    colorBlendMode: BlendMode.darken,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    errorWidget: imageErrorWidget,
-                  )
-                : const SizedBox.shrink(),
+            ),
           ),
         ),
         SizedBox(width: 5),
         Text(
-          appendStringDot('@tolani.james hjdfhj vjdj' ?? "", 12),
+          appendStringDot(deliveryModel?.dispatcherFullName ?? "", 10),
           style: TextStyle(
             fontSize: 12,
             fontFamily: "Inter",
@@ -1377,14 +1403,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, Routes.RIDER_MAP_STATUS,
-                arguments: {"journey_id": order?.journeyId});
+                arguments: {"journey_details": deliveryModel});
           },
           child:
               RoundedElevatedButton(svgImg: 'assets/images/location_icon.svg'),
         ),
-        SizedBox(width: 5),
+        SizedBox(width: 3),
         RoundedElevatedButton(svgImg: 'assets/images/call_icon.svg'),
-        SizedBox(width: 5),
+        SizedBox(width: 3),
         badges.Badge(
           position: badges.BadgePosition.topEnd(top: 0, end: 0),
           badgeStyle: badges.BadgeStyle(

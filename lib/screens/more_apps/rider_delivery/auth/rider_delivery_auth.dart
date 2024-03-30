@@ -286,8 +286,8 @@ class RiderDeliveryAuthService extends AuthService {
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
-
-    request.fields["location"] = "${currentP.latitude},${currentP.latitude}";
+    debugPrint("Location : ${currentP.longitude},${currentP.latitude}");
+    request.fields["location"] = "${currentP.longitude},${currentP.latitude}";
 
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();

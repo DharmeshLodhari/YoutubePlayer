@@ -2006,7 +2006,9 @@ class RouteGenerator {
         );
       case Routes.DELIVERY_COMPLETED:
         return PageTransition(
-          child: DeliveryCompleted(),
+          child: DeliveryCompleted(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
