@@ -221,19 +221,23 @@ class DeliveryModel {
 class RiderLocation {
   double? longitude;
   double? latitude;
+  double? heading;
 
   RiderLocation({
     this.longitude,
     this.latitude,
+    this.heading,
   });
 
   factory RiderLocation.fromJson(Map<String, dynamic> json) => RiderLocation(
         longitude: json["longitude"]?.toDouble(),
         latitude: json["latitude"]?.toDouble(),
+        heading: json["heading"]?.toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
         "longitude": longitude,
         "latitude": latitude,
+        "heading": heading,
       };
 }

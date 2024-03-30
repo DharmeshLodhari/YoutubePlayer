@@ -31,9 +31,10 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   String rideMarkerImage = "assets/images/bike_top.png";
   GoogleMapController? controller;
   Location _locationController = new Location();
+  bool isLoading = false;
 
   Map<PolylineId, Polyline> polylines = {};
-  late Future<Uint8List> _markerImageData;
+  Uint8List? _markerImageData;
 
   RiderLocation? riderLocation;
   Timer? _timer;
@@ -41,8 +42,20 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   @override
   void initState() {
     super.initState();
-    _markerImageData = getMarkerImage();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (mounted) {
+        setState(() {
+          isLoading = true;
+        });
+      }
+
+      _markerImageData = await getMarkerImage();
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+
       Map<String, dynamic>? location;
       _timer = Timer.periodic(Duration(seconds: 2), (timer) async {
         location = await RiderDeliveryAuthService()
@@ -85,29 +98,22 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   }
 
   Widget _buildShowRoute() {
-    return FutureBuilder<Uint8List>(
-      future: _markerImageData,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-          debugPrint("riderLocation $riderLocation");
-          return GoogleMap(
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : GoogleMap(
             onMapCreated: ((GoogleMapController controller) =>
                 _mapController.complete(controller)),
             initialCameraPosition: CameraPosition(
               target: LatLng(
                   widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
                   widget.journeyDetail?.pickupAddress?.longitude ?? 0.0),
-              zoom: 12,
+              zoom: 13,
             ),
             markers: {
               Marker(
                   markerId: MarkerId("_riderLocation"),
-                  icon: BitmapDescriptor.fromBytes(snapshot.data!),
-                  rotation: 130,
+                  icon: BitmapDescriptor.fromBytes(_markerImageData!),
+                  rotation: riderLocation?.heading ?? 0,
                   position: LatLng(riderLocation?.latitude ?? 0.0,
                       riderLocation?.longitude ?? 0.0)),
               Marker(
@@ -125,9 +131,6 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
             },
             polylines: Set<Polyline>.of(polylines.values),
           );
-        }
-      },
-    );
   }
 
   Future<void> _cameraToPosition(LatLng pos) async {
