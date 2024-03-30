@@ -59,6 +59,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   String? userChecked;
   bool isLoading = false;
 
+  GlobalKey mapKey = GlobalKey();
+
   @override
   void initState() {
     journeyId = widget.arguments['journeyId'];
@@ -187,7 +189,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 children: [
                   Expanded(
                     flex: 7,
-                    child: RiderDeliveryMap(),
+                    child: RiderDeliveryMap(key: mapKey),
                   ),
                   Expanded(child: Container())
                 ],
@@ -744,11 +746,11 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               fontSize: 15,
               onPressed: isRejectAPILoading
                   ? null
-                  : () {
+                  : () async {
                       FocusScope.of(context).unfocus();
                       isRejectAPILoading = true;
                       if (mounted) setState(() {});
-                      rejectOffer();
+                      await rejectOffer();
                       isRejectAPILoading = false;
                       if (mounted) setState(() {});
                     },
@@ -769,6 +771,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                       isAcceptAPILoading = true;
                       if (mounted) setState(() {});
                       await acceptOffer();
+                      mapKey = GlobalKey();
                       isAcceptAPILoading = false;
                       if (mounted) setState(() {});
                     },
@@ -1000,12 +1003,13 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       backgroundColor: isChecked == true ? navyBlue : greyBorderColor,
       textColor: white,
       onPressed: isChecked == true
-          ? () {
+          ? () async {
               if (isStartAPILoading == false) {
                 FocusScope.of(context).unfocus();
                 isStartAPILoading = true;
                 if (mounted) setState(() {});
-                startOffer();
+                await startOffer();
+                mapKey = GlobalKey();
                 isStartAPILoading = false;
                 if (mounted) setState(() {});
               }
@@ -1086,7 +1090,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               FocusScope.of(context).unfocus();
               isEndedAPILoading = true;
               if (mounted) setState(() {});
-              endOffer();
+              await endOffer();
 
               isEndedAPILoading = false;
               if (mounted) setState(() {});
@@ -1176,7 +1180,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     );
   }
 
-  void _validateInputs() {
+  void _validateInputs() async {
     final form = _formKey.currentState;
     if (form!.validate()) {
       if (userChecked == null || userChecked == "") {
@@ -1188,7 +1192,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           FocusScope.of(context).unfocus();
           isCancelAPILoading = true;
           if (mounted) setState(() {});
-          cancelOffer(userChecked ?? "");
+          await cancelOffer(userChecked ?? "");
           isCancelAPILoading = false;
           if (mounted) setState(() {});
         }
