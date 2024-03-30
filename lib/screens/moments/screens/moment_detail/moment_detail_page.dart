@@ -377,11 +377,13 @@ class MediaRendererPageViewState extends State<MediaRendererPageView> {
     _pageCtrl = PageController();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
-          widget.momentsModelList.map((e) => e.numberOfComments).toList();
+      if (mounted) {
+        Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
+            widget.momentsModelList.map((e) => e.numberOfComments).toList();
 
-      debugPrint(
-          'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
+        debugPrint(
+            'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
+      }
     });
   }
 
@@ -433,6 +435,7 @@ extension ListExtensions on List {
 
 class Range extends Iterable<int> {
   const Range(this.start, this.end) : assert(start <= end);
+
   const Range.fromLength(int length) : this(0, length - 1);
 
   final int start;

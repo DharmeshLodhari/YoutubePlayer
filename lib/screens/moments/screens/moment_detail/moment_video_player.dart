@@ -27,11 +27,13 @@ class MomentVideoPlayer extends StatefulWidget {
 class MomentVideoPlayerState extends State<MomentVideoPlayer> {
   bool initialized = false;
   bool showMediaIcon = false;
+
   // late VideoPlayerManager videoPlayerManager;
 
   late CachedVideoPlayerController _controller;
 
   Key? key;
+
   MomentVideoPlayerState({this.key});
 
   @override
@@ -39,6 +41,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
     debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!.length}');
     // videoPlayerManager = VideoPlayerManager();
     // videoPlayerManager.init(widget.momentsModel.media!);
+
     _controller = CachedVideoPlayerController.network(
       widget.momentsModel.media!,
     )..initialize().then((value) async {

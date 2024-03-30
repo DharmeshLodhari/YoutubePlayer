@@ -42,6 +42,7 @@ class RenderMoment extends StatefulWidget {
 class RenderMomentState extends State<RenderMoment>
     with TickerProviderStateMixin {
   Key? key;
+
   RenderMomentState({this.key});
 
   GlobalKey<MomentVideoPlayerState> _momentVideoPlayerKey =
@@ -67,8 +68,6 @@ class RenderMomentState extends State<RenderMoment>
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('GLAD IMAGE MEDIATYPE -> ${widget.momentsModel.id}');
-    debugPrint('GLAD IMAGE -> ${widget.momentsModel.media!}');
     if (widget.momentsModel.gif != null) {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.gif!,
@@ -85,7 +84,7 @@ class RenderMomentState extends State<RenderMoment>
               widget.controller.stop();
             },
             onLongPressCancel: () {
-              widget.controller.animateBack(value!);
+              widget.controller.animateBack(value ?? 0);
             },
             child: PhotoView(
               //To be able to zoom the image.

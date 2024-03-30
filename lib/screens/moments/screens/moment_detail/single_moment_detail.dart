@@ -137,7 +137,9 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         vsync: this,
         duration: Duration(seconds: widget.currentMoment.duration ?? 30),
       )..addListener(() {
-          setState(() {});
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            if (mounted) setState(() {});
+          });
         });
     } else if (widget.currentMoment.mediaType == 'video' &&
         widget.videoPlayerControllers.isNotEmpty) {
@@ -145,14 +147,18 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         vsync: this,
         duration: Duration(seconds: widget.currentMoment.duration ?? 30),
       )..addListener(() {
-          setState(() {});
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            if (mounted) setState(() {});
+          });
         });
     } else {
       controller = AnimationController(
         vsync: this,
         duration: const Duration(seconds: 10),
       )..addListener(() {
-          setState(() {});
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            if (mounted) setState(() {});
+          });
         });
     }
     controller.animateTo(5.0);
