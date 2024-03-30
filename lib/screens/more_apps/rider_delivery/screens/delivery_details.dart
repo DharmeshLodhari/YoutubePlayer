@@ -63,9 +63,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   void initState() {
     journeyId = widget.arguments['journeyId'];
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      fetchJobData();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    fetchJobData();
+    // });
 
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     //   riderDeliveryBloc.deliveryDetails = deliveryDetails;
@@ -793,7 +793,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 
@@ -815,7 +814,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 
@@ -1074,7 +1072,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 
@@ -1113,7 +1110,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 
@@ -1215,7 +1211,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       }
     }).catchError((error) {
       debugPrint(error.toString());
-      showToast(message: error.toString());
     });
   }
 

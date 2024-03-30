@@ -58,7 +58,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   String note = "";
 
   Order? order;
-  List items = [];
+  List<Map<String, dynamic>> items = [];
   bool isLoading = true;
   final _auth = ShoppingAuthService();
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -207,7 +207,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       debugPrint('VALUE :: $value');
       if (mounted) {
         setState(() {
-          items = value;
+          order = value;
+          items = order?.items ?? [];
           isLoading = false;
         });
       }
@@ -1222,19 +1223,19 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     ];
   }
 
-  void removeItem(int index) {
-    var item = items[index];
-    Map data = {
-      "type": item["type"],
-      "id": item.conversationID,
-    };
-
-    _auth.removeItemFromShoppingCart(data);
-    basketBloc.removeItemFromCart(item);
-    showToast(
-        message:
-            AppLocalization.of(context)!.itemIsRemovedSuccessfullyFromCart);
-  }
+  // void removeItem(int index) {
+  //   var item = items[index];
+  //   Map data = {
+  //     "type": item["type"],
+  //     "id": item.conversationID,
+  //   };
+  //
+  //   _auth.removeItemFromShoppingCart(data);
+  //   basketBloc.removeItemFromCart(item);
+  //   showToast(
+  //       message:
+  //           AppLocalization.of(context)!.itemIsRemovedSuccessfullyFromCart);
+  // }
 
   List<Widget> listActionSlideActions(int index) {
     return [];
@@ -1334,8 +1335,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                       SizedBox(height: 5),
-                      if (statusTitle == 'Order Picked Up' &&
-                          deliveryModel?.isInProgress == true)
+                      if (statusTitle == 'Order Picked Up')
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -1425,7 +1425,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               fontWeight: FontWeight.w700,
             ),
           ),
-          child: RoundedElevatedButton(svgImg: 'assets/images/chat_icon.svg'),
+          child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/chat-screen', arguments: {
+                  "recipientUserName": deliveryModel?.dispatcher
+                });
+              },
+              child:
+                  RoundedElevatedButton(svgImg: 'assets/images/chat_icon.svg')),
         ),
       ],
     );

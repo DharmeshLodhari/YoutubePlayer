@@ -113,8 +113,7 @@ class _RidersUpdateState extends State<RidersUpdate> {
                 ],
               ),
             ),
-            // if (userBloc.user.rider?.isStatusApproved() == true)
-            _buildButton(),
+            if (userBloc.user.rider?.isStatusApproved() == true) _buildButton(),
             SizedBox(height: 30.0),
           ],
         ),

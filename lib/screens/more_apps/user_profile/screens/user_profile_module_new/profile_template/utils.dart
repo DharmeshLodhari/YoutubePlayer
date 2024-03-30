@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/moments/models/comment_model.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
@@ -65,7 +67,11 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     // } else {
     //   height = 460;
     // }
-    height = 370;
+    if (Platform.isAndroid) {
+      height = 400;
+    } else {
+      height = 370;
+    }
   }
 
   debugPrint('GET HEIGHT -> $height');

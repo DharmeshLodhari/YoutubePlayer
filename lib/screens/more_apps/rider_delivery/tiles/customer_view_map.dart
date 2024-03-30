@@ -113,7 +113,7 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
               Marker(
                   markerId: MarkerId("_riderLocation"),
                   icon: BitmapDescriptor.fromBytes(_markerImageData!),
-                  rotation: riderLocation?.heading ?? 0,
+                  // rotation: riderLocation?.heading ?? 0,
                   position: LatLng(riderLocation?.latitude ?? 0.0,
                       riderLocation?.longitude ?? 0.0)),
               Marker(

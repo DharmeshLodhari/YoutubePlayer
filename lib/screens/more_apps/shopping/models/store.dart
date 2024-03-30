@@ -1862,6 +1862,7 @@ class Order {
   DateTime? updatedAt;
   DateTime? date;
   String? qty;
+  List<Map<String, dynamic>>? items;
 
   Order({
     this.id,
@@ -1892,6 +1893,7 @@ class Order {
     this.updatedAt,
     this.date,
     this.qty,
+    this.items,
   });
 
   Order.fromJson(object) {
@@ -1928,5 +1930,27 @@ class Order {
         : DateTime.parse(object["updated_at"]);
     date = object["date"] == null ? null : DateTime.parse(object["date"]);
     qty = object["qty"];
+
+    if (object["item"] != null &&
+        object["item"] is Map &&
+        (object["item"] as Map).isNotEmpty) {
+      items ??= [];
+      if (object["item"].containsKey("manufacturer")) {
+        var product = Product.fromJson(object["item"]);
+        items?.add({
+          "type": "product",
+          "item": product,
+          "qty": int.parse(object["qty"]),
+        });
+      }
+      if (!object["item"].containsKey("manufacturer")) {
+        var service = Service.fromJson(object["item"]);
+        items?.add({
+          "type": "service",
+          "item": service,
+          "qty": int.parse(object["qty"]),
+        });
+      }
+    }
   }
 }

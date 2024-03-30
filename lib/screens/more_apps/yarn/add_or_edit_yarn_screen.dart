@@ -476,16 +476,17 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             ),
             InkWell(
               onTap: () {
-                if (FocusScope.of(context).hasFocus) {
-                  FocusScope.of(context).unfocus();
-                  Future.delayed(Duration(milliseconds: 100)).then((value) {
-                    showMoreAction = !showMoreAction;
-                    if (mounted) setState(() {});
-                  });
-                } else {
-                  showMoreAction = !showMoreAction;
-                  if (mounted) setState(() {});
-                }
+                showToast(message: 'Coming soon');
+                // if (FocusScope.of(context).hasFocus) {
+                //   FocusScope.of(context).unfocus();
+                //   Future.delayed(Duration(milliseconds: 100)).then((value) {
+                //     showMoreAction = !showMoreAction;
+                //     if (mounted) setState(() {});
+                //   });
+                // } else {
+                //   showMoreAction = !showMoreAction;
+                //   if (mounted) setState(() {});
+                // }
                 // showMoreAction = false;
                 // _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
                 // getGIFs(isRandom: true);
