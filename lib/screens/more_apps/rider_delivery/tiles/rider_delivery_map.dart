@@ -120,12 +120,12 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     userBloc = Provider.of<UserBloc>(context, listen: false);
     riderDeliveryBloc = Provider.of<RiderDeliveryBloc>(context);
     return Scaffold(
-      body: _buildShowRoute(),
-      // body: _currentP == null
-      //     ? const Center(
-      //         child: Text("Loading..."),
-      //       )
-      //     : _buildShowRoute(),
+      // body: _buildShowRoute(),
+      body: _currentP == null
+          ? const Center(
+              child: Text("Loading..."),
+            )
+          : _buildShowRoute(),
     );
   }
 
@@ -302,21 +302,25 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
       }
     }
 
-    if (riderDeliveryBloc.deliveryDetails?.isOfferStarted(username) == true) {
-      _locationController.onLocationChanged
-          .listen((LocationData currentLocation) {
-        if (currentLocation.latitude != null &&
-            currentLocation.longitude != null) {
-          if (mounted)
-            setState(() {
-              _currentP = currentLocation;
+    _locationController.onLocationChanged
+        .listen((LocationData currentLocation) {
+      if (currentLocation.latitude != null &&
+          currentLocation.longitude != null) {
+        if (mounted)
+          setState(() {
+            _currentP = currentLocation;
 
-              _cameraToPosition(currentLocation);
+            _cameraToPosition(currentLocation);
+            if (riderDeliveryBloc.deliveryDetails?.isOfferStarted(username) ==
+                    true ||
+                riderDeliveryBloc.deliveryDetails
+                        ?.isAfterOfferAccepted(username) ==
+                    true) {
               updateCurrentLocation(currentLocation);
-            });
-        }
-      });
-    }
+            }
+          });
+      }
+    });
   }
 
   Future<void> updateCurrentLocation(LocationData currentP) async {
@@ -355,7 +359,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
         PointLatLng(localData.latitude!, localData.longitude!),
         PointLatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
             deliveryModel?.pickupAddress?.longitude ?? 0.0),
-        travelMode: TravelMode.bicycling,
+        travelMode: TravelMode.driving,
       );
     } else if (deliveryModel?.isOfferStarted(username) == true) {
       result = await polylinePoints.getRouteBetweenCoordinates(

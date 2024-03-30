@@ -554,7 +554,7 @@ class _HomeState extends State<Home> {
         .getKYCStatus(userBloc.user.userName)
         .then((value) {
       riderRegistrationBloc.updateKYCDataModel(value);
-      Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
+      Navigator.of(context).pushNamed(Routes.RIDERS_UPDATE);
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());

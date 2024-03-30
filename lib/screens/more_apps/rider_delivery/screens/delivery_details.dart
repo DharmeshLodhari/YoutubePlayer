@@ -63,9 +63,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   void initState() {
     journeyId = widget.arguments['journeyId'];
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      fetchJobData();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    fetchJobData();
+    // });
 
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     //   riderDeliveryBloc.deliveryDetails = deliveryDetails;
