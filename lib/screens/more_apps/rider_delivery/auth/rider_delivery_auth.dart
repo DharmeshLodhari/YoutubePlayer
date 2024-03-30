@@ -5,8 +5,8 @@ import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dar
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 
 class RiderDeliveryAuthService extends AuthService {
   //get all dispatch job list
@@ -276,7 +276,8 @@ class RiderDeliveryAuthService extends AuthService {
   }
 
   //Update Current Location
-  Future<bool> updateCurrentLocation(String? journeyId, LatLng currentP) async {
+  Future<bool> updateCurrentLocation(
+      String? journeyId, LocationData currentP) async {
     if (journeyId == null) {
       return false;
     }
@@ -288,6 +289,7 @@ class RiderDeliveryAuthService extends AuthService {
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
     debugPrint("Location : ${currentP.longitude},${currentP.latitude}");
     request.fields["location"] = "${currentP.longitude},${currentP.latitude}";
+    request.fields["heading"] = "${currentP.heading}";
 
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();

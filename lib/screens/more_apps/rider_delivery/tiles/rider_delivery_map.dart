@@ -75,6 +75,10 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
       localData = await getCurrentLocation();
       _currentP = localData;
 
+      getPolylinePoints().then((coordinates) => {
+            generatePolyLineFromPoints(coordinates),
+          });
+
       getLocationUpdates().then(
         (_) => {
           getPolylinePoints().then((coordinates) => {
@@ -128,35 +132,38 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   Widget _buildShowRoute() {
     DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
     if (deliveryModel?.isOfferAccepted(username) == false) {
-      return GoogleMap(
-        onMapCreated: ((GoogleMapController controller) =>
-            _mapController.complete(controller)),
-        initialCameraPosition: CameraPosition(
-          target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
-              deliveryModel?.pickupAddress?.longitude ?? 0.0),
-          zoom: 13,
-        ),
-        markers: {
-          if (_currentP != null && _markerImageData != null)
-            _buildRiderMarker(),
-          Marker(
-              markerId: MarkerId("_sourceLocation"),
-              icon: BitmapDescriptor.defaultMarkerWithHue(0),
-              position: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
-                  deliveryModel?.pickupAddress?.longitude ?? 0.0)),
-          Marker(
-              markerId: MarkerId("_destinationLocation"),
-              icon: BitmapDescriptor.defaultMarkerWithHue(250),
-              position: LatLng(
-                  riderDeliveryBloc
-                          .deliveryDetails?.deliveryAddress?.latitude ??
-                      0.0,
-                  riderDeliveryBloc
-                          .deliveryDetails?.deliveryAddress?.longitude ??
-                      0.0))
-        },
-        polylines: Set<Polyline>.of(polylines.values),
-      );
+      return isLoading
+          ? Center(child: CircularProgressIndicator())
+          : GoogleMap(
+              onMapCreated: ((GoogleMapController controller) =>
+                  _mapController.complete(controller)),
+              initialCameraPosition: CameraPosition(
+                target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
+                    deliveryModel?.pickupAddress?.longitude ?? 0.0),
+                zoom: 13,
+              ),
+              markers: {
+                if (_currentP != null && _markerImageData != null)
+                  _buildRiderMarker(),
+                Marker(
+                    markerId: MarkerId("_sourceLocation"),
+                    icon: BitmapDescriptor.defaultMarkerWithHue(0),
+                    position: LatLng(
+                        deliveryModel?.pickupAddress?.latitude ?? 0.0,
+                        deliveryModel?.pickupAddress?.longitude ?? 0.0)),
+                Marker(
+                    markerId: MarkerId("_destinationLocation"),
+                    icon: BitmapDescriptor.defaultMarkerWithHue(250),
+                    position: LatLng(
+                        riderDeliveryBloc
+                                .deliveryDetails?.deliveryAddress?.latitude ??
+                            0.0,
+                        riderDeliveryBloc
+                                .deliveryDetails?.deliveryAddress?.longitude ??
+                            0.0))
+              },
+              polylines: Set<Polyline>.of(polylines.values),
+            );
     } else if (deliveryModel?.isAfterOfferAccepted(username) == true) {
       return isLoading
           ? Center(child: CircularProgressIndicator())
@@ -189,7 +196,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
               initialCameraPosition: CameraPosition(
                 target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                     deliveryModel?.pickupAddress?.longitude ?? 0.0),
-                zoom: 12,
+                zoom: 13,
               ),
               markers: {
                 if (_currentP != null && _markerImageData != null)
@@ -218,7 +225,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
               initialCameraPosition: CameraPosition(
                 target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                     deliveryModel?.pickupAddress?.longitude ?? 0.0),
-                zoom: 12,
+                zoom: 13,
               ),
               markers: {
                 if (_currentP != null && _markerImageData != null)
@@ -241,7 +248,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
               initialCameraPosition: CameraPosition(
                 target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                     deliveryModel?.pickupAddress?.longitude ?? 0.0),
-                zoom: 12,
+                zoom: 13,
               ),
               markers: {
                 if (_currentP != null && _markerImageData != null)
@@ -315,8 +322,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   Future<void> updateCurrentLocation(LocationData currentP) async {
     if (riderDeliveryBloc.deliveryDetails?.isOfferStarted(username) ?? false) {
       await RiderDeliveryAuthService()
-          .updateCurrentLocation(riderDeliveryBloc.deliveryDetails?.id,
-              LatLng(currentP.latitude!, currentP.longitude!))
+          .updateCurrentLocation(
+              riderDeliveryBloc.deliveryDetails?.id, currentP)
           .then((value) {
         if (value == true) {
           print('Location updated successfully in the background');
