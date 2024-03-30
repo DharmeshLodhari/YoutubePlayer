@@ -25,6 +25,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // import '../../../../../utils/date_time_and_money_converter.dart';
 import '../../../../../routes/route_constants.dart';
@@ -153,6 +154,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       debugPrint(error.toString());
       showToast(message: error.toString());
     });
+  }
+
+  Future<void> _makePhoneCall() async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: deliveryModel?.dispatcherNumber,
+    );
+    await launchUrl(launchUri);
   }
 
   getOrderStatusTime(Order? order, String? status) {
@@ -1335,7 +1344,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               fontSize: 10,
                               fontWeight: FontWeight.w400)),
                       SizedBox(height: 5),
-                      if (statusTitle == 'Order Picked Up')
+                      if (statusTitle == 'Order Picked Up' &&
+                          deliveryModel?.isInProgress == true)
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -1409,7 +1419,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               RoundedElevatedButton(svgImg: 'assets/images/location_icon.svg'),
         ),
         SizedBox(width: 3),
-        RoundedElevatedButton(svgImg: 'assets/images/call_icon.svg'),
+        GestureDetector(
+            onTap: () {
+              _makePhoneCall();
+            },
+            child:
+                RoundedElevatedButton(svgImg: 'assets/images/call_icon.svg')),
         SizedBox(width: 3),
         badges.Badge(
           position: badges.BadgePosition.topEnd(top: 0, end: 0),

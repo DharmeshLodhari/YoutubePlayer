@@ -35,7 +35,8 @@ class DeliveryModel {
   int? totalNoOfItems;
   String? deliveryEvidence;
   int? orderId;
-  int? distaneTravel;
+  int? distanceTravel;
+  String? dispatcherNumber;
   // bool? isShowDetails;
   // bool? isDeliveryAccepted;
   // bool? isDeliveryStarted;
@@ -77,6 +78,8 @@ class DeliveryModel {
     this.totalNoOfItems,
     this.deliveryEvidence,
     this.orderId,
+    this.distanceTravel,
+    this.dispatcherNumber,
     // this.isShowDetails = true,
     // this.isDeliveryAccepted = false,
     // this.isDeliveryStarted = false,
@@ -139,6 +142,8 @@ class DeliveryModel {
         totalNoOfItems: json["total_no_of_items"],
         deliveryEvidence: json["delivery_evidence"],
         orderId: json["order_id"],
+        distanceTravel: json["distance_travel"],
+        dispatcherNumber: json["dispatcher_number"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -175,6 +180,10 @@ class DeliveryModel {
         "total_weight": totalWeight,
         "delivery_evidence": deliveryEvidence,
         "total_no_of_items": totalNoOfItems,
+        "delivery_evidence": deliveryEvidence,
+        "order_id": orderId,
+        "distance_travel": distanceTravel,
+        "dispatcher_number": dispatcherNumber,
       };
 
   bool isOfferAccepted(String? userName) {

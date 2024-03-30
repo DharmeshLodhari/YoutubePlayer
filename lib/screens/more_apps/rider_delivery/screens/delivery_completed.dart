@@ -324,10 +324,9 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
     //   riderDeliveryBloc.deliveryDetails?.deliveryAddress?.latitude ?? 0.0,
     //   riderDeliveryBloc.deliveryDetails?.deliveryAddress?.longitude ?? 0.0,
     // );
-    var _distanceInMeters = 00;
-    double distanceInKiloMeters = _distanceInMeters / 1000;
-    double roundDistanceInKM =
-        double.parse((distanceInKiloMeters).toStringAsFixed(2));
+    // double distanceInKiloMeters = _distanceInMeters / 1000;
+    // double roundDistanceInKM =
+    //     double.parse((distanceInKiloMeters).toStringAsFixed(2));
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -341,7 +340,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
           ),
         ),
         Text(
-          "$roundDistanceInKM km",
+          "${riderDeliveryBloc.deliveryDetails?.distanceTravel ?? 10} km",
           style: TextStyle(
             color: navyBlue,
             fontSize: 14,

@@ -10,6 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RiderMapStatus extends StatefulWidget {
   var arguments;
@@ -244,25 +245,38 @@ class _RiderMapStatusState extends State<RiderMapStatus> {
     );
   }
 
+  Future<void> _makePhoneCall() async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: deliveryModel?.dispatcherNumber,
+    );
+    await launchUrl(launchUri);
+  }
+
   Widget _buildPartnerContactIcon() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
-          elevation: 3,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: Container(
-              width: 60,
-              height: 60,
-              color: white,
-              child: Image.asset(
-                "assets/images/phone_call_icon.png",
-                width: 24,
-                height: 24,
+        GestureDetector(
+          onTap: () {
+            _makePhoneCall();
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50),
+            ),
+            elevation: 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                width: 60,
+                height: 60,
+                color: white,
+                child: Image.asset(
+                  "assets/images/phone_call_icon.png",
+                  width: 24,
+                  height: 24,
+                ),
               ),
             ),
           ),
