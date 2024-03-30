@@ -7,6 +7,8 @@ import 'package:image_cropper/image_cropper.dart';
 class ImageCrop {
   Future<String?> cropImage(String filePath,
       {bool isProfilePicture = false}) async {
+    return filePath;
+
     debugPrint("Selected image ==> $filePath");
 
     CroppedFile? croppedImage = await ImageCropper().cropImage(

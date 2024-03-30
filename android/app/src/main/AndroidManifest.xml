@@ -7,40 +7,41 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
 
-    <application android:allowBackup="false"
+    <application
         android:name=".Application"
-        android:label="Slydo"
-        android:icon="@mipmap/launcher_icon"
+        android:allowBackup="false"
         android:hardwareAccelerated="true"
+        android:icon="@mipmap/launcher_icon"
+        android:label="Slydo"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
+            android:hardwareAccelerated="true"
             android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="FLUTTER_NOTIFICATION_CLICK" />
@@ -58,8 +59,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.android.camera.CropImage"/>
-        <activity android:name="com.yalantis.ucrop.UCropActivity"/>
+        <!--        <activity android:name="com.android.camera.CropImage" />-->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <!-- notification icon-->
         <meta-data
@@ -72,17 +76,17 @@
             android:resource="@color/notification_icon_color" />
 
         <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAs0AD96236ASgq_7l8u4q9OHW0bOuESV8" />
+        <!--            android:value="AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY"/>-->
 
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAs0AD96236ASgq_7l8u4q9OHW0bOuESV8"/>
-<!--            android:value="AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY"/>-->
-
-        <meta-data android:name="com.google.android.gms.version"
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <meta-data android:name="flutterEmbedding" android:value="2"/>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
 
         <provider
             android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
@@ -91,7 +95,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <!-- Begin FlutterDownloader customization -->
