@@ -119,24 +119,26 @@ class Yarn extends Equatable {
         item = {};
       }
 
-      if (item['service'] != null) {
-        attachmentType = 'service';
-        attachment = item['service'];
-      } else if (item['job'] != null) {
-        attachmentType = 'job';
-        attachment = item['job'];
-      } else if (item['blog'] != null) {
-        attachmentType = 'blog';
-        attachment = item['blog'];
-      } else if (item['product'] != null) {
-        attachmentType = 'product';
-        attachment = item['product'];
-      } else if (item['profile'] != null) {
-        attachmentType = 'profile';
-        attachment = item['full_name'] == null ? item['profile'] : item;
-      } else {
-        rebuildAttachment(item);
-        attachment = item;
+      if (item.isNotEmpty) {
+        if (item['service'] != null) {
+          attachmentType = 'service';
+          attachment = item['service'];
+        } else if (item['job'] != null) {
+          attachmentType = 'job';
+          attachment = item['job'];
+        } else if (item['blog'] != null) {
+          attachmentType = 'blog';
+          attachment = item['blog'];
+        } else if (item['product'] != null) {
+          attachmentType = 'product';
+          attachment = item['product'];
+        } else if (item['profile'] != null) {
+          attachmentType = 'profile';
+          attachment = item['full_name'] == null ? item['profile'] : item;
+        } else {
+          rebuildAttachment(item);
+          attachment = item;
+        }
       }
     }
 
@@ -313,6 +315,7 @@ class ViewersAvatars {
     username = json['username'];
     avatar = json['avatar'];
   }
+
   String? username;
   String? avatar;
 

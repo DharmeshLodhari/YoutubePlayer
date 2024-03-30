@@ -63,7 +63,6 @@ final logger = Logger();
 
 void main() async {
   HttpOverrides.global = new MyHttpOverrides();
-
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
 
