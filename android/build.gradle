@@ -26,6 +26,12 @@ allprojects {
     repositories {
         google()
         jcenter()
+
+        configurations.configureEach {
+            resolutionStrategy {
+                force "com.google.android.gms:play-services-location:21.0.1"
+            }
+        }
     }
 }
 
