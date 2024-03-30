@@ -384,10 +384,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
-        polylineId: id,
-        color: naturalGreen,
-        points: polylineCoordinates,
-        width: 8);
+        polylineId: id, color: navyBlue, points: polylineCoordinates, width: 3);
     if (mounted)
       setState(() {
         polylines[id] = polyline;
