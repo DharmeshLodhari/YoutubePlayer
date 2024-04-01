@@ -1827,7 +1827,7 @@ class _EditJobState extends State<EditJob> {
                               child: ListTile(
                                 dense: true,
                                 title: Text(
-                                  category.name,
+                                  messageDecoderWithEmoji(category?.name) ?? "",
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                   style: TextStyle(
@@ -1849,7 +1849,7 @@ class _EditJobState extends State<EditJob> {
                           }
                           return ListTile(
                             title: Text(
-                              category.name,
+                              messageDecoderWithEmoji(category?.name) ?? "",
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' show atan2, cos, pi, pow, sin, sqrt;
 import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
@@ -41,6 +42,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   LocationData? _currentP;
   String rideMarkerImage = "assets/images/bike_top.png";
   GoogleMapController? controller;
+  Set<Circle> circles = Set();
 
   Map<PolylineId, Polyline> polylines = {};
   Uint8List? _markerImageData;
@@ -112,6 +114,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
       icon: BitmapDescriptor.fromBytes(_markerImageData!),
       rotation: _currentP?.heading ?? 0,
       position: LatLng(_currentP!.latitude!, _currentP!.longitude!),
+      anchor: Offset(0.5, 0.5),
     );
   }
 
@@ -186,6 +189,9 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
                         deliveryModel?.pickupAddress?.longitude ?? 0.0)),
               },
               polylines: Set<Polyline>.of(polylines.values),
+              circles: {
+                _buildPickupCircle(),
+              },
             );
     } else if (deliveryModel?.isOfferStarted(username) == true) {
       return isLoading
@@ -215,6 +221,9 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
                         deliveryModel?.deliveryAddress?.longitude ?? 0.0))
               },
               polylines: Set<Polyline>.of(polylines.values),
+              circles: {
+                _buildDestinationCircle(),
+              },
             );
     } else if (deliveryModel?.isOfferEnded(username) == true) {
       return isLoading
@@ -278,8 +287,50 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
       target: LatLng(pos.latitude!, pos.longitude!),
       zoom: zoomLevel,
     );
-    await controller?.animateCamera(
-      CameraUpdate.newCameraPosition(_newCameraPosition),
+    // await controller?.animateCamera(
+    //   CameraUpdate.newCameraPosition(_newCameraPosition),
+    // );
+  }
+
+  // Function to calculate distance between two LatLng points for a given radius
+  double distanceBetween(LocationData pos1, LatLng pos2) {
+    const double radius = 6371000; // Earth's radius in meters
+    double lat1 = pos1.latitude! * (3.141592653589793 / 180);
+    double lon1 = pos1.longitude! * (3.141592653589793 / 180);
+    double lat2 = pos2.latitude * (3.141592653589793 / 180);
+    double lon2 = pos2.longitude * (3.141592653589793 / 180);
+    double dLat = lat2 - lat1;
+    double dLon = lon2 - lon1;
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1) * cos(lat2) * sin(dLon / 2) * sin(dLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = radius * c;
+    return distance;
+  }
+
+  Circle _buildPickupCircle() {
+    DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
+    return Circle(
+      center: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
+          deliveryModel?.pickupAddress?.longitude ?? 0.0),
+      radius: 500,
+      fillColor: navyBlue.withAlpha(50),
+      strokeColor: navyBlue.withAlpha(100),
+      strokeWidth: 1,
+      circleId: CircleId("_sourceLocation"),
+    );
+  }
+
+  Circle _buildDestinationCircle() {
+    DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
+    return Circle(
+      center: LatLng(deliveryModel?.deliveryAddress?.latitude ?? 0.0,
+          deliveryModel?.deliveryAddress?.longitude ?? 0.0),
+      radius: 500,
+      fillColor: navyBlue.withAlpha(50),
+      strokeColor: navyBlue.withAlpha(100),
+      strokeWidth: 1,
+      circleId: CircleId("_destinationLocation"),
     );
   }
 
@@ -311,12 +362,46 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
             _currentP = currentLocation;
 
             _cameraToPosition(currentLocation);
+
+            double pickupDistance = distanceBetween(
+                currentLocation,
+                LatLng(
+                    riderDeliveryBloc
+                            .deliveryDetails?.pickupAddress?.latitude ??
+                        0.0,
+                    riderDeliveryBloc
+                            .deliveryDetails?.pickupAddress?.longitude ??
+                        0.0));
+
+            double destiDistance = distanceBetween(
+                currentLocation,
+                LatLng(
+                    riderDeliveryBloc
+                            .deliveryDetails?.deliveryAddress?.latitude ??
+                        0.0,
+                    riderDeliveryBloc
+                            .deliveryDetails?.deliveryAddress?.longitude ??
+                        0.0));
+
             if (riderDeliveryBloc.deliveryDetails?.isOfferStarted(username) ==
                     true ||
                 riderDeliveryBloc.deliveryDetails
                         ?.isAfterOfferAccepted(username) ==
                     true) {
               updateCurrentLocation(currentLocation);
+
+              if (pickupDistance <= 500) {
+                riderDeliveryBloc.isRiderNearbyPickupLocation(true);
+              } else {
+                riderDeliveryBloc.isRiderNearbyPickupLocation(false);
+              }
+
+              debugPrint("destiDistance : $destiDistance");
+              if (destiDistance <= 500) {
+                riderDeliveryBloc.isRiderNearbyDestinationLocation(true);
+              } else {
+                riderDeliveryBloc.isRiderNearbyDestinationLocation(false);
+              }
             }
           });
       }

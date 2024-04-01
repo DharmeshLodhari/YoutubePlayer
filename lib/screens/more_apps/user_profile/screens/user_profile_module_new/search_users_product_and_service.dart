@@ -892,7 +892,7 @@ class _SearchUsersProductAndServiceState
 
   Widget getTitle(Product product) {
     return Text(
-      "${product.name}",
+      messageDecoderWithEmoji(product.name) ?? "",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
@@ -928,7 +928,7 @@ class _SearchUsersProductAndServiceState
           height: 2,
         ),
         Text(
-          "${product.shortDescription}",
+          messageDecoderWithEmoji(product.shortDescription) ?? "",
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 12),
         ),
@@ -977,7 +977,7 @@ class _SearchUsersProductAndServiceState
                   dense: true,
                   leading: getLeadingService(service),
                   title: Text(
-                    service.name!,
+                    messageDecoderWithEmoji(service.name) ?? "",
                     maxLines: 1,
                     style: TextStyle(
                         color: blackFont,
@@ -1033,7 +1033,7 @@ class _SearchUsersProductAndServiceState
           height: 2,
         ),
         Text(
-          "${service.shortDescription}",
+          messageDecoderWithEmoji(service.shortDescription) ?? "",
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 12),
         ),

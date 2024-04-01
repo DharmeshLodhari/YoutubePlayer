@@ -669,7 +669,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  service.name!,
+                  messageDecoderWithEmoji(service.name) ?? "",
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,

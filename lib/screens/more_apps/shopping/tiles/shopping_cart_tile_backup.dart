@@ -163,7 +163,9 @@ class _ShoppingCartTileForProductState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          appendStringDot("${widget.item!.name}", 10),
+          messageDecoderWithEmoji(
+                  appendStringDot(widget.item!.name ?? "", 10)) ??
+              "",
           maxLines: 1,
           style: TextStyle(
             color: blackFont,
@@ -570,7 +572,7 @@ class _ShoppingCartTileForServiceState
 
   Widget getTitle() {
     return Text(
-      "${widget.item!.name}",
+      messageDecoderWithEmoji(widget.item?.name) ?? "",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),

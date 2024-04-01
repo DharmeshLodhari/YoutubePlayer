@@ -58,7 +58,7 @@ class _SearchProductTileState extends State<SearchProductTile> {
                     ListTile(
                         dense: true,
                         title: Text(
-                          widget.product.name!,
+                          messageDecoderWithEmoji(widget.product.name) ?? "",
                           maxLines: 1,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -68,7 +68,9 @@ class _SearchProductTileState extends State<SearchProductTile> {
                           overflow: TextOverflow.fade,
                         ),
                         subtitle: Text(
-                          widget.product.shortDescription!,
+                          messageDecoderWithEmoji(
+                                  widget.product.shortDescription) ??
+                              "",
                           maxLines: 1,
                           style: TextStyle(fontSize: 14, color: darkGrey),
                           softWrap: false,
@@ -155,7 +157,7 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
                     ListTile(
                         dense: true,
                         title: Text(
-                          widget.service.name!,
+                          messageDecoderWithEmoji(widget.service.name) ?? "",
                           maxLines: 1,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -165,7 +167,9 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
                           overflow: TextOverflow.fade,
                         ),
                         subtitle: Text(
-                          widget.service.shortDescription!,
+                          messageDecoderWithEmoji(
+                                  widget.service.shortDescription) ??
+                              "",
                           maxLines: 1,
                           style: TextStyle(
                               fontSize: 14,

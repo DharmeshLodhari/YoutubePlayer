@@ -182,7 +182,9 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  product!.name!,
+                                                  messageDecoderWithEmoji(
+                                                          product?.name) ??
+                                                      "",
                                                   maxLines: 1,
                                                   style: TextStyle(
                                                       fontWeight:
@@ -537,7 +539,9 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  service!.name!,
+                                                  messageDecoderWithEmoji(
+                                                          service?.name) ??
+                                                      "",
                                                   maxLines: 1,
                                                   style: TextStyle(
                                                       fontWeight:

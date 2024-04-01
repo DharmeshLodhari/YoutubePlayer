@@ -155,7 +155,8 @@ class ShoppingCartTileForProduct extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          appendStringDot("${product.name}", 12),
+          messageDecoderWithEmoji(appendStringDot(product.name ?? "", 12)) ??
+              "",
           maxLines: 1,
           style: TextStyle(
             color: blackFont,
@@ -520,7 +521,7 @@ class _ShoppingCartTileForServiceState
 
   Widget getTitle() {
     return Text(
-      "${widget.item!.name}",
+      messageDecoderWithEmoji(widget.item?.name) ?? "",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),

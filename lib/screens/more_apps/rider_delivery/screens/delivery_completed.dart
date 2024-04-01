@@ -139,7 +139,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
 
   Widget _buildRideNumber() {
     return Text(
-      'Ride #${riderDeliveryBloc.deliveryDetails?.orderId}',
+      'Ride #${riderDeliveryBloc.deliveryDetails?.orderId ?? ""}',
       style: TextStyle(
         fontSize: 18,
         fontFamily: "Inter",

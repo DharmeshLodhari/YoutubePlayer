@@ -1040,7 +1040,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  product.name!,
+                  messageDecoderWithEmoji(product.name) ?? "",
                   style: TextStyle(
                       color: getDividerColor(
                           isSend: isSend, isRepliedSend: isRepliedSend),
@@ -1197,7 +1197,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  service.name!,
+                  messageDecoderWithEmoji(service.name) ?? "",
                   style: TextStyle(
                       color: getDividerColor(
                           isSend: isSend, isRepliedSend: isRepliedSend),

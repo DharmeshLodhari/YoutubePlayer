@@ -473,7 +473,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  product.name!,
+                  messageDecoderWithEmoji(product.name) ?? "",
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -671,8 +671,11 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      discountProductList
-                                                          .first.name!,
+                                                      messageDecoderWithEmoji(
+                                                              discountProductList
+                                                                  .first
+                                                                  .name) ??
+                                                          "",
                                                       softWrap: false,
                                                       overflow:
                                                           TextOverflow.fade,
@@ -688,8 +691,11 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                                                       height: 2,
                                                     ),
                                                     Text(
-                                                      discountProductList.first
-                                                          .shortDescription!,
+                                                      messageDecoderWithEmoji(
+                                                              discountProductList
+                                                                  .first
+                                                                  .shortDescription) ??
+                                                          "",
                                                       // softWrap: false,
                                                       // overflow:
                                                       //     TextOverflow.fade,
@@ -803,7 +809,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                product.name!,
+                messageDecoderWithEmoji(product.name) ?? "",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontWeight: FontWeight.w700,

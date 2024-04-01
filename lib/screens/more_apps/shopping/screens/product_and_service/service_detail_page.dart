@@ -363,7 +363,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
         var shareBody =
             "http://slydo.co/store/${service!.provider}/services/${service!.id}";
-        Share.share(shareBody, subject: "${service!.name}");
+        Share.share(
+          shareBody,
+          subject: messageDecoderWithEmoji(service?.name) ?? "",
+        );
       },
     ));
 

@@ -148,7 +148,9 @@ class _YarnProductTileState extends State<YarnProductTile> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    widget.product!.name!,
+                                    messageDecoderWithEmoji(
+                                            widget.product?.name) ??
+                                        "",
                                     maxLines: 1,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w700,

@@ -28,6 +28,19 @@ class RiderDeliveryBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool isNearbyPickupLocation = false;
+  bool isNearbyDestinationLocation = false;
+
+  void isRiderNearbyPickupLocation(bool value) {
+    isNearbyPickupLocation = value;
+    notifyListeners();
+  }
+
+  void isRiderNearbyDestinationLocation(bool value) {
+    isNearbyDestinationLocation = value;
+    notifyListeners();
+  }
+
   void updateDeliveryModel(DeliveryModel data) {
     deliveryDetails = data;
     notifyListeners();

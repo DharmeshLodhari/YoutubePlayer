@@ -65,7 +65,9 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
             location?["location"]["longitude"]);
 
         riderLocation = RiderLocation(
-            latitude: latLng.latitude, longitude: latLng.longitude);
+            latitude: latLng.latitude,
+            longitude: latLng.longitude,
+            dispatcherHeading: location?["dispatcher_heading"]);
 
         _cameraToPosition(latLng);
 
@@ -111,23 +113,27 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
             ),
             markers: {
               Marker(
-                  markerId: MarkerId("_riderLocation"),
-                  icon: BitmapDescriptor.fromBytes(_markerImageData!),
-                  // rotation: riderLocation?.heading ?? 0,
-                  position: LatLng(riderLocation?.latitude ?? 0.0,
-                      riderLocation?.longitude ?? 0.0)),
+                markerId: MarkerId("_riderLocation"),
+                icon: BitmapDescriptor.fromBytes(_markerImageData!),
+                rotation: riderLocation?.getHeading() ?? 0.0,
+                position: LatLng(riderLocation?.latitude ?? 0.0,
+                    riderLocation?.longitude ?? 0.0),
+                anchor: Offset(0.5, 0.5),
+              ),
               Marker(
-                  markerId: MarkerId("_sourceLocation"),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(0),
-                  position: LatLng(
-                      widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
-                      widget.journeyDetail?.pickupAddress?.longitude ?? 0.0)),
+                markerId: MarkerId("_sourceLocation"),
+                icon: BitmapDescriptor.defaultMarkerWithHue(0),
+                position: LatLng(
+                    widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
+                    widget.journeyDetail?.pickupAddress?.longitude ?? 0.0),
+              ),
               Marker(
-                  markerId: MarkerId("_destinationLocation"),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(250),
-                  position: LatLng(
-                      widget.journeyDetail?.deliveryAddress?.latitude ?? 0.0,
-                      widget.journeyDetail?.deliveryAddress?.longitude ?? 0.0))
+                markerId: MarkerId("_destinationLocation"),
+                icon: BitmapDescriptor.defaultMarkerWithHue(250),
+                position: LatLng(
+                    widget.journeyDetail?.deliveryAddress?.latitude ?? 0.0,
+                    widget.journeyDetail?.deliveryAddress?.longitude ?? 0.0),
+              )
             },
             polylines: Set<Polyline>.of(polylines.values),
           );
@@ -140,9 +146,9 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
       target: pos,
       zoom: zoomLevel,
     );
-    await controller?.animateCamera(
-      CameraUpdate.newCameraPosition(_newCameraPosition),
-    );
+    // await controller?.animateCamera(
+    //   CameraUpdate.newCameraPosition(_newCameraPosition),
+    // );
   }
 
   Future<void> getLocationUpdates() async {

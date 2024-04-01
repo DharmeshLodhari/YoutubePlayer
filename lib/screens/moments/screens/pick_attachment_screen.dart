@@ -119,9 +119,9 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
           displayCardModelList = resultList
               .map((e) => DisplayCardModel(
                   id: e.id!,
-                  title: e.name!,
+                  title: e.name ?? "",
                   imageUrl: e.sellerAvatar!,
-                  description: e.description!))
+                  description: e.description ?? ""))
               .toList();
           break;
         }
@@ -131,9 +131,9 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
           displayCardModelList = resultList
               .map((e) => DisplayCardModel(
                   id: e.id!,
-                  title: e.name!,
+                  title: e.name ?? "",
                   imageUrl: e.providerAvatar!,
-                  description: e.description!))
+                  description: e.description ?? ""))
               .toList();
           break;
         }

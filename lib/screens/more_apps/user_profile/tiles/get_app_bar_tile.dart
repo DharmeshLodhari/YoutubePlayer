@@ -499,7 +499,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           Row(
             children: [
               AnimatedContainer(
-                width: 48,
                 duration: const Duration(milliseconds: 500),
                 decoration: const BoxDecoration(
                     // border: Border.all(color: borderColor, width: 3),
@@ -520,40 +519,58 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   },
                   child: searchedUser?.type?.toLowerCase() != "user" &&
                           searchedUser?.rating != 0.0
-                      ? Stack(
-                          clipBehavior: Clip.none,
+                      ? Column(
                           children: [
                             Center(child: getUserProfilePic()),
-                            Positioned.fill(
-                              bottom: -12,
-                              left: 0,
-                              right: 0,
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(60),
-                                    border: Border.all(
-                                      color: dividerColor,
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5, vertical: 2),
-                                  child: getRating(
-                                      numberOfRating:
-                                          searchedUser?.rating.toInt()),
+                            SizedBox(height: 2),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(60),
+                                border: Border.all(
+                                  color: dividerColor,
                                 ),
                               ),
-                            )
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 2),
+                              child: getRating(
+                                  numberOfRating: searchedUser?.rating.toInt()),
+                            ),
                           ],
                         )
+                      // ? Stack(
+                      //     clipBehavior: Clip.none,
+                      //     children: [
+                      //       Center(child: getUserProfilePic()),
+                      //       Positioned.fill(
+                      //         bottom: -12,
+                      //         left: 0,
+                      //         right: 0,
+                      //         child: Align(
+                      //           alignment: Alignment.bottomCenter,
+                      //           child: Container(
+                      //             decoration: BoxDecoration(
+                      //               color: Colors.white,
+                      //               borderRadius: BorderRadius.circular(60),
+                      //               border: Border.all(
+                      //                 color: dividerColor,
+                      //               ),
+                      //             ),
+                      //             padding: const EdgeInsets.symmetric(
+                      //                 horizontal: 5, vertical: 2),
+                      //             child: getRating(
+                      //                 numberOfRating:
+                      //                     searchedUser?.rating.toInt()),
+                      //           ),
+                      //         ),
+                      //       )
+                      //     ],
+                      //   )
                       : getUserProfilePic(),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

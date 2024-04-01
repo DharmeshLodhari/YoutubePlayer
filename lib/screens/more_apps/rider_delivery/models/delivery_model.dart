@@ -231,23 +231,33 @@ class DeliveryModel {
 class RiderLocation {
   double? longitude;
   double? latitude;
-  double? heading;
+  String? dispatcherHeading;
 
   RiderLocation({
     this.longitude,
     this.latitude,
-    this.heading,
+    this.dispatcherHeading,
   });
 
   factory RiderLocation.fromJson(Map<String, dynamic> json) => RiderLocation(
         longitude: json["longitude"]?.toDouble(),
         latitude: json["latitude"]?.toDouble(),
-        heading: json["heading"]?.toDouble(),
+        dispatcherHeading: json["dispatcher_heading"],
       );
 
   Map<String, dynamic> toJson() => {
         "longitude": longitude,
         "latitude": latitude,
-        "heading": heading,
+        "dispatcher_heading": dispatcherHeading,
       };
+
+  double getHeading() {
+    double parsedValue;
+    if (dispatcherHeading != null) {
+      parsedValue = double.tryParse(dispatcherHeading!) ?? 0.0;
+    } else {
+      parsedValue = 0.0;
+    }
+    return parsedValue;
+  }
 }

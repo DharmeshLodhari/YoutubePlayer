@@ -50,7 +50,7 @@ class ShoppingTile extends StatelessWidget {
                       children: [
                         flexibleSpace(flex: 2),
                         Text(
-                          product!.name!,
+                          messageDecoderWithEmoji(product?.name) ?? "",
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -60,7 +60,8 @@ class ShoppingTile extends StatelessWidget {
                         ),
                         flexibleSpace(),
                         Text(
-                          product!.shortDescription!,
+                          messageDecoderWithEmoji(product?.shortDescription) ??
+                              "",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -154,7 +155,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          widget.product!.name!,
+                          messageDecoderWithEmoji(widget.product?.name) ?? "",
                           maxLines: 1,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -280,7 +281,7 @@ class _ShoppingTileWithHeartWithProductState
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          widget.product!.name!,
+                          messageDecoderWithEmoji(widget.product?.name) ?? "",
                           maxLines: 1,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -516,7 +517,7 @@ class _ShoppingTileWithHeartWithServiceState
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          widget.service!.name!,
+                          messageDecoderWithEmoji(widget.service?.name) ?? "",
                           maxLines: 1,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,

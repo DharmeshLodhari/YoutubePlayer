@@ -140,7 +140,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     return AppBar(
       backgroundColor: white,
       title: Text(
-        'Ride #${riderDeliveryBloc.deliveryDetails?.orderId}',
+        'Ride #${riderDeliveryBloc.deliveryDetails?.orderId ?? ""}',
         style: TextStyle(
           fontSize: 20,
           fontFamily: "Inter",
@@ -823,7 +823,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildDrivingToPickupLocation() {
     return Center(
       child: Text(
-        'Driving to pickup location',
+        riderDeliveryBloc.isNearbyPickupLocation == false
+            ? 'Driving to pickup location'
+            : 'You have reach your pickup location',
         style: TextStyle(
           color: blackFont,
           fontSize: 14,
@@ -837,7 +839,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildDrivingToDestination() {
     return Center(
       child: Text(
-        'Driving to destination',
+        riderDeliveryBloc.isNearbyDestinationLocation == false
+            ? 'Driving to destination'
+            : 'You have arrived at the destination',
         style: TextStyle(
           color: blackFont,
           fontSize: 14,

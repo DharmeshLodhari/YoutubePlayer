@@ -253,16 +253,18 @@ class FindJobsTabState extends State<FindJobsTab> {
   Widget _buildJobAction(int index) {
     if (jobListing[index].isOfferAccepted(userBloc.user.userName) == false) {
       return _buildAcceptRejectButton(jobListing[index]);
-    } else if (jobListing[index].isOfferAccepted(userBloc.user.userName) ==
-            true &&
-        jobListing[index].isInProgress == false &&
-        jobListing[index].hasEnded == false) {
-      return _buildStartDeliveryButton(jobListing[index]);
-    } else if (jobListing[index].isOfferAccepted(userBloc.user.userName) ==
-            true &&
-        jobListing[index].isInProgress == true) {
-      return _buildEndDeliveryButton(jobListing[index]);
-    } else {
+    }
+    // else if (jobListing[index].isOfferAccepted(userBloc.user.userName) ==
+    //         true &&
+    //     jobListing[index].isInProgress == false &&
+    //     jobListing[index].hasEnded == false) {
+    //   return _buildStartDeliveryButton(jobListing[index]);
+    // } else if (jobListing[index].isOfferAccepted(userBloc.user.userName) ==
+    //         true &&
+    //     jobListing[index].isInProgress == true) {
+    //   return _buildEndDeliveryButton(jobListing[index]);
+    // }
+    else {
       return Container();
     }
   }
@@ -320,51 +322,6 @@ class FindJobsTabState extends State<FindJobsTab> {
     );
   }
 
-  Widget _buildStartDeliveryButton(DeliveryModel jobListing) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 7.0),
-      child: CurvedButton(
-        text: 'Start Delivery',
-        backgroundColor: navyBlue,
-        textColor: white,
-        onPressed: () {
-          if (isStartAPILoading == false) {
-            FocusScope.of(context).unfocus();
-            isStartAPILoading = true;
-            if (mounted) setState(() {});
-            startOffer(jobListing);
-            isStartAPILoading = false;
-            if (mounted) setState(() {});
-          }
-        },
-        isLoading: isStartAPILoading,
-      ),
-    );
-  }
-
-  Widget _buildEndDeliveryButton(DeliveryModel jobListing) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 7.0),
-      child: CurvedButton(
-        text: 'End Delivery',
-        backgroundColor: navyBlue,
-        textColor: white,
-        onPressed: isEndedAPILoading
-            ? null
-            : () async {
-                FocusScope.of(context).unfocus();
-                isEndedAPILoading = true;
-                if (mounted) setState(() {});
-                endOffer(jobListing);
-
-                isEndedAPILoading = false;
-                if (mounted) setState(() {});
-              },
-        isLoading: isEndedAPILoading,
-      ),
-    );
-  }
-
   Future<void> rejectJob(DeliveryModel jobListing) async {
     await RiderDeliveryAuthService().rejectOffer(jobListing.id).then((value) {
       if (value == true) {
@@ -395,37 +352,82 @@ class FindJobsTabState extends State<FindJobsTab> {
     });
   }
 
-  Future<void> startOffer(DeliveryModel jobListing) async {
-    await RiderDeliveryAuthService().startJourney(jobListing.id).then((value) {
-      if (value == true) {
-        showToast(
-            message: AppLocalization.of(context)!.journyStartedSuccessfully);
-        // jobListing.isDeliveryAccepted = false;
-        // jobListing.isDeliveryStarted = true;
-        _onRefresh();
-        setState(() {});
-      }
-    }).catchError((error) {
-      debugPrint(error.toString());
-      showToast(message: error.toString());
-    });
-  }
-
-  Future<void> endOffer(DeliveryModel jobListing) async {
-    await RiderDeliveryAuthService().endJourney(jobListing.id).then((value) {
-      if (value == true) {
-        showToast(message: AppLocalization.of(context)!.endJob);
-        // jobListing.isDeliveryStarted = false;
-        // jobListing.isDeliveryEnded = true;
-        Navigator.of(context).pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
-          'showDetails': true,
-          'deliveryDetail': jobListing
-        }).whenComplete(() => _onRefresh());
-        setState(() {});
-      }
-    }).catchError((error) {
-      debugPrint(error.toString());
-      showToast(message: error.toString());
-    });
-  }
+// Widget _buildStartDeliveryButton(DeliveryModel jobListing) {
+  //   return Padding(
+  //     padding: EdgeInsets.symmetric(horizontal: 7.0),
+  //     child: CurvedButton(
+  //       text: 'Start Delivery',
+  //       backgroundColor: navyBlue,
+  //       textColor: white,
+  //       onPressed: () {
+  //         if (isStartAPILoading == false) {
+  //           FocusScope.of(context).unfocus();
+  //           isStartAPILoading = true;
+  //           if (mounted) setState(() {});
+  //           startOffer(jobListing);
+  //           isStartAPILoading = false;
+  //           if (mounted) setState(() {});
+  //         }
+  //       },
+  //       isLoading: isStartAPILoading,
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildEndDeliveryButton(DeliveryModel jobListing) {
+  //   return Padding(
+  //     padding: EdgeInsets.symmetric(horizontal: 7.0),
+  //     child: CurvedButton(
+  //       text: 'End Delivery',
+  //       backgroundColor: navyBlue,
+  //       textColor: white,
+  //       onPressed: isEndedAPILoading
+  //           ? null
+  //           : () async {
+  //               FocusScope.of(context).unfocus();
+  //               isEndedAPILoading = true;
+  //               if (mounted) setState(() {});
+  //               endOffer(jobListing);
+  //
+  //               isEndedAPILoading = false;
+  //               if (mounted) setState(() {});
+  //             },
+  //       isLoading: isEndedAPILoading,
+  //     ),
+  //   );
+  // }
+  //
+  // Future<void> startOffer(DeliveryModel jobListing) async {
+  //   await RiderDeliveryAuthService().startJourney(jobListing.id).then((value) {
+  //     if (value == true) {
+  //       showToast(
+  //           message: AppLocalization.of(context)!.journyStartedSuccessfully);
+  //       // jobListing.isDeliveryAccepted = false;
+  //       // jobListing.isDeliveryStarted = true;
+  //       _onRefresh();
+  //       setState(() {});
+  //     }
+  //   }).catchError((error) {
+  //     debugPrint(error.toString());
+  //     showToast(message: error.toString());
+  //   });
+  // }
+  //
+  // Future<void> endOffer(DeliveryModel jobListing) async {
+  //   await RiderDeliveryAuthService().endJourney(jobListing.id).then((value) {
+  //     if (value == true) {
+  //       showToast(message: AppLocalization.of(context)!.endJob);
+  //       // jobListing.isDeliveryStarted = false;
+  //       // jobListing.isDeliveryEnded = true;
+  //       Navigator.of(context).pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
+  //         'showDetails': true,
+  //         'deliveryDetail': jobListing
+  //       }).whenComplete(() => _onRefresh());
+  //       setState(() {});
+  //     }
+  //   }).catchError((error) {
+  //     debugPrint(error.toString());
+  //     showToast(message: error.toString());
+  //   });
+  // }
 }

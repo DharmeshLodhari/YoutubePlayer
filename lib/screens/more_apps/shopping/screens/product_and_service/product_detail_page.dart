@@ -383,7 +383,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
         var shareBody = "http://slydo.co/store/${product!.seller}/products/" +
             product!.id.toString();
-        Share.share(shareBody, subject: "${product!.name}");
+        Share.share(shareBody,
+            subject: "${messageDecoderWithEmoji(product?.name) ?? ""}");
       },
     ));
 
@@ -1572,7 +1573,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 children: <Widget>[
                   Text(
                     //name,
-                    messageDecoderWithEmoji(product!.name)!,
+                    messageDecoderWithEmoji(product?.name) ?? "",
                     style: TextStyle(
                         fontSize: 16,
                         color: blackFont,
@@ -1584,7 +1585,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Text(
-                          worldCurrencies[product!.currency!]!,
+                          worldCurrencies[product?.currency] ?? "0",
                           style: TextStyle(
                               fontFamily: "Inter",
                               fontSize: 18.0,

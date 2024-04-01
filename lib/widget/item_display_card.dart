@@ -169,7 +169,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                     children: [
                       Text(
                         truncateString(
-                          str: widget.product.getName(),
+                          str: messageDecoderWithEmoji(widget.product.name) ??
+                              "",
                           lengthToTruncateAt: 16,
                           showEllipsis: false,
                         ),
@@ -183,11 +184,14 @@ class _DisplayProductState extends State<DisplayProduct> {
                         height: 4,
                       ),
                       Text(
-                        truncateString(
-                          str: widget.product.shortDescription!,
-                          lengthToTruncateAt: 60,
-                          showEllipsis: true,
-                        ),
+                        messageDecoderWithEmoji(
+                              truncateString(
+                                str: widget.product.shortDescription!,
+                                lengthToTruncateAt: 60,
+                                showEllipsis: true,
+                              ),
+                            ) ??
+                            "",
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,
@@ -783,11 +787,14 @@ class _DisplayServiceState extends State<DisplayService> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        truncateString(
-                          str: widget.service.name!,
-                          lengthToTruncateAt: 16,
-                          showEllipsis: false,
-                        ),
+                        messageDecoderWithEmoji(
+                              truncateString(
+                                str: widget.service.name!,
+                                lengthToTruncateAt: 16,
+                                showEllipsis: false,
+                              ),
+                            ) ??
+                            "",
                         style: TextStyle(
                           color: blackFont,
                           fontSize: 14,
@@ -801,7 +808,9 @@ class _DisplayServiceState extends State<DisplayService> {
                         width: 140,
                         height: 14,
                         child: Text(
-                          widget.service.shortDescription!,
+                          messageDecoderWithEmoji(
+                                  widget.service.shortDescription) ??
+                              "",
                           overflow: widget.service.shortDescription!.length > 21
                               ? TextOverflow.ellipsis
                               : TextOverflow.visible,

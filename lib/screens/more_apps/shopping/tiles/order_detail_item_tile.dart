@@ -111,7 +111,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
 
   Widget getTitle() {
     return Text(
-      "${product!.name}",
+      messageDecoderWithEmoji(product?.name) ?? "",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
@@ -302,7 +302,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
 
   Widget getTitle() {
     return Text(
-      "${service!.name}",
+      messageDecoderWithEmoji(service?.name) ?? "",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),

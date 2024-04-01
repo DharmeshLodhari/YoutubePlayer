@@ -868,7 +868,7 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget getTitle(Product product) {
     return Text(
-      "${product.name}",
+      messageDecoderWithEmoji(product.name) ?? "",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
@@ -904,7 +904,7 @@ class _SearchModuleState extends State<SearchModule> {
           height: 2,
         ),
         Text(
-          "${product.shortDescription}",
+          messageDecoderWithEmoji(product.shortDescription) ?? "",
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 12),
         ),

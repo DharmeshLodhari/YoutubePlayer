@@ -176,7 +176,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
             .replaceAll(",", "");
 
     amount = double.parse(_amountController.text.replaceAll(',', ''));
-    _referenceController.text = product!.name!;
+    _referenceController.text = product?.name ?? "";
     reference = _referenceController.text;
     selectedCategory = "Shopping";
     isValidPayee = true;

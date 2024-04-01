@@ -86,11 +86,14 @@ class DisplayProductForDiscount extends StatelessWidget {
                         height: 4,
                       ),
                       Text(
-                        truncateString(
-                          str: product.shortDescription!,
-                          lengthToTruncateAt: 60,
-                          showEllipsis: true,
-                        ),
+                        messageDecoderWithEmoji(
+                              truncateString(
+                                str: product.shortDescription!,
+                                lengthToTruncateAt: 60,
+                                showEllipsis: true,
+                              ),
+                            ) ??
+                            "",
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontWeight: FontWeight.w400,

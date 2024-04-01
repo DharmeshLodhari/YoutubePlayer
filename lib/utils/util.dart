@@ -1179,7 +1179,7 @@ Widget getClickableRatingBar(
   );
 }
 
-Widget getRating({required int? numberOfRating, double starSize = 11}) {
+Widget getRating({required int? numberOfRating, double starSize = 8}) {
   List<Widget> widgets = [];
 
   for (int i = 1; i < 6; i++) {

@@ -133,18 +133,18 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
 
   String getTitle() {
     if (product != null) {
-      return product?.name ?? "";
+      return messageDecoderWithEmoji(product?.name) ?? "";
     } else if (service != null) {
-      return service?.name ?? "";
+      return messageDecoderWithEmoji(service?.name) ?? "";
     }
     return reviewedUser?.fullName ?? "";
   }
 
   String getSubTitle() {
     if (product != null) {
-      return product?.shortDescription ?? "";
+      return messageDecoderWithEmoji(product?.shortDescription) ?? "";
     } else if (service != null) {
-      return service?.shortDescription ?? "";
+      return messageDecoderWithEmoji(service?.shortDescription) ?? "";
     }
     return reviewedUser?.userName ?? "";
   }

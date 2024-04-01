@@ -589,7 +589,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      product.name!,
+                      messageDecoderWithEmoji(product.name) ?? "",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
