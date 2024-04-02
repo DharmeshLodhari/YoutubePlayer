@@ -1656,7 +1656,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
       "job": job!.id,
     }).then((value) {
       print('${value}Create Listing');
-      Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
+      Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
       showToast(message: AppLocalization.of(context)!.jobListSuccessfully);
     }).catchError((error) {
       debugPrint(error.toString());
@@ -1668,7 +1668,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     await ServiceHubAuthService()
         .removeJobListing(job!.activeListing)
         .then((value) {
-      Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
+      Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
       showToast(message: AppLocalization.of(context)!.jobRemovedFromListing);
     }).catchError((error) {
       debugPrint(error.toString());
@@ -1680,7 +1680,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     await ServiceHubAuthService().applyForJob(
         {"applicant": "${userBloc.user.userName}"},
         jobId: job!.id).then((value) {
-      Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
+      Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
       showToast(
           message: AppLocalization.of(context)!.appliedForJobSuccessfully);
     }).catchError((error) {
@@ -1693,7 +1693,7 @@ class _MyJobsDetailsState extends State<MyJobsDetails> {
     await ServiceHubAuthService().cancelApplicationForJob(
         {"applicant": "${userBloc.user.userName}"},
         jobId: job!.id).then((value) {
-      Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
+      Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 1});
       showToast(
           message: AppLocalization.of(context)!
               .cancelledApplicactionForJobSuccessfully);

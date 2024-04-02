@@ -1,17 +1,22 @@
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
-import 'package:permission_handler/permission_handler.dart' as ph;
 
 class LocationService {
   UserLocation? _currentLocation;
 
-  var location = Location();
+  Location location = Location();
 
   Future<UserLocation?> getLocation() async {
-    var userLocation;
+    LocationData userLocation;
     try {
-      userLocation = await location.getLocation();
+      userLocation = await fetchLocation();
+      _currentLocation = UserLocation(
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+      );
+
+      return _currentLocation;
     } on PlatformException catch (e) {
       var error = "";
       if (e.code == 'PERMISSION_DENIED') {
@@ -25,27 +30,19 @@ class LocationService {
         throw error;
       }
     }
-    _currentLocation = UserLocation(
-      latitude: userLocation.latitude,
-      longitude: userLocation.longitude,
-    );
-
-    return _currentLocation;
   }
 
   Future<UserLocation?> getLocationEndless() async {
-    var userLocation;
+    LocationData userLocation;
     try {
-      var error = "";
-      ph.PermissionStatus permissionStatus =
-          await ph.Permission.location.request();
+      userLocation = await fetchLocation();
 
-      if (permissionStatus == ph.PermissionStatus.granted) {
-        userLocation = await location.getLocation();
-      } else {
-        error = 'permission denied - please enable it from app settings';
-        throw error;
-      }
+      _currentLocation = UserLocation(
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+      );
+
+      return _currentLocation;
     } on PlatformException catch (e) {
       var error = "";
       if (e.code == 'PERMISSION_DENIED') {
@@ -59,11 +56,33 @@ class LocationService {
         throw error;
       }
     }
-    _currentLocation = UserLocation(
-      latitude: userLocation.latitude,
-      longitude: userLocation.longitude,
-    );
+  }
 
-    return _currentLocation;
+  fetchLocation() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _currentPosition;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _currentPosition = await location.getLocation();
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      _currentPosition = currentLocation;
+    });
+    return _currentPosition;
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -199,6 +200,7 @@ class PushNotificationService {
   static FirebaseMessaging _fcm = FirebaseMessaging.instance;
   static AuthService _auth = AuthService();
   static DatabaseHelper _db = DatabaseHelper();
+  StreamSubscription? streamListen;
 
   static final PushNotificationService _singleton =
       new PushNotificationService._internal();
@@ -253,7 +255,10 @@ class PushNotificationService {
     /// "body":"User Updated Order Status","title":"Order Update",
     /// "priority":"normal","actions":"\/orders\/52"}}
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    await streamListen?.cancel();
+
+    streamListen =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print("onMessage: ${message.data}");
       // creating notification from server payload
       Map<String, dynamic> notification = Platform.isIOS
@@ -511,6 +516,7 @@ class PushNotificationService {
 
     try {
       await FirebaseMessaging.instance.deleteToken();
+      await streamListen?.cancel();
     } catch (e) {
       debugPrint("logout error:- $e");
     }

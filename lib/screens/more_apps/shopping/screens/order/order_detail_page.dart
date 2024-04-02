@@ -124,14 +124,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   void initState() {
     order = arguments['order'];
-    statusOfOrder = order!.status!.toLowerCase();
-    statusOfOrderCopy = order!.status!.toLowerCase();
+    statusOfOrder = order?.status?.toLowerCase();
+    statusOfOrderCopy = order?.status?.toLowerCase();
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
     fetchOrder(order!.id.toString());
-    fetchJobData();
+    if (order?.journeyId != null) {
+      fetchJobData();
+    }
     super.initState();
   }
 

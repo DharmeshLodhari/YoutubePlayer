@@ -648,20 +648,20 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       title: widget.isLoading
           ? SizedBox.shrink()
           : userNameWithVerifiedIcon(
-              name: searchedUser!.displayName()!,
-              isVerified: searchedUser!.isVerified),
+              name: searchedUser?.displayName()!,
+              isVerified: searchedUser?.isVerified),
     );
   }
 
   Future<void> dispose() async {
     super.dispose();
-    scrollController!.dispose();
-    _tabController!.dispose();
-    _pageController!.dispose();
+    scrollController?.dispose();
+    _tabController?.dispose();
+    _pageController?.dispose();
 
-    scrollController!.removeListener(_scrollListener);
-    _tabController!.removeListener(_scrollListener);
-    _pageController!.removeListener(_scrollListener);
+    scrollController?.removeListener(_scrollListener);
+    _tabController?.removeListener(_scrollListener);
+    _pageController?.removeListener(_scrollListener);
   }
 
   refreshTabs(Map<String, bool> val) {
@@ -704,7 +704,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       reorderedBoolMap = val;
 
       if (mounted) setState(() {});
-      _tabController!.animateTo(0);
+      _tabController?.animateTo(0);
     }
   }
 
@@ -741,10 +741,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     scrollController?.addListener(_scrollListener);
 
     // Add a listener to the tab controller that updates the current index
-    _tabController!.addListener(tabController);
+    _tabController?.addListener(tabController);
 
     if (mounted) setState(() {});
-    _tabController!.animateTo(0);
+    _tabController?.animateTo(0);
   }
 
   Widget _buildCrawlingAlert() {

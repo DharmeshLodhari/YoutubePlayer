@@ -52,7 +52,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     searchedUser = widget.searchedUser!;
     isOwner = widget.isOwner;
 
-    Map<String, dynamic>? result = searchedUser!.profileMenu!.toJson();
+    Map<String, dynamic>? result = searchedUser?.profileMenu?.toJson();
 
     // Initialize a map to store boolean values
     var boolMap = <String, bool>{};
@@ -392,14 +392,14 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
       scrollController?.addListener(_scrollListener);
 
       // Add a listener to the tab controller that updates the current index
-      _tabController!.addListener(tabController);
+      _tabController?.addListener(tabController);
 
       //clear map and reassign
       reorderedBoolMap = {};
       reorderedBoolMap = val;
 
       if (mounted) setState(() {});
-      _tabController!.animateTo(0);
+      _tabController?.animateTo(0);
     }
   }
 }
