@@ -25,10 +25,10 @@ class MainSocketProvider extends ChangeNotifier {
 
   bool get isChatOnScreen => _isChatOnScreen;
 
-  static List<StreamSubscription?> _streamSubscriptions = [];
+  static final List<StreamSubscription?> _streamSubscriptions = [];
 
   /// Queue for the messages which users sends in to the socket
-  static List<String> _queueMessages = [];
+  static final List<String> _queueMessages = [];
 
   /// Variable for listening the internet connections
   static bool? _isNetworkConnectionIsOn;
@@ -56,16 +56,17 @@ class MainSocketProvider extends ChangeNotifier {
   static Timer? _timerForRetryConnection;
   static int _numberOfRetry = 30;
   static int _countRetry = 0;
-  static Duration _connectionRetryDuration = Duration(seconds: 3);
+  static final Duration _connectionRetryDuration = Duration(seconds: 3);
 
   User? get currentUser => _currentUser;
 
   /// ping server variables
   static Timer? _timerForPingServer;
-  static Duration _pingInterval = Duration(seconds: 2);
+  static final Duration _pingInterval = Duration(seconds: 2);
   static DateTime _lastSent = DateTime.now();
   static DateTime _lastReceive = DateTime.now();
-  static Duration _socketTimeout = Duration(seconds: Platform.isIOS ? 2 : 1);
+  static final Duration _socketTimeout =
+      Duration(seconds: Platform.isIOS ? 2 : 1);
   static int pingCount = 0;
 
   // set currentUser(User? value) {
