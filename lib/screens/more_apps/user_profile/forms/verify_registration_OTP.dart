@@ -18,7 +18,7 @@ import '../../payment_and_banking/payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class VerifyRegistrationOTPScreen extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   VerifyRegistrationOTPScreen({this.arguments});
 

@@ -24,7 +24,7 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
     var userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 3,
       child: Container(
@@ -32,7 +32,7 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: iconBtnGrey, width: 1)),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
             leading: RoundedBackgroundIcon(
               icon: Icon(

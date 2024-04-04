@@ -92,13 +92,13 @@ class ReadMoreTextState extends State<ReadMoreText> {
         effectiveTextStyle!.copyWith(color: colorClickableText);
     final _defaultDelimiterStyle = widget.delimiterStyle ?? effectiveTextStyle;
 
-    TextSpan link = TextSpan(
+    final TextSpan link = TextSpan(
       text: _readMore ? widget.trimCollapsedText : widget.trimExpandedText,
       style: _readMore ? _defaultMoreStyle : _defaultLessStyle,
       recognizer: TapGestureRecognizer()..onTap = _onTapLink,
     );
 
-    TextSpan _delimiter = TextSpan(
+    final TextSpan _delimiter = TextSpan(
       text: _readMore
           ? widget.trimCollapsedText.isNotEmpty
               ? widget.delimiter
@@ -122,7 +122,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
         );
 
         // Layout and measure link
-        TextPainter textPainter = TextPainter(
+        final TextPainter textPainter = TextPainter(
           text: link,
           textAlign: textAlign,
           textDirection: textDirection,
@@ -150,7 +150,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
           ));
           endIndex = textPainter.getOffsetBefore(pos.offset);
         } else {
-          var pos = textPainter.getPositionForOffset(
+          final pos = textPainter.getPositionForOffset(
             textSize.bottomLeft(Offset.zero),
           );
           endIndex = pos.offset;

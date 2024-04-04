@@ -93,7 +93,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              isSend ? Container() : Container(width: 20),
+              if (isSend) Container() else Container(width: 20),
               Container(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.75,
@@ -109,8 +109,8 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    topLeft: const Radius.circular(10),
+                    topRight: const Radius.circular(10),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -128,31 +128,32 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    widget.chatConversation!.isGroupConversation!
-                        ? widget.message!['author'] != userBloc.user.userName
-                            ? Column(
-                                children: [
-                                  Text(
-                                    widget.message!['author_full_name'] ??
-                                        widget.message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                ],
-                              )
-                            : Container(
-                                height: 0,
-                                width: 0,
-                              )
-                        : Container(
-                            height: 0,
-                            width: 0,
-                          ),
+                    if (widget.chatConversation!.isGroupConversation!)
+                      widget.message!['author'] != userBloc.user.userName
+                          ? Column(
+                              children: [
+                                Text(
+                                  widget.message!['author_full_name'] ??
+                                      widget.message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                              ],
+                            )
+                          : Container(
+                              height: 0,
+                              width: 0,
+                            )
+                    else
+                      Container(
+                        height: 0,
+                        width: 0,
+                      ),
                     Expanded(
                       child: Card(
                         margin: EdgeInsets.zero,
@@ -169,15 +170,15 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                                   alignment: Alignment.center,
                                   children: [
                                     ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10)),
                                       // child: momentForChatModel.video != null
                                       //     ? _buildVideoPlayer()
                                       //     : _buildImage(),
                                       child: _buildImage(),
                                     ),
                                     if (isLoading)
-                                      Align(
+                                      const Align(
                                         alignment: Alignment.center,
                                         child: CircularProgressIndicator(),
                                       ),
@@ -210,7 +211,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(width: 10),
+                                                const SizedBox(width: 10),
                                                 Expanded(
                                                   child: Text(
                                                     messageDecoderWithEmoji(
@@ -229,7 +230,7 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                                                 ),
                                               ],
                                             ),
-                                            SizedBox(height: 4),
+                                            const SizedBox(height: 4),
                                             Text(
                                               messageDecoderWithEmoji(
                                                       momentForChatModel
@@ -256,40 +257,43 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                   ],
                 ),
               ),
-              isSend
-                  ? Container(
-                      width: 20,
-                      child: isSend
-                          ? Center(
-                              child: getMessageTick(message: widget.message!),
-                            )
-                          : Container(),
-                    )
-                  : Container(),
+              if (isSend)
+                Container(
+                  width: 20,
+                  child: isSend
+                      ? Center(
+                          child: getMessageTick(message: widget.message!),
+                        )
+                      : Container(),
+                )
+              else
+                Container(),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           Row(
             mainAxisAlignment:
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              isSend
-                  ? Container()
-                  : SizedBox(
-                      width: 20,
-                    ),
+              if (isSend)
+                Container()
+              else
+                const SizedBox(
+                  width: 20,
+                ),
               Text(
                 formatTime(widget.message!['created_at']),
                 style: TextStyle(
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
-              isSend
-                  ? SizedBox(
-                      width: 20,
-                    )
-                  : Container(),
+              if (isSend)
+                const SizedBox(
+                  width: 20,
+                )
+              else
+                Container(),
             ],
           ),
         ],

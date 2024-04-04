@@ -125,7 +125,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -166,7 +166,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         ),
         body: SafeArea(
           child: Container(
-            padding: EdgeInsets.fromLTRB(10, 15, 10, 0),
+            padding: const EdgeInsets.fromLTRB(10, 15, 10, 0),
             child: Column(
               children: [
                 Align(
@@ -199,7 +199,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 isLoading
                     ? Expanded(
                         child: Center(
@@ -237,7 +237,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         itemSize: 15,
         allowHalfRating: true,
         itemCount: 5,
-        itemPadding: EdgeInsets.symmetric(horizontal: 2),
+        itemPadding: const EdgeInsets.symmetric(horizontal: 2),
         itemBuilder: (context, _) => Icon(
           SlydoAppIcon.star,
           color: starYellow,

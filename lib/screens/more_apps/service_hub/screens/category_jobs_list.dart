@@ -40,7 +40,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService().getActiveJobListing(
+        final result = await ServiceHubAuthService().getActiveJobListing(
             listNext, listPrevious,
             category: widget.categoryId);
 
@@ -57,7 +57,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
         listCount = result.count;
         listNext = result.next;
         listPrevious = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
         if (mounted) {
           setState(() {
             noJobsInList = false;
@@ -76,7 +76,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
         _jobScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -92,7 +92,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -140,40 +140,41 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
                 children: [
                   getJobsListData(),
                   const SizedBox(height: 16),
-                  isLoading
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                              mainAxisSpacing: 14,
-                              mainAxisExtent: 180,
-                              crossAxisSpacing: 15,
-                              maxCrossAxisExtent: 200,
+                  if (isLoading)
+                    Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: 14,
+                          mainAxisExtent: 180,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            itemCount: 2,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : SizedBox.shrink(),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
                   Visibility(
                     visible: !isLoading && activeListing.isEmpty,
                     child: Center(
                       child: Column(
                         children: [
                           Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                          SizedBox(height: 20),
-                          Text('No items at the moment'),
+                          const SizedBox(height: 20),
+                          const Text('No items at the moment'),
                         ],
                       ),
                     ),
@@ -189,14 +190,14 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
 
   Widget getJobsListData() {
     if (activeListing.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return listNext == "" && isLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : ListView.builder(
             itemCount: activeListing.length,
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10.0),
@@ -243,7 +244,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
       ),
       actions: [
         _filterBtn(),
-        SizedBox(
+        const SizedBox(
           width: 12,
         )
       ],

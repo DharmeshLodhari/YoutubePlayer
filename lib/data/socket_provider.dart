@@ -56,7 +56,7 @@ class MainSocketProvider extends ChangeNotifier {
   static Timer? _timerForRetryConnection;
   static int _numberOfRetry = 30;
   static int _countRetry = 0;
-  static final Duration _connectionRetryDuration = Duration(seconds: 3);
+  static final Duration _connectionRetryDuration = const Duration(seconds: 3);
 
   User? get currentUser => _currentUser;
 
@@ -177,7 +177,7 @@ class MainSocketProvider extends ChangeNotifier {
           _lastSent = DateTime.now();
 
           if (AppConfig.enableLogs.value)
-            print(
+            debugPrint(
                 "ping sent ${++pingCount} Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}!!");
           _isConnected = false;
         } else {

@@ -24,8 +24,9 @@ class _ChannelsListState extends State<ChannelsList> {
   bool isFirstTime = true;
   bool noItemInList = false;
   List<ChannelModel> channelModelList = [];
-  ScrollController _scrollCtrl = ScrollController();
-  RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
+  final ScrollController _scrollCtrl = ScrollController();
+  final RefreshController _refreshCtrl =
+      RefreshController(initialRefresh: false);
   BasePaginationModel<List<ChannelModel>>? basePaginationModel;
   TextEditingController searchTextCtrl = TextEditingController();
 
@@ -83,7 +84,7 @@ class _ChannelsListState extends State<ChannelsList> {
     });
   }
 
-  _onRefresh() {
+  void _onRefresh() {
     isFirstTime = true;
     channelModelList.clear();
     nextPageUrl = null;
@@ -113,40 +114,39 @@ class _ChannelsListState extends State<ChannelsList> {
           child: Column(
             children: [
               searchBox(),
-              SizedBox(height: 6),
-              noItemInList
-                  ? Expanded(
-                      child: NoItemInList(
-                          msg: AppLocalization.of(context)!.noChannels))
-                  : Expanded(
-                      child: ListView.builder(
-                        physics: ClampingScrollPhysics(),
-                        controller: _scrollCtrl,
-                        itemCount: channelModelList.length + 1,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (index == channelModelList.length) {
-                            return buildLoadingIndicator(isLoading: _isLoading);
-                          } else {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, Routes.USER_PROFILE,
-                                    arguments: {
-                                      "searchedUserName":
-                                          channelModelList[index].id,
-                                      "channel":
-                                          channelModelList[index].groupName,
-                                    });
-                              },
-                              child: CustomSlydoChannelCard(
-                                channelModel: channelModelList[index],
-                                tileRenderPlace: TileRenderPlace.Thiny,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
+              const SizedBox(height: 6),
+              if (noItemInList)
+                Expanded(
+                    child: NoItemInList(
+                        msg: AppLocalization.of(context)!.noChannels))
+              else
+                Expanded(
+                  child: ListView.builder(
+                    physics: const ClampingScrollPhysics(),
+                    controller: _scrollCtrl,
+                    itemCount: channelModelList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == channelModelList.length) {
+                        return buildLoadingIndicator(isLoading: _isLoading);
+                      } else {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, Routes.USER_PROFILE,
+                                arguments: {
+                                  "searchedUserName":
+                                      channelModelList[index].id,
+                                  "channel": channelModelList[index].groupName,
+                                });
+                          },
+                          child: CustomSlydoChannelCard(
+                            channelModel: channelModelList[index],
+                            tileRenderPlace: TileRenderPlace.Thiny,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
             ],
           ),
         ),
@@ -156,7 +156,7 @@ class _ChannelsListState extends State<ChannelsList> {
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
+      preferredSize: const Size.fromHeight(50.0),
       child: AppBar(
         backgroundColor: Colors.white,
         titleSpacing: 0,
@@ -192,7 +192,7 @@ class _ChannelsListState extends State<ChannelsList> {
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Theme(
           data: Theme.of(context).copyWith(
             textSelectionTheme: TextSelectionThemeData(
@@ -223,8 +223,8 @@ class _ChannelsListState extends State<ChannelsList> {
               hintText: 'Search...',
               fillColor: Colors.white,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefix: Padding(
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
                 padding: EdgeInsets.only(left: 12),
               ),
               suffixIcon: searchIcon(),

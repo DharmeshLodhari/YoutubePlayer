@@ -49,9 +49,9 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
         foregroundColor: Colors.black,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 10),
+            padding: const EdgeInsets.only(right: 10),
             child: IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               color: Colors.black,
               onPressed: () {
                 Navigator.pop(context);
@@ -62,7 +62,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
       ),
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.fromLTRB(10, 15, 10, 0),
+          padding: const EdgeInsets.fromLTRB(10, 15, 10, 0),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -70,7 +70,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       ClipRRect(
@@ -82,7 +82,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Text(
@@ -93,7 +93,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       Text(
@@ -107,11 +107,11 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 _buildUserReview(),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
               ],

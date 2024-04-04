@@ -37,7 +37,7 @@ class InvoiceBloc extends ChangeNotifier {
         _isLoading = true;
         notifyListeners();
 
-        Map<String, dynamic>? result = await businessAuth.getInvoiceList(
+        final Map<String, dynamic>? result = await businessAuth.getInvoiceList(
           next,
           previous,
           isSender: isSender,
@@ -52,7 +52,7 @@ class InvoiceBloc extends ChangeNotifier {
         next = result['next'];
         count = result['count'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         _isLoading = false;
         invoiceList.addAll(tempList);

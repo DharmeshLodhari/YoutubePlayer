@@ -82,13 +82,13 @@ Future showIconNotification(
     notifications.show(id, title, body, await _icon(context, icon));
 
 NotificationDetails get _noSound {
-  final androidChannelSpecifics = AndroidNotificationDetails(
+  final androidChannelSpecifics = const AndroidNotificationDetails(
     'silent channel id',
     'silent channel name',
     // 'silent channel description',
     playSound: false,
   );
-  final iOSChannelSpecifics = IOSNotificationDetails(presentSound: false);
+  final iOSChannelSpecifics = const IOSNotificationDetails(presentSound: false);
 
   return NotificationDetails(
       android: androidChannelSpecifics, iOS: iOSChannelSpecifics);
@@ -104,14 +104,14 @@ Future showSilentNotification(
         title: title, body: body, id: id, type: _noSound);
 
 NotificationDetails get _ongoing {
-  final androidChannelSpecifics = AndroidNotificationDetails(
+  final androidChannelSpecifics = const AndroidNotificationDetails(
     'slydo_notification',
     'simple_notification',
     // 'notification for simple messages',
     ongoing: true,
     autoCancel: true,
   );
-  final iOSChannelSpecifics = IOSNotificationDetails();
+  final iOSChannelSpecifics = const IOSNotificationDetails();
   return NotificationDetails(
       android: androidChannelSpecifics, iOS: iOSChannelSpecifics);
 }

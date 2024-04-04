@@ -26,9 +26,9 @@ class _ShareExperienceState extends State<ShareExperience> {
   KeyboardActionsConfig _buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
       keyboardActionsPlatform: KeyboardActionsPlatform.IOS,
-      keyboardBarColor: Color(0xFFC5C9D1),
+      keyboardBarColor: const Color(0xFFC5C9D1),
       nextFocus: false,
-      defaultDoneWidget: Text(
+      defaultDoneWidget: const Text(
         'Done',
         style: TextStyle(fontWeight: FontWeight.w500),
       ),
@@ -71,17 +71,17 @@ class _ShareExperienceState extends State<ShareExperience> {
         config: _buildConfig(context),
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0),
             child: Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _buildTitle(),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _buildNote(),
-                  SizedBox(height: 50),
+                  const SizedBox(height: 50),
                   _buildFeedbackTextField(),
                 ],
               ),

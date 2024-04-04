@@ -26,7 +26,7 @@ class PaymentRequestTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -35,7 +35,7 @@ class PaymentRequestTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                   dense: true,
                   leading: getLeading(),
@@ -78,7 +78,7 @@ class PaymentRequestTile extends StatelessWidget {
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) => paymentRequest!.avatar == ""
-                ? Icon(Icons.person)
+                ? const Icon(Icons.person)
                 : CircularLoadingIndicator(),
           ),
         ),
@@ -88,7 +88,7 @@ class PaymentRequestTile extends StatelessWidget {
 
   Widget getTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         getCustomerName(),
         maxLines: 1,
@@ -123,7 +123,9 @@ class PaymentRequestTile extends StatelessWidget {
               )
             : Container(),
         paymentRequest!.amount! >= amountLimit ? getTrailing() : Container(),
-        paymentRequest!.createdAt == null ? SizedBox() : getDateTime(context)
+        paymentRequest!.createdAt == null
+            ? const SizedBox()
+            : getDateTime(context)
       ],
     );
   }
@@ -190,7 +192,7 @@ class CardTransactionTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                 dense: true,
                 title: getTitle(),
@@ -214,7 +216,7 @@ class CardTransactionTile extends StatelessWidget {
 
   Widget getTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         "${transaction!.merchantName}",
         maxLines: 1,
@@ -305,7 +307,7 @@ class TransactionTile extends StatelessWidget {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -314,7 +316,7 @@ class TransactionTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                 dense: true,
                 title: getTitle(),
@@ -338,7 +340,7 @@ class TransactionTile extends StatelessWidget {
 
   Widget getTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         "${transaction!.displayCustomer}",
         maxLines: 1,
@@ -351,7 +353,7 @@ class TransactionTile extends StatelessWidget {
   Widget getLeading() {
     return transaction!.isAnonymous!
         ? Container(
-            padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+            padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
             child: Image.asset(
               "assets/images/anonymous.png",
               height: 48,
@@ -437,13 +439,13 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
         decoration: decorateBox(),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
             dense: true,
             title: getTitle(),
@@ -464,7 +466,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
 
   Widget getTitle() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Text(
         "${widget.transaction!.payee}",
         maxLines: 1,
@@ -478,7 +480,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
     return ClipOval(
       child: widget.transaction!.isAnonymous!
           ? Container(
-              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
               child: Image.asset(
                 "assets/images/anonymous.png",
                 height: 48,
@@ -496,7 +498,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
               placeholder: (context, url) => widget.transaction!.avatar == ""
-                  ? Icon(Icons.person)
+                  ? const Icon(Icons.person)
                   : CircularLoadingIndicator(),
             ),
     );

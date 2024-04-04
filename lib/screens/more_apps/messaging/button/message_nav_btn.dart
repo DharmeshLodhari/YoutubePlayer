@@ -3,8 +3,8 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:flutter/material.dart';
 
 class MessageNavBtn extends StatefulWidget {
   const MessageNavBtn({Key? key}) : super(key: key);
@@ -40,7 +40,7 @@ class _MessageNavBtnState extends State<MessageNavBtn> {
         badgeContent: getUnReadCount(count),
         position: badges.BadgePosition.topEnd(
             end: count.toString().length == 1 ? -5 : 0, top: 0),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -51,7 +51,7 @@ class _MessageNavBtnState extends State<MessageNavBtn> {
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
           padding: count == 0
-              ? EdgeInsets.all(0)
+              ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: count.toString().length == 1 ? 6 : 8,
                   right: 6,
@@ -81,7 +81,7 @@ class _MessageNavBtnState extends State<MessageNavBtn> {
     }
     return Text(
       count.toString(),
-      style: TextStyle(
+      style: const TextStyle(
           fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }

@@ -4,6 +4,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'get_connection_list_for_sharing.dart';
 
 /// For sharing items in the chat
@@ -17,11 +18,11 @@ class ShareInChat {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
-          ShareMessageToChatBloc shareMessageToChatBloc =
+          final ShareMessageToChatBloc shareMessageToChatBloc =
               Provider.of<ShareMessageToChatBloc>(context);
 
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -29,11 +30,11 @@ class ShareInChat {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.only(bottom: 18),
+                padding: const EdgeInsets.only(bottom: 18),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Row(
@@ -84,12 +85,12 @@ class ShareInChat {
                         //   ),
                         //   color: navyBlue,
                         // ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Expanded(child: GetUserConnectionList())
@@ -101,9 +102,9 @@ class ShareInChat {
 
   Future<List<ChatConversation?>> selectShareCustomer(
       BuildContext context) async {
-    var result = await selectUsersToShare(context);
+    final result = await selectUsersToShare(context);
 
-    ShareMessageToChatBloc shareMessageToChatBloc =
+    final ShareMessageToChatBloc shareMessageToChatBloc =
         Provider.of<ShareMessageToChatBloc>(context, listen: false);
 
     debugPrint("Result = $result");
@@ -111,9 +112,10 @@ class ShareInChat {
       shareMessageToChatBloc.clearRecipient();
       return [];
     } else {
-      List<ChatConversation?> tempList = shareMessageToChatBloc.getRecipients();
+      final List<ChatConversation?> tempList =
+          shareMessageToChatBloc.getRecipients();
 
-      List<ChatConversation?> recipientList = [];
+      final List<ChatConversation?> recipientList = [];
 
       if (tempList != null && tempList.isNotEmpty) {
         for (ChatConversation? conversation in tempList) {

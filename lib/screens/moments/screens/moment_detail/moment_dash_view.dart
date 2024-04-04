@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import '../../../../utils/colors.dart';
 
 class MomentDashView extends StatefulWidget {
@@ -9,7 +10,7 @@ class MomentDashView extends StatefulWidget {
   final int lengthOfMoment;
   final AnimationController controller;
   final PageController pageController;
-  double value;
+  final double value;
 
   MomentDashView(
       {Key? key,

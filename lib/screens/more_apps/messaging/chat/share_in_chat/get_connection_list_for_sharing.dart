@@ -14,9 +14,9 @@ class GetUserConnectionList extends StatefulWidget {
 
 class _GetUserConnectionListState extends State<GetUserConnectionList> {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   List<ChatConversation> connectionsList = [];
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   bool isLoading = false;
   bool noItemInList = false;
@@ -42,7 +42,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
             msg: "You Have No Connections",
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               vertical: 4,
             ),
             //+1 for progressbar
@@ -61,10 +61,10 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
             opacity: isLoading ? 1.0 : 00,
             child: isLoading ? CircularLoadingIndicator() : Container()),
       ),
@@ -72,7 +72,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   }
 
   void getList() async {
-    ConnectionListBloc _connectionListBloc =
+    final ConnectionListBloc _connectionListBloc =
         Provider.of<ConnectionListBloc>(context, listen: false);
 
     connectionsList.addAll(_connectionListBloc.connectionUsers);
@@ -178,7 +178,7 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
   Widget getTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: GestureDetector(

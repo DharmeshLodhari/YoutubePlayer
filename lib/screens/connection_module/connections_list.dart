@@ -37,15 +37,15 @@ class ConnectionList extends StatefulWidget {
 
 class _ConnectionListState extends State<ConnectionList> {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerContactsListKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";
   String? previous = "";
   List connectionsList = [];
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   bool isLoading = false;
   bool noItemInList = false;
@@ -58,7 +58,7 @@ class _ConnectionListState extends State<ConnectionList> {
   List<ChatConversation> searchedChatConnection = [];
 
   RefreshBlocForConnectionDashboard? _refreshBloc;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   AppConfigurationModel? appConfigurationModel;
 
@@ -111,14 +111,14 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   void fetchConnectionListFromDbIfAvailable() async {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        myGlobals.scaffoldKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(myGlobals.scaffoldKey.currentContext!,
+            listen: false);
 
     isLoading = true;
     if (mounted) setState(() {});
 
-    int result = await connectionListBloc.getConnectionsCount();
+    final int result = await connectionListBloc.getConnectionsCount();
     debugPrint("RESULT FROM CONNECTION LIST :- $result");
     if (result == 0) {
       isLoading = false;
@@ -142,16 +142,17 @@ class _ConnectionListState extends State<ConnectionList> {
         backgroundColor: Colors.white,
         body: GestureDetector(
           onTap: () {
-            FocusScope.of(context).requestFocus(new FocusNode());
+            FocusScope.of(context).requestFocus(FocusNode());
           },
           child: Column(
             children: [
               getSearchTextField(),
-              isUserIsSearching
-                  ? Expanded(child: getSearchedUserListUI())
-                  : Expanded(
-                      child: getRefreshIndicator(),
-                    ),
+              if (isUserIsSearching)
+                Expanded(child: getSearchedUserListUI())
+              else
+                Expanded(
+                  child: getRefreshIndicator(),
+                ),
             ],
           ),
         ),
@@ -193,14 +194,14 @@ class _ConnectionListState extends State<ConnectionList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18), color: navyBlue),
             child: JumpingText(
               'Syncing Messages ...',
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.w400),
@@ -236,7 +237,7 @@ class _ConnectionListState extends State<ConnectionList> {
         : Container(
             child: ListView.builder(
             shrinkWrap: true,
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               vertical: 4,
             ),
             //+1 for progressbar
@@ -252,7 +253,7 @@ class _ConnectionListState extends State<ConnectionList> {
   Widget getSearchTextField() {
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8),
       child: SearchTextField(
         hintText: "Search my contacts",
         hintStyle: TextStyle(
@@ -289,18 +290,18 @@ class _ConnectionListState extends State<ConnectionList> {
           : ListView.builder(
               shrinkWrap: true,
               // padding: EdgeInsets.symmetric(vertical: 4),
-              padding: EdgeInsets.only(bottom: 80.0),
+              padding: const EdgeInsets.only(bottom: 80.0),
               //+1 for progressbar
               itemCount: getConnectionListItemCount(),
               physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
               itemBuilder: (BuildContext context, int index) {
-                ChatConversation chatConversation =
+                final ChatConversation chatConversation =
                     _connectionListBloc.connectionUsers[index];
 
                 if (appConfigurationModel?.enableGroupChat == false) {
                   if (chatConversation.isGroupConversation!) {
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   }
                 }
                 return _getSlidableWithLists(
@@ -317,7 +318,7 @@ class _ConnectionListState extends State<ConnectionList> {
             )
           : ListView.builder(
               shrinkWrap: true,
-              padding: EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(vertical: 4),
               //+1 for progressbar
               itemCount: _connectionListBloc.connectionUsers.length,
               // physics: const BouncingScrollPhysics(
@@ -332,13 +333,13 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   void getList() async {
-    ConnectionListBloc connectionListBloc =
+    final ConnectionListBloc connectionListBloc =
         Provider.of<ConnectionListBloc>(context, listen: false);
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await UserAuth().contacts(next, previous);
         if (result == null) {
           isLoading = false;
@@ -348,11 +349,11 @@ class _ConnectionListState extends State<ConnectionList> {
         next = result['next'];
         previous = result['previous'];
 
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         debugPrint("List:- $tempList");
 
-        List<ChatConversation> users = [];
+        final List<ChatConversation> users = [];
 
         tempList.forEach(
             (element) => users.add(ChatConversation.fromJson(element)));
@@ -380,7 +381,7 @@ class _ConnectionListState extends State<ConnectionList> {
         _scaffoldMessengerContactsListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -391,7 +392,8 @@ class _ConnectionListState extends State<ConnectionList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessengerContactsListKey.currentState?.showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessengerContactsListKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {
@@ -402,7 +404,7 @@ class _ConnectionListState extends State<ConnectionList> {
     if (user.isGroupConversation!) {
       return [];
     }
-    CustomerProfile customerProfile =
+    final CustomerProfile customerProfile =
         CustomerProfile.fromChatConversation(user);
 
     return [
@@ -420,7 +422,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
   List<Widget> listActionSlideActions(
       ChatConversation chatConversation, int index) {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
     if (chatConversation.userName.toString().toLowerCase() == 'slydo') {
       return [];
@@ -444,7 +446,7 @@ class _ConnectionListState extends State<ConnectionList> {
       ];
     }
 
-    CustomerProfile customerProfile =
+    final CustomerProfile customerProfile =
         CustomerProfile.fromChatConversation(chatConversation);
 
     return [
@@ -461,7 +463,7 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   void blockUserAlert(CustomerProfile user) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -486,14 +488,14 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().blockUser(user);
+      final bool done = await UserAuth().blockUser(user);
       // done = true;
       if (done) {
         _showSnackBar(
             context,
             "${user.displayName()} " +
                 AppLocalization.of(context)!.isBlockedSuccessfully);
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
@@ -510,7 +512,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
   Future<void> exitTheGroupAlert(
       ChatConversation chatConversation, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -534,12 +536,12 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await MessageAuth()
+      final bool done = await MessageAuth()
           .exitFromGroup(conversationId: chatConversation.conversationId!);
       if (done) {
         _showSnackBar(context, "You left ${chatConversation.fullName}");
 
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: chatConversation.conversationId);
@@ -553,7 +555,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
   Future<void> removeFromConnectionUserAlert(
       CustomerProfile user, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -579,14 +581,14 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().removeFromContactList(user);
+      final bool done = await UserAuth().removeFromContactList(user);
       if (done) {
         _showSnackBar(
             context,
             "${user.displayName()} " +
                 AppLocalization.of(context)!.isRemovedSuccessfully);
 
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
@@ -603,11 +605,11 @@ class _ConnectionListState extends State<ConnectionList> {
       key: Key(user.userName ?? ''),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(user),
       actions: listActionSlideActions(user, index),
       secondaryActions: listSecondaryActions(user, index),
+      child: VerticalListItem(user),
     );
   }
 
@@ -642,7 +644,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         if (mounted) setState(() {});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: UserTileForConnection(user: widget.user),
       ),
     );

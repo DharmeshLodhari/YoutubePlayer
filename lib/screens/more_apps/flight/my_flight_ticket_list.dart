@@ -22,7 +22,7 @@ class _MyFlightTicketListState extends State<MyFlightTicketList> {
   List<Transport> transports = [];
   bool isLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -44,7 +44,7 @@ class _MyFlightTicketListState extends State<MyFlightTicketList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -110,7 +110,7 @@ class _MyFlightTicketListState extends State<MyFlightTicketList> {
             )
           : SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: transports
                       .map(
@@ -119,7 +119,7 @@ class _MyFlightTicketListState extends State<MyFlightTicketList> {
                             Navigator.of(context).pushNamed("/ticket-detail");
                           },
                           child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: FlightTicketTile(
                                 transport: element,
                               )),

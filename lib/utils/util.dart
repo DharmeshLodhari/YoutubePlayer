@@ -270,8 +270,8 @@ Future<String?> generateThumbNailFromVideo({required String videoPath}) async {
 
   if (videoInUnit8List != null) {
     final tempDir = await getTemporaryDirectory();
-    String uniqueId = const Uuid().v4();
-    File file = await File('${tempDir.path}/$uniqueId.jpg').create();
+    final String uniqueId = const Uuid().v4();
+    final File file = await File('${tempDir.path}/$uniqueId.jpg').create();
     //Example of file => File: '/data/user/0/com.slydo.slydo/cache/954e542e-c217-46d8-867c-cfcb8d2636ba.png'
     file.writeAsBytesSync(videoInUnit8List);
     return file.path;
@@ -288,8 +288,8 @@ Future<File?> generateThumbnailFromVideo({required String videoPath}) async {
 
   if (videoInUnit8List != null) {
     final tempDir = await getTemporaryDirectory();
-    String uniqueId = const Uuid().v4();
-    File file = await File('${tempDir.path}/$uniqueId.jpg').create();
+    final String uniqueId = const Uuid().v4();
+    final File file = await File('${tempDir.path}/$uniqueId.jpg').create();
     //Example of file => File: '/data/user/0/com.slydo.slydo/cache/954e542e-c217-46d8-867c-cfcb8d2636ba.png'
     file.writeAsBytesSync(videoInUnit8List);
     return file;
@@ -408,7 +408,7 @@ Future<dynamic> androidBottomSheet(
     required Widget child,
     bool enableDrag = true,
     bool isDismissible = true}) async {
-  var result = await showModalBottomSheet(
+  final result = await showModalBottomSheet(
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     context: context,
@@ -729,9 +729,9 @@ String getDayName({required int day}) {
 }
 
 String formatTime(String date) {
-  DateTime dateTime = DateTime.parse(date).toLocal();
+  final DateTime dateTime = DateTime.parse(date).toLocal();
 
-  String time = DateFormat("hh:mm a").format(dateTime);
+  final String time = DateFormat("hh:mm a").format(dateTime);
 
   return time;
 }
@@ -740,20 +740,20 @@ String formatDate(DateTime? dateTime) {
   if (dateTime == null) {
     return '';
   }
-  String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+  final String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
   return date;
 }
 
 String formatDateInTwoDigit(DateTime dateTime) {
-  String date =
+  final String date =
       "${dateTime.day.toString().padLeft(2, '0')} ${monthName[dateTime.month - 1]}, ${dateTime.year}";
 
   return date;
 }
 
 String formatDateInDigit(DateTime dateTime) {
-  String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+  final String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
   return date;
 }
@@ -770,8 +770,8 @@ String formatDurationInSeconds({Duration? duration}) {
 }
 
 String dateToString(DateTime date) {
-  var formatter = DateFormat('yyyy-MM-dd');
-  var formatted = formatter.format(date);
+  final formatter = DateFormat('yyyy-MM-dd');
+  final formatted = formatter.format(date);
   return formatted;
 }
 
@@ -781,9 +781,9 @@ String durationToString(Duration duration) {
     return "0$n";
   }
 
-  String twoDigitMinutes =
+  final String twoDigitMinutes =
       twoDigits(duration.inMinutes.remainder(Duration.minutesPerHour));
-  String twoDigitSeconds =
+  final String twoDigitSeconds =
       twoDigits(duration.inSeconds.remainder(Duration.secondsPerMinute));
   return "$twoDigitMinutes:$twoDigitSeconds";
 }
@@ -832,9 +832,9 @@ Widget getAmount(amount, currency, {double fontSize = 14}) {
 
 Widget getDateTime(BuildContext context, String dateTime,
     {double fontSize = 10, color}) {
-  DateTime transactionTime = DateTime.parse(dateTime).toLocal();
-  String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-  String time = DateFormat("hh:mm a").format(transactionTime);
+  final DateTime transactionTime = DateTime.parse(dateTime).toLocal();
+  final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+  final String time = DateFormat("hh:mm a").format(transactionTime);
   return Text(
     "$date • $time",
     softWrap: false,
@@ -854,13 +854,13 @@ void apiErrorHandler({String? error, BuildContext? context, int duration = 1}) {
 }
 
 int moneyInputNormalizer(String amount) {
-  double value = double.parse(amount) * 100;
+  final double value = double.parse(amount) * 100;
   // Format the money into integer as server store money in integer
   return value.toInt();
 }
 
 int moneyInputNormalizer2(String amount) {
-  double value = double.parse(amount) / 100;
+  final double value = double.parse(amount) / 100;
   // Format the money into integer as server store money in integer
   return value.toInt();
 }
@@ -870,9 +870,9 @@ String moneyDisplayNormalizer(int? amount) {
   // amount = 1050500;
 
   if (amount.toString().length >= 3) {
-    int amountLength = amount.toString().length;
+    final int amountLength = amount.toString().length;
 
-    int getLastTwoDigit =
+    final int getLastTwoDigit =
         int.parse(amount.toString().substring(amountLength - 2, amountLength));
 
     if (getLastTwoDigit > 0) {
@@ -902,7 +902,8 @@ int moneyDisplayNormalizerForGraph(int? amount) {
   // Format the money into double as server returns money in integer
   // amount = 1050500;
 
-  int formattedAmount = (double.parse(amount.toString()) / 100).truncate();
+  final int formattedAmount =
+      (double.parse(amount.toString()) / 100).truncate();
   return formattedAmount;
 }
 
@@ -922,7 +923,7 @@ Future<String> saveImage(BuildContext context, Image image) {
   image.image
       .resolve(const ImageConfiguration())
       .addListener(ImageStreamListener((imageInfo, _) async {
-    ByteData? byteData =
+    final ByteData? byteData =
         await imageInfo.image.toByteData(format: ImageByteFormat.png);
     if (byteData == null) return Future.error("ERROR while saving image");
     final pngBytes = byteData.buffer.asUint8List();
@@ -945,13 +946,13 @@ String generateHashedMessage(String input) {
 }
 
 Future<double> getAccountBalance() async {
-  Map<String, dynamic>? data =
+  final Map<String, dynamic>? data =
       await PaymentAndBankingAuth().getAccountBalance();
   if (data == null) return 0.0;
 
-  int spendableBalance = data["spendable_balance"];
+  final int spendableBalance = data["spendable_balance"];
 
-  double accountBalanceConverted = spendableBalance / 100;
+  final double accountBalanceConverted = spendableBalance / 100;
   debugPrint("ACCOUNT BALANCE:- $accountBalanceConverted");
 
   return accountBalanceConverted;
@@ -976,8 +977,8 @@ void showToast({BuildContext? context, String? message}) {
 }
 
 String? validateSlydoName(String userInput) {
-  String lowerCaseInput = userInput.toLowerCase();
-  String cleanName = lowerCaseInput
+  final String lowerCaseInput = userInput.toLowerCase();
+  final String cleanName = lowerCaseInput
       .replaceAll(".", "")
       .replaceAll(" ", "")
       .replaceAll("_", "")
@@ -1046,11 +1047,11 @@ String? checkSlydoName(String name) {
   String? result;
 
   if (name.isNotEmpty && name != "") {
-    String lowerCaseInput = name.trim().toLowerCase();
+    final String lowerCaseInput = name.trim().toLowerCase();
 
     debugPrint("ERROR lowerCaseInput:- $lowerCaseInput");
 
-    String cleanName = lowerCaseInput
+    final String cleanName = lowerCaseInput
         .replaceAll(".", "")
         .replaceAll(" ", "")
         .replaceAll("_", "")
@@ -1180,7 +1181,7 @@ Widget getClickableRatingBar(
 }
 
 Widget getRating({required int? numberOfRating, double starSize = 8}) {
-  List<Widget> widgets = [];
+  final List<Widget> widgets = [];
 
   for (int i = 1; i < 6; i++) {
     widgets.add(
@@ -1222,31 +1223,31 @@ Future<bool> doesFileExist(String filePath) async {
 // file already exists in the user's file system, so that each file name will
 // be unique.
 Future<String> makeFileName(String path, String fileName) async {
-  bool fileExists = await File('$path/$fileName').exists();
+  final bool fileExists = await File('$path/$fileName').exists();
 
   if (fileExists) {
     int counter = 1;
-    List newFileExt = fileName.split('.');
-    String ext = newFileExt[1]; // refers to the file extension.
+    final List newFileExt = fileName.split('.');
+    final String ext = newFileExt[1]; // refers to the file extension.
 
-    String fName = newFileExt[0];
+    final String fName = newFileExt[0];
 
     String newFileName = '$fName($counter).$ext';
 
     bool newFileExists = await File('$path/$newFileName').exists();
 
     while (newFileExists) {
-      List newFileExt = fileName.split('.');
+      final List newFileExt = fileName.split('.');
 
-      String ext = newFileExt[1];
+      final String ext = newFileExt[1];
 
       String fName = newFileExt[0];
 
       /// The regex here is used to get the last occurrence of something like this: (1)
       /// (opening and closing bracket with digit(s) inside). The reason for this is that
       /// it may happen that a file name itself contains (something like this) "(1)"
-      RegExp regExp = RegExp(r'\([0-9]+\)$');
-      String? stringMatch = regExp.stringMatch(fName);
+      final RegExp regExp = RegExp(r'\([0-9]+\)$');
+      final String? stringMatch = regExp.stringMatch(fName);
 
       if (stringMatch != null) {
         fName = fName.replaceAll(regExp, "(${counter + 1})");
@@ -1281,21 +1282,21 @@ Future<String> getLocalPathToSaveDownloads(
 
     return path;
   } else {
-    var directory = await pathProvider.getApplicationDocumentsDirectory();
+    final directory = await pathProvider.getApplicationDocumentsDirectory();
 
     return '${directory.path}/$uniqueFileName';
   }
 }
 
 Future<bool> checkStoragePermission() async {
-  var status = await Permission.storage.status;
+  final status = await Permission.storage.status;
 
   if (status.isGranted) {
     return true;
   } else if (status.isPermanentlyDenied) {
     openAppSettings();
   } else {
-    Map<Permission, PermissionStatus> permissions =
+    final Map<Permission, PermissionStatus> permissions =
         await [Permission.storage].request();
 
     if (permissions[Permission.storage] == PermissionStatus.granted) {
@@ -1344,7 +1345,7 @@ String? toTimeAgoLabel({required DateTime dateTime}) {
   //check for days
   if (inDays >= 1) {
     // return inDays.toString();
-    String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
+    final String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
     return convertedDate;
   }
 
@@ -1398,7 +1399,7 @@ String toTimeAgoLabelYarn({required DateTime dateTime}) {
   final inDays = durationSinceNow.inDays;
   if (inDays >= 1) {
     // return inDays.toString();
-    String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
+    final String convertedDate = DateFormat("dd/MM/yyyy").format(dateTime);
     return convertedDate;
   }
 
@@ -2413,7 +2414,7 @@ List<String> expiresList = [
 ];
 
 List<String> getAllStates() {
-  List<String> states = [];
+  final List<String> states = [];
 
   nigeriaStateAndLg.forEach((element) {
     states.add(element['state']);
@@ -2427,7 +2428,7 @@ List<String> getLgs({required String? state}) {
     return [];
   }
 
-  List<String> lgs = [];
+  final List<String> lgs = [];
   for (int i = 0; i < nigeriaStateAndLg.length; i++) {
     if (nigeriaStateAndLg[i]['state'] == state) {
       lgs.addAll(nigeriaStateAndLg[i]['lgas']);
@@ -2442,7 +2443,7 @@ List<String> getLga({required List<String>? states}) {
     return [];
   }
 
-  List<String> lgs = [];
+  final List<String> lgs = [];
   for (int i = 0; i < nigeriaStateAndLg.length; i++) {
     if (states.contains(nigeriaStateAndLg[i]['state'])) {
       lgs.addAll(nigeriaStateAndLg[i]['lgas']);
@@ -2463,8 +2464,8 @@ extension StringCasingExtension on String {
 }
 
 bool canCashOut(int amount, int accountBalance) {
-  int payoutCharge = 2500; //transaction charges in kobo
-  int minimumAccountBalance =
+  final int payoutCharge = 2500; //transaction charges in kobo
+  final int minimumAccountBalance =
       1000; //the minimum a user's account can have at any time in kobo
   int totalDeduction = 0;
   int balanceAfterTransaction = 0;
@@ -2481,8 +2482,8 @@ bool canCashOut(int amount, int accountBalance) {
 }
 
 int displayPossibleCashOutAmount(int accountBalance) {
-  int payoutCharge = 2500; //transaction charges in kobo
-  int minimumAccountBalance =
+  final int payoutCharge = 2500; //transaction charges in kobo
+  final int minimumAccountBalance =
       1000; //the minimum a user's account can have at any time in kobo
   int possibleSendOutAmount = 0;
 
@@ -2513,8 +2514,8 @@ Widget userImageUserInitialsPic(
       ),
     );
   } else {
-    String? url = image;
-    String imageUrl = url.replaceAll('https//', 'https://');
+    final String? url = image;
+    final String? imageUrl = url?.replaceAll('https//', 'https://');
 
     return Container(
       width: imageWidth,
@@ -2526,7 +2527,7 @@ Widget userImageUserInitialsPic(
         image: DecorationImage(
           fit: BoxFit.cover,
           image: CachedNetworkImageProvider(
-            imageUrl,
+            imageUrl ?? "",
           ),
         ),
       ),
@@ -2540,7 +2541,7 @@ bool canSendMoney(int? amount, String? limit) {
 }
 
 Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
-  bool? result = await showDialogBox(
+  final bool? result = await showDialogBox(
     context: context,
     roundedBackgroundIcon: RoundedBackgroundIcon(
       backgroundColor: mateRed.withOpacity(0.08),
@@ -2566,7 +2567,7 @@ Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
     // rightButtonOnPressed: Navigator.pop(context),
   );
   if (result != null && result) {
-    bool done = await UserAuth().blockUser(user);
+    final bool done = await UserAuth().blockUser(user);
 
     if (done) {
       showSnackbar(context,
@@ -2582,7 +2583,7 @@ Future<bool?> blockUserAlert(BuildContext context, CustomerProfile user) async {
 }
 
 Future<XFile?> selectSingleImageVideo() async {
-  XFile? file = await ImagePicker().pickMedia(
+  final XFile? file = await ImagePicker().pickMedia(
     maxWidth: 1800,
     maxHeight: 1800,
   );
@@ -2590,7 +2591,7 @@ Future<XFile?> selectSingleImageVideo() async {
 }
 
 Future<List<XFile>> selectMultipleImageVideo() async {
-  List<XFile> file = await ImagePicker().pickMultipleMedia(
+  final List<XFile> file = await ImagePicker().pickMultipleMedia(
     maxWidth: 1800,
     maxHeight: 1800,
   );

@@ -12,8 +12,8 @@ Widget attachmentWidget({
       onTap();
     },
     child: Container(
-      margin: EdgeInsets.only(right: 10),
-      padding: EdgeInsets.all(6),
+      margin: const EdgeInsets.only(right: 10),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
@@ -22,7 +22,7 @@ Widget attachmentWidget({
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(iconData, size: 18),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text(
             title,
             style: TextStyle(

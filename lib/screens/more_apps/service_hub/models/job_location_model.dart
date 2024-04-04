@@ -13,13 +13,13 @@ class JobLocationModel {
     if (json['results'] != null) {
       results = <LocationData>[];
       json['results'].forEach((v) {
-        results!.add(new LocationData.fromJson(v));
+        results!.add(LocationData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['count'] = this.count;
     data['next'] = this.next;
     data['previous'] = this.previous;
@@ -42,7 +42,7 @@ class LocationData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['slug'] = this.slug;
     data['name'] = this.name;
     return data;

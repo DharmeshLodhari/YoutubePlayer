@@ -5,7 +5,7 @@ import 'models/Ticket.dart';
 
 class BusAuthService extends AuthService {
   Future<List<Transport>> getAvailableTransports() async {
-    List<Transport> transport = List.generate(
+    final List<Transport> transport = List.generate(
         10,
         (index) => Transport.fromJson({
               "name": "Slydo Train",
@@ -18,12 +18,12 @@ class BusAuthService extends AuthService {
               "travel_time": "15 minutes",
               "currency": "NGN"
             }));
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return transport;
   }
 
   Future<List<Ticket>> getTicket() async {
-    List<Ticket> ticket = List.generate(
+    final List<Ticket> ticket = List.generate(
         10,
         (index) => Ticket.fromJson({
               "from": "Lagos",
@@ -36,7 +36,7 @@ class BusAuthService extends AuthService {
               "qr_code":
                   "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"
             }));
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return ticket;
   }
 }

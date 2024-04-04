@@ -33,7 +33,7 @@ class ShareManager {
   List<SharedMediaFile>? _sharedFiles;
   String? _sharedText;
   Timer? _timerForSharingDataListen;
-  Duration _refreshDurationInterval = Duration(seconds: 1);
+  Duration _refreshDurationInterval = const Duration(seconds: 1);
 
   void initializeShareManager() {
     _initializeMediaStream();
@@ -45,18 +45,14 @@ class ShareManager {
     // For sharing images coming from outside the app while the app is in the memory
     _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
         .listen((List<SharedMediaFile> value) {
-      print("ReceiveSharedMedia1:" + value.map((f) => f.path).join(","));
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
       }
-    }, onError: (err) {
-      print("getIntentDataStream error: $err");
-    });
+    }, onError: (err) {});
 
     // For sharing images coming from outside the app while the app is closed
     ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
-      print("ReceiveSharedMedia2:" + (value.map((f) => f.path).join(",")));
       _sharedFiles = value;
       if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
@@ -69,18 +65,14 @@ class ShareManager {
     // For sharing or opening urls/text coming from outside the app while the app is in the memory
     _intentDataStreamSubscription =
         ReceiveSharingIntent.getTextStream().listen((String value) {
-      print("ReceiveSharedText1: $value");
       _sharedText = value;
       if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
         initializeNavigationTimer();
       }
-    }, onError: (err) {
-      print("getLinkStream error: $err");
-    });
+    }, onError: (err) {});
 
     // For sharing or opening urls/text coming from outside the app while the app is closed
     ReceiveSharingIntent.getInitialText().then((String? value) {
-      print("ReceiveSharedText2: $value");
       _sharedText = value;
       if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
         initializeNavigationTimer();
@@ -108,8 +100,7 @@ class ShareManager {
       try {
         if (myGlobals.navigationKey.currentContext != null) {
           _timerForSharingDataListen!.cancel();
-          print("<====== Opening user list ======>");
-          RouteProvider routeProvider = Provider.of<RouteProvider>(
+          final RouteProvider routeProvider = Provider.of<RouteProvider>(
               myGlobals.navigationKey.currentContext!,
               listen: false);
 
@@ -118,19 +109,17 @@ class ShareManager {
             openPopup();
           }
         }
-      } catch (e) {
-        print("ShareContextException===>$e");
-      }
+      } catch (e) {}
     });
   }
 
   void openPopup() async {
     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
       debugPrint("ShareContext===> Text ===> $_sharedText");
-      String text = _sharedText!.trim();
+      final String text = _sharedText!.trim();
       _timerForSharingDataListen!.cancel();
       disposeSharedValue();
-      List<ChatConversation?> selectedUser = await ShareInChat()
+      final List<ChatConversation?> selectedUser = await ShareInChat()
           .selectShareCustomer(myGlobals.navigationKey.currentContext!);
 
       for (int i = 0; i < selectedUser.length; i++) {
@@ -138,11 +127,11 @@ class ShareManager {
       }
     } else if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
       debugPrint("ShareContext===> Media ===> $_sharedFiles");
-      List<SharedMediaFile> files = [];
+      final List<SharedMediaFile> files = [];
       files.addAll(_sharedFiles!);
       _timerForSharingDataListen!.cancel();
       disposeSharedValue();
-      List<ChatConversation?> selectedUser = await ShareInChat()
+      final List<ChatConversation?> selectedUser = await ShareInChat()
           .selectShareCustomer(myGlobals.navigationKey.currentContext!);
 
       for (int i = 0; i < selectedUser.length; i++) {
@@ -155,19 +144,19 @@ class ShareManager {
 
   Future<void> sendMediaMessage(ChatConversation? chatConversation,
       SharedMediaFile sharedMediaFile) async {
-    UserBloc userBloc = Provider.of<UserBloc>(
+    final UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
-    File file = File(sharedMediaFile.path);
+    final File file = File(sharedMediaFile.path);
 
-    String? mediaType = getFileKind(sharedMediaFile);
+    final String? mediaType = getFileKind(sharedMediaFile);
 
     if (mediaType == null) return;
 
-    Map<String, dynamic> _data = {};
+    final Map<String, dynamic> _data = {};
     _data['text'] = "";
-    _data['check_id'] = Uuid().v4();
+    _data['check_id'] = const Uuid().v4();
     _data['kind'] = mediaType;
     _data['read_by_author'] = true;
     _data['created_at'] = DateTime.now().toUtc().toString();
@@ -179,7 +168,7 @@ class ShareManager {
 
     File? poster;
     if (mediaType == "video") {
-      String? posterPath = await getVideoThumbnail(file);
+      final String? posterPath = await getVideoThumbnail(file);
 
       if (posterPath == null) return;
       poster = File(posterPath);
@@ -205,12 +194,12 @@ class ShareManager {
 
   Future<void> sendTextMessage(
       String message, ChatConversation chatConversation) async {
-    UserBloc userBloc = Provider.of<UserBloc>(
+    final UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
-    Map<String, dynamic> data = {
-      "check_id": Uuid().v4(),
+    final Map<String, dynamic> data = {
+      "check_id": const Uuid().v4(),
       "conversation_id": chatConversation.conversationId,
       "author": userBloc.user.userName,
       "author_full_name": userBloc.user.fullName,
@@ -232,7 +221,7 @@ class ShareManager {
       DBSocketMessageHandler()
           .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
-      ChatMessage chatMessage = convertToChatMessage(data);
+      final ChatMessage chatMessage = convertToChatMessage(data);
 
       await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
 
@@ -247,21 +236,22 @@ class ShareManager {
   void updateConnectionList(
       {required Map<String, dynamic> messageData, String? conversationId}) {
     if (messageData.containsKey("created_at")) {
-      DateTime dateTime = DateTime.parse(messageData["created_at"]).toLocal();
-      int time = dateTime.millisecondsSinceEpoch;
+      final DateTime dateTime =
+          DateTime.parse(messageData["created_at"]).toLocal();
+      final int time = dateTime.millisecondsSinceEpoch;
 
       debugPrint("Last message Time => $time");
 
-      ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-          myGlobals.scaffoldKey.currentContext!,
-          listen: false);
+      final ConnectionListBloc connectionListBloc =
+          Provider.of<ConnectionListBloc>(myGlobals.scaffoldKey.currentContext!,
+              listen: false);
       connectionListBloc.updateLastMessageTime(
           conversationId: conversationId, time: time);
     }
   }
 
   ChatMessage convertToChatMessage(Map<String, dynamic> data) {
-    Map<String, dynamic> newData = {};
+    final Map<String, dynamic> newData = {};
     newData["check_id"] = data["check_id"];
     newData["conversation"] = data["conversation_id"];
     newData["author"] = data["author"];

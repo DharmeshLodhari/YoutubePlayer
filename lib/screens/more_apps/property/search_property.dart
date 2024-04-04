@@ -33,13 +33,13 @@ class _SearchPropertyState extends State<SearchProperty> {
   String selectedSearch = "London";
 
   List<int> numberCount = List.generate(10, (index) => ++index);
-  RangeValues selectedPriceValue = RangeValues(20000, 50000);
+  RangeValues selectedPriceValue = const RangeValues(20000, 50000);
 
   List<bool> isForBuyOrRent = [true, false];
 
   List<PropertyItem> propertyList = [];
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   /// type of property filter variables
@@ -159,7 +159,7 @@ class _SearchPropertyState extends State<SearchProperty> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult("");
@@ -205,11 +205,11 @@ class _SearchPropertyState extends State<SearchProperty> {
       ),
       actions: <Widget>[
         locationChip(),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         filterPropertyBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -236,8 +236,8 @@ class _SearchPropertyState extends State<SearchProperty> {
 
   Widget locationChip() {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(60), color: iconBtnGrey),
       child: Row(
@@ -247,7 +247,7 @@ class _SearchPropertyState extends State<SearchProperty> {
             color: blackFont,
             size: 14,
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(
@@ -264,46 +264,46 @@ class _SearchPropertyState extends State<SearchProperty> {
     return Container(
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
           // searchBox(),
           searchBoxWithSuggestion(),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
-          isLoading
-              ? Expanded(
-                  child: Center(
-                    child: CircularLoadingIndicator(),
-                  ),
-                )
-              : propertyList.isEmpty
-                  ? Expanded(child: searchBackground())
-                  : Expanded(
-                      child: SmartRefresher(
-                        enablePullDown: true,
-                        header: WaterDropHeader(
-                          complete: Container(),
-                          waterDropColor: navyBlue,
-                        ),
-                        controller: _refreshController,
-                        onRefresh: _onRefresh,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: propertyList
-                                .map(
-                                  (element) => Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 16),
-                                      child:
-                                          RentPropertyTile(property: element)),
-                                )
-                                .toList(),
-                          ),
+          if (isLoading)
+            Expanded(
+              child: Center(
+                child: CircularLoadingIndicator(),
+              ),
+            )
+          else
+            propertyList.isEmpty
+                ? Expanded(child: searchBackground())
+                : Expanded(
+                    child: SmartRefresher(
+                      enablePullDown: true,
+                      header: WaterDropHeader(
+                        complete: Container(),
+                        waterDropColor: navyBlue,
+                      ),
+                      controller: _refreshController,
+                      onRefresh: _onRefresh,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: propertyList
+                              .map(
+                                (element) => Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 16),
+                                    child: RentPropertyTile(property: element)),
+                              )
+                              .toList(),
                         ),
                       ),
                     ),
+                  ),
         ],
       ),
     );
@@ -347,7 +347,7 @@ class _SearchPropertyState extends State<SearchProperty> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -379,8 +379,8 @@ class _SearchPropertyState extends State<SearchProperty> {
             hintText: "Search",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(
@@ -441,7 +441,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20)),
@@ -450,8 +450,8 @@ class _SearchPropertyState extends State<SearchProperty> {
                     margin: EdgeInsets.zero,
                     child: Container(
                       height: MediaQuery.of(context).size.height * 0.66,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 20),
                       child: Column(
                         children: [
                           Text(
@@ -461,7 +461,7 @@ class _SearchPropertyState extends State<SearchProperty> {
                                 fontWeight: FontWeight.w700,
                                 color: blackFont),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           Expanded(
@@ -471,7 +471,7 @@ class _SearchPropertyState extends State<SearchProperty> {
                                 children: <Widget>[
                                   buyOrRentSwitch(
                                       bottomSheetSetState: bottomSheetSetState),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 20,
                                   ),
                                   getHouseTypeRequirement(
@@ -498,7 +498,7 @@ class _SearchPropertyState extends State<SearchProperty> {
                                   getAmenityRequirement(
                                     bottomSheetSetState: bottomSheetSetState,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 20,
                                   ),
                                   Divider(
@@ -506,15 +506,15 @@ class _SearchPropertyState extends State<SearchProperty> {
                                     thickness: 1,
                                     color: dividerColor,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   getPriceSelection(bottomSheetSetState),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 50,
                                   ),
                                   getFilerSubmitButton(),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                 ],
@@ -559,12 +559,12 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget getDurationRequirement({StateSetter? bottomSheetSetState}) {
-    bool isForRent = isForBuyOrRent[1];
+    final bool isForRent = isForBuyOrRent[1];
     return !isForRent
         ? Container()
         : Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Divider(
@@ -572,7 +572,7 @@ class _SearchPropertyState extends State<SearchProperty> {
                 thickness: 1,
                 color: dividerColor,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               getChipsList(
@@ -608,7 +608,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         ? Container()
         : Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 12,
               ),
               Row(
@@ -657,7 +657,7 @@ class _SearchPropertyState extends State<SearchProperty> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Expanded(
@@ -716,14 +716,14 @@ class _SearchPropertyState extends State<SearchProperty> {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
+              const SizedBox(
                 height: 12,
               ),
               Text(
                 "Guest",
                 style: TextStyle(color: blackFont, fontSize: 14),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 6,
               ),
               Card(
@@ -732,7 +732,7 @@ class _SearchPropertyState extends State<SearchProperty> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(color: greyBorderColor)),
-                margin: EdgeInsets.all(0),
+                margin: const EdgeInsets.all(0),
                 borderOnForeground: true,
                 child: ListTile(
                   dense: true,
@@ -763,7 +763,8 @@ class _SearchPropertyState extends State<SearchProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -835,12 +836,12 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget getRoommatesRequirement({StateSetter? bottomSheetSetState}) {
-    bool isForRent = isForBuyOrRent[1];
+    final bool isForRent = isForBuyOrRent[1];
     return !isForRent
         ? Container()
         : Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Divider(
@@ -848,7 +849,7 @@ class _SearchPropertyState extends State<SearchProperty> {
                 thickness: 1,
                 color: dividerColor,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               getChipsList(
@@ -872,12 +873,12 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget getPetPolicyRequirement({StateSetter? bottomSheetSetState}) {
-    bool isForRent = isForBuyOrRent[1];
+    final bool isForRent = isForBuyOrRent[1];
     return !isForRent
         ? Container()
         : Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Divider(
@@ -885,7 +886,7 @@ class _SearchPropertyState extends State<SearchProperty> {
                 thickness: 1,
                 color: dividerColor,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               getChipsList(
@@ -911,7 +912,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   Widget getBedroomRequirement({StateSetter? bottomSheetSetState}) {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Divider(
@@ -919,7 +920,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           thickness: 1,
           color: dividerColor,
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         getChipsList(
@@ -960,7 +961,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   Widget getBathroomRequirement({StateSetter? bottomSheetSetState}) {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Divider(
@@ -968,7 +969,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           thickness: 1,
           color: dividerColor,
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         getChipsList(
@@ -1009,7 +1010,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   Widget getFurnitureRequirement({StateSetter? bottomSheetSetState}) {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Divider(
@@ -1017,7 +1018,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           thickness: 1,
           color: dividerColor,
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         getChipsList(
@@ -1043,7 +1044,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   Widget getAmenityRequirement({StateSetter? bottomSheetSetState}) {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Divider(
@@ -1051,7 +1052,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           thickness: 1,
           color: dividerColor,
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         getChipsList(
@@ -1131,7 +1132,7 @@ class _SearchPropertyState extends State<SearchProperty> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Wrap(
@@ -1165,10 +1166,6 @@ class _SearchPropertyState extends State<SearchProperty> {
                 height: 30,
                 width: (MediaQuery.of(context).size.width - 45) / 2),
             selectedBorderColor: navyBlue,
-            children: <Widget>[
-              buyButton(),
-              rentButton(),
-            ],
             isSelected: isForBuyOrRent,
             onPressed: (int index) {
               if (index == 0) {
@@ -1180,6 +1177,10 @@ class _SearchPropertyState extends State<SearchProperty> {
               }
               bottomSheetSetState!(() {});
             },
+            children: <Widget>[
+              buyButton(),
+              rentButton(),
+            ],
           ),
         ],
       ),
@@ -1227,20 +1228,20 @@ class _SearchPropertyState extends State<SearchProperty> {
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color: boxShadowTwo,
-                offset: Offset(0.0, 0.0),
+                offset: const Offset(0.0, 0.0),
                 blurRadius: 1.0,
               ),
             ],
             color: chipData.isSelected! ? navyBlue : Colors.white,
-            borderRadius: BorderRadius.all(
+            borderRadius: const BorderRadius.all(
               Radius.circular(10),
             ),
-            border: new Border.all(
+            border: Border.all(
                 color: chipData.isSelected! ? navyBlue : dividerColor,
                 width: 1.0,
                 style: BorderStyle.solid),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Text(
             chipData.name!,
             style: TextStyle(
@@ -1544,7 +1545,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         style: TextStyle(
             color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
       ),
-      SizedBox(
+      const SizedBox(
         height: 16,
       ),
       Container(
@@ -1559,7 +1560,8 @@ class _SearchPropertyState extends State<SearchProperty> {
                 rangeThumbShape: CustomRangeThumbShapeForProperty(
                     selectedPriceValue.start.toInt(),
                     selectedPriceValue.end.toInt()),
-                overlayShape: RoundSliderOverlayShape(overlayRadius: 12.0),
+                overlayShape:
+                    const RoundSliderOverlayShape(overlayRadius: 12.0),
                 minThumbSeparation: 30,
               ),
               child: RangeSlider(
@@ -1677,7 +1679,7 @@ class SelectedItemWidget extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.delete_outline, size: 22),
+            icon: const Icon(Icons.delete_outline, size: 22),
             color: Colors.grey[700],
             onPressed: deleteSelectedItem,
           ),
@@ -1696,7 +1698,7 @@ class MyTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -1730,8 +1732,8 @@ class MyTextField extends StatelessWidget {
             hintText: "Search",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(

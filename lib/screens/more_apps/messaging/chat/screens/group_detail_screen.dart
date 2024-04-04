@@ -26,7 +26,7 @@ import '../../../../../widget/dialog.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class GroupDetailScreen extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   GroupDetailScreen({this.arguments});
 
@@ -36,7 +36,7 @@ class GroupDetailScreen extends StatefulWidget {
 
 class _GroupDetailScreenState extends State<GroupDetailScreen> {
   final GlobalKey<ScaffoldState> _scaffoldGroupDetailScreen =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
   SlidableController? _slideController;
 
@@ -78,7 +78,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void determineMessageType(String message) async {
-    Map<String, dynamic> messageData = jsonDecode(message);
+    final Map<String, dynamic> messageData = jsonDecode(message);
 
     switch (messageData['type']) {
       case "group_conversation_admin_actions":
@@ -94,10 +94,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                   context, ModalRoute.withName(Routes.DASHBOARD));
             return;
           } else if (messageData['meta_data']['action'] == "remove_user") {
-            List users = messageData['meta_data']['users'];
+            final List users = messageData['meta_data']['users'];
             if (users.isEmpty) return;
             if (users.first == null || users.first == "") return;
-            String user = users.first.toString();
+            final String user = users.first.toString();
             if (user == userBloc.user.userName) {
               showToast(
                   message:
@@ -110,12 +110,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             }
           }
         }
-        UserBloc user = Provider.of<UserBloc>(
+        final UserBloc user = Provider.of<UserBloc>(
             MyGlobals().navigationKey.currentContext!,
             listen: false);
 
         if (messageData['meta_data']['author'] != user.user.userName) {
-          var result =
+          final result =
               ChatGroupActionManagerForLiveConversation(message: messageData)
                   .handleMessageAction(groupDetailModel: groupDetail);
 
@@ -195,7 +195,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           child: Row(
             children: [
               getUserIcon(),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Expanded(
@@ -219,7 +219,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   Widget getUserIcon() {
-    Color borderColor = getUserTypeColorByType(type: groupDetail!.type!);
+    final Color borderColor = getUserTypeColorByType(type: groupDetail!.type!);
 
     if (groupDetail!.avatar == null ||
         groupDetail!.avatar == "" ||
@@ -317,10 +317,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   List<Widget> getGroupActions() {
     if (groupDetail!.adminUsers.contains(userBloc.user.userName)) {
       return [
-        isLoading ? Container() : editGroupBtn(),
-        SizedBox(width: 8),
-        isLoading ? Container() : addUserToGroupBtn(),
-        SizedBox(
+        if (isLoading) Container() else editGroupBtn(),
+        const SizedBox(width: 8),
+        if (isLoading) Container() else addUserToGroupBtn(),
+        const SizedBox(
           width: 16,
         )
       ];
@@ -355,7 +355,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         color: blackFont,
       ),
       onTap: () async {
-        var result = await Navigator.of(context).pushNamed(
+        final result = await Navigator.of(context).pushNamed(
             Routes.UPDATE_NAME_AND_PROFILE_FOR_GROUP,
             arguments: {"groupDetail": groupDetail});
 
@@ -388,7 +388,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     return groupDetail!.description == ""
         ? Container()
         : Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -399,7 +399,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                       fontSize: 12,
                       fontWeight: FontWeight.w600),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Text(
@@ -416,15 +416,15 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           getGroupDescription(),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -448,7 +448,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Column(
@@ -458,7 +458,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                       MapEntry(index, getUserTile(index: index, user: value)))
                   .values
                   .toList()),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Divider(
@@ -466,11 +466,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             height: 0,
             thickness: 1,
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           getMuteNotificationTile(),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Divider(
@@ -478,7 +478,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             height: 0,
             thickness: 1,
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           _buildExitingGroup(),
@@ -500,7 +500,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void seeAllGroupMember() async {
-    var result = await Navigator.of(context).pushNamed(
+    final result = await Navigator.of(context).pushNamed(
         "/search-member-in-group",
         arguments: {"groupDetail": groupDetail});
 
@@ -515,7 +515,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   Widget getMuteNotificationTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -558,7 +558,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   Widget getDeleteGroupTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -582,7 +582,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             color: mateRed,
           ),
           onTap: () async {
-            bool? result = await showDialogBox(
+            final bool? result = await showDialogBox(
               context: context,
               actionOneBgColor: mateRed,
               actionOneTextColor: white,
@@ -610,7 +610,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   Widget getExitGroupTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -642,7 +642,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   Widget getUserTile({required Participant user, int? index}) {
-    CustomerProfile customerProfile = CustomerProfile(
+    final CustomerProfile customerProfile = CustomerProfile(
         fullName: user.fullName,
         avatar: user.avatar,
         userName: user.userName,
@@ -659,14 +659,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       key: UniqueKey(),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.20,
       fastThreshold: 1,
       showAllActionsThreshold: 0.6,
-      // movementDuration: Duration(milliseconds: 300),
-      child: VerticalListItem(user, groupDetail),
       actions: listActionSlideActions(user, index),
       secondaryActions: listSecondaryActions(user, index),
+      // movementDuration: Duration(milliseconds: 300),
+      child: VerticalListItem(user, groupDetail),
     );
   }
 
@@ -697,7 +697,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       isCurrentUserIsAdmin = true;
     }
 
-    List<Widget> leftSwipeActions = [];
+    final List<Widget> leftSwipeActions = [];
 
     if (isOwner || isCurrentUser) return leftSwipeActions;
 
@@ -786,7 +786,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       isCurrentUserIsAdmin = true;
     }
 
-    List<Widget> rightSwipeAction = [];
+    final List<Widget> rightSwipeAction = [];
 
     if (isOwner || isCurrentUser) return rightSwipeAction;
 
@@ -837,7 +837,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void removeParticipantFromAdmin(int index) {
-    Participant participant = groupDetail!.participants[index];
+    final Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .removeParticipantFromAdmin(
             conversationId: groupDetail!.conversationId!,
@@ -854,7 +854,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void makeParticipantAdmin(int index) {
-    Participant participant = groupDetail!.participants[index];
+    final Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .makeParticipantAdmin(
             conversationId: groupDetail!.conversationId!,
@@ -871,7 +871,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void muteParticipantFromGroup(int index) {
-    Participant participant = groupDetail!.participants[index];
+    final Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .muteParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -888,7 +888,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void unMuteParticipantFromGroup(int index) {
-    Participant participant = groupDetail!.participants[index];
+    final Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .unMuteParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -905,7 +905,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void blockParticipantFromGroup(int index) {
-    Participant participant = groupDetail!.participants[index];
+    final Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .blockParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -922,7 +922,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void unBlockParticipantFromGroup(int index) {
-    Participant participant = groupDetail!.participants[index];
+    final Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .unBlockParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -939,7 +939,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void removeParticipantFromGroup(int index) {
-    Participant participant = groupDetail!.participants[index];
+    final Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .removeParticipantFromGroup(
             conversationId: groupDetail!.conversationId!,
@@ -956,7 +956,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void addParticipantToGroup() async {
-    var selectedUsers = await Navigator.of(context)
+    final selectedUsers = await Navigator.of(context)
         .pushNamed("/select-user-for-group", arguments: {
       "isForAddingUserInGroup": true,
       "groupDetailModel": groupDetail
@@ -969,21 +969,19 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               users: selectedUsers as List<CustomerProfile>)
           .then((value) {
         if (value) {
-          if (selectedUsers is List<CustomerProfile>) {
-            List<Participant> usersAdded = [];
+          final List<Participant> usersAdded = [];
 
-            selectedUsers.forEach((element) {
-              usersAdded.add(Participant(
-                  avatar: element.avatar,
-                  fullName: element.displayName(),
-                  type: element.type,
-                  userName: element.userName));
-            });
+          selectedUsers.forEach((element) {
+            usersAdded.add(Participant(
+                avatar: element.avatar,
+                fullName: element.displayName(),
+                type: element.type,
+                userName: element.userName));
+          });
 
-            groupDetail!.participants.addAll(usersAdded);
-            showToast(message: "Users are added in group !!");
-            if (mounted) setState(() {});
-          }
+          groupDetail!.participants.addAll(usersAdded);
+          showToast(message: "Users are added in group !!");
+          if (mounted) setState(() {});
         }
       }).catchError((error) {
         debugPrint("ERROR:- $error");
@@ -992,7 +990,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void exitFromGroup() {
-    String? conversationId = groupDetail?.conversationId;
+    final String? conversationId = groupDetail?.conversationId;
 
     if (conversationId != null) {
       isExitingGroup = true;
@@ -1001,9 +999,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         isExitingGroup = false;
         if (mounted) setState(() {});
         if (value) {
-          ConnectionListBloc connectionListBloc =
+          final ConnectionListBloc connectionListBloc =
               Provider.of<ConnectionListBloc>(context, listen: false);
-          DashboardBloc dashboardBloc =
+          final DashboardBloc dashboardBloc =
               Provider.of<DashboardBloc>(context, listen: false);
           connectionListBloc.deleteChatConversation(
               conversationId: conversationId);
@@ -1023,7 +1021,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void deleteGroup() {
-    String? conversationId = groupDetail?.conversationId;
+    final String? conversationId = groupDetail?.conversationId;
 
     if (conversationId != null) {
       isExitingGroup = true;
@@ -1032,9 +1030,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         isExitingGroup = false;
         if (mounted) setState(() {});
         if (value) {
-          ConnectionListBloc connectionListBloc =
+          final ConnectionListBloc connectionListBloc =
               Provider.of<ConnectionListBloc>(context, listen: false);
-          DashboardBloc dashboardBloc =
+          final DashboardBloc dashboardBloc =
               Provider.of<DashboardBloc>(context, listen: false);
           connectionListBloc.deleteChatConversation(
               conversationId: conversationId);
@@ -1093,7 +1091,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
             : Slidable.of(context)?.close();
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: UserTileForGroupDetail(
             user: widget.user, groupDetail: widget.groupDetail),
       ),

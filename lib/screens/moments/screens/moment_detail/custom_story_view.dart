@@ -60,7 +60,7 @@ class Shiddo extends StoryItem {
     Duration? duration,
     MomentsModel? momentsModel,
   }) {
-    double contrast = ContrastHelper.contrast([
+    final double contrast = ContrastHelper.contrast([
       backgroundColor.red,
       backgroundColor.green,
       backgroundColor.blue,
@@ -80,7 +80,7 @@ class Shiddo extends StoryItem {
               bottom: Radius.circular(roundedBottom ? 8 : 0),
             ),
           ),
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 24,
             vertical: 16,
           ),
@@ -100,7 +100,7 @@ class Shiddo extends StoryItem {
           //color: backgroundColor,
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -133,10 +133,10 @@ class Shiddo extends StoryItem {
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(
+                    margin: const EdgeInsets.only(
                       bottom: 24,
                     ),
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 8,
                     ),
@@ -145,13 +145,13 @@ class Shiddo extends StoryItem {
                     child: caption != null
                         ? Text(
                             caption,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 15,
                               color: Colors.white,
                             ),
                             textAlign: TextAlign.center,
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ),
                 ),
               )
@@ -159,7 +159,7 @@ class Shiddo extends StoryItem {
           ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -180,6 +180,10 @@ class Shiddo extends StoryItem {
     return Shiddo(
         ClipRRect(
           key: key,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(roundedTop ? 8 : 0),
+            bottom: Radius.circular(roundedBottom ? 8 : 0),
+          ),
           child: Container(
             color: Colors.grey[100],
             child: Container(
@@ -193,13 +197,14 @@ class Shiddo extends StoryItem {
                     requestHeaders: requestHeaders,
                   ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 16),
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     child: Align(
                       alignment: Alignment.bottomLeft,
                       child: Container(
-                        child: caption == null ? SizedBox() : caption,
                         width: double.infinity,
+                        child: caption == null ? const SizedBox() : caption,
                       ),
                     ),
                   ),
@@ -207,13 +212,9 @@ class Shiddo extends StoryItem {
               ),
             ),
           ),
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(roundedTop ? 8 : 0),
-            bottom: Radius.circular(roundedBottom ? 8 : 0),
-          ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -244,17 +245,19 @@ class Shiddo extends StoryItem {
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(bottom: 24),
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    margin: const EdgeInsets.only(bottom: 24),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     color:
                         caption != null ? Colors.black54 : Colors.transparent,
                     child: caption != null
                         ? Text(
                             caption,
-                            style: TextStyle(fontSize: 15, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 15, color: Colors.white),
                             textAlign: TextAlign.center,
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ),
                 ),
               )
@@ -262,7 +265,7 @@ class Shiddo extends StoryItem {
           ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 10),
+        duration: duration ?? const Duration(seconds: 10),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -295,10 +298,10 @@ class Shiddo extends StoryItem {
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(
+                    margin: const EdgeInsets.only(
                       bottom: 24,
                     ),
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 8,
                     ),
@@ -307,13 +310,13 @@ class Shiddo extends StoryItem {
                     child: caption != null
                         ? Text(
                             caption,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 15,
                               color: Colors.white,
                             ),
                             textAlign: TextAlign.center,
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ),
                 ),
               )
@@ -321,7 +324,7 @@ class Shiddo extends StoryItem {
           ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 
@@ -350,24 +353,24 @@ class Shiddo extends StoryItem {
                 fit: BoxFit.cover,
               )),
           child: Container(
-            margin: EdgeInsets.only(
+            margin: const EdgeInsets.only(
               bottom: 16,
             ),
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: 24,
               vertical: 8,
             ),
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Container(
-                child: caption == null ? SizedBox() : caption,
                 width: double.infinity,
+                child: caption == null ? const SizedBox() : caption,
               ),
             ),
           ),
         ),
         shown: shown,
-        duration: duration ?? Duration(seconds: 3),
+        duration: duration ?? const Duration(seconds: 3),
         momentsModel: momentsModel ?? MomentsModel());
   }
 }
@@ -576,7 +579,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
       _beginPlay();
     } else {
       this._currentStory!.shown = false;
-      int lastPos = widget.storyItems.indexOf(this._currentStory);
+      final int lastPos = widget.storyItems.indexOf(this._currentStory);
       final previous = widget.storyItems[lastPos - 1]!;
 
       previous.shown = false;
@@ -601,7 +604,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
     } else {
       // this is the last page, progress animation should skip to end
       _animationController!
-          .animateTo(1.0, duration: Duration(milliseconds: 10));
+          .animateTo(1.0, duration: const Duration(milliseconds: 10));
     }
   }
 
@@ -617,7 +620,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
 
   void _holdNext() {
     _nextDebouncer?.cancel();
-    _nextDebouncer = Timer(Duration(milliseconds: 500), () {});
+    _nextDebouncer = Timer(const Duration(milliseconds: 500), () {});
   }
 
   @override
@@ -637,7 +640,7 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
                 bottom: widget.inline ? false : true,
                 // we use SafeArea here for notched and bezeles phones
                 child: Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 8,
                   ),
@@ -714,10 +717,10 @@ class StoryViewShiddoState extends State<StoryViewShiddo>
             alignment: Alignment.centerLeft,
             heightFactor: 1,
             child: SizedBox(
+                width: 70,
                 child: GestureDetector(onTap: () {
                   widget.controller.previous();
-                }),
-                width: 70),
+                })),
           ),
         ],
       ),
@@ -765,7 +768,7 @@ class PageBarState extends State<PageBar> {
   void initState() {
     super.initState();
 
-    int count = widget.pages.length;
+    final int count = widget.pages.length;
     spacing = (count > 15) ? 1 : ((count > 10) ? 2 : 4);
 
     widget.animation!.addListener(() {
@@ -774,7 +777,7 @@ class PageBarState extends State<PageBar> {
   }
 
   @override
-  void setState(fn) {
+  void setState(Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -852,7 +855,7 @@ class IndicatorOval extends CustomPainter {
     canvas.drawRRect(
         RRect.fromRectAndRadius(
             Rect.fromLTWH(0, 0, size.width * this.widthFactor, size.height),
-            Radius.circular(3)),
+            const Radius.circular(3)),
         paint);
   }
 
@@ -866,7 +869,7 @@ class IndicatorOval extends CustomPainter {
 class ContrastHelper {
   static double luminance(int? r, int? g, int? b) {
     final a = [r, g, b].map((it) {
-      double value = it!.toDouble() / 255.0;
+      final double value = it!.toDouble() / 255.0;
       return value <= 0.03928
           ? value / 12.92
           : pow((value + 0.055) / 1.055, 2.4);

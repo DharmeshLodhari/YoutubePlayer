@@ -157,7 +157,7 @@ class _MoreAppsState extends State<MoreApps> {
 
   Widget foregroundScreen() {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 20),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
       child: SingleChildScrollView(
         child: Column(
           children: getUserDashboardItem(),
@@ -191,7 +191,7 @@ class _MoreAppsState extends State<MoreApps> {
   }
 
   List<Widget> getUserDashboardItem() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     for (int i = 0; i < dashboardItems.length; i = i + 3) {
       items.add(Column(
@@ -199,7 +199,7 @@ class _MoreAppsState extends State<MoreApps> {
           Row(
             children: [
               Expanded(child: dashboardItems[i]),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Expanded(
@@ -208,7 +208,7 @@ class _MoreAppsState extends State<MoreApps> {
                       : Container(
                           height: GRID_ITEM_HEIGHT,
                         )),
-              SizedBox(
+              const SizedBox(
                 width: 12,
               ),
               Expanded(
@@ -219,7 +219,7 @@ class _MoreAppsState extends State<MoreApps> {
                         )),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
         ],

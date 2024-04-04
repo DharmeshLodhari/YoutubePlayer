@@ -35,54 +35,55 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    Widget uiTile =
+    final Widget uiTile =
         getUITileAccordingToMessageType(messageData: widget.messageData!);
 
-    return Container(padding: EdgeInsets.only(top: 8), child: uiTile);
+    return Container(padding: const EdgeInsets.only(top: 8), child: uiTile);
   }
 
   Widget getUITileAccordingToMessageType(
       {required Map<String, dynamic> messageData}) {
-    String? messageType = messageData["kind"];
+    final String? messageType = messageData["kind"];
     switch (messageType) {
       case "text":
-        Widget getMessageUi = renderMessage(message: messageData);
+        final Widget getMessageUi = renderMessage(message: messageData);
         return getMessageUi;
 
       case "image":
-        Widget getMessageUi = renderImageMedia(message: messageData);
+        final Widget getMessageUi = renderImageMedia(message: messageData);
         return getMessageUi;
 
       case "video":
-        Widget getMessageUi = renderVideoMedia(message: messageData);
+        final Widget getMessageUi = renderVideoMedia(message: messageData);
         return getMessageUi;
 
       case "audio":
-        Widget getMessageUi = renderAudioMedia(message: messageData);
+        final Widget getMessageUi = renderAudioMedia(message: messageData);
         return getMessageUi;
 
       case "transaction":
-        Widget getPaymentUI = renderSendPayment(message: messageData);
+        final Widget getPaymentUI = renderSendPayment(message: messageData);
         return getPaymentUI;
 
       case "payment-request":
-        Widget getPaymentUI = renderPaymentRequest(message: messageData);
+        final Widget getPaymentUI = renderPaymentRequest(message: messageData);
         return getPaymentUI;
 
       case "product":
-        Widget getProductUI = renderProduct(message: messageData);
+        final Widget getProductUI = renderProduct(message: messageData);
         return getProductUI;
 
       case "service":
-        Widget getServiceUI = renderService(message: messageData);
+        final Widget getServiceUI = renderService(message: messageData);
         return getServiceUI;
 
       case "user-profile":
-        Widget getUserProfileUI = renderUserProfile(message: messageData);
+        final Widget getUserProfileUI = renderUserProfile(message: messageData);
         return getUserProfileUI;
 
       case "user_location":
-        Widget getUserLocationUI = renderUserLocationUI(message: messageData);
+        final Widget getUserLocationUI =
+            renderUserLocationUI(message: messageData);
         return getUserLocationUI;
 
       case "gif_image":
@@ -90,23 +91,23 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           gifController = GifController(vsync: this);
           gifController!.value = 0;
         }
-        Widget getGIFImageUI = renderGIFImageUI(message: messageData);
+        final Widget getGIFImageUI = renderGIFImageUI(message: messageData);
         return getGIFImageUI;
 
       case "envelope":
-        Widget getEnvelopeUI = renderEnvelope(message: messageData);
+        final Widget getEnvelopeUI = renderEnvelope(message: messageData);
         return getEnvelopeUI;
       case "blog_post":
-        Widget getPostUI = renderPostUI(message: messageData);
+        final Widget getPostUI = renderPostUI(message: messageData);
         return getPostUI;
       case "job":
-        Widget getJobUI = renderJobService(message: messageData);
+        final Widget getJobUI = renderJobService(message: messageData);
         return getJobUI;
 
       default:
         debugPrint(
             "Unknown Message Kind 3: $messageType Message:- $messageData");
-        Widget getErrorRenderTypeUI = unKnownMessageType();
+        final Widget getErrorRenderTypeUI = unKnownMessageType();
         return getErrorRenderTypeUI;
     }
   }
@@ -119,7 +120,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -131,7 +132,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             maxLines: 1,
             softWrap: false,
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Text(
@@ -154,7 +155,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -167,7 +168,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               errorWidget: imageErrorWidget,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -184,7 +185,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -212,7 +213,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -226,7 +227,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   imageUrl: message["poster"],
                   errorWidget: imageErrorWidget,
                 ),
-                Positioned(
+                const Positioned(
                   top: 16,
                   left: 16,
                   child: Icon(
@@ -238,7 +239,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -255,7 +256,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -283,7 +284,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -295,7 +296,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
             maxLines: 1,
             softWrap: false,
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Text(
@@ -326,7 +327,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.only(left: 12),
+      padding: const EdgeInsets.only(left: 12),
       child: Row(
         children: [
           Expanded(
@@ -348,7 +349,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -378,55 +379,56 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
-          widget.chatConversation!.isGroupConversation!
-              ? Container(
-                  height: 50,
-                  width: 70,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned(
-                        left: 30,
-                        child: Container(
+          if (widget.chatConversation!.isGroupConversation!)
+            Container(
+              height: 50,
+              width: 70,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    left: 30,
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(color: navyBlue, width: 2)),
+                      child: ClipOval(
+                        child: CachedNetworkImage(
                           height: 40,
                           width: 40,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              border: Border.all(color: navyBlue, width: 2)),
-                          child: ClipOval(
-                            child: CachedNetworkImage(
-                              height: 40,
-                              width: 40,
-                              fit: BoxFit.fill,
-                              errorWidget: imageErrorWidget,
-                              imageUrl: message['to_customer_avatar'],
-                            ),
-                          ),
+                          fit: BoxFit.fill,
+                          errorWidget: imageErrorWidget,
+                          imageUrl: message['to_customer_avatar'],
                         ),
                       ),
-                      Container(
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: naturalGreen, width: 2)),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
                         height: 40,
                         width: 40,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(color: naturalGreen, width: 2)),
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            height: 40,
-                            width: 40,
-                            fit: BoxFit.fill,
-                            errorWidget: imageErrorWidget,
-                            imageUrl: message['from_customer_avatar'],
-                          ),
-                        ),
+                        fit: BoxFit.fill,
+                        errorWidget: imageErrorWidget,
+                        imageUrl: message['from_customer_avatar'],
                       ),
-                    ],
+                    ),
                   ),
-                )
-              : Container(
-                  width: 1,
-                  height: 1,
-                ),
+                ],
+              ),
+            )
+          else
+            Container(
+              width: 1,
+              height: 1,
+            ),
         ],
       ),
     );
@@ -448,7 +450,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.only(left: 12),
+      padding: const EdgeInsets.only(left: 12),
       child: Row(
         children: [
           Expanded(
@@ -470,7 +472,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -501,55 +503,56 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
-          widget.chatConversation!.isGroupConversation!
-              ? Container(
-                  height: 50,
-                  width: 70,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned(
-                        left: 30,
-                        child: Container(
+          if (widget.chatConversation!.isGroupConversation!)
+            Container(
+              height: 50,
+              width: 70,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    left: 30,
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(color: navyBlue, width: 2)),
+                      child: ClipOval(
+                        child: CachedNetworkImage(
                           height: 40,
                           width: 40,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              border: Border.all(color: navyBlue, width: 2)),
-                          child: ClipOval(
-                            child: CachedNetworkImage(
-                              height: 40,
-                              width: 40,
-                              fit: BoxFit.fill,
-                              errorWidget: imageErrorWidget,
-                              imageUrl: message['to_customer_avatar'],
-                            ),
-                          ),
+                          fit: BoxFit.fill,
+                          errorWidget: imageErrorWidget,
+                          imageUrl: message['to_customer_avatar'],
                         ),
                       ),
-                      Container(
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: naturalGreen, width: 2)),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
                         height: 40,
                         width: 40,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(color: naturalGreen, width: 2)),
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            height: 40,
-                            width: 40,
-                            fit: BoxFit.fill,
-                            errorWidget: imageErrorWidget,
-                            imageUrl: message['from_customer_avatar'],
-                          ),
-                        ),
+                        fit: BoxFit.fill,
+                        errorWidget: imageErrorWidget,
+                        imageUrl: message['from_customer_avatar'],
                       ),
-                    ],
+                    ),
                   ),
-                )
-              : Container(
-                  width: 1,
-                  height: 1,
-                ),
+                ],
+              ),
+            )
+          else
+            Container(
+              width: 1,
+              height: 1,
+            ),
         ],
       ),
     );
@@ -570,7 +573,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -583,7 +586,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               errorWidget: imageErrorWidget,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -600,7 +603,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -648,7 +651,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -661,7 +664,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               errorWidget: imageErrorWidget,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -678,7 +681,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -727,7 +730,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -740,7 +743,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               errorWidget: imageErrorWidget,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -757,7 +760,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Row(
@@ -799,7 +802,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
       customerProfile = CustomerProfile.fromJson(message['meta_data']);
     }
 
-    Color borderColor = getUserTypeColor(user: customerProfile);
+    final Color borderColor = getUserTypeColor(user: customerProfile);
 
     return Container(
       decoration: BoxDecoration(
@@ -808,7 +811,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           Container(
@@ -830,7 +833,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   errorWidget: imageErrorWidget,
                 ),
               )),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -847,7 +850,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -888,7 +891,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.only(left: 12),
+      padding: const EdgeInsets.only(left: 12),
       child: Row(
         children: <Widget>[
           ClipRRect(
@@ -904,7 +907,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               fit: BoxFit.fill,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -921,7 +924,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -936,55 +939,56 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
-          widget.chatConversation!.isGroupConversation!
-              ? Container(
-                  height: 50,
-                  width: 80,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned(
-                        left: 30,
-                        child: Container(
+          if (widget.chatConversation!.isGroupConversation!)
+            Container(
+              height: 50,
+              width: 80,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    left: 30,
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(color: navyBlue, width: 2)),
+                      child: ClipOval(
+                        child: CachedNetworkImage(
                           height: 40,
                           width: 40,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              border: Border.all(color: navyBlue, width: 2)),
-                          child: ClipOval(
-                            child: CachedNetworkImage(
-                              height: 40,
-                              width: 40,
-                              fit: BoxFit.fill,
-                              errorWidget: imageErrorWidget,
-                              imageUrl: message['to_customer_avatar'],
-                            ),
-                          ),
+                          fit: BoxFit.fill,
+                          errorWidget: imageErrorWidget,
+                          imageUrl: message['to_customer_avatar'],
                         ),
                       ),
-                      Container(
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: naturalGreen, width: 2)),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
                         height: 40,
                         width: 40,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(color: naturalGreen, width: 2)),
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            height: 40,
-                            width: 40,
-                            fit: BoxFit.fill,
-                            errorWidget: imageErrorWidget,
-                            imageUrl: message['from_customer_avatar'],
-                          ),
-                        ),
+                        fit: BoxFit.fill,
+                        errorWidget: imageErrorWidget,
+                        imageUrl: message['from_customer_avatar'],
                       ),
-                    ],
+                    ),
                   ),
-                )
-              : Container(
-                  width: 1,
-                  height: 1,
-                ),
+                ],
+              ),
+            )
+          else
+            Container(
+              width: 1,
+              height: 1,
+            ),
         ],
       ),
     );
@@ -998,7 +1002,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -1013,7 +1017,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               errorWidget: imageErrorWidget,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1030,7 +1034,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -1058,7 +1062,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -1071,7 +1075,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               image: NetworkImage(message["text"]),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -1088,7 +1092,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -1109,7 +1113,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
   }
 
   Widget renderPostUI({required Map<String, dynamic> message}) {
-    PostForChatModel post =
+    final PostForChatModel post =
         PostForChatModel.fromJson(jsonDecode(message['meta_data']));
     return Container(
       decoration: BoxDecoration(
@@ -1118,7 +1122,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
           left: BorderSide(width: 2.0, color: blackFont),
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
           ClipRRect(
@@ -1130,7 +1134,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               imageUrl: post.image!,
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1145,7 +1149,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   maxLines: 1,
                   softWrap: false,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(

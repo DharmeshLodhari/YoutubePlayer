@@ -4,6 +4,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
@@ -25,21 +26,21 @@ class RiderDeliveryAuthService extends AuthService {
 
     debugPrint('ALL Job URL ---> $url');
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      List<DeliveryModel> askCategories = [];
-      var jsonData = json.decode(response.body);
+      final List<DeliveryModel> askCategories = [];
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        DeliveryModel categories = DeliveryModel.fromJson(item);
+        final DeliveryModel categories = DeliveryModel.fromJson(item);
         askCategories.add(categories);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -69,21 +70,21 @@ class RiderDeliveryAuthService extends AuthService {
 
     debugPrint('My Job URL ---> $url');
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      List<DeliveryModel> askCategories = [];
-      var jsonData = json.decode(response.body);
+      final List<DeliveryModel> askCategories = [];
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
-        DeliveryModel categories = DeliveryModel.fromJson(item);
+        final DeliveryModel categories = DeliveryModel.fromJson(item);
         askCategories.add(categories);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -101,16 +102,18 @@ class RiderDeliveryAuthService extends AuthService {
   // Fetch a job
   Future<DeliveryModel?> fetchJob(String? journeyId) async {
     try {
-      String url =
+      final String url =
           "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/?user_current_location=6.6616402,3.6470794";
 
       debugPrint('Fetch Job URL ---> $url');
 
-      var headers = await getAuthHeaders();
-      var response = await httpGet(url, headers: headers);
+      final headers = await getAuthHeaders();
+      final response = await httpGet(url, headers: headers);
       debugPrint('Fetch Job URL BODY ---> ${response.body}');
 
-      print(response.statusCode);
+      if (kDebugMode) {
+        print(response.statusCode);
+      }
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
         return DeliveryModel.fromJson(jsonData);
@@ -120,10 +123,14 @@ class RiderDeliveryAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     } catch (err) {
       showToast(message: err.toString());
-      print(err);
+      if (kDebugMode) {
+        print(err);
+      }
     }
     return null;
   }
@@ -133,17 +140,17 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/accept-offer/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      final response = await httpPatch(url, headers: headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
+        final jsonResponse = jsonDecode(response.body);
         if (jsonResponse.containsKey("error")) {
           showToast(message: jsonResponse['error']);
           return false;
@@ -151,7 +158,6 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
       return false;
     }
   }
@@ -161,17 +167,17 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/reject-offer/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      final response = await httpPatch(url, headers: headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
+        final jsonResponse = jsonDecode(response.body);
         if (jsonResponse.containsKey("error")) {
           showToast(message: jsonResponse['error']);
           return false;
@@ -179,7 +185,6 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
       return false;
     }
   }
@@ -189,17 +194,17 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/start-journey/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      final response = await httpPatch(url, headers: headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
+        final jsonResponse = jsonDecode(response.body);
         if (jsonResponse.containsKey("error")) {
           showToast(message: jsonResponse['error']);
           return false;
@@ -207,7 +212,6 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
       return false;
     }
   }
@@ -217,17 +221,17 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    String url =
+    final String url =
         AppConfig.baseUrl + "/api/v1/shipping/journeys/$journeyId/end-journey/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      final response = await httpPatch(url, headers: headers);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
+        final jsonResponse = jsonDecode(response.body);
         if (jsonResponse.containsKey("error")) {
           showToast(message: jsonResponse['error']);
           return false;
@@ -235,7 +239,6 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
       return false;
     }
   }
@@ -245,24 +248,24 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/cancel-offer/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     //create multipart request for POST or PATCH method
-    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+    final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     request.fields["cancellation_reason"] = userChecked;
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
 
     try {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
-        var responseBody = await response.stream.bytesToString();
-        var jsonResponse = jsonDecode(responseBody);
+        final responseBody = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(responseBody);
         if (jsonResponse.containsKey("error")) {
           showToast(message: jsonResponse['error']);
           return false;
@@ -270,7 +273,6 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
       return false;
     }
   }
@@ -281,26 +283,26 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/update-current-location/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     //create multipart request for POST or PATCH method
-    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+    final request = http.MultipartRequest("PATCH", Uri.parse(url));
     debugPrint(
         "Location : ${currentP.longitude},${currentP.latitude},${currentP.heading}");
     request.fields["location"] = "${currentP.longitude},${currentP.latitude}";
     request.fields["dispatcher_heading"] = "${currentP.heading}";
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
 
     try {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
-        var responseBody = await response.stream.bytesToString();
-        var jsonResponse = jsonDecode(responseBody);
+        final responseBody = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(responseBody);
         if (jsonResponse.containsKey("error")) {
           showToast(message: jsonResponse['error']);
           return false;
@@ -308,7 +310,6 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
       return false;
     }
   }
@@ -318,24 +319,24 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/update-journey-route/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     //create multipart request for POST or PATCH method
-    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+    final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     request.fields["route"] = userChecked;
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
 
     try {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
-        var responseBody = await response.stream.bytesToString();
-        var jsonResponse = jsonDecode(responseBody);
+        final responseBody = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(responseBody);
         if (jsonResponse.containsKey("error")) {
           showToast(message: jsonResponse['error']);
           return false;
@@ -343,7 +344,6 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
       return false;
     }
   }
@@ -354,21 +354,21 @@ class RiderDeliveryAuthService extends AuthService {
     if (journeyId == null) {
       return false;
     }
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/send-delivery-evidence/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     //create multipart request for POST or PATCH method
-    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+    final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    http.MultipartFile? filePath =
+    final http.MultipartFile? filePath =
         await http.MultipartFile.fromPath("delivery_evidence", argument);
 
     //add multipart to request
-    request.files.add(filePath);
+    request.files.add(filePath!);
 
     headers.forEach((k, v) => request.headers[k] = v);
-    var response = await request.send();
+    final response = await request.send();
 
     if (response.statusCode == 413) {
       return Future.error(
@@ -379,8 +379,8 @@ class RiderDeliveryAuthService extends AuthService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
-        var responseBody = await response.stream.bytesToString();
-        var jsonResponse = jsonDecode(responseBody);
+        final responseBody = await response.stream.bytesToString();
+        final jsonResponse = jsonDecode(responseBody);
         if (jsonResponse.containsKey("error")) {
           showToast(message: jsonResponse['error']);
           return false;
@@ -388,27 +388,26 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
       return false;
     }
   }
 
   //Share Rider Experience
   Future<bool> shareExperience(String? journeyId, {Map? data}) async {
-    String url =
+    final String url =
         "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/send-journey-experience/";
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
     debugPrint('Order details ::: $_data');
 
-    var headers = await getAuthHeaders();
-    var response = await httpPost(url, headers: headers, body: _data);
+    final headers = await getAuthHeaders();
+    final response = await httpPost(url, headers: headers, body: _data);
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else if (response.statusCode == 400) {
-      var jsonResponse = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(response.body);
       if (jsonResponse.containsKey("error")) {
         showToast(message: jsonResponse['error']);
         return false;
@@ -420,16 +419,15 @@ class RiderDeliveryAuthService extends AuthService {
   // Fetch a rider location
   Future<Map<String, dynamic>?> fetchRiderLocation(String? journeyId) async {
     try {
-      String url =
+      final String url =
           "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId?location_only=true";
 
       debugPrint('Fetch rider location URL ---> $url');
 
-      var headers = await getAuthHeaders();
-      var response = await httpGet(url, headers: headers);
+      final headers = await getAuthHeaders();
+      final response = await httpGet(url, headers: headers);
       debugPrint('Fetch rider location URL BODY ---> ${response.body}');
 
-      print(response.statusCode);
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
         return jsonData;
@@ -439,10 +437,8 @@ class RiderDeliveryAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
-      print(e);
     } catch (err) {
       showToast(message: err.toString());
-      print(err);
     }
     return null;
   }

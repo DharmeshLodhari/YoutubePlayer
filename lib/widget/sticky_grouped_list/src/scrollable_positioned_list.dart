@@ -273,7 +273,8 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
   @override
   void initState() {
     super.initState();
-    ItemPosition? initialPosition = PageStorage.of(context)!.readState(context);
+    final ItemPosition? initialPosition =
+        PageStorage.of(context)!.readState(context);
     primary.target = initialPosition?.index ?? widget.initialScrollIndex;
     primary.alignment =
         initialPosition?.itemLeadingEdge ?? widget.initialAlignment;
@@ -347,7 +348,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
   }
 
   List<Widget> getItems({double? cacheExtent}) {
-    List<Widget> items = [
+    final List<Widget> items = [
       PostMountCallback(
         key: primary.key,
         callback: startAnimationCallback,
@@ -622,7 +623,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
       if (opacity.value >= 0.5) {
         // Secondary [ListView] is more visible than the primary; make it the
         // new primary.
-        var temp = primary;
+        final temp = primary;
         primary = secondary;
         secondary = temp;
       }
@@ -649,7 +650,7 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
       if (opacity.value >= 0.5) {
         // Secondary [ListView] is more visible than the primary; make it the
         // new primary.
-        var temp = primary;
+        final temp = primary;
         primary = secondary;
         secondary = temp;
       }

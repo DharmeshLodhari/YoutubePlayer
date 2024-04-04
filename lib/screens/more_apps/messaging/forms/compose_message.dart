@@ -28,15 +28,15 @@ class ComposeMessage extends StatefulWidget {
 }
 
 class _ComposeMessageState extends State<ComposeMessage> {
-  var arguments;
+  final dynamic arguments;
 
   late DashboardBloc _dashboardBloc;
 
   _ComposeMessageState({this.arguments});
 
-  TextEditingController _recipientController = TextEditingController();
-  TextEditingController _subjectController = TextEditingController();
-  FocusNode _recipientFocus = FocusNode();
+  final TextEditingController _recipientController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final FocusNode _recipientFocus = FocusNode();
 
   bool isValidRecipient = false;
   bool isReplyMessage = false;
@@ -80,7 +80,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   void fetchCustomer() async {
     print('recipient:::: $recipient');
-    var customerProfile = await UserAuth().fetchCustomerProfile(recipient);
+    final customerProfile = await UserAuth().fetchCustomerProfile(recipient);
 
     messageReceiver = customerProfile;
     isValidRecipient = messageReceiver!.userName != userBloc.user.userName;
@@ -153,7 +153,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           children: [
             Expanded(
@@ -176,7 +176,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                         getDisplayCard(),
                         Expanded(
                             child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
                             children: [
                               flexibleSpace(),
@@ -188,7 +188,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                               flexibleSpace(),
                               Text(
                                 errorMessage,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Colors.red,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16),
@@ -258,7 +258,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
               context: context,
               builder: (context) => Center(child: CircularLoadingIndicator()));
           try {
-            var data = {
+            final data = {
               "sender": userBloc.user.userName,
               "recipient": _recipientController.text.trim(),
               "body": message.trim(),
@@ -278,7 +278,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                 }
               } else {
                 Navigator.pop(context);
-                var msg = AppLocalization.of(context)!.error;
+                final msg = AppLocalization.of(context)!.error;
                 showToast(message: msg);
               }
             });
@@ -288,19 +288,19 @@ class _ComposeMessageState extends State<ComposeMessage> {
           }
         } else {
           showToast(message: '1');
-          var msg = AppLocalization.of(context)!.invalidRecipient;
+          final msg = AppLocalization.of(context)!.invalidRecipient;
           showToast(message: msg);
         }
       }
     } else {
-      var msg = AppLocalization.of(context)!.invalidRecipient;
+      final msg = AppLocalization.of(context)!.invalidRecipient;
       showToast(message: msg);
     }
   }
 
   Widget sendMessage() {
     return IconButton(
-        icon: Icon(Icons.send),
+        icon: const Icon(Icons.send),
         onPressed: () {
           if (!isValidRecipient) {
             setState(() {
@@ -325,7 +325,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                     context: context,
                     builder: (context) => CircularLoadingIndicator());
                 try {
-                  var data = {
+                  final data = {
                     "sender": userBloc.user.userName,
                     "recipient": _recipientController.text.trim(),
                     "body": message.trim(),
@@ -340,7 +340,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                       );
                     } else {
                       Navigator.pop(context);
-                      var msg = AppLocalization.of(context)!.error;
+                      final msg = AppLocalization.of(context)!.error;
                       showToast(message: msg);
                     }
                   });
@@ -349,12 +349,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
                   showToast(message: e.toString());
                 }
               } else {
-                var msg = AppLocalization.of(context)!.invalidRecipient;
+                final msg = AppLocalization.of(context)!.invalidRecipient;
                 showToast(message: msg);
               }
             }
           } else {
-            var msg = AppLocalization.of(context)!.invalidRecipient;
+            final msg = AppLocalization.of(context)!.invalidRecipient;
             showToast(message: msg);
           }
         });
@@ -362,7 +362,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -373,7 +373,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
     var avatarImage;
     var qrCodeImage;
     if (messageReceiver != null) {
-      Color borderColor = getUserTypeColor(user: messageReceiver!);
+      final Color borderColor = getUserTypeColor(user: messageReceiver!);
 
       avatarImage = Container(
         height: 48,
@@ -415,12 +415,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
         : Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
                     messageReceiver!.displayName()!,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
@@ -472,8 +472,8 @@ class _ComposeMessageState extends State<ComposeMessage> {
         });
       },
       onTap: () async {
-        CustomerProfile? userFound =
-            await NavigationUtil.push(context, screen: SearchUser());
+        final CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: const SearchUser());
 
         if (userFound != null) {
           messageReceiver = userFound;

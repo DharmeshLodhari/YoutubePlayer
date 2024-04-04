@@ -18,7 +18,7 @@ class _MyWishListState extends State<MyWishList> {
   List<PartialEventItem> eventList = [];
 
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   void getResult() async {
@@ -40,7 +40,7 @@ class _MyWishListState extends State<MyWishList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -73,12 +73,12 @@ class _MyWishListState extends State<MyWishList> {
               onRefresh: _onRefresh,
               child: SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     children: eventList
                         .map(
                           (element) => Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: EventTileWithHeart(
                                 partialEvent: element,
                               )),

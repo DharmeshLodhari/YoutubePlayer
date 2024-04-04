@@ -12,9 +12,9 @@ import 'package:path_provider/path_provider.dart';
 class CacheManager {
   void deleteCache({bool clearAll = false}) async {
     final Directory tempDir = await getTemporaryDirectory();
-    List<FileSystemEntity> list =
+    final List<FileSystemEntity> list =
         tempDir.listSync(followLinks: false, recursive: clearAll);
-    List<FileSystemEntity> temp = [];
+    final List<FileSystemEntity> temp = [];
     list.forEach((element) {
       if (element is File) {
         temp.add(element);

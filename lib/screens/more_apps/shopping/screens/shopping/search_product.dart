@@ -15,7 +15,7 @@ import '../../../user_profile/models/search_user_item_with_filter.dart';
 import '../../models/store.dart';
 
 class SearchProduct extends StatefulWidget {
-  dynamic arguments;
+  final dynamic arguments;
   SearchProduct({Key? key, this.arguments}) : super(key: key);
 
   @override

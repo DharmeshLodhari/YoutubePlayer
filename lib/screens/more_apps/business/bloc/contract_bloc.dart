@@ -1,5 +1,5 @@
 import 'package:Slydo/screens/more_apps/business/business_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../utils/enums.dart';
 import '../models/Contract.dart';
@@ -36,7 +36,7 @@ class ContractBloc extends ChangeNotifier {
         _isLoading = true;
         notifyListeners();
 
-        Map<String, dynamic>? result = await businessAuth.getContractList(
+        final Map<String, dynamic>? result = await businessAuth.getContractList(
           next,
           isContractor: isContractor,
           contractStatus: contractStatus,
@@ -50,16 +50,20 @@ class ContractBloc extends ChangeNotifier {
 
         next = result['next'];
         count = result['count'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         _isLoading = false;
         contractList.addAll(tempList);
         notifyListeners();
 
-        print('CONTRACT LENGTH :: ${contractList.length}');
+        if (kDebugMode) {
+          print('CONTRACT LENGTH :: ${contractList.length}');
+        }
 
         if (isFirstTime && next != null && next != "") {
-          print('NEXT :::: $next');
+          if (kDebugMode) {
+            print('NEXT :::: $next');
+          }
           isFirstTime = false;
           getContractList(contractStatus: contractStatus);
         }

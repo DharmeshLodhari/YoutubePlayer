@@ -18,7 +18,7 @@ class Bedroom {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['four_plus'] = this.fourPlus;
     data['one'] = this.one;
     data['studio'] = this.studio;

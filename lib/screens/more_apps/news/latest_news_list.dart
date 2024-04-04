@@ -82,16 +82,17 @@ class _LatestNewsListState extends State<LatestNewsList> {
             onRefresh: _onRefresh,
             child: SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.only(top: 32),
+                padding: const EdgeInsets.only(top: 32),
                 child: Column(
                     children: newsListItem
                         .map((news) => GestureDetector(
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 child: Column(
                                   children: [
                                     NewsTile(newsListItem: news),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 16,
                                     )
                                   ],

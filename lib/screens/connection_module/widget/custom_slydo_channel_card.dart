@@ -178,7 +178,7 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                                               : 15),
                                 ),
                                 if (widget.channelModel?.isMember == false) ...[
-                                  SizedBox(width: 20),
+                                  const SizedBox(width: 20),
                                   Text(
                                     '${getFormattedViewCount(
                                       noOfViews:

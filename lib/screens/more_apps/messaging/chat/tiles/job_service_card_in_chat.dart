@@ -3,9 +3,11 @@ import 'dart:developer';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../../data/state_notifier.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/util.dart';
@@ -29,9 +31,11 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
   Map<String, dynamic>? authorData;
 
   String getTimeDifference(String date) {
-    var difference = DateTime.now().difference(DateTime.parse(date));
+    final difference = DateTime.now().difference(DateTime.parse(date));
     String time = '';
-    print(difference.toString() + '-----');
+    if (kDebugMode) {
+      print(difference.toString() + '-----');
+    }
 
     if (difference > const Duration(hours: 24)) {
       time = difference.inDays.toString() + ' days';
@@ -61,7 +65,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
 
     jobServiceToChatModel = JobServiceToChatModel.fromJson(data!);
 
-    bool isSend = widget.jobMessage['author'] == userBloc.user.userName;
+    final bool isSend = widget.jobMessage['author'] == userBloc.user.userName;
 
     return GestureDetector(
       onTap: () =>
@@ -77,7 +81,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              isSend ? Container() : Container(width: 20),
+              if (isSend) Container() else Container(width: 20),
               Container(
                 constraints: BoxConstraints(
                     maxWidth: MediaQuery.of(context).size.width / 1.30,
@@ -132,7 +136,8 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                                     color: jobServiceToChatModel?.status ==
                                             'closed'.toLowerCase()
                                         ? Colors.red.withOpacity(.4)
-                                        : Color(0xff46ce7c).withOpacity(.4)),
+                                        : const Color(0xff46ce7c)
+                                            .withOpacity(.4)),
                                 child: Text(
                                   jobServiceToChatModel?.status ?? '',
                                   style: TextStyle(
@@ -231,41 +236,43 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
                       )
                     ]),
               ),
-              isSend
-                  ? Container(
-                      width: 20,
-                      child: isSend
-                          ? Center(
-                              child:
-                                  getMessageTick(message: widget.jobMessage!),
-                            )
-                          : Container(),
-                    )
-                  : Container(),
+              if (isSend)
+                Container(
+                  width: 20,
+                  child: isSend
+                      ? Center(
+                          child: getMessageTick(message: widget.jobMessage!),
+                        )
+                      : Container(),
+                )
+              else
+                Container(),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 1,
           ),
           Row(
             mainAxisAlignment:
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              isSend
-                  ? Container()
-                  : SizedBox(
-                      width: 20,
-                    ),
+              if (isSend)
+                Container()
+              else
+                const SizedBox(
+                  width: 20,
+                ),
               Text(
                 formatTime(jobServiceToChatModel!.creationDate!),
                 style: TextStyle(
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
-              isSend
-                  ? SizedBox(
-                      width: 20,
-                    )
-                  : Container(),
+              if (isSend)
+                const SizedBox(
+                  width: 20,
+                )
+              else
+                Container(),
             ],
           )
         ],

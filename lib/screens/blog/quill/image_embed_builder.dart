@@ -196,7 +196,7 @@ class FormulaEmbedBuilder implements EmbedBuilder {
           // debugPrint(mathController.currentEditingValue());
         }
       },
-      child: SizedBox(),
+      child: const SizedBox(),
       // child: MathField(
       //   controller: mathController,
       //   variables: const ['x', 'y', 'z'],

@@ -34,7 +34,7 @@ class MusicAlbum {
   }
 
   Map<String, dynamic> toJson() {
-    var map = <String, dynamic>{};
+    final map = <String, dynamic>{};
     map["id"] = _id;
     map["title"] = _title;
     map["image"] = _image;
@@ -66,7 +66,7 @@ class Audio {
   }
 
   Map<String, dynamic> toJson() {
-    var map = <String, dynamic>{};
+    final map = <String, dynamic>{};
     map["src"] = _src;
     if (_metas != null) {
       map["metas"] = _metas!.toJson();
@@ -116,7 +116,7 @@ class Metas {
   }
 
   Map<String, dynamic> toJson() {
-    var map = <String, dynamic>{};
+    final map = <String, dynamic>{};
     map["id"] = _id;
     map["title"] = _title;
     map["artist"] = _artist;

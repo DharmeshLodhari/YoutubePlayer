@@ -73,7 +73,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
       ),
       actions: <Widget>[
         showMap(),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -100,7 +100,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           children: [
             displayTransactionInfo(),
@@ -140,9 +140,9 @@ class _TransactionDetailState extends State<TransactionDetail> {
   }
 
   Widget getSubtitle() {
-    DateTime transactionTime = DateTime.parse(transaction!.createdAt!);
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    final DateTime transactionTime = DateTime.parse(transaction!.createdAt!);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final String time = DateFormat("hh:mm a").format(transactionTime);
 
     return Text(
       "$date • $time",
@@ -156,7 +156,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
     return ClipOval(
         child: transaction!.isAnonymous!
             ? Container(
-                padding: EdgeInsets.all(4.0),
+                padding: const EdgeInsets.all(4.0),
                 child: Image.asset(
                   "assets/images/anonymous.png",
                   height: 48,

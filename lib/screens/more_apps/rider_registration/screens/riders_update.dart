@@ -70,7 +70,7 @@ class _RidersUpdateState extends State<RidersUpdate> {
   Widget _buildBody() {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(25.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -114,7 +114,7 @@ class _RidersUpdateState extends State<RidersUpdate> {
               ),
             ),
             if (userBloc.user.rider?.isStatusApproved() == true) _buildButton(),
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
           ],
         ),
       ),

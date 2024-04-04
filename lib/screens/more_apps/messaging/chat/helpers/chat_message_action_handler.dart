@@ -24,11 +24,11 @@ class GetChatMessageActions {
 
     ChatMessageAction chatMessageAction = ChatMessageAction(message: _message);
 
-    Map<String, dynamic> messageData = jsonDecode(_message!);
+    final Map<String, dynamic> messageData = jsonDecode(_message!);
 
-    String? messageType = messageData["kind"];
+    final String? messageType = messageData["kind"];
 
-    bool isAuthorPerformingAction =
+    final bool isAuthorPerformingAction =
         _userBloc!.user.userName == messageData["author"];
 
     switch (messageType) {
@@ -112,7 +112,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getTextMessageActions(
       {required String? message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
@@ -127,7 +128,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getImageActions(
       {required String? message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
@@ -141,7 +143,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getVideoActions(
       {required String? message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
@@ -154,7 +157,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getAudioActions(
       {required String? message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
@@ -166,7 +170,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getPaymentRequestActions(
       {required String? message, bool? isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     chatMessageAction.isReplyable = true;
 
@@ -175,7 +180,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getTransactionActions(
       {required String? message, bool? isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     chatMessageAction.isReplyable = true;
 
@@ -184,7 +190,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getProductActions(
       {required String? message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
@@ -196,7 +203,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getServiceActions(
       {required String? message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
@@ -208,7 +216,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getUserProfileActions(
       {required String? message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
@@ -220,7 +229,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getUserLocationActions(
       {required String? message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
@@ -232,7 +242,8 @@ class GetChatMessageActions {
 
   ChatMessageAction _getGIFImageActions(
       {required String? message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
       chatMessageAction.isDeletable = true;
@@ -244,9 +255,10 @@ class GetChatMessageActions {
 
   ChatMessageAction _getEnvelopeActions(
       {required String message, required bool isAuthorPerformingAction}) {
-    ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
+    final ChatMessageAction chatMessageAction =
+        ChatMessageAction(message: message);
 
-    Map<String, dynamic> messageData = jsonDecode(message);
+    final Map<String, dynamic> messageData = jsonDecode(message);
 
     Map<String, dynamic>? data;
 
@@ -256,7 +268,7 @@ class GetChatMessageActions {
       data = messageData['meta_data'];
     }
 
-    Envelope envelope = Envelope.fromJson(data!);
+    final Envelope envelope = Envelope.fromJson(data!);
 
     if (isAuthorPerformingAction) {
       if (!envelope.isOpen) {

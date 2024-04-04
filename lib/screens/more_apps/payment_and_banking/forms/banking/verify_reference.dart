@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 
 // ignore: must_be_immutable
 class AddMoneyToSlydoTwo extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   AddMoneyToSlydoTwo({this.arguments});
 
@@ -41,7 +41,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
     amount = widget.arguments["amount"].toString();
     referenceNumber = widget.arguments["reference"].toString();
     currency = widget.arguments["currency"].toString();
-    Map? bankDetails = widget.arguments["bank_details"];
+    final Map? bankDetails = widget.arguments["bank_details"];
     if (bankDetails == null || bankDetails.isEmpty) {
       // isBankDetailsIsEmpty = true;
       isBankDetailsIsEmpty = false;
@@ -97,17 +97,17 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
         child: Form(
           key: _formKeyTwo,
           child: Column(
             children: <Widget>[
               amountUserGetMsg(),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               amountUserGet(),
-              SizedBox(
+              const SizedBox(
                 height: 28,
               ),
               getOtherDetails(),
@@ -120,7 +120,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -154,8 +154,8 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
               color: dividerColor,
             ),
             Container(
-              padding:
-                  EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 20),
+              padding: const EdgeInsets.only(
+                  left: 16, right: 16, top: 16, bottom: 20),
               child: Column(
                 children: [
                   Row(
@@ -180,7 +180,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Row(
@@ -205,7 +205,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Row(
@@ -245,23 +245,23 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         : Column(
             children: [
               referenceIdFiled(),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               getUserBankAccountSlydo(),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
               userTopUpNote(),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               transferredMoneyCheck(),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
-              isChecked ? getSubmitButton() : Container(),
-              SizedBox(
+              if (isChecked) getSubmitButton() else Container(),
+              const SizedBox(
                 height: 20,
               ),
             ],
@@ -274,7 +274,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
       margin: EdgeInsets.zero,
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         decoration: decorateBox(),
         child: Text("Information not available",
             textAlign: TextAlign.center,
@@ -292,7 +292,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
       elevation: 0,
       margin: EdgeInsets.zero,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         decoration: decorateBox(),
         child: Column(
           children: [
@@ -303,13 +303,13 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                     color: blackFont,
                     fontWeight: FontWeight.w400,
                     height: 1.5)),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             GestureDetector(
               child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: blackFont.withOpacity(0.05),
@@ -324,7 +324,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
                 ),
               ),
               onTap: () {
-                Clipboard.setData(new ClipboardData(text: referenceNumber));
+                Clipboard.setData(ClipboardData(text: referenceNumber));
                 showToast(message: "Reference number copied !!");
               },
             ),
@@ -340,17 +340,17 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         children: <Widget>[
           ClipRRect(
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
             child: SizedBox(
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: new BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -370,7 +370,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Text(
@@ -404,7 +404,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     if (_formKeyTwo.currentState!.validate()) {
-      var data = {"reference": referenceNumber};
+      final data = {"reference": referenceNumber};
       PaymentAndBankingAuth()
           .confirmTopUpWithReferenceNumber(data)
           .then((value) {

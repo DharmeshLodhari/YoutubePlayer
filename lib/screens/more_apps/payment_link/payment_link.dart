@@ -510,36 +510,36 @@ class _PaymentLinkState extends State<PaymentLink> {
             itemBuilder: (BuildContext bc) {
               return const [
                 PopupMenuItem(
-                  child: Text("All"),
                   value: 'all',
+                  child: Text("All"),
                 ),
                 PopupMenuItem(
-                  child: Text("Active"),
                   value: 'active',
+                  child: Text("Active"),
                 ),
                 PopupMenuItem(
-                  child: Text("Inactive"),
                   value: 'inactive',
+                  child: Text("Inactive"),
                 ),
                 PopupMenuItem(
-                  child: Text("Paid"),
                   value: 'paid',
+                  child: Text("Paid"),
                 ),
                 PopupMenuItem(
-                  child: Text("Cancelled"),
                   value: 'cancelled',
+                  child: Text("Cancelled"),
                 ),
                 PopupMenuItem(
-                  child: Text("Suspended"),
                   value: 'suspended',
+                  child: Text("Suspended"),
                 ),
                 PopupMenuItem(
-                  child: Text("Reversed"),
                   value: 'reversed',
+                  child: Text("Reversed"),
                 ),
                 PopupMenuItem(
-                  child: Text("Failed"),
                   value: 'failed',
+                  child: Text("Failed"),
                 ),
               ];
             },

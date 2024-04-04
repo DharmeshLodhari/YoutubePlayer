@@ -245,8 +245,8 @@ class LocationTileForChatMessage extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    topLeft: const Radius.circular(10),
+                    topRight: const Radius.circular(10),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -276,7 +276,7 @@ class LocationTileForChatMessage extends StatelessWidget {
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 4,
                                   ),
                                 ],
@@ -290,7 +290,7 @@ class LocationTileForChatMessage extends StatelessWidget {
                     Container(
                       height: MediaQuery.of(context).size.width / 2.5,
                       // width: MediaQuery.of(context).size.width / 1.8,
-                      padding: EdgeInsets.all(3),
+                      padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
@@ -310,7 +310,7 @@ class LocationTileForChatMessage extends StatelessWidget {
                             layers: [
                               TileLayerOptions(
                                 subdomains: ['a', 'b', 'c'],
-                                errorImage: NetworkImage(
+                                errorImage: const NetworkImage(
                                     "https://i.dlpng.com/static/png/6635948_preview.png"),
                                 overrideTilesWhenUrlChanges: true,
                                 urlTemplate:
@@ -352,7 +352,7 @@ class LocationTileForChatMessage extends StatelessWidget {
                 : Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
@@ -361,7 +361,7 @@ class LocationTileForChatMessage extends StatelessWidget {
           children: [
             isSend
                 ? Container()
-                : SizedBox(
+                : const SizedBox(
                     width: 20,
                   ),
             Text(
@@ -370,7 +370,7 @@ class LocationTileForChatMessage extends StatelessWidget {
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
             isSend
-                ? SizedBox(
+                ? const SizedBox(
                     width: 20,
                   )
                 : Container(),

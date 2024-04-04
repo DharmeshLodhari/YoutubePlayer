@@ -121,7 +121,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
       {required int amount, required double percentage}) {
     var finalFee;
 
-    var percentageAmount = amount * (percentage / 100);
+    final percentageAmount = amount * (percentage / 100);
 
     // ₦100 fee waived for transactions under ₦2500.
     if (percentageAmount > waivedTransactionFeeLimit) {
@@ -160,10 +160,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
             padding: const EdgeInsets.only(left: 20.0),
             child: Text(
               AppLocalization.of(context)!.slydoPayAccepts,
-              style: TextStyle(color: Color(0XFF75818f)),
+              style: const TextStyle(color: Color(0XFF75818f)),
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
             child: Row(
@@ -171,70 +171,68 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                 Image.asset(
                   'assets/images/visa_icon.png',
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Image.asset('assets/images/mastercard_icon.png'),
               ],
             ),
           ),
-          widget.isWalletFunding
-              ? Card(
-                  color: Colors.white,
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                  elevation: 5,
-                  shadowColor: boxShadow,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16.0, horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomizedTextFormField(
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          keyboardType: TextInputType.phone,
-                          controller: _amountController,
-                          isAmountField: true,
-                          labelText: AppLocalization.of(context)!.amount,
-                          onChanged: (value) {
-                            _amountFieldOnChanged(
-                                value.replaceAll(',', '').replaceAll('.', ''));
-                          },
-                          validator: (val) {
-                            try {
-                              double userAmount =
-                                  double.parse(val.replaceAll(',', ''));
-                              if (userAmount > amountLimit) {
-                                return 'You cannot fund more than $amountLimit';
-                              }
-                            } catch (e) {
-                              return AppLocalization.of(context)!.invalidAmount;
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          'You cannot fund more than NGN50000',
-                          style:
-                              TextStyle(color: Colors.black.withOpacity(0.4)),
-                        ),
-                      ],
+          if (widget.isWalletFunding)
+            Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
+              elevation: 5,
+              shadowColor: boxShadow,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomizedTextFormField(
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      keyboardType: TextInputType.phone,
+                      controller: _amountController,
+                      isAmountField: true,
+                      labelText: AppLocalization.of(context)!.amount,
+                      onChanged: (value) {
+                        _amountFieldOnChanged(
+                            value.replaceAll(',', '').replaceAll('.', ''));
+                      },
+                      validator: (val) {
+                        try {
+                          final double userAmount =
+                              double.parse(val.replaceAll(',', ''));
+                          if (userAmount > amountLimit) {
+                            return 'You cannot fund more than $amountLimit';
+                          }
+                        } catch (e) {
+                          return AppLocalization.of(context)!.invalidAmount;
+                        }
+                        return null;
+                      },
                     ),
-                  ),
-                )
-              : SizedBox.shrink(),
+                    const SizedBox(height: 5),
+                    Text(
+                      'You cannot fund more than NGN50000',
+                      style: TextStyle(color: Colors.black.withOpacity(0.4)),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
           Card(
             color: Colors.white,
-            margin: EdgeInsets.symmetric(horizontal: 16),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 5,
             shadowColor: boxShadow,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               child: Column(
                 children: <Widget>[
                   CustomizedTextFormField(
@@ -268,7 +266,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                       });
                     },
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   CustomizedTextFormField(
                     controller: _cardHolderNameController,
                     hintText: 'John Doe',
@@ -280,7 +278,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                           : null;
                     },
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Row(
                     children: [
                       Expanded(
@@ -297,7 +295,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                           },
                         ),
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: CustomizedTextFormField(
                             controller: _cvvCodeController,
@@ -319,7 +317,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     AppLocalization.of(context)!.doesNotSaveUsersCard,
                     style: TextStyle(color: Colors.black.withOpacity(0.5)),
@@ -328,57 +326,57 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
               ),
             ),
           ),
-          SizedBox(height: 20),
-          widget.isWalletFunding
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      AppLocalization.of(context)!.youWillGetAmount,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 10),
-                    showFinalAmount
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              getUserCurrencySymbol(context, fontSize: 30),
-                              Text(
-                                getUserFinalAmount(),
-                                style: TextStyle(
-                                    fontSize: 32,
-                                    color: navyBlue,
-                                    fontWeight: FontWeight.bold),
-                              )
-                            ],
-                          )
-                        : SizedBox.shrink(),
-                  ],
-                )
-              : SizedBox.shrink(),
-          SizedBox(height: 30),
-          showButton
-              ? Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: CurvedButton(
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        widget.isWalletFunding
-                            ? _fundWallet()
-                            : _addCreditCard();
-                      } else {
-                        showToast(
-                            message:
-                                AppLocalization.of(context)!.invalidDetails +
-                                    " !!");
-                      }
-                    },
-                    text: AppLocalization.of(context)!.submit,
-                    textColor: Colors.white,
-                  ),
-                )
-              : SizedBox.shrink(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
+          if (widget.isWalletFunding)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  AppLocalization.of(context)!.youWillGetAmount,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                if (showFinalAmount)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      getUserCurrencySymbol(context, fontSize: 30),
+                      Text(
+                        getUserFinalAmount(),
+                        style: TextStyle(
+                            fontSize: 32,
+                            color: navyBlue,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  )
+                else
+                  const SizedBox.shrink(),
+              ],
+            )
+          else
+            const SizedBox.shrink(),
+          const SizedBox(height: 30),
+          if (showButton)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: CurvedButton(
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    widget.isWalletFunding ? _fundWallet() : _addCreditCard();
+                  } else {
+                    showToast(
+                        message: AppLocalization.of(context)!.invalidDetails +
+                            " !!");
+                  }
+                },
+                text: AppLocalization.of(context)!.submit,
+                textColor: Colors.white,
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -389,10 +387,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
   }
 
   String formattedExpiryDate() {
-    String expiryYear = _expiryDateController.text.split('/').last;
-    String expiryMonth = _expiryDateController.text.split('/').first;
+    final String expiryYear = _expiryDateController.text.split('/').last;
+    final String expiryMonth = _expiryDateController.text.split('/').first;
 
-    String formattedExpiryDate = '20$expiryYear-$expiryMonth-01';
+    final String formattedExpiryDate = '20$expiryYear-$expiryMonth-01';
     return formattedExpiryDate;
   }
 
@@ -401,7 +399,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
   }
 
   void _addCreditCard() {
-    CreditCardData creditCardData = CreditCardData(
+    final CreditCardData creditCardData = CreditCardData(
       email: getUsersEmail(),
       cvv: _cvvCodeController.text,
       expiryDate: formattedExpiryDate(),
@@ -420,10 +418,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
   }
 
   void _fundWallet() {
-    int amount =
+    final int amount =
         int.parse(_amountController.text) * 100; // Convert naira to kobo.
 
-    CreditCardData creditCardData = CreditCardData(
+    final CreditCardData creditCardData = CreditCardData(
       amount: amount,
       email: getUsersEmail(),
       cvv: _cvvCodeController.text,
@@ -445,12 +443,12 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
 
   String? _validateExpiryDate(value) {
     if (value.isNotEmpty) {
-      String yearInputted = value.split('/').last;
-      String monthInputted = value.split('/').first;
-      String currentYear = DateTime.now().year.toString();
-      String monthInDigit = DateTime.now().month.toString();
+      final String yearInputted = value.split('/').last;
+      final String monthInputted = value.split('/').first;
+      final String currentYear = DateTime.now().year.toString();
+      final String monthInDigit = DateTime.now().month.toString();
       //To get the last two digit of the year
-      String formattedYear =
+      final String formattedYear =
           currentYear.substring(currentYear.toString().length - 2);
 
       if (int.parse(yearInputted) < int.parse(formattedYear)) {

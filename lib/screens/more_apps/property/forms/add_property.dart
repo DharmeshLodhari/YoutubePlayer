@@ -40,7 +40,7 @@ class _AddPropertyState extends State<AddProperty> {
   int bathroomCount = 0;
   int livingRoomCount = 0;
 
-  Duration videoLimit = Duration(minutes: 1);
+  Duration videoLimit = const Duration(minutes: 1);
 
   List<String> cities = ["Lagos", "Kano", "Ibadan", "Benin City", "Abuja"];
 
@@ -92,7 +92,7 @@ class _AddPropertyState extends State<AddProperty> {
   bool propertyAvailableImmediately = true;
   DateTime propertyAvailableFrom = DateTime.now();
 
-  Duration videoDuration = Duration(seconds: 5);
+  Duration videoDuration = const Duration(seconds: 5);
 
   @override
   void deactivate() {
@@ -185,14 +185,14 @@ class _AddPropertyState extends State<AddProperty> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Center(
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 // _previewVideo(),
@@ -207,13 +207,13 @@ class _AddPropertyState extends State<AddProperty> {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 addImages(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 addVideos(),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
 
@@ -228,19 +228,19 @@ class _AddPropertyState extends State<AddProperty> {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 sellOrRentSwitch(),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 addTagNameField(),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 getPropertyDescription(),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Row(
@@ -254,27 +254,33 @@ class _AddPropertyState extends State<AddProperty> {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
-                isPropertyForSellOrRent[1] ? getRentDuration() : Container(),
-                isPropertyForSellOrRent[1] ? SizedBox(height: 10) : Container(),
+                if (isPropertyForSellOrRent[1])
+                  getRentDuration()
+                else
+                  Container(),
+                if (isPropertyForSellOrRent[1])
+                  const SizedBox(height: 10)
+                else
+                  Container(),
                 Row(
                   children: <Widget>[
                     Expanded(child: getPropertyType()),
-                    SizedBox(
+                    const SizedBox(
                       width: 16,
                     ),
                     Expanded(child: getBedroomCountField()),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   children: <Widget>[
                     Expanded(
                       child: getBathroomCountField(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 16,
                     ),
                     Expanded(
@@ -282,25 +288,33 @@ class _AddPropertyState extends State<AddProperty> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 getAmenityField(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 getPropertyFurnitureDetailField(),
-                isPropertyForSellOrRent[1] ? SizedBox(height: 10) : Container(),
-                isPropertyForSellOrRent[1] ? getPetPolicyField() : Container(),
-                SizedBox(height: 16),
+                if (isPropertyForSellOrRent[1])
+                  const SizedBox(height: 10)
+                else
+                  Container(),
+                if (isPropertyForSellOrRent[1])
+                  getPetPolicyField()
+                else
+                  Container(),
+                const SizedBox(height: 16),
                 getIsAvailableImmediately(),
-                SizedBox(height: 16),
-                propertyAvailableImmediately
-                    ? Container()
-                    : getAvailableFromField(),
-                propertyAvailableImmediately
-                    ? Container()
-                    : SizedBox(height: 10),
+                const SizedBox(height: 16),
+                if (propertyAvailableImmediately)
+                  Container()
+                else
+                  getAvailableFromField(),
+                if (propertyAvailableImmediately)
+                  Container()
+                else
+                  const SizedBox(height: 10),
                 getAmountField(),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Row(
@@ -314,19 +328,19 @@ class _AddPropertyState extends State<AddProperty> {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 getPropertyAddressLineOne(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 getPropertyAddressLineTwo(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 getPropertyPassCode(),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 getPropertyCity(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 getSubmitButton(),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -337,7 +351,7 @@ class _AddPropertyState extends State<AddProperty> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -352,7 +366,7 @@ class _AddPropertyState extends State<AddProperty> {
         scrollDirection: Axis.horizontal,
         itemCount: propertyImages.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != propertyImages.length
               ? showImage(index)
               : propertyImages.length != imageCount
@@ -369,7 +383,7 @@ class _AddPropertyState extends State<AddProperty> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -383,7 +397,7 @@ class _AddPropertyState extends State<AddProperty> {
                   SlydoAppIcon.add_image,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -440,7 +454,7 @@ class _AddPropertyState extends State<AddProperty> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
               width: 100,
               decoration: BoxDecoration(
@@ -457,10 +471,10 @@ class _AddPropertyState extends State<AddProperty> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -491,7 +505,7 @@ class _AddPropertyState extends State<AddProperty> {
         scrollDirection: Axis.horizontal,
         itemCount: propertyVideos.length + 1,
         itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
+          padding: const EdgeInsets.only(right: 6),
           child: index != propertyVideos.length
               ? showVideo(index)
               : propertyVideos.length != imageCount
@@ -503,7 +517,7 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   void captureVideo() async {
-    var path = await Navigator.of(context)
+    final path = await Navigator.of(context)
         .pushNamed("/video-recorder", arguments: {"duration": videoDuration});
     if (path != null) {
       debugPrint("$path");
@@ -519,7 +533,7 @@ class _AddPropertyState extends State<AddProperty> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -533,7 +547,7 @@ class _AddPropertyState extends State<AddProperty> {
                   SlydoAppIcon.movies_moreapps,
                   color: darkGrey,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -555,7 +569,7 @@ class _AddPropertyState extends State<AddProperty> {
     final videoSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text("Select video source"),
+              title: const Text("Select video source"),
               actions: <Widget>[
                 MaterialButton(
                   child: Text(AppLocalization.of(context)!.camera),
@@ -569,18 +583,18 @@ class _AddPropertyState extends State<AddProperty> {
             ));
 
     if (videoSource != null) {
-      bool? isConditionAccepted = await videoLengthAlert();
+      final bool? isConditionAccepted = await videoLengthAlert();
       if (isConditionAccepted != null && isConditionAccepted) {
         if (videoSource == ImageSource.gallery) {
           ImagePicker()
               .pickVideo(
-                  source: videoSource, maxDuration: Duration(minutes: 10))
+                  source: videoSource, maxDuration: const Duration(minutes: 10))
               .then((value) async {
             if (value != null) {
               final videoInfo = FlutterVideoInfo();
-              var info = await videoInfo.getVideoInfo(value.path);
+              final info = await videoInfo.getVideoInfo(value.path);
               if (info == null) return;
-              Duration pickedVideoDuration =
+              final Duration pickedVideoDuration =
                   Duration(milliseconds: info.duration!.toInt());
               if (pickedVideoDuration > videoLimit) {
                 showToast(
@@ -617,7 +631,7 @@ class _AddPropertyState extends State<AddProperty> {
             StatefulBuilder(builder: (context, videoLengthAlert) {
               return AlertDialog(
                 insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
@@ -636,13 +650,13 @@ class _AddPropertyState extends State<AddProperty> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
-                            padding: EdgeInsets.only(top: 16, bottom: 8),
+                            padding: const EdgeInsets.only(top: 16, bottom: 8),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                   ),
                                   child: Column(
@@ -662,7 +676,7 @@ class _AddPropertyState extends State<AddProperty> {
                                               fontWeight: FontWeight.w700),
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 12,
                                       ),
                                       RichText(
@@ -675,7 +689,7 @@ class _AddPropertyState extends State<AddProperty> {
                                               fontSize: 14,
                                               fontWeight: FontWeight.w400),
                                           children: <TextSpan>[
-                                            TextSpan(
+                                            const TextSpan(
                                               text:
                                                   'Please make sure your picked or captured video do not exceed ',
                                             ),
@@ -685,7 +699,7 @@ class _AddPropertyState extends State<AddProperty> {
                                                 style: new TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),
-                                            TextSpan(
+                                            const TextSpan(
                                                 text:
                                                     ' otherwise it will be not uploaded.'),
                                           ],
@@ -766,7 +780,7 @@ class _AddPropertyState extends State<AddProperty> {
               borderRadius: BorderRadius.circular(10),
             ),
             shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: index < propertyVideoThumbnail.length
                 ? Container(
                     width: 100,
@@ -789,10 +803,10 @@ class _AddPropertyState extends State<AddProperty> {
             right: 0,
             top: 0,
             child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
+              padding: const EdgeInsets.only(right: 6, top: 6),
               alignment: Alignment.topRight,
               icon: Container(
-                padding: EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(2.0),
                 decoration: BoxDecoration(
                   color: iconBtnGrey,
                   borderRadius: BorderRadius.circular(5),
@@ -899,7 +913,7 @@ class _AddPropertyState extends State<AddProperty> {
           "Property for",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Container(
@@ -1001,7 +1015,7 @@ class _AddPropertyState extends State<AddProperty> {
             StatefulBuilder(builder: (context, rentDurationStateSetter) {
               return AlertDialog(
                 insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
@@ -1130,7 +1144,8 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1326,7 +1341,8 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1403,7 +1419,8 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1481,7 +1498,8 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1559,7 +1577,8 @@ class _AddPropertyState extends State<AddProperty> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1689,7 +1708,7 @@ class _AddPropertyState extends State<AddProperty> {
             StatefulBuilder(builder: (context, amenitiesStateSetter) {
               return AlertDialog(
                 insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
@@ -1843,7 +1862,7 @@ class _AddPropertyState extends State<AddProperty> {
             StatefulBuilder(builder: (context, petPolicyStateSetter) {
               return AlertDialog(
                 insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
@@ -1988,7 +2007,7 @@ class _AddPropertyState extends State<AddProperty> {
             StatefulBuilder(builder: (context, furnitureDetailStateSetter) {
               return AlertDialog(
                   insetPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   contentPadding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
@@ -2090,7 +2109,7 @@ class _AddPropertyState extends State<AddProperty> {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.price,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       isAmountField: true,
       onChanged: (val) {
@@ -2138,7 +2157,7 @@ class _AddPropertyState extends State<AddProperty> {
               child: CircularLoadingIndicator(),
             ));
 
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     Navigator.pop(context);
     Navigator.pop(context);
     // Product product = Product();

@@ -9,6 +9,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,8 +26,8 @@ class EditInvoiceItem extends StatefulWidget {
 class _EditInvoiceItemState extends State<EditInvoiceItem> {
   double totalCost = 0;
 
-  TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _amountController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
 
   late UserBloc userBloc;
 
@@ -90,7 +91,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
         onPressed: () async {
           if (FocusScope.of(context).hasFocus) {
             FocusScope.of(context).unfocus();
-            await Future.delayed(Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 300));
           }
           Navigator.pop(context);
         },
@@ -107,7 +108,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
     return _invoiceItem != null
         ? SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
                   Card(
@@ -127,31 +128,33 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                           child: Column(
                             children: <Widget>[
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Column(
                                   children: [
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     getRecipientField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     displayAmountField(),
-                                    SizedBox(height: 20),
+                                    const SizedBox(height: 20),
                                     getQtyOfItem(),
-                                    SizedBox(height: 20),
+                                    const SizedBox(height: 20),
                                     getTotalText(),
-                                    errorMessage == ""
-                                        ? Container()
-                                        : Text(
-                                            errorMessage,
-                                            style: TextStyle(
-                                                color: mateRed,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                    SizedBox(height: 20),
+                                    if (errorMessage == "")
+                                      Container()
+                                    else
+                                      Text(
+                                        errorMessage,
+                                        style: TextStyle(
+                                            color: mateRed,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                    const SizedBox(height: 20),
                                   ],
                                 ),
                               ),
@@ -164,9 +167,9 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                   Container(
                     child: Column(
                       children: [
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         getSubmitButton(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                       ],
@@ -193,12 +196,12 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
               Text("$totalCost"),
             ],
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -224,7 +227,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
       labelText: "Amount",
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
@@ -282,7 +285,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                       setState(() {});
                     }
                   }),
-              Expanded(
+              const Expanded(
                 child: SizedBox(width: 10),
               ),
               Text(
@@ -292,7 +295,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                     fontWeight: FontWeight.w600,
                     color: blackFont),
               ),
-              Expanded(
+              const Expanded(
                 child: SizedBox(
                   width: 10,
                 ),
@@ -333,7 +336,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
 
     if (_formKey.currentState!.validate()) {
       try {
-        var data = {
+        final data = {
           "amount": amount.toString().trim(),
         };
         debugPrint("$data");
@@ -343,7 +346,9 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
             _amountController.text.replaceAll(',', '').split('.')[0].trim());
         _invoiceItem!.currency = userBloc.user.currency;
 
-        print('INVOICE AMOUUNT SENT =------> ${_invoiceItem!.amount}');
+        if (kDebugMode) {
+          print('INVOICE AMOUUNT SENT =------> ${_invoiceItem!.amount}');
+        }
         addInvoiceBloc.updateItem(index: itemIndex!, invoiceItem: _invoiceItem);
 
         ///

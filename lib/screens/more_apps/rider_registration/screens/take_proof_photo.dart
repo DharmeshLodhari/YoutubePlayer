@@ -47,12 +47,9 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
       cameras = availableCameras;
       if (cameras.length > 0) {
         initCamera(cameras[0]);
-      } else {
-        print("No camera available");
-      }
+      } else {}
     }).catchError((err) {
       // 3
-      print('Error: $err.code\nError Message: $err.message');
     });
   }
 
@@ -94,12 +91,9 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
               cameras = availableCameras;
               if (cameras.length > 0) {
                 initCamera(cameras[_isRearCameraSelected ? 0 : 1]);
-              } else {
-                print("No camera available");
-              }
+              } else {}
             }).catchError((err) {
               // 3
-              print('Error: $err.code\nError Message: $err.message');
             });
           },
         ),
@@ -125,7 +119,7 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
       onPressed: () {
         Navigator.pop(context, "back pressed");
       },
-      icon: Icon(
+      icon: const Icon(
         Icons.keyboard_arrow_left,
         size: 20,
         color: Colors.white,
@@ -137,11 +131,12 @@ class _TakeProofPhotoState extends State<TakeProofPhoto> {
     return SafeArea(
       child: Stack(
         children: [
-          (_cameraController?.value.isInitialized ?? false)
-              ? CameraPreview(_cameraController!)
-              : Container(
-                  color: Colors.black,
-                  child: Center(child: CircularProgressIndicator())),
+          if (_cameraController?.value.isInitialized ?? false)
+            CameraPreview(_cameraController!)
+          else
+            Container(
+                color: Colors.black,
+                child: const Center(child: CircularProgressIndicator())),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(

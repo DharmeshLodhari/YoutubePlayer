@@ -17,17 +17,17 @@ class CashoutTransactionsList extends StatefulWidget {
 }
 
 class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   // Get list of users transactions
   int? count = 0;
   String? next = "";
   String? previous = "";
   List<Payout> payoutList = [];
-  ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
+  final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -49,7 +49,7 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -108,7 +108,7 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
                 return _buildIndicator();
               } else {
                 return Container(
-                  padding: EdgeInsets.symmetric(vertical: 2),
+                  padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Column(
                     children: [
                       PayoutTile(
@@ -126,10 +126,10 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
           opacity: isLoading ? 1.0 : 00,
           child: CircularLoadingIndicator(),
         ),
@@ -145,7 +145,7 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await PaymentAndBankingAuth().getPayoutList(next, previous);
 
         if (result == null) {
@@ -155,7 +155,7 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -173,7 +173,7 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
         _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }

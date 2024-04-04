@@ -56,12 +56,12 @@ class ModifiedCustomizedAlert {
     return Center(
       child: ConstrainedBox(
         constraints: style.constraints ??
-            BoxConstraints.expand(
+            const BoxConstraints.expand(
                 width: double.infinity, height: double.infinity),
         child: Center(
           child: SingleChildScrollView(
             child: AlertDialog(
-              insetPadding: EdgeInsets.all(20),
+              insetPadding: const EdgeInsets.all(20),
               backgroundColor: style.backgroundColor ??
                   Theme.of(context).dialogBackgroundColor,
               shape: style.alertBorder ?? _defaultShape(),
@@ -74,11 +74,11 @@ class ModifiedCustomizedAlert {
                         children: <Widget>[
                           Column(
                             children: <Widget>[
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               _getImage() ?? Container(),
-                              SizedBox(
+                              const SizedBox(
                                 height: 12,
                               ),
                               Text(
@@ -92,21 +92,22 @@ class ModifiedCustomizedAlert {
                               SizedBox(
                                 height: image != null ? 8 : 20,
                               ),
-                              desc == null
-                                  ? Container()
-                                  : Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 40),
-                                      child: Text(
-                                        desc ?? "",
-                                        style: TextStyle(
-                                            color: blackFont,
-                                            fontSize: 16.0,
-                                            fontFamily: "Inter"),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                              SizedBox(
+                              if (desc == null)
+                                Container()
+                              else
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 40),
+                                  child: Text(
+                                    desc ?? "",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16.0,
+                                        fontFamily: "Inter"),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              const SizedBox(
                                 height: 4,
                               ),
                             ],
@@ -121,7 +122,7 @@ class ModifiedCustomizedAlert {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: _getButtons(),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 )
               ]),
@@ -141,19 +142,19 @@ class ModifiedCustomizedAlert {
 
   // Returns defined buttons. Default: Cancel Button
   List<Widget> _getButtons() {
-    List<Widget> expandedButtons = [];
+    final List<Widget> expandedButtons = [];
     if (buttons != null) {
-      var btnOne = Expanded(
+      final btnOne = Expanded(
         child: Padding(
-          padding: EdgeInsets.only(right: 0.0),
+          padding: const EdgeInsets.only(right: 0.0),
           child: buttons?[0] ?? Container(),
         ),
       );
       expandedButtons.add(btnOne);
       if ((buttons?.length ?? 0) > 1) {
-        var btnTwo = Expanded(
+        final btnTwo = Expanded(
           child: Padding(
-            padding: EdgeInsets.only(left: 16.0),
+            padding: const EdgeInsets.only(left: 16.0),
             child: buttons?[1] ?? Container(),
           ),
         );

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../utils/enums.dart';
 import '../../../utils/util.dart';
@@ -34,23 +34,25 @@ class BusinessAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    print('GET CONTRACT LIST URL :: $url');
+    if (kDebugMode) {
+      print('GET CONTRACT LIST URL :: $url');
+    }
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       debugPrint('GET CONTRACT LIST :::: $jsonData');
 
-      List<ContractModel> contractList = [];
-      List jsonResult = jsonData['results'];
+      final List<ContractModel> contractList = [];
+      final List jsonResult = jsonData['results'];
 
       jsonResult.forEach((json) {
         contractList.add(ContractModel.fromJson(json));
       });
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -58,7 +60,7 @@ class BusinessAuth extends AuthService {
       };
       return result;
     } else if (response.statusCode == 404) {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
 
       return jsonData;
     } else {
@@ -67,28 +69,28 @@ class BusinessAuth extends AuthService {
   }
 
   Future<ContractModel> getContract(String id) async {
-    String url =
+    final String url =
         AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint('GET CONTRACT ::: ${json.decode(response.body)}');
     if (response.statusCode == 200) {
-      ContractModel contract =
+      final ContractModel contract =
           ContractModel.fromJson(json.decode(response.body));
 
       return contract;
     } else {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       return Future.error(jsonData.toStiring());
     }
   }
 
   Future<bool> acceptContract({required int contractId}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/transactions/payment-contract/accepted/$contractId";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       return true;
@@ -98,10 +100,10 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> cancelOrRejectContract({required int contractId}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/transactions/payment-contract/reject-or-cancel/$contractId/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 204) {
       return true;
@@ -111,18 +113,18 @@ class BusinessAuth extends AuthService {
   }
 
   Future<String?> getConversationId({required String name}) async {
-    String url =
+    final String url =
         AppConfig.baseUrl + "/api/v1/user/contacts/get-conversation-id/";
 
-    var data = {"contact": name};
+    final data = {"contact": name};
 
-    var headers = await getAuthHeaders();
-    var response =
+    final headers = await getAuthHeaders();
+    final response =
         await httpPost(url, body: jsonEncode(data), headers: headers);
 
     debugPrint('GET CONVERSATION ID :: ${response.body}');
     if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
+      final jsonData = jsonDecode(response.body);
       return jsonData['conversation_id'];
     } else {
       return null;
@@ -146,25 +148,25 @@ class BusinessAuth extends AuthService {
     } else {
       url = next;
     }
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     debugPrint("${response.body}");
     if (response.statusCode == 200) {
-      List<Transaction> transactions = [];
+      final List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
       // var user = await getUser();
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
-        bool isCredit = item["is_credit"];
+        final bool isCredit = item["is_credit"];
 
-        var payee = isCredit ? item["from_customer"] : item['to_customer'];
-        var avatar = isCredit
+        final payee = isCredit ? item["from_customer"] : item['to_customer'];
+        final avatar = isCredit
             ? item["from_customer_avatar"]
             : item['to_customer_avatar'];
 
-        Transaction transaction = Transaction(
+        final Transaction transaction = Transaction(
             status: item['status'],
             uuid: item['slug'],
             description: item['description'],
@@ -181,7 +183,7 @@ class BusinessAuth extends AuthService {
             isCredit: isCredit);
         transactions.add(transaction);
       }
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -196,34 +198,35 @@ class BusinessAuth extends AuthService {
   }
 
   Future<bool> addContract(Map data) async {
-    String url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
-    var headers = await getAuthHeaders();
+    final String url =
+        AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
+    final headers = await getAuthHeaders();
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
     debugPrint("$_data");
-    var response = await httpPost(url, body: _data, headers: headers);
+    final response = await httpPost(url, body: _data, headers: headers);
     debugPrint('ADD CONTRACT RESPONSE ::: ${response.body}');
     if (response.statusCode == 201) {
       return true;
     } else {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       return Future.error(jsonData.toString());
     }
   }
 
   Future<bool> updateContract({String? id, Map? data}) async {
-    String url =
+    final String url =
         AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: _data);
     debugPrint('UPDATE CONTRACT ::: ${response.body}');
     debugPrint('STATUS :: ${json.decode(response.body)['status']}');
 
     if (response.statusCode == 200) {
       return true;
     }
-    var jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
     return Future.error(jsonData.toString());
   }
 
@@ -249,20 +252,20 @@ class BusinessAuth extends AuthService {
 
     debugPrint('INVOICE URL ::: $url');
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     debugPrint('GET INVOICE LIST ::: ${response.body}');
-    var jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      List<InvoiceModel> invoiceList = [];
-      List jsonResult = jsonData['results'];
+      final List<InvoiceModel> invoiceList = [];
+      final List jsonResult = jsonData['results'];
 
       jsonResult.forEach((json) {
         invoiceList.add(InvoiceModel.fromJson(json));
       });
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -277,40 +280,41 @@ class BusinessAuth extends AuthService {
   }
 
   Future<InvoiceModel> getInvoice(String id) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$id/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$id/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      InvoiceModel invoice = InvoiceModel.fromJson(json.decode(response.body));
+      final InvoiceModel invoice =
+          InvoiceModel.fromJson(json.decode(response.body));
       return invoice;
     }
-    var jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
     return Future.error(jsonData.toStiring());
   }
 
   Future<bool> addInvoice(Map data) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
-    var headers = await getAuthHeaders();
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
+    final headers = await getAuthHeaders();
 
     debugPrint('DATE ::: $data');
-    var _data = jsonEncode(data);
-    var response = await httpPost(url, body: _data, headers: headers);
+    final _data = jsonEncode(data);
+    final response = await httpPost(url, body: _data, headers: headers);
 
     debugPrint('ADD INVOICE RESPONSE ::: ${response.body}');
     if (response.statusCode == 201) {
       return true;
     }
-    var jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
     return Future.error(jsonData.toStiring());
   }
 
   Future<bool> updateInvoice({String? invoiceId, Map? data}) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
-    var headers = await getAuthHeaders();
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
+    final headers = await getAuthHeaders();
 
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final _data = jsonEncode(data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     debugPrint('DATA ::: $_data');
     debugPrint('UPDATE INVOICE RESPONSE ::: ${response.body}');
@@ -318,76 +322,77 @@ class BusinessAuth extends AuthService {
     if (response.statusCode == 200) {
       return true;
     }
-    var jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
     return Future.error(jsonData.toString());
   }
 
   Future<bool> deleteInvoice({required int invoiceId}) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
-    var headers = await getAuthHeaders();
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
+    final headers = await getAuthHeaders();
 
-    var response = await httpDelete(url, headers: headers);
+    final response = await httpDelete(url, headers: headers);
 
     debugPrint('DELETE INVOICE RESPONSE ::: ${response.body}');
 
     if (response.statusCode == 204) {
       return true;
     }
-    var jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
     return Future.error(jsonData.toString());
   }
 
   Future<bool> markInvoiceAsPaid({required int invoiceId}) async {
-    var url = AppConfig.baseUrl +
+    final url = AppConfig.baseUrl +
         "/api/v1/transactions/invoice/mark-as-pay/$invoiceId/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       return true;
     }
-    var jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
     return Future.error(jsonData.toString());
   }
 
   Future<bool> payInvoice({required int invoiceId}) async {
-    var url =
+    final url =
         AppConfig.baseUrl + "/api/v1/transactions/invoice/pay/$invoiceId/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
     debugPrint('PAY INVOICE ::: ${response.body}');
 
     if (response.statusCode == 200) {
       return true;
     }
-    var jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
     return Future.error(jsonData.toString());
   }
 
   Future<bool> deleteInvoiceItem({required int itemId}) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final url =
+        AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
     debugPrint('DELETE INVOICE ITEM ::: ${response.body}');
     debugPrint('DELETE INVOICE ITEM ::: ${response.statusCode}');
 
     if (response.statusCode == 204) {
       return true;
     }
-    var jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
     return Future.error(jsonData.toString());
   }
 
   Future<bool> addInvoiceItemToExistingInvoice(
       {required int invoiceId, required InvoiceItem invoiceItem}) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
-    var headers = await getAuthHeaders();
-    var data = invoiceItem.toJson();
+    final url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
+    final headers = await getAuthHeaders();
+    final data = invoiceItem.toJson();
     data.removeWhere((key, value) => value == null);
 
-    var response =
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
     debugPrint('ADD INVOICE ITEM TO EXISTING INVOICE ::: ${response.body}');
     debugPrint(
@@ -401,12 +406,13 @@ class BusinessAuth extends AuthService {
 
   Future<bool> updateInvoiceItem(
       {required int itemId, required InvoiceItem invoiceItem}) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";
-    var headers = await getAuthHeaders();
-    var data = invoiceItem.toJson();
+    final url =
+        AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";
+    final headers = await getAuthHeaders();
+    final data = invoiceItem.toJson();
     data.removeWhere((key, value) => value == null);
 
-    var response =
+    final response =
         await httpPatch(url, headers: headers, body: jsonEncode(data));
     debugPrint('UPDATE INVOICE ITEM ::: ${response.body}');
     debugPrint('UPDATE INVOICE ITEM ::: ${response.statusCode}');

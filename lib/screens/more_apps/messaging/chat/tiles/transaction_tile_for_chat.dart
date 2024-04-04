@@ -41,15 +41,17 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
     } else if (widget.message!['text'] is Map) {
       data = widget.message!['text'];
     }
-    bool isCredit = widget.userBloc!.user.userName == data!['to_customer'];
+    final bool isCredit =
+        widget.userBloc!.user.userName == data!['to_customer'];
 
     data['is_credit'] = isCredit;
 
     transaction = Transaction.fromJson(data);
 
-    bool isSend = widget.message!["author"] == widget.userBloc!.user.userName;
+    final bool isSend =
+        widget.message!["author"] == widget.userBloc!.user.userName;
 
-    bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
+    final bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
 
     return Column(
       children: [
@@ -58,7 +60,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend ? Container() : Container(width: 20),
+            if (isSend) Container() else Container(width: 20),
             Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.40,
@@ -69,12 +71,12 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(!isSend ? 0 : 6),
                   bottomRight: Radius.circular(isSend ? 0 : 6),
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(6),
+                  topLeft: const Radius.circular(6),
+                  topRight: const Radius.circular(6),
                 ),
               ),
-              padding:
-                  EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
+              padding: const EdgeInsets.only(
+                  left: 16, right: 16, top: 12, bottom: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -90,7 +92,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               vertical: 20, horizontal: 12),
                           child: Row(
                             children: [
@@ -130,7 +132,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
                   Container(
@@ -141,7 +143,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                           size: 12,
                           color: naturalGreen,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Row(
@@ -168,107 +170,109 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                       ],
                     ),
                   ),
-                  widget.chatConversation!.isGroupConversation!
-                      ? Column(
-                          children: [
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Container(
-                              width: 42,
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Positioned(
-                                    left: 26,
+                  if (widget.chatConversation!.isGroupConversation!)
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        Container(
+                          width: 42,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Positioned(
+                                left: 26,
+                                child: Container(
+                                  height: 34,
+                                  width: 34,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                      border: Border.all(
+                                          color: navyBlue, width: 2)),
+                                  child: ClipOval(
                                     child: Container(
+                                      color: Colors.white,
+                                      child: CachedNetworkImage(
+                                        height: 34,
+                                        width: 34,
+                                        fit: BoxFit.fill,
+                                        errorWidget: imageErrorWidget,
+                                        imageUrl: widget
+                                            .message!['to_customer_avatar'],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                height: 34,
+                                width: 34,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100),
+                                    border: Border.all(
+                                        color: naturalGreen, width: 2)),
+                                child: ClipOval(
+                                  child: Container(
+                                    color: Colors.white,
+                                    child: CachedNetworkImage(
                                       height: 34,
                                       width: 34,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          border: Border.all(
-                                              color: navyBlue, width: 2)),
-                                      child: ClipOval(
-                                        child: Container(
-                                          color: Colors.white,
-                                          child: CachedNetworkImage(
-                                            height: 34,
-                                            width: 34,
-                                            fit: BoxFit.fill,
-                                            errorWidget: imageErrorWidget,
-                                            imageUrl: widget
-                                                .message!['to_customer_avatar'],
-                                          ),
-                                        ),
-                                      ),
+                                      fit: BoxFit.fill,
+                                      errorWidget: imageErrorWidget,
+                                      imageUrl: widget
+                                          .message!['from_customer_avatar'],
                                     ),
                                   ),
-                                  Container(
-                                    height: 34,
-                                    width: 34,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        border: Border.all(
-                                            color: naturalGreen, width: 2)),
-                                    child: ClipOval(
-                                      child: Container(
-                                        color: Colors.white,
-                                        child: CachedNetworkImage(
-                                          height: 34,
-                                          width: 34,
-                                          fit: BoxFit.fill,
-                                          errorWidget: imageErrorWidget,
-                                          imageUrl: widget
-                                              .message!['from_customer_avatar'],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      : Container()
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Container()
                 ],
               ),
             ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: widget.message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSend)
+              Container(
+                width: 20,
+                child: isSend
+                    ? Center(
+                        child: getMessageTick(message: widget.message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              const SizedBox(
+                width: 20,
+              ),
             Text(
               formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSend)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         )
       ],
@@ -276,9 +280,9 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
   }
 
   String getDateTime({required String dateAndTime}) {
-    DateTime requestTime = DateTime.parse(dateAndTime).toLocal();
-    String date = DateFormat("dd/MM/yy").format(requestTime);
-    String time = DateFormat("hh:mm a").format(requestTime);
+    final DateTime requestTime = DateTime.parse(dateAndTime).toLocal();
+    final String date = DateFormat("dd/MM/yy").format(requestTime);
+    final String time = DateFormat("hh:mm a").format(requestTime);
     return " • $date • $time";
   }
 
@@ -359,9 +363,10 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
       paymentRequest = PaymentRequest.fromJson(widget.message!['text']);
     }
 
-    bool isSend = widget.message!["author"] == widget.userBloc!.user.userName;
+    final bool isSend =
+        widget.message!["author"] == widget.userBloc!.user.userName;
 
-    bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
+    final bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
 
     return Column(
       children: [
@@ -370,7 +375,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend ? Container() : Container(width: 20),
+            if (isSend) Container() else Container(width: 20),
             Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.40,
@@ -381,12 +386,12 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(!isSend ? 0 : 6),
                   bottomRight: Radius.circular(isSend ? 0 : 6),
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(6),
+                  topLeft: const Radius.circular(6),
+                  topRight: const Radius.circular(6),
                 ),
               ),
-              padding:
-                  EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
+              padding: const EdgeInsets.only(
+                  left: 16, right: 16, top: 12, bottom: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -402,7 +407,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               vertical: 20, horizontal: 12),
                           child: Row(
                             children: [
@@ -417,7 +422,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                   textAlign: TextAlign.justify,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 6,
                               ),
                               Row(
@@ -444,271 +449,277 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                       ),
                     ),
                   ),
-                  paymentActionStatus == "None"
-                      ? SizedBox(
-                          height: 12,
-                        )
-                      : Container(),
-                  widget.chatConversation!.isGroupConversation!
-                      ? paymentActionStatus == "None"
-                          ? paymentRequest.toCustomer ==
-                                      widget.userBloc!.user.userName ||
-                                  paymentRequest.fromCustomer ==
-                                      widget.userBloc!.user.userName
-                              ? Container(
-                                  child: isSend
-                                      ? Row(
-                                          children: <Widget>[
-                                            Expanded(
-                                              child: CurvedButton(
-                                                text: "CANCEL",
-                                                height: 36,
-                                                backgroundColor: mateRed,
-                                                textColor: Colors.white,
-                                                borderRadius: 10,
-                                                onPressed:
-                                                    rejectOrCancelPaymentRequest,
-                                              ),
+                  if (paymentActionStatus == "None")
+                    const SizedBox(
+                      height: 12,
+                    )
+                  else
+                    Container(),
+                  if (widget.chatConversation!.isGroupConversation!)
+                    paymentActionStatus == "None"
+                        ? paymentRequest.toCustomer ==
+                                    widget.userBloc!.user.userName ||
+                                paymentRequest.fromCustomer ==
+                                    widget.userBloc!.user.userName
+                            ? Container(
+                                child: isSend
+                                    ? Row(
+                                        children: <Widget>[
+                                          Expanded(
+                                            child: CurvedButton(
+                                              text: "CANCEL",
+                                              height: 36,
+                                              backgroundColor: mateRed,
+                                              textColor: Colors.white,
+                                              borderRadius: 10,
+                                              onPressed:
+                                                  rejectOrCancelPaymentRequest,
                                             ),
-                                            SizedBox(
-                                              width: 16,
-                                            ),
-                                            Expanded(
-                                              child: Container(),
-                                            ),
-                                          ],
-                                        )
-                                      : Row(
-                                          children: <Widget>[
-                                            Expanded(
-                                              child: CurvedButton(
-                                                height: 36,
-                                                text: "REJECT",
-                                                backgroundColor: mateRed,
-                                                borderRadius: 10,
-                                                textColor: Colors.white,
-                                                onPressed:
-                                                    rejectOrCancelPaymentRequest,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 16,
-                                            ),
-                                            Expanded(
-                                              child: CurvedButton(
-                                                text: "PAY",
-                                                height: 36,
-                                                backgroundColor: navyBlue,
-                                                textColor: Colors.white,
-                                                borderRadius: 10,
-                                                onPressed: acceptPaymentRequest,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                )
-                              : Container()
-                          : Container()
-                      : paymentActionStatus == "None"
-                          ? Container(
-                              child: isSend
-                                  ? Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: CurvedButton(
-                                            text: "CANCEL",
-                                            height: 36,
-                                            backgroundColor: mateRed,
-                                            textColor: Colors.white,
-                                            borderRadius: 10,
-                                            onPressed:
-                                                rejectOrCancelPaymentRequest,
                                           ),
-                                        ),
-                                        SizedBox(
-                                          width: 16,
-                                        ),
-                                        Expanded(
-                                          child: Container(),
-                                        ),
-                                      ],
-                                    )
-                                  : Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: CurvedButton(
-                                            height: 36,
-                                            text: "REJECT",
-                                            backgroundColor: mateRed,
-                                            borderRadius: 10,
-                                            textColor: Colors.white,
-                                            onPressed:
-                                                rejectOrCancelPaymentRequest,
+                                          const SizedBox(
+                                            width: 16,
                                           ),
-                                        ),
-                                        SizedBox(
-                                          width: 16,
-                                        ),
-                                        Expanded(
-                                          child: CurvedButton(
-                                            text: "PAY",
-                                            height: 36,
-                                            backgroundColor: navyBlue,
-                                            textColor: Colors.white,
-                                            borderRadius: 10,
-                                            onPressed: acceptPaymentRequest,
+                                          Expanded(
+                                            child: Container(),
                                           ),
+                                        ],
+                                      )
+                                    : Row(
+                                        children: <Widget>[
+                                          Expanded(
+                                            child: CurvedButton(
+                                              height: 36,
+                                              text: "REJECT",
+                                              backgroundColor: mateRed,
+                                              borderRadius: 10,
+                                              textColor: Colors.white,
+                                              onPressed:
+                                                  rejectOrCancelPaymentRequest,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 16,
+                                          ),
+                                          Expanded(
+                                            child: CurvedButton(
+                                              text: "PAY",
+                                              height: 36,
+                                              backgroundColor: navyBlue,
+                                              textColor: Colors.white,
+                                              borderRadius: 10,
+                                              onPressed: acceptPaymentRequest,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                              )
+                            : Container()
+                        : Container()
+                  else
+                    paymentActionStatus == "None"
+                        ? Container(
+                            child: isSend
+                                ? Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: CurvedButton(
+                                          text: "CANCEL",
+                                          height: 36,
+                                          backgroundColor: mateRed,
+                                          textColor: Colors.white,
+                                          borderRadius: 10,
+                                          onPressed:
+                                              rejectOrCancelPaymentRequest,
                                         ),
-                                      ],
-                                    ),
-                            )
-                          : Container(),
-                  paymentActionStatus != "None"
-                      ? SizedBox(
-                          height: 12,
-                        )
-                      : Container(),
-                  paymentActionStatus != "None"
-                      ? Container(
-                          child: Row(
+                                      ),
+                                      const SizedBox(
+                                        width: 16,
+                                      ),
+                                      Expanded(
+                                        child: Container(),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: CurvedButton(
+                                          height: 36,
+                                          text: "REJECT",
+                                          backgroundColor: mateRed,
+                                          borderRadius: 10,
+                                          textColor: Colors.white,
+                                          onPressed:
+                                              rejectOrCancelPaymentRequest,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 16,
+                                      ),
+                                      Expanded(
+                                        child: CurvedButton(
+                                          text: "PAY",
+                                          height: 36,
+                                          backgroundColor: navyBlue,
+                                          textColor: Colors.white,
+                                          borderRadius: 10,
+                                          onPressed: acceptPaymentRequest,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          )
+                        : Container(),
+                  if (paymentActionStatus != "None")
+                    const SizedBox(
+                      height: 12,
+                    )
+                  else
+                    Container(),
+                  if (paymentActionStatus != "None")
+                    Container(
+                      child: Row(
+                        children: [
+                          Icon(
+                            SlydoAppIcon.true_icon,
+                            size: 12,
+                            color: getStatusOfPaymentColor(),
+                          ),
+                          const SizedBox(
+                            width: 4,
+                          ),
+                          Row(
                             children: [
-                              Icon(
-                                SlydoAppIcon.true_icon,
-                                size: 12,
-                                color: getStatusOfPaymentColor(),
+                              Text(getStatusOfThePayment(isSend),
+                                  style: TextStyle(
+                                      color: blackFont,
+                                      fontWeight: isScreenSmall
+                                          ? FontWeight.w500
+                                          : FontWeight.w600,
+                                      fontSize: isScreenSmall ? 12 : 14)),
+                              Text(
+                                  "${getDateTime(dateAndTime: paymentActionTime)}",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                    color: darkGrey,
+                                    fontSize: isScreenSmall ? 10 : 12,
+                                    fontWeight: FontWeight.w400,
+                                  ))
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Container(),
+                  if (widget.chatConversation!.isGroupConversation!)
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        Container(
+                          width: 42,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Positioned(
+                                left: 26,
+                                child: Container(
+                                  height: 34,
+                                  width: 34,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                      border: Border.all(
+                                          color: navyBlue, width: 2)),
+                                  child: ClipOval(
+                                    child: Container(
+                                      color: Colors.white,
+                                      child: CachedNetworkImage(
+                                        height: 34,
+                                        width: 34,
+                                        fit: BoxFit.fill,
+                                        errorWidget: imageErrorWidget,
+                                        imageUrl:
+                                            paymentRequest.toCustomerAvatar!,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                              SizedBox(
-                                width: 4,
-                              ),
-                              Row(
-                                children: [
-                                  Text(getStatusOfThePayment(isSend),
-                                      style: TextStyle(
-                                          color: blackFont,
-                                          fontWeight: isScreenSmall
-                                              ? FontWeight.w500
-                                              : FontWeight.w600,
-                                          fontSize: isScreenSmall ? 12 : 14)),
-                                  Text(
-                                      "${getDateTime(dateAndTime: paymentActionTime)}",
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      softWrap: false,
-                                      style: TextStyle(
-                                        color: darkGrey,
-                                        fontSize: isScreenSmall ? 10 : 12,
-                                        fontWeight: FontWeight.w400,
-                                      ))
-                                ],
+                              Container(
+                                height: 34,
+                                width: 34,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100),
+                                    border: Border.all(
+                                        color: naturalGreen, width: 2)),
+                                child: ClipOval(
+                                  child: Container(
+                                    color: Colors.white,
+                                    child: CachedNetworkImage(
+                                      height: 34,
+                                      width: 34,
+                                      fit: BoxFit.fill,
+                                      errorWidget: imageErrorWidget,
+                                      imageUrl:
+                                          paymentRequest.fromCustomerAvatar!,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                        )
-                      : Container(),
-                  widget.chatConversation!.isGroupConversation!
-                      ? Column(
-                          children: [
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Container(
-                              width: 42,
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Positioned(
-                                    left: 26,
-                                    child: Container(
-                                      height: 34,
-                                      width: 34,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          border: Border.all(
-                                              color: navyBlue, width: 2)),
-                                      child: ClipOval(
-                                        child: Container(
-                                          color: Colors.white,
-                                          child: CachedNetworkImage(
-                                            height: 34,
-                                            width: 34,
-                                            fit: BoxFit.fill,
-                                            errorWidget: imageErrorWidget,
-                                            imageUrl: paymentRequest
-                                                .toCustomerAvatar!,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 34,
-                                    width: 34,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        border: Border.all(
-                                            color: naturalGreen, width: 2)),
-                                    child: ClipOval(
-                                      child: Container(
-                                        color: Colors.white,
-                                        child: CachedNetworkImage(
-                                          height: 34,
-                                          width: 34,
-                                          fit: BoxFit.fill,
-                                          errorWidget: imageErrorWidget,
-                                          imageUrl: paymentRequest
-                                              .fromCustomerAvatar!,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container()
+                        ),
+                      ],
+                    )
+                  else
+                    Container()
                 ],
               ),
             ),
-            isSend
-                ? Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: 20,
-                      child: isSend
-                          ? Align(
-                              alignment: Alignment.bottomCenter,
-                              child: getMessageTick(message: widget.message!))
-                          : Container(),
-                    ),
-                  )
-                : Container(),
+            if (isSend)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: 20,
+                  child: isSend
+                      ? Align(
+                          alignment: Alignment.bottomCenter,
+                          child: getMessageTick(message: widget.message!))
+                      : Container(),
+                ),
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              const SizedBox(
+                width: 20,
+              ),
             Text(
               formatTime(paymentActionTime),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSend)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         )
       ],
@@ -719,7 +730,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     BottomSheetPassCode(
         context: context,
         isValidCallback: () async {
-          var response = await PaymentAndBankingAuth().acceptPaymentRequests(
+          final response = await PaymentAndBankingAuth().acceptPaymentRequests(
               paymentRequest,
               messageId: widget.message!["id"]);
 
@@ -736,7 +747,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
   }
 
   void rejectOrCancelPaymentRequest() async {
-    var result = await PaymentAndBankingAuth().rejectPaymentRequests(
+    final result = await PaymentAndBankingAuth().rejectPaymentRequests(
         paymentRequest,
         messageId: widget.message!["id"]);
     if (result) {
@@ -745,9 +756,9 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
   }
 
   String getDateTime({required String dateAndTime}) {
-    DateTime requestTime = DateTime.parse(dateAndTime).toLocal();
-    String date = DateFormat("dd/MM/yy").format(requestTime);
-    String time = DateFormat("hh:mm a").format(requestTime);
+    final DateTime requestTime = DateTime.parse(dateAndTime).toLocal();
+    final String date = DateFormat("dd/MM/yy").format(requestTime);
+    final String time = DateFormat("hh:mm a").format(requestTime);
     return " • $date • $time";
   }
 

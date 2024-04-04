@@ -22,13 +22,13 @@ class ListRefresher {
       if (myGlobals.scaffoldKey.currentContext != null) {
         if (AppConfig.enableLogs.value)
           debugPrint("<====== Refreshing list ======>");
-        RouteProvider routeProvider = Provider.of<RouteProvider>(
+        final RouteProvider routeProvider = Provider.of<RouteProvider>(
           myGlobals.scaffoldKey.currentContext!,
           listen: false,
         );
 
         if (routeProvider.routes.contains("/dashboard")) {
-          RefreshBlocForRequestPayment refreshBlocForRequestPayment =
+          final RefreshBlocForRequestPayment refreshBlocForRequestPayment =
               Provider.of<RefreshBlocForRequestPayment>(
                   myGlobals.scaffoldKey.currentContext!,
                   listen: false);
@@ -36,7 +36,7 @@ class ListRefresher {
         }
 
         if (routeProvider.routes.contains("/transactions")) {
-          RefreshBlocForTransaction refreshBlocForTransaction =
+          final RefreshBlocForTransaction refreshBlocForTransaction =
               Provider.of<RefreshBlocForTransaction>(
                   myGlobals.scaffoldKey.currentContext!,
                   listen: false);

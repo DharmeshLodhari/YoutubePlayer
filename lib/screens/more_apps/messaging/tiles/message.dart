@@ -34,7 +34,7 @@ class _MessageTileState extends State<MessageTile> {
     userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -43,7 +43,7 @@ class _MessageTileState extends State<MessageTile> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                   dense: true,
                   leading: getLeading(),
@@ -59,7 +59,8 @@ class _MessageTileState extends State<MessageTile> {
   }
 
   Widget getLeading() {
-    bool currentUserIsSender = userBloc.user.userName == partialMessage!.sender;
+    final bool currentUserIsSender =
+        userBloc.user.userName == partialMessage!.sender;
 
     return Container(
       height: 48,
@@ -99,7 +100,8 @@ class _MessageTileState extends State<MessageTile> {
   }
 
   Widget getTitle() {
-    bool currentUserIsSender = userBloc.user.userName == partialMessage!.sender;
+    final bool currentUserIsSender =
+        userBloc.user.userName == partialMessage!.sender;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 2.0),
@@ -121,7 +123,8 @@ class _MessageTileState extends State<MessageTile> {
     // or isSender is seeing message we got that user and check if it is recipient then
     // we are showing and modifying star icon by message's isStarredByRecipient property and if it sender then
     // we are showing and modifying star icon by message's isStarredBySender property
-    bool isRecipient = userBloc.user.userName == partialMessage!.recipient;
+    final bool isRecipient =
+        userBloc.user.userName == partialMessage!.recipient;
     return IconButton(
       icon: isRecipient
           ? partialMessage!.isStarredByRecipient!
@@ -147,7 +150,7 @@ class _MessageTileState extends State<MessageTile> {
                   size: 20,
                 ),
       onPressed: () async {
-        var action = isRecipient
+        final action = isRecipient
             ? partialMessage!.isStarredByRecipient!
                 ? AppLocalization.of(context)!.unstar
                 : AppLocalization.of(context)!.star

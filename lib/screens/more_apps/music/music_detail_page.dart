@@ -106,7 +106,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -132,14 +132,14 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: musicPoster(),
         ),
-        Flexible(
+        const Flexible(
           flex: 3,
           child: SizedBox(
             height: 40,
@@ -148,7 +148,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
             builder: (context, info) {
           return Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -161,7 +161,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                       fontWeight: FontWeight.w700,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Text(
@@ -177,24 +177,24 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             ),
           );
         }),
-        Flexible(
+        const Flexible(
           flex: 1,
           child: SizedBox(
             height: 40,
           ),
         ),
         progressIndicator(),
-        Flexible(
+        const Flexible(
           flex: 2,
           child: SizedBox(
             height: 40,
           ),
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: playerController(),
         ),
-        Flexible(
+        const Flexible(
           flex: 4,
           child: SizedBox(
             height: 40,
@@ -210,7 +210,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
             builder: (context, info) {
           if (info.current == null) {
-            return SizedBox(
+            return const SizedBox(
               height: 50,
             );
           }
@@ -391,10 +391,10 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
                 trackHeight: 1,
                 thumbColor: navyBlue,
                 inactiveTrackColor: dividerColor,
-                trackShape: RoundedRectSliderTrackShape(),
+                trackShape: const RoundedRectSliderTrackShape(),
                 activeTrackColor: navyBlue,
                 disabledThumbColor: Colors.white,
-                thumbShape: RoundSliderThumbShape(
+                thumbShape: const RoundSliderThumbShape(
                     disabledThumbRadius: 5,
                     enabledThumbRadius: 5,
                     elevation: 1,
@@ -440,7 +440,7 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
                         fontWeight: FontWeight.w400,
                         color: darkGrey),
                   ),
-                  Expanded(
+                  const Expanded(
                       child: SizedBox(
                     width: 8,
                   )),

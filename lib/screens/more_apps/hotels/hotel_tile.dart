@@ -22,7 +22,7 @@ class HotelTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -35,7 +35,7 @@ class HotelTile extends StatelessWidget {
                     width: 68,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
                 Expanded(
@@ -156,12 +156,12 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: widget.hotelRoom!.images!.map((url) {
-                                int index =
+                                final int index =
                                     widget.hotelRoom!.images!.indexOf(url);
                                 return Container(
                                   width: 5.0,
                                   height: 5.0,
-                                  margin: EdgeInsets.symmetric(
+                                  margin: const EdgeInsets.symmetric(
                                       vertical: 10.0, horizontal: 2.0),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
@@ -176,8 +176,8 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                         ],
                       ),
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -234,7 +234,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                                 ),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 4,
                             ),
                             Row(
@@ -257,7 +257,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                                       color: starYellow,
                                       size: 11,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 4,
                                     ),
                                     Text(
@@ -362,11 +362,12 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: widget.hotelRoom!.images!.map((url) {
-                            int index = widget.hotelRoom!.images!.indexOf(url);
+                            final int index =
+                                widget.hotelRoom!.images!.indexOf(url);
                             return Container(
                               width: 5.0,
                               height: 5.0,
-                              margin: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 2.0),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
@@ -381,7 +382,8 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -438,7 +440,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 4,
                         ),
                         Row(
@@ -461,7 +463,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                                   color: starYellow,
                                   size: 11,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 4,
                                 ),
                                 Text(
@@ -502,7 +504,8 @@ class PartialHotelRoomItemTile extends StatelessWidget {
           width: 180,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -516,7 +519,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
                     fit: BoxFit.fill,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Column(
@@ -611,7 +614,8 @@ class CityItemCard extends StatelessWidget {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -626,7 +630,7 @@ class CityItemCard extends StatelessWidget {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -671,7 +675,7 @@ class ReviewTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Text(
@@ -690,7 +694,7 @@ class ReviewTile extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Row(
@@ -700,7 +704,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -708,7 +712,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -716,7 +720,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -724,7 +728,7 @@ class ReviewTile extends StatelessWidget {
                 color: starYellow,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               Icon(
@@ -732,12 +736,12 @@ class ReviewTile extends StatelessWidget {
                 color: greyBorderColor,
                 size: 11,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Text(
@@ -746,7 +750,7 @@ class ReviewTile extends StatelessWidget {
                 fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
             textAlign: TextAlign.justify,
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Divider(
@@ -779,7 +783,7 @@ class PartnerTile extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
           Expanded(
@@ -793,7 +797,7 @@ class PartnerTile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
                 Row(
@@ -803,7 +807,7 @@ class PartnerTile extends StatelessWidget {
                       color: starYellow,
                       size: 11,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -818,7 +822,7 @@ class PartnerTile extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 16,
           ),
           Column(

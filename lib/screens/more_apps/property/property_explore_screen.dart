@@ -135,7 +135,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
       ),
       actions: [
         locationChip(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         )
       ],
@@ -144,8 +144,8 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
 
   Widget locationChip() {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(60),
           color: navyBlue.withOpacity(0.1)),
@@ -156,7 +156,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
             color: blackFont,
             size: 14,
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(
@@ -181,16 +181,16 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 6,
             ),
             searchBox(),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             nearByYou(),
             mostRecentDiscoveryList(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             exploreByCity(
@@ -199,7 +199,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                   "https://m.media-amazon.com/images/I/A1o+mUmviOL._SS500_.jpg",
               movieName: "The Cloud Of Northland Thunder",
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ],
@@ -210,7 +210,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -250,8 +250,8 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -295,7 +295,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -332,12 +332,12 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: mostRecentDiscovery
                             .map(
                               (property) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: PartialPropertyItemTile(
                                   property: property,
                                 ),
@@ -359,7 +359,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -396,12 +396,12 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: listOfCity
                             .map(
                               (city) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: CityItemCard(
                                   city: city,
                                 ),
@@ -429,7 +429,8 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -444,7 +445,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -469,7 +470,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -498,7 +499,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
           ),
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: isNearByItemLoading
                 ? Container(
                     height: 220,
@@ -510,14 +511,14 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(
+                      padding: const EdgeInsets.only(
                         left: 16,
                         bottom: 12,
                       ),
                       child: Row(
                         children: nearByItem
                             .map((element) => Container(
-                                  margin: EdgeInsets.only(right: 16),
+                                  margin: const EdgeInsets.only(right: 16),
                                   child: RentPropertyTile(
                                     property: element,
                                   ),
@@ -558,7 +559,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
               alignment: Alignment.center,
               child: Text(
                 temp ? "Beach event" : "Mongola",
-                style: TextStyle(
+                style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Colors.white),

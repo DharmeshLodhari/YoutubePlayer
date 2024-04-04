@@ -62,11 +62,11 @@ String appVersion = '';
 final logger = Logger();
 
 void main() async {
-  HttpOverrides.global = new MyHttpOverrides();
+  HttpOverrides.global = MyHttpOverrides();
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
 
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  final PackageInfo packageInfo = await PackageInfo.fromPlatform();
   appVersion = packageInfo.version;
 
   cameras = await availableCameras();
@@ -154,7 +154,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final AppLocalizationDelegate _localeOverrideDelegate =
-      AppLocalizationDelegate(Locale('en', 'US'));
+      const AppLocalizationDelegate(Locale('en', 'US'));
 
   @override
   void initState() {

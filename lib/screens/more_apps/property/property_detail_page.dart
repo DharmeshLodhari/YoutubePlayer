@@ -144,7 +144,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -177,29 +177,29 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                 eventPoster(),
                 Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 24,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: eventNameAndHostInformation(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         children: [
                           Divider(
                             thickness: 1,
                             color: dividerColor,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 12,
                           ),
                           features(),
-                          SizedBox(
+                          const SizedBox(
                             height: 16,
                           ),
                           Divider(
@@ -217,12 +217,12 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 propertyFeature(),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
                       Divider(
@@ -230,22 +230,22 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                         color: dividerColor,
                         height: 16,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       aboutEvent(),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       Divider(
                         thickness: 1,
                         color: dividerColor,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       eventLocation(),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                       ),
                       Divider(
@@ -253,16 +253,16 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                         color: dividerColor,
                         height: 0,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       reviewsList(),
                       aboutPartnerList(),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       askQuestionBtn(),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                     ],
@@ -271,7 +271,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                 rentDetail(
                   categoryName: "Similar properties",
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
               ],
@@ -285,68 +285,69 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
         aspectRatio: 16 / 9,
         child: Stack(
           children: [
-            isVideo
-                ? Chewie(
-                    controller: _chewieController,
-                    posterUrl: property.images!.first,
-                    titleName: property.name,
-                  )
-                : Stack(
-                    children: [
-                      CarouselSlider(
-                        options: CarouselOptions(
-                            viewportFraction: 1.0,
-                            enlargeCenterPage: true,
-                            autoPlay: false,
-                            // aspectRatio: 2,
-                            onPageChanged: (index, _) {
-                              if (mounted) {
-                                setState(() {
-                                  _current = index;
-                                });
-                              }
-                            }),
-                        items: property.images!
-                            .map(
-                              (e) => InkWell(
-                                child: CachedNetworkImage(
-                                  width: double.infinity,
-                                  imageUrl: e,
-                                  errorWidget: imageErrorWidget,
-                                  fit: BoxFit.fill,
-                                  filterQuality: FilterQuality.high,
-                                ),
-                                onTap: () {},
-                              ),
-                            )
-                            .toList(),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: MediaQuery.of(context).size.width / 2 -
-                            5 * property.images!.length,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: property.images!.map((url) {
-                            int index = property.images!.indexOf(url);
-                            return Container(
-                              width: 5.0,
-                              height: 5.0,
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 2.0),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: _current == index
-                                    ? Colors.white
-                                    : Colors.white30,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ],
+            if (isVideo)
+              Chewie(
+                controller: _chewieController,
+                posterUrl: property.images!.first,
+                titleName: property.name,
+              )
+            else
+              Stack(
+                children: [
+                  CarouselSlider(
+                    options: CarouselOptions(
+                        viewportFraction: 1.0,
+                        enlargeCenterPage: true,
+                        autoPlay: false,
+                        // aspectRatio: 2,
+                        onPageChanged: (index, _) {
+                          if (mounted) {
+                            setState(() {
+                              _current = index;
+                            });
+                          }
+                        }),
+                    items: property.images!
+                        .map(
+                          (e) => InkWell(
+                            child: CachedNetworkImage(
+                              width: double.infinity,
+                              imageUrl: e,
+                              errorWidget: imageErrorWidget,
+                              fit: BoxFit.fill,
+                              filterQuality: FilterQuality.high,
+                            ),
+                            onTap: () {},
+                          ),
+                        )
+                        .toList(),
                   ),
+                  Positioned(
+                    bottom: 0,
+                    left: MediaQuery.of(context).size.width / 2 -
+                        5 * property.images!.length,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: property.images!.map((url) {
+                        int index = property.images!.indexOf(url);
+                        return Container(
+                          width: 5.0,
+                          height: 5.0,
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 2.0),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _current == index
+                                ? Colors.white
+                                : Colors.white30,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
             Positioned(
               right: 14,
               top: 14,
@@ -388,7 +389,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                   color: starYellow,
                   size: 11,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 4,
                 ),
                 Text(
@@ -399,7 +400,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Text(
@@ -407,7 +408,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Row(
@@ -425,7 +426,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             Text(
@@ -448,7 +449,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Column(
@@ -469,7 +470,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                           color: starYellow,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 12,
                       ),
                       Expanded(
@@ -486,7 +487,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             Row(
@@ -505,7 +506,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                           color: naturalGreen,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 12,
                       ),
                       Expanded(
@@ -522,7 +523,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             Row(
@@ -541,7 +542,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                           color: mateRed,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 12,
                       ),
                       Text(
@@ -556,7 +557,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
           ],
@@ -567,7 +568,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
 
   Widget propertyFeature() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -576,7 +577,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Row(
@@ -595,7 +596,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -622,7 +623,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -637,7 +638,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Row(
@@ -656,7 +657,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -683,7 +684,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -698,7 +699,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Row(
@@ -717,7 +718,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -744,7 +745,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                         color: blackFont,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -769,7 +770,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -802,12 +803,12 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Container(
-                padding: EdgeInsets.only(left: 16, top: 16, bottom: 16),
+                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
                 child: Row(
                   children: property.similarProperties!
                       .map(
                         (similarProperty) => Container(
-                          margin: EdgeInsets.only(right: 12),
+                          margin: const EdgeInsets.only(right: 12),
                           child: rentCard(similarProperty: similarProperty),
                         ),
                       )
@@ -833,7 +834,8 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -848,7 +850,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                     errorWidget: imageErrorWidget,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Column(
@@ -922,20 +924,20 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: boxShadowTwo,
-            offset: Offset(0.0, 0.0),
+            offset: const Offset(0.0, 0.0),
             blurRadius: 20.0,
           ),
         ],
         color: isSelected ? navyBlue : Colors.white,
-        borderRadius: BorderRadius.all(
-          const Radius.circular(10.0),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(10.0),
         ),
-        border: new Border.all(
+        border: Border.all(
             color: isSelected ? navyBlue : lightGrey,
             width: 1.0,
             style: BorderStyle.solid),
       ),
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
       child: Column(
         children: [
           Text(
@@ -945,7 +947,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                 fontWeight: FontWeight.w400,
                 color: isSelected ? Colors.white : blackFont),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Text(
@@ -969,7 +971,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Text(
@@ -1004,7 +1006,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
         Container(
@@ -1053,13 +1055,13 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Column(
             children: property.reviews!
                 .map((review) => Container(
-                      margin: EdgeInsets.only(bottom: 12),
+                      margin: const EdgeInsets.only(bottom: 12),
                       child: ReviewTile(),
                     ))
                 .toList(),
@@ -1082,13 +1084,13 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               color: blackFont,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Column(
             children: property.partners!
                 .map((partner) => Container(
-                      margin: EdgeInsets.only(bottom: 12),
+                      margin: const EdgeInsets.only(bottom: 12),
                       child: Column(
                         children: [
                           InkWell(
@@ -1097,7 +1099,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                                     .pushNamed("/partner-detail");
                               },
                               child: PartnerTile()),
-                          SizedBox(
+                          const SizedBox(
                             height: 16,
                           ),
                           Divider(
@@ -1117,7 +1119,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
 
   Widget selectDate() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1129,13 +1131,13 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               color: blackFont,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           Row(
             children: [
               Expanded(child: dateAndTimeTile("Check in", "Oct 25")),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
               Expanded(child: dateAndTimeTile("Check out", "Nov 25")),

@@ -229,11 +229,11 @@ class FindJobsTabState extends State<FindJobsTab> {
                                 DeliveryOrderTile(
                                     jobListing: jobListing[index]),
                                 _buildJobAction(index),
-                                SizedBox(height: 10.0),
+                                const SizedBox(height: 10.0),
                               ],
                             ),
                           ),
-                          SizedBox(height: 10.0),
+                          const SizedBox(height: 10.0),
                         ],
                       ),
                     );
@@ -271,7 +271,7 @@ class FindJobsTabState extends State<FindJobsTab> {
 
   Widget _buildAcceptRejectButton(DeliveryModel jobListing) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 7.0),
+      padding: const EdgeInsets.symmetric(horizontal: 7.0),
       child: Row(
         children: [
           Expanded(
@@ -297,7 +297,7 @@ class FindJobsTabState extends State<FindJobsTab> {
               isLoading: isRejectAPILoading,
             ),
           ),
-          SizedBox(width: 15),
+          const SizedBox(width: 15),
           Expanded(
             child: CurvedButton(
               onPressed: isAcceptAPILoading

@@ -59,7 +59,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
             arguments: {"searchedUserName": widget.user.userName});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         child: Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -71,7 +71,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     dense: true,
                     title: userNameWithVerifiedIcon(
@@ -95,7 +95,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    Color borderColor = getUserTypeColor(user: user);
+    final Color borderColor = getUserTypeColor(user: user);
 
     if (user.avatar == "" ||
         user.avatar ==
@@ -141,7 +141,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
     return Slidable(
       controller: slidableController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: userCard(),
       actions: widget.user.userName.toString().toLowerCase() == "slydo"
@@ -154,7 +154,8 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
   }
 
   List<Widget> listActionSlideActions() {
-    bool isNotCurrentUser = widget.user.userName != userBloc.user.userName;
+    final bool isNotCurrentUser =
+        widget.user.userName != userBloc.user.userName;
     return [
       if (isNotCurrentUser)
         SlideActionButton(
@@ -224,7 +225,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
   }
 
   void blockUserAlert(CustomerProfile user) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -249,13 +250,13 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().blockUser(user);
+      final bool done = await UserAuth().blockUser(user);
       if (done) {
         showSnackbar(context,
             message: "${user.displayName()} " +
                 AppLocalization.of(context)!.isBlockedSuccessfully);
 
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
@@ -268,7 +269,7 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
   }
 
   void connectUserAlert(CustomerProfile user) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),

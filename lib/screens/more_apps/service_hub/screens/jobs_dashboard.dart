@@ -80,7 +80,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -100,7 +100,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         isActiveListLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService().getActiveJobListing(
+        final result = await ServiceHubAuthService().getActiveJobListing(
             activeListingNext, activeListingPrevious,
             category: category);
 
@@ -117,7 +117,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         activeListingCount = result.count;
         activeListingNext = result.next;
         activeListingPrevious = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
         if (mounted) {
           setState(() {
             noJobsInList = false;
@@ -444,7 +444,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   }
 
   void showSearchProductAndServiceBottomSheet() async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -478,14 +478,14 @@ class _JobsDashboardState extends State<JobsDashboard> {
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -500,8 +500,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
     return Container(
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionTheme:
-              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+          textSelectionTheme: const TextSelectionThemeData()
+              .copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -518,8 +518,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
             hintText: 'Search Category',
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 12),
             ),
             suffixIcon: searchIcon(),
@@ -603,7 +603,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         }
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ServiceHubAuthService()
+        final Map<String, dynamic>? result = await ServiceHubAuthService()
             .getSearchCategoryList(
                 categoryNext, categoryPrevious, searchItemTextController!.text);
         if (result == null) {
@@ -613,7 +613,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
         categoryCount = result['count'];
         categoryNext = result['next'];
         categoryPrevious = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
         searchedCategoryList.clear();
@@ -642,7 +642,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
   Widget bottomSheetTabBar() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Expanded(child: bottomSheetTabViews())
@@ -725,7 +725,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
   void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         categoryCount = 0;
@@ -771,7 +771,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
             isResult: true,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             itemCount: searchedCategoryList.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -781,7 +781,8 @@ class _JobsDashboardState extends State<JobsDashboard> {
                 return GestureDetector(
                     onTap: () {
                       // get selected category
-                      CategoryListData picked = searchedCategoryList[index];
+                      final CategoryListData picked =
+                          searchedCategoryList[index];
                       selectedCategory = picked.name!;
 
                       //refresh the active job listing with selected category
@@ -819,7 +820,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
 
   Widget categoryViewCard(CategoryListData category) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -830,7 +831,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   title: Text(

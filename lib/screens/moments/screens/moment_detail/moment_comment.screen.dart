@@ -244,7 +244,8 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await MomentsService().getAllComments(
+        final Map<String, dynamic>? result =
+            await MomentsService().getAllComments(
           widget.yarnComment!.id!,
         );
 
@@ -261,7 +262,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
         count = result['count'];
         next = result['next'] != null ? result['next'] : "";
         previous = result['previous'] != null ? result['previous'] : "";
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         yarnComments = [];
         if (mounted) {
@@ -375,7 +376,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
   }
 
   Future addReplyComment() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": getLoggedInUserName(context),
       "is_reply": true,
@@ -393,7 +394,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
 
     //create multipart request for POST or PATCH method
     try {
-      YarnComment? yarnComment = await MomentsService()
+      final YarnComment? yarnComment = await MomentsService()
           .addReplyToComment(widget.yarnComment!.id!, data);
       if (yarnComment != null) {
         //update the comment count from previous page
@@ -482,7 +483,7 @@ class _MomentCommentScreenState extends State<MomentCommentScreen> {
 
   void _onPostRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         yarnCommentScreenKey = GlobalKey<ScaffoldState>();

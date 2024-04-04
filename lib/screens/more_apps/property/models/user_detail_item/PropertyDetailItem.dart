@@ -34,8 +34,7 @@ class PropertyDetailItem {
   factory PropertyDetailItem.fromJson(Map<String, dynamic> json) {
     return PropertyDetailItem(
       about: json['about'],
-      images:
-          json['images'] != null ? new List<String>.from(json['images']) : null,
+      images: json['images'] != null ? List<String>.from(json['images']) : null,
       location: json['location'] != null
           ? (json['location'] as List).map((i) => Location.fromJson(i)).toList()
           : null,
@@ -60,7 +59,7 @@ class PropertyDetailItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['about'] = this.about;
     data['name'] = this.name;
     data['owner_avatar'] = this.ownerAvatar;

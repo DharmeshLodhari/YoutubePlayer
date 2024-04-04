@@ -27,21 +27,21 @@ class ConnectionRequestList extends StatefulWidget {
 
 class _ConnectionRequestListState extends State<ConnectionRequestList> {
   final GlobalKey<ScaffoldState> _scaffoldContactRequestListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState>
       _scaffoldMessengerContactRequestListKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
   late UserBloc userBloc;
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";
   String? previous = "";
   List connectionRequestList = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @protected
   void initState() {
@@ -64,7 +64,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -111,7 +111,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       child: Column(
         children: [
           Expanded(child: _buildFriendsList()),
-          SizedBox(height: 80),
+          const SizedBox(height: 80),
         ],
       ),
     );
@@ -125,7 +125,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             msg: noConnectionRequestMsg,
           )
         : ListView.builder(
-            padding: EdgeInsets.only(bottom: 80.0),
+            padding: const EdgeInsets.only(bottom: 80.0),
             //+1 for progressbar
             itemCount: connectionRequestList.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -141,10 +141,10 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
             opacity: isLoading ? 1.0 : 00,
             child: isLoading ? CircularLoadingIndicator() : Container()),
       ),
@@ -159,7 +159,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result = await UserAuth()
+        final Map<String, dynamic>? result = await UserAuth()
             .listContactRequests(next, previous)
             .catchError((error) {
           debugPrint("ERROR:- $error");
@@ -169,7 +169,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isLoading = false;
         connectionRequestList.addAll(tempList);
@@ -189,7 +189,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             ?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -205,10 +205,11 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 
   List<Widget> listSecondaryActions(Map data, int index) {
-    CustomerProfile fromUser = CustomerProfile.fromJson(data["from_user"]);
-    CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
+    final CustomerProfile fromUser =
+        CustomerProfile.fromJson(data["from_user"]);
+    final CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
 
-    bool isRequestSent = fromUser.userName == userBloc.user.userName;
+    final bool isRequestSent = fromUser.userName == userBloc.user.userName;
     return isRequestSent
         ? []
         : [
@@ -226,10 +227,11 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 
   List<Widget> listActionSlideActions(Map data, int index) {
-    CustomerProfile fromUser = CustomerProfile.fromJson(data["from_user"]);
-    CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
+    final CustomerProfile fromUser =
+        CustomerProfile.fromJson(data["from_user"]);
+    final CustomerProfile toUser = CustomerProfile.fromJson(data["to_user"]);
 
-    bool isRequestSent = fromUser.userName == userBloc.user.userName;
+    final bool isRequestSent = fromUser.userName == userBloc.user.userName;
 
     return [
       SlideActionButton(
@@ -249,7 +251,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
   void rejectRequestAlert(CustomerProfile user, int index,
       {required bool isRequestSent}) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -299,7 +301,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 
   Future<void> acceptFriendRequestAlert(CustomerProfile user, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),
@@ -326,7 +328,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       actionTwoText: AppLocalization.of(context)!.accept,
     );
     if (result != null && result) {
-      bool done = await UserAuth().acceptContactRequest(user);
+      final bool done = await UserAuth().acceptContactRequest(user);
       if (done) {
         _showSnackBar(
             context,
@@ -335,7 +337,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
         connectionRequestList.removeAt(index);
 
-        RefreshBlocForConnectionDashboard refreshBloc =
+        final RefreshBlocForConnectionDashboard refreshBloc =
             Provider.of<RefreshBlocForConnectionDashboard>(context,
                 listen: false);
 
@@ -358,11 +360,11 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       key: Key(data["id"].toString()),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(data),
       actions: listActionSlideActions(data, index),
       secondaryActions: listSecondaryActions(data, index),
+      child: VerticalListItem(data),
     );
   }
 
@@ -394,7 +396,8 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    CustomerProfile user = CustomerProfile.fromJson(cleanDisplayData(data)!);
+    final CustomerProfile user =
+        CustomerProfile.fromJson(cleanDisplayData(data)!);
 
     return GestureDetector(
       onTap: () {
@@ -405,7 +408,7 @@ class VerticalListItem extends StatelessWidget {
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: UserTile(user: user),
       ),
     );

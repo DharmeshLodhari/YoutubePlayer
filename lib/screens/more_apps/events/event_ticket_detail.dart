@@ -73,26 +73,26 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
           ),
           Container(
             height: 570,
-            padding: EdgeInsets.symmetric(horizontal: 36),
+            padding: const EdgeInsets.symmetric(horizontal: 36),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
                 bookingInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 24,
                 ),
                 MySeparator(color: dividerColor),
-                SizedBox(
+                const SizedBox(
                   height: 28,
                 ),
                 placeInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 MySeparator(color: dividerColor),
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
                 Center(
@@ -115,7 +115,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
 
   Widget ticketWithOutImage() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Card(
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -126,22 +126,22 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 bookingInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 MySeparator(color: dividerColor),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 placeInfo(),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Stack(
@@ -175,7 +175,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                   ],
                 ),
                 Container(
-                  padding: EdgeInsets.all(40),
+                  padding: const EdgeInsets.all(40),
                   child: CachedNetworkImage(
                       errorWidget: imageErrorWidget,
                       imageUrl:
@@ -220,7 +220,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Expanded(
@@ -237,7 +237,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -256,7 +256,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Expanded(
@@ -273,7 +273,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -292,7 +292,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                       color: blackFont,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Row(
@@ -312,7 +312,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
       ],
@@ -335,6 +335,8 @@ class MySeparator extends StatelessWidget {
         final dashHeight = height;
         final dashCount = (boxWidth / (2 * dashWidth)).floor();
         return Flex(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          direction: Axis.horizontal,
           children: List.generate(dashCount, (_) {
             return SizedBox(
               width: dashWidth,
@@ -344,8 +346,6 @@ class MySeparator extends StatelessWidget {
               ),
             );
           }),
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          direction: Axis.horizontal,
         );
       },
     );

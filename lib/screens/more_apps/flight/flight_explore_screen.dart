@@ -18,16 +18,16 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
   List<String> numberCount = List.generate(10, (index) => "$index");
   List<String> ageForChildren = ["1", "2", "3"];
 
-  var selectedFromPlace;
-  var selectedToPlace;
-  var selectedClass;
+  String? selectedFromPlace;
+  String? selectedToPlace;
+  String? selectedClass;
 
   DateTime departureDate = DateTime.now();
   DateTime arrivalDate = DateTime.now();
 
   late FlightDashboardBloc _flightDashboardBloc;
 
-  var selectedTripType = "One way";
+  String? selectedTripType = "One way";
 
   String? selectedAdultCount;
   String? selectedChildrenCount;
@@ -73,7 +73,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
         child: Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Card(
             elevation: 2,
             margin: EdgeInsets.zero,
@@ -86,34 +86,34 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: iconBtnGrey, width: 1)),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getTripType(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getFromPlaceDropDown(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getToPlaceDropDown(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getDateField(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getPassengerCount(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     getClassDropDown(),
-                    SizedBox(
+                    const SizedBox(
                       height: 40,
                     ),
                   ],
@@ -122,14 +122,14 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: submitButton(),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
       ],
@@ -153,7 +153,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
                           ? navyBlue
                           : dividerColor,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -188,7 +188,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
                           ? navyBlue
                           : dividerColor,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
@@ -262,56 +262,57 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
             ),
           ),
         ),
-        selectedTripType == "Round trip"
-            ? SizedBox(
-                width: 10,
-              )
-            : Container(),
-        selectedTripType == "Round trip"
-            ? Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    showDatePicker(
-                      builder: customThemeBuilder,
-                      context: context,
-                      initialDate: DateTime(DateTime.now().year,
-                          DateTime.now().month, DateTime.now().day),
-                      firstDate: DateTime(DateTime.now().year,
-                          DateTime.now().month, DateTime.now().day),
-                      lastDate: DateTime(2101),
-                    ).then((value) {
-                      arrivalDate =
-                          DateTime(value!.year, value.month, value.day);
-                      setState(() {});
-                    }).catchError((error) {});
-                  },
-                  child: CustomizedDropDownField(
-                    title: "Arrival date",
-                    child: Container(
-                      child: ListTile(
-                        dense: true,
-                        title: Text(
-                          formatDateInDigit(arrivalDate),
-                          style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                          maxLines: 1,
-                        ),
-                        trailing: Icon(
-                          SlydoAppIcon.date,
-                          size: 16,
-                          color: darkGrey,
-                        ),
+        if (selectedTripType == "Round trip")
+          const SizedBox(
+            width: 10,
+          )
+        else
+          Container(),
+        if (selectedTripType == "Round trip")
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                showDatePicker(
+                  builder: customThemeBuilder,
+                  context: context,
+                  initialDate: DateTime(DateTime.now().year,
+                      DateTime.now().month, DateTime.now().day),
+                  firstDate: DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day),
+                  lastDate: DateTime(2101),
+                ).then((value) {
+                  arrivalDate = DateTime(value!.year, value.month, value.day);
+                  setState(() {});
+                }).catchError((error) {});
+              },
+              child: CustomizedDropDownField(
+                title: "Arrival date",
+                child: Container(
+                  child: ListTile(
+                    dense: true,
+                    title: Text(
+                      formatDateInDigit(arrivalDate),
+                      style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
                       ),
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
+                      maxLines: 1,
+                    ),
+                    trailing: Icon(
+                      SlydoAppIcon.date,
+                      size: 16,
+                      color: darkGrey,
                     ),
                   ),
                 ),
-              )
-            : Container(),
+              ),
+            ),
+          )
+        else
+          Container(),
       ],
     );
   }
@@ -320,7 +321,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
     return Row(
       children: [
         Expanded(child: getAdultCountDropDown()),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         Expanded(child: getChildrenCountDropDown()),
@@ -336,7 +337,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           "From",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -345,12 +346,12 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
             title: Text(
-              selectedFromPlace != null ? selectedFromPlace : "",
+              selectedFromPlace != null ? selectedFromPlace ?? "" : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -374,7 +375,8 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -453,7 +455,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           "To",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -462,12 +464,12 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
             title: Text(
-              selectedToPlace != null ? selectedToPlace : "",
+              selectedToPlace != null ? selectedToPlace ?? "" : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -491,7 +493,8 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -570,7 +573,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           "Class service",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -579,12 +582,12 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
             title: Text(
-              selectedClass != null ? selectedClass : "",
+              selectedClass != null ? selectedClass ?? "" : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -608,7 +611,8 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -687,7 +691,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           "Adult",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -696,7 +700,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -725,7 +729,8 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -804,7 +809,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           "Children",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -813,7 +818,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -842,7 +847,8 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),

@@ -18,7 +18,7 @@ class Bathroom {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['five_plus'] = this.fivePlus;
     data['four'] = this.four;
     data['one'] = this.one;

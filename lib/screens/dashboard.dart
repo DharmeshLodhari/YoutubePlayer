@@ -26,6 +26,7 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -47,9 +48,9 @@ import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
-  Dashboard({this.arguments});
+  Dashboard({required this.arguments});
 
   @override
   _DashboardState createState() => _DashboardState(arguments: arguments);
@@ -58,10 +59,10 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   //newUI Variables
   late DashboardBloc _dashboardBloc;
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
 
   int _currentIndex = 0;
-  var arguments;
+  Map<String, dynamic> arguments;
   List<Widget>? screens;
   late BasketBloc basketBloc;
   late YarnDashboardBloc yarnDashboardBloc;
@@ -80,16 +81,16 @@ class _DashboardState extends State<Dashboard> {
     'home/settings',
   ];
 
-  var list = ['Home', 'Store', 'Chat', 'Settings'];
+  List<String> list = ['Home', 'Store', 'Chat', 'Settings'];
 
   final List<Widget> _pages = [
     KeepAlivePage(wantKeepAlive: false, child: Home()),
-    SuperStoreHome(),
+    const SuperStoreHome(),
     KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
     GeneralSettingScreen(),
   ];
 
-  _DashboardState({this.arguments});
+  _DashboardState({required this.arguments});
 
   @override
   void initState() {
@@ -100,7 +101,7 @@ class _DashboardState extends State<Dashboard> {
     if (mounted) {
       setState(() {
         if (arguments != null) {
-          int? indexFromRoute = arguments['dashboardIndex'];
+          final int? indexFromRoute = arguments['dashboardIndex'];
 
           if (indexFromRoute != null) {
             setState(() {
@@ -128,7 +129,8 @@ class _DashboardState extends State<Dashboard> {
 
   /// Handles fetching of all categories
   void getAllCategories() async {
-    Map<String, dynamic>? result = await YarnAuth().getAllCategories("", "");
+    final Map<String, dynamic>? result =
+        await YarnAuth().getAllCategories("", "");
 
     if (result != null && mounted) {
       yarnDashboardBloc.addCategories(result['results']);
@@ -136,7 +138,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void getProductCategories() async {
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await YarnAuth().getProductCategories("", "");
     if (result != null && mounted) {
       yarnDashboardBloc.addProductCategories(result['results']);
@@ -144,23 +146,23 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void fetchConnections() async {
-    ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        myGlobals.navigationKey.currentContext!,
-        listen: false);
+    final ConnectionListBloc connectionListBloc =
+        Provider.of<ConnectionListBloc>(myGlobals.navigationKey.currentContext!,
+            listen: false);
 
-    BackgroundFetchStopBloc backgroundFetchStopBloc =
+    final BackgroundFetchStopBloc backgroundFetchStopBloc =
         Provider.of<BackgroundFetchStopBloc>(
             myGlobals.navigationKey.currentContext!);
 
     /// to show updating Messaging in connection list
     ChatMessageSynchronizer().updateFetchStream(isFetching: true);
 
-    int result = await connectionListBloc.getConnectionsCount();
+    final int result = await connectionListBloc.getConnectionsCount();
     debugPrint("CONNECTION LIST LENGTH:- $result");
     if (result == 0) {
       await ConnectionSynchronizer().fetch(isRefresh: true);
 
-      int result = await connectionListBloc.getConnectionsCount();
+      final int result = await connectionListBloc.getConnectionsCount();
       debugPrint("CONNECTION LIST LENGTH:- $result");
 
       for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
@@ -194,10 +196,10 @@ class _DashboardState extends State<Dashboard> {
       debugPrint("action:-  ${receivedNotification.buttonKeyPressed}");
       debugPrint("data:-  ${receivedNotification.payload}");
 
-      Map<String, dynamic>? payload = receivedNotification.payload;
+      final Map<String, dynamic>? payload = receivedNotification.payload;
 
       if (receivedNotification.buttonKeyPressed == "reject_nudge") {
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           "check_id": const Uuid().v4(),
           "conversation_id": payload!['conversation_id'],
           "author": payload['recipient'],
@@ -268,7 +270,7 @@ class _DashboardState extends State<Dashboard> {
     ///
     debugPrint('NOTIFICAITON TYPE --> $data');
 
-    Map<String, dynamic> notification = data['payload'] is String
+    final Map<String, dynamic> notification = data['payload'] is String
         ? jsonDecode(data['payload'])
         : data['payload'];
 
@@ -276,16 +278,18 @@ class _DashboardState extends State<Dashboard> {
 
     if (notification['type'] == "chatroom_message" ||
         notification['type'] == "nudge_user") {
-      String? recipientUsername =
+      final String? recipientUsername =
           notification['actions'].replaceAll("/chat-screen/", "");
-      print("Recipient user name = $recipientUsername");
+      if (kDebugMode) {
+        print("Recipient user name = $recipientUsername");
+      }
 
       if (recipientUsername != null) {
         showDialog(
             context: MyGlobals().navigationKey.currentContext!,
             builder: (context) => Center(child: CircularLoadingIndicator()));
 
-        ChatConversation chatConversation =
+        final ChatConversation chatConversation =
             await UserAuth().fetchContactProfile(recipientUsername);
 
         Navigator.of(MyGlobals().navigationKey.currentContext!)
@@ -320,7 +324,7 @@ class _DashboardState extends State<Dashboard> {
           .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
     } else if (notification['type'] == "detail_message") {
       //this variable will fetch the id of message from the response
-      String? idOfMessage =
+      final String? idOfMessage =
           notification['actions'].replaceAll("/detail_message/", "");
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
@@ -332,7 +336,7 @@ class _DashboardState extends State<Dashboard> {
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(context).pushNamed(Routes.ORDERS_LIST);
     } else if (notification['type'].toString().contains("order-detail-page")) {
-      Order order = Order.fromJson(notification["data"] is String
+      final Order order = Order.fromJson(notification["data"] is String
           ? jsonDecode(notification["data"])
           : notification["data"]);
 
@@ -456,7 +460,7 @@ class _DashboardState extends State<Dashboard> {
     return WillPopScope(
       onWillPop: () async {
         if (_dashboardBloc.index == 0) {
-          bool? result = await showDialogBox(
+          final bool? result = await showDialogBox(
             context: context,
             actionOneBgColor: mateRed,
             actionOneTextColor: Colors.white,
@@ -571,14 +575,15 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Stack(
                 children: [
-                  iconList[index] == 'home/super_store'
-                      ? Icon(Icons.shopping_basket, color: color)
-                      : SvgPicture.asset(
-                          iconList[index].toSVG(),
-                          color: color,
-                          width: 28,
-                          height: 28,
-                        ),
+                  if (iconList[index] == 'home/super_store')
+                    Icon(Icons.shopping_basket, color: color)
+                  else
+                    SvgPicture.asset(
+                      iconList[index].toSVG(),
+                      color: color,
+                      width: 28,
+                      height: 28,
+                    ),
                   if (list[index] == 'Chat') // Only show badge for Chat icon
                     Positioned(
                       top: 0, // Adjust the top value as needed
@@ -659,7 +664,7 @@ class _DashboardState extends State<Dashboard> {
             _bottomNavIndex = index;
           });
         },
-        shadow: BoxShadow(
+        shadow: const BoxShadow(
           offset: Offset(0, 0),
           blurRadius: 0,
           spreadRadius: 0.5,

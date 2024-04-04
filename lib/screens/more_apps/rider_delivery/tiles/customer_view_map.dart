@@ -57,11 +57,11 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
       }
 
       Map<String, dynamic>? location;
-      _timer = Timer.periodic(Duration(seconds: 2), (timer) async {
+      _timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
         location = await RiderDeliveryAuthService()
             .fetchRiderLocation(widget.journeyDetail?.id);
 
-        LatLng latLng = LatLng(location?["location"]["latitude"],
+        final LatLng latLng = LatLng(location?["location"]["latitude"],
             location?["location"]["longitude"]);
 
         riderLocation = RiderLocation(
@@ -82,13 +82,13 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
 
   Future<Uint8List> getRiderMarker() async {
     debugPrint("rider => $rideMarkerImage");
-    ByteData byteData =
+    final ByteData byteData =
         await DefaultAssetBundle.of(context).load(rideMarkerImage);
     return byteData.buffer.asUint8List();
   }
 
   Future<Uint8List> getMarkerImage() async {
-    Uint8List imageData = await getRiderMarker();
+    final Uint8List imageData = await getRiderMarker();
     return imageData;
   }
 
@@ -101,7 +101,7 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
 
   Widget _buildShowRoute() {
     return isLoading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : GoogleMap(
             onMapCreated: ((GoogleMapController controller) =>
                 _mapController.complete(controller)),
@@ -113,22 +113,22 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
             ),
             markers: {
               Marker(
-                markerId: MarkerId("_riderLocation"),
+                markerId: const MarkerId("_riderLocation"),
                 icon: BitmapDescriptor.fromBytes(_markerImageData!),
                 rotation: riderLocation?.getHeading() ?? 0.0,
                 position: LatLng(riderLocation?.latitude ?? 0.0,
                     riderLocation?.longitude ?? 0.0),
-                anchor: Offset(0.5, 0.5),
+                anchor: const Offset(0.5, 0.5),
               ),
               Marker(
-                markerId: MarkerId("_sourceLocation"),
+                markerId: const MarkerId("_sourceLocation"),
                 icon: BitmapDescriptor.defaultMarkerWithHue(0),
                 position: LatLng(
                     widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
                     widget.journeyDetail?.pickupAddress?.longitude ?? 0.0),
               ),
               Marker(
-                markerId: MarkerId("_destinationLocation"),
+                markerId: const MarkerId("_destinationLocation"),
                 icon: BitmapDescriptor.defaultMarkerWithHue(250),
                 position: LatLng(
                     widget.journeyDetail?.deliveryAddress?.latitude ?? 0.0,
@@ -141,8 +141,8 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
 
   Future<void> _cameraToPosition(LatLng pos) async {
     controller = await _mapController.future;
-    double zoomLevel = await controller?.getZoomLevel() ?? 13;
-    CameraPosition _newCameraPosition = CameraPosition(
+    final double zoomLevel = await controller?.getZoomLevel() ?? 13;
+    final CameraPosition _newCameraPosition = CameraPosition(
       target: pos,
       zoom: zoomLevel,
     );
@@ -188,10 +188,11 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   }
 
   Future<List<LatLng>> getPolylinePoints() async {
-    ShippingAddress? deliveryModel = widget.journeyDetail?.deliveryAddress;
-    ShippingAddress? pickupModel = widget.journeyDetail?.pickupAddress;
-    List<LatLng> polylineCoordinates = [];
-    PolylinePoints polylinePoints = PolylinePoints();
+    final ShippingAddress? deliveryModel =
+        widget.journeyDetail?.deliveryAddress;
+    final ShippingAddress? pickupModel = widget.journeyDetail?.pickupAddress;
+    final List<LatLng> polylineCoordinates = [];
+    final PolylinePoints polylinePoints = PolylinePoints();
     PolylineResult result = PolylineResult();
 
     result = await polylinePoints.getRouteBetweenCoordinates(
@@ -212,8 +213,8 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   }
 
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
-    PolylineId id = PolylineId("poly");
-    Polyline polyline = Polyline(
+    final PolylineId id = const PolylineId("poly");
+    final Polyline polyline = Polyline(
         polylineId: id, color: navyBlue, points: polylineCoordinates, width: 3);
     if (mounted)
       setState(() {

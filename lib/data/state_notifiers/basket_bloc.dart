@@ -36,7 +36,7 @@ class BasketBloc extends ChangeNotifier {
   }
 
   /// New Model implemented
-  List<BasketItem> _basketItems = [];
+  final List<BasketItem> _basketItems = [];
 
   List<BasketItem> get basketItems => _basketItems;
 
@@ -61,13 +61,13 @@ class BasketBloc extends ChangeNotifier {
       int normalTotal = 0;
       if (item.item?.isProduct ?? false) {
         if (item.hasVariant) {
-          int variantPrice =
+          final int variantPrice =
               int.parse(item.variants?.first.price.toString() ?? "");
-          int quantity = item.variants?.first.quantity ?? 0;
+          final int quantity = item.variants?.first.quantity ?? 0;
           variantTotal += variantPrice * quantity;
           totalPrice += variantTotal;
         } else if (item.hasAddOns) {
-          Product product = item.item as Product;
+          final Product product = item.item as Product;
           for (AddOns itemAddOn in item.addOns ?? []) {
             for (var option in itemAddOn.options!) {
               AddOnOptionTotal +=
@@ -79,7 +79,7 @@ class BasketBloc extends ChangeNotifier {
           AddOnTotal = AddOnOptionTotal + normalTotal;
           totalPrice += AddOnTotal;
         } else {
-          Product product = item.item as Product;
+          final Product product = item.item as Product;
 
           normalTotal = product.getProductRealPrice() *
               int.parse(product.quantity.toString());
@@ -122,17 +122,17 @@ class BasketBloc extends ChangeNotifier {
   void getAllMerchant() {
     for (var consumableData in items) {
       if (consumableData['type'] == 'product') {
-        Product product = consumableData['item'];
+        final Product product = consumableData['item'];
 
-        var username = product.seller!;
+        final username = product.seller!;
         if (!merchantData.any((merchant) => merchant['username'] == username)) {
           merchantData
               .add({'name': product.sellerFullName!, 'username': username});
         }
       } else if (consumableData['type'] == 'service') {
-        Service service = consumableData['item'];
+        final Service service = consumableData['item'];
 
-        var username = service.provider!;
+        final username = service.provider!;
         if (!merchantData.any((merchant) => merchant['username'] == username)) {
           merchantData
               .add({'name': service.providerFullName!, 'username': username});
@@ -146,20 +146,22 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addMerchantName(var item) {
-    var merchantUserName = item is Product ? item.seller : item.provider;
-    var merchantFullName =
-        item is Product ? item.sellerFullName : item.providerFullName;
+  void addMerchantName(PurchasableItem item) {
+    final merchantUserName =
+        item is Product ? item.seller : (item as Service).provider;
+    final merchantFullName = item is Product
+        ? item.sellerFullName
+        : (item as Service).providerFullName;
 
-    merchantNameMap[merchantFullName] = merchantUserName;
-    merchantNameMapCopy[merchantFullName] = merchantUserName;
+    merchantNameMap[merchantFullName ?? ""] = merchantUserName ?? "";
+    merchantNameMapCopy[merchantFullName ?? ""] = merchantUserName ?? "";
 
     debugPrint('MERCHANT NAME COPY LENGTH ::: ${merchantNameMapCopy.length}');
     debugPrint('MERCHANT NAME COPY ::: $merchantNameMapCopy');
   }
 
   void removeMerchantName(var item) {
-    var merchantFullName =
+    final merchantFullName =
         item is Product ? item.sellerFullName : item.providerFullName;
 
     merchantNameMap.remove(merchantFullName);
@@ -181,7 +183,7 @@ class BasketBloc extends ChangeNotifier {
             actionType: BasketListModifierAction.increaseQty);
       }
 
-      BasketItem basketItem = BasketItem(
+      final BasketItem basketItem = BasketItem(
         type: type,
         item: item,
         qty: variant.quantity,
@@ -198,8 +200,8 @@ class BasketBloc extends ChangeNotifier {
         /// if item is product
         if (item.isProduct) {
           if (basketItem.item is Product) {
-            Product alreadyPresentProduct = basketItem.item as Product;
-            Product newProduct = item as Product;
+            final Product alreadyPresentProduct = basketItem.item as Product;
+            final Product newProduct = item as Product;
 
             /// check for product id is same then check for variant
             if (alreadyPresentProduct.id == newProduct.id) {
@@ -246,7 +248,7 @@ class BasketBloc extends ChangeNotifier {
               actionType: BasketListModifierAction.increaseQty);
         }
 
-        BasketItem basketItem = BasketItem(
+        final BasketItem basketItem = BasketItem(
           type: type,
           item: item,
           qty: variant.quantity,
@@ -262,7 +264,7 @@ class BasketBloc extends ChangeNotifier {
 
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
           addedOrUpdatedItem,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
@@ -382,8 +384,8 @@ class BasketBloc extends ChangeNotifier {
       /// if item is product
       if (item.isProduct) {
         if (basketItem.item is Product) {
-          Product alreadyPresentProduct = basketItem.item as Product;
-          Product newProduct = item as Product;
+          final Product alreadyPresentProduct = basketItem.item as Product;
+          final Product newProduct = item as Product;
 
           /// check for product id is same then check for addOns
           if (alreadyPresentProduct.id == newProduct.id) {
@@ -443,7 +445,7 @@ class BasketBloc extends ChangeNotifier {
             }
 
             if (withApiCall == true) {
-              Product presentProduct = (basketItem.item as Product);
+              final Product presentProduct = (basketItem.item as Product);
 
               for (AddOns addOn in addOns ?? []) {
                 for (AddOns presentAddOn in presentProduct.addOnsModels ?? []) {
@@ -510,7 +512,7 @@ class BasketBloc extends ChangeNotifier {
         }
       }
 
-      BasketItem basketItem = BasketItem(
+      final BasketItem basketItem = BasketItem(
           type: type,
           item: item,
           qty: (item as Product).quantity,
@@ -525,7 +527,7 @@ class BasketBloc extends ChangeNotifier {
 
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
           addedOrUpdatedItem,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
@@ -598,11 +600,11 @@ class BasketBloc extends ChangeNotifier {
   // }
 
   int calculateTotalPrice(String itemPrice, Map<String, dynamic> addOn) {
-    int itemPriceValue = int.tryParse(itemPrice) ?? 0;
+    final int itemPriceValue = int.tryParse(itemPrice) ?? 0;
     // int addOnQuantity = addOn["quantity"];
-    List<dynamic>? options = addOn["options"];
-    int optionTotalPrice = options!.fold(0, (total, option) {
-      int optionQuantity = option["quantity"];
+    final List<dynamic>? options = addOn["options"];
+    final int optionTotalPrice = options!.fold(0, (total, option) {
+      final int optionQuantity = option["quantity"];
       return total + (itemPriceValue * optionQuantity);
     });
 
@@ -645,7 +647,7 @@ class BasketBloc extends ChangeNotifier {
             actionType: BasketListModifierAction.increaseQty);
       }
 
-      BasketItem basketItem = BasketItem(
+      final BasketItem basketItem = BasketItem(
         item: item,
         qty: (item as Product).quantity,
         type: type,
@@ -660,7 +662,7 @@ class BasketBloc extends ChangeNotifier {
 
     /// add or update this item to the server
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
           addedOrUpdatedItem!,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
@@ -699,21 +701,21 @@ class BasketBloc extends ChangeNotifier {
     bool itemExists = false;
 
     for (var i = 0; i < _items.length; i++) {
-      Product product = _items[i]["item"];
+      final Product product = _items[i]["item"];
 
       if (product.id == selectedProductId) {
         // Check if the variant ID exists in the item's variants list
         for (var j = 0; j < _items[i]["variants"].length; j++) {
           if (int.parse(_items[i]["variants"][j]["id"]) == variantId) {
             // Add one to the variant quantity
-            var quantity =
+            final quantity =
                 int.parse(_items[i]["variants"][j]["quantity"].toString()) + 1;
             _items[i]["variants"][j]["quantity"] = quantity.toString();
 
             // Calculate the total price (assuming "price" is a string)
             _total += int.parse(_items[i]["variants"][j]["price"]);
             // Increase the total quantity
-            var qty = int.parse(_items[i]["qty"].toString()) + 1;
+            final qty = int.parse(_items[i]["qty"].toString()) + 1;
             _items[i]["qty"] = qty;
 
             itemExists = true;
@@ -737,14 +739,14 @@ class BasketBloc extends ChangeNotifier {
     bool itemExists = false;
 
     for (var i = 0; i < _items.length; i++) {
-      Product product = _items[i]["item"];
+      final Product product = _items[i]["item"];
 
       if (product.id == selectedProductId) {
-        List<Variant> variantList =
+        final List<Variant> variantList =
             (_items[i]['item'] as Product).variantModels ?? [];
 
         for (var j = 0; j < variantList.length; j++) {
-          var variant = variantList[j];
+          final variant = variantList[j];
           // debugPrint('fola cart state cart variant id:::: ${variant['id']}');
           // debugPrint('fola cart state cart variantid:::: ${variantId}');
 
@@ -762,7 +764,7 @@ class BasketBloc extends ChangeNotifier {
 
             if (_items[i]['qty'] == 0) {
               //remove item from cart
-              Map<String, dynamic> data = {
+              final Map<String, dynamic> data = {
                 "id": selectedProductId,
                 "type": "product",
                 "qty": 0,
@@ -833,22 +835,22 @@ class BasketBloc extends ChangeNotifier {
   Future<void> resetShoppingCart(BuildContext context) async {
     _items.clear();
     _basketItems.clear();
-    List itemsCart = await ShoppingAuthService().getShoppingCart();
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final List itemsCart = await ShoppingAuthService().getShoppingCart();
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    SharedCartMemberModel? currentUser = userBloc.user.convertToUser();
+    final SharedCartMemberModel? currentUser = userBloc.user.convertToUser();
 
     for (var element in itemsCart) {
-      String type = element is Product ? "product" : "service";
+      final String type = element is Product ? "product" : "service";
 
       // debugPrint('Variant Data element: $element');
 
       if (element is Product) {
         /// varient
-        List<Variant>? variantList = element.variantModels;
+        final List<Variant>? variantList = element.variantModels;
 
         /// adds on
-        List<AddOns>? convertedList = element.addOnsModels;
+        final List<AddOns>? convertedList = element.addOnsModels;
 
         if (variantList != null && variantList.isNotEmpty) {
           for (var variant in variantList) {
@@ -902,7 +904,7 @@ class BasketBloc extends ChangeNotifier {
   }
 
   Map<String, dynamic> getServerPayload() {
-    Map<String, dynamic> data = {};
+    final Map<String, dynamic> data = {};
 
     return data;
   }
@@ -929,7 +931,7 @@ class BasketBloc extends ChangeNotifier {
       if (data?.hasVariant ?? false) {
         for (BasketItem basketItem in _basketItems) {
           if (basketItem.item?.id == data?.item?.id) {
-            Variant? variant = basketItem.variants?.first;
+            final Variant? variant = basketItem.variants?.first;
             if (variant != null) {
               if (variant.id == data?.variants?.first.id) {
                 variant.quantity = (variant.quantity ?? 0) + 1;
@@ -951,7 +953,7 @@ class BasketBloc extends ChangeNotifier {
         /// if basket item has add0ns
       } else if (data?.hasAddOns ?? false) {
         for (BasketItem basketItem in _basketItems) {
-          Product product = basketItem.item as Product;
+          final Product product = basketItem.item as Product;
 
           if (basketItem.item?.id == data?.item?.id) {
             for (AddOns addOns in basketItem.addOns ?? []) {
@@ -981,7 +983,7 @@ class BasketBloc extends ChangeNotifier {
       } else {
         for (BasketItem basketItem in _basketItems) {
           if (basketItem.item?.id == data?.item?.id) {
-            Product product = basketItem.item as Product;
+            final Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) + 1;
             product.quantity = (product.quantity ?? 0) + 1;
@@ -1000,7 +1002,7 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
 
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
           addedOrUpdatedItem,
           actionType: BasketListModifierAction.increaseQty);
       if (data.payload.isNotEmpty) {
@@ -1031,7 +1033,7 @@ class BasketBloc extends ChangeNotifier {
       if (data?.hasVariant ?? false) {
         for (BasketItem basketItem in _basketItems) {
           if (basketItem.item?.id == data?.item?.id) {
-            Variant? variant = basketItem.variants?.first;
+            final Variant? variant = basketItem.variants?.first;
             if (variant != null) {
               if (variant.id == data?.variants?.first.id) {
                 variant.quantity = (variant.quantity ?? 0) - 1;
@@ -1053,7 +1055,7 @@ class BasketBloc extends ChangeNotifier {
         /// if basket item has add0ns
       } else if (data?.hasAddOns ?? false) {
         for (BasketItem basketItem in _basketItems) {
-          Product product = basketItem.item as Product;
+          final Product product = basketItem.item as Product;
 
           if (basketItem.item?.id == data?.item?.id) {
             // for (AddOns addOns in basketItem.addOns ?? []) {
@@ -1075,7 +1077,7 @@ class BasketBloc extends ChangeNotifier {
       } else {
         for (BasketItem basketItem in _basketItems) {
           if (basketItem.item?.id == data?.item?.id) {
-            Product product = basketItem.item as Product;
+            final Product product = basketItem.item as Product;
 
             basketItem.qty = (basketItem.qty ?? 0) - 1;
             product.quantity = (product.quantity ?? 0) - 1;
@@ -1095,7 +1097,7 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
 
     if (withApiCall && addedOrUpdatedItem != null) {
-      BasketListModifierPayload data = _basketItems.toPayload(
+      final BasketListModifierPayload data = _basketItems.toPayload(
         addedOrUpdatedItem,
         actionType: BasketListModifierAction.decreaseQty,
       );
@@ -1113,7 +1115,7 @@ class BasketBloc extends ChangeNotifier {
     int subTotal = 0;
 
     items.forEach((element) {
-      var item = element['item'];
+      final item = element['item'];
 
       if (merchantUserName == item.getMerchantUserName()) {
         List<Map<String, dynamic>> variants = [];
@@ -1130,8 +1132,8 @@ class BasketBloc extends ChangeNotifier {
             if (variant.containsKey('id') &&
                 variant['id'] != null &&
                 variant['id'].toString().isNotEmpty) {
-              int quantity = variant['quantity'];
-              int currentPrice = int.parse(variant['price'].toString());
+              final int quantity = variant['quantity'];
+              final int currentPrice = int.parse(variant['price'].toString());
               subTotal += quantity * currentPrice;
             }
           }
@@ -1157,8 +1159,9 @@ class BasketBloc extends ChangeNotifier {
 
   int getTotalPriceByMerchant(
       {required String merchantUserName, required int shippingOptionPrice}) {
-    int total = getSubTotalPriceByMerchant(merchantUserName: merchantUserName) +
-        shippingOptionPrice;
+    final int total =
+        getSubTotalPriceByMerchant(merchantUserName: merchantUserName) +
+            shippingOptionPrice;
 
     return total;
   }

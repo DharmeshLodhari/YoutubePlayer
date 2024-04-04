@@ -87,7 +87,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   Future<bool> addLikeToMoment() async {
-    MomentsModel data =
+    final MomentsModel data =
         await MomentsService().likeMoment(widget.currentMoment.id!);
     if (data != null) {
       setState(() {
@@ -100,7 +100,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   Future<bool> addDisLikeToMoment() async {
-    MomentsModel data =
+    final MomentsModel data =
         await MomentsService().dislikeMoment(widget.currentMoment.id!);
 
     if (data != null) {
@@ -793,13 +793,13 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
                   iconData: Icons.block,
                   onTap: () async {
                     toggleMediaPlayingState();
-                    var user = CustomerProfile();
+                    final user = CustomerProfile();
                     user.userName = widget.currentMoment.owner;
                     user.fullName = widget.currentMoment.ownerName;
                     user.type = "";
                     user.nickName = "";
 
-                    Future<bool?> check = blockUserAlert(context, user);
+                    final Future<bool?> check = blockUserAlert(context, user);
                     if (check == true) {
                       Navigator.pop(context);
                       Navigator.pop(context);
@@ -814,7 +814,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
 
   Future<void> sendMomentToUserInChat(
       {required MomentsModel momentsModel}) async {
-    List<ChatConversation?> listOfRecipient =
+    final List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
@@ -829,9 +829,9 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
     required MomentsModel momentsModel,
     String? url,
   }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = {
+    final Map<String, dynamic> metaData = {
       "id": momentsModel.id,
       "title": messageDecoderWithEmoji(momentsModel.text),
       "author_avatar": momentsModel.avatar,
@@ -847,7 +847,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
         break;
     }
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
       "check_id": const Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
@@ -1092,7 +1092,7 @@ class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen>
   }
 
   Widget getTags() {
-    List<String> formattedTagList = [];
+    final List<String> formattedTagList = [];
 
     if (widget.currentMoment.tags != null) {
       widget.currentMoment.tags!.join(', ');

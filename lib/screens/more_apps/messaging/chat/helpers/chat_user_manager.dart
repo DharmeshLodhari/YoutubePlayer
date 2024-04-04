@@ -6,10 +6,10 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart
 
 /// For Performing all the db operation related to user connection's message count
 class ChatUserManager {
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
 
   void addUsers(List<ChatConversation> users) {
-    List<ChatUserModel> dbUsers = [];
+    final List<ChatUserModel> dbUsers = [];
 
     /// Converting CustomerProfile in to Chat Users
     users.forEach(
@@ -22,7 +22,7 @@ class ChatUserManager {
   Future<void> addUser({String? conversationId}) async {
     /// Converting CustomerProfile in to Chat Users
 
-    ChatUserModel chatUserModel =
+    final ChatUserModel chatUserModel =
         ChatUserModel.fromConversationId(conversationId);
 
     /// adding Chat User into DataBase
@@ -31,10 +31,10 @@ class ChatUserManager {
   }
 
   Future<ChatUserModel?> getUser(String? conversationId) async {
-    Map<String, dynamic>? user = await _db.getChatUser(conversationId);
+    final Map<String, dynamic>? user = await _db.getChatUser(conversationId);
 
     if (user != null) {
-      ChatUserModel chatUserModel = ChatUserModel.fromJson(user);
+      final ChatUserModel chatUserModel = ChatUserModel.fromJson(user);
 
       return chatUserModel;
     }
@@ -58,7 +58,7 @@ class ChatUserManager {
   }
 
   Future<bool> checkForChatMessagesCount() async {
-    int count = await _db.getChatMessageCount();
+    final int count = await _db.getChatMessageCount();
 
     if (count > 0) return true;
 

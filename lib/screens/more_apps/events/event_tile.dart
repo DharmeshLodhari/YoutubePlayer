@@ -20,7 +20,7 @@ class EventTile extends StatelessWidget {
         child: Container(
           decoration: decorateBox(),
           child: Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -34,7 +34,7 @@ class EventTile extends StatelessWidget {
                     errorWidget: imageErrorWidget,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
                 Expanded(
@@ -106,7 +106,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
       child: Container(
         decoration: decorateBox(),
         child: Container(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -120,7 +120,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                   errorWidget: imageErrorWidget,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 16,
               ),
               Expanded(

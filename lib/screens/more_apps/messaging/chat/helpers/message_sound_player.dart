@@ -17,8 +17,8 @@ class MessageSoundPlayer {
 
   // ignore: missing_return
   String? playSound() {
-    Map<String, dynamic> messageData = jsonDecode(message!);
-    String? sound = determineSoundType(messageData: messageData);
+    final Map<String, dynamic> messageData = jsonDecode(message!);
+    final String? sound = determineSoundType(messageData: messageData);
     if (sound != null) {
       if (messageData["type"] == "chatroom_message") {
         AssetsAudioPlayer.playAndForget(
@@ -28,7 +28,7 @@ class MessageSoundPlayer {
           respectSilentMode: true,
         );
       } else if (messageData["type"] == "nudge_user") {
-        AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId(
+        final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId(
           messageData["author"],
         );
 
@@ -44,7 +44,7 @@ class MessageSoundPlayer {
 
   String? determineSoundType({required Map<String, dynamic> messageData}) {
     if (messageData["type"] == "chatroom_message") {
-      UserBloc userBloc = Provider.of<UserBloc>(
+      final UserBloc userBloc = Provider.of<UserBloc>(
           myGlobals.scaffoldKey.currentContext!,
           listen: false);
 

@@ -131,7 +131,7 @@ class _TransactionListState extends State<TransactionList> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             getDateRangeText(),
-            SizedBox(
+            const SizedBox(
               height: 15.0,
             ),
             _buildTabs(),
@@ -146,7 +146,7 @@ class _TransactionListState extends State<TransactionList> {
     return newDateTimeRange != null
         ? Container(
             color: greyBorderColor.withOpacity(0.2),
-            margin: EdgeInsets.symmetric(vertical: 5),
+            margin: const EdgeInsets.symmetric(vertical: 5),
             child: Text(
               '${dateFormat.format(newDateTimeRange!.start)} - ${dateFormat.format(newDateTimeRange!.end)}',
               textAlign: TextAlign.center,
@@ -157,7 +157,7 @@ class _TransactionListState extends State<TransactionList> {
               ),
             ),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   Widget appBar() {
@@ -188,13 +188,13 @@ class _TransactionListState extends State<TransactionList> {
       ),
       actions: <Widget>[
         getSearchBtn(),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
         openGraphBtn(),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
         dateFilterIcon(),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
         popUpMenuButton(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -208,12 +208,12 @@ class _TransactionListState extends State<TransactionList> {
       child: Card(
         color: iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         child: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.search,
             color: Colors.black,
             size: 20,
@@ -221,7 +221,7 @@ class _TransactionListState extends State<TransactionList> {
           onPressed: () async {
             CustomerProfile? userFound = await NavigationUtil.push(
               context,
-              screen: SearchUser(),
+              screen: const SearchUser(),
             );
 
             if (userFound != null) {
@@ -240,12 +240,12 @@ class _TransactionListState extends State<TransactionList> {
       child: Card(
         color: iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         child: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.date_range_rounded,
             color: Colors.black,
             size: 20,
@@ -293,7 +293,7 @@ class _TransactionListState extends State<TransactionList> {
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -317,7 +317,7 @@ class _TransactionListState extends State<TransactionList> {
 
   Widget openGraph() {
     return IconButton(
-      icon: Icon(
+      icon: const Icon(
         Icons.pie_chart,
         color: Colors.white,
       ),
@@ -340,7 +340,7 @@ class _TransactionListState extends State<TransactionList> {
           tabOne: 'Slydo',
           tabTwo: 'Cashout',
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
       ],

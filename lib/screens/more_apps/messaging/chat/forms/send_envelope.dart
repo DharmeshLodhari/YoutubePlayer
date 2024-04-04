@@ -21,7 +21,7 @@ import '../../../payment_loading_screen.dart';
 
 // ignore: must_be_immutable
 class SendEnvelope extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   SendEnvelope({this.arguments});
 
@@ -30,9 +30,9 @@ class SendEnvelope extends StatefulWidget {
 }
 
 class _SendEnvelopeState extends State<SendEnvelope> {
-  TextEditingController _amountController = TextEditingController();
-  TextEditingController _messageController = TextEditingController();
-  TextEditingController _titleController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   final _sendEnvelopeScaffold = GlobalKey<ScaffoldState>();
@@ -63,7 +63,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    FeeStructure? feeStructure = await DatabaseHelper().getFeeStructure();
+    final FeeStructure? feeStructure = await DatabaseHelper().getFeeStructure();
 
     if (feeStructure == null) {
       isLoading = false;
@@ -146,12 +146,12 @@ class _SendEnvelopeState extends State<SendEnvelope> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
               chatConversation!.fullName!,
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16),
@@ -182,7 +182,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -212,44 +212,48 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                             children: <Widget>[
                               getDisplayCard(),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Column(
                                   children: [
-                                    isEmptyEnvelope!
-                                        ? Container()
-                                        : Column(
-                                            children: [
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-                                              displayAmountField(),
-                                            ],
+                                    if (isEmptyEnvelope!)
+                                      Container()
+                                    else
+                                      Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 20,
                                           ),
-                                    SizedBox(
+                                          displayAmountField(),
+                                        ],
+                                      ),
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     getTitleField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     getMessageField(),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
-                                    errorMessage == ""
-                                        ? Container()
-                                        : Text(
-                                            errorMessage,
-                                            style: TextStyle(
-                                                color: mateRed,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                    errorMessage == ""
-                                        ? Container()
-                                        : SizedBox(
-                                            height: 20,
-                                          ),
+                                    if (errorMessage == "")
+                                      Container()
+                                    else
+                                      Text(
+                                        errorMessage,
+                                        style: TextStyle(
+                                            color: mateRed,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                    if (errorMessage == "")
+                                      Container()
+                                    else
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
                                   ],
                                 ),
                               ),
@@ -262,11 +266,11 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                   Container(
                     child: Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getSubmitButton(),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         getConditionText(),
@@ -281,7 +285,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -293,7 +297,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       labelText: "Amount",
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       controller: _amountController,
       onChanged: (val) {
@@ -306,7 +310,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {
@@ -370,7 +374,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
     }
 
     if (_formKey.currentState!.validate()) {
-      await Future.delayed(Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 300));
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
@@ -382,7 +386,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
 
             String? envelope = 'Empty Envelope';
 
-            Map<String, dynamic> data = {
+            final Map<String, dynamic> data = {
               "from_customer": userBloc.user.userName,
               "to_customer": chatConversation!.userName,
               "notes": "",

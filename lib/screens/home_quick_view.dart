@@ -1,5 +1,6 @@
 import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -48,7 +49,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   String autoCompleteSearchText = "";
   late AppLocalization appLocalization;
   AppConfigurationModel? appConfigurationModel;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   TextEditingController searchItemTextController = TextEditingController();
 
   String appBarTitle = "";
@@ -222,11 +223,13 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        if (kDebugMode) {
+          print('Tapped on an unknown shortcut');
+        }
     }
   }
 
-  _isRefreshing() {
+  void _isRefreshing() {
     count = 0;
     next = "";
     previous = "";
@@ -253,7 +256,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
       appBar: appBar() as PreferredSizeWidget?,
       body: Column(
         children: [
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           // searchBox(),
           // SizedBox(height: 16),
           Expanded(
@@ -280,7 +283,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   Widget searchBox() {
     try {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Theme(
           data: Theme.of(context).copyWith(
             textSelectionTheme: TextSelectionThemeData(
@@ -301,8 +304,8 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               hintText: AppLocalization.of(context)!.searchHomeQuickViewHint,
               fillColor: Colors.white,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
-              prefix: Padding(
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              prefix: const Padding(
                 padding: EdgeInsets.only(left: 12),
               ),
               suffixIcon: searchIcon(),
@@ -413,7 +416,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
                 children: pairShortcuts.map((shortcut) {
                   if (shortcut.isEmpty) {
                     // Return an empty space (SizedBox)
-                    return Expanded(
+                    return const Expanded(
                       child: SizedBox(),
                     );
                   } else {
@@ -573,7 +576,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         NavigationUtil.push(context, screen: YarnDashboard());
         break;
       case 'Moment':
-        NavigationUtil.push(context, screen: MomentsScreen());
+        NavigationUtil.push(context, screen: const MomentsScreen());
         break;
       case 'Blog':
         // if (appConfigurationModel?.enableSuperBlog == true) {
@@ -595,14 +598,16 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         Navigator.pushNamed(context, Routes.ORDERS_LIST);
         break;
       case 'Super store':
-        NavigationUtil.push(context, screen: SuperStoreHome());
+        NavigationUtil.push(context, screen: const SuperStoreHome());
         break;
       case 'Services Hub':
         Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        if (kDebugMode) {
+          print('Tapped on an unknown shortcut');
+        }
     }
   }
 
@@ -677,7 +682,9 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        if (kDebugMode) {
+          print('Tapped on an unknown shortcut');
+        }
     }
   }
 

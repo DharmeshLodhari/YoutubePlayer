@@ -56,7 +56,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   bool? createPaidChannel = false;
   bool? limitGroupMembers = false;
   AppConfigurationModel? appConfigurationModel;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String createTitle = "";
 
   @protected
@@ -101,7 +101,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
             onPressed: () => createGroup(onCallBack: () {
               NavigationUtil.pop(context);
             }),
-            child: Icon(
+            child: const Icon(
               Icons.arrow_forward_rounded,
               size: 28,
             ),
@@ -152,7 +152,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               child: Column(
                 children: [
                   getMakePublicField(),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   getPaidGroupChatField(),
                   getLimitGroupMembersField(),
                   getAgeRestrictionField(),
@@ -215,7 +215,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   Widget getMakePublicField() {
     return Row(
       children: [
-        Expanded(
+        const Expanded(
           child: Text(
             'Make public',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
@@ -231,7 +231,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           },
           value: makeChannelPublic!,
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         )
       ],
@@ -240,7 +240,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
   Widget getGroupDescription() {
     return Container(
-      padding: EdgeInsets.only(top: 16, right: 16, left: 16),
+      padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
       child: CustomizedTextFormField(
         maxLines: 4,
         labelText: "Description",
@@ -254,19 +254,19 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
     return Container(
       child: Container(
         height: 80,
-        padding: EdgeInsets.only(right: 16, left: 16),
+        padding: const EdgeInsets.only(right: 16, left: 16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 getGroupProfile()
               ],
             ),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             Expanded(
@@ -362,7 +362,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
+        final String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -406,7 +406,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
+        final String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -421,23 +421,23 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 24,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             "Members (${selectedConnectionList.length})",
             style: TextStyle(
                 color: darkGrey, fontSize: 12, fontWeight: FontWeight.w400),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               vertical: 4,
             ),
             //+1 for progressbar
@@ -453,14 +453,14 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
   Widget getUserTile({CustomerProfile? user}) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: 2),
       child: UserTile(user: user),
     );
   }
 
   Widget getPaidGroupChatField() {
     return widget.arguments != null && widget.arguments["create"] == "group"
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -484,11 +484,11 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                     },
                     // value: makeGroupPaid!,
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                 ],
               ),
               if (makeGroupPaid!) ...[
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 CustomizedTextFormField(
@@ -498,20 +498,20 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                   isAmountField: true,
                   labelText: AppLocalization.of(context)!.amount,
                   onChanged: (value) {},
-                  validator: (val) {
-                    try {
-                      double userAmount = double.parse(val.replaceAll(',', ''));
-                      // if (userAmount > amountLimit) {
-                      //   return 'You cannot fund more than $amountLimit';
-                      // }
-                    } catch (e) {
-                      return AppLocalization.of(context)!.invalidAmount;
-                    }
-                    return null;
-                  },
+                  // validator: (val) {
+                  //   try {
+                  //     final double userAmount = double.parse(val.replaceAll(',', ''));
+                  //     if (userAmount > amountLimit) {
+                  //       return 'You cannot fund more than $amountLimit';
+                  //     }
+                  //   } catch (e) {
+                  //     return AppLocalization.of(context)!.invalidAmount;
+                  //   }
+                  //   return null;
+                  // },
                 ),
               ],
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
             ],
           );
   }
@@ -530,7 +530,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                     widget.arguments["create"] == "group"
                         ? 'Limit group members'
                         : 'Limit channel members',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                   Text(
                     'By default, number of allowed members is 255',
@@ -551,11 +552,11 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               },
               value: limitGroupMembers!,
             ),
-            SizedBox(width: 10)
+            const SizedBox(width: 10)
           ],
         ),
         if (limitGroupMembers!) ...[
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           CustomizedTextFormField(
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             keyboardType: TextInputType.number,
@@ -571,7 +572,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
             },
           ),
         ],
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
       ],
     );
   }
@@ -586,7 +587,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Age restriction',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   ),
@@ -609,11 +610,11 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               },
               value: ageRestriction,
             ),
-            SizedBox(width: 10)
+            const SizedBox(width: 10)
           ],
         ),
         if (ageRestriction) ...[
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             height: 50,
             padding: const EdgeInsets.symmetric(horizontal: 14.0),
@@ -627,8 +628,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               dropdownDecoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
               ),
-              hint: Text('Select an age'),
-              underline: SizedBox.shrink(),
+              hint: const Text('Select an age'),
+              underline: const SizedBox.shrink(),
               items: ['13+', '15+', '18+', '21+'].map((String item) {
                 return DropdownMenuItem(
                   value: item,
@@ -643,7 +644,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
             ),
           ),
         ],
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
       ],
     );
   }
@@ -689,11 +690,12 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         .createGroupChat(group: groupModel, type: widget.arguments["create"])
         .then((value) async {
       Navigator.pop(context);
-      ChatUserModel chatUserModel = ChatUserModel.fromChatConversation(value);
+      final ChatUserModel chatUserModel =
+          ChatUserModel.fromChatConversation(value);
       ChatUserManager().addUser(conversationId: chatUserModel.conversationId);
       if (mounted) setState(() {});
 
-      ConnectionListBloc connectionListBloc =
+      final ConnectionListBloc connectionListBloc =
           Provider.of<ConnectionListBloc>(context, listen: false);
       connectionListBloc.addConnectionUser(chatConversation: value);
 

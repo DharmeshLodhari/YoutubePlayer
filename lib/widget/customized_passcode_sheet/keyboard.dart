@@ -61,7 +61,7 @@ class Keyboard extends StatelessWidget {
     return Container(
       width: keyboardSize.width,
       height: keyboardSize.height,
-      margin: EdgeInsets.only(top: 1, bottom: 1),
+      margin: const EdgeInsets.only(top: 1, bottom: 1),
       child: AlignedGrid(
         keyboardSize: keyboardSize,
         children: List.generate(10, (index) {
@@ -73,7 +73,7 @@ class Keyboard extends StatelessWidget {
 
   Widget _buildKeyboardDigit(String text) {
     return Container(
-      margin: EdgeInsets.all(1),
+      margin: const EdgeInsets.all(1),
       child: Material(
         color: keyboardUIConfig.digitFillColor,
         child: InkWell(
@@ -82,6 +82,14 @@ class Keyboard extends StatelessWidget {
             onKeyboardTap(text);
           },
           child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                  color: keyboardUIConfig.primaryColor,
+                  width: keyboardUIConfig.digitBorderWidth),
+            ),
             child: Center(
               child: Text(
                 text,
@@ -91,14 +99,6 @@ class Keyboard extends StatelessWidget {
                     fontWeight: FontWeight.w800),
                 semanticsLabel: text,
               ),
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                  color: keyboardUIConfig.primaryColor,
-                  width: keyboardUIConfig.digitBorderWidth),
             ),
           ),
         ),

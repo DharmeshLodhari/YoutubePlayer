@@ -42,7 +42,7 @@ class CustomizedPopUpMenu {
   });
 
   void findButton() {
-    RenderBox renderBox =
+    final RenderBox renderBox =
         buttonKey.currentContext!.findRenderObject() as RenderBox;
     buttonSize = renderBox.size;
     buttonPosition = renderBox.localToGlobal(Offset.zero);
@@ -113,7 +113,8 @@ class CustomizedPopUpMenu {
                             children: [
                               if (!isTitleShow)
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 6),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 6),
                                   child: ListTile(
                                     dense: true,
                                     title: Text(
@@ -142,7 +143,7 @@ class CustomizedPopUpMenu {
                             elevation: 2,
                             margin: EdgeInsets.zero,
                             child: Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.white,
                               ),
                               width: 17,
@@ -167,7 +168,7 @@ class CustomizedPopUpMenu {
       children: List.generate(
         childList.length,
         (index) {
-          bool isSelected = index == selectedIndex;
+          final bool isSelected = index == selectedIndex;
           return GestureDetector(
             onTap: () {
               selectedIndex = index;
@@ -188,12 +189,12 @@ class CustomizedPopUpMenu {
 
   Widget menuListTile({required bool isSelected, required int index}) {
     // if the menu item is lat then we add the circular shape from bottom to menuListTile
-    bool isLast = index == childList.length - 1;
+    final bool isLast = index == childList.length - 1;
     return Container(
       decoration: BoxDecoration(
         color: isSelected ? lightGrey : Colors.white,
         borderRadius: isLast
-            ? BorderRadius.only(
+            ? const BorderRadius.only(
                 bottomLeft: Radius.circular(
                   10.0,
                 ),
@@ -204,7 +205,7 @@ class CustomizedPopUpMenu {
             : null,
       ),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         child: ListTile(
           dense: true,
           title: Text(
@@ -231,7 +232,7 @@ class CustomizedPopUpMenu {
       children: List.generate(
         childList.length,
         (index) {
-          bool isSelected = index == selectedIndex;
+          final bool isSelected = index == selectedIndex;
           return GestureDetector(
             onTap: () {
               selectedIndex = index;
@@ -251,12 +252,12 @@ class CustomizedPopUpMenu {
 
   Widget menuListTileWithIcon({required bool isSelected, required int index}) {
     // if the menu item is lat then we add the circular shape from bottom to menuListTile
-    bool isLast = index == childList.length - 1;
+    final bool isLast = index == childList.length - 1;
     return Container(
       decoration: BoxDecoration(
         color: isSelected ? lightGrey : Colors.white,
         borderRadius: isLast
-            ? BorderRadius.only(
+            ? const BorderRadius.only(
                 bottomLeft: Radius.circular(
                   10.0,
                 ),
@@ -267,7 +268,7 @@ class CustomizedPopUpMenu {
             : null,
       ),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         child: ListTile(
           dense: true,
           title: Row(
@@ -279,7 +280,7 @@ class CustomizedPopUpMenu {
                 size: 16,
                 color: isSelected ? navyBlue : Colors.black,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Text(
@@ -289,7 +290,7 @@ class CustomizedPopUpMenu {
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     color: isSelected ? navyBlue : blackFont),
               ),
-              Expanded(
+              const Expanded(
                   child: SizedBox(
                 width: 10,
               )),

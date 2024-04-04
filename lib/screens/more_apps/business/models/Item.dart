@@ -23,7 +23,7 @@ class InvoiceItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['amount'] = this.amount;
     data['currency'] = this.currency;
     data['id'] = this.id;

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/locator.dart';
@@ -48,15 +49,15 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     super.initState();
   }
 
-  getConnectionRequest() async {
-    Map<String, dynamic>? result =
+  void getConnectionRequest() async {
+    final Map<String, dynamic>? result =
         await UserAuth().listContactRequests('', '').catchError((error) {
       debugPrint("ERROR:- $error");
       //  return;
     });
 
     if (result == null) return;
-    List connectionRequest = result['results'] as List;
+    final List connectionRequest = result['results'] as List;
 
     Provider.of<ConnectionRequestListBloc>(context, listen: false)
         .setHasConnectionRequests = connectionRequest.isNotEmpty;
@@ -92,7 +93,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
-      leading: SizedBox.shrink(),
+      leading: const SizedBox.shrink(),
       leadingWidth: 22,
       title: Text(
         getTitle(),
@@ -124,10 +125,10 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   Widget tabBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
+      preferredSize: const Size.fromHeight(50.0),
       child: TabBar(
         labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
+        indicator: const BoxDecoration(),
         onTap: (int index) {
           currentIndex = index;
           setState(() {});
@@ -135,7 +136,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         tabs: [
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -157,7 +158,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
           ),
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -178,49 +179,48 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                           currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
-                  Provider.of<ConnectionRequestListBloc>(context)
-                          .hasConnectionRequests
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: Padding(
-                            padding: const EdgeInsets.only(),
-                            child: badges.Badge(
-                              badgeContent: Center(
-                                child: Text(
-                                  '++',
-                                  style: TextStyle(
-                                      fontFamily: "Inter",
-                                      fontSize: 12,
-                                      color: Colors.white),
-                                ),
-                              ),
-                              position:
-                                  badges.BadgePosition.topEnd(end: 0, top: 0),
-                              badgeAnimation: badges.BadgeAnimation.rotation(
-                                animationDuration: Duration(seconds: 1),
-                                colorChangeAnimationDuration:
-                                    Duration(seconds: 1),
-                                loopAnimation: false,
-                                curve: Curves.fastOutSlowIn,
-                                colorChangeAnimationCurve: Curves.easeInCubic,
-                              ),
-                              badgeStyle: badges.BadgeStyle(
-                                shape: badges.BadgeShape.circle,
-                                badgeColor: naturalGreen,
-                                padding: EdgeInsets.all(2),
-                              ),
+                  if (Provider.of<ConnectionRequestListBloc>(context)
+                      .hasConnectionRequests)
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Padding(
+                        padding: const EdgeInsets.only(),
+                        child: badges.Badge(
+                          badgeContent: const Center(
+                            child: Text(
+                              '++',
+                              style: TextStyle(
+                                  fontFamily: "Inter",
+                                  fontSize: 12,
+                                  color: Colors.white),
                             ),
                           ),
-                        )
-                      : SizedBox.shrink()
+                          position: badges.BadgePosition.topEnd(end: 0, top: 0),
+                          badgeAnimation: const badges.BadgeAnimation.rotation(
+                            animationDuration: Duration(seconds: 1),
+                            colorChangeAnimationDuration: Duration(seconds: 1),
+                            loopAnimation: false,
+                            curve: Curves.fastOutSlowIn,
+                            colorChangeAnimationCurve: Curves.easeInCubic,
+                          ),
+                          badgeStyle: badges.BadgeStyle(
+                            shape: badges.BadgeShape.circle,
+                            badgeColor: naturalGreen,
+                            padding: const EdgeInsets.all(2),
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink()
                 ],
               ),
             ),
           ),
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -268,7 +268,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -276,7 +276,8 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -286,7 +287,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(bottomSheetItem(
       title: "Create Group",
@@ -320,15 +321,15 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   }
 
   List<Widget> getActions() {
-    List<Widget> list = [
+    final List<Widget> list = [
       ///TODO:- To be enabled in future version
       // synchronizeContactBtn(),
       // SizedBox(
       //   width: 8
       // ),
-      currentIndex == 0 ? menuBtn() : SizedBox.shrink(),
+      if (currentIndex == 0) menuBtn() else const SizedBox.shrink(),
       // currentIndex == 0 ? createGroupBtn() : SizedBox.shrink(),
-      SizedBox(width: 16),
+      const SizedBox(width: 16),
     ];
 
     return list;
@@ -353,7 +354,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       );
     }
 
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Widget synchronizeContactBtn() {

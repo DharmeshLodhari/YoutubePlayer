@@ -35,9 +35,9 @@ class _AddReviewState extends State<AddReview> {
         foregroundColor: Colors.black,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 10),
+            padding: const EdgeInsets.only(right: 10),
             child: IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               color: Colors.black,
               onPressed: () {
                 Navigator.pop(context);
@@ -48,7 +48,7 @@ class _AddReviewState extends State<AddReview> {
       ),
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.fromLTRB(10, 15, 10, 0),
+          padding: const EdgeInsets.fromLTRB(10, 15, 10, 0),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -59,7 +59,7 @@ class _AddReviewState extends State<AddReview> {
                       Image.asset(
                         "assets/images/green_chair.png",
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Text(
@@ -73,11 +73,11 @@ class _AddReviewState extends State<AddReview> {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 _buildAllUserProductReviews(),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
               ],
@@ -108,7 +108,7 @@ class _AddReviewState extends State<AddReview> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     Row(
@@ -120,7 +120,8 @@ class _AddReviewState extends State<AddReview> {
                           direction: Axis.horizontal,
                           allowHalfRating: true,
                           itemCount: 5,
-                          itemPadding: EdgeInsets.symmetric(horizontal: 8),
+                          itemPadding:
+                              const EdgeInsets.symmetric(horizontal: 8),
                           itemBuilder: (context, _) => Icon(
                             SlydoAppIcon.star,
                             color: starYellow,
@@ -133,7 +134,7 @@ class _AddReviewState extends State<AddReview> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 32,
                     ),
                     Row(
@@ -144,7 +145,7 @@ class _AddReviewState extends State<AddReview> {
                             title: "Add photos",
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 14,
                         ),
                         Expanded(
@@ -155,7 +156,7 @@ class _AddReviewState extends State<AddReview> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     Column(
@@ -171,14 +172,14 @@ class _AddReviewState extends State<AddReview> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         TextFormField(
                           maxLines: maxLines,
                           onChanged: (value) {},
                           decoration: InputDecoration(
-                            border: OutlineInputBorder(
+                            border: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(10.0),
                               ),
@@ -186,14 +187,14 @@ class _AddReviewState extends State<AddReview> {
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: greyBorderColor, width: 1.0),
-                              borderRadius: BorderRadius.all(
+                              borderRadius: const BorderRadius.all(
                                 Radius.circular(10.0),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: greyBorderColor, width: 2.0),
-                              borderRadius: BorderRadius.all(
+                              borderRadius: const BorderRadius.all(
                                 Radius.circular(10.0),
                               ),
                             ),
@@ -201,7 +202,7 @@ class _AddReviewState extends State<AddReview> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                   ],
@@ -209,7 +210,7 @@ class _AddReviewState extends State<AddReview> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           CurvedButton(
@@ -224,7 +225,7 @@ class _AddReviewState extends State<AddReview> {
 
   Widget _buildButton({@required IconData? icon, @required String? title}) {
     return Container(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 14,
         vertical: 12,
       ),
@@ -241,7 +242,7 @@ class _AddReviewState extends State<AddReview> {
             icon,
             size: 20,
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(

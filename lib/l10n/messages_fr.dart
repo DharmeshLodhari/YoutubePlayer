@@ -22,7 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final Map<String, dynamic> messages =
       _notInlinedMessages(_notInlinedMessages);
 
-  static _notInlinedMessages(_) => <String, Function>{
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "accept": MessageLookupByLibrary.simpleMessage("Accept"),
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "accountBalance":

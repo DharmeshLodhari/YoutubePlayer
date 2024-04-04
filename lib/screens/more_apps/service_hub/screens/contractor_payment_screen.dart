@@ -38,17 +38,17 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   JobModel? jobmodel;
   // String? selectedCategory;
   List<String?> paymentCategories = [];
-  TextEditingController _recipientController = TextEditingController();
-  TextEditingController _categoryController = TextEditingController();
-  TextEditingController _refNumberController = TextEditingController();
-  TextEditingController _amountController = TextEditingController();
-  TextEditingController _reviewController = TextEditingController();
+  final TextEditingController _recipientController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _refNumberController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _reviewController = TextEditingController();
 
   CustomerProfile? messageReceiver;
   late UserBloc userBloc;
-  FocusNode _recipientFocus = FocusNode();
-  FocusNode _refNumberFocus = FocusNode();
-  FocusNode _categoryFocus = FocusNode();
+  final FocusNode _recipientFocus = FocusNode();
+  final FocusNode _refNumberFocus = FocusNode();
+  final FocusNode _categoryFocus = FocusNode();
   // double? amount;
   int? rateValue;
   bool? isLoading;
@@ -97,7 +97,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       children: [
         Card(
           elevation: .8,
-          margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -137,11 +137,11 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                     ),
                   ))),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: canDoSlydoTransfer(
                   moneyInputNormalizer2(jobmodel!.pay.toString()).toDouble(),
                   currentBalance)
@@ -156,7 +156,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                   ),
                 ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 60,
         ),
       ],
@@ -210,16 +210,16 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
           minChildSize: .25,
           maxChildSize: .65,
           builder: (_, controller) => Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             decoration: BoxDecoration(
                 color: white,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(10),
                     topRight: Radius.circular(10))),
             child: ListView(
               controller: controller,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 26,
                 ),
                 Row(
@@ -262,7 +262,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Align(
@@ -273,8 +273,8 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                     direction: Axis.horizontal,
                     allowHalfRating: false,
                     itemCount: 5,
-                    itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                    itemBuilder: (context, _) => Icon(
+                    itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    itemBuilder: (context, _) => const Icon(
                       Icons.star,
                       color: Colors.amber,
                     ),
@@ -285,15 +285,15 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
                     },
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 getReferenceField(),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 submitRatingAndReviewButton(),
-                SizedBox(
+                const SizedBox(
                   height: 306,
                 ),
               ],
@@ -466,7 +466,8 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
     return Column(
       children: [
         ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           leading: ClipOval(
             child: CachedNetworkImage(
               height: 50,
@@ -479,7 +480,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
             ),
           ),
           trailing: messageReceiver == null
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : CachedNetworkImage(
                   height: 48,
                   width: 48,
@@ -506,7 +507,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
           color: greyBorderColor,
           thickness: .9,
         ),
-        SizedBox(
+        const SizedBox(
           height: 16.6,
         ),
       ],
@@ -529,7 +530,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
         onPressed: () async {
           if (FocusScope.of(context).hasFocus) {
             FocusScope.of(context).unfocus();
-            await Future.delayed(Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 300));
           }
           Navigator.pop(context, "back pressed");
         },
@@ -544,7 +545,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       ),
       actions: [
         iconAvatar(),
-        SizedBox(
+        const SizedBox(
           width: 26,
         )
       ],
@@ -558,7 +559,7 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
       child: Card(
         color: iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),

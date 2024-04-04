@@ -88,14 +88,14 @@ class _RideTypeState extends State<RideType> {
 
   Widget _buildBody() {
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 Text(
                   'Select ride type',
                   style: TextStyle(
@@ -114,7 +114,7 @@ class _RideTypeState extends State<RideType> {
                     fontFamily: "Inter",
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 _buildRideTypeList(),
               ],
             ),
@@ -136,13 +136,13 @@ class _RideTypeState extends State<RideType> {
           shape: RoundedRectangleBorder(
               side: BorderSide(color: selectedListItemBackgroundBlue),
               borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(vertical: 5),
+          margin: const EdgeInsets.symmetric(vertical: 5),
           shadowColor: boxShadowTwo,
           color: white,
           child: Container(
             decoration: decorateBox(),
             child: Padding(
-              padding: EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -159,7 +159,7 @@ class _RideTypeState extends State<RideType> {
   Widget _buildListTile(int index) {
     return RadioListTile(
       contentPadding: EdgeInsets.zero,
-      visualDensity: VisualDensity(horizontal: 0, vertical: -3),
+      visualDensity: const VisualDensity(horizontal: 0, vertical: -3),
       value: rideType[index],
       groupValue: selectType,
       onChanged: userBloc.user.rider?.isStatusApproved() == false

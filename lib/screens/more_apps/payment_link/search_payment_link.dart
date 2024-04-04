@@ -314,52 +314,54 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
     return Container(
       child: Column(
         children: [
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           searchBox(),
-          SizedBox(height: 12),
-          isLoading
-              ? Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: greyBorderColor,
-                  child: GridView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      mainAxisSpacing: 14,
-                      mainAxisExtent: 180,
-                      crossAxisSpacing: 15,
-                      maxCrossAxisExtent: 200,
+          const SizedBox(height: 12),
+          if (isLoading)
+            Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: greyBorderColor,
+              child: GridView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisSpacing: 14,
+                  mainAxisExtent: 180,
+                  crossAxisSpacing: 15,
+                  maxCrossAxisExtent: 200,
+                ),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    itemCount: 2,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        color: Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      );
-                    },
-                  ),
-                )
-              : SizedBox.shrink(),
-          isSearchIsEmpty
-              ? Expanded(
-                  child: NoItemInList(
-                    msg: AppLocalization.of(context)!
-                        .pleaseTypeSomethingToGetResult,
-                    isResult: false,
-                  ),
-                )
-              : noItemInList
-                  ? Expanded(
-                      child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      ),
-                    )
-                  : Expanded(
-                      child: _buildFriendsList(),
+                  );
+                },
+              ),
+            )
+          else
+            const SizedBox.shrink(),
+          if (isSearchIsEmpty)
+            Expanded(
+              child: NoItemInList(
+                msg:
+                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+                isResult: false,
+              ),
+            )
+          else
+            noItemInList
+                ? Expanded(
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noResultFound,
                     ),
+                  )
+                : Expanded(
+                    child: _buildFriendsList(),
+                  ),
         ],
       ),
     );
@@ -375,7 +377,7 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
           ),
         ),
         child: TextFormField(
-          key: ValueKey('Search'),
+          key: const ValueKey('Search'),
           controller: searchController,
           onChanged: (value) {
             if (value.length >= 3) {
@@ -409,8 +411,8 @@ class _PaymentLinkSearchState extends State<PaymentLinkSearch> {
             hintText: "",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 16),
             ),
             enabledBorder: OutlineInputBorder(

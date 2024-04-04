@@ -144,7 +144,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   bool _isMessageIsGIFOrSticker = false;
   bool _isGIFLoading = false;
   bool _isMessageIsSticker = false;
-  TextEditingController _gifController = TextEditingController();
+  final TextEditingController _gifController = TextEditingController();
 
   /// variables for product or service search
   bool isBlogSearch = true;
@@ -160,12 +160,12 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   int? productOrServiceCount = 0;
   String? productOrServiceNext = "";
   String? productOrServicePrevious = "";
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = new ScrollController();
 
   TextEditingController? searchItemTextController;
-  GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
+  final GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
   CustomizedPopUpMenu? itemSearchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -411,7 +411,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   List<Widget> getSearchBarItems() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     if (_isMessageIsGIFOrSticker) {
       items.add(Container(
@@ -445,11 +445,12 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                     showToast(
                         message: "You can select only 4 images or videos");
                   } else {
-                    bool isPermissionGranted = await requestGalleryPermission();
+                    final bool isPermissionGranted =
+                        await requestGalleryPermission();
                     if (isPermissionGranted) {
                       await pickFileFromMedia();
                     } else {
-                      bool isPermissionIsDenied =
+                      final bool isPermissionIsDenied =
                           await isPermanentlyDeniedPermission();
                       if (isPermissionIsDenied) {
                         await openAppSettings();
@@ -493,7 +494,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   void showSearchProductAndServiceBottomSheet() async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -690,7 +691,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   void getProductOrServiceList() async {
-    String url = getSearchUrl();
+    final String url = getSearchUrl();
 
     if (!isItemLoading) {
       if (productOrServiceNext != null && !isItemLoading) {
@@ -701,7 +702,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         }
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await MessageAuth()
+        final Map<String, dynamic>? result = await MessageAuth()
             .searchProductAndServiceOfUser(
                 url, productOrServiceNext, productOrServicePrevious);
         if (result == null) {
@@ -711,7 +712,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         productOrServiceCount = result['count'];
         productOrServiceNext = result['next'];
         productOrServicePrevious = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted) {
@@ -861,7 +862,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         productOrServiceCount = 0;
@@ -919,27 +920,32 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
 
                       if (productServicePreview.runtimeType.toString() ==
                           'Product') {
-                        Product product = searchedProductAndService[index];
-                        var attachment = {'product': product.toJson()};
+                        final Product product =
+                            searchedProductAndService[index];
+                        final attachment = {'product': product.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         productMode = searchedProductAndService[index];
                       } else if (productServicePreview.runtimeType.toString() ==
                           'Service') {
-                        Service service = searchedProductAndService[index];
-                        var attachment = {'service': service.toJson()};
+                        final Service service =
+                            searchedProductAndService[index];
+                        final attachment = {'service': service.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         serviceMode = searchedProductAndService[index];
                       } else if (productServicePreview.runtimeType.toString() ==
                           'CustomerProfile') {
-                        CustomerProfile customerProfile =
+                        final CustomerProfile customerProfile =
                             searchedProductAndService[index];
-                        var attachment = {'profile': customerProfile.toJson()};
+                        final attachment = {
+                          'profile': customerProfile.toJson()
+                        };
                         yarnDashboardBloc!.productService = attachment;
                         customerProfileMode = searchedProductAndService[index];
                       } else if (productServicePreview.runtimeType.toString() ==
                           'UserPost') {
-                        UserPost userPost = searchedProductAndService[index];
-                        var attachment = {'blog': userPost.toJson()};
+                        final UserPost userPost =
+                            searchedProductAndService[index];
+                        final attachment = {'blog': userPost.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         userPostMode = searchedProductAndService[index];
                       }
@@ -1018,11 +1024,12 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
               if (selectedImages.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
-                bool isPermissionGranted = await requestGalleryPermission();
+                final bool isPermissionGranted =
+                    await requestGalleryPermission();
                 if (isPermissionGranted) {
                   await pickFileFromMedia();
                 } else {
-                  bool isPermissionIsDenied =
+                  final bool isPermissionIsDenied =
                       await isPermanentlyDeniedPermission();
                   if (isPermissionIsDenied) {
                     await openAppSettings();
@@ -1111,13 +1118,13 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
     //   ),
     // );
 
-    List<XFile> res = await selectMultipleImageVideo();
+    final List<XFile> res = await selectMultipleImageVideo();
 
     if (res == null || res.isEmpty) return;
 
     for (var item in res) {
-      File file = File(item.path);
-      String? mediaType = getFileTypeByPath(path: file.path);
+      final File file = File(item.path);
+      final String? mediaType = getFileTypeByPath(path: file.path);
 
       if (mediaType == null) return;
 
@@ -1131,12 +1138,13 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
         selectedMedia
             .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
       } else if (mediaType == 'video') {
-        var videoFilePath =
+        final videoFilePath =
             await NavigationUtil.push(context, screen: TrimmerView(file: file));
         if (videoFilePath is String) {
           videoPath = videoFilePath;
-          Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
-          String? thumbnailImage =
+          final Uint8List? uInt8List =
+              await getVideoThumbnailFromUrl(videoPath!);
+          final String? thumbnailImage =
               await generateThumbNailFromVideo(videoPath: videoPath!);
           // setUpVideoPlayer();
           // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
@@ -1205,7 +1213,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
                     shrinkWrap: true,
                     itemCount: widget.shareAsYarnModel!.length,
                     itemBuilder: (context, index) {
-                      ShareAsYarnModel category =
+                      final ShareAsYarnModel category =
                           widget.shareAsYarnModel![index];
 
                       return ListTile(
@@ -1347,7 +1355,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
           );
   }
 
-  textMessageField() {
+  Widget textMessageField() {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -1600,7 +1608,7 @@ class MomentCommentTextFieldState extends State<MomentCommentTextField> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    Color borderColor = getUserTypeColor(user: user);
+    final Color borderColor = getUserTypeColor(user: user);
 
     return GestureDetector(
       onTap: () {

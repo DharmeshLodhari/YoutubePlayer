@@ -22,6 +22,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -125,7 +126,7 @@ class _HomeState extends State<Home> {
       }
 
       if (!isAppTutorialDone) {
-        bool result =
+        final bool result =
             await _sharedPreferences.setBool("isAppTutorialDone", true);
         debugPrint("result:- $result");
         await Future.delayed(const Duration(milliseconds: 1500)).then((value) {
@@ -147,9 +148,9 @@ class _HomeState extends State<Home> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        String latestTrending = 'latest';
+        final String latestTrending = 'latest';
 
-        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
+        final Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
             type: type,
             isType: isType,
@@ -170,21 +171,21 @@ class _HomeState extends State<Home> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         if (tempList.isNotEmpty) {
           noList = false;
           isLoading = false;
 
-          List<Yarn> createYarnTopicList =
+          final List<Yarn> createYarnTopicList =
               List.from(yarnDashboardBloc.createYarnTopicList);
-          List<Yarn> deleteYarnTopicList =
+          final List<Yarn> deleteYarnTopicList =
               List.from(yarnDashboardBloc.deleteYarnTopicList);
-          List<Yarn> reYarnTopicList =
+          final List<Yarn> reYarnTopicList =
               List.from(yarnDashboardBloc.reYarnTopicList);
 
           /// Get the common CreateYarnTopicList objects in both lists
-          List<Yarn> commonCreateYarnTopicList = tempList
+          final List<Yarn> commonCreateYarnTopicList = tempList
               .where((o1) => createYarnTopicList.any((o2) => o2.id == o1.id))
               .toList();
 
@@ -193,7 +194,7 @@ class _HomeState extends State<Home> {
               (o1) => commonCreateYarnTopicList.any((o2) => o2.id == o1.id));
 
           /// Get the common reYarnTopicList objects in both lists
-          List<Yarn> commonReYarnTopicList = tempList
+          final List<Yarn> commonReYarnTopicList = tempList
               .where((o1) => reYarnTopicList.any((o2) => o2.id == o1.id))
               .toList();
 
@@ -264,9 +265,9 @@ class _HomeState extends State<Home> {
             isExploreMomentsLoading = true;
           });
         }
-        Map<String, dynamic>? result = await MomentsService().getExploreMoments(
-            nextExploreMoments, previousExploreMoments,
-            page_size: 10);
+        final Map<String, dynamic>? result = await MomentsService()
+            .getExploreMoments(nextExploreMoments, previousExploreMoments,
+                page_size: 10);
         if (result == null) {
           isExploreMomentsLoading = false;
           return;
@@ -274,7 +275,7 @@ class _HomeState extends State<Home> {
         nextExploreMoments = result['next'];
         countExploreMoments = result['count'];
         previousExploreMoments = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isExploreMomentsLoading = false;
 
@@ -436,72 +437,73 @@ class _HomeState extends State<Home> {
           if (momentsList.isNotEmpty)
             Container(
               color: Colors.white,
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
-                    onTap: () =>
-                        NavigationUtil.push(context, screen: MomentsScreen()),
+                    onTap: () => NavigationUtil.push(context,
+                        screen: const MomentsScreen()),
                     child: sectionHeader(
                       "Share your moment",
                       "View Moment",
                     ),
                   ),
-                  SizedBox(height: 15),
-                  (nextContactMoments == '' && isExploreMomentsLoading)
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: SizedBox(
-                            height: 180,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: 4,
-                              itemBuilder: (context, index) {
-                                return SizedBox(
-                                  width: 120,
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        )
-                      : SizedBox(
-                          height: 180,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            controller: _myConnectionsScrollController,
-                            scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.symmetric(vertical: 4),
-                            itemCount: momentsList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index == momentsList.length) {
-                                return Container();
-                                // buildIndicator(
-                                //     isLoading: isContactMomentsLoading);
-                              } else {
-                                return ContactMomentsCard(
-                                  index: index,
-                                  nextPageUrl: nextContactMoments,
-                                  userMomentModel: momentsList[index],
-                                  listOfConnectionsNames:
-                                      momentsList.map((e) => e.owner!).toList(),
-                                );
-                              }
-                            },
-                          ),
+                  const SizedBox(height: 15),
+                  if (nextContactMoments == '' && isExploreMomentsLoading)
+                    Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: SizedBox(
+                        height: 180,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: 4,
+                          itemBuilder: (context, index) {
+                            return SizedBox(
+                              width: 120,
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                            );
+                          },
                         ),
+                      ),
+                    )
+                  else
+                    SizedBox(
+                      height: 180,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        controller: _myConnectionsScrollController,
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        itemCount: momentsList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == momentsList.length) {
+                            return Container();
+                            // buildIndicator(
+                            //     isLoading: isContactMomentsLoading);
+                          } else {
+                            return ContactMomentsCard(
+                              index: index,
+                              nextPageUrl: nextContactMoments,
+                              userMomentModel: momentsList[index],
+                              listOfConnectionsNames:
+                                  momentsList.map((e) => e.owner!).toList(),
+                            );
+                          }
+                        },
+                      ),
+                    ),
                 ],
               ),
             ),
-          SizedBox(height: 25),
+          const SizedBox(height: 25),
 
           InkWell(
             onTap: () {
@@ -518,7 +520,7 @@ class _HomeState extends State<Home> {
               }
             },
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
               child: Image.asset(
                 "assets/images/bike_home.jpg",
                 width: double.infinity,
@@ -526,17 +528,17 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             child: Column(
               children: [
                 GestureDetector(
                     onTap: () =>
                         NavigationUtil.push(context, screen: YarnDashboard()),
                     child: sectionHeader("Join the conversation", "View Yarn")),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 _buildListView()
               ],
             ),
@@ -670,7 +672,7 @@ class _HomeState extends State<Home> {
         break;
       case 'Moment':
         hideBalance();
-        NavigationUtil.push(context, screen: MomentsScreen());
+        NavigationUtil.push(context, screen: const MomentsScreen());
         break;
       case 'Services':
         hideBalance();
@@ -689,7 +691,9 @@ class _HomeState extends State<Home> {
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        if (kDebugMode) {
+          print('Tapped on an unknown shortcut');
+        }
     }
   }
 
@@ -753,9 +757,9 @@ class _HomeState extends State<Home> {
 
   Widget _buildListView() {
     return ListView.builder(
-      physics: ScrollPhysics(),
+      physics: const ScrollPhysics(),
       shrinkWrap: true,
-      padding: EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16),
       // scrollDirection: Axis.horizontal,
       // controller: _scrollController,
       itemCount: yarnTopicList.length + 1,
@@ -822,7 +826,7 @@ class _HomeState extends State<Home> {
 
   Widget shortcutViewExtra(String imagePath, String title, String subTitle,
       String color, double dynamicHeight) {
-    double opacity = 0.8;
+    final double opacity = 0.8;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
@@ -877,7 +881,7 @@ class _HomeState extends State<Home> {
     // Calculate the dynamic height based on the longest subtitle
     final textSpan = TextSpan(
       text: longestSubTitle,
-      style: TextStyle(fontSize: maxFontSize),
+      style: const TextStyle(fontSize: maxFontSize),
     );
 
     final textPainter = TextPainter(
@@ -919,7 +923,9 @@ class _HomeState extends State<Home> {
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        if (kDebugMode) {
+          print('Tapped on an unknown shortcut');
+        }
     }
   }
 
@@ -984,7 +990,7 @@ class _HomeState extends State<Home> {
                       color: black,
                       fontWeight: FontWeight.w400),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 3,
                 ),
                 userNameWithVerifiedIcon(
@@ -1001,7 +1007,7 @@ class _HomeState extends State<Home> {
               ],
             ),
           ),
-          SizedBox(height: 5.0),
+          const SizedBox(height: 5.0),
           _buildCurrentLocation(),
         ],
       ),
@@ -1081,13 +1087,13 @@ class _HomeState extends State<Home> {
                 border: Border.all(color: navyBlue)),
             child: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.location_pin,
                   color: Colors.black,
                   size: 18.0,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Text(
                     _buildLocationText(),
                     style: TextStyle(
@@ -1097,7 +1103,7 @@ class _HomeState extends State<Home> {
                         fontWeight: FontWeight.w300),
                   ),
                 ),
-                Icon(
+                const Icon(
                   Icons.keyboard_arrow_down,
                   color: Colors.black,
                   size: 15.0,
@@ -1126,7 +1132,7 @@ class _HomeState extends State<Home> {
   void getAddressList() async {
     if (mounted) setState(() {});
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await ShoppingAuthService().listOfDispatchAddress("", null);
 
     if (result == null) {
@@ -1136,7 +1142,7 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    List<ShippingAddress> tempList = result['results'];
+    final List<ShippingAddress> tempList = result['results'];
 
     if (mounted) {
       setState(() {
@@ -1341,20 +1347,21 @@ class _HomeState extends State<Home> {
         : Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              isBalanceHidden
-                  ? Container()
-                  : Padding(
-                      padding: const EdgeInsets.only(bottom: 2.0),
-                      child: Text(
-                        worldCurrencies[userBloc.user.currency!]!,
-                        style: TextStyle(
-                          color: white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 22,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
+              if (isBalanceHidden)
+                Container()
+              else
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0),
+                  child: Text(
+                    worldCurrencies[userBloc.user.currency!]!,
+                    style: TextStyle(
+                      color: white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 22,
+                      fontFamily: 'Inter',
                     ),
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 2.0),
                 child: Text(
@@ -1399,7 +1406,7 @@ class _HomeState extends State<Home> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 15.0),
+          const SizedBox(height: 15.0),
           Text(
             bankName,
             style: TextStyle(
@@ -1419,7 +1426,7 @@ class _HomeState extends State<Home> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(width: 4),
+              const SizedBox(width: 4),
               GestureDetector(
                 onTap: copyAccountDetails,
                 child: SvgPicture.asset(
@@ -1487,9 +1494,9 @@ class _HomeState extends State<Home> {
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
-      var actualBalance = data["balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
+      final actualBalance = data["balance"];
 
       accountBalance = spendableBalance;
       actualAccountBalance = actualBalance;
@@ -1500,7 +1507,7 @@ class _HomeState extends State<Home> {
     });
   }
 
-  checkUser() {
+  Widget checkUser() {
     if (userBloc.user.type.toString().toLowerCase() == 'user') {
       return Column(
         children: [
@@ -1827,7 +1834,7 @@ class _HomeState extends State<Home> {
   }
 
   String getGreetingMessage() {
-    TimeOfDay currentTime = TimeOfDay.now();
+    final TimeOfDay currentTime = TimeOfDay.now();
 
     if (currentTime.hour >= 6 &&
         (currentTime.hour <= 11 && currentTime.minute <= 59)) {
@@ -1892,23 +1899,24 @@ class _HomeState extends State<Home> {
   }
 
   void pickImage() async {
-    String? croppedImage = await getCroppedImage(context);
+    final String? croppedImage = await getCroppedImage(context);
 
     if (croppedImage != null) {
       try {
         isLoading = true;
         if (mounted) setState(() {});
 
-        User? _user = await DatabaseHelper().getUser();
+        final User? _user = await DatabaseHelper().getUser();
 
-        SharedPreferences sharedPreferences =
+        final SharedPreferences sharedPreferences =
             await SharedPreferences.getInstance();
-        String countryFromPref = sharedPreferences.getString('country') ?? "NG";
+        final String countryFromPref =
+            sharedPreferences.getString('country') ?? "NG";
 
-        Country country =
+        final Country country =
             CountryPickerUtils.getCountryByIsoCode(countryFromPref);
 
-        SecureUser secureUser = await SecureStorage().getUser();
+        final SecureUser secureUser = await SecureStorage().getUser();
         String phoneNumber = secureUser.phoneNumber ?? "";
         String password = secureUser.password ?? "";
 
@@ -1948,16 +1956,16 @@ class _HomeState extends State<Home> {
 
   String generateAsteriskMask(String amount) {
     // Determine the length of the amount
-    int amountLength = amount.length;
+    final int amountLength = amount.length;
 
     // Generate a string of asterisks of the same length as the amount
-    String asteriskMask = '*' * amountLength;
+    final String asteriskMask = '*' * amountLength;
 
     // Trim the trailing space and return the asterisk mask
     return asteriskMask.trim();
   }
 
-  showTutorial(String? shortcut) {
+  void showTutorial(String? shortcut) {
     switch (shortcut) {
       case 'Send':
         tutorialSendPaymentKey;
@@ -1979,7 +1987,9 @@ class _HomeState extends State<Home> {
         break;
       default:
         // Handle the default case (if any)
-        print('Tapped on an unknown shortcut');
+        if (kDebugMode) {
+          print('Tapped on an unknown shortcut');
+        }
     }
   }
 }

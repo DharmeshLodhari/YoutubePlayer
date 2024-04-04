@@ -75,7 +75,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
     userBloc = Provider.of<UserBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
-    bool isSend = widget.message!["author"] == userBloc.user.userName;
+    final bool isSend = widget.message!["author"] == userBloc.user.userName;
 
     return GestureDetector(
       onTap: () {
@@ -98,7 +98,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              isSend ? Container() : Container(width: 20),
+              if (isSend) Container() else Container(width: 20),
               Container(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.50,
@@ -114,8 +114,8 @@ class _PostTileForChatState extends State<PostTileForChat> {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    topLeft: const Radius.circular(10),
+                    topRight: const Radius.circular(10),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -133,31 +133,32 @@ class _PostTileForChatState extends State<PostTileForChat> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    widget.chatConversation!.isGroupConversation!
-                        ? widget.message!['author'] != userBloc.user.userName
-                            ? Column(
-                                children: [
-                                  Text(
-                                    widget.message!['author_full_name'] ??
-                                        widget.message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                ],
-                              )
-                            : Container(
-                                height: 0,
-                                width: 0,
-                              )
-                        : Container(
-                            height: 0,
-                            width: 0,
-                          ),
+                    if (widget.chatConversation!.isGroupConversation!)
+                      widget.message!['author'] != userBloc.user.userName
+                          ? Column(
+                              children: [
+                                Text(
+                                  widget.message!['author_full_name'] ??
+                                      widget.message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                              ],
+                            )
+                          : Container(
+                              height: 0,
+                              width: 0,
+                            )
+                    else
+                      Container(
+                        height: 0,
+                        width: 0,
+                      ),
                     Card(
                       margin: EdgeInsets.zero,
                       elevation: 0,
@@ -169,7 +170,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.only(
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(10),
                                 topRight: Radius.circular(10),
                               ),
@@ -203,7 +204,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
                                     softWrap: true,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  SizedBox(height: 14),
+                                  const SizedBox(height: 14),
                                   Row(
                                     children: [
                                       SizedBox(
@@ -221,7 +222,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 10),
+                                      const SizedBox(width: 10),
                                       Text(
                                         messageDecoderWithEmoji(postForChatModel
                                                 .authorUsername) ??
@@ -244,40 +245,43 @@ class _PostTileForChatState extends State<PostTileForChat> {
                   ],
                 ),
               ),
-              isSend
-                  ? Container(
-                      width: 20,
-                      child: isSend
-                          ? Center(
-                              child: getMessageTick(message: widget.message!),
-                            )
-                          : Container(),
-                    )
-                  : Container(),
+              if (isSend)
+                Container(
+                  width: 20,
+                  child: isSend
+                      ? Center(
+                          child: getMessageTick(message: widget.message!),
+                        )
+                      : Container(),
+                )
+              else
+                Container(),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           Row(
             mainAxisAlignment:
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              isSend
-                  ? Container()
-                  : SizedBox(
-                      width: 20,
-                    ),
+              if (isSend)
+                Container()
+              else
+                const SizedBox(
+                  width: 20,
+                ),
               Text(
                 formatTime(widget.message!['created_at']),
                 style: TextStyle(
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
-              isSend
-                  ? SizedBox(
-                      width: 20,
-                    )
-                  : Container(),
+              if (isSend)
+                const SizedBox(
+                  width: 20,
+                )
+              else
+                Container(),
             ],
           ),
         ],

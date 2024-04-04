@@ -49,12 +49,12 @@ class ChatConversation {
     debugPrint('JSON VE ->> ${json['is_verified']}');
     return ChatConversation(
       adminUsers: json['admin_users'] != null
-          ? new List<String>.from(json['admin_users'])
+          ? List<String>.from(json['admin_users'])
           : [],
       avatar: json['avatar'],
       banner: json['banner'],
       blockedParticipants: json['blocked_participants'] != null
-          ? new List<String>.from(json['blocked_participants'])
+          ? List<String>.from(json['blocked_participants'])
           : [],
       isVerified: json['is_verified'] ?? false,
       conversationId: json['conversation_id'],
@@ -63,11 +63,11 @@ class ChatConversation {
       isGroupConversation: json['is_group_conversation'],
       createdAt: json['created_at'] ?? DateTime.now().toUtc().toIso8601String(),
       mutedParticipants: json['muted_participants'] != null
-          ? new List<String>.from(json['muted_participants'])
+          ? List<String>.from(json['muted_participants'])
           : [],
       owner: json['owner'] == "" || json['owner'] == null ? '' : json['owner'],
       participants: json['participants'] != null
-          ? new List<String>.from(json['participants'])
+          ? List<String>.from(json['participants'])
           : [],
       qrCode: json['qr_code'] == "" || json['qr_code'] == null
           ? ''
@@ -80,7 +80,7 @@ class ChatConversation {
 
   /// Creating Server Payload From ChatConversation
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['avatar'] = avatar;
     data['banner'] = banner;
     data['conversation_id'] = conversationId;
@@ -105,12 +105,12 @@ class ChatConversation {
   factory ChatConversation.fromDBJson(Map<String, dynamic> json) {
     return ChatConversation(
       adminUsers: json['admin_users'] != null
-          ? new List<String>.from(jsonDecode(json['admin_users']))
+          ? List<String>.from(jsonDecode(json['admin_users']))
           : [],
       avatar: json['avatar'],
       banner: json['banner'],
       blockedParticipants: json['blocked_participants'] != null
-          ? new List<String>.from(jsonDecode(json['blocked_participants']))
+          ? List<String>.from(jsonDecode(json['blocked_participants']))
           : [],
       conversationId: json['conversation_id'],
       description: json['description'],
@@ -118,12 +118,12 @@ class ChatConversation {
       createdAt: convertMillisecondsSinceEpochToString(json['created_at']),
       isGroupConversation: json['is_group_conversation'] == 1 ? true : false,
       mutedParticipants: json['muted_participants'] != null
-          ? new List<String>.from(jsonDecode(json['muted_participants']))
+          ? List<String>.from(jsonDecode(json['muted_participants']))
           : [],
       owner: json['owner'],
       isVerified: json['is_verified'] == 1 ? true : false,
       participants: json['participants'] != null
-          ? new List<String>.from(jsonDecode(json['participants']))
+          ? List<String>.from(jsonDecode(json['participants']))
           : [],
       qrCode: json['qr_code'],
       type: json['type'],
@@ -134,7 +134,7 @@ class ChatConversation {
 
   /// Creating DB Payload From ChatConversation
   Map<String, dynamic> toDBJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['avatar'] = avatar;
     data['banner'] = banner;
     data['conversation_id'] = conversationId;
@@ -151,8 +151,7 @@ class ChatConversation {
     data['blocked_participants'] = jsonEncode(blockedParticipants);
     data['muted_participants'] = jsonEncode(mutedParticipants);
     data['participants'] = jsonEncode(participants);
-    data['is_verified'] =
-        isVerified != null && isVerified! == true ? 1 : 0;
+    data['is_verified'] = isVerified != null && isVerified! == true ? 1 : 0;
 
     return data;
   }
@@ -187,7 +186,7 @@ class ChatConversation {
 
   static ChatConversation fromChatConversation(
       ChatConversation chatConversation) {
-    ChatConversation _chatConversation = ChatConversation();
+    final ChatConversation _chatConversation = ChatConversation();
     _chatConversation.adminUsers = chatConversation.adminUsers;
     _chatConversation.avatar = chatConversation.avatar;
     _chatConversation.banner = chatConversation.banner;

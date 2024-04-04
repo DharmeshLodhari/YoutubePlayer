@@ -102,7 +102,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     focusNode = FocusNode();
     super.initState();
 
-    String? fType = getFileTypeByPath(path: widget.filePath);
+    final String? fType = getFileTypeByPath(path: widget.filePath);
     if (fType == null) return;
     fileType = fType;
     /*If the media to be previewed is a video, generate a thumbnail from it (the video)*/
@@ -392,22 +392,23 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                           ),
                         ),
                         const SizedBox(height: 30),
-                        appConfigurationModel?.enablePayment == true
-                            ? previewMomentSwitchOptions(
-                                icon: 'yarn/black_logo',
-                                title: 'Enable Payment',
-                                description:
-                                    'Enable this to allow other users to support your work by making a donation.',
-                                switchBtn: Switch(
-                                  value: enablePayMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      enablePayMe = value;
-                                    });
-                                  },
-                                ),
-                              )
-                            : const SizedBox.shrink(),
+                        if (appConfigurationModel?.enablePayment == true)
+                          previewMomentSwitchOptions(
+                            icon: 'yarn/black_logo',
+                            title: 'Enable Payment',
+                            description:
+                                'Enable this to allow other users to support your work by making a donation.',
+                            switchBtn: Switch(
+                              value: enablePayMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  enablePayMe = value;
+                                });
+                              },
+                            ),
+                          )
+                        else
+                          const SizedBox.shrink(),
                         const SizedBox(height: 20),
                         dropDownPickItemWidget(
                           label: 'Pick attachment',
@@ -480,7 +481,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                                     focusNode.unfocus();
                                     await Future.delayed(
                                         const Duration(milliseconds: 200));
-                                    bool? _pickedColor = await showDialog<bool>(
+                                    final bool? _pickedColor =
+                                        await showDialog<bool>(
                                       context: context,
                                       builder: (context) => AlertDialog(
                                         title: const Text('Pick your color'),
@@ -695,56 +697,56 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         ),
       ),
       actions: [
-        isText == false
-            ? const SizedBox.shrink()
-            : Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: CurvedButton(
-                  width: 100,
-                  height: 10,
-                  borderRadius: 20,
-                  text: 'Submit',
-                  fontSize: 14,
-                  onPressed: () async {
-                    if (enablePayMe && payMeCtrl.text.isEmpty) {
-                      showToast(message: 'Payment label cannot be empty');
-                      return;
-                    }
+        if (isText == false)
+          const SizedBox.shrink()
+        else
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: CurvedButton(
+              width: 100,
+              height: 10,
+              borderRadius: 20,
+              text: 'Submit',
+              fontSize: 14,
+              onPressed: () async {
+                if (enablePayMe && payMeCtrl.text.isEmpty) {
+                  showToast(message: 'Payment label cannot be empty');
+                  return;
+                }
 
-                    if (pickedAttachmentType == 'Url' &&
-                        (urlTextCtrl.text.isEmpty ||
-                            (!await canLaunchUrl(
-                                Uri.parse(urlTextCtrl.text))))) {
-                      showToast(message: 'Please enter a valid url');
-                      return;
-                    }
-                    showDialogBox(
-                      context: context,
-                      actionOneTextColor: blackFont,
-                      actionTwoBgColor: navyBlue,
-                      actionTwoTextColor: Colors.white,
-                      actionOneBgColor: greyBorderColor,
-                      title: AppLocalization.of(context)!.post,
-                      actionTwoText: AppLocalization.of(context)!.post,
-                      actionOneText: AppLocalization.of(context)!.notNow,
-                      description:
-                          'Are you sure you want to post\nyour moment now?',
-                      roundedBackgroundIcon: RoundedBackgroundIcon(
-                        enableMargin: false,
-                        width: 90,
-                        height: 90,
-                        image: Image.asset(
-                          'assets/images/accept_dialog_icon.png',
-                          color: navyBlue,
-                        ),
-                      ),
-                      rightButtonOnPressed: () {
-                        postMoment();
-                      },
-                    );
+                if (pickedAttachmentType == 'Url' &&
+                    (urlTextCtrl.text.isEmpty ||
+                        (!await canLaunchUrl(Uri.parse(urlTextCtrl.text))))) {
+                  showToast(message: 'Please enter a valid url');
+                  return;
+                }
+                showDialogBox(
+                  context: context,
+                  actionOneTextColor: blackFont,
+                  actionTwoBgColor: navyBlue,
+                  actionTwoTextColor: Colors.white,
+                  actionOneBgColor: greyBorderColor,
+                  title: AppLocalization.of(context)!.post,
+                  actionTwoText: AppLocalization.of(context)!.post,
+                  actionOneText: AppLocalization.of(context)!.notNow,
+                  description:
+                      'Are you sure you want to post\nyour moment now?',
+                  roundedBackgroundIcon: RoundedBackgroundIcon(
+                    enableMargin: false,
+                    width: 90,
+                    height: 90,
+                    image: Image.asset(
+                      'assets/images/accept_dialog_icon.png',
+                      color: navyBlue,
+                    ),
+                  ),
+                  rightButtonOnPressed: () {
+                    postMoment();
                   },
-                ),
-              ),
+                );
+              },
+            ),
+          ),
       ],
     );
   }
@@ -788,16 +790,17 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                 child: CornerRadiusVideo(
                     widget: Stack(children: [
                   VideoPlayer(videoPlayerController!),
-                  isTapped == false
-                      ? Align(
-                          alignment: Alignment.center,
-                          child: SvgPicture.asset(
-                            "yarn/cam_vec".toSVG(),
-                            height: 50,
-                            width: 50,
-                          ),
-                        )
-                      : const SizedBox.shrink()
+                  if (isTapped == false)
+                    Align(
+                      alignment: Alignment.center,
+                      child: SvgPicture.asset(
+                        "yarn/cam_vec".toSVG(),
+                        height: 50,
+                        width: 50,
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink()
                 ]))),
           ));
       //   ),
@@ -850,7 +853,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   }
 
   void postMoment() {
-    List<String> newUserTags =
+    final List<String> newUserTags =
         []; // For replacing the # in a tag with an empty string.
 
     userTags.forEach((tag) {
@@ -937,7 +940,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   }
 
   pickAttachmentWidget() async {
-    String? pickedAttachmentOption = await showPickItemDialog<String>(
+    final String? pickedAttachmentOption = await showPickItemDialog<String>(
       context: context,
       items: attachmentList,
       selectedItem: pickedAttachmentType,
@@ -949,7 +952,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
       switch (pickedAttachmentOption) {
         case 'Blog':
-          var attachmentItemModelResult = await NavigationUtil.push(context,
+          final attachmentItemModelResult = await NavigationUtil.push(context,
               screen: const PickAttachmentScreen(
                   attachmentType: AttachmentType.Blog));
           if (attachmentItemModelResult != null) {
@@ -962,7 +965,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           }
           break;
         case 'Product':
-          var attachmentItemModelResult = await NavigationUtil.push(context,
+          final attachmentItemModelResult = await NavigationUtil.push(context,
               screen: const PickAttachmentScreen(
                   attachmentType: AttachmentType.Product));
           if (attachmentItemModelResult != null) {
@@ -976,7 +979,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
           break;
         case 'Service':
-          var attachmentItemModelResult = await NavigationUtil.push(context,
+          final attachmentItemModelResult = await NavigationUtil.push(context,
               screen: const PickAttachmentScreen(
                   attachmentType: AttachmentType.Service));
           if (attachmentItemModelResult != null) {
@@ -1000,7 +1003,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   }
 
   pickAttachmentItemWidget() async {
-    AttachmentItemModel? pickedItemAttachment =
+    final AttachmentItemModel? pickedItemAttachment =
         await showDialog<AttachmentItemModel>(
       context: context,
       builder: (context) => AlertDialog(

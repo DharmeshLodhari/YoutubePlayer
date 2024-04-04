@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 class MyRouteObserver extends RouteObserver {
   @override
   void didPop(Route route, Route? previousRoute) {
-    RouteProvider routeProvider =
+    final RouteProvider routeProvider =
         Provider.of<RouteProvider>(route.navigator!.context, listen: false);
 
     routeProvider.removeRoute(name: route.settings.name);
@@ -17,7 +17,7 @@ class MyRouteObserver extends RouteObserver {
 
   @override
   void didPush(Route route, Route? previousRoute) {
-    RouteProvider routeProvider =
+    final RouteProvider routeProvider =
         Provider.of<RouteProvider>(route.navigator!.context, listen: false);
 
     routeProvider.addRoute(name: route.settings.name);

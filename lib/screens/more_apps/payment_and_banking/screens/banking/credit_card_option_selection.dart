@@ -42,13 +42,13 @@ class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
       children: [
         Expanded(
             child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 getChatSettingTitle(),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 getSettingTile(
@@ -64,7 +64,6 @@ class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
                       //   showToast(message: 'Coming soon');
                       // }
                       Navigator.pushNamed(context, Routes.VIRTUAL_CARD_HOME);
-
                     }),
                 getSettingTile(
                   title:
@@ -87,7 +86,7 @@ class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
             ),
           ),
         )),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }

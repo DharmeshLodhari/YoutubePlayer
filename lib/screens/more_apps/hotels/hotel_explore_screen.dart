@@ -20,7 +20,7 @@ class HotelExploreScreen extends StatefulWidget {
 }
 
 class _HotelExploreScreenState extends State<HotelExploreScreen> {
-  CarouselController _carouselController = CarouselController();
+  final CarouselController _carouselController = CarouselController();
 
   List<PartialHotelRoomItem> sliderItem = [];
   bool isSliderLoading = false;
@@ -34,7 +34,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
   List<CityData> listOfCity = [];
   bool isExploreByCityLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
@@ -96,7 +96,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -144,7 +144,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
       ),
       actions: [
         locationChip(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         )
       ],
@@ -153,8 +153,8 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
 
   Widget locationChip() {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(60),
           color: navyBlue.withOpacity(0.1)),
@@ -165,7 +165,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
             color: blackFont,
             size: 14,
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(
@@ -190,24 +190,24 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 6,
             ),
             searchBox(),
-            SizedBox(
+            const SizedBox(
               height: 32,
             ),
             cityCarouselSlider(),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             nearByYou(),
             mostRecentDiscoveryList(),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             exploreByCity(),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ],
@@ -218,7 +218,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -257,8 +257,8 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -324,11 +324,11 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                       child: Stack(
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: Center(
                                 child: ClipRRect(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
+                                  const BorderRadius.all(Radius.circular(10)),
                               child: CachedNetworkImage(
                                 imageUrl: item.image!,
                                 fit: BoxFit.fill,
@@ -340,7 +340,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                               ),
                             )),
                           ),
-                          Align(
+                          const Align(
                             alignment: Alignment.center,
                             child: Text(
                               "Homestay",
@@ -364,7 +364,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -401,12 +401,12 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: mostRecentDiscovery
                             .map(
                               (hotelRoom) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: PartialHotelRoomItemTile(
                                   hotelRoom: hotelRoom,
                                 ),
@@ -427,7 +427,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -464,12 +464,12 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: listOfCity
                             .map(
                               (city) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: CityItemCard(
                                   city: city,
                                 ),
@@ -490,7 +490,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -519,7 +519,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
           ),
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: isNearByItemLoading
                 ? Container(
                     height: 220,
@@ -531,14 +531,14 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(
+                      padding: const EdgeInsets.only(
                         left: 16,
                         bottom: 12,
                       ),
                       child: Row(
                         children: nearByItem
                             .map((element) => Container(
-                                  margin: EdgeInsets.only(right: 16),
+                                  margin: const EdgeInsets.only(right: 16),
                                   child:
                                       HotelRoomImagesTile(hotelRoom: element),
                                 ))

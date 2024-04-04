@@ -87,7 +87,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
         attachmentLoading = true;
       });
     }
-    Map<String, dynamic>? result = await getAttachmentAPI();
+    final Map<String, dynamic>? result = await getAttachmentAPI();
 
     if (mounted) {
       setState(() {
@@ -111,11 +111,11 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
     }
   }
 
-  getDisplayCardModelList(dynamic result) {
+  void getDisplayCardModelList(dynamic result) {
     switch (widget.attachmentType) {
       case AttachmentType.Product:
         {
-          List<Product> resultList = result['results'];
+          final List<Product> resultList = result['results'];
           displayCardModelList = resultList
               .map((e) => DisplayCardModel(
                   id: e.id!,
@@ -127,7 +127,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
         }
       case AttachmentType.Service:
         {
-          List<Service> resultList = result['results'];
+          final List<Service> resultList = result['results'];
           displayCardModelList = resultList
               .map((e) => DisplayCardModel(
                   id: e.id!,
@@ -139,7 +139,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
         }
       case AttachmentType.Blog:
         {
-          List<dynamic> resultList = result['results'];
+          final List<dynamic> resultList = result['results'];
 
           resultList.forEach((e) {
             displayCardModelList.add(
@@ -208,10 +208,10 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
   }
 
   Widget buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
           opacity: attachmentLoading ? 1.0 : 00,
           child: CircularLoadingIndicator(),
         ),
@@ -221,7 +221,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
 
   Widget displayCard({required DisplayCardModel displayCardModel}) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -232,7 +232,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   leading: getLeading(displayCardModel.imageUrl),

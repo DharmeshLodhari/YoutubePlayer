@@ -42,12 +42,12 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   ChewieController? _chewieController;
 
   /// Music Player
-  AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
+  final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
   bool isAudioPlaying = false;
 
   @override
   void initState() {
-    var message = widget.arguments!["message"];
+    final message = widget.arguments!["message"];
     messageController = TextEditingController(text: message);
     data = widget.arguments!["data"];
     mediaFile = widget.arguments!["media"];
@@ -71,7 +71,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
 
   void cropImage() async {
     /// for cropping the image
-    String? croppedImage = await ImageCrop().cropImage(mediaFile!.path);
+    final String? croppedImage = await ImageCrop().cropImage(mediaFile!.path);
     if (croppedImage != null) {
       mediaFile = File(croppedImage);
       if (mounted) setState(() {});
@@ -146,7 +146,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
               ? FloatingActionButton(
                   backgroundColor: navyBlue,
                   onPressed: sendMessage,
-                  child: Icon(
+                  child: const Icon(
                     Icons.send,
                     color: Colors.white,
                   ),
@@ -188,36 +188,37 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
               ],
             ),
           ),
-          mediaType != "audio"
-              ? Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  constraints: BoxConstraints(
-                    maxHeight: 100,
+          if (mediaType != "audio")
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              constraints: const BoxConstraints(
+                maxHeight: 100,
+              ),
+              child: Row(
+                children: <Widget>[
+                  const SizedBox(
+                    width: 8,
                   ),
-                  child: Row(
-                    children: <Widget>[
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(child: getMessageTextFormField()),
-                      InkWell(
-                        onTap: sendMessage,
-                        child: Row(
-                          children: [
-                            SizedBox(width: 8),
-                            Icon(
-                              Icons.send,
-                              color: navyBlue,
-                            ),
-                            SizedBox(width: 8),
-                          ],
+                  Expanded(child: getMessageTextFormField()),
+                  InkWell(
+                    onTap: sendMessage,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.send,
+                          color: navyBlue,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                      ],
+                    ),
                   ),
-                )
-              : Container(),
+                ],
+              ),
+            )
+          else
+            Container(),
         ],
       ),
     );
@@ -231,7 +232,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
         child: Theme(
             data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
             child: Scrollbar(
-              radius: Radius.circular(12),
+              radius: const Radius.circular(12),
               thickness: 2.5,
               child: TextFormField(
                 controller: messageController,
@@ -245,7 +246,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                 cursorWidth: 1,
                 cursorHeight: 20,
                 maxLines: null,
-                cursorRadius: Radius.circular(16),
+                cursorRadius: const Radius.circular(16),
                 decoration: InputDecoration(
                   hintText: "Type a message",
                   hintStyle: TextStyle(
@@ -253,13 +254,13 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
-                  prefix: Padding(
+                  prefix: const Padding(
                     padding: EdgeInsets.only(left: 16),
                   ),
-                  suffix: Padding(
+                  suffix: const Padding(
                     padding: EdgeInsets.only(right: 16),
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
                   isDense: true,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(3),
@@ -304,9 +305,9 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   }
 
   void sendMessage() async {
-    Map<String, dynamic> _data = {};
+    final Map<String, dynamic> _data = {};
     _data['text'] = messageController!.text.trim();
-    _data['check_id'] = Uuid().v4();
+    _data['check_id'] = const Uuid().v4();
     _data['kind'] = mediaType;
     _data['read_by_author'] = true;
     _data['created_at'] = DateTime.now().toUtc().toString();
@@ -321,7 +322,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
 
     File? poster;
     if (mediaType == "video") {
-      String? posterPath = await getVideoThumbnail(mediaFile!);
+      final String? posterPath = await getVideoThumbnail(mediaFile!);
       if (posterPath == null) return;
       poster = File(posterPath);
     }
@@ -356,7 +357,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
             );
     } else if (mediaType == "audio") {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -368,14 +369,15 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                     minHeight: 50),
                 decoration: BoxDecoration(
                   color: chatBackgroundColor,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(6),
                     bottomRight: Radius.circular(6),
                     topLeft: Radius.circular(6),
                     topRight: Radius.circular(6),
                   ),
                 ),
-                padding: EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
+                padding:
+                    const EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,7 +385,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                     Row(
                       children: [
                         Container(
-                          padding: EdgeInsets.only(top: 6, left: 4),
+                          padding: const EdgeInsets.only(top: 6, left: 4),
                           child: _audioPlayer.builderRealtimePlayingInfos(
                               builder: (context, info) {
                             if (info.current == null) {
@@ -433,7 +435,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                                     duration: Duration.zero,
                                     seekTo: (to) {},
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 6,
                                   )
                                 ],
@@ -450,7 +452,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                                     _audioPlayer.seek(to!);
                                   },
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 6,
                                 )
                               ],
@@ -481,7 +483,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                 width: 150,
                 height: 150,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 mediaFile!.path.split('/').last,
                 textAlign: TextAlign.center,

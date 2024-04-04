@@ -23,11 +23,11 @@ class _BankAccountTileState extends State<BankAccountTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       child: ListTile(
         title: Text(
           widget.account!.bankName!,
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
         subtitle: Text('******' +

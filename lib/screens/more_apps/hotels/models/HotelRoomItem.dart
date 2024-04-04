@@ -21,8 +21,7 @@ class HotelRoomItem {
       address1: json['address1'],
       address2: json['address2'],
       currency: json['currency'],
-      images:
-          json['images'] != null ? new List<String>.from(json['images']) : null,
+      images: json['images'] != null ? List<String>.from(json['images']) : null,
       name: json['name'],
       price: json['price'],
       rating: json['rating'],
@@ -30,7 +29,7 @@ class HotelRoomItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['address1'] = this.address1;
     data['address2'] = this.address2;
     data['currency'] = this.currency;

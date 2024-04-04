@@ -39,7 +39,6 @@ bool isDialogueOpen = false;
 
 Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
 // await Firebase.initializeApp();
-  print("onBackgroundMessage: ${remoteMessage.data}");
 
   try {
     /// {data:
@@ -56,15 +55,14 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
     /// "author_avatar":null},
     /// title: Slydo Notification}}
 
-    Map<String, dynamic> data = {};
+    final Map<String, dynamic> data = {};
 
-    Map<String, dynamic> notification =
+    final Map<String, dynamic> notification =
         remoteMessage.data["notification"] != null
             ? jsonDecode(remoteMessage.data["notification"])
             : {};
 
     if (notification.isEmpty) {
-      print("Invalid Data Format:-  ${remoteMessage.data}");
       return;
     }
 
@@ -72,7 +70,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
 
     AwesomeNotificationService().init();
 
-    Map<String, dynamic> dataOfNotification = Platform.isIOS
+    final Map<String, dynamic> dataOfNotification = Platform.isIOS
         ? decodeNotificationIOS(remoteMessage.data)
         : decodeNotification(remoteMessage.data);
 
@@ -97,22 +95,22 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
       } else if (data['data']['type'] == "chatroom_message") {
         data['notification'] = notification;
 
-        ChatMessage textMessage = ChatMessage.fromJson(data['data']);
+        final ChatMessage textMessage = ChatMessage.fromJson(data['data']);
 
-        int result =
+        final int result =
             await ChatMessageHandler().addChatMessage(chatMessage: textMessage);
 
         if (result == 1) {
-          int? time =
+          final int? time =
               convertStringToMillisecondsSinceEpoch(textMessage.createdAt);
 
-          String? conversationId = textMessage.conversationId;
+          final String? conversationId = textMessage.conversationId;
 
           /// move user to top of the list in the connection list
           await ConnectionListManager().updateLastMessageTime(
               conversationId: conversationId, time: time);
 
-          String hashedMessage =
+          final String hashedMessage =
               generateHashedMessage(jsonEncode(data['data']));
 
           log("====> UPDATE CHAT USER MESSAGE COUNT FROM FCM");
@@ -131,9 +129,10 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
           AwesomeNotificationService().showNotification(message: data);
         }
       } else if (data['data']['type'] == "acknowledge_message") {
-        Map<String, dynamic> messageData = dataOfNotification['data'] is Map
-            ? dataOfNotification['data']
-            : jsonDecode(dataOfNotification['data']);
+        final Map<String, dynamic> messageData =
+            dataOfNotification['data'] is Map
+                ? dataOfNotification['data']
+                : jsonDecode(dataOfNotification['data']);
 
         /// set delivery status true for the message
         MainSocketMessageHandler()
@@ -156,7 +155,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
     else {
       data['notification'] = notification;
 
-      String action = data['notification']['actions'] ??
+      final String action = data['notification']['actions'] ??
           data['notification']['click_action'] ??
           "";
 
@@ -188,10 +187,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
       }
       AwesomeNotificationService().showNotification(message: data);
     }
-  } catch (error) {
-    print("ERROR IN BACKGROUND HANDLER : - $error");
-    print("DATA IN BACKGROUND HANDLER : - $remoteMessage");
-  }
+  } catch (error) {}
 
   return Future<void>.value();
 }
@@ -226,14 +222,13 @@ class PushNotificationService {
       // });
     }
 
-    var data = await getDeviceInfo();
+    final data = await getDeviceInfo();
     await _fcm.getToken().then((String? token) async {
       data["token"] = token;
 
-      print("FCM Token:- $token");
       // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
       // so we can store that data into database
-      Map<String, dynamic> tempData = new Map<String, dynamic>();
+      final Map<String, dynamic> tempData = new Map<String, dynamic>();
       tempData['firebaseToken'] = data['token'];
       tempData['type'] = data['type'];
       tempData['mode'] = data['mode'];
@@ -259,9 +254,8 @@ class PushNotificationService {
 
     streamListen =
         FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print("onMessage: ${message.data}");
       // creating notification from server payload
-      Map<String, dynamic> notification = Platform.isIOS
+      final Map<String, dynamic> notification = Platform.isIOS
           ? decodeNotificationIOS(message.data)
           : decodeNotification(message.data);
 
@@ -272,8 +266,6 @@ class PushNotificationService {
           (notification["data"]['type'] == "chatroom_message" ||
               notification["data"]['type'] == "nudge_user" ||
               notification["data"]['type'] == "acknowledge_message")) {
-        print("notification data = ${notification["data"]}");
-        print("notification data type = ${notification["data"] is String}");
         Map<String, dynamic>? decodeMessage;
         try {
           decodeMessage = notification["data"] is Map
@@ -309,7 +301,7 @@ class PushNotificationService {
             if (!isDialogueOpen) {
               isDialogueOpen = true;
               // dialog for shared cart payment request
-              var result = await buildCartPaymentRequestDialog(
+              final result = await buildCartPaymentRequestDialog(
                   context: myGlobals.scaffoldKey.currentContext!,
                   notification: notification);
 
@@ -328,7 +320,7 @@ class PushNotificationService {
             if (!isDialogueOpen) {
               isDialogueOpen = true;
               // dialog for new shared cart created
-              var result = await buildNewCartAlertDialog(
+              final result = await buildNewCartAlertDialog(
                   context: myGlobals.scaffoldKey.currentContext!,
                   notification: notification);
 
@@ -348,7 +340,6 @@ class PushNotificationService {
                     notification["body"].toString().toLowerCase() == "null") &&
                 notification['title'] == "" ||
             notification["body"] == "" && notification['title'] == "") {
-          print("ERROR:- notification data = $notification");
           return;
         }
         if (notification["actions"].toString().contains('/moment/')) return;
@@ -374,13 +365,11 @@ class PushNotificationService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print("onLaunch: ${message.data}");
-
       // creating notification from server payload
       // var notification = Platform.isAndroid
       //     ? getAndroidNotification(message.data)
       //     : getIosNotification(message.data);
-      Map<String, dynamic> notification = Platform.isIOS
+      final Map<String, dynamic> notification = Platform.isIOS
           ? decodeNotificationIOS(message.data)
           : decodeNotification(message.data);
 
@@ -419,7 +408,7 @@ class PushNotificationService {
         Navigator.of(context)
             .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
       } else if (payload == "/connection-request") {
-        DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
+        final DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
             context ?? myGlobals.navigationKey.currentContext!,
             listen: false);
         dashboardBloc.index = 3;
@@ -428,7 +417,7 @@ class PushNotificationService {
         // Navigator.of(context)
         //     .pushNamed('/friends-dashboard', arguments: {"index": 1});
       } else if (payload == "/friends-dashboard") {
-        DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
+        final DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
             context ?? myGlobals.navigationKey.currentContext!,
             listen: false);
         dashboardBloc.index = 3;
@@ -439,7 +428,7 @@ class PushNotificationService {
       } else if (payload!.length > 15 &&
           payload.substring(0, 16) == "/detail_message/") {
         //this variable will fetch the id of message from the response
-        String idOfMessage = payload.replaceAll("/detail_message/", "");
+        final String idOfMessage = payload.replaceAll("/detail_message/", "");
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed('/detail_message', arguments: {
           'id': idOfMessage,
@@ -447,15 +436,15 @@ class PushNotificationService {
       } else if (payload.length > 13 &&
           payload.substring(0, 13) == "/chat-screen/") {
         //this variable will fetch the username of the recipient
-        String recipientUsername = payload.replaceAll("/chat-screen/", "");
-        print("Recipient user name = $recipientUsername");
+        final String recipientUsername =
+            payload.replaceAll("/chat-screen/", "");
 
         if (recipientUsername != null) {
           showDialog(
               context: context!,
               builder: (context) => Center(child: CircularLoadingIndicator()));
 
-          ChatConversation chatConversation =
+          final ChatConversation chatConversation =
               await UserAuth().fetchContactProfile(recipientUsername);
 
           if (chatConversation == null) {
@@ -471,14 +460,15 @@ class PushNotificationService {
         Navigator.of(context!).popUntil(ModalRoute.withName(Routes.DASHBOARD));
         Navigator.of(context).pushNamed('/orders-list');
       } else if (payload.toString().contains("order-detail-page")) {
-        Order order = Order.fromJson(notification["data"]);
+        final Order order = Order.fromJson(notification["data"]);
 
         Navigator.of(context!).pushNamed(Routes.ORDER_DETAIL_PAGE, arguments: {
           'order': order,
         });
       } else if (payload.toString().contains('/moment/')) {
         debugPrint('FRANK MOMENT ---> ${notification["data"]}');
-        MomentsModel momentsModel = MomentsModel.fromJson(notification['data']);
+        final MomentsModel momentsModel =
+            MomentsModel.fromJson(notification['data']);
         NavigationUtil.push(context!,
             screen: MomentsDetailsScreen(
               indexOfMoment: 0,
@@ -487,7 +477,7 @@ class PushNotificationService {
               ],
             ));
       } else if (payload.toString().contains('/yarn/')) {
-        String yarnId = payload.toString().replaceAll("/yarn/", "");
+        final String yarnId = payload.toString().replaceAll("/yarn/", "");
         NavigationUtil.push(context!,
             screen: YarnDetailScreen(
               yarn: Yarn(),
@@ -500,14 +490,11 @@ class PushNotificationService {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed(Routes.SHOPPING_CART);
       }
-    } catch (error) {
-      print("new error:- $error");
-    }
+    } catch (error) {}
   }
 
   void _navigateToItemDetail(
       Map<String, dynamic> notification, BuildContext? context) async {
-    print("navigate function is called");
     onSelectNotification(notification['actions'], context, notification);
   }
 
@@ -530,7 +517,7 @@ class PushNotificationService {
     debugPrint("====> $notification");
     // show the notification in the dialog
     isDialogueOpen = true;
-    bool? result = await showDialogBoxWithImage(
+    final bool? result = await showDialogBoxWithImage(
       context: context,
       actionOneBgColor: greyBorderColor,
       actionOneTextColor: blackFont,
@@ -557,8 +544,9 @@ class PushNotificationService {
 
 Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
   debugPrint("DATA:- $message");
-  Map<String, dynamic> notification = {};
-  Map<String, dynamic> decodeNotification = jsonDecode(message["notification"]);
+  final Map<String, dynamic> notification = {};
+  final Map<String, dynamic> decodeNotification =
+      jsonDecode(message["notification"]);
   notification["body"] = decodeNotification["body"] ?? "";
   notification["title"] = decodeNotification["title"] ?? "";
   notification["actions"] =
@@ -566,7 +554,7 @@ Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
   notification['image'] = decodeNotification['image'];
 
   if (message["data"] != null) {
-    Map<String, dynamic> decodedInnerData =
+    final Map<String, dynamic> decodedInnerData =
         message["data"] is Map ? message["data"] : jsonDecode(message["data"]);
     notification["data"] = decodedInnerData;
   }
@@ -575,7 +563,7 @@ Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
     if (message["data"] != null &&
         message['data'] is Map &&
         (message['data'] as Map)['notification'] != null) {
-      Map<String, dynamic> notificationFromMessage =
+      final Map<String, dynamic> notificationFromMessage =
           jsonDecode(message['data']['notification']);
 
       notification["body"] = notificationFromMessage['body'] ?? "";
@@ -589,13 +577,12 @@ Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
     debugPrint("ERROR11:- $error");
   }
 
-  print("notification from android $notification");
   return notification;
 }
 
 Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
   debugPrint("DATA:- $message");
-  Map<String, dynamic> notification = {};
+  final Map<String, dynamic> notification = {};
 
   notification["body"] = message["body"] ?? "";
   notification["title"] = message["title"] ?? "";
@@ -603,7 +590,7 @@ Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
   notification['image'] = message['image'];
 
   if (message["data"] != null) {
-    Map<String, dynamic> decodedInnerData =
+    final Map<String, dynamic> decodedInnerData =
         message["data"] is Map ? message["data"] : jsonDecode(message["data"]);
     notification["data"] = decodedInnerData;
   }
@@ -612,7 +599,7 @@ Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
     if (message["data"] != null &&
         message['data'] is Map &&
         (message['data'] as Map)['notification'] != null) {
-      Map<String, dynamic> notificationFromMessage =
+      final Map<String, dynamic> notificationFromMessage =
           jsonDecode(message['data']['notification']);
 
       notification["body"] = notificationFromMessage['body'] ?? "";
@@ -626,7 +613,6 @@ Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
     debugPrint("ERROR22:- $error");
   }
 
-  print("notification from android $notification");
   return notification;
 }
 

@@ -13,7 +13,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +20,7 @@ import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 
 class WithdrawVirtualCard extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   WithdrawVirtualCard({this.arguments, Key? key}) : super(key: key);
 
@@ -107,7 +106,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -167,33 +166,33 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                         const SizedBox(
                           height: 20,
                         ),
-                        canWithdraw(usdCheck!, allCards.availableBalance!)
-                            ? getSubmitButton()
-                            : Container(
-                                child: Center(
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16.0),
-                                        child: Text.rich(TextSpan(
-                                            text: AppLocalization.of(context)!
-                                                .availableFund,
+                        if (canWithdraw(usdCheck!, allCards.availableBalance!))
+                          getSubmitButton()
+                        else
+                          Container(
+                            child: Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0),
+                                    child: Text.rich(TextSpan(
+                                        text: AppLocalization.of(context)!
+                                            .availableFund,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: formatAsDollar(
+                                                allCards.availableBalance!),
                                             style: TextStyle(
                                                 fontSize: 12,
                                                 color: blackFont,
+                                                fontFamily: "Inter",
                                                 fontWeight: FontWeight.w600),
-                                            children: <InlineSpan>[
-                                              TextSpan(
-                                                text: formatAsDollar(
-                                                    allCards.availableBalance!),
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: blackFont,
-                                                    fontFamily: "Inter",
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              )
-                                            ])))),
-                              ),
+                                          )
+                                        ])))),
+                          ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -214,7 +213,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
       cardColors = [navyBlue, richPink, black, orange];
       cardColor = navyBlue;
     } else {
-      String? color = cardData.color;
+      final String? color = cardData.color;
       switch (color) {
         case 'Slydo Blue':
           cardColor = navyBlue;
@@ -380,31 +379,33 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
                         right: 20,
                         child: Column(
                           children: [
-                            cardData.cardBrand == 'Visa'
-                                ? SvgPicture.asset(
-                                    "visa".toSVG(),
-                                    fit: BoxFit.cover,
-                                  )
-                                : SvgPicture.asset(
-                                    "mastercard".toSVG(),
-                                    fit: BoxFit.cover,
-                                  ),
+                            if (cardData.cardBrand == 'Visa')
+                              SvgPicture.asset(
+                                "visa".toSVG(),
+                                fit: BoxFit.cover,
+                              )
+                            else
+                              SvgPicture.asset(
+                                "mastercard".toSVG(),
+                                fit: BoxFit.cover,
+                              ),
                             const SizedBox(width: 5.0),
-                            cardData.cardBrand == 'Visa'
-                                ? SizedBox.shrink()
-                                : Column(
-                                    children: [
-                                      Text(
-                                        'Mastercard',
-                                        style: TextStyle(
-                                          color: white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 5.0),
-                                    ],
+                            if (cardData.cardBrand == 'Visa')
+                              const SizedBox.shrink()
+                            else
+                              Column(
+                                children: [
+                                  Text(
+                                    'Mastercard',
+                                    style: TextStyle(
+                                      color: white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
+                                  const SizedBox(width: 5.0),
+                                ],
+                              ),
                           ],
                         ),
                       ),
@@ -581,7 +582,7 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
             isAPILoading = true;
             if (mounted) setState(() {});
 
-            Map<String, dynamic> result = {
+            final Map<String, dynamic> result = {
               "amount": usdAmount,
               "exchange_rate_id": exchangeRate.id,
               "reason": reason,
@@ -612,8 +613,8 @@ class WithdrawVirtualCardState extends State<WithdrawVirtualCard> {
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
 
       balance = spendableBalance;
       if (mounted) {

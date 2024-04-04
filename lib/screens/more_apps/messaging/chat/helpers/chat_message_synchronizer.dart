@@ -64,8 +64,8 @@ class ChatMessageSynchronizer {
       {required ChatConversation chatConversation, bool? isFirstTime}) async {
     debugPrint("Fetching previous messages !!");
 
-    ChatMessagePagination chatMessagePagination = await ChatMessageHandler()
-        .getChatMessagePagination(
+    final ChatMessagePagination chatMessagePagination =
+        await ChatMessageHandler().getChatMessagePagination(
             conversationId: chatConversation.conversationId);
 
     _next = chatMessagePagination.next;
@@ -75,7 +75,7 @@ class ChatMessageSynchronizer {
       debugPrint(
           "recipient conversationID:- ${chatConversation.conversationId}  ${chatConversation.fullName}");
 
-      Map<String, dynamic>? result = await MessageAuth()
+      final Map<String, dynamic>? result = await MessageAuth()
           .getChatMessages(_next, _previous,
               conversionId: chatConversation.conversationId)
           .catchError((error) {
@@ -84,9 +84,9 @@ class ChatMessageSynchronizer {
 
       if (result == null) return;
 
-      List<String> tempList = result['results'];
+      final List<String> tempList = result['results'];
 
-      List<ChatMessage> insertedMessages =
+      final List<ChatMessage> insertedMessages =
           await ChatMessageHandler().saveChatMessages(messages: tempList);
 
       chatMessagePagination.count = result['count'];
@@ -115,11 +115,11 @@ class ChatMessageSynchronizer {
 
   void sendAcknowledgementForNewMessages(
       {required List<ChatMessage> messages}) async {
-    UserBloc userBloc = Provider.of<UserBloc>(
+    final UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext!,
         listen: false);
 
-    List<String?> acknowledgedMessageIds = [];
+    final List<String?> acknowledgedMessageIds = [];
     for (int i = 0; i < messages.length; i++) {
       if (userBloc.user.userName != messages[i].author &&
           !messages[i].delivered!) {
@@ -127,10 +127,10 @@ class ChatMessageSynchronizer {
         await MainSocketMessageHandler()
             .saveAndUpdateUserMessageCount(messageData: messages[i].toJson());
 
-        int? time =
+        final int? time =
             convertStringToMillisecondsSinceEpoch(messages[i].createdAt);
 
-        String? conversationId = messages[i].conversationId;
+        final String? conversationId = messages[i].conversationId;
 
         await ConnectionListManager()
             .updateLastMessageTime(conversationId: conversationId, time: time);
@@ -140,7 +140,7 @@ class ChatMessageSynchronizer {
     }
 
     if (acknowledgedMessageIds.isNotEmpty) {
-      Map<String, dynamic>? acknowledgedMessages = await MessageAuth()
+      final Map<String, dynamic>? acknowledgedMessages = await MessageAuth()
           .acknowledgeMessagesToServer(dataToBeSent: acknowledgedMessageIds)
           .catchError((error) {
         debugPrint("Error:- $error");
@@ -156,7 +156,7 @@ class ChatMessageSynchronizer {
       _previousMissedMessages = "";
     }
 
-    Map<String, dynamic>? resultData = await MessageAuth()
+    final Map<String, dynamic>? resultData = await MessageAuth()
         .fetchMissedMessages(
             next: _nextMissedMessages, previous: _previousMissedMessages)
         .catchError((error) {
@@ -165,9 +165,9 @@ class ChatMessageSynchronizer {
 
     if (resultData == null) return;
 
-    List<ChatMessage> messageList = [];
+    final List<ChatMessage> messageList = [];
 
-    List? missedMessages = resultData['results'];
+    final List? missedMessages = resultData['results'];
     _nextMissedMessages = resultData['next'];
     _previousMissedMessages = resultData['previous'];
 
@@ -176,24 +176,24 @@ class ChatMessageSynchronizer {
     if (missedMessages.isEmpty) return;
 
     missedMessages.forEach((element) {
-      ChatMessage chatMessage = ChatMessage.fromJson(jsonDecode(element));
+      final ChatMessage chatMessage = ChatMessage.fromJson(jsonDecode(element));
       debugPrint("<==== ${chatMessage.text}   <===== ${chatMessage.createdAt}");
       messageList.add(chatMessage);
     });
 
     if (messageList.isNotEmpty) {
       for (int i = 0; i < messageList.length; i++) {
-        int result = await ChatMessageHandler()
+        final int result = await ChatMessageHandler()
             .insertMissedChatMessage(chatMessage: messageList[i]);
 
         if (result == 1) {
           await MainSocketMessageHandler().saveAndUpdateUserMessageCount(
               messageData: messageList[i].toJson());
 
-          int? time =
+          final int? time =
               convertStringToMillisecondsSinceEpoch(messageList[i].createdAt);
 
-          String? conversationId = messageList[i].conversationId;
+          final String? conversationId = messageList[i].conversationId;
 
           await ConnectionListManager().updateLastMessageTime(
               conversationId: conversationId, time: time);
@@ -202,19 +202,20 @@ class ChatMessageSynchronizer {
         }
       }
 
-      ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-          myGlobals.navigationKey.currentContext!,
-          listen: false);
+      final ConnectionListBloc connectionListBloc =
+          Provider.of<ConnectionListBloc>(
+              myGlobals.navigationKey.currentContext!,
+              listen: false);
       await connectionListBloc.getConnectionsCount();
 
       _chatMessageStream.sink.add(true);
 
-      List<String?> acknowledgedMessageIds = [];
+      final List<String?> acknowledgedMessageIds = [];
       for (int i = 0; i < messageList.length; i++) {
         acknowledgedMessageIds.add(messageList[i].messageId);
       }
 
-      Map<String, dynamic>? acknowledgedMessages = await MessageAuth()
+      final Map<String, dynamic>? acknowledgedMessages = await MessageAuth()
           .acknowledgeMessagesToServer(dataToBeSent: acknowledgedMessageIds)
           .catchError((error) {
         debugPrint("Error:- $error");
@@ -235,7 +236,7 @@ class ChatMessageSynchronizer {
     /// {check_id: e0c64c88-262d-4428-8634-031762897556,
     /// conversation_id: 09700559-3aa6-4d71-bd4b-748322e49fdb,
     /// username: black, delivered: true, type: acknowledge_message}
-    UserBloc userBloc = Provider.of<UserBloc>(
+    final UserBloc userBloc = Provider.of<UserBloc>(
         MyGlobals().navigationKey.currentContext!,
         listen: false);
 

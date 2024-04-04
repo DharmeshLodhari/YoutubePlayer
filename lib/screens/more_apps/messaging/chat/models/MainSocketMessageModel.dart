@@ -89,10 +89,10 @@ class MainSocketMessageModel {
   }
 
   String generateCreatedAt() {
-    DateTime createdAtDate =
+    final DateTime createdAtDate =
         DateTime.parse(createdAt ?? DateTime.now().toString());
 
-    DateTime messageDateTillSecond = DateTime(
+    final DateTime messageDateTillSecond = DateTime(
       createdAtDate.year,
       createdAtDate.month,
       createdAtDate.day,
@@ -105,10 +105,10 @@ class MainSocketMessageModel {
   }
 
   String generateUpdatedAt() {
-    DateTime updatedAtDate =
+    final DateTime updatedAtDate =
         DateTime.parse(updatedAt ?? DateTime.now().toString());
 
-    DateTime messageDateTillSecond = DateTime(
+    final DateTime messageDateTillSecond = DateTime(
       updatedAtDate.year,
       updatedAtDate.month,
       updatedAtDate.day,

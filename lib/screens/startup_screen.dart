@@ -10,7 +10,7 @@ import 'package:sizer/sizer.dart';
 
 // ignore: must_be_immutable
 class StartupScreen extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   StartupScreen({this.arguments});
 
@@ -20,7 +20,7 @@ class StartupScreen extends StatefulWidget {
 }
 
 class _StartupScreenState extends State<StartupScreen> {
-  var arguments;
+  final dynamic arguments;
 
   _StartupScreenState(
       {this.arguments}); // for Checking if User  start App first time or come back from logout button
@@ -28,8 +28,8 @@ class _StartupScreenState extends State<StartupScreen> {
   bool? isIntroDone = false;
   int introScreenCount = 4;
 
-  var _pageController = PageController();
-  var _currentPageNotifier = ValueNotifier<int>(0);
+  final _pageController = PageController();
+  final _currentPageNotifier = ValueNotifier<int>(0);
 
   @override
   void initState() {

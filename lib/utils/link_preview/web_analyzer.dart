@@ -96,9 +96,7 @@ class WebAnalyzer {
         info._timeout = DateTime.now().add(cache);
         _map[url] = info;
       }
-    } catch (e) {
-      print("Get web error:$url, Error:$e");
-    }
+    } catch (e) {}
 
     // print("$url cost ${DateTime.now().difference(start).inMilliseconds}");
 
@@ -236,8 +234,7 @@ class WebAnalyzer {
       }
     }
     client.close();
-    if (res == null) print("Get web info empty($url)");
-    return res;
+    if (res == null) return res;
   }
 
   static Future<InfoBase?> _getWebInfo(
@@ -249,13 +246,10 @@ class WebAnalyzer {
       } catch (e) {
         try {
           html = gbk.decode(response.bodyBytes);
-        } catch (e) {
-          print("Web page resolution failure from:$url Error:$e");
-        }
+        } catch (e) {}
       }
 
       if (html == null) {
-        print("Web page resolution failure from:$url");
         return null;
       }
 
@@ -376,9 +370,6 @@ class WebAnalyzer {
     Element? metaIcon;
 
     for (int i = 0; i < meta.length; i++) {
-      print('META ----> ${meta[i]}');
-      print('META ----> ${meta[i].attributes}');
-
       final rel = (meta[i].attributes["rel"] ?? "").toLowerCase();
       if (rel == "icon") {
         icon = meta[i].attributes["href"];
@@ -397,7 +388,6 @@ class WebAnalyzer {
         }
       }
     }
-    print('META ICON ----> $metaIcon');
     if (metaIcon != null) {
       icon = metaIcon.attributes["href"];
     } else {

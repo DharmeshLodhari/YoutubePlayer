@@ -38,7 +38,7 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
             child: Container(
@@ -57,7 +57,7 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
                       overflow: TextOverflow.fade,
                       softWrap: false,
                     ),
-                    trailing: Icon(Icons.navigate_next),
+                    trailing: const Icon(Icons.navigate_next),
                     onTap: () async {
                       await getFile(context).then((value) {});
                     },
@@ -74,7 +74,7 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
                       overflow: TextOverflow.fade,
                       softWrap: false,
                     ),
-                    trailing: Icon(Icons.navigate_next),
+                    trailing: const Icon(Icons.navigate_next),
                     onTap: () {},
                   ),
                   ListTile(
@@ -89,26 +89,26 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
                       overflow: TextOverflow.fade,
                       softWrap: false,
                     ),
-                    trailing: Icon(Icons.navigate_next),
+                    trailing: const Icon(Icons.navigate_next),
                     onTap: () {},
                   ),
                 ],
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
             child: Container(
               decoration: decorateBox(),
               child: ListTile(
-                title: Text(
+                title: const Text(
                   "Reset wallpaper",
                   maxLines: 1,
                   style: TextStyle(
@@ -119,7 +119,7 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
                   overflow: TextOverflow.fade,
                   softWrap: false,
                 ),
-                leading: Icon(
+                leading: const Icon(
                   Icons.clear_rounded,
                   color: Colors.red,
                 ),

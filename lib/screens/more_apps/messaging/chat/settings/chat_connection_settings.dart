@@ -41,7 +41,7 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
             child: Container(
@@ -68,13 +68,13 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 14,
           ),
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
             child: Container(
@@ -99,7 +99,7 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           Container(
@@ -114,13 +114,13 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
             child: Container(
@@ -139,11 +139,11 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
                       overflow: TextOverflow.fade,
                       softWrap: false,
                     ),
-                    leading: Icon(Icons.archive),
+                    leading: const Icon(Icons.archive),
                     onTap: () {},
                   ),
                   ListTile(
-                    title: Text(
+                    title: const Text(
                       "Clear all chats",
                       maxLines: 1,
                       style: TextStyle(
@@ -154,14 +154,14 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
                       overflow: TextOverflow.fade,
                       softWrap: false,
                     ),
-                    leading: Icon(
+                    leading: const Icon(
                       Icons.clear_rounded,
                       color: Colors.red,
                     ),
                     onTap: () {},
                   ),
                   ListTile(
-                    title: Text(
+                    title: const Text(
                       "Delete all chats",
                       maxLines: 1,
                       style: TextStyle(
@@ -172,7 +172,7 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
                       overflow: TextOverflow.fade,
                       softWrap: false,
                     ),
-                    leading: Icon(
+                    leading: const Icon(
                       Icons.delete,
                       color: Colors.red,
                     ),

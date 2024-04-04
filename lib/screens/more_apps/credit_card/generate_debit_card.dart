@@ -18,7 +18,7 @@ import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 
 class GenerateDebitCard extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   GenerateDebitCard({this.arguments, Key? key}) : super(key: key);
 
@@ -98,7 +98,7 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -196,42 +196,42 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
                         const SizedBox(
                           height: 20,
                         ),
-                        canCashOut(nairaCheck, balance)
-                            ? getSubmitButton()
-                            : Container(
-                                child: Center(
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16.0),
-                                        child: Text.rich(TextSpan(
-                                            text: AppLocalization.of(context)!
-                                                .availableFund,
+                        if (canCashOut(nairaCheck, balance))
+                          getSubmitButton()
+                        else
+                          Container(
+                            child: Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0),
+                                    child: Text.rich(TextSpan(
+                                        text: AppLocalization.of(context)!
+                                            .availableFund,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: double.parse(
+                                                        moneyDisplayNormalizer(
+                                                            displayPossibleCashOutAmount(
+                                                                balance))) >=
+                                                    35.00
+                                                ? worldCurrencies[userBloc!
+                                                        .user.currency!]! +
+                                                    moneyDisplayNormalizer(
+                                                        displayPossibleCashOutAmount(
+                                                            balance))
+                                                : '${worldCurrencies[userBloc!.user.currency!]!}0.00',
                                             style: TextStyle(
                                                 fontSize: 12,
                                                 color: blackFont,
+                                                fontFamily: "Inter",
                                                 fontWeight: FontWeight.w600),
-                                            children: <InlineSpan>[
-                                              TextSpan(
-                                                text: double.parse(
-                                                            moneyDisplayNormalizer(
-                                                                displayPossibleCashOutAmount(
-                                                                    balance))) >=
-                                                        35.00
-                                                    ? worldCurrencies[userBloc!
-                                                            .user.currency!]! +
-                                                        moneyDisplayNormalizer(
-                                                            displayPossibleCashOutAmount(
-                                                                balance))
-                                                    : '${worldCurrencies[userBloc!.user.currency!]!}0.00',
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: blackFont,
-                                                    fontFamily: "Inter",
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              )
-                                            ])))),
-                              ),
+                                          )
+                                        ])))),
+                          ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -336,7 +336,7 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
     );
   }
 
-  createCard() async {
+  Future<void> createCard() async {
     if (_formKey.currentState!.validate()) {
       BottomSheetPassCode(
           context: context,
@@ -344,7 +344,7 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
             isAPILoading = true;
             if (mounted) setState(() {});
 
-            Map<String, dynamic> result = {
+            final Map<String, dynamic> result = {
               "first_name": widget.arguments["data"]['first_name'],
               "last_name": widget.arguments["data"]['last_name'],
               "address1": widget.arguments["data"]['address1'],
@@ -389,9 +389,9 @@ class GenerateDebitCardState extends State<GenerateDebitCard> {
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
-      var actualBalance = data["balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
+      final actualBalance = data["balance"];
 
       balance = spendableBalance;
       // isLoading = false;

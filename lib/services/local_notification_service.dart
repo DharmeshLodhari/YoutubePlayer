@@ -33,7 +33,7 @@ class LocalNotificationService {
 
   Future<void> init() async {
     final AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
+        const AndroidInitializationSettings('app_icon');
 
     final IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(
@@ -85,7 +85,8 @@ class LocalNotificationService {
 
   Future<void> _createNotificationChannel(
       String id, String name, String description, String? sound) async {
-    var androidNotificationChannel = AndroidNotificationChannel(
+    final AndroidNotificationChannel androidNotificationChannel =
+        AndroidNotificationChannel(
       id,
       name,
       // description,

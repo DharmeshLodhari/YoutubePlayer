@@ -85,8 +85,8 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Timer startTime() {
-    var _duration = new Duration(seconds: 1);
-    return new Timer.periodic(_duration, (timer) {
+    final _duration = const Duration(seconds: 1);
+    return Timer.periodic(_duration, (timer) {
       navigationPage();
     });
   }
@@ -143,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void checkConnection() async {
     await Connectivity().checkConnectivity().then((value) async {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         hasConnection = true;
@@ -170,9 +170,10 @@ class _SplashScreenState extends State<SplashScreen>
     String? currentLocale;
 
     //checking if the language data is stored in system or not
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
     if (sharedPreferences.containsKey("language")) {
-      String languageCode = sharedPreferences.getString("language")!;
+      final String languageCode = sharedPreferences.getString("language")!;
       AppLocalization.load(Locale(languageCode, ""));
       debugPrint("Language Set From SharedPreference => $languageCode ");
       return;
@@ -199,14 +200,14 @@ class _SplashScreenState extends State<SplashScreen>
       AppLocalization.load(Locale(language.languageCode, ""));
       debugPrint("Language Set From System ${language.name}");
 
-      SharedPreferences sharedPreferences =
+      final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       if (sharedPreferences.containsKey("language")) {
-        bool result = await sharedPreferences.setString(
+        final bool result = await sharedPreferences.setString(
             "language", language.languageCode);
         debugPrint("Language is updated in sharedPreference => $result");
       } else {
-        bool result = await sharedPreferences.setString(
+        final bool result = await sharedPreferences.setString(
             "language", language.languageCode);
         debugPrint("Language is set in sharedPreference => $result");
       }
@@ -217,7 +218,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    precacheImage(AssetImage("assets/images/app_logo.png"), context);
+    precacheImage(const AssetImage("assets/images/app_logo.png"), context);
     basketBloc = Provider.of<BasketBloc>(context);
     sharedCartBloc = Provider.of<SharedCartBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
@@ -227,7 +228,7 @@ class _SplashScreenState extends State<SplashScreen>
       child: hasConnection
           ? Scaffold(
               body: Stack(fit: StackFit.expand, children: <Widget>[
-              new AspectRatio(
+              AspectRatio(
                   aspectRatio: 9 / 16,
                   child: Container(
                     child: (playerController != null
@@ -259,11 +260,11 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   MaterialButton(
                     color: navyBlue,
+                    onPressed: checkConnection,
                     child: Text(
                       AppLocalization.of(context)!.retry,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
-                    onPressed: checkConnection,
                   )
                 ],
               ),
@@ -318,12 +319,12 @@ class _SplashScreenState extends State<SplashScreen>
         errorText += "country2 isoCode ${country2.isoCode}\n";
         errorText += "country2 iso3Code ${country2.iso3Code}\n";
 
-        SecureUser secureUser = await SecureStorage().getUser();
+        final SecureUser secureUser = await SecureStorage().getUser();
         userPhoneNumber = secureUser.phoneNumber;
         userPassword = secureUser.password;
 
-        var phoneNumber = "+" + country2.phoneCode! + userPhoneNumber!;
-        var password = userPassword;
+        final phoneNumber = "+" + country2.phoneCode! + userPhoneNumber!;
+        final password = userPassword;
 
         errorText += "phoneNumber $phoneNumber\n";
         errorText += "password $password\n";
@@ -366,9 +367,9 @@ class _SplashScreenState extends State<SplashScreen>
             getUserYarnSetting();
 
             /// get user settings from DB
-            Map<String, dynamic> settings =
+            final Map<String, dynamic> settings =
                 await DatabaseHelper().getGeneralSettings();
-            ChatMessageSettings chatMessageSettings =
+            final ChatMessageSettings chatMessageSettings =
                 ChatMessageSettings.fromDBJson(settings);
             userBloc.chatMessageSettings = chatMessageSettings;
 
@@ -531,9 +532,9 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> initializeShoppingCart() async {
     try {
       debugPrint("initializeShoppingCart called");
-      List items = await ShoppingAuthService().getShoppingCart();
+      final List items = await ShoppingAuthService().getShoppingCart();
       items.forEach((element) {
-        String type = element is Product ? "product" : "service";
+        final String type = element is Product ? "product" : "service";
         basketBloc.addItemToCart(
             item: element,
             type: type,
@@ -552,9 +553,10 @@ class _SplashScreenState extends State<SplashScreen>
   void getUserYarnSetting() async {
     await YarnAuth().getUserYarnSettings().then((value) async {
       if (value != null) {
-        YarnDashboardBloc yarnDashboardBloc = Provider.of<YarnDashboardBloc>(
-            MyGlobals().navigationKey.currentContext ?? context,
-            listen: false);
+        final YarnDashboardBloc yarnDashboardBloc =
+            Provider.of<YarnDashboardBloc>(
+                MyGlobals().navigationKey.currentContext ?? context,
+                listen: false);
         yarnDashboardBloc.yarnSettings = value;
       }
     });

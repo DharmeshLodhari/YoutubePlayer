@@ -68,7 +68,7 @@ class NewsAuthService extends AuthService {
     },
   ];
   Future<List<NewsListItem>> getNewsList() async {
-    var newsListItems = newsList
+    final newsListItems = newsList
         .map(
           (news) => NewsListItem.fromJson({
             "title": news["title"],
@@ -77,12 +77,12 @@ class NewsAuthService extends AuthService {
           }),
         )
         .toList();
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return newsListItems;
   }
 
   Future<List<SubscriptionItem>> getSubscriptionList() async {
-    var subscriptionItemList = List.generate(
+    final subscriptionItemList = List.generate(
         10,
         (index) => SubscriptionItem.fromJson({
               "id": 1,
@@ -91,12 +91,12 @@ class NewsAuthService extends AuthService {
               "name": "Punch"
             }));
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return subscriptionItemList;
   }
 
   Future<NewsDetailItem> getNewsDetail() async {
-    var dummyData = {
+    final dummyData = {
       "title":
           "End SARS: See how Nigeria anti-police brutality protests go global",
       "poster":
@@ -164,13 +164,13 @@ class NewsAuthService extends AuthService {
       ]
     };
 
-    NewsDetailItem news = NewsDetailItem.fromJson(dummyData);
-    await Future.delayed(Duration(seconds: 1));
+    final NewsDetailItem news = NewsDetailItem.fromJson(dummyData);
+    await Future.delayed(const Duration(seconds: 1));
     return news;
   }
 
   Future<void> addToWishList() async {
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     return;
   }
 }

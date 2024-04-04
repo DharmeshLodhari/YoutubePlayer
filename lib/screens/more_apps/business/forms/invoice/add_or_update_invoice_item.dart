@@ -28,8 +28,8 @@ class AddOrUpdateInvoiceItem extends StatefulWidget {
 
 class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
   double totalCost = 0;
-  TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _amountController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
 
   InvoiceItem? _invoiceItem;
 
@@ -108,7 +108,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
         onPressed: () async {
           if (FocusScope.of(context).hasFocus) {
             FocusScope.of(context).unfocus();
-            await Future.delayed(Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 300));
           }
           Navigator.pop(context);
         },
@@ -124,7 +124,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           children: [
             Card(
@@ -144,20 +144,20 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
                     child: Column(
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               getDescriptionField(),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               displayAmountField(),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               getQtyOfItem(),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               getTotalText(),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               errorMessage == ""
                                   ? Container()
                                   : Text(
@@ -167,7 +167,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16),
                                     ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
@@ -180,11 +180,11 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
             Container(
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   getSubmitButton(),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                 ],
@@ -208,12 +208,12 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
               Text("$totalCost"),
             ],
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -239,7 +239,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
       labelText: "Unit cost",
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       controller: _amountController,
       onChanged: (val) {
@@ -302,7 +302,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
                       showToast(message: 'Add an amount');
                     }
                   }),
-              Expanded(
+              const Expanded(
                 child: SizedBox(
                   width: 10,
                 ),
@@ -314,7 +314,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
                     fontWeight: FontWeight.w600,
                     color: blackFont),
               ),
-              Expanded(
+              const Expanded(
                 child: SizedBox(
                   width: 10,
                 ),

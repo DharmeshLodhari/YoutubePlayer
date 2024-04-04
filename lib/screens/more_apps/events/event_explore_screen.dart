@@ -35,10 +35,10 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
   List<PartialEventItem> eventList = [];
   bool isEventListLoading = false;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  CarouselController _carouselController = CarouselController();
+  final CarouselController _carouselController = CarouselController();
 
   @override
   void initState() {
@@ -99,7 +99,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -160,27 +160,27 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
       child: SingleChildScrollView(
           child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
           searchBox(),
-          SizedBox(
+          const SizedBox(
             height: 32,
           ),
           eventCarouselSlider(),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           nearByEvents(),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           exploreByCity(),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           foodFestivalEvent(categoryName: "Food festival events"),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
         ],
@@ -190,7 +190,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -229,8 +229,8 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -294,10 +294,11 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                         Navigator.of(context).pushNamed("/event-detail");
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Center(
                             child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
                           child: CachedNetworkImage(
                             imageUrl: item.image!,
                             fit: BoxFit.fill,
@@ -319,7 +320,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -356,12 +357,12 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: listOfCity
                             .map(
                               (cityData) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: cityCard(cityData: cityData),
                               ),
                             )
@@ -387,7 +388,8 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -402,7 +404,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 ClipRRect(
@@ -428,7 +430,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -457,7 +459,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
           ),
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: isPopularInLocationLoading
                 ? Container(
                     height: 100,
@@ -468,11 +470,11 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: popularInLocation
                             .map((element) => Container(
-                                  margin: EdgeInsets.only(right: 12),
+                                  margin: const EdgeInsets.only(right: 12),
                                   child: eventPoster(eventPoster: element),
                                 ))
                             .toList(),
@@ -490,7 +492,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -519,11 +521,11 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
           ),
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Container(
-                padding: EdgeInsets.only(left: 16, right: 16),
+                padding: const EdgeInsets.only(left: 16, right: 16),
                 child: Column(
                   children: [
                     Container(
@@ -559,7 +561,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                           ),
                                         ),
                                         Container(
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               horizontal: 16, vertical: 0),
                                           child: Row(
                                             children: [
@@ -580,7 +582,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                         color: mateRed,
                                                       ),
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       height: 2,
                                                     ),
                                                     Text(
@@ -595,7 +597,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                         color: blackFont,
                                                       ),
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       height: 2,
                                                     ),
                                                     Text(
@@ -641,25 +643,26 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                   )),
                             ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 12,
                     ),
-                    isEventListLoading
-                        ? Container(
-                            height: 180,
-                            child: Center(
-                              child: CircularLoadingIndicator(),
-                            ),
-                          )
-                        : Column(
-                            children: eventList
-                                .map((partialEvent) => Container(
-                                      margin: EdgeInsets.only(bottom: 12),
-                                      child: EventTileWithHeart(
-                                          partialEvent: partialEvent),
-                                    ))
-                                .toList(),
-                          ),
+                    if (isEventListLoading)
+                      Container(
+                        height: 180,
+                        child: Center(
+                          child: CircularLoadingIndicator(),
+                        ),
+                      )
+                    else
+                      Column(
+                        children: eventList
+                            .map((partialEvent) => Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  child: EventTileWithHeart(
+                                      partialEvent: partialEvent),
+                                ))
+                            .toList(),
+                      ),
                   ],
                 ),
               ),
@@ -696,7 +699,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
               alignment: Alignment.center,
               child: Text(
                 eventPoster.name!,
-                style: TextStyle(
+                style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: Colors.white),

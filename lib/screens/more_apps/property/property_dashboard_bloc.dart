@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class PropertyDashboardBloc extends ChangeNotifier {
   static int _index = 0;
-  PageController _pageController = PageController(initialPage: _index);
+  final PageController _pageController = PageController(initialPage: _index);
 
   int get index => _index;
 
@@ -13,7 +13,7 @@ class PropertyDashboardBloc extends ChangeNotifier {
   set index(int value) {
     _index = value;
     _pageController.animateToPage(_index,
-        duration: Duration(milliseconds: 500), curve: Curves.linear);
+        duration: const Duration(milliseconds: 500), curve: Curves.linear);
     notifyListeners();
   }
 }

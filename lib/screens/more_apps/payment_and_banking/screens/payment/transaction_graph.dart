@@ -141,7 +141,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
           body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: <Widget>[
                   Card(
@@ -162,34 +162,36 @@ class _TransactionGraphState extends State<TransactionGraph> {
                             color: dividerColor,
                             thickness: 1,
                           ),
-                          isLoading
-                              ? Container(
-                                  height: 240,
-                                  child: Center(
-                                    child: CircularLoadingIndicator(),
-                                  ),
-                                )
-                              : Container(
-                                  child:
-                                      !isLineGraph ? firstSide() : secondSide(),
-                                ),
+                          if (isLoading)
+                            Container(
+                              height: 240,
+                              child: Center(
+                                child: CircularLoadingIndicator(),
+                              ),
+                            )
+                          else
+                            Container(
+                              child: !isLineGraph ? firstSide() : secondSide(),
+                            ),
                         ],
                       ),
                     ),
                   ),
-                  !isLineGraph
-                      ? SizedBox(
-                          height: 10,
-                        )
-                      : Container(),
-                  !isLineGraph
-                      ? Column(
-                          children: categoryAndSpend
-                              .map<Widget>((category) =>
-                                  getSpendOnCategoryTile(category))
-                              .toList(),
-                        )
-                      : Container(),
+                  if (!isLineGraph)
+                    const SizedBox(
+                      height: 10,
+                    )
+                  else
+                    Container(),
+                  if (!isLineGraph)
+                    Column(
+                      children: categoryAndSpend
+                          .map<Widget>(
+                              (category) => getSpendOnCategoryTile(category))
+                          .toList(),
+                    )
+                  else
+                    Container(),
                 ],
               ),
             ),
@@ -220,7 +222,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
       ),
       actions: <Widget>[
         flipGraphButton(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -267,7 +269,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
   Widget secondSide() {
     return Container(
         height: MediaQuery.of(context).size.height / 1.35,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: lineGraph());
   }
 
@@ -280,11 +282,11 @@ class _TransactionGraphState extends State<TransactionGraph> {
             style: TextStyle(
                 fontSize: 14.0, fontWeight: FontWeight.w600, color: blackFont),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Expanded(child: chartBuilder()),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Row(
@@ -304,7 +306,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     Text(
@@ -331,7 +333,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     Text(
@@ -411,15 +413,15 @@ class _TransactionGraphState extends State<TransactionGraph> {
     }
 
     return charts.LineChart(series,
-        domainAxis: new charts.NumericAxisSpec(
-          renderSpec: new charts.SmallTickRendererSpec(
+        domainAxis: charts.NumericAxisSpec(
+          renderSpec: charts.SmallTickRendererSpec(
             // Tick and Label styling here.
-            labelStyle: new charts.TextStyleSpec(
+            labelStyle: charts.TextStyleSpec(
                 fontSize: 12, // size in Pts.
                 color: charts.Color.fromHex(code: "#75818F")),
 
             // Change the line colors to match text color.
-            lineStyle: new charts.LineStyleSpec(
+            lineStyle: charts.LineStyleSpec(
               color: charts.Color.fromHex(code: "#EBEDFC"),
             ),
           ),
@@ -427,15 +429,15 @@ class _TransactionGraphState extends State<TransactionGraph> {
             formatDay,
           ),
         ),
-        primaryMeasureAxis: new charts.NumericAxisSpec(
-          renderSpec: new charts.GridlineRendererSpec(
+        primaryMeasureAxis: charts.NumericAxisSpec(
+          renderSpec: charts.GridlineRendererSpec(
             // Tick and Label styling here.
-            labelStyle: new charts.TextStyleSpec(
+            labelStyle: charts.TextStyleSpec(
                 fontSize: 10, // size in Pts.
                 color: charts.Color.fromHex(code: "#485465")),
             labelOffsetFromAxisPx: -2,
             // Change the line colors to match text color.
-            lineStyle: new charts.LineStyleSpec(
+            lineStyle: charts.LineStyleSpec(
               color: charts.Color.fromHex(code: "#EBEDFC"),
             ),
           ),
@@ -450,16 +452,16 @@ class _TransactionGraphState extends State<TransactionGraph> {
               charts.MarginSpec.fromPixel(minPixel: 4, maxPixel: 8),
         ),
         defaultRenderer:
-            new charts.LineRendererConfig(includePoints: true, radiusPx: 4),
+            charts.LineRendererConfig(includePoints: true, radiusPx: 4),
         selectionModels: [
-          new charts.SelectionModelConfig(
+          charts.SelectionModelConfig(
               type: charts.SelectionModelType.info,
               changedListener: _onSelectionChanged)
         ],
         behaviors: [
-          new charts.SelectNearest(
+          charts.SelectNearest(
               eventTrigger: charts.SelectionTrigger.tapAndDrag),
-          new charts.LinePointHighlighter(
+          charts.LinePointHighlighter(
               showHorizontalFollowLine:
                   charts.LinePointHighlighterFollowLineType.none,
               showVerticalFollowLine:
@@ -628,7 +630,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   Widget dateChanger() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -652,7 +654,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                   fontWeight: FontWeight.bold,
                   color: blackFont),
             ),
-            SizedBox(
+            const SizedBox(
               height: 2,
             ),
             Text(
@@ -679,8 +681,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   void fetchPrevious() {
     week = week - 1;
-    start = start.subtract(Duration(days: 7));
-    end = end.subtract(Duration(days: 7));
+    start = start.subtract(const Duration(days: 7));
+    end = end.subtract(const Duration(days: 7));
     fetchData(week.toString());
     // isLineGraph = false;
     // setState(() {});
@@ -688,8 +690,8 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   void fetchNext() {
     week = week + 1;
-    start = start.add(Duration(days: 7));
-    end = end.add(Duration(days: 7));
+    start = start.add(const Duration(days: 7));
+    end = end.add(const Duration(days: 7));
     fetchData(week.toString());
     // isLineGraph = false;
     // setState(() {});
@@ -697,7 +699,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
 
   Widget flipCardButton() {
     return IconButton(
-      icon: Icon(Icons.flip),
+      icon: const Icon(Icons.flip),
       onPressed: () {
         cardKey.currentState?.toggleCard();
         isLineGraph = !isLineGraph;

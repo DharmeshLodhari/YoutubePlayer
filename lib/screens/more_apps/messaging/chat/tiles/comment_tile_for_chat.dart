@@ -65,11 +65,11 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   void checkModel() {
     try {
       yarnQuestionForChatModel = YarnQuestionForChatModel();
-      var meta = widget.message!['meta_data'];
+      final meta = widget.message!['meta_data'];
 
       yarnComment = YarnComment.fromJson(jsonDecode(meta));
       if (yarnComment != null) {
-        Map<String, dynamic> linkData =
+        final Map<String, dynamic> linkData =
             detectLinkInText(messageDecoderWithEmoji(yarnComment.comment)!);
 
         if (linkData["hasLink"]) {
@@ -110,7 +110,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = widget.message!["author"] == userBloc.user.userName;
+    final bool isSend = widget.message!["author"] == userBloc.user.userName;
 
     return GestureDetector(
       onTap: () async {
@@ -119,10 +119,10 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
 
         // debugPrint('Comment in chat::::: ${widget.message!['meta_data']}');
 
-        Map body = json.decode(widget.message!['meta_data']);
+        final Map body = json.decode(widget.message!['meta_data']);
         Yarn? yarnTopic;
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await YarnAuth().getSingleTopics(yarnId: body['related_object_id']);
 
         if (result == null) {
@@ -148,7 +148,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
             );
           }
         } else {
-          YarnComment yarnComment = YarnComment.fromJson(body);
+          final YarnComment yarnComment = YarnComment.fromJson(body);
           if (yarnTopic != null) {
             NavigationUtil.push(
               context,
@@ -167,7 +167,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              isSend ? Container() : Container(width: 20),
+              if (isSend) Container() else Container(width: 20),
               Container(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.35,
@@ -183,8 +183,8 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 20),
                     bottomRight: Radius.circular(isSend ? 0 : 20),
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+                    topLeft: const Radius.circular(20),
+                    topRight: const Radius.circular(20),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -202,31 +202,32 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    widget.chatConversation!.isGroupConversation!
-                        ? widget.message!['author'] != userBloc.user.userName
-                            ? Column(
-                                children: [
-                                  Text(
-                                    widget.message!['author_full_name'] ??
-                                        widget.message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                ],
-                              )
-                            : Container(
-                                height: 0,
-                                width: 0,
-                              )
-                        : Container(
-                            height: 0,
-                            width: 0,
-                          ),
+                    if (widget.chatConversation!.isGroupConversation!)
+                      widget.message!['author'] != userBloc.user.userName
+                          ? Column(
+                              children: [
+                                Text(
+                                  widget.message!['author_full_name'] ??
+                                      widget.message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                              ],
+                            )
+                          : Container(
+                              height: 0,
+                              width: 0,
+                            )
+                    else
+                      Container(
+                        height: 0,
+                        width: 0,
+                      ),
                     Card(
                       margin: EdgeInsets.zero,
                       elevation: 0,
@@ -234,7 +235,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                           borderRadius: BorderRadius.circular(20)),
                       child: Container(
                         decoration: decorateBox(color: Colors.white),
-                        padding: EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                             right: 10, top: 10, left: 10, bottom: 4),
                         child: _buildMainCard(),
                       ),
@@ -242,40 +243,43 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                   ],
                 ),
               ),
-              isSend
-                  ? Container(
-                      width: 20,
-                      child: isSend
-                          ? Center(
-                              child: getMessageTick(message: widget.message!),
-                            )
-                          : Container(),
-                    )
-                  : Container(),
+              if (isSend)
+                Container(
+                  width: 20,
+                  child: isSend
+                      ? Center(
+                          child: getMessageTick(message: widget.message!),
+                        )
+                      : Container(),
+                )
+              else
+                Container(),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 2,
           ),
           Row(
             mainAxisAlignment:
                 isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              isSend
-                  ? Container()
-                  : SizedBox(
-                      width: 20,
-                    ),
+              if (isSend)
+                Container()
+              else
+                const SizedBox(
+                  width: 20,
+                ),
               Text(
                 formatTime(widget.message!['created_at']),
                 style: TextStyle(
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
-              isSend
-                  ? SizedBox(
-                      width: 20,
-                    )
-                  : Container(),
+              if (isSend)
+                const SizedBox(
+                  width: 20,
+                )
+              else
+                Container(),
             ],
           ),
         ],
@@ -296,16 +300,16 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         _buildPostDescription(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (yarnQuestionForChatModel.media != null) ...[
           _buildImagesRow(context: context),
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
         ]
@@ -321,7 +325,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
             Container(
               height: 24,
               width: 24,
-              decoration: BoxDecoration(shape: BoxShape.circle),
+              decoration: const BoxDecoration(shape: BoxShape.circle),
               child: ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: yarnQuestionForChatModel.authorAvatar!,
@@ -330,7 +334,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
           ],
@@ -370,7 +374,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           YarnSmartText(
@@ -390,7 +394,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               });
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -411,8 +415,8 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                       launchUrl(Uri.parse(linkToBePreview!));
                     },
                     child: Container(
-                      margin:
-                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 10.0, bottom: 10.0),
                       child: Text(
                         linkToBePreview!,
                         maxLines: 1,
@@ -441,7 +445,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                     color: Colors.white,
                   ),
                   padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  margin: const EdgeInsets.only(bottom: 4, top: 8),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,7 +486,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     } else if (yarnQuestionForChatModel.media!.length >= 4) {
       return _buildFourImageRow(context: context);
     }
-    return SizedBox();
+    return const SizedBox();
   }
 
   Widget _buildSingleImage({required BuildContext context}) {
@@ -511,7 +515,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -542,7 +546,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
             child: Container(
               height: (MediaQuery.of(context).size.width - 40) / 2,
               width: (MediaQuery.of(context).size.width - 40) / 2,
-              padding: EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -562,7 +566,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
             child: Container(
               height: (MediaQuery.of(context).size.width - 40) / 2,
               width: (MediaQuery.of(context).size.width - 40) / 2,
-              padding: EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -582,7 +586,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
             child: Container(
               height: (MediaQuery.of(context).size.width - 40) / 2,
               width: (MediaQuery.of(context).size.width - 40) / 2,
-              padding: EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -613,7 +617,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -633,7 +637,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -651,7 +655,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Row(
@@ -660,7 +664,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -680,7 +684,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                 child: Container(
                   height: (MediaQuery.of(context).size.width - 40) / 2,
                   width: (MediaQuery.of(context).size.width - 40) / 2,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -708,7 +712,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRowNew(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         // if (yarnComment.isQuestion) ...[
@@ -716,7 +720,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
         //   SizedBox(height: 8),
         // ],
         _buildPostDescriptionNew(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
 
@@ -724,18 +728,18 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
             yarnComment.attachment != null &&
             yarnComment.attachment?.isEmpty != true) ...[
           getDisplayWidget(_buildAttachment),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
         if (isMediaPresent) ...[
           _buildImagesRowNew(),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
         ],
         // yarnComment.factChecked == true ? _buildFactCheckWidget() : SizedBox.shrink(),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
       ],
     );
   }
@@ -744,14 +748,14 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildUserAvatar(),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
@@ -776,7 +780,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(
@@ -815,7 +819,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       child: Container(
         height: 36,
         width: 36,
-        decoration: BoxDecoration(shape: BoxShape.circle),
+        decoration: const BoxDecoration(shape: BoxShape.circle),
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: yarnComment.authorAvatar!,
@@ -829,7 +833,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
 
   Widget _buildPostDescriptionNew() {
     var newString = '';
-    var list = [];
+    final list = [];
 
     yarnComment.comment.toString().split(' ').forEach((ch) {
       list.add(ch);
@@ -856,7 +860,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           YarnSmartText(
@@ -876,7 +880,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               });
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -897,8 +901,8 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                       launchUrl(Uri.parse(linkToBePreview!));
                     },
                     child: Container(
-                      margin:
-                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      margin: const EdgeInsets.only(
+                          left: 10.0, top: 10.0, bottom: 10.0),
                       child: Text(
                         linkToBePreview!,
                         maxLines: 1,
@@ -927,7 +931,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
                     color: Colors.white,
                   ),
                   padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  margin: const EdgeInsets.only(bottom: 4, top: 8),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -961,24 +965,24 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   Widget _buildAttachment() {
     Widget childWidget;
     if (yarnComment.attachmentType == 'service') {
-      Service service = Service.fromJson(yarnComment.attachment);
+      final Service service = Service.fromJson(yarnComment.attachment);
       childWidget = YarnServiceTile(
         service: service,
       );
     } else if (yarnComment.attachmentType == 'product') {
-      Product product = Product.fromJson(yarnComment.attachment);
+      final Product product = Product.fromJson(yarnComment.attachment);
       childWidget = YarnProductTile(
         product: product,
       );
     } else if (yarnComment.attachmentType == 'blog') {
-      UserPost post = UserPost.fromJson(yarnComment.attachment);
+      final UserPost post = UserPost.fromJson(yarnComment.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
     } else if (yarnComment.attachmentType == 'profile') {
-      CustomerProfile customerProfile =
+      final CustomerProfile customerProfile =
           CustomerProfile.fromJson(yarnComment.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
@@ -986,7 +990,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
         onDeleteBlog: () {},
       );
     } else {
-      childWidget = SizedBox();
+      childWidget = const SizedBox();
     }
     return childWidget;
   }
@@ -998,7 +1002,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
   Widget clickWidget({String? text, Function()? onClick}) => GestureDetector(
         onTap: onClick,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15), color: blackFont),
           child: Text(

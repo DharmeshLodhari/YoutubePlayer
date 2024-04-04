@@ -6,6 +6,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:camera/camera.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -49,12 +50,9 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
       cameras = availableCameras;
       if (cameras.length > 0) {
         initCamera(cameras[0]);
-      } else {
-        print("No camera available");
-      }
+      } else {}
     }).catchError((err) {
       // 3
-      print('Error: $err.code\nError Message: $err.message');
     });
   }
 
@@ -70,10 +68,11 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenied':
-            print('User denied camera access.');
+            if (kDebugMode) {
+              print('User denied camera access.');
+            }
             break;
           default:
-            print('Handle other errors.');
             break;
         }
       }
@@ -117,12 +116,9 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
               cameras = availableCameras;
               if (cameras.length > 0) {
                 initCamera(cameras[_isRearCameraSelected ? 0 : 1]);
-              } else {
-                print("No camera available");
-              }
+              } else {}
             }).catchError((err) {
               // 3
-              print('Error: $err.code\nError Message: $err.message');
             });
           },
         ),
@@ -148,7 +144,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
       onPressed: () {
         Navigator.pop(context, "back pressed");
       },
-      icon: Icon(
+      icon: const Icon(
         Icons.keyboard_arrow_left,
         size: 20,
         color: Colors.white,
@@ -160,11 +156,12 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
     return SafeArea(
       child: Stack(
         children: [
-          (_cameraController?.value.isInitialized ?? false)
-              ? CameraPreview(_cameraController!)
-              : Container(
-                  color: Colors.black,
-                  child: Center(child: CircularProgressIndicator())),
+          if (_cameraController?.value.isInitialized ?? false)
+            CameraPreview(_cameraController!)
+          else
+            Container(
+                color: Colors.black,
+                child: const Center(child: CircularProgressIndicator())),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -173,16 +170,17 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
               child: Center(
                 child: Column(
                   children: [
-                    videoTimer != 4
-                        ? Text(
-                            videoTimer.toString(),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600),
-                          )
-                        : SizedBox.shrink(),
-                    SizedBox(height: 10),
+                    if (videoTimer != 4)
+                      Text(
+                        videoTimer.toString(),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    const SizedBox(height: 10),
                     GestureDetector(
                       onTap: takePhoto,
                       onLongPressStart: mediaCaptured()
@@ -246,7 +244,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
 
     try {
       _cameraController?.startVideoRecording();
-      timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (mounted) {
           setState(() {
             videoTimer--;

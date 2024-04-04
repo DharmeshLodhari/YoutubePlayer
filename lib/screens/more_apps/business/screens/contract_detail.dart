@@ -78,8 +78,7 @@ class _ContractDetailState extends State<ContractDetail> {
 
   @pragma(
       'vm:entry-point') // To avoid tree shaking in release mode for Android.
-  static void downloadCallback(
-      String id, int status, int progress) {
+  static void downloadCallback(String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('contract_downloader_send_port')!;
     send.send([id, status, progress]);
@@ -100,7 +99,7 @@ class _ContractDetailState extends State<ContractDetail> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -144,16 +143,17 @@ class _ContractDetailState extends State<ContractDetail> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        isLoading
-            ? SizedBox.shrink()
-            : IconButton(
-                icon: getDownloadIconWidget(),
-                onPressed: () {
-                  _downloadContract();
-                },
-              ),
+        if (isLoading)
+          const SizedBox.shrink()
+        else
+          IconButton(
+            icon: getDownloadIconWidget(),
+            onPressed: () {
+              _downloadContract();
+            },
+          ),
         // transactionHistoryBtn(),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -172,11 +172,11 @@ class _ContractDetailState extends State<ContractDetail> {
     return Icon(Icons.download_rounded, color: navyBlue);
   }
 
-  _downloadContract() async {
-    String fileName = 'Contract_${contract.id}.pdf';
-    PermissionStatus status = await Permission.storage.request();
+  void _downloadContract() async {
+    final String fileName = 'Contract_${contract.id}.pdf';
+    final PermissionStatus status = await Permission.storage.request();
 
-    var downloadsDirectoryPath =
+    final downloadsDirectoryPath =
         await ExternalPath.getExternalStoragePublicDirectory(
             ExternalPath.DIRECTORY_DOWNLOADS);
 
@@ -184,7 +184,7 @@ class _ContractDetailState extends State<ContractDetail> {
       setState(() {
         isDownloading = true;
       });
-      String formattedFileName =
+      final String formattedFileName =
           await makeFileName(downloadsDirectoryPath, fileName);
 
       await FlutterDownloader.enqueue(
@@ -226,7 +226,7 @@ class _ContractDetailState extends State<ContractDetail> {
                   (AppBar().preferredSize.height +
                       MediaQuery.of(context).padding.top),
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
                   displayContractInfo(),
@@ -258,9 +258,9 @@ class _ContractDetailState extends State<ContractDetail> {
   }
 
   Widget getSubtitle() {
-    DateTime dateAndTime = DateTime.parse(contract.createdAt!);
-    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
-    String time = DateFormat("hh:mm a").format(dateAndTime);
+    final DateTime dateAndTime = DateTime.parse(contract.createdAt!);
+    final String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    final String time = DateFormat("hh:mm a").format(dateAndTime);
 
     return Text(
       "$date • $time",
@@ -274,9 +274,9 @@ class _ContractDetailState extends State<ContractDetail> {
     if (datetime == null) {
       return "";
     }
-    DateTime dateAndTime = DateTime.parse(datetime);
-    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
-    String time = DateFormat("hh:mm a").format(dateAndTime);
+    final DateTime dateAndTime = DateTime.parse(datetime);
+    final String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    final String time = DateFormat("hh:mm a").format(dateAndTime);
     return "$date • $time";
   }
 
@@ -290,7 +290,7 @@ class _ContractDetailState extends State<ContractDetail> {
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
         placeholder: (context, url) => contract.contractorAvatar == ""
-            ? Icon(Icons.person)
+            ? const Icon(Icons.person)
             : CircularLoadingIndicator(),
       ),
     );

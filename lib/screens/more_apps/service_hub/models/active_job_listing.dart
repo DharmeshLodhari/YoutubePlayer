@@ -15,13 +15,13 @@ class ActiveJobListing {
     if (json['results'] != null) {
       results = <ActiveListingData>[];
       json['results'].forEach((v) {
-        results!.add(new ActiveListingData.fromJson(v));
+        results!.add(ActiveListingData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['count'] = this.count;
     data['next'] = this.next;
     data['previous'] = this.previous;
@@ -50,7 +50,7 @@ class ActiveListingData {
 
   ActiveListingData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    job = json['job'] != null ? new JobModel.fromJson(json['job']) : null;
+    job = json['job'] != null ? JobModel.fromJson(json['job']) : null;
     type = json['type'];
     isActive = json['is_active'];
     createdAt = json['created_at'];
@@ -58,7 +58,7 @@ class ActiveListingData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     if (this.job != null) {
       data['job'] = this.job!.toJson();

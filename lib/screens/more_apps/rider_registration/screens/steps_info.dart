@@ -133,7 +133,7 @@ class _StepsInfoState extends State<StepsInfo> {
 
   Widget _buildBody() {
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: _buildScreen(getListObjectByType()),
     );
   }
@@ -144,7 +144,7 @@ class _StepsInfoState extends State<StepsInfo> {
       children: [
         _buildStepsInfo(details),
         Expanded(child: _buildImageAndINfo(details)),
-        SizedBox(height: 30.0),
+        const SizedBox(height: 30.0),
         _buildTakePhotoBtn(),
       ],
     );
@@ -163,7 +163,7 @@ class _StepsInfoState extends State<StepsInfo> {
             fontFamily: "Inter",
           ),
         ),
-        SizedBox(height: 10.0),
+        const SizedBox(height: 10.0),
         Text(
           details["subtitle"],
           style: TextStyle(
@@ -173,9 +173,9 @@ class _StepsInfoState extends State<StepsInfo> {
             fontFamily: "Inter",
           ),
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         Padding(
-          padding: EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(5.0),
           child: Text(
             details["note"],
             style: TextStyle(

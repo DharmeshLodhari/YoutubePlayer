@@ -21,7 +21,7 @@ import '../../../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 
 class FundVirtualCard extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   FundVirtualCard({this.arguments, Key? key}) : super(key: key);
 
@@ -110,7 +110,7 @@ class FundVirtualCardState extends State<FundVirtualCard> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -168,42 +168,42 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                         const SizedBox(
                           height: 20,
                         ),
-                        canCashOut(nairaCheck, balance)
-                            ? getSubmitButton()
-                            : Container(
-                                child: Center(
-                                    child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16.0),
-                                        child: Text.rich(TextSpan(
-                                            text: AppLocalization.of(context)!
-                                                .availableFund,
+                        if (canCashOut(nairaCheck, balance))
+                          getSubmitButton()
+                        else
+                          Container(
+                            child: Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0),
+                                    child: Text.rich(TextSpan(
+                                        text: AppLocalization.of(context)!
+                                            .availableFund,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: blackFont,
+                                            fontWeight: FontWeight.w600),
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: double.parse(
+                                                        moneyDisplayNormalizer(
+                                                            displayPossibleCashOutAmount(
+                                                                balance))) >=
+                                                    35.00
+                                                ? worldCurrencies[userBloc!
+                                                        .user.currency!]! +
+                                                    moneyDisplayNormalizer(
+                                                        displayPossibleCashOutAmount(
+                                                            balance))
+                                                : '${worldCurrencies[userBloc!.user.currency!]!}0.00',
                                             style: TextStyle(
                                                 fontSize: 12,
                                                 color: blackFont,
+                                                fontFamily: "Inter",
                                                 fontWeight: FontWeight.w600),
-                                            children: <InlineSpan>[
-                                              TextSpan(
-                                                text: double.parse(
-                                                            moneyDisplayNormalizer(
-                                                                displayPossibleCashOutAmount(
-                                                                    balance))) >=
-                                                        35.00
-                                                    ? worldCurrencies[userBloc!
-                                                            .user.currency!]! +
-                                                        moneyDisplayNormalizer(
-                                                            displayPossibleCashOutAmount(
-                                                                balance))
-                                                    : '${worldCurrencies[userBloc!.user.currency!]!}0.00',
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: blackFont,
-                                                    fontFamily: "Inter",
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              )
-                                            ])))),
-                              ),
+                                          )
+                                        ])))),
+                          ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -217,14 +217,14 @@ class FundVirtualCardState extends State<FundVirtualCard> {
   }
 
   Widget mainCreditCardContent(AllCards cardData) {
-    var cardColors = [];
-    var cardColor;
+    // var cardColors = [];
+    Color cardColor;
 
     if (cardData.color == null) {
-      cardColors = [navyBlue, richPink, black, orange];
+      // cardColors = [navyBlue, richPink, black, orange];
       cardColor = navyBlue;
     } else {
-      String? color = cardData.color;
+      final String? color = cardData.color;
       switch (color) {
         case 'Slydo Blue':
           cardColor = navyBlue;
@@ -390,31 +390,33 @@ class FundVirtualCardState extends State<FundVirtualCard> {
                         right: 20,
                         child: Column(
                           children: [
-                            cardData.cardBrand == 'Visa'
-                                ? SvgPicture.asset(
-                                    "visa".toSVG(),
-                                    fit: BoxFit.cover,
-                                  )
-                                : SvgPicture.asset(
-                                    "mastercard".toSVG(),
-                                    fit: BoxFit.cover,
-                                  ),
+                            if (cardData.cardBrand == 'Visa')
+                              SvgPicture.asset(
+                                "visa".toSVG(),
+                                fit: BoxFit.cover,
+                              )
+                            else
+                              SvgPicture.asset(
+                                "mastercard".toSVG(),
+                                fit: BoxFit.cover,
+                              ),
                             const SizedBox(width: 5.0),
-                            cardData.cardBrand == 'Visa'
-                                ? SizedBox.shrink()
-                                : Column(
-                                    children: [
-                                      Text(
-                                        'Mastercard',
-                                        style: TextStyle(
-                                          color: white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 5.0),
-                                    ],
+                            if (cardData.cardBrand == 'Visa')
+                              const SizedBox.shrink()
+                            else
+                              Column(
+                                children: [
+                                  Text(
+                                    'Mastercard',
+                                    style: TextStyle(
+                                      color: white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
+                                  const SizedBox(width: 5.0),
+                                ],
+                              ),
                           ],
                         ),
                       ),
@@ -578,7 +580,7 @@ class FundVirtualCardState extends State<FundVirtualCard> {
             isAPILoading = true;
             if (mounted) setState(() {});
 
-            Map<String, dynamic> result = {
+            final Map<String, dynamic> result = {
               "amount": usdAmount,
               "exchange_rate_id": exchangeRate.id,
             };
@@ -608,8 +610,8 @@ class FundVirtualCardState extends State<FundVirtualCard> {
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
 
       balance = spendableBalance;
       if (mounted) {

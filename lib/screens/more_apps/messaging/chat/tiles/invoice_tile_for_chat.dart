@@ -47,7 +47,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    bool isSender = widget.message!["author"] == userBloc.user.userName;
+    final bool isSender = widget.message!["author"] == userBloc.user.userName;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -57,7 +57,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
               isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSender ? Container() : Container(width: 20),
+            if (isSender) Container() else Container(width: 20),
             Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.30,
@@ -65,36 +65,38 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
                   minHeight: 50),
               child: getPaymentContractTile(),
             ),
-            isSender
-                ? Container(
-                    width: 20,
-                    child: isSender
-                        ? Center(
-                            child: getMessageTick(message: widget.message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSender)
+              Container(
+                width: 20,
+                child: isSender
+                    ? Center(
+                        child: getMessageTick(message: widget.message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 1,
         ),
         Row(
           mainAxisAlignment:
               isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSender ? Container() : SizedBox(width: 20),
+            if (isSender) Container() else const SizedBox(width: 20),
             Text(
               formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSender
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSender)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         ),
       ],
@@ -128,8 +130,8 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
           Row(
             children: [
               getAvatar(),
-              SizedBox(width: 20),
-              Text(
+              const SizedBox(width: 20),
+              const Text(
                 'Invoice',
                 style: TextStyle(
                   fontSize: 18,
@@ -140,9 +142,9 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
           ),
           Row(
             children: [
-              SizedBox(width: 70),
-              Text('Total:'),
-              SizedBox(width: 20),
+              const SizedBox(width: 70),
+              const Text('Total:'),
+              const SizedBox(width: 20),
               getAmount(),
             ],
           ),
@@ -201,7 +203,7 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
             ),
           ),
         ),
-        Positioned(
+        const Positioned(
           right: 0,
           child: CircleAvatar(
             radius: 10,

@@ -12,7 +12,7 @@ class EventPoster {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['image'] = this.image;
     data['name'] = this.name;
     return data;

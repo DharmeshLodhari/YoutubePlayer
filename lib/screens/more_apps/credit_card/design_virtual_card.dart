@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 import '../../../routes/route_constants.dart';
 
 class DesignVirtualCard extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   DesignVirtualCard({this.arguments, Key? key}) : super(key: key);
 
@@ -41,7 +41,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
   bool isAPILoading = false;
   List<Color> cardColors = [navyBlue, richPink, black, orange];
   int currentColorIndex = 0;
-  CarouselController _carouselController = CarouselController();
+  final CarouselController _carouselController = CarouselController();
 
   @override
   void deactivate() {
@@ -99,7 +99,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     return isLoading
         ? Center(
@@ -212,7 +212,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
               builder: (BuildContext context) {
                 return Container(
                   width: MediaQuery.of(context).size.width,
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: creditCard(color),
                 );
               },
@@ -475,7 +475,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
                     shrinkWrap: true,
                     itemCount: cardTypeList.length,
                     itemBuilder: (context, index) {
-                      String category = cardTypeList[index];
+                      final String category = cardTypeList[index];
                       return ListTile(
                         title: Text(
                           category,
@@ -521,7 +521,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
                     shrinkWrap: true,
                     itemCount: cardList.length,
                     itemBuilder: (context, index) {
-                      String category = cardList[index];
+                      final String category = cardList[index];
                       return ListTile(
                         title: Text(
                           category,
@@ -568,7 +568,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
     );
   }
 
-  goToGeneratePage() async {
+  Future<void> goToGeneratePage() async {
     if (_formKey.currentState!.validate()) {
       if (validateDropdown()) {
         String color = "";
@@ -582,7 +582,7 @@ class DesignVirtualCardState extends State<DesignVirtualCard> {
           color = 'Orange';
         }
 
-        Map<String, dynamic> result = {
+        final Map<String, dynamic> result = {
           "first_name": widget.arguments["data"]['first_name'],
           "last_name": widget.arguments["data"]['last_name'],
           "address1": widget.arguments["data"]['address1'],

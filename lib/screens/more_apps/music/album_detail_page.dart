@@ -123,11 +123,11 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
       ),
       actions: <Widget>[
         shareBtn(),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         addToCartBtn(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -174,14 +174,14 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                 albumPoster(),
                 Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 24,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: albumDetail(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 24,
                     ),
                     Divider(
@@ -189,12 +189,12 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                       thickness: 1,
                       color: dividerColor,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Row(
                       children: <Widget>[
-                        SizedBox(
+                        const SizedBox(
                           width: 58,
                         ),
                         Expanded(
@@ -206,7 +206,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                                 color: blackFont),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 24,
                         ),
                         Text(
@@ -216,7 +216,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                               fontWeight: FontWeight.w600,
                               color: blackFont),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 24,
                         ),
                         Text(
@@ -226,12 +226,12 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                               fontWeight: FontWeight.w600,
                               color: blackFont),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 75,
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Divider(
@@ -240,7 +240,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                       color: dividerColor,
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 20, left: 10),
+                      padding: const EdgeInsets.only(right: 20, left: 10),
                       child: Column(
                         children: musicAlbum.audio!
                             .asMap()
@@ -269,7 +269,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                             .toList(),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                   ],
@@ -340,7 +340,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Row(
@@ -355,7 +355,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                       fontWeight: FontWeight.w400,
                       color: blackFont),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Row(
@@ -365,7 +365,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                       color: starYellow,
                       size: 11,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(

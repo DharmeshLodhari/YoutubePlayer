@@ -66,6 +66,7 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -100,7 +101,7 @@ import '../tiles/post_title_for_chat.dart';
 import '../tiles/yarn_question_tile.dart';
 
 class ChatScreenGroupMessage extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   ChatScreenGroupMessage({this.arguments});
 
@@ -138,24 +139,24 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   /// User typing state variables
   Timer? _timerForUserTypingState;
-  Duration userMessageTypingStateUpdateTime = Duration(seconds: 2);
+  Duration userMessageTypingStateUpdateTime = const Duration(seconds: 2);
   bool isRecipientTyping = false;
   String? typingMessage = "";
 
   /// User Typing Count
   int _userTypingCount = 0;
-  int _userTypingResetCount = 4;
+  final int _userTypingResetCount = 4;
 
   /// User online offline status
   Timer? _timerForUserStatus;
-  Duration userStatusCheckTimeDuration = Duration(seconds: 2);
+  Duration userStatusCheckTimeDuration = const Duration(seconds: 2);
 
   /// User Audio Recording state variables
   Timer? _timerForCheckingAudioRecording;
-  Duration userAudioRecordingCheckDuration = Duration(seconds: 2);
+  Duration userAudioRecordingCheckDuration = const Duration(seconds: 2);
 
   /// Music Player
-  AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
+  final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
   bool isAudioPlaying = false;
 
   /// User status
@@ -173,12 +174,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   int? productOrServiceCount = 0;
   String? productOrServiceNext = "";
   String? productOrServicePrevious = "";
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
-  GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
+  final GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
   CustomizedPopUpMenu? itemSearchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -238,7 +239,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool _isMessageIsGIFOrSticker = false;
   bool _isMessageIsSticker = false;
   bool _isGIFLoading = false;
-  TextEditingController _gifController = TextEditingController();
+  final TextEditingController _gifController = TextEditingController();
 
   GroupedItemScrollController? messageListController;
   ItemPositionsListener? messageListPositionListener;
@@ -246,7 +247,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   AppConfigurationModel? appConfigurationModel;
 
   /// CHAT SYNCHRONIZER
-  Duration _chatSynchronizeTime = Duration(seconds: 2);
+  final Duration _chatSynchronizeTime = const Duration(seconds: 2);
   Timer? _chatSynchronizerTimer;
   late YarnDashboardBloc yarnDashboardBloc;
 
@@ -308,7 +309,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void fetchRecipientUserIfNotAvailable() async {
-    String recipientUserName = widget.arguments["recipientUserName"] ?? "";
+    final String recipientUserName =
+        widget.arguments["recipientUserName"] ?? "";
 
     if (recipientUserName != "") {
       isChatConversationLoading = true;
@@ -362,11 +364,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void getDBMessage() async {
-    List<ChatMessage> messages = await ChatMessageHandler()
+    final List<ChatMessage> messages = await ChatMessageHandler()
         .getChatMessages(chatConversation: chatConversation!);
 
     if (messages.isEmpty) {
-      ChatMessagePagination chatMessagePagination = ChatMessagePagination(
+      final ChatMessagePagination chatMessagePagination = ChatMessagePagination(
           conversationId: chatConversation!.conversationId,
           count: count,
           next: next,
@@ -375,8 +377,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           chatMessagePagination: chatMessagePagination);
       getPreviousMessages();
     } else {
-      ChatMessagePagination chatMessagePagination = await ChatMessageHandler()
-          .getChatMessagePagination(
+      final ChatMessagePagination chatMessagePagination =
+          await ChatMessageHandler().getChatMessagePagination(
               conversationId: chatConversation!.conversationId);
 
       count = chatMessagePagination.count;
@@ -400,14 +402,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void getMissedMessageFromDB() async {
     debugPrint("Get missed messages Called !!");
-    List<ChatMessage> messages = await ChatMessageHandler()
+    final List<ChatMessage> messages = await ChatMessageHandler()
         .getChatMessages(chatConversation: chatConversation!);
 
     messages.forEach((message) {
       bool isPresent = false;
       for (int i = 0; i < messageList.length; i++) {
-        Map<String, dynamic> decodePresentMessage = jsonDecode(messageList[i]!);
-        ChatMessage decodedMessage = ChatMessage.fromJson(decodePresentMessage);
+        final Map<String, dynamic> decodePresentMessage =
+            jsonDecode(messageList[i]!);
+        final ChatMessage decodedMessage =
+            ChatMessage.fromJson(decodePresentMessage);
 
         if (message.checkId == decodedMessage.checkId &&
             message.conversationId == decodedMessage.conversationId) {
@@ -418,7 +422,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       if (!isPresent) {
         debugPrint("MESSAGE ADDED:--- ${message.text}");
-        String encodedMessage = jsonEncode(message.toJson());
+        final String encodedMessage = jsonEncode(message.toJson());
         messageList.add(encodedMessage);
         storeMessagesTemporary(message: encodedMessage);
       }
@@ -506,7 +510,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       isAudioRecorderInitialized = true;
       if (mounted) setState(() {});
     });
-    await audioRecorder?.setSubscriptionDuration(Duration(seconds: 1));
+    await audioRecorder?.setSubscriptionDuration(const Duration(seconds: 1));
 
     audioRecorder?.onProgress?.listen((RecordingDisposition event) {
       debugPrint("EVENT => ${event.duration}");
@@ -534,7 +538,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void disposeAudioPlayers() {
     messageList.forEach((element) {
-      Map<String, dynamic>? messageData = jsonDecode(element!);
+      final Map<String, dynamic>? messageData = jsonDecode(element!);
 
       AssetsAudioPlayer.allPlayers().forEach((key, value) {
         if (value.id == messageData!["id"]) {
@@ -737,8 +741,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void getPreviousMessages({bool showLoading = true}) async {
     debugPrint("Fetching previous messages !!");
 
-    ChatMessagePagination chatMessagePagination = await ChatMessageHandler()
-        .getChatMessagePagination(
+    final ChatMessagePagination chatMessagePagination =
+        await ChatMessageHandler().getChatMessagePagination(
             conversationId: chatConversation!.conversationId);
 
     count = chatMessagePagination.count;
@@ -763,7 +767,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         debugPrint(
             "recipient conversationID:- ${chatConversation!.conversationId}");
 
-        Map<String, dynamic>? result = await MessageAuth()
+        final Map<String, dynamic>? result = await MessageAuth()
             .getChatMessages(next, previous,
                 conversionId: chatConversation!.conversationId)
             .catchError((error) {
@@ -779,9 +783,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           return;
         }
 
-        List<String> tempList = result!['results'];
+        final List<String> tempList = result!['results'];
 
-        List<ChatMessage> messages =
+        final List<ChatMessage> messages =
             await ChatMessageHandler().saveChatMessages(messages: tempList);
 
         chatMessagePagination.count = result['count'];
@@ -833,7 +837,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void determineReceivedChatMessageType(String message) async {
-    Map<String, dynamic> messageData = jsonDecode(message);
+    final Map<String, dynamic> messageData = jsonDecode(message);
     debugPrint('message type data ::: ${messageData['type']}');
 
     if (messageData['type'] != "pong") {
@@ -864,7 +868,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             typingMessage = messageData["message"];
             if (mounted) setState(() {});
 
-            Future.delayed(Duration(seconds: 1)).then((value) {
+            Future.delayed(const Duration(seconds: 1)).then((value) {
               isRecipientTyping = false;
               typingMessage = "";
               if (mounted) setState(() {});
@@ -879,7 +883,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             isOtherUserRecordingAudio = true;
             if (mounted) setState(() {});
 
-            Future.delayed(Duration(seconds: 1)).then((value) {
+            Future.delayed(const Duration(seconds: 1)).then((value) {
               isOtherUserRecordingAudio = false;
               if (mounted) setState(() {});
             });
@@ -902,7 +906,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         isUserNudging = true;
         if (mounted) setState(() {});
 
-        Future.delayed(Duration(seconds: 11)).then((value) {
+        Future.delayed(const Duration(seconds: 11)).then((value) {
           isUserNudging = false;
           if (mounted) setState(() {});
         });
@@ -956,11 +960,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
         return;
       } else if (messageData['meta_data']['action'] == "remove_user") {
-        List users = messageData['meta_data']['users'];
+        final List users = messageData['meta_data']['users'];
         if (users.isEmpty) return;
 
         if (users.first == null || users.first == "") return;
-        String user = users.first.toString();
+        final String user = users.first.toString();
 
         if (user == userBloc!.user.userName) {
           showToast(
@@ -974,8 +978,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       }
     }
 
-    var result = ChatGroupActionManagerForLiveConversation(message: messageData)
-        .handleMessageAction(chatConversation: chatConversation);
+    final result =
+        ChatGroupActionManagerForLiveConversation(message: messageData)
+            .handleMessageAction(chatConversation: chatConversation);
 
     if (result != null) {
       if (result is ChatConversation) {
@@ -1002,11 +1007,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (!messageData.containsKey("meta_data")) {
       metaData = messageData;
     }
-    String? action = metaData!['action'];
+    final String? action = metaData!['action'];
 
     switch (action) {
       case "delete_conversation":
-        String? conversationId = metaData['conversation_id'];
+        final String? conversationId = metaData['conversation_id'];
         if (chatConversation!.conversationId == conversationId) {
           if (!isRecipientRemovedDialogueIsOpen) {
             showRecipientHasRemovedYouDialogue();
@@ -1019,9 +1024,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void handleAcknowledgementMessage({Map<String, dynamic>? messageData}) {
     if (messageList.length > 0) {
       for (int i = 0; i < messageList.length; i++) {
-        Map<String, dynamic> previousMessage = jsonDecode(messageList[i]!);
+        final Map<String, dynamic> previousMessage =
+            jsonDecode(messageList[i]!);
 
-        String? conversationId =
+        final String? conversationId =
             messageData!['conversation_id'] ?? messageData['conversation'];
 
         if (messageData['check_id'] == previousMessage['check_id'] &&
@@ -1066,18 +1072,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void checkMessageToAdd({required String message}) {
     print('CHECK MESSAGE TO ADD :: $message');
-    Map<String, dynamic>? newMessage = jsonDecode(message);
+    final Map<String, dynamic>? newMessage = jsonDecode(message);
 
     if (messageList.length > 0) {
       bool isMatchFound = false;
       for (int i = 0; i < messageList.length; i++) {
-        Map<String, dynamic> previousMessage = jsonDecode(messageList[i]!);
+        final Map<String, dynamic> previousMessage =
+            jsonDecode(messageList[i]!);
 
-        String? newMessageText = newMessage!["text"] is String
+        final String? newMessageText = newMessage!["text"] is String
             ? newMessage["text"]
             : jsonEncode(newMessage["text"]);
 
-        String? previousMessageText = previousMessage["text"] is String
+        final String? previousMessageText = previousMessage["text"] is String
             ? previousMessage["text"]
             : jsonEncode(previousMessage["text"]);
 
@@ -1104,7 +1111,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void addMessageToChat({String? message}) {
     messageList.insert(0, message);
-    print('ADDED MESSAGE :::: $message');
+    if (kDebugMode) {
+      print('ADDED MESSAGE :::: $message');
+    }
 
     ///PlaySoundAccordingToMessageType
     MessageSoundPlayer(message: message).playSound();
@@ -1121,10 +1130,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void updateMessageReadMark({required String message}) async {
-    Map<String, dynamic>? messageData = jsonDecode(message);
+    final Map<String, dynamic>? messageData = jsonDecode(message);
 
     for (int i = 0; i < messageList.length; i++) {
-      Map<String, dynamic> decodeListMessage = jsonDecode(messageList[i]!);
+      final Map<String, dynamic> decodeListMessage =
+          jsonDecode(messageList[i]!);
       if (decodeListMessage["check_id"] == messageData!["check_id"]) {
         decodeListMessage["read_by_recipient"] = true;
         decodeListMessage["delivered"] = true;
@@ -1138,7 +1148,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void userTyping() async {
     _userTypingCount = _userTypingCount + 1;
     if (_userTypingCount == _userTypingResetCount) {
-      var data = {
+      final data = {
         "message": "typing",
         "type": "user_typing_message",
         "full_name": chatConversation!.fullName,
@@ -1151,7 +1161,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void userRecordingAudio() async {
-    var data = {
+    final data = {
       "message": "recording audio",
       "type": "user_recording_audio_message",
       "full_name": chatConversation!.fullName,
@@ -1164,7 +1174,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Future<void> messageReadByRecipient(Map<String, dynamic> message) async {
     if (message["author"] != userBloc!.user.userName) {
       if (mainSocketProvider!.isChatOnScreen) {
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           "check_id": message["check_id"],
           "type": "read_by_recipient",
           "conversation_id": chatConversation!.conversationId,
@@ -1177,7 +1187,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Future<void> sendReadByRecipientMessageThroughHttp(
       {required Map<String, dynamic> data}) async {
-    Map<String, dynamic> dataToBeSent = {};
+    final Map<String, dynamic> dataToBeSent = {};
     data.forEach((key, value) {
       if (key != "type") {
         dataToBeSent[key] = value;
@@ -1201,7 +1211,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (messageList.isNotEmpty) {
       messageListController!.scrollToBottom(
           index: 0,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.fastLinearToSlowEaseIn);
     } else {
       debugPrint("ERROR:- ===> scroll to bottom called when list is empty");
@@ -1252,20 +1262,20 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           appBar: appBar() as PreferredSizeWidget?,
           body: scaffoldBody(),
           floatingActionButton: Padding(
-            padding: EdgeInsets.only(bottom: 48),
+            padding: const EdgeInsets.only(bottom: 48),
             child: AnimatedSwitcher(
-              duration: Duration(milliseconds: 100),
+              duration: const Duration(milliseconds: 100),
               child: fabIsVisible
                   ? FloatingActionButton(
                       mini: true,
                       backgroundColor: dividerColor,
+                      tooltip: "Increment",
+                      onPressed: scrollToBottom,
                       child: Icon(
                         Icons.keyboard_arrow_down_rounded,
                         size: 28,
                         color: blackFont,
                       ),
-                      tooltip: "Increment",
-                      onPressed: scrollToBottom,
                     )
                   : Container(
                       height: 0,
@@ -1351,7 +1361,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget appBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(kToolbarHeight),
+      preferredSize: const Size.fromHeight(kToolbarHeight),
       child: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -1405,7 +1415,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                       }
                       return getUserIcon();
                     }),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1465,7 +1475,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   ? Container(
                       color: white,
                       width: 100.0,
-                      padding: EdgeInsets.only(left: 40.0, right: 10.0),
+                      padding: const EdgeInsets.only(left: 40.0, right: 10.0),
                       child: Icon(
                         Icons.settings,
                         color: blackFont,
@@ -1474,7 +1484,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     )
                   : Container(
                       width: 100.0,
-                      padding: EdgeInsets.only(left: 40.0, right: 10.0),
+                      padding: const EdgeInsets.only(left: 40.0, right: 10.0),
                       color: white,
                       child: Center(
                         child: SvgPicture.asset(
@@ -1500,7 +1510,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -1508,7 +1518,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: generateBottomSheetItem(),
@@ -1518,7 +1529,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(bottomSheetItem(
       title: "Settings",
@@ -1637,16 +1648,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     return isUserNudging
         ? Container(
-            margin: EdgeInsets.only(top: 8, bottom: 8),
+            margin: const EdgeInsets.only(top: 8, bottom: 8),
             child: Center(child: CircularLoadingIndicator()))
         : IconButton(
-            icon: Icon(Icons.vibration_outlined),
+            icon: const Icon(Icons.vibration_outlined),
             color: navyBlue,
             onPressed: () {
               isUserNudging = true;
               if (mounted) setState(() {});
-              Map<String, dynamic> data = {
-                "check_id": Uuid().v4(),
+              final Map<String, dynamic> data = {
+                "check_id": const Uuid().v4(),
                 "conversation_id": chatConversation!.conversationId,
                 "author": userBloc!.user.userName,
                 "author_avatar": userBloc!.user.avatar,
@@ -1660,7 +1671,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void navigateToGroupDetailScreen() async {
-    var result = await Navigator.of(context).pushNamed(Routes.GROUP_DETAIL,
+    final result = await Navigator.of(context).pushNamed(Routes.GROUP_DETAIL,
         arguments: {"groupDetail": groupDetail});
 
     if (result != null) {
@@ -1669,7 +1680,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         groupDetail = result;
 
         if (mounted) setState(() {});
-        ConnectionListBloc connectionListBloc =
+        final ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
 
         connectionListBloc.updateChatConversation(
@@ -1686,7 +1697,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         return;
       }
 
-      var data = await MessageAuth()
+      final data = await MessageAuth()
           .getChatUserStatus(chatConversation!.userName!)
           .catchError((error) {
         debugPrint("ERROR:- $error");
@@ -1702,21 +1713,23 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         if (mounted) setState(() {});
         return;
       } else {
-        DateTime now = DateTime.now();
-        DateTime today = DateTime(now.year, now.month, now.day);
-        DateTime yesterday = now.subtract(Duration(days: 1));
+        final DateTime now = DateTime.now();
+        final DateTime today = DateTime(now.year, now.month, now.day);
+        final DateTime yesterday = now.subtract(const Duration(days: 1));
 
-        DateTime lastSeenDateTime = DateTime.parse(data["last_seen"]).toLocal();
-        DateTime lastSeenDate = DateTime(lastSeenDateTime.year,
+        final DateTime lastSeenDateTime =
+            DateTime.parse(data["last_seen"]).toLocal();
+        final DateTime lastSeenDate = DateTime(lastSeenDateTime.year,
             lastSeenDateTime.month, lastSeenDateTime.day);
 
-        String lastSeenDateString =
+        final String lastSeenDateString =
             DateFormat("dd/MM/yyyy").format(lastSeenDateTime);
-        String lastSeenTime = DateFormat("hh:mm a").format(lastSeenDateTime);
+        final String lastSeenTime =
+            DateFormat("hh:mm a").format(lastSeenDateTime);
 
         if (today == lastSeenDate) {
           if (lastSeenDateTime.difference(now).inMinutes.abs() < 59) {
-            Duration minuteDifference = lastSeenDateTime.difference(now);
+            final Duration minuteDifference = lastSeenDateTime.difference(now);
 
             if (lastSeenDateTime.difference(now).inSeconds.abs() < 3) {
               userStatus = "Online";
@@ -1748,8 +1761,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         }
 
         if (lastSeenDateTime.difference(now).inDays.abs() < 7) {
-          int weekDay = lastSeenDateTime.weekday;
-          String dayName = getDayName(day: weekDay);
+          final int weekDay = lastSeenDateTime.weekday;
+          final String dayName = getDayName(day: weekDay);
           userStatus = 'last seen ' + dayName + ' at ' + lastSeenTime;
           if (mounted) setState(() {});
           return;
@@ -1764,7 +1777,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (isChatConversationLoading) {
       return Container();
     }
-    Color borderColor = getUserTypeColorByType(type: chatConversation!.type!);
+    final Color borderColor =
+        getUserTypeColorByType(type: chatConversation!.type!);
 
     if (chatConversation!.avatar == null || chatConversation!.avatar == "") {
       return GestureDetector(
@@ -1879,11 +1893,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   List<Widget> getSearchBarItems() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     if (_isMessageIsGIFOrSticker) {
       items.add(Container(
-        constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+        constraints: const BoxConstraints(minHeight: 54, maxHeight: 100),
         child: Row(
           children: <Widget>[
             getSearchGIFCancelBtn(),
@@ -1899,10 +1913,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
 
     items.add(Container(
-      constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+      constraints: const BoxConstraints(minHeight: 54, maxHeight: 100),
       child: Row(
         children: <Widget>[
-          isAudioMessage ? getAudioCancelBtn() : moreActionBtn(),
+          if (isAudioMessage) getAudioCancelBtn() else moreActionBtn(),
           Expanded(
             child: isAudioMessage ? getAudioRecordingUi() : textMessageField(),
           ),
@@ -1924,8 +1938,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       child: _isGIFLoading
           ? Center(child: CircularLoadingIndicator())
           : GridView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 4),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 2,
                 mainAxisSpacing: 4,
@@ -1963,8 +1977,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget getMutedOrBlockedParticipantMessage() {
     return Container(
       color: isUserMuted ? lightGrey : mateRed.withOpacity(0.1),
-      constraints: BoxConstraints(minHeight: 54),
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      constraints: const BoxConstraints(minHeight: 54),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Center(
         child: Text(getMutedOrBlockedMessage(),
             style: TextStyle(
@@ -2025,7 +2039,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget getAudioRecordingUi() {
     return Container(
       height: 46,
-      margin: EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         color: navyBlue,
         borderRadius: BorderRadius.circular(3),
@@ -2035,12 +2049,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           Container(
             width: 50,
             height: 50,
-            child: FlareActor(
+            child: const FlareActor(
               "assets/images/flare/voice_record_active.flr",
               animation: "record",
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 4,
           ),
           Expanded(
@@ -2052,14 +2066,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               fit: BoxFit.cover,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(
             "${formatDurationInSeconds(duration: audioRecordingDuration)}",
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
         ],
@@ -2077,7 +2091,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         onPressed: () async {
           if (FocusScope.of(context).hasFocus) {
             FocusScope.of(context).unfocus();
-            Future.delayed(Duration(milliseconds: 100)).then((value) {
+            Future.delayed(const Duration(milliseconds: 100)).then((value) {
               showMoreAction = !showMoreAction;
               if (mounted) setState(() {});
             });
@@ -2090,7 +2104,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget moreActionsBtn() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Wrap(
         spacing: 45,
         runSpacing: 20,
@@ -2116,11 +2130,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget assignTitleToAction({required String text, required Widget child}) {
     return Container(
-      constraints: BoxConstraints(maxWidth: 60),
+      constraints: const BoxConstraints(maxWidth: 60),
       child: Column(
         children: [
           child,
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Center(
             child: Text(text,
                 style: TextStyle(
@@ -2162,7 +2176,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           getGroupDetailFromServer();
         }
 
-        CustomerProfile? user = await selectRecipientForAction();
+        final CustomerProfile? user = await selectRecipientForAction();
 
         if (user == null) {
           return;
@@ -2197,7 +2211,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -2205,11 +2219,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.only(bottom: 18),
+                padding: const EdgeInsets.only(bottom: 18),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Row(
@@ -2225,12 +2239,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Expanded(child: getGroupUserList())
@@ -2241,7 +2255,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Widget getGroupUserList() {
-    List<Participant> participantList = [];
+    final List<Participant> participantList = [];
 
     groupDetail!.participants.forEach((element) {
       if (element.userName != userBloc!.user.userName) {
@@ -2251,7 +2265,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     return ListView.builder(
       itemBuilder: (context, index) {
-        CustomerProfile user =
+        final CustomerProfile user =
             CustomerProfile.fromGroupParticipant(participantList[index]);
 
         return GestureDetector(
@@ -2292,7 +2306,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           getGroupDetailFromServer();
         }
 
-        CustomerProfile? user = await selectRecipientForAction();
+        final CustomerProfile? user = await selectRecipientForAction();
 
         if (user == null) return;
         selectedUser = user.userName;
@@ -2330,11 +2344,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        bool isPermissionGranted = await requestGalleryPermission();
+        final bool isPermissionGranted = await requestGalleryPermission();
         if (isPermissionGranted) {
           await addMediaToMessage;
         } else {
-          bool isPermissionIsDenied = await isPermanentlyDeniedPermission();
+          final bool isPermissionIsDenied =
+              await isPermanentlyDeniedPermission();
           if (isPermissionIsDenied) {
             await openAppSettings();
           } else {
@@ -2488,7 +2503,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void pickGIF() async {
     stopShakeDetector();
-    GiphyGif? gif = await GiphyPicker.pickGif(
+    final GiphyGif? gif = await GiphyPicker.pickGif(
         context: context,
         apiKey: AppConfig.gifApiKey,
         showPreviewPage: false,
@@ -2497,7 +2512,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           showAppBar: false,
           searchElevation: 4,
           giphyTheme: ThemeData.light().copyWith(
-            inputDecorationTheme: InputDecorationTheme(
+            inputDecorationTheme: const InputDecorationTheme(
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -2509,7 +2524,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         onError: (error) {
           debugPrint("ERROR IN GIPHY PICKER:- $error");
         },
-        title: Text(
+        title: const Text(
           "Slydo GIPHY",
           style: TextStyle(
             color: Colors.white,
@@ -2525,7 +2540,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void pickSticker() async {
     stopShakeDetector();
-    GiphyGif? gif = await GiphyPicker.pickGif(
+    final GiphyGif? gif = await GiphyPicker.pickGif(
         context: context,
         apiKey: AppConfig.gifApiKey,
         showPreviewPage: false,
@@ -2536,7 +2551,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           showAppBar: false,
           searchElevation: 4,
           giphyTheme: ThemeData.light().copyWith(
-            inputDecorationTheme: InputDecorationTheme(
+            inputDecorationTheme: const InputDecorationTheme(
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -2547,7 +2562,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ),
         sticker: true,
         searchText: "Search Sticker",
-        title: Text(
+        title: const Text(
           "Slydo Sticker",
           style: TextStyle(
             color: Colors.white,
@@ -2566,7 +2581,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         height: 50,
         width: 50,
         icon: Container(
-          margin: EdgeInsets.symmetric(vertical: 14),
+          margin: const EdgeInsets.symmetric(vertical: 14),
           child: Image.asset(
             "assets/images/envelope/envelope_blue.png",
           ),
@@ -2606,7 +2621,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       height: 50,
       width: 50,
       icon: Container(
-        margin: EdgeInsets.symmetric(vertical: 14),
+        margin: const EdgeInsets.symmetric(vertical: 14),
         child: Image.asset(
           "assets/images/envelope/envelope_blue_empty.png",
         ),
@@ -2642,11 +2657,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void sendEnvelope({bool isEmpty = false, CustomerProfile? recipient}) async {
-    Map<String, dynamic> arguments = {};
+    final Map<String, dynamic> arguments = {};
 
     arguments['isEmptyEnvelope'] = isEmpty;
 
-    ChatConversation _chatConversation =
+    final ChatConversation _chatConversation =
         ChatConversation.fromChatConversation(chatConversation!);
 
     if (chatConversation!.isGroupConversation!) {
@@ -2659,7 +2674,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     arguments['chatConversation'] = _chatConversation;
 
     stopShakeDetector();
-    var result = await Navigator.of(context)
+    final result = await Navigator.of(context)
         .pushNamed(Routes.SEND_ENVELOPE, arguments: arguments);
 
     setupShakeDetector();
@@ -2677,7 +2692,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             Theme(
               data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
               child: Scrollbar(
-                radius: Radius.circular(12),
+                radius: const Radius.circular(12),
                 thickness: 2.5,
                 child: TextFormField(
                   controller: messageController,
@@ -2691,7 +2706,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   cursorWidth: 1,
                   cursorHeight: 20,
                   maxLines: null,
-                  cursorRadius: Radius.circular(16),
+                  cursorRadius: const Radius.circular(16),
                   decoration: InputDecoration(
                     hintText: "Type a message",
                     hintStyle: TextStyle(
@@ -2699,13 +2714,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
-                    prefix: Padding(
+                    prefix: const Padding(
                       padding: EdgeInsets.only(left: 16),
                     ),
-                    suffix: Padding(
+                    suffix: const Padding(
                       padding: EdgeInsets.only(right: 36),
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
                     isDense: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(3),
@@ -2747,8 +2762,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               ),
             ),
             Positioned(
-              child: captureImageOrVideoBtn(),
               right: 8,
+              child: captureImageOrVideoBtn(),
             )
           ],
         ),
@@ -2764,7 +2779,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         child: Theme(
             data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
             child: Scrollbar(
-              radius: Radius.circular(12),
+              radius: const Radius.circular(12),
               thickness: 2.5,
               child: TextFormField(
                 controller: _gifController,
@@ -2777,7 +2792,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 cursorWidth: 1,
                 cursorHeight: 20,
                 maxLines: null,
-                cursorRadius: Radius.circular(16),
+                cursorRadius: const Radius.circular(16),
                 decoration: InputDecoration(
                   hintText: "Search ${_isMessageIsSticker ? "Sticker" : "GIF"}",
                   hintStyle: TextStyle(
@@ -2785,13 +2800,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
-                  prefix: Padding(
+                  prefix: const Padding(
                     padding: EdgeInsets.only(left: 16),
                   ),
-                  suffix: Padding(
+                  suffix: const Padding(
                     padding: EdgeInsets.only(right: 36),
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
                   isDense: true,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(3),
@@ -2859,17 +2874,17 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void addProductOrServiceToChat(var item) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
         item.id +
         "/";
 
-    Map<String, dynamic>? itemData =
+    final Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
-      "check_id": Uuid().v4(),
+      "check_id": const Uuid().v4(),
       "conversation_id": chatConversation!.conversationId,
       "author": userBloc!.user.userName,
       "message": url,
@@ -2880,7 +2895,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     updateConnectionList(
         messageData: data, conversationId: chatConversation!.conversationId);
-    bool result = await sendDataToSocket(data);
+    final bool result = await sendDataToSocket(data);
     if (result) {
       clearSearchedListItems();
       setState(() {});
@@ -2911,12 +2926,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     //   ),
     // );
 
-    XFile? res = await selectSingleImageVideo();
+    final XFile? res = await selectSingleImageVideo();
 
     if (res == null) return;
     File? file;
     file = File(res.path);
-    String? mediaType = getFileTypeByPath(path: file.path);
+    final String? mediaType = getFileTypeByPath(path: file.path);
 
     if (mediaType == null) {
       setupShakeDetector();
@@ -2924,7 +2939,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
 
     if (mediaType == 'video') {
-      var videoFilePath =
+      final videoFilePath =
           await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         file = File(videoFilePath);
@@ -2943,7 +2958,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     //   return;
     // }
 
-    Object? result = await Navigator.of(context).pushNamed(
+    final Object? result = await Navigator.of(context).pushNamed(
       Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
       arguments: {
         "data": {
@@ -2966,21 +2981,21 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void addDocumentFileToMessage() async {
-    FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
+    final FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: fileExtensions,
     );
 
     if (pickedMedia != null) {
-      File file = File(pickedMedia.files.single.path!);
+      final File file = File(pickedMedia.files.single.path!);
 
-      String mediaType = getFileType(pickedMedia);
+      final String mediaType = getFileType(pickedMedia);
       if (mediaType == "") {
         setupShakeDetector();
         return;
       }
 
-      Object? result = await Navigator.of(context).pushNamed(
+      final Object? result = await Navigator.of(context).pushNamed(
         Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
         arguments: {
           "data": {
@@ -3008,12 +3023,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       FocusScope.of(context).unfocus();
     }
 
-    var source = await showModalBottomSheet<String>(
+    final source = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
           return Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -3021,7 +3036,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -3051,7 +3067,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget captureImageOrVideoBtn() {
     return AnimatedSwitcher(
-      duration: Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 100),
       child: messageIsText
           ? Container(
               height: 0,
@@ -3063,6 +3079,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget cameraIconBtn() {
     return InkWell(
+      onTap: captureImageOrVideo,
       child: ClipOval(
           child: Container(
         child: Icon(
@@ -3071,13 +3088,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           size: 22,
         ),
       )),
-      onTap: captureImageOrVideo,
     );
   }
 
   void captureImageOrVideo() async {
     stopShakeDetector();
-    String? mediaType = await selectMediaType();
+    final String? mediaType = await selectMediaType();
     if (mediaType == null) {
       setupShakeDetector();
       return;
@@ -3096,7 +3112,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     if (capturedMediaPath != null) {
       stopShakeDetector();
-      Object? result = await Navigator.of(context).pushNamed(
+      final Object? result = await Navigator.of(context).pushNamed(
         Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
         arguments: {
           "data": {
@@ -3119,7 +3135,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Future<String?> captureImage() async {
-    XFile? media = await ImagePicker()
+    final XFile? media = await ImagePicker()
         .pickImage(source: ImageSource.camera, imageQuality: 85);
 
     if (media == null) return null;
@@ -3127,8 +3143,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Future<String?> captureVideo() async {
-    XFile? media = await ImagePicker().pickVideo(
-        source: ImageSource.camera, maxDuration: Duration(seconds: 29));
+    final XFile? media = await ImagePicker().pickVideo(
+        source: ImageSource.camera, maxDuration: const Duration(seconds: 29));
 
     if (media == null) return null;
     return media.path;
@@ -3165,10 +3181,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     return InkWell(
       onTap: getSendMessageAction,
       child: Container(
-        padding: EdgeInsets.all(2),
+        padding: const EdgeInsets.all(2),
         child: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Icon(
@@ -3176,7 +3192,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               color: navyBlue,
               size: 22,
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
           ],
         ),
       ),
@@ -3187,10 +3203,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     return InkWell(
       onTap: getGIFs,
       child: Container(
-        padding: EdgeInsets.all(2),
+        padding: const EdgeInsets.all(2),
         child: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Icon(
@@ -3198,7 +3214,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               color: navyBlue,
               size: 22,
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
           ],
@@ -3208,11 +3224,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Future<bool> getAudioPermission() async {
-    var status = await Permission.microphone.status;
+    final status = await Permission.microphone.status;
     debugPrint("====> $status");
 
     if (!status.isGranted) {
-      var permission = await Permission.microphone.request();
+      final permission = await Permission.microphone.request();
       debugPrint("===> $permission");
       if (permission.isGranted) {
         isAudioPermissionAccepted = true;
@@ -3225,13 +3241,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Future<void> recordAudio() async {
-    Directory tempDirectory = await getTemporaryDirectory();
-    audioUuid = Uuid().v4();
-    String filePath = '${tempDirectory.path}/$audioUuid.mp4';
+    final Directory tempDirectory = await getTemporaryDirectory();
+    audioUuid = const Uuid().v4();
+    final String filePath = '${tempDirectory.path}/$audioUuid.mp4';
 
     audioPath = filePath;
 
-    Codec codec = Codec.aacMP4;
+    final Codec codec = Codec.aacMP4;
 
     if (await audioRecorder?.isEncoderSupported(codec) ?? false) {
       await audioRecorder
@@ -3257,8 +3273,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void sendAudioToServer() async {
-    File mediaFile = File(audioPath!);
-    Map<String, dynamic> _data = {};
+    final File mediaFile = File(audioPath!);
+    final Map<String, dynamic> _data = {};
     _data['text'] = "";
     _data['check_id'] = audioUuid;
     _data['kind'] = "audio";
@@ -3312,7 +3328,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget renderDataAccordingType(String message) {
     Map<String, dynamic> messageData = jsonDecode(message);
 
-    String? messageType = getMessageKind(messageData: messageData);
+    final String? messageType = getMessageKind(messageData: messageData);
 
     messageData = modifyMessageAccordingToType(messageData: messageData);
 
@@ -3425,19 +3441,19 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       default:
         debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
-        Widget getErrorRenderTypeUI = unKnownMessageType(messageType);
+        final Widget getErrorRenderTypeUI = unKnownMessageType(messageType);
         return getErrorRenderTypeUI;
     }
     return getReplyOnSwipe(ui: finalUI, message: message);
   }
 
   Widget getReplyOnSwipe({required Widget ui, required String message}) {
-    Map<String, dynamic> messageData = jsonDecode(message);
+    final Map<String, dynamic> messageData = jsonDecode(message);
 
-    bool isSend = userBloc!.user.userName == messageData["author"];
+    final bool isSend = userBloc!.user.userName == messageData["author"];
 
     return SwipeTo(
-      animationDuration: Duration(milliseconds: 200),
+      animationDuration: const Duration(milliseconds: 200),
       offsetDx: 8.1,
       onLeftSwipe: isSend
           ? () {
@@ -3460,8 +3476,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       return;
     }
 
-    Map<String, dynamic> data = {
-      "check_id": Uuid().v4(),
+    final Map<String, dynamic> data = {
+      "check_id": const Uuid().v4(),
       "conversation_id": chatConversation!.conversationId,
       "author": userBloc!.user.userName,
       "author_full_name": userBloc!.user.fullName,
@@ -3481,13 +3497,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       DBSocketMessageHandler()
           .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
-      String payload = convertServerPayload(data);
+      final String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
 
       if (mounted) setState(() {});
 
-      ChatMessage chatMessage = convertToChatMessage(data);
+      final ChatMessage chatMessage = convertToChatMessage(data);
 
       await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
 
@@ -3502,22 +3518,24 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Future<Map<String, dynamic>?> getUserLocation() async {
-    bool isLocationPermissionGranted = await Permission.location.isGranted;
+    final bool isLocationPermissionGranted =
+        await Permission.location.isGranted;
     // bool isLocationPermissionUnknown = await Permission.location.isUndetermined;
 
     // if (!isLocationPermissionGranted || isLocationPermissionUnknown) {
     if (!isLocationPermissionGranted) {
-      bool result = await showInAppLocationAlertPopUp(context: context);
+      final bool result = await showInAppLocationAlertPopUp(context: context);
       if (result == false) return null;
 
-      PermissionStatus permissionStatus = await Permission.location.request();
+      final PermissionStatus permissionStatus =
+          await Permission.location.request();
       if (permissionStatus != PermissionStatus.granted) {
         return null;
       }
     }
 
     final locationService = LocationService();
-    UserLocation? userLocation =
+    final UserLocation? userLocation =
         await locationService.getLocation().catchError((error) {
       showToast(message: "$error");
     });
@@ -3526,7 +3544,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       return null;
     }
 
-    Map<String, double?> locationCoordinate = {
+    final Map<String, double?> locationCoordinate = {
       "latitude": userLocation.latitude,
       "longitude": userLocation.longitude,
     };
@@ -3538,12 +3556,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     showMoreAction = false;
     if (mounted) setState(() {});
 
-    Map<String, dynamic>? locationCoordinate = await getUserLocation();
+    final Map<String, dynamic>? locationCoordinate = await getUserLocation();
 
     if (locationCoordinate == null) return;
 
-    Map<String, dynamic> data = {
-      "check_id": Uuid().v4(),
+    final Map<String, dynamic> data = {
+      "check_id": const Uuid().v4(),
       "conversation_id": chatConversation!.conversationId,
       "author": userBloc!.user.userName,
       "author_full_name": userBloc!.user.fullName,
@@ -3563,13 +3581,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       DBSocketMessageHandler()
           .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
-      String payload = convertServerPayload(data);
+      final String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
 
       if (mounted) setState(() {});
 
-      ChatMessage chatMessage = convertToChatMessage(data);
+      final ChatMessage chatMessage = convertToChatMessage(data);
 
       await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
 
@@ -3584,7 +3602,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void sendTextMessage() async {
-    String message = messageController!.text.trim();
+    final String message = messageController!.text.trim();
 
     if (message.isEmpty) {
       return;
@@ -3593,8 +3611,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     showMoreAction = false;
     if (mounted) setState(() {});
 
-    Map<String, dynamic> data = {
-      "check_id": Uuid().v4(),
+    final Map<String, dynamic> data = {
+      "check_id": const Uuid().v4(),
       "conversation_id": chatConversation!.conversationId,
       "author": userBloc!.user.userName,
       "author_full_name": userBloc!.user.fullName,
@@ -3614,14 +3632,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       DBSocketMessageHandler()
           .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
-      String payload = convertServerPayload(data);
+      final String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
 
       messageController!.text = "";
       if (mounted) setState(() {});
 
-      ChatMessage chatMessage = convertToChatMessage(data);
+      final ChatMessage chatMessage = convertToChatMessage(data);
 
       await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
 
@@ -3637,7 +3655,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   String convertServerPayload(Map<String, dynamic> data) {
-    Map<String, dynamic> newData = {};
+    final Map<String, dynamic> newData = {};
     newData["check_id"] = data["check_id"];
     newData["conversation"] = data["conversation_id"];
     newData["author"] = data["author"];
@@ -3661,7 +3679,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   ChatMessage convertToChatMessage(Map<String, dynamic> data) {
-    Map<String, dynamic> newData = {};
+    final Map<String, dynamic> newData = {};
     newData["check_id"] = data["check_id"];
     newData["conversation"] = data["conversation_id"];
     newData["author"] = data["author"];
@@ -3692,15 +3710,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               ? Center(child: CircularLoadingIndicator())
               : messageListBuilder(),
         ),
-        isEditingMessage ? getEditingMessageWidget() : Container(),
-        isReplyingMessage ? getReplyingMessageWidget() : Container(),
+        if (isEditingMessage) getEditingMessageWidget() else Container(),
+        if (isReplyingMessage) getReplyingMessageWidget() else Container(),
         messageActionBar()
       ],
     );
   }
 
   Widget getEditingMessageWidget() {
-    Map<String, dynamic>? messageData = jsonDecode(editingMessage!);
+    final Map<String, dynamic>? messageData = jsonDecode(editingMessage!);
 
     return Container(
         color: Colors.white,
@@ -3716,7 +3734,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       SlydoAppIcon.close_2,
                       color: Colors.white,
                       size: 20,
@@ -3728,7 +3746,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                       chatConversation: chatConversation),
                 ),
                 IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       SlydoAppIcon.close_2,
                       color: Colors.white,
                       size: 22,
@@ -3745,7 +3763,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Widget getReplyingMessageWidget() {
-    Map<String, dynamic>? messageData = jsonDecode(replayingMessage!);
+    final Map<String, dynamic>? messageData = jsonDecode(replayingMessage!);
     return Container(
         width: MediaQuery.of(context).size.width,
         color: Colors.white,
@@ -3760,7 +3778,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       SlydoAppIcon.close_2,
                       color: Colors.white,
                       size: 20,
@@ -3774,7 +3792,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 ),
                 Container(
                   width: 48,
-                  padding: EdgeInsets.only(top: 4),
+                  padding: const EdgeInsets.only(top: 4),
                   child: GestureDetector(
                       child: Icon(
                         Icons.close_rounded,
@@ -3820,20 +3838,23 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         itemPositionsListener: messageListPositionListener,
         elements: messageList,
         groupBy: (String? element) {
-          Map<String, dynamic> message = jsonDecode(element!);
-          DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
-          DateTime date = DateTime(dateTime.year, dateTime.month, dateTime.day);
+          final Map<String, dynamic> message = jsonDecode(element!);
+          final DateTime dateTime =
+              DateTime.parse(message['created_at']).toLocal();
+          final DateTime date =
+              DateTime(dateTime.year, dateTime.month, dateTime.day);
           return date;
         },
         stickyHeaderBackgroundColor: Colors.transparent,
         groupSeparatorBuilder: (String? element) {
-          Map<String, dynamic> message = jsonDecode(element!);
+          final Map<String, dynamic> message = jsonDecode(element!);
 
-          DateTime dateTime = DateTime.parse(message['created_at']).toLocal();
+          final DateTime dateTime =
+              DateTime.parse(message['created_at']).toLocal();
 
           String formattedDate = formatDateInTwoDigit(dateTime);
 
-          DateTime presentDate = DateTime.now().toLocal();
+          final DateTime presentDate = DateTime.now().toLocal();
 
           /// checking if git is today's Date
           if (DateTime(presentDate.year, presentDate.month, presentDate.day)
@@ -3844,20 +3865,21 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           }
 
           return Container(
-            padding: EdgeInsets.only(top: 2),
+            padding: const EdgeInsets.only(top: 2),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  margin: EdgeInsets.only(bottom: 4),
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  margin: const EdgeInsets.only(bottom: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                       color: navyBlue.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(25)),
                   child: Text(
                     isLoading ? "Loading ..." : "$formattedDate",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
@@ -3869,7 +3891,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           );
         },
         itemBuilder: (context, String? element) => Container(
-          padding: EdgeInsets.only(bottom: 4),
+          padding: const EdgeInsets.only(bottom: 4),
           child: GestureDetector(
             onLongPress: () {
               showChatMessageAction(message: element);
@@ -3878,11 +3900,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           ),
         ),
         itemComparator: (element1, element2) {
-          Map<String, dynamic> message1 = jsonDecode(element1!);
-          Map<String, dynamic> message2 = jsonDecode(element2!);
-          DateTime messageOneDateTime =
+          final Map<String, dynamic> message1 = jsonDecode(element1!);
+          final Map<String, dynamic> message2 = jsonDecode(element2!);
+          final DateTime messageOneDateTime =
               DateTime.parse(message1['created_at']).toLocal();
-          DateTime messageTwoDateTime =
+          final DateTime messageTwoDateTime =
               DateTime.parse(message2['created_at']).toLocal();
 
           return messageOneDateTime.compareTo(messageTwoDateTime);
@@ -3892,9 +3914,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         // optional
 
         groupComparator: (dateTime1, dateTime2) {
-          DateTime groupOneDate =
+          final DateTime groupOneDate =
               DateTime(dateTime1.year, dateTime1.month, dateTime1.day);
-          DateTime groupTwoDate =
+          final DateTime groupTwoDate =
               DateTime(dateTime2.year, dateTime2.month, dateTime2.day);
           return groupOneDate.compareTo(groupTwoDate);
         },
@@ -3914,7 +3936,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ChatConversation? chatConversation}) {
     bool isReplyMessage = false;
 
-    Map<String, dynamic> isReplyTo = message["replied_to"] is String
+    final Map<String, dynamic> isReplyTo = message["replied_to"] is String
         ? jsonDecode(message["replied_to"])
         : message["replied_to"] ?? {};
 
@@ -3936,11 +3958,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void replyMessageTapped({required Map<String, dynamic> repliedTo}) {
     debugPrint('REPLIED --->');
     if (repliedTo.isNotEmpty) {
-      int messageListLength = messageList.length;
+      final int messageListLength = messageList.length;
 
       int? index;
       for (int i = 0; i < messageList.length; i++) {
-        Map<String, dynamic> messageData = jsonDecode(messageList[i]!);
+        final Map<String, dynamic> messageData = jsonDecode(messageList[i]!);
 
         if (repliedTo['id'] == messageData['id'] ||
             repliedTo['check_id'] == messageData['check_id']) {
@@ -3960,7 +3982,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             index: (messageListLength - index - 4) > 0
                 ? messageListLength - index - 4
                 : 0,
-            duration: Duration(milliseconds: 500));
+            duration: const Duration(milliseconds: 500));
       }
     }
   }
@@ -4113,7 +4135,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        String type = item is Product ? "product" : "service";
+        final String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(
             item: item,
@@ -4126,7 +4148,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             return;
           }
         });
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].checkID,
           "qty": mapData["qty"],
@@ -4158,7 +4180,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       /// kind: text, deleted_for_recipient: false,
       /// deleted_for_author: false, delivered: true,
       /// meta_data: {}}
-      Map<String, dynamic> messageData = jsonDecode(element!);
+      final Map<String, dynamic> messageData = jsonDecode(element!);
 
       if (messageData["author"] != userBloc!.user.userName) {
         if (messageData["read_by_recipient"] == false) {
@@ -4172,7 +4194,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void showSearchProductAndServiceBottomSheet() async {
     stopShakeDetector();
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -4185,7 +4207,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             bottomSheetMounted = true;
 
             return Card(
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
@@ -4194,14 +4216,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -4221,8 +4243,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     return Container(
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionTheme:
-              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+          textSelectionTheme: const TextSelectionThemeData()
+              .copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -4238,9 +4260,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             hintText: "Search here",
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
             prefixIcon: searchTypeSelection(),
-            prefix: Padding(
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 12),
             ),
             suffixIcon: searchIcon(),
@@ -4314,7 +4336,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void getProductOrServiceList() async {
-    String url = getSearchUrl();
+    final String url = getSearchUrl();
 
     if (!isItemLoading) {
       if (productOrServiceNext != null && !isItemLoading) {
@@ -4324,7 +4346,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await MessageAuth()
+        final Map<String, dynamic>? result = await MessageAuth()
             .searchProductAndServiceOfUser(
                 url, productOrServiceNext, productOrServicePrevious);
         if (result == null) {
@@ -4334,7 +4356,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         productOrServiceCount = result['count'];
         productOrServiceNext = result['next'];
         productOrServicePrevious = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
@@ -4421,7 +4443,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget searchTypeSelection() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
         color: navyBlue,
       ),
@@ -4459,7 +4481,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         // Container(
         //     padding: EdgeInsets.symmetric(horizontal: 20),
         //     child: bottomSheetTabBars()),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Expanded(child: bottomSheetTabViews())
@@ -4469,7 +4491,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget bottomSheetTabBars() {
     return PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
+        preferredSize: const Size.fromHeight(50.0),
         child: Row(
           children: [
             GestureDetector(
@@ -4481,7 +4503,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 searchProductOrService();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -4510,7 +4533,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 searchProductOrService();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -4540,7 +4564,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         productOrServiceCount = 0;
@@ -4585,7 +4609,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             isResult: true,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             itemCount: searchedProductAndService.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -4627,7 +4651,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         backgroundColor: Colors.transparent,
         context: context,
         builder: (context) => Card(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
@@ -4635,7 +4659,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               color: Colors.white,
               margin: EdgeInsets.zero,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: getChatMessageActionTiles(message: message!),
@@ -4647,22 +4672,24 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   List<Widget> getChatMessageActionTiles({required String message}) {
     bool isEditable = false;
     bool isDeletable = false;
-    ChatMessageAction chatMessageAction = GetChatMessageActions()
+    final ChatMessageAction chatMessageAction = GetChatMessageActions()
         .getActions(message: message, userBloc: userBloc);
 
-    List<Widget> elements = [];
+    final List<Widget> elements = [];
 
-    Map<String, dynamic> messageData = jsonDecode(message);
+    final Map<String, dynamic> messageData = jsonDecode(message);
 
-    DateTime messageCreatedTime =
+    final DateTime messageCreatedTime =
         DateTime.parse(messageData["created_at"]).toLocal();
 
-    DateTime currentTime = DateTime.now();
+    final DateTime currentTime = DateTime.now();
 
-    if (currentTime.difference(messageCreatedTime) < Duration(minutes: 1)) {
+    if (currentTime.difference(messageCreatedTime) <
+        const Duration(minutes: 1)) {
       isEditable = true;
     }
-    if (currentTime.difference(messageCreatedTime) < Duration(minutes: 2)) {
+    if (currentTime.difference(messageCreatedTime) <
+        const Duration(minutes: 2)) {
       isDeletable = true;
     }
 
@@ -4720,17 +4747,17 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void deleteChatMessage({required String message}) async {
-    Map<String, dynamic> messageData = jsonDecode(message);
+    final Map<String, dynamic> messageData = jsonDecode(message);
 
     if (messageData['kind'] == "envelope") {
       cancelEnvelope(messageData);
       return;
     }
 
-    String? messageId = messageData["check_id"];
+    final String? messageId = messageData["check_id"];
 
     if (chatConversation != null && chatConversation!.conversationId != null) {
-      Map<String, dynamic> data = Map<String, dynamic>();
+      final Map<String, dynamic> data = Map<String, dynamic>();
 
       data["check_id"] = messageId;
       data["conversation_id"] =
@@ -4752,9 +4779,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void copyChatMessage({required String message}) {
     String? textToBeCopy;
 
-    Map<String, dynamic> messageData = jsonDecode(message);
+    final Map<String, dynamic> messageData = jsonDecode(message);
 
-    String? messageType = messageData["kind"];
+    final String? messageType = messageData["kind"];
     switch (messageType) {
       case "text":
         textToBeCopy = messageData["text"] ?? null;
@@ -4791,9 +4818,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void editChatMessage({required String message}) {
-    Map<String, dynamic> messageData = jsonDecode(message);
+    final Map<String, dynamic> messageData = jsonDecode(message);
 
-    String? messageType = messageData["kind"];
+    final String? messageType = messageData["kind"];
     switch (messageType) {
       case "text":
         updateChatTextMessage(message: message);
@@ -4806,7 +4833,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void updateChatTextMessage({required String message}) {
-    Map<String, dynamic> messageData = jsonDecode(message);
+    final Map<String, dynamic> messageData = jsonDecode(message);
     messageController!.text = messageData["text"];
 
     editingMessage = message;
@@ -4816,7 +4843,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void editTextMessage() async {
-    String message = messageController!.text.trim();
+    final String message = messageController!.text.trim();
 
     if (message.isEmpty) {
       return;
@@ -4828,9 +4855,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     debugPrint(
         "recipientUser = $chatConversation  recipientUser.conversationId = ${chatConversation!.conversationId}");
     if (chatConversation != null && chatConversation!.conversationId != null) {
-      Map<String, dynamic> data = Map<String, dynamic>();
+      final Map<String, dynamic> data = Map<String, dynamic>();
 
-      Map<String, dynamic> oldMessageData = jsonDecode(editingMessage!);
+      final Map<String, dynamic> oldMessageData = jsonDecode(editingMessage!);
       debugPrint("old Data :- $oldMessageData");
       data["text"] = message;
       data["check_id"] = oldMessageData["check_id"];
@@ -4859,7 +4886,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     if (chatConversation!.conversationId == message["conversation_id"]) {
       for (int i = 0; i < messageList.length; i++) {
-        Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]!);
+        final Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]!);
 
         if (message["check_id"] == decodedMessage["check_id"]) {
           messageList.removeAt(i);
@@ -4880,13 +4907,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     if (chatConversation!.conversationId == message["conversation_id"]) {
       for (int i = 0; i < messageList.length; i++) {
-        Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]!);
+        final Map<String, dynamic> decodedMessage = jsonDecode(messageList[i]!);
 
         if (message["check_id"] == decodedMessage["check_id"]) {
           decodedMessage["was_edited"] = message["was_edited"];
           decodedMessage["text"] = message["text"];
 
-          String encodedMessage = jsonEncode(decodedMessage);
+          final String encodedMessage = jsonEncode(decodedMessage);
           messageList[i] = encodedMessage;
 
           if (mounted) setState(() {});
@@ -4910,7 +4937,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void sendReplyChatMessage() async {
-    String message = messageController!.text.trim();
+    final String message = messageController!.text.trim();
 
     if (message.isEmpty) {
       return;
@@ -4919,8 +4946,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     showMoreAction = false;
     if (mounted) setState(() {});
 
-    Map<String, dynamic> data = {
-      "check_id": Uuid().v4(),
+    final Map<String, dynamic> data = {
+      "check_id": const Uuid().v4(),
       "conversation_id": chatConversation!.conversationId,
       "author": userBloc!.user.userName,
       "author_full_name": userBloc!.user.fullName,
@@ -4941,7 +4968,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       DBSocketMessageHandler()
           .saveMessageToDb(message: SocketQueueChatMessage.fromJson(data));
 
-      String payload = convertServerPayload(data);
+      final String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
       print('MESSAGE PAYLOAD :: $payload');
@@ -4953,7 +4980,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       isReplyingMessage = false;
       if (mounted) setState(() {});
 
-      ChatMessage chatMessage = convertToChatMessage(data);
+      final ChatMessage chatMessage = convertToChatMessage(data);
 
       await ChatMessageHandler().addChatMessage(chatMessage: chatMessage);
       scrollToBottom();
@@ -4967,14 +4994,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void updateConnectionList(
       {required Map<String, dynamic> messageData, String? conversationId}) {
     if (messageData.containsKey("created_at")) {
-      DateTime dateTime = DateTime.parse(messageData["created_at"]).toLocal();
-      int time = dateTime.millisecondsSinceEpoch;
+      final DateTime dateTime =
+          DateTime.parse(messageData["created_at"]).toLocal();
+      final int time = dateTime.millisecondsSinceEpoch;
 
       debugPrint("Last message Time => $time");
 
-      ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-          myGlobals.scaffoldKey.currentContext!,
-          listen: false);
+      final ConnectionListBloc connectionListBloc =
+          Provider.of<ConnectionListBloc>(myGlobals.scaffoldKey.currentContext!,
+              listen: false);
       connectionListBloc.updateLastMessageTime(
           conversationId: conversationId, time: time);
     }
@@ -4989,14 +5017,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       data = message['meta_data'];
     }
 
-    Envelope envelope = Envelope.fromJson(data!);
+    final Envelope envelope = Envelope.fromJson(data!);
 
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
-    var result = await MessageAuth()
+    final result = await MessageAuth()
         .cancelEnvelope(envelope: envelope, data: message)
         .catchError((error) {
       Navigator.pop(context);
@@ -5016,10 +5044,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
 void broadcastUserAvatarUpdate(
     {required BuildContext context, required String avatar}) async {
-  MainSocketProvider mainSocketProvider =
+  final MainSocketProvider mainSocketProvider =
       Provider.of<MainSocketProvider>(context, listen: false);
-  UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-  var data = {
+  final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+  final data = {
     "kind": "info",
     "message": avatar,
     "type": "update_user_avatar",

@@ -100,13 +100,13 @@ class MyAlertDialog<T> extends StatelessWidget {
     String? label = semanticLabel;
 
     if (title != null) {
-      children.add(new Padding(
+      children.add(Padding(
         padding: titlePadding ??
-            new EdgeInsets.fromLTRB(
+            EdgeInsets.fromLTRB(
                 24.0, 24.0, 24.0, isDividerEnabled ? 20.0 : 0.0),
-        child: new DefaultTextStyle(
+        child: DefaultTextStyle(
           style: Theme.of(context).textTheme.subtitle1!,
-          child: new Semantics(child: title, namesRoute: true),
+          child: Semantics(child: title, namesRoute: true),
         ),
       ));
       if (isDividerEnabled) children.add(divider);
@@ -131,10 +131,10 @@ class MyAlertDialog<T> extends StatelessWidget {
     }
 
     if (content != null) {
-      children.add(new Flexible(
-        child: new Padding(
+      children.add(Flexible(
+        child: Padding(
           padding: contentPadding,
-          child: new DefaultTextStyle(
+          child: DefaultTextStyle(
             style: Theme.of(context).textTheme.subtitle1!,
             child: content!,
           ),
@@ -152,7 +152,7 @@ class MyAlertDialog<T> extends StatelessWidget {
       ));
     }
 
-    Widget dialogChild = new Column(
+    Widget dialogChild = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: children,
@@ -160,8 +160,8 @@ class MyAlertDialog<T> extends StatelessWidget {
 
     if (label != null)
       dialogChild =
-          new Semantics(namesRoute: true, label: label, child: dialogChild);
+          Semantics(namesRoute: true, label: label, child: dialogChild);
 
-    return new Dialog(child: dialogChild);
+    return Dialog(child: dialogChild);
   }
 }

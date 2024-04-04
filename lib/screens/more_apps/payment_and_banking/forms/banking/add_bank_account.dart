@@ -54,11 +54,11 @@ class _AddAccountState extends State<AddAccount> {
   bool isItemLoading = false;
   final searchItemTextController = TextEditingController();
   GlobalKey searchItemTextFormField = GlobalKey();
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   int bottomSheetSearchIndex = 0;
   bool noSearchedItem = false;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -121,10 +121,10 @@ class _AddAccountState extends State<AddAccount> {
           Form(
             key: _formKey,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: <Widget>[
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   InkWell(
@@ -165,39 +165,41 @@ class _AddAccountState extends State<AddAccount> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   getAccountNumber(),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   checkButton(),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  errorMessage != ""
-                      ? Column(
-                          children: [
-                            Text(
-                              errorMessage,
-                              style: TextStyle(color: mateRed, fontSize: 14),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        )
-                      : Container(),
+                  if (errorMessage != "")
+                    Column(
+                      children: [
+                        Text(
+                          errorMessage,
+                          style: TextStyle(color: mateRed, fontSize: 14),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    )
+                  else
+                    Container(),
                   getUserAgreeCheckBoxWidget(),
-                  SizedBox(
+                  const SizedBox(
                     height: 40,
                   ),
-                  isUserAgree
-                      ? getSubmitButton(userBloc.user.userName)
-                      : Container(
-                          height: 42,
-                        ),
+                  if (isUserAgree)
+                    getSubmitButton(userBloc.user.userName)
+                  else
+                    Container(
+                      height: 42,
+                    ),
                 ],
               ),
             ),
@@ -215,7 +217,7 @@ class _AddAccountState extends State<AddAccount> {
           AppLocalization.of(context)!.bank,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -224,20 +226,20 @@ class _AddAccountState extends State<AddAccount> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: DropdownButton<String>(
             isExpanded: true,
             value: bankName,
             icon: Padding(
-              padding: EdgeInsets.only(right: 8.0),
+              padding: const EdgeInsets.only(right: 8.0),
               child: Icon(
                 Icons.keyboard_arrow_down,
                 color: darkGrey,
                 size: 20,
               ),
             ),
-            underline: Divider(
+            underline: const Divider(
               color: Colors.transparent,
             ),
             hint: Padding(
@@ -246,7 +248,7 @@ class _AddAccountState extends State<AddAccount> {
             ),
             iconSize: 24,
             elevation: 16,
-            style: TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.black),
             onChanged: (String? val) {
               if (mounted) {
                 setState(() {
@@ -334,13 +336,14 @@ class _AddAccountState extends State<AddAccount> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      Map data = {
+      final Map data = {
         "bank_code": selectedBank!.providerCode,
         "account_number": accountNumber,
       };
 
       try {
-        Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
+        final Map<String, dynamic>? result =
+            await _auth.verifyBankAccount(data);
 
         isLoading = false;
         if (mounted) setState(() {});
@@ -350,7 +353,7 @@ class _AddAccountState extends State<AddAccount> {
           return;
         }
 
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         showDialogBox(
           context: context,
@@ -388,7 +391,7 @@ class _AddAccountState extends State<AddAccount> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    Map data = {
+    final Map data = {
       "customer_username": userName,
       "bank": selectedBank!.slug,
       "account_name": tempList['account_name'],
@@ -396,7 +399,7 @@ class _AddAccountState extends State<AddAccount> {
       "is_default": isDefault,
     };
 
-    Map<String, dynamic>? result = await _auth.addBankAccount(data);
+    final Map<String, dynamic>? result = await _auth.addBankAccount(data);
 
     isLoading = false;
     if (mounted) setState(() {});
@@ -426,7 +429,7 @@ class _AddAccountState extends State<AddAccount> {
       Navigator.pop(context);
       Navigator.of(context).popAndPushNamed('/bank-account-list');
     } else {
-      dynamic jsonObject = jsonDecode(result['results']);
+      final dynamic jsonObject = jsonDecode(result['results']);
 
       if (jsonObject.containsKey("non_field_errors")) {
         showToast(message: jsonObject['non_field_errors'][0].toString());
@@ -466,17 +469,17 @@ class _AddAccountState extends State<AddAccount> {
         children: <Widget>[
           ClipRRect(
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
             child: SizedBox(
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: new BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -499,7 +502,7 @@ class _AddAccountState extends State<AddAccount> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -519,7 +522,7 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   void showSearchBankBottomSheet() async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -538,7 +541,7 @@ class _AddAccountState extends State<AddAccount> {
             });
 
             return Card(
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
@@ -547,14 +550,14 @@ class _AddAccountState extends State<AddAccount> {
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -573,8 +576,8 @@ class _AddAccountState extends State<AddAccount> {
     return Container(
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionTheme:
-              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+          textSelectionTheme: const TextSelectionThemeData()
+              .copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -590,9 +593,9 @@ class _AddAccountState extends State<AddAccount> {
             hintText: 'Search Bank Name',
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
             // prefixIcon: searchTypeSelection(),
-            prefix: Padding(
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 12),
             ),
             suffixIcon: searchIcon(),
@@ -638,7 +641,7 @@ class _AddAccountState extends State<AddAccount> {
   Widget bottomSheetTabBar() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Expanded(child: bottomSheetTabViews())
@@ -648,7 +651,7 @@ class _AddAccountState extends State<AddAccount> {
 
   Widget bottomSheetTabBars() {
     return PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
+        preferredSize: const Size.fromHeight(50.0),
         child: Row(
           children: [
             GestureDetector(
@@ -661,7 +664,8 @@ class _AddAccountState extends State<AddAccount> {
                 searchBankList();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -690,7 +694,8 @@ class _AddAccountState extends State<AddAccount> {
                 searchBankList();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   shape: BoxShape.rectangle,
@@ -720,7 +725,7 @@ class _AddAccountState extends State<AddAccount> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -761,13 +766,13 @@ class _AddAccountState extends State<AddAccount> {
   Widget searchTypeSelection() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
         color: navyBlue,
       ),
       child: IconButton(
         // key: _key,
-        icon: Icon(
+        icon: const Icon(
           SlydoAppIcon.payout_list,
           color: Colors.white,
           size: 16,
@@ -812,7 +817,7 @@ class _AddAccountState extends State<AddAccount> {
             isResult: true,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             shrinkWrap: true,
             itemCount: bankList.length + 1,
@@ -859,7 +864,7 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   void getBankListSearched() async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/transactions/get-bank-info/?search=" +
         searchItemTextController.text;
 
@@ -871,7 +876,7 @@ class _AddAccountState extends State<AddAccount> {
           bottomSheetStateSetterGlobal!(() {});
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await _auth.searchBankList(url, next, previous);
         if (result == null) {
           isItemLoading = false;
@@ -880,7 +885,7 @@ class _AddAccountState extends State<AddAccount> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
@@ -914,7 +919,7 @@ class _AddAccountState extends State<AddAccount> {
 
   Widget bankCardDisplay(BankModel bankModel) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -925,7 +930,7 @@ class _AddAccountState extends State<AddAccount> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   title: Text(
@@ -949,7 +954,7 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget getBankLogoLeading(BankModel bankModel) {
-    String? bankUrl = bankModel.logoUrl == ""
+    final String? bankUrl = bankModel.logoUrl == ""
         ? getInitials(bankModel.name!).toUpperCase()
         : bankModel.logoUrl;
 

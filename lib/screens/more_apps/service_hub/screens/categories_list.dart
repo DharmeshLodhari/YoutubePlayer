@@ -22,13 +22,13 @@ class _CategoriesListState extends State<CategoriesList> {
   String? categoryPrevious = "";
   int? productCount = 0;
   bool noJobsInList = false;
-  GlobalKey _categoriesScaffoldMessengerKey = GlobalKey<FormState>();
+  final GlobalKey _categoriesScaffoldMessengerKey = GlobalKey<FormState>();
 
   List<CategoryListData> categoriesList = [];
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _categoryScrollController = ScrollController();
+  final ScrollController _categoryScrollController = ScrollController();
 
   void getCategoriesList() async {
     if (!isCategoryLoading) {
@@ -140,40 +140,41 @@ class _CategoriesListState extends State<CategoriesList> {
                 children: [
                   getCategoryData(context),
                   const SizedBox(height: 16),
-                  isCategoryLoading
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                              mainAxisSpacing: 14,
-                              mainAxisExtent: 180,
-                              crossAxisSpacing: 15,
-                              maxCrossAxisExtent: 200,
+                  if (isCategoryLoading)
+                    Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: 14,
+                          mainAxisExtent: 180,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            itemCount: 2,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                color: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : SizedBox.shrink(),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
                   Visibility(
                     visible: !isCategoryLoading && categoriesList.isEmpty,
                     child: Center(
                       child: Column(
                         children: [
                           Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                          SizedBox(height: 20),
-                          Text('No items at the moment'),
+                          const SizedBox(height: 20),
+                          const Text('No items at the moment'),
                         ],
                       ),
                     ),
@@ -218,16 +219,16 @@ class _CategoriesListState extends State<CategoriesList> {
 
   Widget getCategoryData(BuildContext context) {
     if (categoriesList.isEmpty) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return categoryNext == "" && isCategoryLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
             children: [
               GridView.builder(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     mainAxisSpacing: 22,
                     mainAxisExtent: 150,
                     crossAxisSpacing: 15,

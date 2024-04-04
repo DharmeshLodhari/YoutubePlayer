@@ -181,7 +181,7 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
                 .toList(),
           )
         : widget.searchEmptyView ??
-            Center(
+            const Center(
               child: Text('No country found.'),
             );
   }
@@ -209,8 +209,8 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
   _buildSearchField() {
     return TextField(
       cursorColor: widget.searchCursorColor,
-      decoration:
-          widget.searchInputDecoration ?? InputDecoration(hintText: 'Search'),
+      decoration: widget.searchInputDecoration ??
+          const InputDecoration(hintText: 'Search'),
       onChanged: (String value) {
         if (mounted) {
           setState(() {

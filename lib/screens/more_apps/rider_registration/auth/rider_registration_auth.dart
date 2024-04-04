@@ -14,31 +14,31 @@ import 'package:http/http.dart' as http;
 class RiderRegistrationAuthService extends AuthService {
   Future<RiderModel> riderRegister(
       {RiderRegistrationModel? registrationModel}) async {
-    String url = "${AppConfig.baseUrl}/api/v1/user/rider-kyc/";
-    var headers = await getAuthHeaders();
+    final String url = "${AppConfig.baseUrl}/api/v1/user/rider-kyc/";
+    final headers = await getAuthHeaders();
 
     if (registrationModel != null) {
       //create multipart request for POST or PATCH method
-      var request = http.MultipartRequest("POST", Uri.parse(url));
+      final request = http.MultipartRequest("POST", Uri.parse(url));
 
       //add fields
       request.fields.addAll(registrationModel.toRegisterRider());
 
-      List<http.MultipartFile> files =
+      final List<http.MultipartFile> files =
           await registrationModel.getMultipartFiles();
       //add multipart to request
       request.files.addAll(files);
       headers.forEach((k, v) => request.headers[k] = v);
-      var response = await request.send();
+      final response = await request.send();
 
       if (response.statusCode == 413) {
         return Future.error(
             "Please upload smaller image, This image is too large.");
       }
-      var responseBody = await response.stream.bytesToString();
+      final responseBody = await response.stream.bytesToString();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        var jsonData = jsonDecode(responseBody);
+        final jsonData = jsonDecode(responseBody);
 
         debugPrint('UPDATE ---> $jsonData');
 
@@ -53,12 +53,11 @@ class RiderRegistrationAuthService extends AuthService {
 
   // Status of KYC
   Future<KYCDataModel> getKYCStatus(String? username) async {
-    String url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
-    print('Status of KYC...${response.body} and ${response.statusCode}');
+    final String url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var jsonData = jsonDecode(response.body);
+      final jsonData = jsonDecode(response.body);
       return KYCDataModel.fromJson(jsonData);
     } else {
       showToast(message: response.body.toString());
@@ -68,31 +67,31 @@ class RiderRegistrationAuthService extends AuthService {
 
   Future<KYCDataModel> kycStatus(
       {RiderRegistrationModel? registrationModel, String? username}) async {
-    String url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
-    var headers = await getAuthHeaders();
+    final String url = AppConfig.baseUrl + "/api/v1/user/rider-kyc/$username/";
+    final headers = await getAuthHeaders();
 
     if (registrationModel != null) {
       //create multipart request for POST or PATCH method
-      var request = http.MultipartRequest("PATCH", Uri.parse(url));
+      final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
       //add fields
       // request.fields.addAll(registrationModel.toRegisterRider());
 
-      List<http.MultipartFile> files =
+      final List<http.MultipartFile> files =
           await registrationModel.updateMultipartFiles();
       //add multipart to request
       request.files.addAll(files);
       headers.forEach((k, v) => request.headers[k] = v);
-      var response = await request.send();
+      final response = await request.send();
 
       if (response.statusCode == 413) {
         return Future.error(
             "Please upload smaller image, This image is too large.");
       }
-      var responseBody = await response.stream.bytesToString();
+      final responseBody = await response.stream.bytesToString();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        var jsonData = jsonDecode(responseBody);
+        final jsonData = jsonDecode(responseBody);
 
         debugPrint('UPDATE ---> $jsonData');
 

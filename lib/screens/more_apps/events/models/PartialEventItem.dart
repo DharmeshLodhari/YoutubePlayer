@@ -32,7 +32,7 @@ class PartialEventItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['currency'] = this.currency;
     data['date_time'] = this.dateTime;
     data['image'] = this.image;

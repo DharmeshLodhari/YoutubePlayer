@@ -68,17 +68,22 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    !widget.isAddress ? enterPinTitle() : enterAddressTitle(),
+                    if (!widget.isAddress)
+                      enterPinTitle()
+                    else
+                      enterAddressTitle(),
                     flexibleSpace(flex: 1),
-                    !widget.isAddress
-                        ? enterPinDescription()
-                        : enterAddressDescription(),
+                    if (!widget.isAddress)
+                      enterPinDescription()
+                    else
+                      enterAddressDescription(),
                     flexibleSpace(flex: 3),
-                    !widget.isAddress
-                        ? pinFillUpField()
-                        : CustomizedTextFormField(
-                            hintText: 'Enter your address',
-                          ),
+                    if (!widget.isAddress)
+                      pinFillUpField()
+                    else
+                      CustomizedTextFormField(
+                        hintText: 'Enter your address',
+                      ),
                     flexibleSpace(flex: 2),
                     submitBtn(),
                     flexibleSpace(flex: 1),
@@ -96,7 +101,7 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
   void submitCreditCard() {
     late CreditCardData creditCardData;
     if (formKey.currentState!.validate()) {
-      String enteredPin = pinController!.text.trim();
+      final String enteredPin = pinController!.text.trim();
       creditCardData = widget.creditCardData!.copyWith(pin: enteredPin);
 
       showDialog(context: context, builder: (context) => LoadingIndicator());
@@ -174,14 +179,14 @@ class _EnterAddressOrPinPinPageState extends State<EnterAddressOrPinPinPage> {
   }
 
   Widget pinFillUpField() {
-    BoxDecoration navyBlueBorder = BoxDecoration(
+    final BoxDecoration navyBlueBorder = BoxDecoration(
       border: Border(
           bottom: BorderSide(
         color: navyBlue,
         width: 2,
       )),
     );
-    BoxDecoration grayBorder = BoxDecoration(
+    final BoxDecoration grayBorder = BoxDecoration(
       border: Border(
           bottom: BorderSide(
         color: HexColor("#E6E5EB"),

@@ -170,7 +170,7 @@ class _EditJobState extends State<EditJob> {
         }
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ServiceHubAuthService()
+        final Map<String, dynamic>? result = await ServiceHubAuthService()
             .getSearchCategoryList(
                 categoryNext, categoryPrevious, searchItemTextController!.text);
         if (result == null) {
@@ -180,7 +180,7 @@ class _EditJobState extends State<EditJob> {
         categoryCount = result['count'];
         categoryNext = result['next'];
         categoryPrevious = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
         if (bottomSheetStateSetterGlobal != null && bottomSheetMounted) {
@@ -217,7 +217,7 @@ class _EditJobState extends State<EditJob> {
   }
 
   void showSearchProductAndServiceBottomSheet() async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -251,14 +251,14 @@ class _EditJobState extends State<EditJob> {
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -272,7 +272,7 @@ class _EditJobState extends State<EditJob> {
   Widget bottomSheetTabBar() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Expanded(child: bottomSheetTabViews())
@@ -309,7 +309,7 @@ class _EditJobState extends State<EditJob> {
             isResult: true,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             itemCount: searchedCategoryList.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -319,7 +319,8 @@ class _EditJobState extends State<EditJob> {
                 return GestureDetector(
                     onTap: () {
                       // get selected category
-                      CategoryListData picked = searchedCategoryList[index];
+                      final CategoryListData picked =
+                          searchedCategoryList[index];
                       selectedCategory = picked.slug!;
                       selectedCategoryName = picked.name;
 
@@ -351,7 +352,7 @@ class _EditJobState extends State<EditJob> {
 
   void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         categoryCount = 0;
@@ -393,8 +394,8 @@ class _EditJobState extends State<EditJob> {
     return Container(
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionTheme:
-              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+          textSelectionTheme: const TextSelectionThemeData()
+              .copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -411,8 +412,8 @@ class _EditJobState extends State<EditJob> {
             hintText: 'Search Category',
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 12),
             ),
             suffixIcon: searchIcon(),
@@ -464,7 +465,7 @@ class _EditJobState extends State<EditJob> {
 
   Widget categoryViewCard(CategoryListData category) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -475,7 +476,7 @@ class _EditJobState extends State<EditJob> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   title: Text(
@@ -498,7 +499,7 @@ class _EditJobState extends State<EditJob> {
       isLoading = true;
       if (mounted) setState(() {});
 
-      var result =
+      final result =
           await ServiceHubAuthService().retreiveJob(jobId: jobId).then((value) {
         if (mounted) {
           setState(() {
@@ -563,7 +564,7 @@ class _EditJobState extends State<EditJob> {
       isLoader = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await ShoppingAuthService().getShippingStates();
 
       if (result == null) {
@@ -574,7 +575,7 @@ class _EditJobState extends State<EditJob> {
         return;
       }
 
-      List<StatesModel> tempList = result['results'];
+      final List<StatesModel> tempList = result['results'];
       // tempList.forEach((element) {
       //   states.add(element.name!);
       // });
@@ -594,7 +595,7 @@ class _EditJobState extends State<EditJob> {
         }
       }
       if (selectedStateModel != null) {
-        String? code = selectedStateModel.isoCode;
+        final String? code = selectedStateModel.isoCode;
         if (code != null) {
           getShippingCities(code);
         }
@@ -608,7 +609,7 @@ class _EditJobState extends State<EditJob> {
       isLoader = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await ShoppingAuthService().getShippingCities(code);
 
       if (result == null) {
@@ -619,7 +620,7 @@ class _EditJobState extends State<EditJob> {
         return;
       }
 
-      List<Cities> tempList = result['results'];
+      final List<Cities> tempList = result['results'];
       cityList = [];
       if (mounted) {
         setState(() {
@@ -777,7 +778,7 @@ class _EditJobState extends State<EditJob> {
                     fontFamily: "Inter",
                   ),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 stateDropdownSearch(),
                 const SizedBox(height: 20),
                 Text(
@@ -789,7 +790,7 @@ class _EditJobState extends State<EditJob> {
                     fontFamily: "Inter",
                   ),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 cityDropdownSearch(),
                 // const SizedBox(height: 20),
                 // getLocationField(),
@@ -1084,10 +1085,10 @@ class _EditJobState extends State<EditJob> {
                 ),
               ),
               onPressed: () async {
-                var imageId =
+                final imageId =
                     currentJob!.getImageId(jobImagesFromServer[index]!.image!);
                 debugPrint("imageId:- $imageId");
-                bool done = await ServiceHubAuthService()
+                final bool done = await ServiceHubAuthService()
                     .deleteJobServerImage(jobId: jobId, pictureId: imageId);
                 if (done) {
                   getJobDetail();
@@ -1121,7 +1122,7 @@ class _EditJobState extends State<EditJob> {
         ),
         CheckboxListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text("List Job"),
+          title: const Text("List Job"),
           value: checkedValue,
           activeColor: navyBlue,
           onChanged: (newValue) {
@@ -1365,7 +1366,7 @@ class _EditJobState extends State<EditJob> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -1527,7 +1528,7 @@ class _EditJobState extends State<EditJob> {
         ),
       ),
       onChanged: (String? value) async {
-        StatesModel picked =
+        final StatesModel picked =
             stateList.firstWhere((element) => element.name == value);
         selectedCity = null;
         await getShippingCities(picked.isoCode);
@@ -1753,7 +1754,7 @@ class _EditJobState extends State<EditJob> {
                     onNotification: (scrollEnd) {
                       final metrics = scrollEnd.metrics;
                       if (metrics.atEdge) {
-                        bool isTop = metrics.pixels == 0;
+                        final bool isTop = metrics.pixels == 0;
                         if (!isTop) {
                           changeState(() {});
                         }
@@ -1765,7 +1766,8 @@ class _EditJobState extends State<EditJob> {
                       shrinkWrap: true,
                       itemCount: categoriesList.length,
                       itemBuilder: (context, index) {
-                        CategoryListData category = categoriesList[index]!;
+                        final CategoryListData category =
+                            categoriesList[index]!;
 
                         return ListTile(
                           title: Text(
@@ -2254,7 +2256,7 @@ class _EditJobState extends State<EditJob> {
                     onNotification: (scrollEnd) {
                       final metrics = scrollEnd.metrics;
                       if (metrics.atEdge) {
-                        bool isTop = metrics.pixels == 0;
+                        final bool isTop = metrics.pixels == 0;
                         if (!isTop) {
                           changeState(() {});
                         }
@@ -2266,7 +2268,7 @@ class _EditJobState extends State<EditJob> {
                       shrinkWrap: true,
                       itemCount: locationsList.length,
                       itemBuilder: (context, index) {
-                        LocationData location = locationsList[index]!;
+                        final LocationData location = locationsList[index]!;
 
                         return ListTile(
                           title: Text(
@@ -2305,7 +2307,7 @@ class _EditJobState extends State<EditJob> {
         isLocationLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService()
+        final result = await ServiceHubAuthService()
             .getJobLocation(locationNext, locationPrevious);
 
         if (result == null) {
@@ -2321,7 +2323,7 @@ class _EditJobState extends State<EditJob> {
         locationCount = result.count;
         locationNext = result.next;
         locationPrevious = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
         if (mounted) {
           setState(() {
             noLocinList = false;
@@ -2344,7 +2346,7 @@ class _EditJobState extends State<EditJob> {
         _jobScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }

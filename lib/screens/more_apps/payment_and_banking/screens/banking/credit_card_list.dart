@@ -33,10 +33,10 @@ class _CreditCardListState extends State<CreditCardList> {
   bool noItemInList = false;
   VirtualAccount? virtualAccount;
   List<CreditCard> creditCardList = [];
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
+  final PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   // //slidable tile
@@ -76,7 +76,7 @@ class _CreditCardListState extends State<CreditCardList> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -149,7 +149,7 @@ class _CreditCardListState extends State<CreditCardList> {
       ),
       actions: <Widget>[
         openGraphBtn(),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -189,7 +189,7 @@ class _CreditCardListState extends State<CreditCardList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await _auth.getCreditCardPagination(next, previous);
         if (result == null) {
           isLoading = false;
@@ -198,7 +198,7 @@ class _CreditCardListState extends State<CreditCardList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -216,7 +216,7 @@ class _CreditCardListState extends State<CreditCardList> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -229,7 +229,7 @@ class _CreditCardListState extends State<CreditCardList> {
                 .youDontHaveAnyCreditCardPleaseAddOne,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             //+1 for progressbar
             itemCount: creditCardList.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -251,7 +251,7 @@ class _CreditCardListState extends State<CreditCardList> {
   Widget creditCardTile({required CreditCard creditCard}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -283,7 +283,7 @@ class _CreditCardListState extends State<CreditCardList> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Text(
@@ -291,12 +291,12 @@ class _CreditCardListState extends State<CreditCardList> {
                 accountNumber: creditCard.cardNumber!.toString()),
             style: TextStyle(color: darkGrey, fontSize: 12),
           ),
-          SizedBox(height: 2),
+          const SizedBox(height: 2),
           Text(
             AppLocalization.of(context)!.defaultMsg,
             style: TextStyle(color: darkGrey, fontSize: 12),
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
         ],
@@ -314,11 +314,11 @@ class _CreditCardListState extends State<CreditCardList> {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(creditCardTile),
       actions: listActionSlideActions(creditCard: creditCard),
       secondaryActions: listSecondaryActions(creditCard: creditCard),
+      child: VerticalListItem(creditCardTile),
     );
   }
 

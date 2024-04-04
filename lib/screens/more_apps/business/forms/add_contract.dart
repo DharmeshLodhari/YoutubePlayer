@@ -35,11 +35,11 @@ class AddContract extends StatefulWidget {
 
 class _AddContractState extends State<AddContract> {
   String? conversationId;
-  TextEditingController _noteCtrl = TextEditingController();
-  TextEditingController _recipientController = TextEditingController();
-  TextEditingController _amountController = TextEditingController();
-  TextEditingController _referenceController = TextEditingController();
-  FocusNode _recipientFocus = FocusNode();
+  final TextEditingController _noteCtrl = TextEditingController();
+  final TextEditingController _recipientController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _referenceController = TextEditingController();
+  final FocusNode _recipientFocus = FocusNode();
   http.Response? response;
 
   final _formKey = GlobalKey<FormState>();
@@ -111,7 +111,7 @@ class _AddContractState extends State<AddContract> {
         onPressed: () async {
           if (FocusScope.of(context).hasFocus) {
             FocusScope.of(context).unfocus();
-            await Future.delayed(Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 300));
           }
           _payee = null;
           Navigator.pop(context);
@@ -124,7 +124,7 @@ class _AddContractState extends State<AddContract> {
       ),
       actions: <Widget>[
         userProfileIcon(),
-        SizedBox(
+        const SizedBox(
           width: 16,
         ),
       ],
@@ -162,7 +162,7 @@ class _AddContractState extends State<AddContract> {
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           children: [
             Expanded(
@@ -186,7 +186,8 @@ class _AddContractState extends State<AddContract> {
                           getDisplayCard(),
                           Expanded(
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               child: Column(
                                 children: [
                                   flexibleSpace(),
@@ -200,15 +201,16 @@ class _AddContractState extends State<AddContract> {
                                   flexibleSpace(),
                                   getNoteField(),
                                   flexibleSpace(),
-                                  errorMessage == ""
-                                      ? Container()
-                                      : Text(
-                                          errorMessage,
-                                          style: TextStyle(
-                                              color: mateRed,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
+                                  if (errorMessage == "")
+                                    Container()
+                                  else
+                                    Text(
+                                      errorMessage,
+                                      style: TextStyle(
+                                          color: mateRed,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
                                   flexibleSpace(),
                                 ],
                               ),
@@ -226,7 +228,7 @@ class _AddContractState extends State<AddContract> {
               child: Container(
                 child: Column(
                   children: [
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     getSubmitButton(),
                     flexibleSpace(flex: 2),
                   ],
@@ -242,7 +244,7 @@ class _AddContractState extends State<AddContract> {
   Widget getUserProfileIcon() {
     if (_payee != null || isValidPayee) {
       return IconButton(
-        icon: Icon(Icons.person),
+        icon: const Icon(Icons.person),
         onPressed: () {
           Navigator.pushNamed(context, Routes.USER_PROFILE,
               arguments: {"searchedUserName": _payee!.userName});
@@ -257,7 +259,7 @@ class _AddContractState extends State<AddContract> {
 
   Widget showBackArrow() {
     return IconButton(
-      icon: Icon(Icons.arrow_back_ios),
+      icon: const Icon(Icons.arrow_back_ios),
       onPressed: () {
         _payee = null;
         Navigator.pop(context);
@@ -302,12 +304,12 @@ class _AddContractState extends State<AddContract> {
         : Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
                     _payee!.fullName!,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
@@ -357,8 +359,8 @@ class _AddContractState extends State<AddContract> {
         }
       },
       onTap: () async {
-        CustomerProfile? userFound =
-            await NavigationUtil.push(context, screen: SearchUser());
+        final CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: const SearchUser());
 
         if (userFound != null) {
           _payee = userFound;
@@ -382,7 +384,7 @@ class _AddContractState extends State<AddContract> {
       labelText: "Amount",
       isAmountField: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
@@ -396,7 +398,7 @@ class _AddContractState extends State<AddContract> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
 
             if (amount > 0.0) {
               return null;
@@ -417,7 +419,7 @@ class _AddContractState extends State<AddContract> {
               _recipientController.text = recipient!;
             });
           }
-          var customerProfile =
+          final customerProfile =
               await UserAuth().fetchCustomerProfileWithAuth(recipient);
           if (mounted) {
             setState(() {
@@ -476,7 +478,7 @@ class _AddContractState extends State<AddContract> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         Expanded(
@@ -533,7 +535,7 @@ class _AddContractState extends State<AddContract> {
           "Payment period",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -542,7 +544,7 @@ class _AddContractState extends State<AddContract> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -571,7 +573,8 @@ class _AddContractState extends State<AddContract> {
         barrierDismissible: true,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -704,7 +707,7 @@ class _AddContractState extends State<AddContract> {
         }
       }
     } else {
-      var msg = AppLocalization.of(context)!.invalidRecipient;
+      final msg = AppLocalization.of(context)!.invalidRecipient;
       showToast(message: msg);
     }
   }
@@ -725,7 +728,7 @@ class _AddContractState extends State<AddContract> {
         },
       );
 
-      var data = {
+      final data = {
         "contractor": _recipientController.text,
         "currency": userBloc.user.currency.toString(),
         "amount": moneyInputNormalizer(amount.toString().trim()),

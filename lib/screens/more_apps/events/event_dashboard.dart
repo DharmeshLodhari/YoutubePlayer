@@ -99,7 +99,7 @@ class _EventDashboardState extends State<EventDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
@@ -109,13 +109,13 @@ class _EventDashboardState extends State<EventDashboard> {
                 size: 16,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.w700),

@@ -1,4 +1,5 @@
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -36,12 +37,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
 
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  GlobalKey _key = LabeledGlobalKey("myInvoiceList");
+  final GlobalKey _key = LabeledGlobalKey("myInvoiceList");
 
   SlidableController? _slideController;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   AppConfigurationModel? appConfigurationModel;
 
   @override
@@ -99,20 +100,21 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       ),
       actions: [
         appBarSwitch(),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
         popUpMenuButton(),
-        SizedBox(width: 10.0),
+        const SizedBox(width: 10.0),
         addContractButton(),
-        SizedBox(width: 16)
+        const SizedBox(width: 16)
       ],
     );
   }
 
   Widget appBarSwitch() {
     return Switch(
-      activeThumbImage: AssetImage('assets/images/invoice_outgoing_arrow.png'),
+      activeThumbImage:
+          const AssetImage('assets/images/invoice_outgoing_arrow.png'),
       inactiveThumbImage:
-          AssetImage('assets/images/invoice_incoming_arrow.png'),
+          const AssetImage('assets/images/invoice_incoming_arrow.png'),
       activeColor: Colors.grey.withOpacity(0.9),
       value: isSender,
       onChanged: (value) {
@@ -143,7 +145,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -187,9 +189,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         color: blackFont,
       ),
       onTap: () async {
-        var invoiceAdded =
+        final invoiceAdded =
             await Navigator.of(context).pushNamed(Routes.ADD_INVOICE);
-        print('INVOICE ADDED ::: $invoiceAdded');
+        if (kDebugMode) {
+          print('INVOICE ADDED ::: $invoiceAdded');
+        }
 
         if (invoiceAdded == true) {
           invoiceBloc.isRefreshing = true;
@@ -233,7 +237,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-  filterStatementForInvoicePage(String value) {
+  void filterStatementForInvoicePage(String value) {
     invoiceBloc.noItemInList = false;
     invoiceBloc.isRefreshing = true;
 
@@ -272,7 +276,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         invoiceBloc.isRefreshing = true;
@@ -308,7 +312,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(
                     AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
               ));
             },
           );
@@ -320,35 +324,26 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   Widget invoiceListWidget(InvoiceBloc invoiceBloc) {
     return ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       itemCount: invoiceBloc.invoiceList.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == invoiceBloc.invoiceList.length) {
           return buildLoadingIndicator(isLoading: invoiceBloc.isLoading);
         } else {
-          InvoiceModel invoice = invoiceBloc.invoiceList[index];
+          final InvoiceModel invoice = invoiceBloc.invoiceList[index];
 
-          bool canDeleteInvoice =
+          final bool canDeleteInvoice =
               invoice.fromCustomer == userBloc.user.userName &&
                   invoice.status == "Draft";
 
-          bool canPay = invoice.fromCustomer != userBloc.user.userName &&
+          final bool canPay = invoice.fromCustomer != userBloc.user.userName &&
               invoice.status == "Unpaid";
 
           return Slidable(
             controller: _slideController,
             direction: Axis.horizontal,
-            actionPane: SlidableBehindActionPane(),
+            actionPane: const SlidableBehindActionPane(),
             actionExtentRatio: 0.25,
-            child: InvoiceTile(
-              invoice: invoice,
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  Routes.INVOICE_DETAIL,
-                  arguments: {"id": invoice.id},
-                );
-              },
-            ),
             actions: canDeleteInvoice
                 ? [
                     SlideActionButton(
@@ -372,6 +367,15 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         slideController: _slideController)
                   ]
                 : null,
+            child: InvoiceTile(
+              invoice: invoice,
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  Routes.INVOICE_DETAIL,
+                  arguments: {"id": invoice.id},
+                );
+              },
+            ),
           );
         }
       },
@@ -415,7 +419,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         showToast(message: "Status not updated");
       });
     } else {
-      Map<String, String> data = {"status": action};
+      final Map<String, String> data = {"status": action};
 
       BusinessAuth()
           .updateInvoice(invoiceId: invoice.id.toString(), data: data)

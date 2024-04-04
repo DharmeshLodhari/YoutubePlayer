@@ -23,17 +23,17 @@ class BlockedList extends StatefulWidget {
 
 class _BlockedListState extends State<BlockedList> {
   final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldBlockMessengerListKey =
-      new GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";
   String? previous = "";
   List blockList = [];
-  ScrollController _scrollController = new ScrollController();
-  RefreshController _refreshController =
+  final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -59,7 +59,7 @@ class _BlockedListState extends State<BlockedList> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -99,7 +99,7 @@ class _BlockedListState extends State<BlockedList> {
             child: Column(
               children: [
                 Expanded(child: _buildFriendsList()),
-                SizedBox(height: 80),
+                const SizedBox(height: 80),
               ],
             )),
       ),
@@ -113,7 +113,7 @@ class _BlockedListState extends State<BlockedList> {
             msg: noBlockedListMsg,
           )
         : ListView.builder(
-            padding: EdgeInsets.only(bottom: 80.0),
+            padding: const EdgeInsets.only(bottom: 80.0),
             //+1 for progressbar
             itemCount: blockList.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -128,10 +128,10 @@ class _BlockedListState extends State<BlockedList> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
             opacity: isLoading ? 1.0 : 00,
             child: isLoading ? CircularLoadingIndicator() : Container()),
       ),
@@ -146,7 +146,7 @@ class _BlockedListState extends State<BlockedList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await UserAuth().listBlockUsers(next, previous).catchError((error) {
           debugPrint("ERROR:- $error");
           //  return;
@@ -156,9 +156,9 @@ class _BlockedListState extends State<BlockedList> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
-        List<CustomerProfile> users = [];
+        final List<CustomerProfile> users = [];
 
         tempList
             .forEach((element) => users.add(CustomerProfile.fromJson(element)));
@@ -176,7 +176,7 @@ class _BlockedListState extends State<BlockedList> {
         _scaffoldBlockMessengerListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -210,7 +210,7 @@ class _BlockedListState extends State<BlockedList> {
   }
 
   void unBlockUserAlert(CustomerProfile user, int index) async {
-    bool? result = await showDialogBox(
+    final bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: naturalGreen.withOpacity(0.08),
@@ -259,11 +259,11 @@ class _BlockedListState extends State<BlockedList> {
       key: Key(user.userName!),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(user),
       actions: listActionSlideActions(user, index),
       secondaryActions: listSecondaryActions(user, index),
+      child: VerticalListItem(user),
     );
   }
 
@@ -291,7 +291,7 @@ class VerticalListItem extends StatelessWidget {
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: UserTile(user: user),
       ),
     );

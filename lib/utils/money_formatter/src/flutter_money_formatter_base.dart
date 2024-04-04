@@ -73,8 +73,8 @@ class FlutterMoneyFormatter {
   MoneyFormatterOutput _getOutput() {
     _utilities = _Utilities(amount: this.amount, settings: this.settings);
 
-    String _urs = _utilities.refineSeparator;
-    int _decSepCharPos = _urs.indexOf(this.settings!.decimalSeparator!);
+    final String _urs = _utilities.refineSeparator;
+    final int _decSepCharPos = _urs.indexOf(this.settings!.decimalSeparator!);
 
     return MoneyFormatterOutput(
         nonSymbol: _urs,
@@ -135,9 +135,9 @@ class FlutterMoneyFormatter {
       int? fractionDigits,
       String? symbolAndNumberSeparator,
       CompactFormatType? compactFormatType}) {
-    MoneyFormatterSettings? ts = this.settings;
+    final MoneyFormatterSettings? ts = this.settings;
 
-    MoneyFormatterSettings mfs = MoneyFormatterSettings(
+    final MoneyFormatterSettings mfs = MoneyFormatterSettings(
         symbol: symbol ?? ts!.symbol,
         thousandSeparator: thousandSeparator ?? ts!.thousandSeparator,
         decimalSeparator: decimalSeparator ?? ts!.decimalSeparator,
@@ -151,17 +151,17 @@ class FlutterMoneyFormatter {
 
   /// Returns compact format number without currency symbol
   String get _compactNonSymbol {
-    String compacted = _utilities.baseCompact.format(amount);
-    String numerics = RegExp(r'(\d+\.\d+)|(\d+)')
+    final String compacted = _utilities.baseCompact.format(amount);
+    final String numerics = RegExp(r'(\d+\.\d+)|(\d+)')
         .allMatches(compacted)
         .map((_) => _.group(0))
         .toString()
         .replaceAll('(', '')
         .replaceAll(')', '');
 
-    String alphas = compacted.replaceAll(numerics, '');
+    final String alphas = compacted.replaceAll(numerics, '');
 
-    String reformat = NumberFormat.currency(
+    final String reformat = NumberFormat.currency(
             symbol: '',
             decimalDigits:
                 numerics.indexOf('.') == -1 ? 0 : this.settings!.fractionDigits)

@@ -78,7 +78,7 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         payout = null;
@@ -178,9 +178,9 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   }
 
   Widget getSubtitle() {
-    DateTime transactionTime = DateTime.parse(payout!.timeStamp!);
-    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    String time = DateFormat("hh:mm a").format(transactionTime);
+    final DateTime transactionTime = DateTime.parse(payout!.timeStamp!);
+    final String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    final String time = DateFormat("hh:mm a").format(transactionTime);
 
     return Text(
       "$date • $time",
@@ -191,9 +191,9 @@ class _PayoutTransactionDetailState extends State<PayoutTransactionDetail> {
   }
 
   Widget getLeading() {
-    String? url = payout!.bankLogo;
+    final String? url = payout!.bankLogo;
 
-    String imageUrl = url!.replaceAll('https//', 'https://');
+    final String imageUrl = url!.replaceAll('https//', 'https://');
 
     if (url == "") {
       return CircleAvatar(

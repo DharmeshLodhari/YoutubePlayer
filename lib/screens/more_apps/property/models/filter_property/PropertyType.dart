@@ -19,7 +19,7 @@ class PropertyType {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['any'] = this.any;
     data['apartment'] = this.apartment;
     data['condo'] = this.condo;

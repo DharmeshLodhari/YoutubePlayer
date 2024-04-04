@@ -1,6 +1,4 @@
-
 import 'package:Slydo/screens/moments/models/moments_model.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
@@ -9,12 +7,14 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:like_button/like_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
@@ -80,7 +80,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   @override
   void initState() {
     if (widget.yarnComment.comment != null) {
-      Map<String, dynamic> linkData = detectLinkInText(
+      final Map<String, dynamic> linkData = detectLinkInText(
           messageDecoderWithEmoji(widget.yarnComment.comment)!);
 
       if (linkData["hasLink"]) {
@@ -106,7 +106,6 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       padding: const EdgeInsets.only(top: 12),
       child: Column(
@@ -165,26 +164,26 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   Widget _buildAttachment() {
     Widget childWidget;
     if (widget.yarnComment.attachmentType == 'service') {
-      Service service = Service.fromJson(widget.yarnComment.attachment);
+      final Service service = Service.fromJson(widget.yarnComment.attachment);
       childWidget = YarnServiceTile(
         service: service,
         tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else if (widget.yarnComment.attachmentType == 'product') {
-      Product product = Product.fromJson(widget.yarnComment.attachment);
+      final Product product = Product.fromJson(widget.yarnComment.attachment);
       childWidget = YarnProductTile(
         product: product,
         tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else if (widget.yarnComment.attachmentType == 'blog') {
-      UserPost post = UserPost.fromJson(widget.yarnComment.attachment);
+      final UserPost post = UserPost.fromJson(widget.yarnComment.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
     } else if (widget.yarnComment.attachmentType == 'profile') {
-      CustomerProfile customerProfile =
+      final CustomerProfile customerProfile =
           CustomerProfile.fromJson(widget.yarnComment.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
@@ -470,7 +469,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   }
 
   Future<bool> addLikeToComment() async {
-    Map<String, dynamic>? data =
+    final Map<String, dynamic>? data =
         await YarnAuth().addLikeComment(widget.yarnComment.id!);
     setState(() {
       widget.yarnComment.userLike = !widget.yarnComment.userLike!;
@@ -487,7 +486,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   }
 
   Future<bool> addDisLikeToComment() async {
-    Map<String, dynamic>? data =
+    final Map<String, dynamic>? data =
         await YarnAuth().addDisLikeComment(widget.yarnComment.id!);
     setState(() {
       widget.yarnComment.userDisLike = !widget.yarnComment.userDisLike!;
@@ -534,7 +533,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
                 },
                 likeCount: widget.yarnComment.likes,
                 countBuilder: (_, __, ___) {
-                  int count = widget.yarnComment.likes!;
+                  final int count = widget.yarnComment.likes!;
                   return Text(
                     count == 0 ? '' : count.toString(),
                     style: TextStyle(
@@ -571,7 +570,7 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
             },
             likeCount: widget.yarnComment.dislike,
             countBuilder: (_, __, ___) {
-              int count = widget.yarnComment.dislike!;
+              final int count = widget.yarnComment.dislike!;
               return Text(
                 count == 0 ? '' : count.toString(),
                 style: TextStyle(
@@ -592,8 +591,8 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
                   yarnComment: widget.yarnComment,
                   momentId: widget.momentId,
                   minusComment: widget.minusComment,
-                  callbackUpdateCommentCount: (value){
-                    if(value == true){
+                  callbackUpdateCommentCount: (value) {
+                    if (value == true) {
                       //increase the count by for the single moment detail + 1
                       widget.callbackUpdateCommentCount!(true);
                     }
@@ -623,10 +622,10 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   }
 
   bool isComments(BuildContext context) {
-    DateTime messageCreatedTime =
+    final DateTime messageCreatedTime =
         DateTime.parse(widget.yarnComment.createdAt!).toLocal();
 
-    DateTime currentTime = DateTime.now();
+    final DateTime currentTime = DateTime.now();
     if (getLoggedInUserName(context) == widget.yarnComment.authorUsername) {
       if (currentTime.difference(messageCreatedTime) <
           const Duration(minutes: 3)) {
@@ -640,7 +639,6 @@ class _MomentCommentTileState extends State<MomentCommentTile> {
   }
 
   Widget _buildPinned({required BuildContext context}) {
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -7,11 +7,11 @@ import 'package:provider/provider.dart';
 
 /// For performing the db operation related to socket queue messages
 class DBSocketMessageHandler {
-  DatabaseHelper _db = DatabaseHelper();
+  final DatabaseHelper _db = DatabaseHelper();
 
   void saveMessageToDb({required SocketQueueChatMessage message}) async {
     await _db.saveSocketQueueChatMessage(message: message);
-    List<SocketQueueChatMessage> socketQueueChatMessage =
+    final List<SocketQueueChatMessage> socketQueueChatMessage =
         await getSocketQueueChatMessage();
     debugPrint(
         "Length of Pending Messages 1 :- ${socketQueueChatMessage.length}");
@@ -25,7 +25,7 @@ class DBSocketMessageHandler {
       {required SocketQueueChatMessage message}) async {
     await _db.deleteSocketQueueChatMessage(message: message);
 
-    List<SocketQueueChatMessage> socketQueueChatMessage =
+    final List<SocketQueueChatMessage> socketQueueChatMessage =
         await getSocketQueueChatMessage();
     debugPrint(
         "Length of Pending Messages 2 :- ${socketQueueChatMessage.length}");
@@ -33,9 +33,9 @@ class DBSocketMessageHandler {
 
   void deleteSocketQueueForSpecificConversation(
       {String? conversationId}) async {
-    MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
-        myGlobals.navigationKey.currentContext!,
-        listen: false);
+    final MainSocketProvider mainSocketProvider =
+        Provider.of<MainSocketProvider>(myGlobals.navigationKey.currentContext!,
+            listen: false);
     mainSocketProvider.deleteQueueMessagesForSpecificConversation(
         conversationId: conversationId);
     await _db.deleteSocketQueueForSpecificConversation(

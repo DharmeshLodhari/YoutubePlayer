@@ -155,7 +155,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         }
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ServiceHubAuthService()
+        final Map<String, dynamic>? result = await ServiceHubAuthService()
             .getSearchCategoryList(
                 categoryNext, categoryPrevious, searchItemTextController!.text);
         if (result == null) {
@@ -165,7 +165,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         categoryCount = result['count'];
         categoryNext = result['next'];
         categoryPrevious = result['previous'];
-        List tempList = result['results'];
+        final List tempList = result['results'];
 
         isItemLoading = false;
         searchedCategoryList.clear();
@@ -223,7 +223,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       isLoader = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await ShoppingAuthService().getShippingStates();
 
       if (result == null) {
@@ -234,7 +234,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         return;
       }
 
-      List<StatesModel> tempList = result['results'];
+      final List<StatesModel> tempList = result['results'];
       // tempList.forEach((element) {
       //   states.add(element.name!);
       // });
@@ -254,7 +254,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         }
       }
       if (selectedStateModel != null) {
-        String? code = selectedStateModel.isoCode;
+        final String? code = selectedStateModel.isoCode;
         if (code != null) {
           getShippingCities(code);
         }
@@ -268,7 +268,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       isLoader = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await ShoppingAuthService().getShippingCities(code);
 
       if (result == null) {
@@ -279,7 +279,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         return;
       }
 
-      List<Cities> tempList = result['results'];
+      final List<Cities> tempList = result['results'];
       cityList = [];
       if (mounted) {
         setState(() {
@@ -399,7 +399,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                           fontFamily: "Inter",
                         ),
                       ),
-                      SizedBox(height: 6),
+                      const SizedBox(height: 6),
                       stateDropdownSearch(),
                       const SizedBox(height: 20),
                       Text(
@@ -411,7 +411,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                           fontFamily: "Inter",
                         ),
                       ),
-                      SizedBox(height: 6),
+                      const SizedBox(height: 6),
                       cityDropdownSearch(),
                       // const SizedBox(height: 20),
                       // getLocationField(),
@@ -494,7 +494,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         ),
         CheckboxListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text("List Job"),
+          title: const Text("List Job"),
           activeColor: navyBlue,
           value: checkedValue,
           onChanged: (newValue) {
@@ -624,7 +624,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
               ? addImageButton()
               : index <= jobImages.length
                   ? showImage(index - 1)
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink(),
         ),
       ),
     );
@@ -690,7 +690,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
+          final String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -878,7 +878,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         ),
       ),
       onChanged: (String? value) async {
-        StatesModel picked =
+        final StatesModel picked =
             stateList.firstWhere((element) => element.name == value);
         selectedCity = null;
         await getShippingCities(picked.isoCode);
@@ -1074,7 +1074,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                     onNotification: (scrollEnd) {
                       final metrics = scrollEnd.metrics;
                       if (metrics.atEdge) {
-                        bool isTop = metrics.pixels == 0;
+                        final bool isTop = metrics.pixels == 0;
                         if (!isTop) {
                           changeState(() {});
                         }
@@ -1086,7 +1086,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                       shrinkWrap: true,
                       itemCount: locationsList.length,
                       itemBuilder: (context, index) {
-                        LocationData location = locationsList[index]!;
+                        final LocationData location = locationsList[index]!;
 
                         return ListTile(
                           title: Text(
@@ -1453,7 +1453,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         isLocationLoading = true;
         if (mounted) setState(() {});
 
-        var result = await ServiceHubAuthService()
+        final result = await ServiceHubAuthService()
             .getJobLocation(locationNext, locationPrevious);
 
         if (result == null) {
@@ -1469,7 +1469,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         locationCount = result.count;
         locationNext = result.next;
         locationPrevious = result.previous;
-        var tempList = result.results;
+        final tempList = result.results;
         if (mounted) {
           setState(() {
             noLocinList = false;
@@ -1492,7 +1492,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         _jobScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -1503,7 +1503,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
       if (jobImages.length >= 1) {
         if (validateDropdown()) {
           if (jobEndDate != null) {
-            CreateJobModel job = CreateJobModel();
+            final CreateJobModel job = CreateJobModel();
             job.pictures = jobImages
                 .map((file) => Pictures(
                     image: File(file.path), caption: '$selectedCategory 1'))
@@ -1831,7 +1831,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   }
 
   void showSearchProductAndServiceBottomSheet() async {
-    var result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
         useRootNavigator: true,
@@ -1865,14 +1865,14 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 margin: EdgeInsets.zero,
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.88,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -1886,7 +1886,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   Widget bottomSheetTabBar() {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Expanded(child: bottomSheetTabViews())
@@ -1923,7 +1923,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             isResult: true,
           )
         : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             itemCount: searchedCategoryList.length + 1,
             itemBuilder: (BuildContext context, int index) {
@@ -1933,7 +1933,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
                 return GestureDetector(
                     onTap: () {
                       // get selected category
-                      CategoryListData picked = searchedCategoryList[index];
+                      final CategoryListData picked =
+                          searchedCategoryList[index];
                       selectedCategory = picked.slug!;
                       displayCategory = picked.name;
 
@@ -1965,7 +1966,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
   void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         categoryCount = 0;
@@ -2007,8 +2008,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
     return Container(
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionTheme:
-              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+          textSelectionTheme: const TextSelectionThemeData()
+              .copyWith(selectionHandleColor: navyBlue),
         ),
         child: TextFormField(
           key: searchItemTextFormField,
@@ -2025,8 +2026,8 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
             hintText: 'Search Category',
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            prefix: Padding(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            prefix: const Padding(
               padding: EdgeInsets.only(left: 12),
             ),
             suffixIcon: searchIcon(),
@@ -2078,7 +2079,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
 
   Widget categoryViewCard(CategoryListData category) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: EdgeInsets.zero,
@@ -2089,7 +2090,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
                   title: Text(

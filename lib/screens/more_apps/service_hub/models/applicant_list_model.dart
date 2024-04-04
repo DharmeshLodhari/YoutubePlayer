@@ -21,7 +21,7 @@ class JobApplicantModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['number_of_jobs'] = this.numberOfJobs;
     data['applicant_username'] = this.applicantUsername;
     data['applicant_name'] = this.applicantName;

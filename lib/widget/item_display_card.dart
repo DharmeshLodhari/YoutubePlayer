@@ -115,20 +115,21 @@ class _DisplayProductState extends State<DisplayProduct> {
                       child: getRating(
                           numberOfRating: widget.product.rating?.toInt()),
                     ),
-                    widget.product.discountedPrice != null
-                        ? (checkDiscount(
-                                widget.product.discountIsActive!,
-                                widget.product.discountedPrice!,
-                                widget.product.price!))
-                            ? Positioned(
-                                top: 10,
-                                right: 10,
-                                child: showDiscountValue(
-                                    widget.product.discountType!,
-                                    widget.product.discountValue!,
-                                    widget.product.currency))
-                            : SizedBox()
-                        : SizedBox(),
+                    if (widget.product.discountedPrice != null)
+                      (checkDiscount(
+                              widget.product.discountIsActive!,
+                              widget.product.discountedPrice!,
+                              widget.product.price!))
+                          ? Positioned(
+                              top: 10,
+                              right: 10,
+                              child: showDiscountValue(
+                                  widget.product.discountType!,
+                                  widget.product.discountValue!,
+                                  widget.product.currency))
+                          : const SizedBox()
+                    else
+                      const SizedBox(),
 
                     if ((widget.product.pricePercentageChange != null) &
                         (widget.product.pricePercentageChange != 0.0)) ...[
@@ -136,15 +137,16 @@ class _DisplayProductState extends State<DisplayProduct> {
                         top: 8,
                         right: 8,
                         child: Container(
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                               left: 6.0, right: 6.0, top: 4.0, bottom: 4.0),
                           decoration: BoxDecoration(
                             color: naturalGreen,
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8)),
                           ),
                           child: Text(
                             "${widget.product.pricePercentageChange!.toString()}% off",
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                             ),
                           ),
@@ -240,41 +242,42 @@ class _DisplayProductState extends State<DisplayProduct> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 5),
-                                widget.product.discountedPrice != null
-                                    ? (checkDiscount(
-                                            widget.product.discountIsActive!,
-                                            widget.product.discountedPrice!,
-                                            widget.product.price!))
-                                        ? Row(
-                                            children: [
-                                              Text(
-                                                worldCurrencies[
-                                                    widget.product.currency!]!,
-                                                style: TextStyle(
-                                                  fontFamily: "Inter",
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 12.8,
-                                                  color: navyBlue,
-                                                  decoration: TextDecoration
-                                                      .lineThrough,
-                                                ),
+                                const SizedBox(height: 5),
+                                if (widget.product.discountedPrice != null)
+                                  (checkDiscount(
+                                          widget.product.discountIsActive!,
+                                          widget.product.discountedPrice!,
+                                          widget.product.price!))
+                                      ? Row(
+                                          children: [
+                                            Text(
+                                              worldCurrencies[
+                                                  widget.product.currency!]!,
+                                              style: TextStyle(
+                                                fontFamily: "Inter",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 12.8,
+                                                color: navyBlue,
+                                                decoration:
+                                                    TextDecoration.lineThrough,
                                               ),
-                                              Text(
-                                                moneyDisplayNormalizer(
-                                                    widget.product.price!),
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 12,
-                                                  color: navyBlue,
-                                                  decoration: TextDecoration
-                                                      .lineThrough,
-                                                ),
+                                            ),
+                                            Text(
+                                              moneyDisplayNormalizer(
+                                                  widget.product.price!),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 12,
+                                                color: navyBlue,
+                                                decoration:
+                                                    TextDecoration.lineThrough,
                                               ),
-                                            ],
-                                          )
-                                        : SizedBox()
-                                    : SizedBox(),
+                                            ),
+                                          ],
+                                        )
+                                      : const SizedBox()
+                                else
+                                  const SizedBox(),
                               ],
                             ),
                             const Expanded(child: SizedBox(width: 40)),
@@ -316,7 +319,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(
       bottomSheetItem(
@@ -342,7 +345,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         onTap: () async {
           Navigator.pop(context);
 
-          var result = await Navigator.of(context).pushNamed(
+          final result = await Navigator.of(context).pushNamed(
             '/edit-product',
             arguments: {
               "productId": widget.product.id.toString(),
@@ -388,7 +391,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                 ..attachment = {
                   "product": widget.product.toJson().cast<String, dynamic>()
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }
@@ -421,7 +425,7 @@ class _DisplayProductState extends State<DisplayProduct> {
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
     if (widget.product.isProductAvailableNow()) {
-      String type = "product";
+      final String type = "product";
       if (widget.product.variantModels?.isNotEmpty ?? false) {
         showToast(message: AppLocalization.of(context)!.selectVariantColorSize);
         Navigator.pushNamed(context, '/product',
@@ -443,9 +447,9 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   Future<void> addToSharedCart(SharedCartModel result) async {
-    String type = "product";
+    final String type = "product";
 
-    Product products =
+    final Product products =
         widget.product.copyWith(quantity: 1, withSelectedAddOn: true);
 
     sharedCartBloc.addItemToSharedCart(
@@ -608,10 +612,10 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   showBottomSheetDialog() async {
-    var result = await androidBottomSheet(
+    final result = await androidBottomSheet(
       enableDrag: true,
       context: context,
-      child: AllActiveCart(),
+      child: const AllActiveCart(),
     );
     if (result != null && result is SharedCartModel) {
       if (result.id == 'my-cart') {
@@ -644,7 +648,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   void removeProductFromCartOld() async {
-    String type = "product";
+    final String type = "product";
 
     late var mapData;
     basketBloc.items.forEach((element) {
@@ -653,7 +657,7 @@ class _DisplayProductState extends State<DisplayProduct> {
         return;
       }
     });
-    Map data = {
+    final Map data = {
       "type": type,
       "id": mapData["item"].id,
       "qty": int.parse(mapData["qty"].toString()) - 1,
@@ -709,7 +713,7 @@ class _DisplayServiceState extends State<DisplayService> {
           return;
         }
 
-        Service currentService = Service();
+        final Service currentService = Service();
         currentService.name = widget.service.name;
         currentService.id = widget.service.id;
         currentService.shortDescription = widget.service.shortDescription;
@@ -991,7 +995,7 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   List<Widget> generateBottomSheetItem() {
-    List<Widget> list = [];
+    final List<Widget> list = [];
 
     list.add(
       bottomSheetItem(
@@ -1017,7 +1021,7 @@ class _DisplayServiceState extends State<DisplayService> {
         onTap: () async {
           Navigator.pop(context);
 
-          var result = await Navigator.of(context).pushNamed(
+          final result = await Navigator.of(context).pushNamed(
             '/edit-service',
             arguments: {
               "serviceId": widget.service.id.toString(),
@@ -1053,7 +1057,7 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   void removeServiceFromCart() async {
-    String type = "service";
+    final String type = "service";
 
     late var mapData;
     basketBloc.items.forEach((element) {
@@ -1062,7 +1066,7 @@ class _DisplayServiceState extends State<DisplayService> {
         return;
       }
     });
-    Map data = {
+    final Map data = {
       "type": type,
       "id": mapData["item"].id,
       "qty": mapData["qty"] - 1,
@@ -1079,7 +1083,7 @@ class _DisplayServiceState extends State<DisplayService> {
           message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
     }
     if (widget.service.isAvailable!) {
-      String type = "service";
+      final String type = "service";
       basketBloc.addItemToCart(
         item: widget.service,
         type: type,
@@ -1091,7 +1095,7 @@ class _DisplayServiceState extends State<DisplayService> {
           return;
         }
       });
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         "type": type,
         "id": mapData["item"].id,
         "qty": mapData["qty"],
@@ -1114,7 +1118,8 @@ class _DisplayServiceState extends State<DisplayService> {
                 ..attachment = {
                   "service": widget.service.toJson().cast<String, dynamic>()
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params, '', '');
+              final bool data =
+                  await YarnAuth().addYarnAndQuestion(params, '', '');
               if (data) {
                 showToast(message: "Shared in Yarn successfully");
               }

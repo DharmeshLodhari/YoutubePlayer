@@ -18,7 +18,7 @@ class ChatShakeDetection extends ChangeNotifier {
   ShakeDetector? _detector;
   bool _showShakingAlert = false;
   Timer? _nudgeAlertTimer;
-  Duration _nudgeAlertDuration = Duration(seconds: 11);
+  Duration _nudgeAlertDuration = const Duration(seconds: 11);
   ChatConversation? _recipientUser;
   late UserBloc _userBloc;
 
@@ -117,9 +117,9 @@ class ChatShakeDetection extends ChangeNotifier {
         _resetShakeDetector();
       });
 
-      await Future.delayed(Duration(milliseconds: 1500));
+      await Future.delayed(const Duration(milliseconds: 1500));
 
-      String? result = await showDialog<String>(
+      final String? result = await showDialog<String>(
           context: myGlobals.scaffoldKey.currentContext!,
           barrierColor: Colors.black38,
           builder: (context) => Column(
@@ -139,14 +139,14 @@ class ChatShakeDetection extends ChangeNotifier {
                           color: Colors.white,
                           child: Column(
                             children: [
-                              Expanded(
+                              const Expanded(
                                 flex: 1,
                                 child: SizedBox(
                                   height: 8.0,
                                 ),
                               ),
                               CircularLoadingIndicator(),
-                              Expanded(
+                              const Expanded(
                                 child: SizedBox(
                                   height: 8.0,
                                 ),
@@ -158,7 +158,7 @@ class ChatShakeDetection extends ChangeNotifier {
                                     color: blackFont,
                                     fontWeight: FontWeight.w500,
                                   )),
-                              Expanded(
+                              const Expanded(
                                 flex: 1,
                                 child: SizedBox(
                                   height: 8.0,
@@ -169,7 +169,7 @@ class ChatShakeDetection extends ChangeNotifier {
                                 child: Container(
                                   color: mateRed,
                                   child: IconButton(
-                                    icon: Icon(
+                                    icon: const Icon(
                                       SlydoAppIcon.remove,
                                       color: Colors.white,
                                     ),
@@ -179,7 +179,7 @@ class ChatShakeDetection extends ChangeNotifier {
                                   ),
                                 ),
                               ),
-                              Expanded(
+                              const Expanded(
                                 flex: 1,
                                 child: SizedBox(
                                   height: 8.0,
@@ -210,8 +210,8 @@ class ChatShakeDetection extends ChangeNotifier {
   void _nudgeRecipient() {
     if (_recipientUser == null) return null;
 
-    Map<String, dynamic> data = {
-      "check_id": Uuid().v4(),
+    final Map<String, dynamic> data = {
+      "check_id": const Uuid().v4(),
       "conversation_id": _recipientUser!.conversationId,
       "author": _userBloc.user.userName,
       "author_avatar": _userBloc.user.avatar,
@@ -225,8 +225,8 @@ class ChatShakeDetection extends ChangeNotifier {
   void _stopNudge() {
     if (_recipientUser == null) return null;
 
-    Map<String, dynamic> data = {
-      "check_id": Uuid().v4(),
+    final Map<String, dynamic> data = {
+      "check_id": const Uuid().v4(),
       "conversation_id": _recipientUser!.conversationId,
       "author": _userBloc.user.userName,
       "author_avatar": _userBloc.user.avatar,

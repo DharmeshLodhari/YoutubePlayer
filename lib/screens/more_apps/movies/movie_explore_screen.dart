@@ -156,24 +156,24 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
       child: SingleChildScrollView(
           child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 6,
           ),
           searchBox(),
-          SizedBox(
+          const SizedBox(
             height: 32,
           ),
           movieCarouselSlider(),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           mostRecentDiscovery(),
           indiePicks(),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           nowAvailableToRent(),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
         ],
@@ -183,7 +183,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
 
   Widget searchBox() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: TextSelectionThemeData(
@@ -222,8 +222,8 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                 hintText: "Search",
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
-                prefix: Padding(
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                prefix: const Padding(
                   padding: EdgeInsets.only(left: 16),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -287,10 +287,11 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                         Navigator.of(context).pushNamed("/movie-detail");
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Center(
                             child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
                           child: CachedNetworkImage(
                             imageUrl: item.poster!,
                             fit: BoxFit.fill,
@@ -312,7 +313,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -349,12 +350,12 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: mostRecentDiscoveryList
                             .map(
                               (movie) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: movieItemWithDetail(movieItem: movie),
                               ),
                             )
@@ -373,7 +374,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -410,12 +411,12 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: nowAvailableTORent
                             .map(
                               (movie) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: movieItemWithDetail(movieItem: movie),
                               ),
                             )
@@ -441,7 +442,8 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
           width: 160,
           decoration: decorateBox(borderColor: selectedListItemBackgroundBlue),
           child: Container(
-            padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -456,7 +458,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                     fit: BoxFit.fill,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Text(
@@ -469,7 +471,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                     color: blackFont,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 1,
                 ),
                 Row(
@@ -485,7 +487,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Row(
@@ -497,7 +499,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                           color: starYellow,
                           size: 12,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Text(
@@ -534,7 +536,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -563,7 +565,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
           ),
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: isIndiePicksLoading
                 ? Container(
                     height: 132,
@@ -574,12 +576,12 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.only(left: 16),
+                      padding: const EdgeInsets.only(left: 16),
                       child: Row(
                         children: indiePicksList
                             .map(
                               (movie) => Container(
-                                margin: EdgeInsets.only(right: 12),
+                                margin: const EdgeInsets.only(right: 12),
                                 child: moviePoster(partialMovieItem: movie),
                               ),
                             )

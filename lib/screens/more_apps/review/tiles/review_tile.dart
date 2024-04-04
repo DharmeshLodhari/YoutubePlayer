@@ -50,7 +50,7 @@ class _ReviewTileState extends State<ReviewTile> {
       onTap: widget.isNavigable!
           ? () async {
               if (isAuthor) {
-                var result = await Navigator.of(context).pushNamed(
+                final result = await Navigator.of(context).pushNamed(
                   "/edit-review",
                   arguments: {
                     "review": widget.review,
@@ -84,7 +84,7 @@ class _ReviewTileState extends State<ReviewTile> {
           elevation: 4,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.all(6.0),
+          margin: const EdgeInsets.all(6.0),
           shadowColor: boxShadowTwo,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
@@ -92,7 +92,7 @@ class _ReviewTileState extends State<ReviewTile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildAuthorReviewAvatar(),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 _buildReviewDetail(),
               ],
             ),
@@ -119,7 +119,7 @@ class _ReviewTileState extends State<ReviewTile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -127,9 +127,9 @@ class _ReviewTileState extends State<ReviewTile> {
               _buildReviewDate(),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           _buildRateReview(),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           _buildReviewFirstValue(),
           getLikeUnlikeReportTile(),
         ],
@@ -142,7 +142,7 @@ class _ReviewTileState extends State<ReviewTile> {
   Widget getLikeUnlikeReportTile() {
     return Column(
       children: [
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         _buildLikeUnLikeReportTile(),
       ],
     );
@@ -194,7 +194,7 @@ class _ReviewTileState extends State<ReviewTile> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildReviewLike(),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
             _buildReviewUnLike(),
@@ -202,7 +202,7 @@ class _ReviewTileState extends State<ReviewTile> {
         ),
 
         // Expanded(child: Container())
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         _buildReviewReport(),
       ],
     );
@@ -212,7 +212,7 @@ class _ReviewTileState extends State<ReviewTile> {
     return GestureDetector(
       onTap: isAuthor ? null : likeUnlikeReview,
       child: Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 6,
         ),
@@ -224,11 +224,11 @@ class _ReviewTileState extends State<ReviewTile> {
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.thumb_up_alt_outlined,
               size: 16,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               widget.review?.likes == null
                   ? "0"
@@ -269,7 +269,7 @@ class _ReviewTileState extends State<ReviewTile> {
     return GestureDetector(
       onTap: isAuthor ? null : dislikeUnlikeReview,
       child: Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 6,
         ),
@@ -281,11 +281,11 @@ class _ReviewTileState extends State<ReviewTile> {
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.thumb_down_alt_outlined,
               size: 16,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(
@@ -308,7 +308,7 @@ class _ReviewTileState extends State<ReviewTile> {
     return GestureDetector(
       onTap: () {},
       child: Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 6,
         ),
@@ -320,11 +320,11 @@ class _ReviewTileState extends State<ReviewTile> {
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.flag_outlined,
               size: 16,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(
@@ -346,8 +346,8 @@ class _ReviewTileState extends State<ReviewTile> {
     date = widget.review?.createdAt ?? "";
     if (date != "") {
       debugPrint("Date ==> $date");
-      DateFormat dateFormat = DateFormat("MMM dd, yyyy");
-      DateTime dateTime = DateTime.parse(date);
+      final DateFormat dateFormat = DateFormat("MMM dd, yyyy");
+      final DateTime dateTime = DateTime.parse(date);
       date = dateFormat.format(dateTime);
     }
     return date;

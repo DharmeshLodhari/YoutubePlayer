@@ -37,8 +37,8 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
   String? next = "";
   String? previous = "";
   List transactionList = [];
-  ScrollController _scrollController = ScrollController();
-  RefreshController _refreshController =
+  final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -51,7 +51,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
 
   late CustomerProfileBloc customerProfileBloc;
 
-  GlobalKey _key = LabeledGlobalKey("transactionListPopUpMenu");
+  final GlobalKey _key = LabeledGlobalKey("transactionListPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
@@ -195,7 +195,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
     return newDateTimeRange != null
         ? Container(
             color: greyBorderColor.withOpacity(0.2),
-            margin: EdgeInsets.symmetric(vertical: 5),
+            margin: const EdgeInsets.symmetric(vertical: 5),
             child: Text(
               '${dateFormat.format(newDateTimeRange!.start)} - ${dateFormat.format(newDateTimeRange!.end)}',
               textAlign: TextAlign.center,
@@ -205,7 +205,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
               ),
             ),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   Widget popUpMenuButton() {
@@ -216,7 +216,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
       child: Card(
         color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -252,7 +252,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
             controller: _refreshController,
             onRefresh: _onRefresh,
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(vertical: 4),
               //+1 for progressbar
               itemCount: transactionList.length + 1,
               itemBuilder: (BuildContext context, int index) {
@@ -321,7 +321,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -329,7 +329,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
 
   Widget openGraph() {
     return IconButton(
-      icon: Icon(
+      icon: const Icon(
         Icons.pie_chart,
         color: Colors.white,
       ),
@@ -411,7 +411,7 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
       key: Key(transaction.payee!),
       controller: _slideController,
       direction: Axis.horizontal,
-      actionPane: SlidableBehindActionPane(),
+      actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(
         transaction,
@@ -479,7 +479,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         }
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: TransactionTile(
           transaction: widget.transaction,
           expandedWidget: expandedWidget(),
@@ -491,7 +491,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
 
   Widget expandedWidget() {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       height: isExpanded ? 48 : 0,
       curve: Curves.fastOutSlowIn,
       child: isExpanded
@@ -542,12 +542,12 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 32,
               height: 32,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Text(
               AppLocalization.of(context)!.message,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black),
@@ -615,12 +615,12 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 32,
               height: 32,
             ),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Text(
               AppLocalization.of(context)!.blockUser,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black),

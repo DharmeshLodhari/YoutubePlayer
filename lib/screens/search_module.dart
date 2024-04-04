@@ -32,7 +32,7 @@ import 'more_apps/user_profile/user_auth.dart';
 import 'more_apps/yarn/widgets/yarn_tab_selection.dart';
 
 class SearchModule extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   SearchModule({this.arguments});
 

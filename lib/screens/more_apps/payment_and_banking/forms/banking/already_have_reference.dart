@@ -81,13 +81,13 @@ class _AlreadyHaveReferenceScreenState
             (AppBar().preferredSize.height +
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Form(
           key: _formKeyTwo,
           child: Column(
             children: <Widget>[
               displayReferenceField(),
-              SizedBox(
+              const SizedBox(
                 height: 40,
               ),
               submitBtn(),
@@ -129,7 +129,7 @@ class _AlreadyHaveReferenceScreenState
             filterQuality: FilterQuality.high,
             placeholder: (context, url) =>
                 bankAccountBloc.bankAccount!.bankAvatar == ""
-                    ? Icon(Icons.account_balance)
+                    ? const Icon(Icons.account_balance)
                     : CircularLoadingIndicator(),
             errorWidget: imageErrorWidget,
           ),
@@ -143,7 +143,7 @@ class _AlreadyHaveReferenceScreenState
       elevation: 0,
       margin: EdgeInsets.zero,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
         decoration: decorateBox(),
         child: CustomizedTextFormField(
           labelText: "Reference",

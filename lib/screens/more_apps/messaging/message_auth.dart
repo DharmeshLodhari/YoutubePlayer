@@ -21,10 +21,10 @@ import 'chat/models/channel_model.dart';
 class MessageAuth extends AuthService {
   // Send email to user.
   Future<bool> sendMessage(Map data) async {
-    String url = AppConfig.baseUrl + "/api/v1/messaging/send/";
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPost(url, body: _data, headers: headers);
+    final String url = AppConfig.baseUrl + "/api/v1/messaging/send/";
+    final headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
+    final response = await httpPost(url, body: _data, headers: headers);
 
     if (response.statusCode == 201) {
       return true;
@@ -36,10 +36,10 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> sendSocketMessage(Map data, File media, {File? poster}) async {
-    String url = AppConfig.chatUrl + "/api/v1/chat/create/";
-    var headers = await getAuthHeaders();
+    final String url = AppConfig.chatUrl + "/api/v1/chat/create/";
+    final headers = await getAuthHeaders();
 
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
     data.forEach((k, v) {
       request.fields[k] = v.toString();
@@ -49,7 +49,8 @@ class MessageAuth extends AuthService {
     request.fields["media"] = media.path;
 
     // Create multipart using filepath, string or bytes
-    var multipartFile1 = await http.MultipartFile.fromPath("media", media.path);
+    final multipartFile1 =
+        await http.MultipartFile.fromPath("media", media.path);
 
     // Add multipart to request
     request.files.add(multipartFile1);
@@ -57,7 +58,7 @@ class MessageAuth extends AuthService {
     // adding poster
     if (poster != null) {
       request.fields["poster"] = poster.path;
-      var multipartFile2 =
+      final multipartFile2 =
           await http.MultipartFile.fromPath("poster", poster.path);
       request.files.add(multipartFile2);
     }
@@ -68,12 +69,12 @@ class MessageAuth extends AuthService {
       // debugPrint("$key :- $value");
     });
 
-    var response = await request.send();
+    final response = await request.send();
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller image, Your image is too large.");
     }
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
     if (response.statusCode == 201) {
       return true;
     } else {
@@ -85,12 +86,12 @@ class MessageAuth extends AuthService {
 
   Future<bool> sendReplyMessage(
       {String? messageId, String? data, String? conversationId}) async {
-    String url = AppConfig.chatUrl +
+    final String url = AppConfig.chatUrl +
         "/api/v1/chat/reply-chat-message/$messageId/$conversationId/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
     debugPrint(
         "Data Sent MESSAGE ID:- $messageId CONVERSATION ID:- $conversationId DATA:- $data");
-    var response = await httpPost(url, body: data, headers: headers);
+    final response = await httpPost(url, body: data, headers: headers);
     if (response.statusCode == 201) {
       return true;
     } else {
@@ -102,14 +103,14 @@ class MessageAuth extends AuthService {
 
   // it will update the message actions:  [Archived,UnArchived,Starred,UnStarred]
   Future<bool> updateMessage(String id, String action) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/messaging/update/" +
         id +
         "/" +
         action +
         "/";
-    var headers = await getAuthHeaders();
-    var response = await httpPatch(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpPatch(url, headers: headers);
 
     if (response.statusCode == 200) {
       return true;
@@ -122,9 +123,10 @@ class MessageAuth extends AuthService {
 
   // it will delete the message
   Future<bool> deleteMessage(String id) async {
-    String url = AppConfig.baseUrl + "/api/v1/messaging/delete/" + id + "/";
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
+    final String url =
+        AppConfig.baseUrl + "/api/v1/messaging/delete/" + id + "/";
+    final headers = await getAuthHeaders();
+    final response = await httpDelete(url, headers: headers);
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -136,13 +138,13 @@ class MessageAuth extends AuthService {
 
   // Get single message
   Future<Message> getMessage(String id) async {
-    String url = AppConfig.baseUrl + "/api/v1/messaging/read/" + id + "/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final String url = AppConfig.baseUrl + "/api/v1/messaging/read/" + id + "/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-      Message message = Message(
+      final jsonData = json.decode(response.body);
+      final Message message = Message(
         subject: jsonData["subject"],
         id: jsonData["id"],
         body: jsonData["body"],
@@ -169,12 +171,12 @@ class MessageAuth extends AuthService {
 
   // Get single message
   Future<int> getUnreadMessageCount() async {
-    String url = AppConfig.baseUrl + "/api/v1/messaging/unread-count/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final String url = AppConfig.baseUrl + "/api/v1/messaging/unread-count/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       return jsonData["count"] as int;
     } else {
       debugPrint(
@@ -184,12 +186,13 @@ class MessageAuth extends AuthService {
   }
 
   Future<int> getUnreadNotificationCount() async {
-    String url = AppConfig.baseUrl + "/api/v1/social/ask/notifications-count/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final String url =
+        AppConfig.baseUrl + "/api/v1/social/ask/notifications-count/";
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       return jsonData["count"] as int;
     } else {
       debugPrint(
@@ -214,18 +217,18 @@ class MessageAuth extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
 
     debugPrint('MESSAGE URL ::: ${response.statusCode}');
     debugPrint('MESSAGE ::: ${response.body}');
 
     if (response.statusCode == 200) {
-      List<PartialMessage> messagesList = [];
-      var jsonData = json.decode(response.body);
+      final List<PartialMessage> messagesList = [];
+      final jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        PartialMessage message = PartialMessage(
+        final PartialMessage message = PartialMessage(
           subtitle: item["subtitle"],
           subject: item["sender"],
           id: item["id"],
@@ -245,7 +248,7 @@ class MessageAuth extends AuthService {
         messagesList.add(message);
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -273,22 +276,22 @@ class MessageAuth extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     // var response = await http
     //     .get(url, headers: headers)
     //     .timeout(timeOutDuration, onTimeout: () => timeOutFunction(url: url));
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      List<String> previousMessages = [];
-      var jsonData = json.decode(response.body);
+      final List<String> previousMessages = [];
+      final jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
         previousMessages.add(jsonEncode(item));
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -308,16 +311,16 @@ class MessageAuth extends AuthService {
 
   // Get status of the user you are chatting with
   Future<Map?> getChatUserStatus(String id) async {
-    String url = AppConfig.chatUrl +
+    final String url = AppConfig.chatUrl +
         "/api/v1/chat/retrieve-user-chat-status/" +
         id +
         "/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers)
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
       return jsonData;
     } else {
       debugPrint(
@@ -336,14 +339,14 @@ class MessageAuth extends AuthService {
     if (next != "") {
       url = getSecureUrl(url: next);
     }
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
+      final jsonData = json.decode(response.body);
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -359,12 +362,12 @@ class MessageAuth extends AuthService {
 
   Future<ChatConversation> createGroupChat(
       {required AddGroupModel group, required String type}) async {
-    String url = AppConfig.baseUrl + "/api/v1/user/group-conversation/";
-    var headers = await getAuthHeaders();
+    final String url = AppConfig.baseUrl + "/api/v1/user/group-conversation/";
+    final headers = await getAuthHeaders();
 
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    final request = http.MultipartRequest("POST", Uri.parse(url));
 
-    List<String?> listOfUser = [];
+    final List<String?> listOfUser = [];
 
     group.users!.forEach((element) {
       listOfUser.add(element.userName);
@@ -389,7 +392,7 @@ class MessageAuth extends AuthService {
         jsonEncode(group.maxAllowedMembers);
     if (group.groupProfilePhoto != null) {
       // Create multipart using filepath, string or bytes
-      var multipartFile1 =
+      final multipartFile1 =
           await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
 
       // Add multipart to request
@@ -397,7 +400,7 @@ class MessageAuth extends AuthService {
     }
     if (group.avatar != null) {
       // Create multipart using filepath, string or bytes
-      var multipartFile2 =
+      final multipartFile2 =
           await http.MultipartFile.fromPath("avatar", group.avatar!);
 
       // Add multipart to request
@@ -412,12 +415,12 @@ class MessageAuth extends AuthService {
       debugPrint("$key :- $value");
     });
 
-    var response = await request.send();
+    final response = await request.send();
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller image, Your image is too large.");
     }
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
 
     if (response.statusCode == 201) {
@@ -425,7 +428,7 @@ class MessageAuth extends AuthService {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
-      ChatConversation chatConversation =
+      final ChatConversation chatConversation =
           ChatConversation.fromJson(jsonDecode(responseBody));
 
       return chatConversation;
@@ -439,11 +442,11 @@ class MessageAuth extends AuthService {
 
   Future<Map<String, dynamic>?> updateGroupChat(
       {required AddGroupModel group}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/${group.groupConversationId}/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+    final request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     request.fields["group_name"] = group.name!;
     request.fields["description"] = group.description!;
@@ -459,7 +462,7 @@ class MessageAuth extends AuthService {
 
     if (group.groupProfilePhoto != null) {
       // Create multipart using filepath, string or bytes
-      var multipartFile1 =
+      final multipartFile1 =
           await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
 
       // Add multipart to request
@@ -468,7 +471,7 @@ class MessageAuth extends AuthService {
 
     if (group.avatar != null) {
       // Create multipart using filepath, string or bytes
-      var multipartFile2 =
+      final multipartFile2 =
           await http.MultipartFile.fromPath("avatar", group.avatar!);
 
       // Add multipart to request
@@ -481,12 +484,12 @@ class MessageAuth extends AuthService {
       debugPrint("$key :- $value");
     });
 
-    var response = await request.send();
+    final response = await request.send();
     if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller image, Your image is too large.");
     }
-    var responseBody = await response.stream.bytesToString();
+    final responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
 
     log("URL:- $url REQUEST FIELDS:- ${request.fields} RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
@@ -505,18 +508,19 @@ class MessageAuth extends AuthService {
   // Get status of the user you are chatting with
   Future<GroupDetailModel> getGroupConversationDetail(
       String conversationID) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/detail/" +
         conversationID +
         "/";
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers)
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
+      final Map<String, dynamic> jsonData = json.decode(response.body);
       log("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
-      GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
+      final GroupDetailModel groupDetailModel =
+          GroupDetailModel.fromJson(jsonData);
       return groupDetailModel;
     } else {
       debugPrint(
@@ -527,14 +531,15 @@ class MessageAuth extends AuthService {
 
   // Get status of the user you are chatting with
   Future<dynamic> fetchChannels() async {
-    String url = AppConfig.baseUrl + "/api/v1/chat/conversation/channels/";
+    final String url =
+        AppConfig.baseUrl + "/api/v1/chat/conversation/channels/";
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers)
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
+      final Map<String, dynamic> jsonData = json.decode(response.body);
       // GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
       debugPrint(jsonData.toString());
       return 'channels';
@@ -548,19 +553,19 @@ class MessageAuth extends AuthService {
   Future<bool> addParticipantToGroup(
       {required String conversationId,
       required List<CustomerProfile> users}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/add-user/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    List<String?> userList = users.map((user) => user.userName).toList();
+    final List<String?> userList = users.map((user) => user.userName).toList();
 
     debugPrint("List of users to add:- $userList");
 
-    Map<String, dynamic> data = {"users": userList};
+    final Map<String, dynamic> data = {"users": userList};
 
-    var response =
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
 
     if (response.statusCode == 200) {
@@ -574,19 +579,19 @@ class MessageAuth extends AuthService {
 
   Future<bool> joinChannel(
       {required String channelId, required String userName}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/join-channel/" +
         channelId +
         "/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
     debugPrint("List of users to add:- ${[userName]}");
 
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "users": [userName]
     };
 
-    var response =
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(data));
 
     debugPrint(
@@ -605,16 +610,16 @@ class MessageAuth extends AuthService {
 
   Future<bool> removeParticipantFromAdmin(
       {required String conversationId, String? userName}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/remove-admin-user/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
-    Map<String, dynamic> data = {"user": userName};
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -627,16 +632,16 @@ class MessageAuth extends AuthService {
 
   Future<bool> makeParticipantAdmin(
       {required String conversationId, String? userName}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/add-admin-user/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
-    Map<String, dynamic> data = {"user": userName};
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -649,16 +654,16 @@ class MessageAuth extends AuthService {
 
   Future<bool> muteParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/mute-participant/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
-    Map<String, dynamic> data = {"user": userName};
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -671,16 +676,16 @@ class MessageAuth extends AuthService {
 
   Future<bool> unMuteParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/unmute-participant/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
-    Map<String, dynamic> data = {"user": userName};
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -693,16 +698,16 @@ class MessageAuth extends AuthService {
 
   Future<bool> blockParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/block-participants/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
-    Map<String, dynamic> data = {"user": userName};
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -715,16 +720,16 @@ class MessageAuth extends AuthService {
 
   Future<bool> unBlockParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/unblock-participants/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
-    Map<String, dynamic> data = {"user": userName};
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -737,16 +742,16 @@ class MessageAuth extends AuthService {
 
   Future<bool> removeParticipantFromGroup(
       {required String conversationId, String? userName}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/remove-user/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
-    Map<String, dynamic> data = {"user": userName};
+    final headers = await getAuthHeaders();
+    final Map<String, dynamic> data = {"user": userName};
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -758,13 +763,13 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> exitFromGroup({required String conversationId}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/exit-group/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
@@ -776,13 +781,13 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> deleteGroup({required String conversationId}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/delete-group/" +
         conversationId +
         "/";
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpDelete(url, headers: headers);
+    final response = await httpDelete(url, headers: headers);
 
     if (response.statusCode == 200 ||
         response.statusCode == 201 ||
@@ -812,12 +817,12 @@ class MessageAuth extends AuthService {
     if (next != "") {
       url = getSecureUrl(url: next);
     }
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    final headers = await getAuthHeaders();
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-      Map<String, dynamic> result = {
+      final jsonData = json.decode(response.body);
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -832,10 +837,11 @@ class MessageAuth extends AuthService {
   }
 
   void sendStopNudge({Map<String, dynamic>? dataToSend}) async {
-    String url = AppConfig.chatUrl + "/api/v1/chat/conversation/stop-nudge/";
-    var headers = await getAuthHeaders();
+    final String url =
+        AppConfig.chatUrl + "/api/v1/chat/conversation/stop-nudge/";
+    final headers = await getAuthHeaders();
 
-    var response =
+    final response =
         await httpPost(url, headers: headers, body: jsonEncode(dataToSend));
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -858,21 +864,21 @@ class MessageAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
       debugPrint(
           "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
-      List<String> missedMessages = [];
-      var jsonData = json.decode(response.body);
+      final List<String> missedMessages = [];
+      final jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
         missedMessages.add(jsonEncode(item));
       }
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -888,11 +894,11 @@ class MessageAuth extends AuthService {
 
   Future<Map<String, dynamic>?> acknowledgeMessagesToServer(
       {List? dataToBeSent}) async {
-    String url = AppConfig.chatUrl + "/api/v1/chat/acknowledge-messages/";
+    final String url = AppConfig.chatUrl + "/api/v1/chat/acknowledge-messages/";
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    Map<String, dynamic> data = {"data": dataToBeSent};
+    final Map<String, dynamic> data = {"data": dataToBeSent};
 
     if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
 
@@ -916,9 +922,9 @@ class MessageAuth extends AuthService {
     /// "username": "black",
     /// "delivered": true, "type": "acknowledge_message"}
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200) {
       debugPrint(
@@ -933,18 +939,18 @@ class MessageAuth extends AuthService {
 
   Future<Map<String, dynamic>?> readByRecipientToServer(
       {Map<String, dynamic>? dataToBeSent}) async {
-    String url = AppConfig.chatUrl +
+    final String url = AppConfig.chatUrl +
         "/api/v1/chat/acknowledge-message-read-by-recipient/";
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    Map<String, dynamic> data = {"data": dataToBeSent};
+    final Map<String, dynamic> data = {"data": dataToBeSent};
 
     if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
 
-    var _data = jsonEncode(data);
+    final _data = jsonEncode(data);
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200) {
       debugPrint(
@@ -965,10 +971,10 @@ class MessageAuth extends AuthService {
       url = AppConfig.baseUrl + "/api/v1/transactions/empty-envelop/";
     }
 
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
+    final headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
 
-    var response = await httpPost(url, headers: headers, body: _data);
+    final response = await httpPost(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -983,15 +989,15 @@ class MessageAuth extends AuthService {
 
   Future<bool> putMoneyInEnvelope(
       {Map<String, dynamic>? data, required Envelope envelope}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/transactions/empty-envelop/${envelope.id}/";
 
-    var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
+    final headers = await getAuthHeaders();
+    final _data = jsonEncode(data);
 
     debugPrint("Data sent => $data");
 
-    var response = await httpPatch(url, headers: headers, body: _data);
+    final response = await httpPatch(url, headers: headers, body: _data);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -1005,17 +1011,17 @@ class MessageAuth extends AuthService {
   }
 
   Future<Envelope> getEnvelope({required Envelope envelope, String? id}) async {
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/transactions/magic-envelop/${envelope.id.toString()}/?message_id=$id";
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-      Envelope envelope = Envelope.fromJson(jsonDecode(response.body));
+      final Envelope envelope = Envelope.fromJson(jsonDecode(response.body));
 
       return envelope;
     } else {
@@ -1027,23 +1033,23 @@ class MessageAuth extends AuthService {
 
   Future<bool> cancelEnvelope(
       {required Envelope envelope, required Map<String, dynamic> data}) async {
-    var type = envelope.type!.replaceAll("-envelop", "");
+    final type = envelope.type!.replaceAll("-envelop", "");
 
     // debugPrint("Message DATA:- $data");
 
-    String url = AppConfig.baseUrl +
+    final String url = AppConfig.baseUrl +
         "/api/v1/transactions/cancel-envelop/$type/${envelope.id}/";
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var param = {
+    final param = {
       "check_id": data['check_id'],
       "conversation_id": data["conversation_id"] ?? data["conversation"],
     };
 
-    var _data = jsonEncode(param);
+    final _data = jsonEncode(param);
 
-    var response = await httpPatch(url, body: _data, headers: headers);
+    final response = await httpPatch(url, body: _data, headers: headers);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       debugPrint(
@@ -1074,16 +1080,16 @@ class MessageAuth extends AuthService {
 
     url = Uri.encodeFull(url);
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
 
-      List data = responseBody['data'];
+      final List data = responseBody['data'];
 
-      List<GIFModel> gifs = [];
+      final List<GIFModel> gifs = [];
       for (var item in data) {
         gifs.add(GIFModel.fromJson(item));
       }
@@ -1100,7 +1106,7 @@ class MessageAuth extends AuthService {
       {String? filter}) async {
     await Future.delayed(Duration(seconds: 1));
 
-    String url = "";
+    // final String url = "";
 
     // if (next == null) {
     //   return null;
@@ -1123,7 +1129,7 @@ class MessageAuth extends AuthService {
     // debugPrint('MESSAGE ::: ${response.body}');
 
     if (true) {
-      var jsonData = {
+      final jsonData = {
         'count': 0,
         'next': '',
         'previous': '',
@@ -1134,7 +1140,7 @@ class MessageAuth extends AuthService {
         ]
       };
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],
         "previous": jsonData["previous"],
@@ -1163,9 +1169,9 @@ class MessageAuth extends AuthService {
       url = url + "?owner=$ownerName";
     }
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "GET CHANNELS $url ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
@@ -1174,7 +1180,7 @@ class MessageAuth extends AuthService {
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
       final jsonData = jsonDecode(response.body);
-      List results = jsonData['results'];
+      final List results = jsonData['results'];
 
       return BasePaginationModel<List<ChannelModel>>.fromJson(
         jsonData,
@@ -1194,9 +1200,9 @@ class MessageAuth extends AuthService {
       url = url + "$channelId" + "/";
     }
 
-    var headers = await getAuthHeaders();
+    final headers = await getAuthHeaders();
 
-    var response = await httpGet(url, headers: headers);
+    final response = await httpGet(url, headers: headers);
     debugPrint(
         "GET CHANNELS two $url ${response.statusCode}  RESPONSE BODY:- ${response.body}");
 
@@ -1206,7 +1212,7 @@ class MessageAuth extends AuthService {
 
       final jsonData = jsonDecode(response.body);
 
-      Map<String, dynamic> result = {
+      final Map<String, dynamic> result = {
         "results": jsonData,
       };
 

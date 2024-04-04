@@ -65,10 +65,10 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
 
   Widget tabBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
+      preferredSize: const Size.fromHeight(50.0),
       child: TabBar(
         labelPadding: EdgeInsets.zero,
-        indicator: BoxDecoration(),
+        indicator: const BoxDecoration(),
         onTap: (int index) {
           currentIndex = index;
           setState(() {});
@@ -76,7 +76,7 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
         tabs: [
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
@@ -97,7 +97,7 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
           ),
           Tab(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 shape: BoxShape.rectangle,
