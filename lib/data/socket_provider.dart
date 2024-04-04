@@ -109,7 +109,7 @@ class MainSocketProvider extends ChangeNotifier {
             await connect().then((value) async {
               if (_isConnected) {
                 try {
-                  bool result = await addDataInTheCorrectOrder();
+                  final bool result = await addDataInTheCorrectOrder();
                   if (result) {
                     if (AppConfig.enableLogs.value)
                       debugPrint("Clearing Pending Messages 1!!");
@@ -161,12 +161,12 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// this method will ping the server
   void ping() async {
-    var currentTime = DateTime.now();
+    final currentTime = DateTime.now();
 
     /// only ping server when there is no user activity is done with in _socketTimeout time
     if (currentTime.difference(_lastSent) > _socketTimeout &&
         currentTime.difference(_lastReceive) > _socketTimeout) {
-      var data = {
+      final data = {
         "message": "ping",
         "type": "ping",
       };
@@ -216,7 +216,7 @@ class MainSocketProvider extends ChangeNotifier {
 
     /// change socket url according to recipient user url
     // var finalUrl = "$_socketUrl";
-    var finalUrl = "${AppConfig.socketUrl}/${_currentUser!.userName}/";
+    final finalUrl = "${AppConfig.socketUrl}/${_currentUser!.userName}/";
 
     // Set auth headers or socket will be closed
     _headers = await MessageAuth().getAuthHeaders();
@@ -330,7 +330,7 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// for listening the user socket
   StreamSubscription? listen(Function(dynamic event) listener) {
-    StreamSubscription? newStreamSubscription =
+    final StreamSubscription? newStreamSubscription =
         _streamController?.stream.listen(listener);
     _streamSubscriptions.add(newStreamSubscription);
     notifyListeners();
@@ -351,7 +351,7 @@ class MainSocketProvider extends ChangeNotifier {
   /// for adding data into user socket
   Future<bool> add(Map<String, dynamic> data) async {
     bool isDataAlreadyInQueue = false;
-    String _data = jsonEncode(data);
+    final String _data = jsonEncode(data);
 
     for (int i = 0; i < _queueMessages.length; i++) {
       if (_data == _queueMessages[i]) {
@@ -428,12 +428,13 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   void removeFromTheQueue({required String message}) {
-    Map<String, dynamic> decodedMessage = jsonDecode(message);
+    final Map<String, dynamic> decodedMessage = jsonDecode(message);
     if (decodedMessage.containsKey("check_id")) {
       int? index;
 
       for (int i = 0; i < _queueMessages.length; i++) {
-        Map<String, dynamic> decodeQueueMessage = jsonDecode(_queueMessages[i]);
+        final Map<String, dynamic> decodeQueueMessage =
+            jsonDecode(_queueMessages[i]);
 
         if (decodeQueueMessage.containsKey("check_id")) {
           if (decodeQueueMessage["check_id"] == decodedMessage["check_id"]) {
@@ -454,7 +455,7 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   void sendPendingQueueMessages() async {
-    List<SocketQueueChatMessage> pendingMessages =
+    final List<SocketQueueChatMessage> pendingMessages =
         await DBSocketMessageHandler().getSocketQueueChatMessage();
 
     int count = 0;
@@ -468,9 +469,9 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   void deleteQueueMessagesForSpecificConversation({String? conversationId}) {
-    List<int> messagesIndex = [];
+    final List<int> messagesIndex = [];
     for (int i = 0; i < _queueMessages.length; i++) {
-      Map<String, dynamic> message = jsonDecode(_queueMessages[i]);
+      final Map<String, dynamic> message = jsonDecode(_queueMessages[i]);
 
       if (message.containsKey("conversation_id")) {
         if (message['conversation_id'] == conversationId) {
@@ -491,7 +492,7 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// checking internet connectivity
   Future<bool> checkConnection() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
+    final connectivityResult = await (Connectivity().checkConnectivity());
 
     if (connectivityResult == ConnectivityResult.none) {
       return false;
