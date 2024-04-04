@@ -147,8 +147,7 @@ class _UserProductListState extends State<UserProductList> {
           productList.length > 6 &&
           !_isSnackBarShowing) {
         _isSnackBarShowing = true;
-        _productMessengerScaffoldKey.currentState!
-            .showSnackBar(SnackBar(
+        _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
               duration: Duration(milliseconds: 500),
@@ -203,8 +202,7 @@ class _UserProductListState extends State<UserProductList> {
           productList.length > 6 &&
           !_isSnackBarShowing) {
         _isSnackBarShowing = true;
-        _productMessengerScaffoldKey.currentState!
-            .showSnackBar(SnackBar(
+        _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
               duration: Duration(milliseconds: 500),

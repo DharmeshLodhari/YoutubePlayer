@@ -1214,8 +1214,7 @@ class _SlydoSlydoTransferState extends State<SlydoSlydoTransfer> {
                 },
                 cancelCallBack: () {
                   Navigator.pop(context);
-                  _sendPaymentScaffoldMessenger.currentState!
-                      .showSnackBar(SnackBar(
+                  _sendPaymentScaffoldMessenger.currentState?.showSnackBar(SnackBar(
                     content: Text(AppLocalization.of(context)!.invalidPassword),
                   ));
                 });

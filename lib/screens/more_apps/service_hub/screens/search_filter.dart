@@ -126,7 +126,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
           });
         }
       } else if (categoryNext == null && categoriesList.length > 6) {
-        // _filterScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        // _filterScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
         //   content:
         //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //   duration: const Duration(milliseconds: 500),
@@ -182,7 +182,7 @@ class _JobsSearchFilterState extends State<JobsSearchFilter> {
           });
         }
       } else if (locationNext == null && locationsList.length > 6) {
-        // _filterScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        // _filterScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
         //   content:
         //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //   duration: const Duration(milliseconds: 500),

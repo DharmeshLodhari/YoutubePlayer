@@ -6,7 +6,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/find_jobs_tab.dart';
 import 'package:Slydo/screens/more_apps/service_hub/screens/jobs_dashboard.dart';
 import 'package:Slydo/screens/more_apps/service_hub/service_hub.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:colorful_safe_area/colorful_safe_area.dart';
@@ -388,7 +387,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           length: 2,
           child: Scaffold(
             backgroundColor: Colors.white,
-            appBar: appBar() as PreferredSizeWidget?,
+            appBar: appBar(),
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

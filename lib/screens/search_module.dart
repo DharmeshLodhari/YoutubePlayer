@@ -620,7 +620,7 @@ class _SearchModuleState extends State<SearchModule> {
           setState(() {});
         }
       } else if (next == null && results.length > 6) {
-        _scaffoldMessengerSearchKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerSearchKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -630,7 +630,7 @@ class _SearchModuleState extends State<SearchModule> {
         //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //   duration: Duration(milliseconds: 500),
         // ));
-        // _scaffoldSearchKey.currentState!.showSnackBar(SnackBar(
+        // _scaffoldSearchKey.currentState?.showSnackBar(SnackBar(
         //   content:
         //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //   duration: Duration(milliseconds: 500),

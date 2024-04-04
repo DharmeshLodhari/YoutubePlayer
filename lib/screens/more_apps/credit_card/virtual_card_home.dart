@@ -1088,7 +1088,7 @@ class VirtualCardHomeState extends State<VirtualCardHome> {
           _scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        _scaffoldMessengerPaymentListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerPaymentListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),

@@ -171,7 +171,7 @@ class _SearchServicesState extends State<SearchServices> {
           setState(() {});
         }
       } else if (next == null && products.length > 6) {
-        _scaffoldMessengerSearchKey.currentState!.showSnackBar(
+        _scaffoldMessengerSearchKey.currentState?.showSnackBar(
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),

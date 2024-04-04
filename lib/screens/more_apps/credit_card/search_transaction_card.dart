@@ -127,7 +127,7 @@ class SearchTransactionCardState extends State<SearchTransactionCard> {
           setState(() {});
         }
       } else if (next == null && transactionList.length > 6) {
-        _scaffoldMessengerSearchKey.currentState!.showSnackBar(
+        _scaffoldMessengerSearchKey.currentState?.showSnackBar(
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),

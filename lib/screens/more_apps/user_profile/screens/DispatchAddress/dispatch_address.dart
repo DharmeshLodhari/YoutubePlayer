@@ -145,7 +145,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
           });
         }
       } else if (next == null && itemList.length > 6) {
-        _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -201,7 +201,7 @@ class _DispatchAddressState extends State<DispatchAddress> {
         });
       }
     } else if (next == null && itemList.length > 6) {
-      _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+      _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         duration: Duration(milliseconds: 500),

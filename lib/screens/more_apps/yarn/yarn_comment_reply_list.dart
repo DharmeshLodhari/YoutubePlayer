@@ -214,7 +214,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
         }
       }
       // else if (categoriesNext == null && askCategoriesList.length > 6) {
-      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+      //   _askCategoriesScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
       //     content:
       //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
       //     duration: Duration(milliseconds: 500),

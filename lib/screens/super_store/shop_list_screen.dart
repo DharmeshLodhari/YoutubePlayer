@@ -186,8 +186,7 @@ class ShopListScreenState extends State<ShopListScreen> {
           productList.length > 6 &&
           !_isSnackBarShowing) {
         _isSnackBarShowing = true;
-        _productScaffoldMessengerKey.currentState!
-            .showSnackBar(SnackBar(
+        _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
               duration: Duration(milliseconds: 500),

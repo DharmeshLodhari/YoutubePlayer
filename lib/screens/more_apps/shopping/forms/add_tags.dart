@@ -290,7 +290,7 @@ class _AddTagsState extends State<AddTags> {
           });
         }
       } else if (next == null && tagList.length > 6) {
-        _addTagsScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _addTagsScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),

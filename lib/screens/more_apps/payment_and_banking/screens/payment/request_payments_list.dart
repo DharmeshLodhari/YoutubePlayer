@@ -596,7 +596,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           _scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        _scaffoldMessengerPaymentListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerPaymentListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -636,8 +636,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessengerPaymentListKey.currentState!
-        .showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessengerPaymentListKey.currentState?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {

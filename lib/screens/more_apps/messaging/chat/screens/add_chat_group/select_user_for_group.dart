@@ -434,8 +434,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         noItemInList = true;
         if (mounted) setState(() {});
       } else if (next == null && connectionList.length > 6) {
-        _scaffoldMessengerSelectUserForGroupKey.currentState!
-            .showSnackBar(SnackBar(
+        _scaffoldMessengerSelectUserForGroupKey.currentState?.showSnackBar(SnackBar(
           content: Text(
               AppLocalization.of(context)?.youHaveReachedBottomOfTheList ?? ""),
           duration: Duration(milliseconds: 500),

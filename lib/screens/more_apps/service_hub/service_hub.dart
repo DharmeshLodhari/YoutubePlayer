@@ -192,7 +192,7 @@ class _SuperHubState extends State<SuperHub> {
           });
         }
       } else if (productNext == null && productList.length > 6) {
-        _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),

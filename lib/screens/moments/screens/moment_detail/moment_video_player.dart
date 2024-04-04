@@ -10,7 +10,7 @@ class MomentVideoPlayer extends StatefulWidget {
   final MomentsModel momentsModel;
   final List<CachedVideoPlayerController> videoPlayerControllers;
   final AnimationController controller;
-  double? value;
+  final double? value;
 
   MomentVideoPlayer(
       {Key? key,

@@ -1,15 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:Slydo/screens/more_apps/payment_link/payment_link_cashout.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+
 import '../../../locale/app_localization.dart';
 import '../../../services/app_tutorial_controller.dart';
-import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../../widget/curved_btn.dart';

@@ -377,7 +377,7 @@ class _ConnectionListState extends State<ConnectionList> {
         if (mounted) setState(() {});
       } else if (next == null &&
           connectionListBloc.connectionUsers.length > 6) {
-        _scaffoldMessengerContactsListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerContactsListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -391,8 +391,7 @@ class _ConnectionListState extends State<ConnectionList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessengerContactsListKey.currentState!
-        .showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessengerContactsListKey.currentState?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {

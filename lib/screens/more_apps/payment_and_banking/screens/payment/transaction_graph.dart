@@ -699,7 +699,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     return IconButton(
       icon: Icon(Icons.flip),
       onPressed: () {
-        cardKey.currentState!.toggleCard();
+        cardKey.currentState?.toggleCard();
         isLineGraph = !isLineGraph;
         setState(() {});
       },

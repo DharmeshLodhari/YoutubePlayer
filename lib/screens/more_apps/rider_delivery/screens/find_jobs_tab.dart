@@ -109,7 +109,7 @@ class FindJobsTabState extends State<FindJobsTab> {
           });
         }
       } else if (listNext == null && jobListing.length > 6) {
-        _findJobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _findJobScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),

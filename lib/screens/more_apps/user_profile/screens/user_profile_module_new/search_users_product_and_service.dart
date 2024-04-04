@@ -789,7 +789,7 @@ class _SearchUsersProductAndServiceState
           setState(() {});
         }
       } else if (next == null && results.length > 6) {
-        _scaffoldMessengerSearchKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerSearchKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

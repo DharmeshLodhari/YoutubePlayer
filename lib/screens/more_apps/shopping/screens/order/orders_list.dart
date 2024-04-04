@@ -415,7 +415,7 @@ class _OrdersListState extends State<OrdersList> {
           _scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        _scaffoldMessengerOrderListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerOrderListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

@@ -170,7 +170,7 @@ class _CashoutTransactionsListState extends State<CashoutTransactionsList> {
           });
         }
       } else if (next == null && payoutList.length > 6) {
-        _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

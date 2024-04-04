@@ -421,7 +421,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                 context, ModalRoute.withName(Routes.CHAT_SCREEN));
           },
           cancelCallBack: () {
-            _sendEnvelopeScaffoldMessenger.currentState!.showSnackBar(SnackBar(
+            _sendEnvelopeScaffoldMessenger.currentState?.showSnackBar(SnackBar(
               content: Text(AppLocalization.of(context)!.invalidPassword),
             ));
           });

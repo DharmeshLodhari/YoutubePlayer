@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/applicant_list_model.dart';
@@ -80,7 +78,7 @@ class _ApplicantListState extends State<ApplicantList> {
           });
         }
       } else if (listNext == null && applicantList.length > 6) {
-        // _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        // _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
         //   content:
         //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //   duration: Duration(milliseconds: 500),

@@ -1,5 +1,6 @@
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/utils.dart';
 import 'package:flutter/material.dart';
+
 import '../../models/user.dart';
 import '../../user_auth.dart';
 
@@ -60,7 +61,7 @@ class _UserFollowersViewState extends State<UserFollowersView> {
         });
       }
     } else if (next == null && userFollowers.length > 6) {
-      // _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+      // _askCategoriesScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
       //   content:
       //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
       //   duration: Duration(milliseconds: 500),

@@ -73,7 +73,8 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
   }
 
   Future<bool> addLikeToMoment() async {
-    MomentsModel data = await MomentsService().likeMoment(currentMoment!.id!);
+    MomentsModel data =
+        await MomentsService().likeMoment(currentMoment?.id ?? "");
     if (data != null) {
       setState(() {
         currentMoment!.likes = data.likes;
@@ -86,7 +87,7 @@ class _StoryMomentScreenState extends State<StoryMomentScreen> {
 
   Future<bool> addDisLikeToMoment() async {
     MomentsModel data =
-        await MomentsService().dislikeMoment(currentMoment!.id!);
+        await MomentsService().dislikeMoment(currentMoment?.id ?? "");
 
     if (data != null) {
       setState(() {

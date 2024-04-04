@@ -1,6 +1,5 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

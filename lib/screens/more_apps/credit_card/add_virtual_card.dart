@@ -12,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../routes/route_constants.dart';
-import '../shopping/shopping_auth.dart';
 
 class AddVirtualCard extends StatefulWidget {
   const AddVirtualCard({Key? key}) : super(key: key);
@@ -22,7 +21,6 @@ class AddVirtualCard extends StatefulWidget {
 }
 
 class _AddVirtualCardState extends State<AddVirtualCard> {
-  final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
 
   UserBloc? userBloc;

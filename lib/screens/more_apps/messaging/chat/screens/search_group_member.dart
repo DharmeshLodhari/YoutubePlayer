@@ -284,8 +284,7 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
         noItemInList = true;
         if (mounted) setState(() {});
       } else if (next == null && groupMember.length > 6) {
-        _scaffoldMessengerSearchGroupMemberKey.currentState!
-            .showSnackBar(SnackBar(
+        _scaffoldMessengerSearchGroupMemberKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

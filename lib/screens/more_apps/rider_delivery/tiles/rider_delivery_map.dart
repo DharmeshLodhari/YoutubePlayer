@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math' show atan2, cos, pi, pow, sin, sqrt;
+import 'dart:math' show atan2, cos, sin, sqrt;
 import 'dart:typed_data';
 
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
@@ -469,7 +469,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
-        polylineId: id, color: navyBlue, points: polylineCoordinates, width: 3);
+        polylineId: id, color: navyBlue, points: polylineCoordinates, width: 5);
     if (mounted)
       setState(() {
         polylines[id] = polyline;

@@ -5,14 +5,12 @@ import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/data/state_notifiers/user_bloc.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 

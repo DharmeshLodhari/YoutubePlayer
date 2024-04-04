@@ -88,7 +88,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
           });
         }
       } else if (nearByNext == null && customerProfileList.length > 6) {
-        _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),

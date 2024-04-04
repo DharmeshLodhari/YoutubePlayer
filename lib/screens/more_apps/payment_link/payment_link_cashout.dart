@@ -939,7 +939,7 @@ class _PaymentLinkCashOutState extends State<PaymentLinkCashOut> {
       loading = false;
       setState(() {});
       log('$res');
-    } on Exception catch (e) {
+    } catch (e) {
       rethrow;
     }
   }

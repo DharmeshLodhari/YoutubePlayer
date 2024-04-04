@@ -129,7 +129,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
           setState(() {});
         }
       } else if (next == null && searchMyJobListing.length > 6) {
-        _scaffoldMessengerSearchKey.currentState!.showSnackBar(
+        _scaffoldMessengerSearchKey.currentState?.showSnackBar(
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),

@@ -112,7 +112,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
   List<String> categoriesNameList = [];
-  ScrollController _categoryScrollController = ScrollController();
+  // ScrollController _categoryScrollController = ScrollController();
   ScrollController _locationScrollController = ScrollController();
 
   TextEditingController? searchItemTextController;
@@ -1489,7 +1489,7 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
           });
         }
       } else if (locationNext == null && locationsList.length > 6) {
-        _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _jobScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -1504,8 +1504,6 @@ class _JobsCreateJobsState extends State<JobsCreateJobs> {
         if (validateDropdown()) {
           if (jobEndDate != null) {
             CreateJobModel job = CreateJobModel();
-            Pictures pictures = Pictures();
-            Category category = Category();
             job.pictures = jobImages
                 .map((file) => Pictures(
                     image: File(file.path), caption: '$selectedCategory 1'))

@@ -107,7 +107,7 @@ class _ProductAddOnListState extends State<ProductAddOnList> {
           });
         }
       } else if (next == null && productAddOnList.length > 6) {
-        _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

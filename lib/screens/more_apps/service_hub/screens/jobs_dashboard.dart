@@ -133,7 +133,7 @@ class _JobsDashboardState extends State<JobsDashboard> {
           });
         }
       } else if (activeListingNext == null && activeListing.length > 6) {
-        _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _jobScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
