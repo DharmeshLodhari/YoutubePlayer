@@ -36,7 +36,7 @@
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>This app requires access to your location.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>This app requires access to your location.</string>
+    <string>Your location allows you to view restaurants in delivery range of your address.</string>
     <key>NSLocationUsageDescription</key>
     <string>This app requires access to your location.</string>
     <key>NSLocationAlwaysUsageDescription</key>
