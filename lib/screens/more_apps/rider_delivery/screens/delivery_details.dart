@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DeliveryDetails extends StatefulWidget {
   var arguments;
@@ -435,14 +436,18 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               children: [
                 _buildDrivingToPickupLocation(),
                 SizedBox(height: 15.0),
-                _buildDistanceAndHoursAndImageAndAddress(),
+                _buildDistanceAndHoursAndImageAndAddress(
+                  pickupAddress: "Your Current Location",
+                  deliveryAddress:
+                      '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
+                ),
                 SizedBox(height: 10.0),
                 _buildCheckBoxAndItems(),
                 _buildStartDelivery(),
                 SizedBox(height: 15.0),
                 _buildCancelDelivery(),
                 SizedBox(height: 15.0),
-                _buildCallButton(),
+                _buildCallSender(),
               ],
             ),
           ],
@@ -470,13 +475,17 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               children: [
                 _buildDrivingToDestination(),
                 SizedBox(height: 10.0),
-                _buildDistanceAndHoursAndImageAndAddress(),
+                _buildDistanceAndHoursAndImageAndAddress(
+                    pickupAddress:
+                        '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
+                    deliveryAddress:
+                        '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}'),
                 SizedBox(height: 10.0),
                 _buildItems(),
                 SizedBox(height: 15.0),
                 _buildEndDelivery(),
                 SizedBox(height: 15.0),
-                _buildCallButton(),
+                _buildCallReceiver(),
               ],
             ),
           ],
@@ -825,7 +834,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       child: Text(
         riderDeliveryBloc.isNearbyPickupLocation == false
             ? 'Driving to pickup location'
-            : 'You have reach your pickup location',
+            : 'You have arrived at the pickup location',
         style: TextStyle(
           color: blackFont,
           fontSize: 14,
@@ -852,14 +861,15 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     );
   }
 
-  Widget _buildDistanceAndHoursAndImageAndAddress() {
+  Widget _buildDistanceAndHoursAndImageAndAddress(
+      {String? pickupAddress, String? deliveryAddress}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildDistanceAndHours(),
         SizedBox(width: 15.0),
         _buildRouteIconImage(),
-        _buildAddressColumn()
+        _buildAddressColumn(pickupAddress, deliveryAddress),
       ],
     );
   }
@@ -916,13 +926,13 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     );
   }
 
-  Widget _buildAddressColumn() {
+  Widget _buildAddressColumn(String? pickupAddress, String? deliveryAddress) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
+            pickupAddress ?? "",
             style: TextStyle(
               fontWeight: FontWeight.w500,
               color: riderDeliveryBloc.deliveryDetails
@@ -938,7 +948,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
           ),
           SizedBox(height: 25),
           Text(
-            '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
+            deliveryAddress ?? "",
             style: TextStyle(
               fontWeight: FontWeight.w500,
               color: riderDeliveryBloc.deliveryDetails
@@ -1034,22 +1044,22 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildCancelDelivery() {
     return OutlineCurvedButton(
       text: "Cancel Delivery",
-      textColor: isChecked == true ? navyBlue : greyBorderColor,
-      onPressed: isChecked == true
-          ? () {
-              // riderDeliveryBloc.deliveryDetails?.isDeliveryAccepted = false;
-              isDeliveryCancel = true;
-              // _initialSheetChildSize = 0.73;
-              setState(() {});
-            }
-          : null,
+      textColor: navyBlue,
+      onPressed: () {
+        // riderDeliveryBloc.deliveryDetails?.isDeliveryAccepted = false;
+        isDeliveryCancel = true;
+        // _initialSheetChildSize = 0.73;
+        setState(() {});
+      },
       backgroundColor: white,
     );
   }
 
-  Widget _buildCallButton() {
+  Widget _buildCallSender() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        _makePhoneCall(riderDeliveryBloc.deliveryDetails?.pickupAddress?.phone);
+      },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -1066,10 +1076,46 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               fontWeight: FontWeight.w600,
               fontFamily: "Inter",
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCallReceiver() {
+    return GestureDetector(
+      onTap: () {
+        _makePhoneCall(
+            riderDeliveryBloc.deliveryDetails?.deliveryAddress?.phone);
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.phone_in_talk_outlined,
+            size: 25,
+          ),
+          SizedBox(width: 10.0),
+          Text(
+            "Tap to call package receiver",
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Inter",
+            ),
           )
         ],
       ),
     );
+  }
+
+  Future<void> _makePhoneCall(String? phone) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phone ?? "",
+    );
+    await launchUrl(launchUri);
   }
 
   Future<void> startOffer() async {

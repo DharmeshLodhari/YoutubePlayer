@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math' show atan2, cos, sin, sqrt;
 import 'dart:typed_data';
 
@@ -57,7 +56,6 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   late RiderDeliveryBloc riderDeliveryBloc;
   String? username;
   String? _mapStyle;
-  String? _mapStyleIos;
 
   bool isLoading = false;
 
@@ -83,12 +81,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
       localData = await getCurrentLocation();
       _currentP = localData;
 
-      rootBundle.loadString('assets/map_style').then((string) {
-        _mapStyle = string;
-      });
-
       rootBundle.loadString('assets/map_style.json').then((string) {
-        _mapStyleIos = string;
+        _mapStyle = string;
       });
 
       getPolylinePoints().then((coordinates) => {
@@ -193,14 +187,10 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     return isLoading
         ? Center(child: CircularProgressIndicator())
         : GoogleMap(
-            // onMapCreated: ((GoogleMapController controller) =>
-            //     _mapController.complete(controller)),
-            onMapCreated: (GoogleMapController controller) {
-              controller = controller;
-              Platform.isAndroid
-                  ? controller.setMapStyle(_mapStyle)
-                  : controller.setMapStyle(_mapStyleIos);
-            },
+            onMapCreated: ((GoogleMapController controller) {
+              controller.setMapStyle(_mapStyle);
+              _mapController.complete(controller);
+            }),
             initialCameraPosition: CameraPosition(
               target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                   deliveryModel?.pickupAddress?.longitude ?? 0.0),
@@ -349,10 +339,6 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
             _currentP = currentLocation;
 
             _cameraToPosition(currentLocation);
-
-            debugPrint("time ${currentLocation.time}");
-            debugPrint("speed ${currentLocation.speed}");
-            debugPrint("speedAccuracy ${currentLocation.speedAccuracy}");
 
             double pickupDistance = distanceBetween(
                 currentLocation,
