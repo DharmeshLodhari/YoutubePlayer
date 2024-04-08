@@ -123,9 +123,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
-      if (kDebugMode) {
-        print(e);
-      }
+      debugPrint("Error: $e");
     } catch (err) {
       showToast(message: err.toString());
       if (kDebugMode) {
@@ -158,6 +156,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -185,6 +184,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -212,6 +212,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -239,6 +240,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -273,6 +275,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -310,6 +313,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -344,6 +348,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -388,6 +393,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -437,9 +443,95 @@ class RiderDeliveryAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
+      debugPrint("Error: $e");
     } catch (err) {
       showToast(message: err.toString());
+      debugPrint("Error: $err");
     }
     return null;
+  }
+
+  // Rider at pickup location
+  Future<bool> atPickupLocation(int? orderId) async {
+    if (orderId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/order/$orderId/set-rider-in-pickup-location/";
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
+      }
+      return false;
+    } catch (e) {
+      debugPrint("Error: $e");
+      return false;
+    }
+  }
+
+// Rider at Delivery location
+  Future<bool> atDeliveryLocation(int? orderId) async {
+    if (orderId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/order/$orderId/set-rider-in-delivery-location/";
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
+      }
+      return false;
+    } catch (e) {
+      debugPrint("Error: $e");
+      return false;
+    }
+  }
+
+// Rider pickup order
+  Future<bool> riderPickupOrder(int? orderId) async {
+    if (orderId == null) {
+      return false;
+    }
+    String url =
+        AppConfig.baseUrl + "/api/v1/order/$orderId/set-rider-picked-up-order/";
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
+      }
+      return false;
+    } catch (e) {
+      debugPrint("Error: $e");
+      return false;
+    }
   }
 }

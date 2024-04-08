@@ -429,6 +429,7 @@ class ServiceHubAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
+      debugPrint("Error: $e");
     } catch (err) {
       showToast(message: err.toString());
     }
@@ -453,6 +454,7 @@ class ServiceHubAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
+      debugPrint("Error: $e");
     } catch (err) {
       showToast(message: err.toString());
     }

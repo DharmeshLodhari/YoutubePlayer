@@ -338,7 +338,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
           ),
         ),
         Text(
-          "${riderDeliveryBloc.deliveryDetails?.distanceTravel ?? 10} km",
+          "${riderDeliveryBloc.deliveryDetails?.totalDistance ?? 10} km",
           style: TextStyle(
             color: navyBlue,
             fontSize: 14,

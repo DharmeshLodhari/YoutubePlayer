@@ -865,6 +865,8 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   Widget _buildDistanceAndHours() {
+    Duration? duration = riderDeliveryBloc.deliveryDetails?.travelDuration;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -883,7 +885,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         Row(
           children: [
             Text(
-              "20",
+              duration?.inMinutes.toString() ?? "0",
               style: TextStyle(
                 color: blackFont,
                 fontSize: 26,
@@ -969,7 +971,13 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             value: isChecked,
             onChanged: (bool? val) {
               setState(() {
-                isChecked = val!;
+                if (riderDeliveryBloc.isNearbyPickupLocation == true) {
+                  isChecked = val!;
+                  if (isChecked == true) {
+                    RiderDeliveryAuthService().riderPickupOrder(
+                        riderDeliveryBloc.deliveryDetails?.orderId);
+                  }
+                }
               });
             }),
         Text(
