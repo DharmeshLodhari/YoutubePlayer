@@ -4,8 +4,8 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -31,12 +31,12 @@ class AskNotificationView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(context: context),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (notification!.body != null) ...[
           _buildPostDescription(),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
         ],
@@ -48,14 +48,14 @@ class AskNotificationView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildUserAvatar(context: context),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Expanded(
@@ -77,7 +77,7 @@ class AskNotificationView extends StatelessWidget {
                               "",
                           style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         ClipOval(
@@ -87,7 +87,7 @@ class AskNotificationView extends StatelessWidget {
                             color: yarnBlack,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 4,
                         ),
                         Expanded(
@@ -195,7 +195,7 @@ class AskNotificationView extends StatelessWidget {
   }
 
   deleteNotification(String? notificationId) async {
-    bool? data = await YarnAuth().deleteNotification(notification!.id);
+    final bool? data = await YarnAuth().deleteNotification(notification!.id);
     if (data != null && data) {
       showToast(message: "Notification deleted successfully");
 

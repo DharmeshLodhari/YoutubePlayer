@@ -17,9 +17,7 @@ Future<bool> commitMsg() async {
   if (commitMsg.startsWith('fix:')) {
     return true; // you can return true let commit go
   } else {
-    if (kDebugMode) {
-      print('you should add `fix` in the commit message');
-    }
+    debugPrint('you should add `fix` in the commit message');
     return false;
   }
 }
@@ -27,9 +25,7 @@ Future<bool> commitMsg() async {
 Future<bool> preCommit() async {
   try {
     final ProcessResult result = await Process.run('dartanalyzer', ['bin']);
-    if (kDebugMode) {
-      print(result.stdout);
-    }
+    debugPrint("Result : ${result.stdout}");
     if (result.exitCode != 0) return false;
   } catch (e) {
     return false;

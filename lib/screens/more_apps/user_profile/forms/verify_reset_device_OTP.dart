@@ -7,7 +7,7 @@ import 'package:pinput/pin_put/pin_put.dart';
 
 // ignore: must_be_immutable
 class VerifyResetDeviceOTPScreen extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   VerifyResetDeviceOTPScreen({this.arguments});
 
@@ -61,7 +61,7 @@ class _VerifyResetDeviceOTPScreenState
         ),
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             height: MediaQuery.of(context).size.height -
                 (AppBar().preferredSize.height +
                     MediaQuery.of(context).padding.top),
@@ -123,7 +123,7 @@ class _VerifyResetDeviceOTPScreenState
                 "This code will expired in",
                 style: TextStyle(fontSize: 14, color: darkGrey),
               ),
-              Text(
+              const Text(
                 " 00:30 ",
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
@@ -139,14 +139,14 @@ class _VerifyResetDeviceOTPScreenState
   }
 
   Widget otpFillUpField() {
-    BoxDecoration navyBlueBorder = BoxDecoration(
+    final BoxDecoration navyBlueBorder = BoxDecoration(
       border: Border(
           bottom: BorderSide(
         color: navyBlue,
         width: 2,
       )),
     );
-    BoxDecoration grayBorder = BoxDecoration(
+    final BoxDecoration grayBorder = BoxDecoration(
       border: Border(
           bottom: BorderSide(
         color: HexColor("#E6E5EB"),
@@ -160,7 +160,7 @@ class _VerifyResetDeviceOTPScreenState
           side: BorderSide(color: whiteBackground)),
       shadowColor: whiteBackground,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 28),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 28),
         child: PinPut(
           eachFieldWidth: 40,
           eachFieldHeight: 45,
@@ -195,7 +195,7 @@ class _VerifyResetDeviceOTPScreenState
 
   void verifyOTP() {
     if (_verifyOtpFormKey.currentState!.validate()) {
-      String enteredOTP = otpController!.text.trim();
+      final String enteredOTP = otpController!.text.trim();
 
       if (enteredOTP == requireOtp) {
         showDialog(context: context, builder: (context) => LoadingIndicator());

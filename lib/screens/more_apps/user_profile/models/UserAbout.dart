@@ -13,24 +13,24 @@ class UserAbout {
       this.userAddress,
       this.contact = "",
       this.wallpaper = "",
-      this.openingHours = const [], this.industry});
+      this.openingHours = const [],
+      this.industry});
 
   factory UserAbout.fromJson(Map<String, dynamic> json) {
     return UserAbout(
-      userAddress: UserAddress.fromJson(json['address']),
-      wallpaper: json['wallpaper'] ?? "",
-      contact: json['contact'] ?? "",
-      openingHours: json['opening_hours'] != null
-          ? (json['opening_hours'] as List)
-              .map((i) => OpeningHourForDay.fromJson(i))
-              .toList()
-          : [],
-      industry: Industry.fromJson(json['industry'])
-    );
+        userAddress: UserAddress.fromJson(json['address']),
+        wallpaper: json['wallpaper'] ?? "",
+        contact: json['contact'] ?? "",
+        openingHours: json['opening_hours'] != null
+            ? (json['opening_hours'] as List)
+                .map((i) => OpeningHourForDay.fromJson(i))
+                .toList()
+            : [],
+        industry: Industry.fromJson(json['industry']));
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
 
     data['address'] = this.userAddress?.toJson();
     data['bio'] = this.bio;
@@ -79,7 +79,7 @@ class UserAddress {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['state'] = this.state;
     data['address_line_1'] = this.addressLine1;
@@ -89,13 +89,12 @@ class UserAddress {
     return data;
   }
 }
+
 class Industry {
   String? id;
   String? name;
 
-  Industry(
-      {this.id,
-      this.name});
+  Industry({this.id, this.name});
 
   factory Industry.fromJson(Map<String, dynamic>? json) {
     if (json != null) {
@@ -109,7 +108,7 @@ class Industry {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
     return data;
@@ -127,11 +126,11 @@ class UserState {
     id = json['id'];
     name = json['name'];
     country =
-        json['country'] != null ? new Country.fromJson(json['country']) : null;
+        json['country'] != null ? Country.fromJson(json['country']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
     if (this.country != null) {
@@ -155,7 +154,7 @@ class Country {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
     data['iso_code'] = this.isoCode;

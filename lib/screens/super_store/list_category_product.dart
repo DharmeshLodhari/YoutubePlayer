@@ -46,10 +46,10 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
 
   Future<List<Product>> getProducts() async {
     if (nextUrl != null) {
-      Map<String, dynamic>? result = await ShoppingAuthService()
+      final Map<String, dynamic>? result = await ShoppingAuthService()
           .listOfProduct(nextUrl, "", "", false, otherDeals: false);
 
-      var tempList = result!['results'];
+      final tempList = result!['results'];
 
       nextUrl = result['next'];
       productCount = result['count'];
@@ -82,13 +82,14 @@ class _ListCategoryProductState extends State<ListCategoryProduct> {
       return const SizedBox.shrink();
     }
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          productList.isEmpty
-              ? const SizedBox.shrink()
-              : const SizedBox(height: 16),
+          if (productList.isEmpty)
+            const SizedBox.shrink()
+          else
+            const SizedBox(height: 16),
           if (productList.isNotEmpty)
             Container(
               margin: const EdgeInsets.only(bottom: 15.0),

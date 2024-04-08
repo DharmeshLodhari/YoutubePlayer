@@ -143,13 +143,13 @@ class _CustomSlydoUserCardState extends State<CustomSlydoUserCard> {
       direction: Axis.horizontal,
       actionPane: const SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: userCard(),
       actions: widget.user.userName.toString().toLowerCase() == "slydo"
           ? []
           : listActionSlideActions(),
       secondaryActions: widget.user.userName.toString().toLowerCase() == "slydo"
           ? []
           : listSecondaryActions(),
+      child: userCard(),
     );
   }
 

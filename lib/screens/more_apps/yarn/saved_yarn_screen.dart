@@ -37,7 +37,7 @@ class SavedYarnState extends State<SavedYarn> {
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
   String? selectedId;
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   late UserBloc userBloc;
 
   @override
@@ -65,7 +65,7 @@ class SavedYarnState extends State<SavedYarn> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getAllSavedYarn(
+        final Map<String, dynamic>? result = await YarnAuth().getAllSavedYarn(
             next, previous ?? '',
             type: type, isType: isType, categoryId: categoryId);
 
@@ -82,7 +82,7 @@ class SavedYarnState extends State<SavedYarn> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         // if (mounted && tempList.isNotEmpty) {
         //   setState(() {
@@ -155,7 +155,7 @@ class SavedYarnState extends State<SavedYarn> {
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
+      preferredSize: const Size.fromHeight(50.0),
       child: AppBar(
         backgroundColor: Colors.white,
         titleSpacing: 0,
@@ -189,7 +189,7 @@ class SavedYarnState extends State<SavedYarn> {
                   size: 26,
                 ),
               ),
-              SizedBox(width: 17),
+              const SizedBox(width: 17),
             ],
           ),
         ],
@@ -211,8 +211,8 @@ class SavedYarnState extends State<SavedYarn> {
   Widget _buildListView() {
     if (!noList) {
       return ListView.separated(
-        physics: ClampingScrollPhysics(),
-        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        physics: const ClampingScrollPhysics(),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         controller: _scrollController,
         itemCount: yarnTopicList.length + 1,
         itemBuilder: (BuildContext context, int index) {
@@ -249,7 +249,7 @@ class SavedYarnState extends State<SavedYarn> {
                 if (mounted) setState(() {});
               },
               onUpdateYarn: (Yarn yarn) {
-                int index = yarnTopicList
+                final int index = yarnTopicList
                     .indexWhere((element) => element.id == yarn.id);
                 yarnTopicList[index] = yarn;
                 if (mounted) setState(() {});
@@ -267,7 +267,7 @@ class SavedYarnState extends State<SavedYarn> {
         separatorBuilder: (context, int) {
           return Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Divider(
@@ -288,13 +288,13 @@ class SavedYarnState extends State<SavedYarn> {
   Widget _buildLoadingIndicator() {
     return Opacity(
       opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? YarnShimmer() : Container(),
+      child: isLoading ? const YarnShimmer() : Container(),
     );
   }
 
   void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;

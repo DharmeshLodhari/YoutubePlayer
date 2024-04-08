@@ -106,7 +106,7 @@ class MyAlertDialog<T> extends StatelessWidget {
                 24.0, 24.0, 24.0, isDividerEnabled ? 20.0 : 0.0),
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.subtitle1!,
-          child: Semantics(child: title, namesRoute: true),
+          child: Semantics(namesRoute: true, child: title),
         ),
       ));
       if (isDividerEnabled) children.add(divider);
@@ -145,10 +145,10 @@ class MyAlertDialog<T> extends StatelessWidget {
     if (actions != null) {
       if (isDividerEnabled) children.add(divider);
       children.add(ButtonBarTheme(
+        data: const ButtonBarThemeData(),
         child: ButtonBar(
           children: actions!,
         ),
-        data: ButtonBarThemeData(),
       ));
     }
 

@@ -42,12 +42,12 @@ class _UserProductListState extends State<UserProductList> {
   String? productPrevious = "";
   List<Product> productList = [];
   List sectionProductList = [];
-  ScrollController _productScrollController = new ScrollController();
+  final ScrollController _productScrollController = ScrollController();
   final GlobalKey<ScaffoldState> _productScaffoldKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _productMessengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
-  RefreshController _productsRefreshController =
+      GlobalKey<ScaffoldMessengerState>();
+  final RefreshController _productsRefreshController =
       RefreshController(initialRefresh: false);
   bool isProductLoading = false;
   bool noProductInList = false;
@@ -82,7 +82,7 @@ class _UserProductListState extends State<UserProductList> {
 
   void _onProductRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         productCount = 0;
@@ -110,7 +110,7 @@ class _UserProductListState extends State<UserProductList> {
 
         debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(productNext, productPrevious, "", widget.channel!,
                 userName: widget.channel == false
                     ? widget.user!.userName
@@ -128,7 +128,7 @@ class _UserProductListState extends State<UserProductList> {
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noProductInList = false;
@@ -147,10 +147,11 @@ class _UserProductListState extends State<UserProductList> {
           productList.length > 6 &&
           !_isSnackBarShowing) {
         _isSnackBarShowing = true;
-        _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        _productMessengerScaffoldKey.currentState
+            ?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
             ))
             .closed
             .then((_) {
@@ -167,10 +168,8 @@ class _UserProductListState extends State<UserProductList> {
         if (mounted) setState(() {});
 
         debugPrint('CALLING PRODUCT channel::: ${widget.channel!}');
-        print("_______________________________________________$productNext");
-        print("++++++++++++++++++++++++++++++++++++++++$productNext");
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfUsersProduct(
                 sectionUrl: productNext, name: widget.user!.userName);
 
@@ -183,7 +182,7 @@ class _UserProductListState extends State<UserProductList> {
           return;
         }
 
-        var tempList = result['sectionProducts'];
+        final tempList = result['sectionProducts'];
         if (mounted) {
           setState(() {
             noProductInList = false;
@@ -202,10 +201,11 @@ class _UserProductListState extends State<UserProductList> {
           productList.length > 6 &&
           !_isSnackBarShowing) {
         _isSnackBarShowing = true;
-        _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
+        _productMessengerScaffoldKey.currentState
+            ?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
             ))
             .closed
             .then((_) {
@@ -261,9 +261,9 @@ class _UserProductListState extends State<UserProductList> {
                           highlightColor: greyBorderColor,
                           child: GridView.builder(
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
                               mainAxisExtent: 180,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 15,
@@ -300,7 +300,7 @@ class _UserProductListState extends State<UserProductList> {
 
   Widget _buildProductList() {
     return productNext == "" && isProductLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -328,10 +328,11 @@ class _UserProductListState extends State<UserProductList> {
                     ? sectionProducts()
                     : GridView.builder(
                         shrinkWrap: true,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
                         controller: _productScrollController,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
                           mainAxisSpacing: 8,
                           mainAxisExtent: 274,
                           crossAxisSpacing: 15,
@@ -386,6 +387,6 @@ class _UserProductListState extends State<UserProductList> {
         );
       }
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 }

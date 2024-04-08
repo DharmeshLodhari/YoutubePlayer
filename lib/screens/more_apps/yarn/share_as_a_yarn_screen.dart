@@ -118,7 +118,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   bool _isMessageIsGIFOrSticker = false;
   bool _isMessageIsSticker = false;
   bool _isGIFLoading = false;
-  TextEditingController _gifController = TextEditingController();
+  final TextEditingController _gifController = TextEditingController();
 
   @override
   void initState() {
@@ -169,8 +169,8 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
       child: _isGIFLoading
           ? Center(child: CircularLoadingIndicator())
           : GridView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 4),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 2,
                 mainAxisSpacing: 4,
@@ -227,7 +227,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         child: Theme(
             data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
             child: Scrollbar(
-              radius: Radius.circular(12),
+              radius: const Radius.circular(12),
               thickness: 2.5,
               child: TextFormField(
                 controller: _gifController,
@@ -240,7 +240,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                 cursorWidth: 1,
                 cursorHeight: 20,
                 maxLines: null,
-                cursorRadius: Radius.circular(16),
+                cursorRadius: const Radius.circular(16),
                 decoration: InputDecoration(
                   hintText: "Search ${_isMessageIsSticker ? "Sticker" : "GIF"}",
                   hintStyle: TextStyle(
@@ -248,13 +248,13 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
-                  prefix: Padding(
+                  prefix: const Padding(
                     padding: EdgeInsets.only(left: 16),
                   ),
-                  suffix: Padding(
+                  suffix: const Padding(
                     padding: EdgeInsets.only(right: 36),
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
                   isDense: true,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(3),
@@ -310,10 +310,10 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     return InkWell(
       onTap: getGIFs,
       child: Container(
-        padding: EdgeInsets.all(2),
+        padding: const EdgeInsets.all(2),
         child: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             Icon(
@@ -321,7 +321,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               color: navyBlue,
               size: 22,
             ),
-            SizedBox(
+            const SizedBox(
               width: 12,
             ),
           ],
@@ -331,11 +331,11 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   }
 
   List<Widget> getSearchBarItems() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     if (_isMessageIsGIFOrSticker) {
       items.add(Container(
-        constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+        constraints: const BoxConstraints(minHeight: 54, maxHeight: 100),
         child: Row(
           children: <Widget>[
             getSearchGIFCancelBtn(),
@@ -428,7 +428,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(left: 20.0, right: 20.0),
+              margin: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: getPreviewContainer(),
             ),
             if (isMentionName) ...[
@@ -525,15 +525,15 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
   Widget _buildRowForContents() {
     return Container(
-      margin: EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 10),
       child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildRatingCategory(),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             _buildEnableViewerAdvice(),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             _buildEnableAdultsOnly(),
           ]),
     );
@@ -543,25 +543,25 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     return SafeArea(
       child: Container(
         // height: 54,
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 16),
         decoration: BoxDecoration(
             border: Border(top: BorderSide(color: HexColor("#D9D9D9")))),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          physics: AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.only(left: 8),
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(left: 8),
           child: Row(
             children: [
               if (!widget.isShare)
                 InkWell(
                     onTap: () async {
                       if (await checkStoragePermission()) {
-                        bool isPermissionGranted =
+                        final bool isPermissionGranted =
                             await requestGalleryPermission();
                         if (isPermissionGranted) {
                           await pickFileFromMedia();
                         } else {
-                          bool isPermissionIsDenied =
+                          final bool isPermissionIsDenied =
                               await isPermanentlyDeniedPermission();
                           if (isPermissionIsDenied) {
                             await openAppSettings();
@@ -572,7 +572,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                       }
                     },
                     child: SvgPicture.asset("yarn/images".toSVG())),
-              if (!widget.isShare) SizedBox(width: 8),
+              if (!widget.isShare) const SizedBox(width: 8),
               if (!widget.isShare)
                 InkWell(
                     onTap: () {
@@ -581,18 +581,18 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                       if (mounted) setState(() {});
                     },
                     child: SvgPicture.asset("yarn/yarn_gif".toSVG())),
-              if (!widget.isShare) SizedBox(width: 8),
+              if (!widget.isShare) const SizedBox(width: 8),
               _buildCategory(),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               if (widget.askCategories != null &&
                   widget.askCategories!.isNotEmpty)
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
               _buildEnableComment(),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               _buildEnablePayme(),
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
               _buildRowForContents(),
@@ -675,7 +675,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         categoryAndroidSheet();
       },
       child: Container(
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
             color: HexColor("#F8F8F8"),
             border: Border.all(color: HexColor("#E9E9E9")),
@@ -689,7 +689,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                   : "select category",
               style: TextStyle(fontSize: 10, color: HexColor("#ACAEB4")),
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Icon(Icons.expand_more_outlined,
@@ -704,7 +704,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     return InkWell(
       onTap: () => ratingCategory(),
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
             color: HexColor("#F8F8F8"),
             border: Border.all(color: HexColor("#E9E9E9")),
@@ -716,7 +716,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               _shareAsYarnModel?.name ?? '',
               style: TextStyle(fontSize: 10, color: HexColor("#7A7A7A")),
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Icon(Icons.expand_more_outlined,
@@ -750,7 +750,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               children: [
                 if (showAddMediaButton) ...[
                   addImageButton(),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   )
                 ],
@@ -772,7 +772,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         //     ),
         //   ),
         // ),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
       ],
@@ -807,7 +807,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
         shadowColor: boxShadowTwo,
-        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
@@ -821,7 +821,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                   Icons.camera_alt_outlined,
                   color: HexColor("#130F26"),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
                 Text(
@@ -835,11 +835,12 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                 showToast(message: "You can select only 4 images or videos");
               } else {
                 // pickImage();
-                bool isPermissionGranted = await requestGalleryPermission();
+                final bool isPermissionGranted =
+                    await requestGalleryPermission();
                 if (isPermissionGranted) {
                   await pickFileFromMedia();
                 } else {
-                  bool isPermissionIsDenied =
+                  final bool isPermissionIsDenied =
                       await isPermanentlyDeniedPermission();
                   if (isPermissionIsDenied) {
                     await openAppSettings();
@@ -869,7 +870,8 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
                 shadowColor: dividerColor,
-                margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
                 child: Container(
                   width: 100,
                   decoration: BoxDecoration(
@@ -890,7 +892,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                   child: Container(
                     height: 25,
                     width: 25,
-                    margin: EdgeInsets.only(right: 6, top: 6),
+                    margin: const EdgeInsets.only(right: 6, top: 6),
                     decoration: BoxDecoration(
                         color: HexColor("#000000"), shape: BoxShape.circle),
                     child: Icon(
@@ -904,7 +906,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 8,
         )
       ],
@@ -925,7 +927,8 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
                 shadowColor: dividerColor,
-                margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
                 child: Container(
                   width: 100,
                   decoration: BoxDecoration(
@@ -950,7 +953,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                   child: Container(
                     height: 25,
                     width: 25,
-                    margin: EdgeInsets.only(right: 6, top: 6),
+                    margin: const EdgeInsets.only(right: 6, top: 6),
                     decoration: BoxDecoration(
                         color: HexColor("#000000"), shape: BoxShape.circle),
                     child: Icon(
@@ -964,7 +967,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 8,
         )
       ],
@@ -1004,14 +1007,14 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   }
 
   void onValueChange(String value) {
-    List<String> listOfWords = value.split(" ");
+    final List<String> listOfWords = value.split(" ");
 
     if (listOfWords.isNotEmpty) {
       if ((listOfWords.last.contains("@") &&
           !value.endsWith(" ") &&
           !value.endsWith("@"))) {
         isMentionName = true;
-        List<String> mentionString = getAllMentions(value);
+        final List<String> mentionString = getAllMentions(value);
 
         if (mentionString.isNotEmpty) {
           searchString = mentionString.last.substring(1);
@@ -1056,7 +1059,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     }
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         CustomizedDropDownField(
@@ -1086,7 +1089,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   Widget _buildSubmitButton() {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       constraints:
           BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 240),
       child: CurvedButton(
@@ -1133,11 +1136,11 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     //   ),
     // );
 
-    XFile? res = await selectSingleImageVideo();
+    final XFile? res = await selectSingleImageVideo();
 
     if (res == null) return;
-    File file = File(res.path);
-    String? mediaType = getFileTypeByPath(path: file.path);
+    final File file = File(res.path);
+    final String? mediaType = getFileTypeByPath(path: file.path);
 
     if (mediaType == null) return;
 
@@ -1147,11 +1150,11 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
           .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
       if (mounted) setState(() {});
     } else if (mediaType == 'video') {
-      var videoFilePath =
+      final videoFilePath =
           await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         videoPath = videoFilePath;
-        File? thumbnailImage =
+        final File? thumbnailImage =
             await generateThumbnailFromVideo(videoPath: videoPath!);
         // setUpVideoPlayer();
         // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
@@ -1197,13 +1200,14 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: widget.askCategories!.length,
                     itemBuilder: (context, index) {
-                      YarnCategories category = widget.askCategories![index];
+                      final YarnCategories category =
+                          widget.askCategories![index];
                       if (selectedAskCategory == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -1294,13 +1298,13 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: widget.shareAsYarnModel!.length,
                     itemBuilder: (context, index) {
-                      ShareAsYarnModel category =
+                      final ShareAsYarnModel category =
                           widget.shareAsYarnModel![index];
 
                       return ListTile(
@@ -1403,7 +1407,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   }
 
   Future<void> addYarnAndQuestion() async {
-    Yarn yarn = Yarn();
+    final Yarn yarn = Yarn();
     yarn.media = newMediaList;
     yarn.tags = userTags;
     yarn.title = messageDecoderWithEmoji(yarnController.text);

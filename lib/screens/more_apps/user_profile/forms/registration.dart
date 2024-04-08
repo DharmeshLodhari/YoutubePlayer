@@ -57,37 +57,37 @@ class _RegistrationState extends State<Registration> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Form(
               key: _registrationFormKey,
               child: Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     appIcon(),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     registerTitle(),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       AppLocalization.of(context)!.registerTopInformation,
                       style: TextStyle(color: darkGrey, fontSize: 14),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 50,
                     ),
                     selectCountryField(),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     phoneNumberField(),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     getUserAgreeCheckBoxWidget(),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Align(
                         alignment: Alignment.centerRight,
                         child: alreadyHaveOtp()),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     continueBtn(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                   ],
@@ -228,17 +228,17 @@ class _RegistrationState extends State<Registration> {
         children: <Widget>[
           ClipRRect(
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
             child: SizedBox(
               width: Checkbox.width - 1.5,
               height: Checkbox.width - 1.5,
               child: Container(
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border.all(
                     color: greyBorderColor,
                     width: 1,
                   ),
-                  borderRadius: new BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Theme(
                   data: ThemeData(
@@ -261,7 +261,7 @@ class _RegistrationState extends State<Registration> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           Expanded(
@@ -354,7 +354,7 @@ class _RegistrationState extends State<Registration> {
           AppLocalization.of(context)!.selectYourCountry,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -363,7 +363,7 @@ class _RegistrationState extends State<Registration> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
@@ -385,7 +385,7 @@ class _RegistrationState extends State<Registration> {
         builder: (context) => Theme(
           data: Theme.of(context).copyWith(primaryColor: Colors.pink),
           child: CountryPickerDialog(
-            titlePadding: EdgeInsets.all(8.0),
+            titlePadding: const EdgeInsets.all(8.0),
             searchCursorColor: Colors.pinkAccent,
             searchInputDecoration:
                 InputDecoration(hintText: AppLocalization.of(context)!.search),
@@ -402,13 +402,13 @@ class _RegistrationState extends State<Registration> {
     return Row(
       children: <Widget>[
         CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Text(
           "+${country.phoneCode}",
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
         ),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Flexible(
             child: Text(
           country.name!,

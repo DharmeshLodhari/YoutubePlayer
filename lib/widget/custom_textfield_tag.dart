@@ -81,7 +81,7 @@ class _CustomTextFieldTagState extends State<CustomTextFieldTag> {
                                   style: TextStyle(color: blackFont),
                                 ),
                                 onTap: () {
-                                  print("$tag selected");
+                                  debugPrint("$tag selected");
                                 },
                               ),
                               const SizedBox(width: 4.0),

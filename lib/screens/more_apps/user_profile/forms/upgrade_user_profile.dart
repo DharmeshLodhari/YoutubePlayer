@@ -22,12 +22,12 @@ class UpgradeUserProfile extends StatefulWidget {
 class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   final _formKey = GlobalKey<FormState>();
 
-  var type = [];
-  var selectedType;
-  var price = "0";
+  List type = [];
+  String? selectedType;
+  String price = "0";
   List<String?> paymentCategories = [];
   bool isLoading = true;
-  var selectedCategory;
+  String? selectedCategory;
 
   String? businessName;
 
@@ -53,8 +53,8 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value!;
-      var spendableBalance = data["spendable_balance"];
+      final data = value!;
+      final spendableBalance = data["spendable_balance"];
 
       debugPrint("spendableBalance $spendableBalance");
       accountBalance = spendableBalance / 100;
@@ -66,7 +66,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
     await PaymentAndBankingAuth().getPaymentCategory().then((result) {
       if (mounted) {
         setState(() {
-          List categoriesList = result["results"]["data"];
+          final List categoriesList = result["results"]["data"];
           categoriesList.forEach((data) {
             paymentCategories.add(data["name"]);
           });
@@ -80,7 +80,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
     UserAuth().getUserProfileUpgradeDetails().then((result) {
       if (mounted) {
         setState(() {
-          List profileUpgradeTypeAndPrice = result!;
+          final List profileUpgradeTypeAndPrice = result!;
           profileUpgradeTypeAndPrice.forEach((data) {
             type.add({"name": data["account_type"], "price": data["price"]});
           });
@@ -151,7 +151,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         : SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
                   Form(
@@ -159,29 +159,30 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                     child: Column(
                       children: <Widget>[
                         getUpgradeProfileType(),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                         getBusinessName(),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                         getCategoryField(),
-                        !hideAmountDropDown
-                            ? Column(
-                                children: [
-                                  SizedBox(
-                                    height: 16,
-                                  ),
-                                  getAmount(),
-                                ],
-                              )
-                            : Container(),
-                        SizedBox(
+                        if (!hideAmountDropDown)
+                          Column(
+                            children: [
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              getAmount(),
+                            ],
+                          )
+                        else
+                          Container(),
+                        const SizedBox(
                           height: 48,
                         ),
                         submitButton(),
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
                       ],
@@ -198,19 +199,19 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       title: "Account type",
       child: DropdownButton<String>(
         isExpanded: true,
-        underline: Divider(
+        underline: const Divider(
           color: Colors.transparent,
         ),
         icon: Padding(
-          padding: EdgeInsets.only(right: 8.0),
+          padding: const EdgeInsets.only(right: 8.0),
           child: Icon(
             Icons.keyboard_arrow_down,
             color: darkGrey,
             size: 20,
           ),
         ),
-        hint: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
+        hint: const Padding(
+          padding: EdgeInsets.only(left: 8.0),
           child: Text("Profile type"),
         ),
         value: selectedType,
@@ -271,11 +272,11 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       title: "Default payment type",
       child: DropdownButton<String>(
         isExpanded: true,
-        underline: Divider(
+        underline: const Divider(
           color: Colors.transparent,
         ),
         icon: Padding(
-          padding: EdgeInsets.only(right: 8.0),
+          padding: const EdgeInsets.only(right: 8.0),
           child: Icon(
             Icons.keyboard_arrow_down,
             color: darkGrey,
@@ -325,9 +326,9 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
       FocusScope.of(context).unfocus();
     }
 
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
-    var data = {
+    final data = {
       "account_type": selectedType.toString().trim(),
       "business_name": businessName.toString().trim(),
       "default_payment_type": selectedCategory.toString().trim(),
@@ -376,7 +377,8 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
               },
               cancelCallBack: () {
                 Navigator.pop(context);
-                _upgradeMessengerProfileScaffold.currentState?.showSnackBar(SnackBar(
+                _upgradeMessengerProfileScaffold.currentState
+                    ?.showSnackBar(SnackBar(
                   content: Text(AppLocalization.of(context)!.invalidPassword),
                 ));
               });
@@ -409,7 +411,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
           "Amount to be paid",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Card(
@@ -423,11 +425,11 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: boxShadow)),
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 18,
                 ),
                 Row(
@@ -458,7 +460,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 18,
                 ),
               ],

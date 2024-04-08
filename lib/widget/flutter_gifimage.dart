@@ -219,7 +219,7 @@ Future<List<ImageInfo>?> fetchGif(ImageProvider provider) async {
     );
   } else if (provider is AssetImage) {
     final AssetBundleImageKey key =
-        await provider.obtainKey(ImageConfiguration());
+        await provider.obtainKey(const ImageConfiguration());
     data = await key.bundle.load(key.name);
   } else if (provider is FileImage) {
     data = await provider.file.readAsBytes();

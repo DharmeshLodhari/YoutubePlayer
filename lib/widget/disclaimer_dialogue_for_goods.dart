@@ -2,7 +2,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
-  bool? result = await showDialog<bool>(
+  final bool? result = await showDialog<bool>(
     barrierDismissible: false,
     context: context,
     builder: (context) => StatefulBuilder(

@@ -77,12 +77,12 @@ class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
                 onRefresh: _onRefresh,
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: musicList
                           .map(
                             (musicItem) => Container(
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: MusicTileWithHeart(
                                 musicItem: musicItem,
                               ),

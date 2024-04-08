@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../utils/colors.dart';
 
+import '../../../../utils/colors.dart';
 
 class CategoryChip extends StatefulWidget {
   CategoryChip({
@@ -56,12 +56,12 @@ class _CategoryChipState extends State<CategoryChip> {
         alignment: Alignment.topRight,
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: chipColor,
               border: Border.all(
-                color: widget.borderColor ?? Color(0xFFFFFFFF),
+                color: widget.borderColor ?? const Color(0xFFFFFFFF),
                 width: 0.5,
               ),
             ),
@@ -101,4 +101,3 @@ class _CategoryChipState extends State<CategoryChip> {
     );
   }
 }
-

@@ -27,7 +27,7 @@ class _YarnNotificationState extends State<YarnNotification> {
   bool noList = false;
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   void getAllNotification() async {
     if (!isLoading) {
@@ -35,7 +35,8 @@ class _YarnNotificationState extends State<YarnNotification> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getAllNotification(
+        final Map<String, dynamic>? result =
+            await YarnAuth().getAllNotification(
           next,
           previous ?? "",
         );
@@ -53,7 +54,7 @@ class _YarnNotificationState extends State<YarnNotification> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         // print('tempList:::: ${tempList.runtimeType}');
         if (mounted) {
@@ -136,7 +137,7 @@ class _YarnNotificationState extends State<YarnNotification> {
   Widget _buildListView() {
     if (!noList) {
       return ListView.separated(
-        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         itemCount: notificationList.length + 1,
         itemBuilder: (context, index) {
           if (index == notificationList.length) {
@@ -145,7 +146,7 @@ class _YarnNotificationState extends State<YarnNotification> {
           return AskNotificationView(
             notification: notificationList[index],
             onDeleteNotification: (Notifications notifications) {
-              int index = notificationList
+              final int index = notificationList
                   .indexWhere((element) => element.id == notifications.id);
               if (index != -1) {
                 notificationList.removeAt(index);
@@ -158,7 +159,7 @@ class _YarnNotificationState extends State<YarnNotification> {
           );
         },
         separatorBuilder: (context, index) {
-          return Divider();
+          return const Divider();
         },
       );
     }
@@ -170,13 +171,13 @@ class _YarnNotificationState extends State<YarnNotification> {
   Widget _buildLoadingIndicator() {
     return Opacity(
       opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? YarnShimmer() : Container(),
+      child: isLoading ? const YarnShimmer() : Container(),
     );
   }
 
   void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;

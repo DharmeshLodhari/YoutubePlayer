@@ -236,7 +236,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     // debugPrint('IS-VERIFIED --> ${json['is_verified']}');
-    User user = User(
+    final User user = User(
       nickName: json['nickname'] ?? "",
       type: json['account_type'],
       avatar: json['avatar'] ?? defaultImage,
@@ -284,7 +284,7 @@ class User {
   }
 
   Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{};
+    final map = <String, dynamic>{};
     map["uuid"] = uuid;
     map["fullName"] = fullName;
     map["nickname"] = nickName;
@@ -299,13 +299,13 @@ class User {
   }
 
   UserFollowers toUserFollowerModel() {
-    UserFollowers userFollowers = UserFollowers();
+    final UserFollowers userFollowers = UserFollowers();
     userFollowers.avatar = avatar;
     return userFollowers;
   }
 
   SharedCartMemberModel convertToUser() {
-    SharedCartMemberModel user = SharedCartMemberModel();
+    final SharedCartMemberModel user = SharedCartMemberModel();
 
     user.userName = userName;
     user.avatar = avatar;
@@ -378,7 +378,7 @@ class CustomerProfile {
       this.rating = 0.0});
 
   factory CustomerProfile.fromJson(Map<String, dynamic> json) {
-    CustomerProfile profile = CustomerProfile(
+    final CustomerProfile profile = CustomerProfile(
         fullName: json['full_name'] ?? json['name'] ?? "",
         userName: json['username'] ?? "",
         bio: json['bio'] ?? "",
@@ -424,7 +424,7 @@ class CustomerProfile {
   }
 
   factory CustomerProfile.fromDBJson(Map<String, dynamic> json) {
-    CustomerProfile profile = CustomerProfile(
+    final CustomerProfile profile = CustomerProfile(
         fullName: json['full_name'],
         userName: json['username'],
         avatar: json['avatar'],
@@ -438,7 +438,7 @@ class CustomerProfile {
 
   factory CustomerProfile.fromChatConversation(
       ChatConversation chatConversation) {
-    CustomerProfile profile = CustomerProfile(
+    final CustomerProfile profile = CustomerProfile(
       fullName: chatConversation.fullName,
       userName: chatConversation.userName,
       avatar: chatConversation.avatar,
@@ -450,7 +450,7 @@ class CustomerProfile {
   }
 
   factory CustomerProfile.fromGroupParticipant(Participant participant) {
-    CustomerProfile profile = CustomerProfile(
+    final CustomerProfile profile = CustomerProfile(
       fullName: participant.fullName,
       userName: participant.userName,
       avatar: participant.avatar,

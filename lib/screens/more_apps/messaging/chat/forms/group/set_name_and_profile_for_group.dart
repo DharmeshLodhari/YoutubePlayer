@@ -36,7 +36,7 @@ class SetNameAndProfileOfGroup extends StatefulWidget {
 
 class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   final GlobalKey<ScaffoldState> _scaffoldSetNameAndProfileKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
   List<CustomerProfile> selectedConnectionList = [];
 

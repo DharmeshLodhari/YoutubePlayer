@@ -10,10 +10,10 @@ class MyGlobals {
   MyGlobals._internal();
 
   static final MyGlobals _myGlobals = MyGlobals._internal();
-  static GlobalKey _scaffoldKey = GlobalKey();
+  static final GlobalKey _scaffoldKey = GlobalKey();
   static StreamSubscription? _notificationStream;
 
-  static GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
   static set notificationStream(StreamSubscription? value) {
     _notificationStream = value;

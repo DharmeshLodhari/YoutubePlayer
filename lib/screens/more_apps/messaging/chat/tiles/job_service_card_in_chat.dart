@@ -33,9 +33,7 @@ class _JobCardChatDescriptionState extends State<JobCardChatDescription> {
   String getTimeDifference(String date) {
     final difference = DateTime.now().difference(DateTime.parse(date));
     String time = '';
-    if (kDebugMode) {
-      print(difference.toString() + '-----');
-    }
+    debugPrint(difference.toString() + '-----');
 
     if (difference > const Duration(hours: 24)) {
       time = difference.inDays.toString() + ' days';

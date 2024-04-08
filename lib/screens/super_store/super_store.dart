@@ -176,7 +176,8 @@ class _SuperStoreState extends State<SuperStore> {
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
-            ProductIndustryResults industryQuery = widget.arguments['industry'];
+            final ProductIndustryResults industryQuery =
+                widget.arguments['industry'];
             Navigator.of(context).pushNamed("/search-product",
                 arguments: {"industry": industryQuery.id});
           },
@@ -187,9 +188,9 @@ class _SuperStoreState extends State<SuperStore> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
       _cartBtn(),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
     ];
   }
 
@@ -207,7 +208,7 @@ class _SuperStoreState extends State<SuperStore> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 15),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -223,7 +224,7 @@ class _SuperStoreState extends State<SuperStore> {
             height: 15,
             width: 15,
           )),
-      SizedBox(width: 15),
+      const SizedBox(width: 15),
 
       // RoundedBackgroundIcon(
       //     backgroundColor: Colors.transparent,
@@ -264,10 +265,10 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget _buildCategoryAndTabs() {
-    ProductIndustryResults productUrl = widget.arguments['industry'];
+    final ProductIndustryResults productUrl = widget.arguments['industry'];
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
         Column(
@@ -282,7 +283,7 @@ class _SuperStoreState extends State<SuperStore> {
               firstTab: firstTabName,
               secondTab: secondTabName,
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
           ],
@@ -307,39 +308,39 @@ class _SuperStoreState extends State<SuperStore> {
                 next_url: AppConfig.baseUrl +
                     "/api/v1/products/categories/?industry=${productUrl.id}"),
           ),
-          SizedBox(height: 14),
+          const SizedBox(height: 14),
           Divider(
             height: 0,
             thickness: 0.5,
             color: greySecondaryYarn,
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
       ],
     );
   }
 
   Widget _buildPageView() {
-    ProductIndustryResults industry = widget.arguments['industry'];
+    final ProductIndustryResults industry = widget.arguments['industry'];
     return IndexedStack(
       index: currentAskTapOnHome,
       children: [
-        categoryId == null || categoryId == ""
-            ? ShopListScreen(
-                onPageRefresh: (bool data) {
-                  if (data == true) {
-                    // _showTabs(true);
-                  }
-                },
-                category: categoryName,
-                industry: appTitle!,
-                nextUrl: nextUrl,
-                type:
-                    categoryId == null || categoryId == "" ? "sessions" : null)
-            : ListCategoryProduct(
-                key: ValueKey("$nextUrl$categoryName"),
-                nextUrl: nextUrl,
-                categoryName: categoryName),
+        if (categoryId == null || categoryId == "")
+          ShopListScreen(
+              onPageRefresh: (bool data) {
+                if (data == true) {
+                  // _showTabs(true);
+                }
+              },
+              category: categoryName,
+              industry: appTitle!,
+              nextUrl: nextUrl,
+              type: categoryId == null || categoryId == "" ? "sessions" : null)
+        else
+          ListCategoryProduct(
+              key: ValueKey("$nextUrl$categoryName"),
+              nextUrl: nextUrl,
+              categoryName: categoryName),
         FindBusinessListScreen(
             onPageRefresh: (bool data) {
               if (data == true) {
@@ -440,7 +441,7 @@ class _SuperStoreState extends State<SuperStore> {
       width: 30,
       icon: badges.Badge(
         badgeContent: getBadgeContent(),
-        badgeAnimation: badges.BadgeAnimation.rotation(
+        badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
           loopAnimation: false,
@@ -451,7 +452,7 @@ class _SuperStoreState extends State<SuperStore> {
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
-              ? EdgeInsets.all(0)
+              ? const EdgeInsets.all(0)
               : EdgeInsets.only(
                   left: getBadgeCount().length == 1 ? 6 : 8,
                   right: 6,
@@ -481,7 +482,7 @@ class _SuperStoreState extends State<SuperStore> {
     }
     return Text(
       getBadgeCount(),
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 10,
         color: Colors.white,
         fontWeight: FontWeight.bold,

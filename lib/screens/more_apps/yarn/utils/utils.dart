@@ -1,8 +1,10 @@
 import 'dart:typed_data';
+
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
 import '../../../../utils/util.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
@@ -26,12 +28,11 @@ String getGetYarnQuestionDateTime(String dateTime) {
 List<String> getAllHashtags(String text) {
   text = messageDecoderWithEmoji(text) ?? "";
   text = text.replaceAll(RegExp(r'\n'), ' ');
-  var new_list = text.split(" ");
+  final new_list = text.split(" ");
   new_list.removeWhere((item) => ["", " ", null, false, 0].contains(item));
-  List<String> hashtags = [];
+  final List<String> hashtags = [];
   for (var i in new_list) {
     if (i.startsWith("#")) {
-      print("NaI:$i");
       hashtags.add(i);
     }
   }
@@ -49,8 +50,8 @@ List<String> getAllHashtags(String text) {
 List<String> getAllMentions(String text) {
   final regexp = RegExp(r'\@[a-zA-Z0-9._-]+\b()');
 
-  List<String> mentions = [];
-  List<String> filterMention = [];
+  final List<String> mentions = [];
+  final List<String> filterMention = [];
 
   regexp.allMatches(text.replaceAll("\n", " ")).forEach((element) {
     if (element.group(0) != null) {
@@ -164,11 +165,11 @@ double getButtonSize(TileRenderPlace tileRenderPlace, BuildContext context) {
 
 Widget assignTitleToAction({required String text, required Widget child}) {
   return Container(
-    constraints: BoxConstraints(maxWidth: 60),
+    constraints: const BoxConstraints(maxWidth: 60),
     child: Column(
       children: [
         child,
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Center(
           child: Text(text,
               style: TextStyle(

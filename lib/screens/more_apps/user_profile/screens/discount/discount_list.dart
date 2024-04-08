@@ -28,11 +28,11 @@ class _DiscountListState extends State<DiscountList> {
   String? next = "";
   String? previous = "";
   List<DiscountModel> itemList = [];
-  ScrollController _scrollController = new ScrollController();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _messengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
-  RefreshController _refreshController =
+      GlobalKey<ScaffoldMessengerState>();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
@@ -53,7 +53,7 @@ class _DiscountListState extends State<DiscountList> {
 
   void _onProductRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         itemCount = 0;
@@ -85,7 +85,7 @@ class _DiscountListState extends State<DiscountList> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await ShoppingAuthService().listOfDiscounts(next, previous);
 
         if (result == null) {
@@ -100,7 +100,7 @@ class _DiscountListState extends State<DiscountList> {
         itemCount = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noItemInList = false;
@@ -119,7 +119,7 @@ class _DiscountListState extends State<DiscountList> {
         _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -134,7 +134,7 @@ class _DiscountListState extends State<DiscountList> {
         appBar: _buildAppBar() as PreferredSizeWidget,
         body: Container(
           color: white,
-          padding: EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -162,7 +162,7 @@ class _DiscountListState extends State<DiscountList> {
       highlightColor: greyBorderColor,
       child: ListView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
         itemCount: 5,
         itemBuilder: (context, index) {
@@ -181,8 +181,8 @@ class _DiscountListState extends State<DiscountList> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 12),
                       child: Row(
                         children: [
                           Expanded(
@@ -194,7 +194,7 @@ class _DiscountListState extends State<DiscountList> {
                                   width: 50,
                                   color: Colors.blueGrey,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 12,
                                 ),
                                 Container(
@@ -258,7 +258,7 @@ class _DiscountListState extends State<DiscountList> {
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () async {
-            var result = await NavigationUtil.push(
+            final result = await NavigationUtil.push(
               context,
               screen: AddEditDiscount(),
             );
@@ -273,20 +273,20 @@ class _DiscountListState extends State<DiscountList> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 30),
+      const SizedBox(width: 30),
     ];
   }
 
   Widget _buildItemList() {
     return next == "" && isLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
               controller: _scrollController,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: itemList.length,
               itemBuilder: (context, index) {
                 return itemTile(index);
@@ -298,7 +298,7 @@ class _DiscountListState extends State<DiscountList> {
   Widget itemTile(int index) {
     return InkWell(
       onTap: () async {
-        var result = await NavigationUtil.push(
+        final result = await NavigationUtil.push(
           context,
           screen: AddEditDiscount(
             discountModel: itemList[index],
@@ -319,7 +319,7 @@ class _DiscountListState extends State<DiscountList> {
           margin: EdgeInsets.zero,
           color: white,
           child: Container(
-            padding: EdgeInsets.only(top: 23, left: 15, right: 15),
+            padding: const EdgeInsets.only(top: 23, left: 15, right: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -340,7 +340,7 @@ class _DiscountListState extends State<DiscountList> {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Text(

@@ -15,10 +15,10 @@ import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
 import '../../../../../services/app_config_bloc.dart';
 import '../../../../../services/auth.dart';
-import '../../../../../widget/loading_indicator.dart';
 import '../../../../../widget/curved_btn.dart';
 import '../../../../../widget/customized_dropdown_field.dart';
 import '../../../../../widget/dialog.dart';
+import '../../../../../widget/loading_indicator.dart';
 import '../../../../../widget/rounded_background_icon.dart';
 import '../../user_auth.dart';
 
@@ -43,7 +43,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
       false; // Variable to show the loading bar when we are verifying business name.
   late SubscriptionsModel subscriptionsModelCopy;
   Future<List<SubscriptionsModel>>? getSubscriptionsFuture;
-  TextEditingController _businessNameCtrl = TextEditingController();
+  final TextEditingController _businessNameCtrl = TextEditingController();
   AppConfigurationModel? appConfigurationModel;
 
   @override
@@ -58,7 +58,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     if (typingTimer != null) {
       setState(() => typingTimer!.cancel()); // clear timer
     }
-    typingTimer = new Timer(
+    typingTimer = Timer(
       duration,
       () => _checkBusinessName(value),
     );
@@ -91,7 +91,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SvgPicture.asset('assets/images/subscription_img.svg'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             const Text(
               'Choose your plan',
               textAlign: TextAlign.center,
@@ -100,7 +100,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
                   color: Color(0xff030F36),
                   fontWeight: FontWeight.w700),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: getAccountTypeField(),
@@ -108,7 +108,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
             Visibility(
               visible: _id != 0,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
                     CustomizedTextFormField(
@@ -124,71 +124,70 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
                 ),
               ),
             ),
-            SizedBox(height: 15),
-            getSubscriptionsFuture != null
-                ? FutureBuilder<List<SubscriptionsModel>>(
-                    future: getSubscriptionsFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasError) {
-                          return Text(snapshot.error.toString());
-                        }
-                        if (snapshot.hasData) {
-                          return ListView.builder(
-                              shrinkWrap: true,
-                              padding: EdgeInsets.zero,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  appConfigurationModel?.freeSubscription ==
-                                          true
-                                      ? 1
-                                      : snapshot.data!.length,
-                              itemBuilder: (context, index) {
-                                SubscriptionsModel subscriptionsModel =
-                                    snapshot.data![index];
-                                return SubscriptionTile(
-                                  id: _id,
-                                  isVisible: true,
-                                  freeSubscription:
-                                      appConfigurationModel?.freeSubscription ??
-                                          false,
-                                  currency: subscriptionsModel.currency,
-                                  subscriptionId: subscriptionsModel.id,
-                                  amount: subscriptionsModel.price.toString(),
-                                  subscriptionType:
-                                      subscriptionsModel.subscriptionType,
-                                  onTap: () {
-                                    if (_id == 0) {
-                                      _selectSubscriptionsPlan(
-                                          subscriptionsModel);
-                                    } else {
-                                      setState(() {
-                                        _id = 0;
-                                        _businessNameCtrl.clear();
-                                        businessNameVerified = null;
-                                      });
-                                    }
-                                  },
-                                );
-                              });
-                        } else {
-                          return Center(
-                              child:
-                                  Text('No subscriptions data at the moment'));
-                        }
-                      } else {
-                        return Center(child: CircularLoadingIndicator());
+            const SizedBox(height: 15),
+            if (getSubscriptionsFuture != null)
+              FutureBuilder<List<SubscriptionsModel>>(
+                  future: getSubscriptionsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.hasError) {
+                        return Text(snapshot.error.toString());
                       }
-                    })
-                : SizedBox.shrink(),
-            SizedBox(height: 10),
+                      if (snapshot.hasData) {
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.zero,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount:
+                                appConfigurationModel?.freeSubscription == true
+                                    ? 1
+                                    : snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final SubscriptionsModel subscriptionsModel =
+                                  snapshot.data![index];
+                              return SubscriptionTile(
+                                id: _id,
+                                isVisible: true,
+                                freeSubscription:
+                                    appConfigurationModel?.freeSubscription ??
+                                        false,
+                                currency: subscriptionsModel.currency,
+                                subscriptionId: subscriptionsModel.id,
+                                amount: subscriptionsModel.price.toString(),
+                                subscriptionType:
+                                    subscriptionsModel.subscriptionType,
+                                onTap: () {
+                                  if (_id == 0) {
+                                    _selectSubscriptionsPlan(
+                                        subscriptionsModel);
+                                  } else {
+                                    setState(() {
+                                      _id = 0;
+                                      _businessNameCtrl.clear();
+                                      businessNameVerified = null;
+                                    });
+                                  }
+                                },
+                              );
+                            });
+                      } else {
+                        return const Center(
+                            child: Text('No subscriptions data at the moment'));
+                      }
+                    } else {
+                      return Center(child: CircularLoadingIndicator());
+                    }
+                  })
+            else
+              const SizedBox.shrink(),
+            const SizedBox(height: 10),
             Visibility(
               visible: businessNameVerified ?? false,
               child: Column(
                 children: [
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: CurvedButton(
                       text: 'Submit',
                       onPressed: () {
@@ -235,7 +234,8 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     final pressedAccountType = await showDialog<String>(
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -338,19 +338,19 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
           return CircleAvatar(
             radius: 14,
             backgroundColor: navyBlue,
-            child: Padding(
-              padding: const EdgeInsets.all(2.0),
+            child: const Padding(
+              padding: EdgeInsets.all(2.0),
               child: Icon(Icons.check, size: 20, color: Colors.white),
             ),
           );
         } else {
-          return Icon(
+          return const Icon(
             Icons.cancel,
             color: Colors.red,
           );
         }
       } else {
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       }
     }
   }
@@ -442,7 +442,7 @@ class SubscriptionTile extends StatelessWidget {
         onTap: onTap,
         child: Card(
           elevation: 4,
-          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           shape: RoundedRectangleBorder(
               side: id == subscriptionId
                   ? BorderSide(color: navyBlue)
@@ -458,68 +458,74 @@ class SubscriptionTile extends StatelessWidget {
                   children: [
                     Text(
                       subscriptionType,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color(0Xff75818F),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    id == subscriptionId
-                        ? CircleAvatar(
-                            radius: 14,
-                            backgroundColor: navyBlue,
-                            child: Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: Icon(Icons.check,
-                                  size: 20, color: Colors.white),
-                            ),
-                          )
-                        : Icon(Icons.radio_button_unchecked_outlined),
+                    if (id == subscriptionId)
+                      CircleAvatar(
+                        radius: 14,
+                        backgroundColor: navyBlue,
+                        child: const Padding(
+                          padding: EdgeInsets.all(2.0),
+                          child:
+                              Icon(Icons.check, size: 20, color: Colors.white),
+                        ),
+                      )
+                    else
+                      const Icon(Icons.radio_button_unchecked_outlined),
                   ],
                 ),
-                freeSubscription
-                    ? Text(
-                        'Free (one year) Plan',
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: naturalGreen.withOpacity(0.8),
-                            fontWeight: FontWeight.w700),
-                      )
-                    : SizedBox.shrink(),
-                SizedBox(height: 12),
-                freeSubscription
-                    ? SizedBox.shrink()
-                    : Row(
-                        children: [
-                          Text(
-                            worldCurrencies[currency]!,
-                            style: TextStyle(
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                          Text(
-                            '${moneyDisplayNormalizer(int.parse(amount))} ($subscriptionType) plan',
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Color(0xff030F36),
-                                fontWeight: FontWeight.w700,
-                                decoration: TextDecoration.lineThrough),
-                          ),
-                        ],
+                if (freeSubscription)
+                  Text(
+                    'Free (one year) Plan',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: naturalGreen.withOpacity(0.8),
+                        fontWeight: FontWeight.w700),
+                  )
+                else
+                  const SizedBox.shrink(),
+                const SizedBox(height: 12),
+                if (freeSubscription)
+                  const SizedBox.shrink()
+                else
+                  Row(
+                    children: [
+                      Text(
+                        worldCurrencies[currency]!,
+                        style: const TextStyle(
+                          fontFamily: "Inter",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
                       ),
-                freeSubscription ? SizedBox.shrink() : SizedBox(height: 10),
+                      Text(
+                        '${moneyDisplayNormalizer(int.parse(amount))} ($subscriptionType) plan',
+                        style: const TextStyle(
+                            fontSize: 20,
+                            color: Color(0xff030F36),
+                            fontWeight: FontWeight.w700,
+                            decoration: TextDecoration.lineThrough),
+                      ),
+                    ],
+                  ),
+                if (freeSubscription)
+                  const SizedBox.shrink()
+                else
+                  const SizedBox(height: 10),
                 RichText(
                   text: TextSpan(
                     text: 'then ',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                     ),
                     children: [
                       WidgetSpan(
                           child: Text(
                             worldCurrencies[currency]!,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontFamily: "Inter",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),

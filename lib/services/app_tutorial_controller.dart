@@ -25,16 +25,15 @@ GlobalKey tutorialBlogsKey = GlobalKey();
 GlobalKey tutorialServicesKey = GlobalKey();
 GlobalKey tutorialSettingsKey = GlobalKey();
 
-
 class AppTutorialController {
   static final AppTutorialController _instance =
-      new AppTutorialController.internal();
+      AppTutorialController.internal();
 
   factory AppTutorialController() => _instance;
 
   AppTutorialController.internal();
 
-  List<TargetFocus> _targets = [];
+  final List<TargetFocus> _targets = [];
 
   TutorialCoachMark? tutorial;
 
@@ -48,26 +47,25 @@ class AppTutorialController {
     _fillTargets();
 
     tutorial = TutorialCoachMark(
-        targets: _targets, // List<TargetFocus>
-        colorShadow: Colors.black12, // DEFAULT Colors.black
-        // alignSkip: Alignment.bottomRight,
-        // textSkip: "SKIP",
-        // paddingFocus: 10,
-        // focusAnimationDuration: Duration(milliseconds: 500),
-        // pulseAnimationDuration: Duration(milliseconds: 500),
-        // pulseVariation: Tween(begin: 1.0, end: 0.99),
-        onFinish: () {
-          print("finish");
-        },
-        onClickTarget: (target) {
-          print(target);
-        },
+      targets: _targets, // List<TargetFocus>
+      colorShadow: Colors.black12, // DEFAULT Colors.black
+      // alignSkip: Alignment.bottomRight,
+      // textSkip: "SKIP",
+      // paddingFocus: 10,
+      // focusAnimationDuration: Duration(milliseconds: 500),
+      // pulseAnimationDuration: Duration(milliseconds: 500),
+      // pulseVariation: Tween(begin: 1.0, end: 0.99),
+      onFinish: () {
+        debugPrint("finish");
+      },
+      onClickTarget: (target) {
+        debugPrint("target");
+      },
       onSkip: () {
-        print("skip");
+        debugPrint("skip");
         return true;
       },
-        )
-      ..show(context: context);
+    )..show(context: context);
 
     // tutorial.skip();
     // tutorial.finish();
@@ -77,7 +75,7 @@ class AppTutorialController {
 
   Widget nextButton() {
     return Container(
-      padding: EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.only(top: 16),
       width:
           MediaQuery.of(MyGlobals().navigationKey.currentContext!).size.width /
               2,
@@ -106,15 +104,15 @@ class AppTutorialController {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "User Profile",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 20.0),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10.0),
                       child: Text(
                         "Click here to navigate to user profile.",
                         style: TextStyle(color: Colors.white),
@@ -141,15 +139,15 @@ class AppTutorialController {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "Make Payment",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 20.0),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10.0),
                       child: Text(
                         "Click here to initiate payment.",
                         style: TextStyle(color: Colors.white),
@@ -176,15 +174,15 @@ class AppTutorialController {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "Payment Request",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 20.0),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10.0),
                       child: Text(
                         "Click here to initiate payment request.",
                         style: TextStyle(color: Colors.white),
@@ -212,15 +210,15 @@ class AppTutorialController {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "User QR Code",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 20.0),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10.0),
                       child: Text(
                         "The current user's QR code.",
                         style: TextStyle(color: Colors.white),
@@ -248,15 +246,15 @@ class AppTutorialController {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "Transactions",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 20.0),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10.0),
                       child: Text(
                         "Access all your completed and pending transactions.",
                         style: TextStyle(color: Colors.white),
@@ -284,15 +282,15 @@ class AppTutorialController {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "Wallet",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 20.0),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10.0),
                       child: Text(
                         "Fund your Slydo account with direct transfers or debit card.",
                         style: TextStyle(color: Colors.white),
@@ -320,15 +318,15 @@ class AppTutorialController {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "Search",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 20.0),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10.0),
                       child: Text(
                         "Click here to search for users, products and services.",
                         style: TextStyle(color: Colors.white),
@@ -356,15 +354,15 @@ class AppTutorialController {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     "Shopping Cart",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         fontSize: 20.0),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10.0),
                     child: Text(
                       "Click here to view your shopping cart.",
                       style: TextStyle(color: Colors.white),
@@ -393,15 +391,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Yarn",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "Connect with others and stay up to date on worldwide trends.",
                     style: TextStyle(color: Colors.white),
@@ -431,15 +429,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "QR Code Scanner",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "Click here to scan slydo QR codes.",
                     style: TextStyle(color: Colors.white),
@@ -469,15 +467,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Chat",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "View and exchange messages with buyers, sellers and friends.",
                     style: TextStyle(color: Colors.white),
@@ -507,15 +505,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Settings",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "Control and manage every account function.",
                     style: TextStyle(color: Colors.white),
@@ -545,15 +543,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Super Store",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "Check out an unlimited variety of goods available for sale.",
                     style: TextStyle(color: Colors.white),
@@ -583,15 +581,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Moment",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "Share and view unforgettable memories.",
                     style: TextStyle(color: Colors.white),
@@ -621,15 +619,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Orders",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "View all open and closed orders.",
                     style: TextStyle(color: Colors.white),
@@ -659,15 +657,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Inbox",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "Check all sent and received messages.",
                     style: TextStyle(color: Colors.white),
@@ -697,15 +695,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Blogs",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "Discover insightful write upd on your preferred topics and many more.",
                     style: TextStyle(color: Colors.white),
@@ -735,15 +733,15 @@ class AppTutorialController {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   "Services",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 20.0),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Text(
                     "Take a look at all services offered by Slydo users at the best prices.",
                     style: TextStyle(color: Colors.white),

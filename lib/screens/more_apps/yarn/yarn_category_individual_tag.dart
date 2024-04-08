@@ -59,7 +59,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
   }
 
   Future<UsersCategories?> getUserCategories() async {
-    Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
+    final Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
     setState(() {
       usersCategory = result!['results'];
     });
@@ -67,7 +67,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
   }
 
   Future<UsersCategories?> saveUserCategories(String categoryId) async {
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await YarnAuth().saveUsersSingleCategories(categoryId);
     setState(() {
       usersCategory = result!['results'];
@@ -102,7 +102,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
                       shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                       askCategory: widget.askCategories,
                       onUpdateYarn: (Yarn yarn) {
-                        List<Yarn> tempList = [];
+                        final List<Yarn> tempList = [];
                         tempList.add(yarn);
                         yarnDashboardBloc.addCreateYarnTopicList(tempList);
 
@@ -118,7 +118,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
             }
           });
         },
-        child: Icon(
+        child: const Icon(
           SlydoAppIconNew.dashboard_yarn,
           color: Colors.white,
         ),
@@ -128,7 +128,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
+      preferredSize: const Size.fromHeight(50.0),
       child: AppBar(
         backgroundColor: Colors.white,
         titleSpacing: 0,
@@ -164,52 +164,53 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
                   size: 26,
                 ),
               ),
-              SizedBox(width: 10),
-              !isAddCategory()!
-                  ? InkWell(
-                      onTap: () {
-                        saveUserCategories(widget.askCategories!.id!);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: white,
-                          borderRadius: BorderRadius.circular(9),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          child: Text(
-                            'Add',
-                            style: TextStyle(
-                              color: blackFont,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, Routes.USER_PROFILE,
-                            arguments: {
-                              "searchedUserName": userBloc.user.userName
-                            });
-                      },
-                      child: Container(
-                        height: 24,
-                        width: 24,
-                        decoration: BoxDecoration(shape: BoxShape.circle),
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl: userBloc.user.avatar!,
-                            fit: BoxFit.cover,
-                            errorWidget: imageErrorWidget,
-                          ),
+              const SizedBox(width: 10),
+              if (!isAddCategory()!)
+                InkWell(
+                  onTap: () {
+                    saveUserCategories(widget.askCategories!.id!);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: white,
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      child: Text(
+                        'Add',
+                        style: TextStyle(
+                          color: blackFont,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-              SizedBox(width: 17),
+                  ),
+                )
+              else
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.USER_PROFILE,
+                        arguments: {
+                          "searchedUserName": userBloc.user.userName
+                        });
+                  },
+                  child: Container(
+                    height: 24,
+                    width: 24,
+                    decoration: const BoxDecoration(shape: BoxShape.circle),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: userBloc.user.avatar!,
+                        fit: BoxFit.cover,
+                        errorWidget: imageErrorWidget,
+                      ),
+                    ),
+                  ),
+                ),
+              const SizedBox(width: 17),
             ],
           ),
         ],
@@ -245,7 +246,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
       },
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           _buildCategoryAndTabs(),
@@ -269,7 +270,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
             firstTab: 'Latest',
             secondTab: 'Trending',
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Divider(
@@ -327,7 +328,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
     return InkWell(
       onTap: () => onPageTap!(),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,

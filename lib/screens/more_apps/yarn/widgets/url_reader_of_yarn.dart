@@ -5,19 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Map<String, dynamic> detectLinkInText(String text) {
-  RegExp exp = RegExp(
+  final RegExp exp = RegExp(
       r'(?<!\d)(?:(?:https?|ftp):\/\/)?[\w/\-?=%.@]+\.[\w/\-?=%.]+(?!\d|\.\d+)',
       caseSensitive: false);
-  Iterable<RegExpMatch> matches = exp.allMatches(text);
+  final Iterable<RegExpMatch> matches = exp.allMatches(text);
   String link;
-  List<String> listOfLinks = [];
+  final List<String> listOfLinks = [];
   matches.forEach((match) {
     link = text.substring(match.start, match.end);
     // will match google.com
     if (link.startsWith("@") != true && !link.contains("..")) {
       // don't match @abiola.rasheed as a url
       //remove double // if present
-      List<String> parts = removeDoubleSlash(link).split('.');
+      final List<String> parts = removeDoubleSlash(link).split('.');
       bool ignoreLink = false;
       for (String part in parts) {
         if (part.contains(RegExp(r'\d'))) {
@@ -31,7 +31,10 @@ Map<String, dynamic> detectLinkInText(String text) {
     }
   });
 
-  Map<String, dynamic> linkData = {"hasLink": false, "links": listOfLinks};
+  final Map<String, dynamic> linkData = {
+    "hasLink": false,
+    "links": listOfLinks
+  };
 
   if (listOfLinks.isEmpty) {
     return linkData;
@@ -62,30 +65,32 @@ String? getPreviewIcon(String? url) {
 
 List<Widget> getWebPreview(
     WebInfo webInfo, BuildContext context, String? url, double height) {
-  List<Widget> children = [
+  final List<Widget> children = [
     Center(
       child: Row(
         children: <Widget>[
-          getPreviewIcon(webInfo.icon)!.isEmpty
-              ? SizedBox.shrink()
-              : CachedNetworkImage(
-                  imageUrl: getPreviewIcon(webInfo.icon)!,
-                  errorWidget: imageErrorWidget,
-                  imageBuilder: (context, imageProvider) {
-                    return Image(
-                      image: imageProvider,
-                      fit: BoxFit.contain,
-                      width: 30,
-                      height: 30,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.link);
-                      },
-                    );
+          if (getPreviewIcon(webInfo.icon)!.isEmpty)
+            const SizedBox.shrink()
+          else
+            CachedNetworkImage(
+              imageUrl: getPreviewIcon(webInfo.icon)!,
+              errorWidget: imageErrorWidget,
+              imageBuilder: (context, imageProvider) {
+                return Image(
+                  image: imageProvider,
+                  fit: BoxFit.contain,
+                  width: 30,
+                  height: 30,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.link);
                   },
-                ),
-          getPreviewIcon(webInfo.icon)!.isEmpty
-              ? SizedBox.shrink()
-              : const SizedBox(width: 8),
+                );
+              },
+            ),
+          if (getPreviewIcon(webInfo.icon)!.isEmpty)
+            const SizedBox.shrink()
+          else
+            const SizedBox(width: 8),
           Expanded(
             child: Text(
               webInfo.title!,

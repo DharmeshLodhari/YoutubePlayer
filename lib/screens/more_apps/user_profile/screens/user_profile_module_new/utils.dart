@@ -9,11 +9,11 @@ Widget getFollowersWidget(widget,
     double radiusShift: 10,
     double radiusHeight: 32,
     double radiusWidth: 32}) {
-  List<UserFollowers> viewers = [];
+  final List<UserFollowers> viewers = [];
 
   if (widget.yarn.viewersAvatars != null) {
     for (ViewersAvatars avatars in widget.yarn.viewersAvatars!) {
-      UserFollowers follower = UserFollowers(avatar: avatars.avatar!);
+      final UserFollowers follower = UserFollowers(avatar: avatars.avatar!);
       viewers.add(follower);
     }
   }
@@ -31,9 +31,9 @@ Widget followersWidget(
     double radiusShift: 10,
     double radiusHeight: 32,
     double radiusWidth: 32}) {
-  int count = userImages!.length;
+  final int count = userImages!.length;
   if (count == 0) {
-    return SizedBox();
+    return const SizedBox();
   } else if (4 > count) {
     return buildStackedFollowersWidget(
         images: userImages, radiusSize: radiusSize, radiusShift: radiusShift);
@@ -45,7 +45,7 @@ Widget followersWidget(
         radiusHeight: radiusHeight,
         radiusWidth: radiusWidth);
   } else {
-    return SizedBox();
+    return const SizedBox();
   }
 }
 
@@ -55,9 +55,9 @@ Widget getMembersWidget(
     double radiusShift: 10,
     double radiusHeight: 20,
     double radiusWidth: 20}) {
-  int count = userImages!.length;
+  final int count = userImages!.length;
   if (count == 0) {
-    return SizedBox();
+    return const SizedBox();
   } else if (4 > count) {
     return buildStackedFollowersWidget(
         images: userImages, radiusSize: radiusSize, radiusShift: radiusShift);
@@ -69,17 +69,19 @@ Widget getMembersWidget(
         radiusHeight: radiusHeight,
         radiusWidth: radiusWidth);
   } else {
-    return SizedBox();
+    return const SizedBox();
   }
 }
 
 Widget buildFollowersCountWidget(List<UserFollowers> userFollowers,
-    {userImages, double radiusHeight: 32, double radiusWidth: 32}) {
-  int count = userFollowers.length - 4;
+    {List<UserFollowers>? userImages,
+    double radiusHeight: 32,
+    double radiusWidth: 32}) {
+  final int count = userFollowers.length - 4;
   return Container(
     height: radiusHeight,
     width: radiusWidth,
-    padding: EdgeInsets.all(2),
+    padding: const EdgeInsets.all(2),
     child: ClipOval(
       child: Container(
         color: Colors.black,
@@ -107,7 +109,7 @@ Widget buildStackedFollowersWidget(
         .toList();
 
     return Padding(
-      padding: EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.only(right: 12),
       child: StackedWidgets(
         items: items,
         size: radiusSize,
@@ -115,7 +117,7 @@ Widget buildStackedFollowersWidget(
       ),
     );
   }
-  return SizedBox();
+  return const SizedBox();
 }
 
 Widget buildMultipleFollowersWidget(
@@ -125,7 +127,7 @@ Widget buildMultipleFollowersWidget(
     double radiusHeight: 32,
     radiusWidth: 32}) {
   return Padding(
-    padding: EdgeInsets.only(right: 12),
+    padding: const EdgeInsets.only(right: 12),
     child: StackedWidgets(
       size: radiusSize,
       xShift: radiusShift,
@@ -159,7 +161,7 @@ String capitalizeAndRemoveUnderscores(String input) {
   }).toList();
 
   // Join the parts back together with spaces
-  String result = parts.join(' ');
+  final String result = parts.join(' ');
 
   return result;
 }

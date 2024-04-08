@@ -30,8 +30,8 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
   List providerListCopy = [];
   bool isFirstTime = true;
   bool noItemInList = false;
-  ScrollController _scrollController = ScrollController();
-  RefreshController _refreshController =
+  final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   late Future<List<ProviderModel>> providerListFuture;
@@ -59,7 +59,7 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result = await UtilityAuth()
+        final Map<String, dynamic>? result = await UtilityAuth()
             .getUtilityProviderList(next, previous,
                 providerEnum: widget.providerEnum);
         if (result == null) {
@@ -69,7 +69,7 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
         next = result['next'];
         count = result['count'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         isLoading = false;
         providerList.addAll(tempList);
@@ -137,7 +137,7 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 selectProviderText(),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 // CustomizedTextFormField(
                 //   onChanged: (value){
                 //     if(providerList.contains(value)){
@@ -159,7 +159,7 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         count = 0;
@@ -188,7 +188,7 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
           )
         : ListView.builder(
             shrinkWrap: true,
-            padding: EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             itemCount: providerList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == providerList.length) {
@@ -202,10 +202,10 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
   }
 
   Widget _buildIndicator() {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
+      child: Center(
+        child: Opacity(
           opacity: isLoading ? 1.0 : 0.0,
           child: CircularLoadingIndicator(),
         ),
@@ -222,7 +222,7 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }

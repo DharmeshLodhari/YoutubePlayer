@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class MovieDashboardBloc extends ChangeNotifier {
   static int _index = 0;
-  PageController _pageController = PageController(initialPage: _index);
+  final PageController _pageController = PageController(initialPage: _index);
 
   int get index => _index;
 

@@ -24,8 +24,9 @@ class _UserChannelsListState extends State<UserChannelsList> {
   bool isFirstTime = true;
   bool noItemInList = false;
   List<ChannelModel> channelModelList = [];
-  ScrollController _scrollCtrl = ScrollController();
-  RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
+  final ScrollController _scrollCtrl = ScrollController();
+  final RefreshController _refreshCtrl =
+      RefreshController(initialRefresh: false);
   BasePaginationModel<List<ChannelModel>>? basePaginationModel;
 
   @override
@@ -77,7 +78,7 @@ class _UserChannelsListState extends State<UserChannelsList> {
     });
   }
 
-  _onRefresh() {
+  void _onRefresh() {
     isFirstTime = true;
     channelModelList.clear();
     nextPageUrl = null;
@@ -100,36 +101,36 @@ class _UserChannelsListState extends State<UserChannelsList> {
       },
       child: Column(
         children: [
-          noItemInList
-              ? Expanded(
-                  child: NoItemInList(
-                      msg: AppLocalization.of(context)!.noChannels))
-              : Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.only(top: 5),
-                    physics: ClampingScrollPhysics(),
-                    controller: _scrollCtrl,
-                    itemCount: channelModelList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == channelModelList.length) {
-                        return buildLoadingIndicator(isLoading: _isLoading);
-                      } else {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, Routes.USER_PROFILE,
-                                arguments: {
-                                  "searchedUserName":
-                                      channelModelList[index].id,
-                                  "channel": channelModelList[index].groupName,
-                                });
-                          },
-                          child: CustomSlydoChannelCard(
-                              channelModel: channelModelList[index]),
-                        );
-                      }
-                    },
-                  ),
-                ),
+          if (noItemInList)
+            Expanded(
+                child:
+                    NoItemInList(msg: AppLocalization.of(context)!.noChannels))
+          else
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.only(top: 5),
+                physics: const ClampingScrollPhysics(),
+                controller: _scrollCtrl,
+                itemCount: channelModelList.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == channelModelList.length) {
+                    return buildLoadingIndicator(isLoading: _isLoading);
+                  } else {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, Routes.USER_PROFILE,
+                            arguments: {
+                              "searchedUserName": channelModelList[index].id,
+                              "channel": channelModelList[index].groupName,
+                            });
+                      },
+                      child: CustomSlydoChannelCard(
+                          channelModel: channelModelList[index]),
+                    );
+                  }
+                },
+              ),
+            ),
         ],
       ),
     );

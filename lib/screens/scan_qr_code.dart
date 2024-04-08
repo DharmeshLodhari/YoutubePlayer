@@ -26,7 +26,7 @@ import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
 class QRCodeView extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   QRCodeView({this.arguments, Key? key}) : super(key: key);
 
@@ -35,10 +35,10 @@ class QRCodeView extends StatefulWidget {
 }
 
 class _QRCodeViewState extends State<QRCodeView> {
-  var arguments;
+  Map<String, dynamic> arguments;
   late bool canShowDialogBox;
   // We need this variable to show the dialogbox just once cause qrscanner controller uses a stream(using a stream will make the dialogbox show up multiple times).
-  _QRCodeViewState({this.arguments});
+  _QRCodeViewState({required this.arguments});
 
   bool? isRequest = false;
   late CustomerProfileBloc customerProfileBloc;
@@ -155,7 +155,7 @@ class _QRCodeViewState extends State<QRCodeView> {
             scanData.code!.startsWith(AppConfig.merchantUrl) ||
             scanData.code!.startsWith("https://slydo.co") ||
             scanData.code!.startsWith(AppConfig.localHost)) {
-          var scanDataList = scanData.code!.split('/');
+          final scanDataList = scanData.code!.split('/');
 
           scanDataList.removeWhere((value) => value == "");
           if (canShowDialogBox) {
@@ -182,18 +182,18 @@ class _QRCodeViewState extends State<QRCodeView> {
   // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
   void getNavigationRoot(List<String> scanDataList,
       {String? scanDataCode}) async {
-    List<String> cleanScanDataLink = scanDataList;
-    int qrCodeIndex = scanDataList.length - 2;
+    final List<String> cleanScanDataLink = scanDataList;
+    final int qrCodeIndex = scanDataList.length - 2;
     String recipient = "";
 
     debugPrint('SCANNED DATA ::: $scanDataList');
     debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
 
     cleanScanDataLink.removeWhere((item) => [""].contains(item));
-    print('cleean...$cleanScanDataLink');
+    debugPrint('cleean...$cleanScanDataLink');
 
     if (cleanScanDataLink[2] == 'payment-link') {
-      String paymentLinkId = cleanScanDataLink[3];
+      final String paymentLinkId = cleanScanDataLink[3];
 
       final result = await NavigationUtil.push(context,
           screen: PaymentLinkCashOut(
@@ -207,8 +207,8 @@ class _QRCodeViewState extends State<QRCodeView> {
         }
       }
     } else if (scanDataList[qrCodeIndex] == "products") {
-      var productId = scanDataList.last;
-      var product = getProduct(productId);
+      final productId = scanDataList.last;
+      final product = getProduct(productId);
 
       final result = await Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
@@ -220,8 +220,8 @@ class _QRCodeViewState extends State<QRCodeView> {
         }
       }
     } else if (scanDataList[qrCodeIndex] == "services") {
-      var serviceId = scanDataList.last;
-      var service = getService(serviceId);
+      final serviceId = scanDataList.last;
+      final service = getService(serviceId);
       // _dashboardBloc.index = 0;
 
       final result = await Navigator.of(context)
@@ -235,7 +235,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       }
     } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
-        ShoppingCartModelFromQrCode? shoppingCartModel =
+        final ShoppingCartModelFromQrCode? shoppingCartModel =
             await ShoppingAuthService()
                 .getShoppingCartDataFromQrCode(url: scanDataCode);
 
@@ -261,7 +261,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                           builder: (dialogLoadingContext) =>
                               LoadingIndicator());
 
-                      bool isPaid = await ShoppingAuthService()
+                      final bool isPaid = await ShoppingAuthService()
                           .payForShoppingCart(cartId: shoppingCartModel.id);
                       if (isPaid) {
                         Navigator.pop(context);
@@ -300,7 +300,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -324,7 +324,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     'Your Order',
                     textAlign: TextAlign.start,
@@ -333,7 +333,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                         fontWeight: FontWeight.bold,
                         fontSize: 16.0),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -353,7 +353,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -370,7 +370,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                             worldCurrencies[
                                     shoppingCartModel.merchantCurrency] ??
                                 'NGN',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontFamily: "Inter",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14),
@@ -387,7 +387,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -404,7 +404,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                             worldCurrencies[
                                     shoppingCartModel.merchantCurrency] ??
                                 'NGN',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontFamily: "Inter",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14),
@@ -420,9 +420,9 @@ class _QRCodeViewState extends State<QRCodeView> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
-                  Divider(thickness: 2),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
+                  const Divider(thickness: 2),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -439,7 +439,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                             worldCurrencies[
                                     shoppingCartModel.merchantCurrency] ??
                                 'NGN',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontFamily: "Inter",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14),
@@ -462,7 +462,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           );
         }
       } catch (e) {
-        print('ERROR :: ${e.toString()}');
+        debugPrint('ERROR :: ${e.toString()}');
         showToast(message: 'Something went wrong, please try again.');
         canShowDialogBox = true;
         if (mounted) setState(() {});
@@ -523,7 +523,7 @@ class _QRCodeViewState extends State<QRCodeView> {
   }
 
   Product getProduct(String productId) {
-    Product product = Product();
+    final Product product = Product();
     product.id = productId;
     product.name = "";
     product.shortDescription = "";
@@ -541,7 +541,7 @@ class _QRCodeViewState extends State<QRCodeView> {
   }
 
   Service getService(String serviceId) {
-    Service service = Service();
+    final Service service = Service();
     service.id = serviceId;
     service.name = "";
     service.description = "";

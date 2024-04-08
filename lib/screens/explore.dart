@@ -103,10 +103,10 @@ class _ExploreListState extends State<ExploreList> {
   }
 
   List<Widget> getServiceList() {
-    List<Widget> lst = [];
+    final List<Widget> lst = [];
     services.sort((a, b) => a[0].compareTo(b[0]));
     for (final service in services) {
-      var card = Padding(
+      final card = Padding(
         padding: const EdgeInsets.only(top: 8.0),
         child: Card(
           margin: const EdgeInsets.fromLTRB(20.0, 6.0, 20.0, 0.0),

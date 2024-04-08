@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../data/state_notifier.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
@@ -56,7 +57,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
       appBar: _buildAppBar(),
       body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
         return ListView(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           children: [_buildYarnOrQuestionForm(model)],
         );
       }),
@@ -80,7 +81,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
           onTap: () {
             Navigator.pop(context);
           },
-          child: Icon(
+          child: const Icon(
             Icons.keyboard_arrow_left,
             color: Colors.black,
             size: 26,
@@ -107,15 +108,15 @@ class _AddReportScreenState extends State<AddReportScreen> {
     return Column(
       children: [
         _buildInfoText(),
-        SizedBox(
+        const SizedBox(
           height: 25,
         ),
         getCategoryField(),
-        SizedBox(
+        const SizedBox(
           height: 25,
         ),
         _buildTextFiled(),
-        SizedBox(
+        const SizedBox(
           height: 30,
         ),
         _buildSubmitButton(),
@@ -125,7 +126,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
 
   Widget _buildInfoText() {
     return Container(
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10), color: HexColor("#FFE3AB")),
       child: Text(
@@ -144,7 +145,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
           style: TextStyle(
               fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
         ),
-        SizedBox(
+        const SizedBox(
           height: 7,
         ),
         TopicTextField(
@@ -247,13 +248,14 @@ class _AddReportScreenState extends State<AddReportScreen> {
                     }
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: violationTypes.length,
                     itemBuilder: (context, index) {
-                      ViolationType selectViolation = violationTypes[index];
+                      final ViolationType selectViolation =
+                          violationTypes[index];
                       if (selectedViolationType == selectViolation) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -316,7 +318,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
   }
 
   Future<void> reportCommentInMoment() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "object": widget.object,
       "type": widget.type,
       "violation_type": selectedViolationType!.id,
@@ -344,7 +346,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
   }
 
   Future<void> addReport() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "object": widget.object,
       "type": widget.type,
       "violation_type": selectedViolationType!.id,
@@ -372,7 +374,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
   }
 
   Future<void> reportJob() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "object": widget.object,
       "type": widget.type,
       "violation_type": selectedViolationType!.id,

@@ -193,13 +193,13 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
 }
 
 class PushNotificationService {
-  static FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  static AuthService _auth = AuthService();
-  static DatabaseHelper _db = DatabaseHelper();
+  static final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  static final AuthService _auth = AuthService();
+  static final DatabaseHelper _db = DatabaseHelper();
   StreamSubscription? streamListen;
 
   static final PushNotificationService _singleton =
-      new PushNotificationService._internal();
+      PushNotificationService._internal();
 
   factory PushNotificationService() {
     return _singleton;
@@ -228,7 +228,7 @@ class PushNotificationService {
 
       // this piece of code convert Map<dynamic,dynamic> data to Map<String,String> tempData
       // so we can store that data into database
-      final Map<String, dynamic> tempData = new Map<String, dynamic>();
+      final Map<String, dynamic> tempData = Map<String, dynamic>();
       tempData['firebaseToken'] = data['token'];
       tempData['type'] = data['type'];
       tempData['mode'] = data['mode'];
@@ -355,7 +355,7 @@ class PushNotificationService {
 
           log("BLACK LOG => $notification");
 
-          Future.delayed(Duration(seconds: 3), () {
+          Future.delayed(const Duration(seconds: 3), () {
             showAlertMessage(
                 notification: notification,
                 context: myGlobals.scaffoldKey.currentContext!);

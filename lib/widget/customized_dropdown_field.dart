@@ -37,16 +37,17 @@ class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        widget.title == ''
-            ? const SizedBox.shrink()
-            : Text(
-                widget.title,
-                style: TextStyle(
-                    color: widget.titleColor,
-                    fontSize: widget.fontSize,
-                    fontWeight: widget.fontWeight,
-                    fontFamily: "Inter"),
-              ),
+        if (widget.title == '')
+          const SizedBox.shrink()
+        else
+          Text(
+            widget.title,
+            style: TextStyle(
+                color: widget.titleColor,
+                fontSize: widget.fontSize,
+                fontWeight: widget.fontWeight,
+                fontFamily: "Inter"),
+          ),
         SizedBox(
           height: widget.height,
         ),
@@ -59,7 +60,7 @@ class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
                   color: greyBorderColor,
                   width:
                       widget.borderWidth != null ? widget.borderWidth! : 1.0)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: DropdownButtonHideUnderline(
             child: ButtonTheme(alignedDropdown: true, child: widget.child),

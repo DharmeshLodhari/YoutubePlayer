@@ -22,7 +22,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -691,9 +690,7 @@ class _HomeState extends State<Home> {
         break;
       default:
         // Handle the default case (if any)
-        if (kDebugMode) {
-          print('Tapped on an unknown shortcut');
-        }
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 
@@ -923,9 +920,7 @@ class _HomeState extends State<Home> {
         break;
       default:
         // Handle the default case (if any)
-        if (kDebugMode) {
-          print('Tapped on an unknown shortcut');
-        }
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 
@@ -1987,9 +1982,7 @@ class _HomeState extends State<Home> {
         break;
       default:
         // Handle the default case (if any)
-        if (kDebugMode) {
-          print('Tapped on an unknown shortcut');
-        }
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 }

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ListRefresher {
-  Duration _refreshDurationInterval = Duration(minutes: 3);
+  final Duration _refreshDurationInterval = const Duration(minutes: 3);
   static Timer? _timerForListRefresher;
 
   void initialize() {

@@ -26,7 +26,7 @@ class _UserFollowersViewState extends State<UserFollowersView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await UserAuth().fetchCustomerFollowers(userName);
 
         if (result == null) {
@@ -42,7 +42,7 @@ class _UserFollowersViewState extends State<UserFollowersView> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         // yarnTopicList = [];
         if (mounted) {
           setState(() {

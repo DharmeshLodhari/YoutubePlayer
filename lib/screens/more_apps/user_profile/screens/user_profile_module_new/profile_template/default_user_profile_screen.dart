@@ -40,7 +40,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
   TabController? _tabController;
   PageController? _pageController;
   int _currentIndex = 0;
-  final PageStorageBucket _bucket = new PageStorageBucket();
+  final PageStorageBucket _bucket = PageStorageBucket();
   // Define a list to store the UserTab objects
   List<UserTab> userTabs = [];
   Map<String, bool> reorderedBoolMap = {};
@@ -52,13 +52,13 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     searchedUser = widget.searchedUser!;
     isOwner = widget.isOwner;
 
-    Map<String, dynamic>? result = searchedUser?.profileMenu?.toJson();
+    final Map<String, dynamic>? result = searchedUser?.profileMenu?.toJson();
 
     // Initialize a map to store boolean values
-    var boolMap = <String, bool>{};
+    final boolMap = <String, bool>{};
 
     // Initialize a list to store the keys in the desired order
-    var orderedKeys = <String>[];
+    final orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
     if (result != null) {
@@ -79,7 +79,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     }
 
     // Create a list of keys not in 'ordering'
-    var remainingKeys =
+    final remainingKeys =
         boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
 
     // Add the remaining keys to orderedKeys to ensure they are at the end
@@ -98,7 +98,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     });
 
     // Define the UserTabView using the created userTabs list
-    UserTabView userView = UserTabView(
+    final UserTabView userView = UserTabView(
       name: "user",
       tabs: userTabs,
     );
@@ -228,7 +228,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_pageController!.hasClients) {
         _pageController!.animateToPage(_currentIndex,
-            duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
+            duration: const Duration(milliseconds: 1), curve: Curves.easeInOut);
       }
     });
     if (mounted) setState(() {});
@@ -262,7 +262,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
               TabBar(
                 controller: _tabController,
                 isScrollable: true,
-                indicator: BoxDecoration(),
+                indicator: const BoxDecoration(),
                 onTap: (int index) {
                   changeIndex(index);
                 },
@@ -327,7 +327,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
               if (snapshot.hasData) {
                 return tab.child!;
               } else {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
             },
           ),
@@ -337,7 +337,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
   }
 
   List<Widget> getTabs() {
-    List<Widget> tabs = [];
+    final List<Widget> tabs = [];
     int index = 0;
 
     _currentUser!.tabs.where((tab) => tab.apiCall != null).map((tab) {
@@ -376,7 +376,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
       });
 
       // Define the UserTabView using the created userTabs list
-      UserTabView userView = UserTabView(
+      final UserTabView userView = UserTabView(
         name: "user",
         tabs: userTabs,
       );

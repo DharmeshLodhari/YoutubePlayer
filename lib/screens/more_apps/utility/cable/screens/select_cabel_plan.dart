@@ -177,7 +177,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Expanded(
             child: Container(
               child: getListOfProvider(),
@@ -201,7 +201,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
   Widget cablePlanTile({required CablePlan plan}) {
     return GestureDetector(
       onTap: () async {
-        var selectedPlan = await Navigator.of(context)
+        final selectedPlan = await Navigator.of(context)
             .pushNamed("/cable-plan-detail", arguments: {"plan": plan});
 
         if (selectedPlan != null) {
@@ -212,20 +212,20 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
       },
       child: Card(
         elevation: 4,
-        margin: EdgeInsets.symmetric(horizontal: 16),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         shadowColor: dividerColor,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: dividerColor, width: 0.2)),
           child: Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
                     Row(
@@ -260,7 +260,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                         )
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
                     getPlanFeatures(plan: plan),
@@ -273,8 +273,8 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                 thickness: 1,
               ),
               Container(
-                padding:
-                    EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 12),
+                padding: const EdgeInsets.only(
+                    left: 16, right: 16, top: 16, bottom: 12),
                 child: Row(
                   children: [
                     Expanded(
@@ -290,12 +290,12 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                               errorWidget: imageErrorWidget,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 8,
                           ),
                           Text(
                             plan.packs![0].name!,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400),
                           ),
                         ],
@@ -305,6 +305,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                       child: Row(
                         children: [
                           ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
                             child: CachedNetworkImage(
                               imageUrl: plan.packs![1].image!,
                               fit: BoxFit.fill,
@@ -312,14 +313,13 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                               height: 32,
                               errorWidget: imageErrorWidget,
                             ),
-                            borderRadius: BorderRadius.circular(8),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 8,
                           ),
                           Text(
                             plan.packs![1].name!,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400),
                           ),
                         ],
@@ -340,22 +340,22 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
   }
 
   List<Widget> getColumnChildren({required CablePlan plan}) {
-    List<Widget> items = [];
+    final List<Widget> items = [];
 
     for (int i = 0; i < plan.features!.length; i = i + 2) {
       items.add(
         Container(
-          padding: EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.only(bottom: 8),
           child: Row(
             children: [
               Expanded(
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.check_rounded,
                       size: 20,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 6,
                     ),
                     Text(
@@ -368,30 +368,31 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                   ],
                 ),
               ),
-              i + 1 < plan.features!.length
-                  ? Expanded(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check_rounded,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: 6,
-                          ),
-                          Text(
-                            plan.features![i + 1],
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14,
-                                color: blackFont),
-                          )
-                        ],
+              if (i + 1 < plan.features!.length)
+                Expanded(
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.check_rounded,
+                        size: 20,
                       ),
-                    )
-                  : Expanded(
-                      child: Container(),
-                    ),
+                      const SizedBox(
+                        width: 6,
+                      ),
+                      Text(
+                        plan.features![i + 1],
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            color: blackFont),
+                      )
+                    ],
+                  ),
+                )
+              else
+                Expanded(
+                  child: Container(),
+                ),
             ],
           ),
         ),

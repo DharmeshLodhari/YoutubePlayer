@@ -158,27 +158,28 @@ class _CommentListWidgetState extends State<CommentListWidget> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          isCommentsLoading
-              ? const SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      const Text(
-                        "Comments",
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        '$count',
-                        style: const TextStyle(
-                          color: Color(0xff75818F),
-                        ),
-                      ),
-                    ],
+          if (isCommentsLoading)
+            const SizedBox.shrink()
+          else
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                children: [
+                  const Text(
+                    "Comments",
                   ),
-                ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    '$count',
+                    style: const TextStyle(
+                      color: Color(0xff75818F),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,

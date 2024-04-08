@@ -112,7 +112,7 @@ class ChewieState extends State<Chewie> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    var controllerProvider = _ChewieControllerProvider(
+    final controllerProvider = _ChewieControllerProvider(
       controller: widget.controller,
       child: PlayerWithControls(
         posterUrl: widget.posterUrl,

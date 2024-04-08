@@ -42,7 +42,7 @@ class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
 
   Future<UsersCategories?> saveUserCategories(String categoryId) async {
     try {
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await YarnAuth().saveUsersSingleCategories(categoryId);
       if (result != null) {
         setState(() {
@@ -63,7 +63,7 @@ class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
 
   Future<UsersCategories?> deleteUserCategories(String categoryId) async {
     try {
-      Map<String, dynamic>? result =
+      final Map<String, dynamic>? result =
           await YarnAuth().deleteUsersSingleCategories(categoryId);
       if (result != null) {
         setState(() {

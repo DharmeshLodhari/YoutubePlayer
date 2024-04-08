@@ -10,15 +10,15 @@ class YarnShimmer extends StatelessWidget {
     return Shimmer.fromColors(
       baseColor: Colors.grey.shade100,
       highlightColor: Colors.white,
-      period: Duration(seconds: 2),
+      period: const Duration(seconds: 2),
       child: ListView.separated(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: 2,
         itemBuilder: (context, index) {
           return Container(
             height: 280,
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: Colors.transparent,
@@ -32,10 +32,10 @@ class YarnShimmer extends StatelessWidget {
                     Container(
                       height: 24,
                       width: 24,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           color: Colors.grey, shape: BoxShape.circle),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     Column(
@@ -48,7 +48,7 @@ class YarnShimmer extends StatelessWidget {
                               color: greyBackground,
                               borderRadius: BorderRadius.circular(4)),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         Container(
@@ -62,7 +62,7 @@ class YarnShimmer extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Container(

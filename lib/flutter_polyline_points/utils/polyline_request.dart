@@ -64,7 +64,7 @@ class PolylineRequest {
 
   Uri toUri() {
     validateKey(apiKey);
-    var params = removeNulls({
+    final params = removeNulls({
       "origin": "${origin.latitude},${origin.longitude}",
       "destination": "${destination.latitude},${destination.longitude}",
       "mode": mode.name,
@@ -78,7 +78,7 @@ class PolylineRequest {
       "transit_mode": transitMode
     });
     if (wayPoints.isNotEmpty) {
-      List wayPointsArray = [];
+      final List wayPointsArray = [];
       wayPoints.forEach((point) => wayPointsArray.add(point.location));
       String wayPointsString = wayPointsArray.join('|');
       if (optimizeWaypoints) {

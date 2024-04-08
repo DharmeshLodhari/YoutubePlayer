@@ -21,7 +21,7 @@ class Language {
 }
 
 List<Language> languages = <Language>[
-  Language('English', 'en'),
+  const Language('English', 'en'),
 //  Language('Spanish', 'es'),
 //  Language('French', 'fr'),
 //  Language('Portuguese', 'pt'),

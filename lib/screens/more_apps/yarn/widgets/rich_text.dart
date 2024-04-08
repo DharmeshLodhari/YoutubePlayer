@@ -26,10 +26,10 @@ class RichTextForTitle extends StatelessWidget {
   }
 
   RichText buildHighlightedText(String text, BuildContext context) {
-    List<String> hashtags = getAllHashtags(text);
-    List<String> mentions = getAllMentions(text);
+    final List<String> hashtags = getAllHashtags(text);
+    final List<String> mentions = getAllMentions(text);
 
-    List<TextSpan> textSpans = [];
+    final List<TextSpan> textSpans = [];
 
     text.split(" ").forEach((value) {
       String removeDot = value.trim();

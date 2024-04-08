@@ -26,7 +26,6 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -280,9 +279,7 @@ class _DashboardState extends State<Dashboard> {
         notification['type'] == "nudge_user") {
       final String? recipientUsername =
           notification['actions'].replaceAll("/chat-screen/", "");
-      if (kDebugMode) {
-        print("Recipient user name = $recipientUsername");
-      }
+      debugPrint("Recipient user name = $recipientUsername");
 
       if (recipientUsername != null) {
         showDialog(

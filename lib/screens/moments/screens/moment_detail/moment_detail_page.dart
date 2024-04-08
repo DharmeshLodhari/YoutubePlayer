@@ -53,8 +53,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   late PageController _verticalScrollPageViewCtrl;
   int? horizoallyPageIndex;
 
-  List<CachedVideoPlayerController> _videoPlayerControllers = [];
-  List<PhotoViewController> _photoViewController = [];
+  final List<CachedVideoPlayerController> _videoPlayerControllers = [];
+  final List<PhotoViewController> _photoViewController = [];
 
   @override
   void initState() {

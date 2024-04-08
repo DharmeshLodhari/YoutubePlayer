@@ -51,13 +51,13 @@ class _AskEnableCommentAndPaymentState
         if (mounted) setState(() {});
       },
       child: Container(
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
             color: isSelected ? widget.highLightBGColor : widget.baseBGColor,
             border: Border.all(
                 color: isSelected
-                    ? widget.highLightBorderColor ?? Color(0xFFFFFFFF)
-                    : widget.baseBorderColor ?? Color(0xFFFFFFFF)),
+                    ? widget.highLightBorderColor ?? const Color(0xFFFFFFFF)
+                    : widget.baseBorderColor ?? const Color(0xFFFFFFFF)),
             borderRadius: BorderRadius.circular(15)),
         child: Row(
           children: [
@@ -69,7 +69,7 @@ class _AskEnableCommentAndPaymentState
                       ? widget.highLightTextColor
                       : widget.baseTextColor),
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             if (widget.image != null)
@@ -82,7 +82,7 @@ class _AskEnableCommentAndPaymentState
                     : widget.baseTextColor,
               ),
             if (widget.image != null)
-              SizedBox(
+              const SizedBox(
                 width: 4,
               ),
             Container(
@@ -92,8 +92,8 @@ class _AskEnableCommentAndPaymentState
                 shape: BoxShape.circle,
                 border: Border.all(
                     color: isSelected
-                        ? widget.highLightTextColor ?? Color(0xFFFFFFFF)
-                        : widget.baseTextColor ?? Color(0xFFFFFFFF),
+                        ? widget.highLightTextColor ?? const Color(0xFFFFFFFF)
+                        : widget.baseTextColor ?? const Color(0xFFFFFFFF),
                     width: isSelected ? 2 : 1),
                 color:
                     isSelected ? widget.highLightBGColor : HexColor("#FFFFFF"),

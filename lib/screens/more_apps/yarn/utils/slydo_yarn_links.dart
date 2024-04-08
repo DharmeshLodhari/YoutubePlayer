@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hash_at_links_detector/hash_at_links_detector.dart';
+
 import '../../../../utils/colors.dart';
 
 abstract class CustomSmartTextElement {}
@@ -264,6 +265,6 @@ class LinkTextSpan extends TextSpan {
   }) : super(
           style: style,
           text: text,
-          recognizer: new TapGestureRecognizer()..onTap = onPressed,
+          recognizer: TapGestureRecognizer()..onTap = onPressed,
         );
 }

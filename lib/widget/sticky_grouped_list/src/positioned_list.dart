@@ -162,7 +162,7 @@ class _PositionedListState extends State<PositionedList> {
       );
 
   List<Widget> getItems() {
-    List<Widget> items = [];
+    final List<Widget> items = [];
     if (widget.positionedIndex > 0)
       items.add(SliverPadding(
         padding: _leadingSliverPadding,

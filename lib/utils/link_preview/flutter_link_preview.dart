@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:Slydo/utils/link_preview/web_analyzer.dart';
 import 'package:flutter/material.dart';
 
@@ -62,7 +63,7 @@ class _FlutterLinkPreviewState extends State<FlutterLinkPreview> {
       );
       if (mounted) setState(() {});
     } else {
-      print("Links don't start with http or https from : $_url");
+      debugPrint("Links don't start with http or https from : $_url");
     }
   }
 

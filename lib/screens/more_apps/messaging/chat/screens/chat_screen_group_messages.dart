@@ -1111,9 +1111,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void addMessageToChat({String? message}) {
     messageList.insert(0, message);
-    if (kDebugMode) {
-      print('ADDED MESSAGE :::: $message');
-    }
+    debugPrint('ADDED MESSAGE :::: $message');
 
     ///PlaySoundAccordingToMessageType
     MessageSoundPlayer(message: message).playSound();

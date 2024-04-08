@@ -62,7 +62,7 @@ class _PostTileForPaymentContractState
               isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSender ? Container() : Container(width: 20),
+            if (isSender) Container() else Container(width: 20),
             Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.30,
@@ -70,16 +70,17 @@ class _PostTileForPaymentContractState
                   minHeight: 50),
               child: getPaymentContractTile(),
             ),
-            isSender
-                ? Container(
-                    width: 20,
-                    child: isSender
-                        ? Center(
-                            child: getMessageTick(message: widget.message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSender)
+              Container(
+                width: 20,
+                child: isSender
+                    ? Center(
+                        child: getMessageTick(message: widget.message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
         const SizedBox(
@@ -89,17 +90,18 @@ class _PostTileForPaymentContractState
           mainAxisAlignment:
               isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSender ? Container() : const SizedBox(width: 20),
+            if (isSender) Container() else const SizedBox(width: 20),
             Text(
               formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSender
-                ? const SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSender)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         ),
       ],

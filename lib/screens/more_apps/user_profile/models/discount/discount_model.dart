@@ -44,7 +44,7 @@ class DiscountModel {
     isActive = json['is_active'] != null ? json['is_active'] as bool : true;
     value = json['value'];
     if (json['start_date'] != null) {
-      List<int> parse = json['start_date']
+      final List<int> parse = json['start_date']
           .toString()
           .split("-")
           .toList()
@@ -56,7 +56,7 @@ class DiscountModel {
     }
 
     if (json['end_date'] != null) {
-      List<int> parse = json['end_date']
+      final List<int> parse = json['end_date']
           .toString()
           .split("-")
           .toList()
@@ -68,7 +68,7 @@ class DiscountModel {
     }
 
     if (json['only_from'] != null) {
-      List<int> parse = json['only_from']
+      final List<int> parse = json['only_from']
           .toString()
           .split(":")
           .toList()
@@ -80,7 +80,7 @@ class DiscountModel {
       }
     }
     if (json['only_to'] != null) {
-      List<int> parse = json['only_to']
+      final List<int> parse = json['only_to']
           .toString()
           .split(":")
           .toList()
@@ -100,13 +100,13 @@ class DiscountModel {
       updatedAt = DateTime.parse(json['updated_at']);
     }
     consumables = json['consumables'] != null
-        ? new Consumables.fromJson(json['consumables'])
+        ? Consumables.fromJson(json['consumables'])
         : null;
     poster = json['poster'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     map['type'] = type?.toValue();
     data['name'] = this.name;
@@ -192,7 +192,7 @@ class DiscountModel {
   void addProductsToDiscount(List<String?> products) {
     consumables ??= Consumables(product: []);
 
-    List<String> data = [];
+    final List<String> data = [];
 
     for (String? id in products) {
       if (id != null) {
@@ -263,7 +263,7 @@ class Consumables {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['Product'] = this.product;
     return data;
   }

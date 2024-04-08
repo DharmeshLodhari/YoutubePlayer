@@ -191,9 +191,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       onTap: () async {
         final invoiceAdded =
             await Navigator.of(context).pushNamed(Routes.ADD_INVOICE);
-        if (kDebugMode) {
-          print('INVOICE ADDED ::: $invoiceAdded');
-        }
+        debugPrint('INVOICE ADDED ::: $invoiceAdded');
 
         if (invoiceAdded == true) {
           invoiceBloc.isRefreshing = true;

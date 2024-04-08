@@ -26,7 +26,7 @@ class PolylinePoints {
       bool optimizeWaypoints = false}) async {
     assert(googleApiKey.isNotEmpty, "Google API Key cannot be empty");
     try {
-      var result = await NetworkUtil().getRouteBetweenCoordinates(
+      final result = await NetworkUtil().getRouteBetweenCoordinates(
           request: PolylineRequest(
               apiKey: googleApiKey,
               origin: origin,

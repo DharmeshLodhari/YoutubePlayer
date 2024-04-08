@@ -22,9 +22,9 @@ class UserTileForGroupDetail extends StatefulWidget {
 class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
   @override
   Widget build(BuildContext context) {
-    Widget tile = Card(
+    final Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       shadowColor: boxShadowTwo,
       elevation: 0,
       child: Container(
@@ -51,7 +51,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
   }
 
   Widget showSelectedUserAvatar(String imageUrl, String fullName) {
-    Color borderColor = getUserTypeColor(user: widget.user!);
+    final Color borderColor = getUserTypeColor(user: widget.user!);
 
     if (imageUrl == null ||
         imageUrl == "" ||
@@ -147,7 +147,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
     return hasNoStatus
         ? Container(width: 0)
         : Container(
-            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
                 color: isOwner

@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/overlay_yarn_photo.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/view_ask_media.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_single_media_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_image_gallery/swipe_image_gallery.dart';
+
 import '../../../../utils/navigation_util.dart';
 
 class YarnMediaRender extends StatefulWidget {
@@ -39,7 +41,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
     } else if (widget.yarnTopic.media.length == 4) {
       return _buildFourImageView();
     }
-    return SizedBox();
+    return const SizedBox();
   }
 
   Widget _buildSingleImageView() {
@@ -62,7 +64,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
               imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Expanded(
@@ -89,7 +91,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
               imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Expanded(
@@ -99,7 +101,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
               imagePoster: widget.yarnTopic.media[1].mediaPoster ?? '',
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Expanded(
@@ -127,7 +129,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
                   imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
               Expanded(
@@ -139,7 +141,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Row(
@@ -151,7 +153,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
                   imagePoster: widget.yarnTopic.media[2].mediaPoster ?? '',
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
               Expanded(
@@ -193,7 +195,7 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
           //   arguments: imageUrl,
           // );
 
-          List<Widget> imageList = [];
+          final List<Widget> imageList = [];
 
           for (var item in widget.yarnTopic.media) {
             if (item.mediaType == 'image') {

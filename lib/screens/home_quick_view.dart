@@ -1,6 +1,5 @@
 import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/utils/extensions.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -223,9 +222,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
       default:
         // Handle the default case (if any)
-        if (kDebugMode) {
-          print('Tapped on an unknown shortcut');
-        }
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 
@@ -605,9 +602,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       default:
         // Handle the default case (if any)
-        if (kDebugMode) {
-          print('Tapped on an unknown shortcut');
-        }
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 
@@ -682,9 +677,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         break;
       default:
         // Handle the default case (if any)
-        if (kDebugMode) {
-          print('Tapped on an unknown shortcut');
-        }
+        debugPrint('Tapped on an unknown shortcut');
     }
   }
 

@@ -15,16 +15,16 @@ class AppConfigurationBloc {
 
 class AppFeaturesService extends AuthService {
   Future<AppConfigurationModel> getAppFeatures() async {
-    String url = AppConfig.baseUrl + "/api/v1/user/app-settings";
+    final String url = AppConfig.baseUrl + "/api/v1/user/app-settings";
 
-    var headers = getNonAuthHeader();
-    var response =
+    final headers = getNonAuthHeader();
+    final response =
         await httpGet(url, headers: headers as Map<String, dynamic>?);
 
     debugPrint('SETTINGS :: ${response.body}');
 
     if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
+      final jsonData = jsonDecode(response.body);
       return AppConfigurationModel.fromJson(jsonData);
     } else {
       return AppConfigurationModel.fromJson({});

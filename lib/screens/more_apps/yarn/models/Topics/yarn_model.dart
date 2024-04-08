@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
 import '../ask_categories_model.dart';
@@ -48,7 +49,7 @@ class Yarn extends Equatable {
       category = YarnCategories.fromJson(json['category']);
     }
     if (json['category'] == null) {
-      YarnCategories defaultCategory = new YarnCategories();
+      final YarnCategories defaultCategory = YarnCategories();
 
       defaultCategory.id = 'd7dd7084-b4bd-4ff3-9372-f314d5ac819f';
       defaultCategory.name = 'General';

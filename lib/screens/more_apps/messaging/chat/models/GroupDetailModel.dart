@@ -51,19 +51,19 @@ class GroupDetailModel {
   factory GroupDetailModel.fromJson(Map<String, dynamic> json) {
     return GroupDetailModel(
       adminUsers: json['admin_users'] != null
-          ? new List<String>.from(json['admin_users'])
+          ? List<String>.from(json['admin_users'])
           : [],
       avatar: json['avatar'],
       banner: json['banner'],
       blockedParticipants: json['blocked_participants'] != null
-          ? new List<String>.from(json['blocked_participants'])
+          ? List<String>.from(json['blocked_participants'])
           : [],
       conversationId: json['conversation_id'],
       fullName: json['full_name'],
       createdAt: json['created_at'],
       isGroupConversation: json['is_group_conversation'],
       mutedParticipants: json['muted_participants'] != null
-          ? new List<String>.from(json['muted_participants'])
+          ? List<String>.from(json['muted_participants'])
           : [],
       participants: json['participants'] != null
           ? (json['participants'] as List)
@@ -106,7 +106,7 @@ class GroupDetailModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['avatar'] = this.avatar;
     data['banner'] = this.banner;
     data['conversation_id'] = this.conversationId;

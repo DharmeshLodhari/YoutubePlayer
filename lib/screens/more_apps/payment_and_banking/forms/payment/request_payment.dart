@@ -285,23 +285,25 @@ class _RequestPaymentState extends State<RequestPayment> {
                                         children: [
                                           displayAmountField(),
                                           const SizedBox(height: 20),
-                                          showMoreOption
-                                              ? getMoreOption()
-                                              : Container(),
+                                          if (showMoreOption)
+                                            getMoreOption()
+                                          else
+                                            Container(),
                                           getMoreOptionTrigger(),
-                                          errorMessage == ""
-                                              ? Container()
-                                              : Text(
-                                                  errorMessage,
-                                                  style: TextStyle(
-                                                      color: mateRed,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 16),
-                                                ),
-                                          errorMessage == ""
-                                              ? Container()
-                                              : const SizedBox(height: 20),
+                                          if (errorMessage == "")
+                                            Container()
+                                          else
+                                            Text(
+                                              errorMessage,
+                                              style: TextStyle(
+                                                  color: mateRed,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                            ),
+                                          if (errorMessage == "")
+                                            Container()
+                                          else
+                                            const SizedBox(height: 20),
                                         ],
                                       ),
                                     ),

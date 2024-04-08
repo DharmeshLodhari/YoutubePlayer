@@ -25,7 +25,7 @@ class UtilityHistoryTile extends StatelessWidget {
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         shadowColor: boxShadowTwo,
         elevation: 0,
         child: Container(
@@ -33,34 +33,38 @@ class UtilityHistoryTile extends StatelessWidget {
           child: Row(
             children: [
               getLeading(),
-              SizedBox(width: 4),
+              const SizedBox(width: 4),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   getTitle(),
-                  SizedBox(height: 4),
-                  utilityHistoryModel.amount.toString().length >= amountLimit
-                      ? getAmount()
-                      : SizedBox.shrink(),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
+                  if (utilityHistoryModel.amount.toString().length >=
+                      amountLimit)
+                    getAmount()
+                  else
+                    const SizedBox.shrink(),
+                  const SizedBox(height: 4),
                   getDateTime(),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                 ],
               ),
-              Expanded(
+              const Expanded(
                 child: SizedBox(width: 1),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  utilityHistoryModel.amount.toString().length >= amountLimit
-                      ? SizedBox.shrink()
-                      : getAmount(),
-                  SizedBox(height: 8),
+                  if (utilityHistoryModel.amount.toString().length >=
+                      amountLimit)
+                    const SizedBox.shrink()
+                  else
+                    getAmount(),
+                  const SizedBox(height: 8),
                   getPaymentStatus(),
                 ],
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
             ],
           ),
         ),
@@ -73,7 +77,7 @@ class UtilityHistoryTile extends StatelessWidget {
       children: [
         Text(
           worldCurrencies[utilityHistoryModel.currency]!,
-          style: TextStyle(
+          style: const TextStyle(
               fontFamily: "Inter", fontWeight: FontWeight.bold, fontSize: 14),
         ),
         Text(
@@ -91,8 +95,8 @@ class UtilityHistoryTile extends StatelessWidget {
   Widget getLeading() {
     return Card(
       elevation: 10,
-      shadowColor: Color(0XFF314167).withOpacity(0.08),
-      margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      shadowColor: const Color(0XFF314167).withOpacity(0.08),
+      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -110,10 +114,10 @@ class UtilityHistoryTile extends StatelessWidget {
   }
 
   Widget getPaymentStatus() {
-    Color color = getStatusColor(utilityHistoryModel.status);
+    final Color color = getStatusColor(utilityHistoryModel.status);
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8)),
@@ -163,9 +167,9 @@ class UtilityHistoryTile extends StatelessWidget {
   }
 
   String _getFormattedDateTime() {
-    String time =
+    final String time =
         DateFormat.jm().format(DateTime.parse(utilityHistoryModel.createdAt));
-    String date =
+    final String date =
         DateFormat.yMd().format(DateTime.parse(utilityHistoryModel.createdAt));
     return '$date • $time';
   }

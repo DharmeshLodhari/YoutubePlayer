@@ -23,7 +23,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchController = TextEditingController();
-  GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
+  final GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   String? filterValue;
@@ -66,7 +66,7 @@ class _SearchScreenState extends State<SearchScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getSearchYarns(
+        final Map<String, dynamic>? result = await YarnAuth().getSearchYarns(
             next, previous,
             isQuestion: isQuestion,
             searchText: searchController.text,
@@ -84,7 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
         count = result['count'];
         next = result['next'] != null ? result['next'] : "";
         previous = result['previous'] != null ? result['previous'] : "";
-        var tempList = result['results'];
+        final tempList = result['results'];
         yarnTopicList = [];
         // if (mounted) {
         //   setState(() {
@@ -134,7 +134,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  _refreshList() {
+  void _refreshList() {
     count = 0;
     next = "";
     previous = "";
@@ -202,7 +202,7 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: Colors.white,
       elevation: 0,
       leading: IconButton(
-        icon: Icon(Icons.keyboard_arrow_left),
+        icon: const Icon(Icons.keyboard_arrow_left),
         color: navyBlue,
         onPressed: () {
           Navigator.of(context).pop();
@@ -213,31 +213,33 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildBody() {
     return Container(
-      padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+      padding: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
       child: Column(
         children: [
           // _buildSearchBox(),
           _buildSearchField(),
-          isLoading
-              ? CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
-                )
-              : SizedBox.shrink(),
-          isSearchIsEmpty
-              ? Expanded(
-                  child: NoItemInList(
-                    msg: AppLocalization.of(context)!
-                        .pleaseTypeSomethingToGetResult,
-                    isResult: false,
-                  ),
-                )
-              : noList
-                  ? Expanded(
-                      child: NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      ),
-                    )
-                  : _buildPostList(),
+          if (isLoading)
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
+            )
+          else
+            const SizedBox.shrink(),
+          if (isSearchIsEmpty)
+            Expanded(
+              child: NoItemInList(
+                msg:
+                    AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+                isResult: false,
+              ),
+            )
+          else
+            noList
+                ? Expanded(
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noResultFound,
+                    ),
+                  )
+                : _buildPostList(),
         ],
       ),
     );
@@ -301,8 +303,8 @@ class _SearchScreenState extends State<SearchScreen> {
         hintText: "Search anything",
         fillColor: Colors.white,
         filled: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 10),
-        prefix: Padding(
+        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+        prefix: const Padding(
           padding: EdgeInsets.only(left: 16),
         ),
         enabledBorder: OutlineInputBorder(
@@ -345,9 +347,9 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Card(
         // color: isPopMenuOpen ? navyBlue : iconBtnGrey,
         elevation: 0,
-        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         child: IconButton(
-          icon: Icon(
+          icon: const Icon(
             SlydoAppIconNew.filter,
             color: Colors.black,
             size: 20,

@@ -38,7 +38,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
 
     if (widget.initialStateValue == null) {
       if (userBioDetail?.userAddress?.state != null) {
-        dynamic state = userBioDetail!.userAddress!.state;
+        final dynamic state = userBioDetail!.userAddress!.state;
         if (state is Map) {
           stateId = state['id'];
           debugPrint('Fola states 0000::: ${state['id']}');
@@ -77,7 +77,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
     return Row(
       children: [
         Expanded(child: addStateDropdown()),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
       ],
     );
   }
@@ -90,7 +90,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
           'State',
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Container(
           height: 50,
           padding: const EdgeInsets.symmetric(horizontal: 14.0),
@@ -104,7 +104,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
               child: DropdownButton2(
                   isExpanded: true,
                   value: pickedStateValue,
-                  underline: SizedBox.shrink(),
+                  underline: const SizedBox.shrink(),
                   dropdownDecoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -121,7 +121,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
                   }).toList(),
                   onChanged: (String? value) {
                     pickedStateValue = value;
-                    int id = statesMap.keys
+                    final int id = statesMap.keys
                         .firstWhere((element) => statesMap[element] == value);
                     stateId = id;
                     if (mounted) setState(() {});

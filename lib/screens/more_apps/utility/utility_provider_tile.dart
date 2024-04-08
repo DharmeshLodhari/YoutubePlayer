@@ -25,11 +25,11 @@ class UtilityProviderTile extends StatelessWidget {
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
         elevation: 0,
         child: Container(
           decoration: decorateBox(),
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
             children: [
               Padding(
@@ -47,7 +47,7 @@ class UtilityProviderTile extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   getProviderName(),
@@ -71,7 +71,7 @@ class UtilityProviderTile extends StatelessWidget {
       debugPrint(
           'PROVIDER NAME :: ${providerModel.name} '); // EEDC (Enugu Electric)
     }
-    List<String> splitString = providerModel.name.split(' ');
+    final List<String> splitString = providerModel.name.split(' ');
 
     String providerName = "";
 

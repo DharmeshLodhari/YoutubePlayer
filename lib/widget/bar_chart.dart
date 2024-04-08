@@ -237,21 +237,21 @@ class _BarState extends State<Bar> {
       },
       child: Column(
         children: <Widget>[
-          showAmount
-              ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8), color: blackFont),
-                  child: Text(
-                    moneyConverter(widget.amountSpent),
-                    style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                )
-              : Container(height: 20),
+          if (showAmount)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8), color: blackFont),
+              child: Text(
+                moneyConverter(widget.amountSpent),
+                style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            )
+          else
+            Container(height: 20),
           const SizedBox(height: 6.0),
           Container(
             height: barHeight,

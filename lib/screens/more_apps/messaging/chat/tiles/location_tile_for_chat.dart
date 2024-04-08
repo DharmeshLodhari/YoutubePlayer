@@ -192,9 +192,9 @@ class LocationTileForChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = message!["author"] == userBloc.user.userName;
+    final bool isSend = message!["author"] == userBloc.user.userName;
 
     late UserLocation location;
 
@@ -204,7 +204,7 @@ class LocationTileForChatMessage extends StatelessWidget {
           longitude: message!['text']["longitude"]);
     }
     if (message!['text'] is String) {
-      Map<String, dynamic> decodedLocation = jsonDecode(message!['text']);
+      final Map<String, dynamic> decodedLocation = jsonDecode(message!['text']);
       location = UserLocation(
           latitude: decodedLocation["latitude"],
           longitude: decodedLocation["longitude"]);
@@ -217,11 +217,12 @@ class LocationTileForChatMessage extends StatelessWidget {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend
-                ? Container()
-                : Container(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              Container(
+                width: 20,
+              ),
             GestureDetector(
               onTap: () async {
                 await MapsLauncher.launchCoordinates(
@@ -264,29 +265,30 @@ class LocationTileForChatMessage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    chatConversation!.isGroupConversation!
-                        ? message!['author'] != userBloc.user.userName
-                            ? Column(
-                                children: [
-                                  Text(
-                                    message!['author_full_name'] ??
-                                        message!['author'],
-                                    style: TextStyle(
-                                        color: isSend ? Colors.white : navyBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  const SizedBox(
-                                    height: 4,
-                                  ),
-                                ],
-                              )
-                            : Container(
-                                width: 0,
-                              )
-                        : Container(
-                            width: 0,
-                          ),
+                    if (chatConversation!.isGroupConversation!)
+                      message!['author'] != userBloc.user.userName
+                          ? Column(
+                              children: [
+                                Text(
+                                  message!['author_full_name'] ??
+                                      message!['author'],
+                                  style: TextStyle(
+                                      color: isSend ? Colors.white : navyBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                              ],
+                            )
+                          : Container(
+                              width: 0,
+                            )
+                    else
+                      Container(
+                        width: 0,
+                      ),
                     Container(
                       height: MediaQuery.of(context).size.width / 2.5,
                       // width: MediaQuery.of(context).size.width / 1.8,
@@ -297,6 +299,7 @@ class LocationTileForChatMessage extends StatelessWidget {
                               width: 3,
                               color: isSend ? navyBlue : Colors.white)),
                       child: ClipRRect(
+                        borderRadius: BorderRadius.circular(3),
                         child: IgnorePointer(
                           ignoring: true,
                           child: FlutterMap(
@@ -333,23 +336,23 @@ class LocationTileForChatMessage extends StatelessWidget {
                             ],
                           ),
                         ),
-                        borderRadius: BorderRadius.circular(3),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: message!),
-                          )
-                        : Container(),
-                  )
-                : Container(),
+            if (isSend)
+              Container(
+                width: 20,
+                child: isSend
+                    ? Center(
+                        child: getMessageTick(message: message!),
+                      )
+                    : Container(),
+              )
+            else
+              Container(),
           ],
         ),
         const SizedBox(
@@ -359,21 +362,23 @@ class LocationTileForChatMessage extends StatelessWidget {
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : const SizedBox(
-                    width: 20,
-                  ),
+            if (isSend)
+              Container()
+            else
+              const SizedBox(
+                width: 20,
+              ),
             Text(
               formatTime(message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
-                ? const SizedBox(
-                    width: 20,
-                  )
-                : Container(),
+            if (isSend)
+              const SizedBox(
+                width: 20,
+              )
+            else
+              Container(),
           ],
         )
       ],

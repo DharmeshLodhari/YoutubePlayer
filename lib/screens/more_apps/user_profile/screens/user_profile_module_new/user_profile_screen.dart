@@ -15,7 +15,7 @@ import 'profile_template/business_profile_screen.dart';
 
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {
-  final arguments;
+  final dynamic arguments;
 
   UserProfileScreen({required this.arguments});
 
@@ -26,12 +26,12 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen>
     with TickerProviderStateMixin {
-  var arguments;
+  Map<String, dynamic> arguments;
   late UserBloc userBloc;
 
   bool isLoading = true;
 
-  _UserProfileScreenState({this.arguments});
+  _UserProfileScreenState({required this.arguments});
 
   int currentIndex = 1;
   BehaviorSubject<int> selectedIndexStream = BehaviorSubject<int>();
@@ -119,7 +119,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   void checkCurrentUserIsInRequestList() async {
-    UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
+    final UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
     debugPrint("is In Request List -");
 
     if (_userBloc.user.userName != searchedUser?.userName) {
@@ -196,9 +196,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget checkView() {
     if (arguments['channel'] != null) {
-      String name = channelDetail['owner']['full_name'];
+      final String name = channelDetail['owner']['full_name'];
 
-      CustomerProfile profile = CustomerProfile(
+      final CustomerProfile profile = CustomerProfile(
         fullName: name,
         userName: channelDetail['group_name'] ?? '',
         nickName: channelDetail['username'] ?? '',

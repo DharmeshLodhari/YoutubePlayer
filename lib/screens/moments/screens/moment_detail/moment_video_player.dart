@@ -146,7 +146,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
                   )
                 : Container(
                     decoration: BoxDecoration(
-                      color: Color(0XFFdcdcdc).withOpacity(0.5),
+                      color: const Color(0XFFdcdcdc).withOpacity(0.5),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -159,7 +159,7 @@ class MomentVideoPlayerState extends State<MomentVideoPlayer> {
 
   showMediaIconFor2Seconds() {
     setState(() => showMediaIcon = true);
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted)
         setState(() {
           showMediaIcon = false;

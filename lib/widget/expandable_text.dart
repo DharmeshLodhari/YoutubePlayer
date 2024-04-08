@@ -9,7 +9,7 @@ class ExpandableText extends StatefulWidget {
   bool isExpanded = false;
 
   @override
-  _ExpandableTextState createState() => new _ExpandableTextState();
+  _ExpandableTextState createState() => _ExpandableTextState();
 }
 
 class _ExpandableTextState extends State<ExpandableText>

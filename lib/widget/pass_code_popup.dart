@@ -66,7 +66,7 @@ class PassCodePopup {
   }
 
   _onPassCodeEntered(String enteredPassCode) {
-    bool isValid = userBloc.user.password == enteredPassCode;
+    final bool isValid = userBloc.user.password == enteredPassCode;
     _verificationNotifier.add(isValid);
   }
 }

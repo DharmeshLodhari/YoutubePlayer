@@ -52,9 +52,7 @@ class ConnectionSynchronizer {
       tempList
           .forEach((element) => users.add(ChatConversation.fromJson(element)));
 
-      if (kDebugMode) {
-        print('USERS ::: $users');
-      }
+      debugPrint('USERS ::: $users');
 
       await connectionListBloc.setConnectionUsers(users: users);
 

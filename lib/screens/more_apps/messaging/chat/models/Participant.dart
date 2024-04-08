@@ -26,7 +26,7 @@ class Participant {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['avatar'] = this.avatar;
     data['full_name'] = this.fullName;
     data['type'] = this.type;

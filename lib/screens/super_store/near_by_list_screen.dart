@@ -12,7 +12,7 @@ import '../more_apps/yarn/utils/yarn_enum.dart';
 import '../more_apps/yarn/widgets/yarn_shimmer.dart';
 
 class NearByListScreen extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
 
   NearByListScreen({this.arguments, Key? key}) : super(key: key);
 
@@ -56,7 +56,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
         isNearbyLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfMerchant(nearByNext, nearByPrevious, '', nearBy: true);
 
         if (result == null) {
@@ -72,7 +72,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
         nearByCount = result['count'];
         nearByNext = result['next'];
         nearByPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noNearByInList = false;
@@ -168,13 +168,13 @@ class _NearByListScreenState extends State<NearByListScreen> {
         }
 
         return Container(
-          margin: EdgeInsets.all(10.0),
+          margin: const EdgeInsets.all(10.0),
           child: FindBusiness(
             customerProfile: customerProfileList[index],
             tileRenderPlace: TileRenderPlace.YarnTimeLine,
             callback: (username, value) {
               //create a list to edit
-              List<CustomerProfile> customerProfileListEdit =
+              final List<CustomerProfile> customerProfileListEdit =
                   customerProfileList;
 
               // modify customerProfileList for the username and refresh the list
@@ -220,7 +220,7 @@ class _NearByListScreenState extends State<NearByListScreen> {
 
   void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         nearByCount = 0;

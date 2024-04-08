@@ -58,7 +58,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
       if (typingTimer != null) {
         setState(() => typingTimer!.cancel()); // clear timer
       }
-      typingTimer = new Timer(
+      typingTimer = Timer(
         duration,
         () => getMoments(value),
       );

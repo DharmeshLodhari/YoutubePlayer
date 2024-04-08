@@ -101,8 +101,8 @@ class _MaterialControlsState extends State<MaterialControls> {
                       !_latestValue!.isPlaying &&
                       _latestValue!.isBuffering)
                     const Expanded(
-                      child: const Center(
-                        child: const CircularProgressIndicator(),
+                      child: Center(
+                        child: CircularProgressIndicator(),
                       ),
                     )
                   else
@@ -580,7 +580,7 @@ class _MaterialControlsState extends State<MaterialControls> {
     });
   }
 
-  Future<Null> _initialize() async {
+  Future<void> _initialize() async {
     controller!.addListener(_updateState);
 
     _updateState();

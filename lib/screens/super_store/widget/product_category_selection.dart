@@ -104,7 +104,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
+        final Map<String, dynamic>? result =
             await YarnAuth().getProductCategories(widget.next_url, previous!);
         if (result == null) {
           noCategoriesList = true;
@@ -119,7 +119,7 @@ class _ProductCategorySelectionState extends State<ProductCategorySelection> {
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           noCategoriesList = false;
           isLoading = false;

@@ -48,7 +48,7 @@ class _StartupScreenState extends State<StartupScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        bool? result = await showDialogBox(
+        final bool? result = await showDialogBox(
           context: context,
           actionOneBgColor: mateRed,
           actionOneTextColor: Colors.white,
@@ -88,31 +88,31 @@ class _StartupScreenState extends State<StartupScreen> {
             ),
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: <Widget>[
                 Expanded(
                   flex: 6,
                   child: Column(
                     children: <Widget>[
-                      Expanded(
+                      const Expanded(
                         flex: 10,
                         child: SizedBox(
                           height: 10,
                         ),
                       ),
                       appIcon(),
-                      Expanded(
+                      const Expanded(
                         child: SizedBox(
                           height: 10,
                         ),
                       ),
-                      Text("Welcome to Slydo",
+                      const Text("Welcome to Slydo",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 22,
                               fontWeight: FontWeight.w700)),
-                      Expanded(
+                      const Expanded(
                         flex: 2,
                         child: SizedBox(
                           height: 10,
@@ -126,11 +126,12 @@ class _StartupScreenState extends State<StartupScreen> {
                         text: "Log in",
                         textColor: HexColor("#3F61DB"),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       CurvedButton(
-                        backgroundColor: Color.fromARGB(38, 255, 255, 255),
+                        backgroundColor:
+                            const Color.fromARGB(38, 255, 255, 255),
                         onPressed: () {
                           Navigator.of(context).pushNamed(Routes.REGISTRATION);
                           // Navigator.of(context).popAndPushNamed(Routes.SIGN_UP, arguments: {
@@ -142,12 +143,12 @@ class _StartupScreenState extends State<StartupScreen> {
                         text: "Register",
                         textColor: Colors.white,
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       // resetDeviceField(),
                     ],
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   flex: 4,
                   child: SizedBox(
                     height: 10,
@@ -281,19 +282,19 @@ class _StartupScreenState extends State<StartupScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Expanded(
+                    const Expanded(
                       flex: 1,
                       child: SizedBox(
                         height: 10,
                       ),
                     ),
-                    Text(
+                    const Text(
                       "SCAN QR CODE",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 22.0, fontWeight: FontWeight.w700),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Padding(
@@ -305,7 +306,7 @@ class _StartupScreenState extends State<StartupScreen> {
                             fontSize: 14.0, color: darkGrey, height: 1.5),
                       ),
                     ),
-                    Expanded(
+                    const Expanded(
                       flex: 2,
                       child: SizedBox(
                         height: 10,
@@ -343,19 +344,19 @@ class _StartupScreenState extends State<StartupScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Expanded(
+                    const Expanded(
                       flex: 1,
                       child: SizedBox(
                         height: 10,
                       ),
                     ),
-                    Text(
+                    const Text(
                       "SEND PAYMENT",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 22.0, fontWeight: FontWeight.w700),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Padding(
@@ -367,7 +368,7 @@ class _StartupScreenState extends State<StartupScreen> {
                             fontSize: 14.0, color: darkGrey, height: 1.5),
                       ),
                     ),
-                    Expanded(
+                    const Expanded(
                       flex: 2,
                       child: SizedBox(
                         height: 10,
@@ -405,19 +406,19 @@ class _StartupScreenState extends State<StartupScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Expanded(
+                    const Expanded(
                       flex: 1,
                       child: SizedBox(
                         height: 10,
                       ),
                     ),
-                    Text(
+                    const Text(
                       "RECEIVE PAYMENT",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 22.0, fontWeight: FontWeight.w700),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Padding(
@@ -429,7 +430,7 @@ class _StartupScreenState extends State<StartupScreen> {
                             fontSize: 14.0, color: darkGrey, height: 1.5),
                       ),
                     ),
-                    Expanded(
+                    const Expanded(
                       flex: 2,
                       child: SizedBox(
                         height: 10,
@@ -467,19 +468,19 @@ class _StartupScreenState extends State<StartupScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Expanded(
+                    const Expanded(
                       flex: 1,
                       child: SizedBox(
                         height: 10,
                       ),
                     ),
-                    Text(
+                    const Text(
                       "VIEW TRANSACTIONS",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 22.0, fontWeight: FontWeight.w700),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Padding(
@@ -491,7 +492,7 @@ class _StartupScreenState extends State<StartupScreen> {
                             fontSize: 14.0, color: darkGrey, height: 1.5),
                       ),
                     ),
-                    Expanded(
+                    const Expanded(
                       flex: 2,
                       child: SizedBox(
                         height: 10,

@@ -72,17 +72,18 @@ class UserDashboardItemTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                isLocked
-                    ? Positioned(
-                        top: 6,
-                        right: 6,
-                        child: Icon(
-                          Icons.lock_outline_rounded,
-                          color: blackFont,
-                          size: 14,
-                        ),
-                      )
-                    : Container()
+                if (isLocked)
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: Icon(
+                      Icons.lock_outline_rounded,
+                      color: blackFont,
+                      size: 14,
+                    ),
+                  )
+                else
+                  Container()
               ],
             ),
           ),

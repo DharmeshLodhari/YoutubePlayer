@@ -18,6 +18,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import 'models/share_as_yarn_model.dart';
 import 'widgets/ask_mention_view.dart';
 
@@ -38,11 +39,11 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
 
   late UserBloc userBloc;
   final TextEditingController controller = TextEditingController();
-  RefreshController _postRefreshController =
+  final RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
   bool isAPILoading = false;
-  ScrollController _commentScrollController = new ScrollController();
-  ScrollController scrollController = new ScrollController();
+  final ScrollController _commentScrollController = ScrollController();
+  ScrollController scrollController = ScrollController();
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
   bool? enableComment = true;
   bool? enablePayment = true;
@@ -80,7 +81,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     isSingleYarnLoading = true;
     if (mounted) setState(() {});
 
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await YarnAuth().getSingleTopics(yarnId: widget.yarnId!);
     if (result != null) {
       finalYarn = result['results'];
@@ -129,7 +130,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         Row(
           children: [
             _buildProfileImage(),
-            SizedBox(
+            const SizedBox(
               width: 16,
             )
           ],
@@ -162,7 +163,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
 
   Widget _buildBody() {
     if (isSingleYarnLoading) {
-      return YarnShimmer();
+      return const YarnShimmer();
     }
 
     return Column(
@@ -190,7 +191,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         onRefresh: _onPostRefresh,
         child: SingleChildScrollView(
           child: Column(children: <Widget>[
-            if (isLoading) YarnShimmer(),
+            if (isLoading) const YarnShimmer(),
             if (!isLoading) _buildMain(),
           ]),
         ),
@@ -202,7 +203,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     return Column(
       children: [
         Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: YarnTile(
               yarn: finalYarn!,
               onDeleteYarn: (Yarn yarn) {
@@ -246,14 +247,14 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   }
 
   void onValueChange(String value) {
-    List<String> listOfWords = value.split(" ");
+    final List<String> listOfWords = value.split(" ");
 
     if (listOfWords.isNotEmpty) {
       if ((listOfWords.last.contains("@") &&
           !value.endsWith(" ") &&
           !value.endsWith("@"))) {
         isMentionName = true;
-        List<String> mentionString = getAllMentions(value);
+        final List<String> mentionString = getAllMentions(value);
 
         if (mentionString.isNotEmpty) {
           searchString = mentionString.last.substring(1);
@@ -341,7 +342,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   }
 
   Future addComment() async {
-    Map<String, dynamic> data = {
+    final Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": userName,
       "enable_payme": enablePayment,
@@ -357,7 +358,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     }
 
     try {
-      YarnComment? commentDetails =
+      final YarnComment? commentDetails =
           await YarnAuth().addCommentToYarn(finalYarn!.id!, data);
       if (commentDetails != null) {
         // widget.onUpdate!(finalYarn!);
@@ -385,7 +386,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
 
   void _onPostRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         yarnCommentScreenKey = GlobalKey<ScaffoldState>();

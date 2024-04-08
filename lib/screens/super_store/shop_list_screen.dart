@@ -94,7 +94,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     if (mounted) {
       isProductLoading = true;
     }
-    Map<String, dynamic>? result =
+    final Map<String, dynamic>? result =
         await ShoppingAuthService().listOfSuperStores(sectionUrl: productNext);
     setState(() {
       rowHeaders = result!['store'];
@@ -102,7 +102,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     });
   }
 
-  loadUrl() {
+  void loadUrl() {
     if (widget.nextUrl != null && widget.nextUrl != "")
       productNext = widget.nextUrl;
   }
@@ -150,7 +150,7 @@ class ShopListScreenState extends State<ShopListScreen> {
         isProductLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(
                 productNext, productPrevious, _currentCategory, false,
                 otherDeals: true);
@@ -166,7 +166,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
         productCount = result['count'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             productNext = result['next'];
@@ -186,10 +186,11 @@ class ShopListScreenState extends State<ShopListScreen> {
           productList.length > 6 &&
           !_isSnackBarShowing) {
         _isSnackBarShowing = true;
-        _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
+        _productScaffoldMessengerKey.currentState
+            ?.showSnackBar(SnackBar(
               content: Text(
                   AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
             ))
             .closed
             .then((_) {
@@ -205,7 +206,7 @@ class ShopListScreenState extends State<ShopListScreen> {
         isTodayDealLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .getProductListForSuperStore(todayDealNext, todayDealPrevious,
                 todaysDeal: true);
 
@@ -221,7 +222,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
         todayDealNext = result['next'];
         todayDealPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
 
         todaysDealsEmpty = false;
         isTodayDealLoading = false;
@@ -241,7 +242,7 @@ class ShopListScreenState extends State<ShopListScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -255,7 +256,7 @@ class ShopListScreenState extends State<ShopListScreen> {
     });
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     productNext = "";
     productCount = 0;
     productPrevious = "";
@@ -328,32 +329,33 @@ class ShopListScreenState extends State<ShopListScreen> {
                       ),
                     if (widget.type == null) superStoreProducts(),
                     const SizedBox(height: 16),
-                    isProductLoading
-                        ? Shimmer.fromColors(
-                            baseColor: Colors.white,
-                            highlightColor: greyBorderColor,
-                            child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithMaxCrossAxisExtent(
-                                mainAxisSpacing: 14,
-                                mainAxisExtent: 180,
-                                crossAxisSpacing: 15,
-                                maxCrossAxisExtent: 200,
+                    if (isProductLoading)
+                      Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisSpacing: 14,
+                            mainAxisExtent: 180,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
+                          ),
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              itemCount: 2,
-                              itemBuilder: (context, index) {
-                                return Card(
-                                  color: Colors.grey,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                        : const SizedBox.shrink(),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
 
                     // Visibility(
                     //   visible: widget.type != null ? !isProductLoading &&
@@ -389,22 +391,24 @@ class ShopListScreenState extends State<ShopListScreen> {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              noProductInList
-                  ? const SizedBox.shrink()
-                  : todaysDealsEmpty
-                      ? const SizedBox.shrink()
-                      : Text(
-                          "Other deals",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: "Inter",
-                            color: blackFont,
-                            fontWeight: FontWeight.w700,
-                          ),
+              if (noProductInList)
+                const SizedBox.shrink()
+              else
+                todaysDealsEmpty
+                    ? const SizedBox.shrink()
+                    : Text(
+                        "Other deals",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: "Inter",
+                          color: blackFont,
+                          fontWeight: FontWeight.w700,
                         ),
-              noProductInList
-                  ? const SizedBox.shrink()
-                  : const SizedBox(height: 16),
+                      ),
+              if (noProductInList)
+                const SizedBox.shrink()
+              else
+                const SizedBox(height: 16),
               Container(
                 margin: const EdgeInsets.only(bottom: 15.0),
                 child: Align(
@@ -443,49 +447,50 @@ class ShopListScreenState extends State<ShopListScreen> {
   Widget getTodaysDealList() {
     return Column(
       children: [
-        todaysDealsEmpty
-            ? const SizedBox.shrink()
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Text(
-                        "Today's deal",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                          fontFamily: "Inter",
-                          color: blackFont,
-                        ),
-                      ),
-                      Icon(
-                        Icons.bolt_rounded,
-                        color: mateRed,
-                      ),
-                    ],
+        if (todaysDealsEmpty)
+          const SizedBox.shrink()
+        else
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                children: [
+                  Text(
+                    "Today's deal",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      fontFamily: "Inter",
+                      color: blackFont,
+                    ),
                   ),
-                  // GestureDetector(
-                  //   child: Row(
-                  //     children: [
-                  //       Text(
-                  //         "See all",
-                  //         style: TextStyle(
-                  //             fontWeight: FontWeight.w600,
-                  //             fontSize: 14,
-                  //             color: navyBlue),
-                  //       ),
-                  //       SizedBox(width: 8),
-                  //       Icon(Icons.arrow_forward_ios_sharp,
-                  //           size: 14, color: navyBlue),
-                  //     ],
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.of(context).pushNamed("/shopping-category");
-                  //   },
-                  // ),
+                  Icon(
+                    Icons.bolt_rounded,
+                    color: mateRed,
+                  ),
                 ],
               ),
+              // GestureDetector(
+              //   child: Row(
+              //     children: [
+              //       Text(
+              //         "See all",
+              //         style: TextStyle(
+              //             fontWeight: FontWeight.w600,
+              //             fontSize: 14,
+              //             color: navyBlue),
+              //       ),
+              //       SizedBox(width: 8),
+              //       Icon(Icons.arrow_forward_ios_sharp,
+              //           size: 14, color: navyBlue),
+              //     ],
+              //   ),
+              //   onTap: () {
+              //     Navigator.of(context).pushNamed("/shopping-category");
+              //   },
+              // ),
+            ],
+          ),
         Container(
           height: 280,
           child: ListView.builder(
@@ -521,7 +526,7 @@ class ShopListScreenState extends State<ShopListScreen> {
                       )
                     : const SizedBox.shrink();
               } else {
-                ShoppingProduct shoppingProduct = todaysDealList[index];
+                final ShoppingProduct shoppingProduct = todaysDealList[index];
                 return DisplayProduct(
                   giveRightPadding: true,
                   product: Product(

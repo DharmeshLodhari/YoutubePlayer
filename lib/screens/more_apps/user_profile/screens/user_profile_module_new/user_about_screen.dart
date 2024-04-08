@@ -25,7 +25,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
   bool isLoading = false;
 
   final GlobalKey<ScaffoldState> _scaffoldUserAboutKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
 
   List<OpeningHourForDay> showOpeningHours = [
     OpeningHourForDay(day: "Monday", time: "Closed"),
@@ -38,7 +38,7 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
   ];
 
   void formatOpeningHour() {
-    List<int> updatedIndex = [];
+    final List<int> updatedIndex = [];
 
     for (int i = 0; i < showOpeningHours.length; i++) {
       for (int j = 0; j < userAbout!.openingHours.length; j++) {
@@ -75,7 +75,8 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
               body: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   child: Column(
                     children: <Widget>[
                       displayUserBio(),
@@ -96,73 +97,74 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
         shadowColor: boxShadowTwo,
         borderOnForeground: true,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              userAbout!.openingHours.isEmpty
-                  ? Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Center(
-                          child: Text(
-                        "No Opening hours added yet.",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: blackFont),
-                      )),
-                    )
-                  : Column(
-                      children: [
-                        Text(
-                          "Opening hours",
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: navyBlue),
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        Divider(
-                          height: 0,
-                          color: dividerColor,
-                          thickness: 1,
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        Column(
-                          children: showOpeningHours
-                              .map((e) => Container(
-                                    padding: EdgeInsets.only(bottom: 16),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          e.day!,
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                        Text(
-                                          e.time!,
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: e.time == "Closed"
-                                                  ? darkGrey
-                                                  : blackFont,
-                                              fontWeight: FontWeight.w600),
-                                        )
-                                      ],
-                                    ),
-                                  ))
-                              .toList(),
-                        ),
-                      ],
+              if (userAbout!.openingHours.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Center(
+                      child: Text(
+                    "No Opening hours added yet.",
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: blackFont),
+                  )),
+                )
+              else
+                Column(
+                  children: [
+                    Text(
+                      "Opening hours",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: navyBlue),
                     ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Divider(
+                      height: 0,
+                      color: dividerColor,
+                      thickness: 1,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Column(
+                      children: showOpeningHours
+                          .map((e) => Container(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      e.day!,
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    Text(
+                                      e.time!,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: e.time == "Closed"
+                                              ? darkGrey
+                                              : blackFont,
+                                          fontWeight: FontWeight.w600),
+                                    )
+                                  ],
+                                ),
+                              ))
+                          .toList(),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),

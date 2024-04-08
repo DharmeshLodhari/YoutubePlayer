@@ -32,7 +32,7 @@ class _SearchProductTileState extends State<SearchProductTile> {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: CustomBoxShadow(
         child: Card(
             elevation: 3,
@@ -131,7 +131,7 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
       itemCover = "";
     }
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: CustomBoxShadow(
         child: Card(
             elevation: 3,

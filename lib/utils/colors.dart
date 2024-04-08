@@ -54,5 +54,5 @@ Color deepBlue = HexColor("#4060DB");
 Color orange = HexColor("#F08770");
 Color darkRed = HexColor("#33FF0000");
 
-Color boxShadow = Color.fromARGB(51, 50, 55, 140);
+Color boxShadow = const Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);

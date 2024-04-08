@@ -28,8 +28,8 @@ class StackedWidgets extends StatelessWidget {
           final value = Container(
             width: size,
             height: size,
-            child: item,
             margin: EdgeInsets.only(left: left * index),
+            child: item,
           );
 
           return MapEntry(index, value);

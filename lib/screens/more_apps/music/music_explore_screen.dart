@@ -103,7 +103,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         getResult();
@@ -660,7 +660,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
   }
 
   Widget eventPoster(String url) {
-    bool temp = Random().nextBool();
+    final bool temp = Random().nextBool();
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/music-detail",

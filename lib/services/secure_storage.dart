@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorage {
   // Create storage
-  static final _storage = new FlutterSecureStorage();
+  static final _storage = const FlutterSecureStorage();
 
   // Check user
   Future<bool> hasUser() async {

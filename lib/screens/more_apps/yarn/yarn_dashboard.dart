@@ -6,22 +6,23 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:neat_periodic_task/neat_periodic_task.dart';
 import 'package:provider/provider.dart';
+
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import '../messaging/message_auth.dart';
 import 'add_or_edit_yarn_screen.dart';
-import 'yarn_search_screen.dart';
 import 'trending_list_screen.dart';
 import 'yarn_dashboard_bloc.dart';
 import 'yarn_list_screen.dart';
+import 'yarn_search_screen.dart';
 import 'yarn_setting_screen.dart';
-import 'package:badges/badges.dart' as badges;
 
 class YarnDashboard extends StatefulWidget {
   @override
@@ -50,13 +51,13 @@ class _YarnDashboardState extends State<YarnDashboard> {
     fetchMessageCount();
 
     final scheduler = NeatPeriodicTaskScheduler(
-      interval: Duration(seconds: 60),
+      interval: const Duration(seconds: 60),
       name: 'count-notify',
-      timeout: Duration(seconds: 5),
+      timeout: const Duration(seconds: 5),
       task: () async {
         fetchMessageCount();
       },
-      minCycle: Duration(seconds: 5),
+      minCycle: const Duration(seconds: 5),
     );
     scheduler.start();
 
@@ -86,7 +87,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
     }
     return Text(
       count.toString(),
-      style: TextStyle(
+      style: const TextStyle(
           fontFamily: "Inter",
           fontSize: 10,
           color: Colors.white,
@@ -154,7 +155,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
       RoundedBackgroundIcon(
         height: 34,
         width: 34,
@@ -162,7 +163,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
             badgeContent: getUnReadCount(count),
             position: badges.BadgePosition.topEnd(
                 end: count.toString().length == 1 ? -5 : 0, top: 0),
-            badgeAnimation: badges.BadgeAnimation.rotation(
+            badgeAnimation: const badges.BadgeAnimation.rotation(
               animationDuration: Duration(seconds: 1),
               colorChangeAnimationDuration: Duration(seconds: 1),
               loopAnimation: false,
@@ -173,7 +174,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
               shape: badges.BadgeShape.circle,
               badgeColor: naturalGreen,
               padding: count == 0
-                  ? EdgeInsets.all(0)
+                  ? const EdgeInsets.all(0)
                   : EdgeInsets.only(
                       left: count.toString().length == 1 ? 6 : 8,
                       right: 6,
@@ -200,7 +201,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
         backgroundColor: lightGrey.withOpacity(0.1),
         enableMargin: true,
       ),
-      SizedBox(width: 20),
+      const SizedBox(width: 20),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -216,7 +217,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 30),
+      const SizedBox(width: 30),
     ];
   }
 
@@ -244,7 +245,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
       },
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           _buildCategoryAndTabs(),
@@ -258,14 +259,14 @@ class _YarnDashboardState extends State<YarnDashboard> {
     return Column(
       children: [
         if (_tabsVisible) ...[
-          YarnCategorySelection(),
-          SizedBox(height: 14),
+          const YarnCategorySelection(),
+          const SizedBox(height: 14),
           Divider(
             height: 0,
             thickness: 0.5,
             color: greySecondaryYarn,
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
         if (_tabsVisible) ...[
           YarnTabSelection(
@@ -279,7 +280,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
             firstTab: 'Latest',
             secondTab: 'Trending',
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
         ],
@@ -376,7 +377,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
             }
           });
         },
-        child: Icon(
+        child: const Icon(
           SlydoAppIconNew.dashboard_yarn,
           color: Colors.white,
         ),

@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import '../../../payment_and_banking/payment_and_banking_auth.dart';
 
 class EditShippingOptions extends StatefulWidget {
-  var arguments;
+  final dynamic arguments;
   final Function(bool)? callback;
 
   EditShippingOptions({this.callback, this.arguments});
@@ -74,7 +74,7 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
   }
 
   Widget scaffoldBody() {
-    bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
+    final bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
     if (isLoading == true) {
       return _buildLoadingIndicator();
@@ -103,34 +103,36 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
                     child: Column(
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Column(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               getLocation(),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               displayAmountField(),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : Text(
-                                      errorMessage,
-                                      style: TextStyle(
-                                          color: mateRed,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : SizedBox(
-                                      height: 20,
-                                    ),
+                              if (errorMessage == "")
+                                Container()
+                              else
+                                Text(
+                                  errorMessage,
+                                  style: TextStyle(
+                                      color: mateRed,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                              if (errorMessage == "")
+                                Container()
+                              else
+                                const SizedBox(
+                                  height: 20,
+                                ),
                             ],
                           ),
                         ),
@@ -143,17 +145,17 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
             Container(
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   if (isEdit == true) ...[
                     getSubmitButton()
                   ] else if (amount == 0.0) ...[
-                    SizedBox()
+                    const SizedBox()
                   ] else ...[
                     getSubmitButton()
                   ],
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                 ],
@@ -227,7 +229,7 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
       isAmountField: true,
       enabled: true,
       keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
+          ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
@@ -241,7 +243,7 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val.replaceAll(',', ''));
+            final double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {
@@ -280,14 +282,14 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
 
     isLoading = true;
 
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     // if (_formKey.currentState?.validate()) {
     try {
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 3));
       errorMessage = '';
 
-      var data = {
+      final data = {
         "currency": userBloc.user.currency,
         "price": moneyInputNormalizer(amount.toString()),
         "name": location,
@@ -295,7 +297,7 @@ class _EditShippingOptionsState extends State<EditShippingOptions> {
 
       debugPrint("Shipping status:- $data");
 
-      int? shippingId = widget.arguments['id'];
+      final int? shippingId = widget.arguments['id'];
 
       await _auth.editShippingOption(data, shippingId!).then((value) async {
         debugPrint(

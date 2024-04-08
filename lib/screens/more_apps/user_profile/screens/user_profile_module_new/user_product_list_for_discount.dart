@@ -37,12 +37,12 @@ class _UserProductListForDiscountState
   String? productNext = "";
   String? productPrevious = "";
   List<Product> productList = [];
-  ScrollController _productScrollController = new ScrollController();
+  final ScrollController _productScrollController = ScrollController();
   final GlobalKey<ScaffoldState> _productScaffoldKey =
-      new GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldMessengerState> _productMessengerScaffoldKey =
-      new GlobalKey<ScaffoldMessengerState>();
-  RefreshController _productsRefreshController =
+      GlobalKey<ScaffoldMessengerState>();
+  final RefreshController _productsRefreshController =
       RefreshController(initialRefresh: false);
   bool isProductLoading = false;
   bool noProductInList = false;
@@ -89,7 +89,7 @@ class _UserProductListForDiscountState
 
   void _onProductRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         productCount = 0;
@@ -114,7 +114,7 @@ class _UserProductListForDiscountState
         isProductLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(productNext, productPrevious, "", false,
                 userName: userBloc.user.userName);
 
@@ -130,7 +130,7 @@ class _UserProductListForDiscountState
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noProductInList = false;
@@ -149,7 +149,7 @@ class _UserProductListForDiscountState
         _productMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
         ));
       }
     }
@@ -193,7 +193,8 @@ class _UserProductListForDiscountState
                                   highlightColor: greyBorderColor,
                                   child: ListView.builder(
                                     shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8.0, vertical: 20.0),
                                     itemCount: 5,
@@ -216,7 +217,8 @@ class _UserProductListForDiscountState
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                                 child: Container(
-                                                  padding: EdgeInsets.symmetric(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
                                                       vertical: 20,
                                                       horizontal: 12),
                                                   child: Row(
@@ -233,7 +235,7 @@ class _UserProductListForDiscountState
                                                               color: Colors
                                                                   .blueGrey,
                                                             ),
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 12,
                                                             ),
                                                             Container(
@@ -267,7 +269,7 @@ class _UserProductListForDiscountState
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: getSubmitButton(),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30,
                         )
                       ],
@@ -284,10 +286,10 @@ class _UserProductListForDiscountState
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: () async {
-        List<Product> selectedProducts =
+        final List<Product> selectedProducts =
             productList.where((e) => e.isSelected).toList();
 
-        Map<String, dynamic> items = {
+        final Map<String, dynamic> items = {
           "products": selectedProducts,
           "ids": selectedProducts.map((e) => e.id).toList(),
           "isSelectAll": isSelectAll
@@ -359,7 +361,7 @@ class _UserProductListForDiscountState
 
   Widget _buildProductList() {
     return productNext == "" && isProductLoading
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : ListView.builder(
             shrinkWrap: true,
             controller: _productScrollController,
@@ -388,7 +390,7 @@ class _UserProductListForDiscountState
             text: AppLocalization.of(context)!.outOfStock, color: starYellow),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   String? getDisplayImage(int index, List<Product> productList) {

@@ -110,9 +110,6 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   ),
                 ),
                 Container(
-                  child: const Padding(
-                    padding: EdgeInsets.all(1.0),
-                  ),
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
@@ -124,6 +121,9 @@ class _VideoRecorderState extends State<VideoRecorder> {
                           : dividerColor,
                       width: 1.0,
                     ),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(1.0),
                   ),
                 ),
                 Positioned(
@@ -167,9 +167,6 @@ class _VideoRecorderState extends State<VideoRecorder> {
                 ),
               ),
               Container(
-                child: const Padding(
-                  padding: EdgeInsets.all(1.0),
-                ),
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
@@ -181,6 +178,9 @@ class _VideoRecorderState extends State<VideoRecorder> {
                             : dividerColor,
                     width: 1.0,
                   ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(1.0),
                 ),
               ),
               Positioned(
@@ -320,12 +320,12 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   : null,
               child: ClipOval(
                 child: AnimatedSwitcher(
-                  child: recordingButton,
                   transitionBuilder: (child, animation) => ScaleTransition(
                     scale: animation,
                     child: child,
                   ),
                   duration: const Duration(microseconds: 500),
+                  child: recordingButton,
                 ),
               ),
             ),

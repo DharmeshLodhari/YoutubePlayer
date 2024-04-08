@@ -114,7 +114,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   userNameWithVerifiedIcon(
                                     name: widget.product?.sellerFullName ?? '',
                                     isVerified: false,
@@ -127,7 +127,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                         Shadow(
                                           blurRadius: 2.0,
                                           color: blackFont,
-                                          offset: Offset(0.0, 0),
+                                          offset: const Offset(0.0, 0),
                                         ),
                                       ],
                                     ),
@@ -139,8 +139,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
                         ]),
                       ),
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -203,67 +203,65 @@ class _YarnProductTileState extends State<YarnProductTile> {
                               softWrap: false,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            widget.product!.seller == userBloc.user.userName
-                                ? Container(
-                                    height: 4,
-                                  )
-                                : Container(
-                                    child: Column(
+                            if (widget.product!.seller ==
+                                userBloc.user.userName)
+                              Container(
+                                height: 4,
+                              )
+                            else
+                              Container(
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
                                       children: [
-                                        SizedBox(
-                                          height: 5,
+                                        addToCartWidget(item: widget.product),
+                                        const SizedBox(
+                                          width: 8,
                                         ),
-                                        Row(
-                                          children: [
-                                            addToCartWidget(
-                                                item: widget.product),
-                                            SizedBox(
-                                              width: 8,
-                                            ),
-                                            Expanded(
-                                              child: CurvedButton(
-                                                height: getButtonSize(
-                                                    widget.tileRenderPlace,
-                                                    context),
-                                                isPaymentBtn: true,
-                                                textColor: Colors.white,
-                                                backgroundColor: navyBlue,
-                                                text: "BUY NOW",
-                                                borderRadius: 10,
-                                                onPressed: () async {
-                                                  // if (appConfigurationModel
-                                                  //         ?.enablePayment ==
-                                                  //     true) {
-                                                  bool result =
-                                                      await showDisclaimerDialogueForGoods(
-                                                          context);
-                                                  if (result) {
-                                                    customerProfileBloc
-                                                            .customer =
-                                                        await UserAuth()
-                                                            .fetchCustomerProfile(
-                                                                widget.product!
-                                                                    .seller);
+                                        Expanded(
+                                          child: CurvedButton(
+                                            height: getButtonSize(
+                                                widget.tileRenderPlace,
+                                                context),
+                                            isPaymentBtn: true,
+                                            textColor: Colors.white,
+                                            backgroundColor: navyBlue,
+                                            text: "BUY NOW",
+                                            borderRadius: 10,
+                                            onPressed: () async {
+                                              // if (appConfigurationModel
+                                              //         ?.enablePayment ==
+                                              //     true) {
+                                              final bool result =
+                                                  await showDisclaimerDialogueForGoods(
+                                                      context);
+                                              if (result) {
+                                                customerProfileBloc.customer =
+                                                    await UserAuth()
+                                                        .fetchCustomerProfile(
+                                                            widget.product!
+                                                                .seller);
 
-                                                    Navigator.of(context)
-                                                        .pushNamed(
-                                                      '/send-payment',
-                                                      arguments: {
-                                                        'isFromProfile': false,
-                                                        'product':
-                                                            widget.product
-                                                      },
-                                                    );
-                                                  }
-                                                  // }
-                                                },
-                                              ),
-                                            ),
-                                          ],
+                                                Navigator.of(context).pushNamed(
+                                                  '/send-payment',
+                                                  arguments: {
+                                                    'isFromProfile': false,
+                                                    'product': widget.product
+                                                  },
+                                                );
+                                              }
+                                              // }
+                                            },
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  )
+                                  ],
+                                ),
+                              )
                           ],
                         ),
                       ),
@@ -288,7 +286,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        String type = item is Product ? "product" : "service";
+        final String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(
             item: item, type: type, currentUser: userBloc.user.convertToUser());
@@ -299,7 +297,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
             return;
           }
         });
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           "type": type,
           "id": mapData["item"].id,
           "qty": mapData["qty"],

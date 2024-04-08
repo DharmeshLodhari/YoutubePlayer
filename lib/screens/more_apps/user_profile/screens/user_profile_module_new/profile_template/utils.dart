@@ -25,7 +25,7 @@ import '../../../../../../utils/util.dart';
 import '../event_list.dart';
 
 double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
-  int bioLength = bio.length;
+  final int bioLength = bio.length;
   debugPrint('GET BIO LEN -> $bioLength');
   debugPrint('GET ADDRESS -> $hasAddress');
   debugPrint('GET CONTACT -> $hasContact');
@@ -95,7 +95,7 @@ fetchYarnData(String? searchedUserName, String isChannel) async {
   if (data != null) {
     // debugPrint('IS SHOW YARN ---> $data');
 
-    List<dynamic> result = data["results"];
+    final List<dynamic> result = data["results"];
     if (result.isNotEmpty) return result;
   }
 
@@ -111,7 +111,7 @@ fetchChannelData(String? searchedUserName) async {
   if (basePaginationModel != null) {
     // debugPrint('IS SHOW CHANNELS ---> $basePaginationModel');
 
-    List<dynamic> result = basePaginationModel.result;
+    final List<dynamic> result = basePaginationModel.result;
     if (result.isNotEmpty) return result;
   }
 
@@ -129,7 +129,7 @@ fetchPostData(String? searchedUserName, String? channelUserName) async {
   if (data != null) {
     // debugPrint('IS SHOW POST ---> $data');
 
-    List<dynamic> result = data["results"];
+    final List<dynamic> result = data["results"];
     if (result.isNotEmpty) return result;
   }
 
@@ -147,7 +147,7 @@ fetchMomentData(String? searchedUserName, String? channelUsername) async {
   if (momentsModel.isNotEmpty) {
     // debugPrint('IS SHOW MOMENTS ---> $momentsModel');
 
-    List<dynamic> result = momentsModel;
+    final List<dynamic> result = momentsModel;
     if (result.isNotEmpty) return result;
   }
 
@@ -162,7 +162,7 @@ fetchProductData(String? searchedUserName, bool? isChannel) async {
   } catch (error) {}
   if (data != null) {
     debugPrint('IS SHOW PRODUCT ---> $data');
-    List<dynamic> result = data["results"];
+    final List<dynamic> result = data["results"];
     if (result.isNotEmpty) return result;
   }
 
@@ -176,7 +176,7 @@ fetchServiceData(String? searchedUserName) async {
         .listServicesByProvider("", "", userName: searchedUserName);
   } catch (error) {}
   if (data != null) {
-    List<dynamic> result = data["results"];
+    final List<dynamic> result = data["results"];
     if (result.isNotEmpty) return result;
   }
 
@@ -268,7 +268,7 @@ String getGroupUsername(String channelUsername) {
 
 Widget showDiscountValue(String discountType, num discountValue, currency) {
   return Container(
-    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
         color: verifyGreen, borderRadius: BorderRadius.circular(5)),
     child: Text(

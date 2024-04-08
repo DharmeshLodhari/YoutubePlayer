@@ -103,7 +103,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         isNearbyLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfMerchant(nearByNext, nearByPrevious, _currentCategory,
                 nearBy: true);
 
@@ -120,7 +120,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         nearByCount = result['count'];
         nearByNext = result['next'];
         nearByPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noNearByInList = false;
@@ -155,7 +155,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         isFindBusinessLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfMerchant(
                 findBusinessNext, findBusinessPrevious, _currentCategory,
                 nearBy: false);
@@ -173,7 +173,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
         findBusinessCount = result['count'];
         findBusinessNext = result['next'];
         findBusinessPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noFindBusinessInList = false;
@@ -204,7 +204,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
 
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
+      final connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
         _refreshPage();
@@ -218,7 +218,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
     });
   }
 
-  _refreshPage() {
+  void _refreshPage() {
     findBusinessNext = "";
     findBusinessCount = 0;
     findBusinessPrevious = "";
@@ -366,7 +366,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
             tileRenderPlace: TileRenderPlace.YarnProductService,
             callback: (username, value) {
               //create a list to edit
-              List<CustomerProfile> customerProfileListEdit =
+              final List<CustomerProfile> customerProfileListEdit =
                   customerProfileList;
 
               // modify customerProfileList for the username and refresh the list

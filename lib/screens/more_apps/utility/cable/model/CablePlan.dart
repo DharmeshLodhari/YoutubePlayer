@@ -10,9 +10,8 @@ class CablePlan {
 
   factory CablePlan.fromJson(Map<String, dynamic> json) {
     return CablePlan(
-      features: json['features'] != null
-          ? new List<String>.from(json['features'])
-          : null,
+      features:
+          json['features'] != null ? List<String>.from(json['features']) : null,
       name: json['name'],
       packs: json['packs'] != null
           ? (json['packs'] as List).map((i) => Pack.fromJson(i)).toList()
@@ -22,7 +21,7 @@ class CablePlan {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['name'] = this.name;
     data['price'] = this.price;
     if (this.features != null) {

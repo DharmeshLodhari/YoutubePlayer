@@ -19,8 +19,8 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
       data: ThemeData(
           colorScheme:
               ColorScheme.fromSwatch().copyWith(secondary: Colors.white)),
-      child: new Container(
-        padding: EdgeInsets.only(
+      child: Container(
+        padding: const EdgeInsets.only(
           left: 16,
         ),
         color: Colors.white,

@@ -43,7 +43,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   TabController? _tabController;
   PageController? _pageController;
   int _currentIndex = 0;
-  final PageStorageBucket _bucket = new PageStorageBucket();
+  final PageStorageBucket _bucket = PageStorageBucket();
 
   // Define a list to store the UserTab objects
   List<UserTab> userTabs = [];
@@ -85,10 +85,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     isOwner = widget.isOwner;
 
     // Initialize a map to store boolean values
-    var boolMap = <String, bool>{};
+    final boolMap = <String, bool>{};
 
     // Initialize a list to store the keys in the desired order
-    var orderedKeys = <String>[];
+    final orderedKeys = <String>[];
 
     // Iterate through the 'ordering' array and add keys that exist in boolMap to orderedKeys
     if (result is Map<String, dynamic>) {
@@ -108,7 +108,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     }
 
     // Create a list of keys not in 'ordering'
-    var remainingKeys =
+    final remainingKeys =
         boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
 
     // Add the remaining keys to orderedKeys to ensure they are at the end
@@ -127,7 +127,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     });
 
     // Define the UserTabView using the created userTabs list
-    UserTabView businessView = UserTabView(
+    final UserTabView businessView = UserTabView(
       name: "business",
       tabs: userTabs,
     );
@@ -147,7 +147,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     // Add a listener to the tab controller that updates the current index
     _tabController!.addListener(tabController);
 
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       obtainCustomCategory(widget.searchedUser!.userName!);
     });
 
@@ -157,12 +157,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   }
 
   Future<void> getAlertTagData() async {
-    print("============================>");
     if (flashTagNext != null && !isFlashTagLoading) {
       isFlashTagLoading = true;
       if (mounted) setState(() {});
 
-      Map<String, dynamic>? result = await ShoppingAuthService()
+      final Map<String, dynamic>? result = await ShoppingAuthService()
           .listOfFlashTags(
               flashTagNext, flashTagPrevious, widget.searchedUser?.userName);
 
@@ -178,7 +177,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       flashTagCount = result['count'];
       flashTagNext = result['next'];
       flashTagPrevious = result['previous'];
-      var tempList = result['results'];
+      final tempList = result['results'];
 
       isFlashTagLoading = false;
       flashTagAlerts.addAll(tempList);
@@ -201,7 +200,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                 element.type?.toValue() == FlashTagCategory("Pop-up").toValue())
             .toList()
             .first;
-        bool check = _sharedPreferences.getBool("showFlash") ?? false;
+        final bool check = _sharedPreferences.getBool("showFlash") ?? false;
         if (!check) {
           showFlashTagAlertPopUp();
           _sharedPreferences.setBool("showFlash", true);
@@ -218,8 +217,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 16),
-          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           content: SizedBox(
@@ -248,7 +247,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -260,7 +259,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                               fontSize: 16,
                               fontFamily: "Inter"),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 24,
                         ),
                         Text(
@@ -272,7 +271,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                               height: 1.5,
                               letterSpacing: 0.6),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 48,
                         ),
                       ],
@@ -287,13 +286,13 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     );
   }
 
-  void obtainCustomCategory(user) async {
+  void obtainCustomCategory(String user) async {
     try {
-      List<ProductCategory> result =
-          await ShoppingAuthService().obtainCustomCategory(user!);
-      List<ProductCategory> initial = [];
-      initial.add(ProductCategory("All", id: "all"));
-      initial.add(ProductCategory("Explore", id: "main"));
+      final List<ProductCategory> result =
+          await ShoppingAuthService().obtainCustomCategory(user);
+      final List<ProductCategory> initial = [];
+      initial.add(const ProductCategory("All", id: "all"));
+      initial.add(const ProductCategory("Explore", id: "main"));
       initial.addAll(result);
       customCategories = initial;
       selectedCategory = customCategories.first.id;
@@ -391,7 +390,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_pageController!.hasClients) {
         _pageController!.animateToPage(_currentIndex,
-            duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
+            duration: const Duration(milliseconds: 1), curve: Curves.easeInOut);
       }
     });
     if (mounted) setState(() {});
@@ -431,7 +430,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
               TabBar(
                 controller: _tabController,
                 isScrollable: true,
-                indicator: BoxDecoration(),
+                indicator: const BoxDecoration(),
                 onTap: (int index) {
                   changeIndex(index);
                 },
@@ -487,10 +486,10 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       color: white,
       child: Column(
         children: [
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Container(
             height: 20,
-            margin: EdgeInsets.only(right: 24, left: 10),
+            margin: const EdgeInsets.only(right: 24, left: 10),
             alignment: Alignment.centerLeft,
             child: ListView(
               shrinkWrap: true,
@@ -526,11 +525,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
             ),
           ),
           Container(
-              margin: EdgeInsets.only(left: 30),
+              margin: const EdgeInsets.only(left: 30),
               child: Divider(
                 color: greySecondaryYarn.withOpacity(.6),
               )),
-          SizedBox(height: 14),
+          const SizedBox(height: 14),
         ],
       ),
     );
@@ -550,7 +549,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     } catch (error) {}
     if (data != null) {
       debugPrint('IS SHOW PRODUCT ---> $data');
-      List<dynamic> result = data["results"];
+      final List<dynamic> result = data["results"];
       if (result.isNotEmpty) return result;
     }
     return [];
@@ -604,7 +603,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
                           if (snapshot.hasData) {
                             return tab.child!;
                           } else {
-                            return Center(child: CircularProgressIndicator());
+                            return const Center(
+                                child: CircularProgressIndicator());
                           }
                         },
                       ),
@@ -617,7 +617,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   }
 
   List<Widget> getTabs() {
-    List<Widget> tabs = [];
+    final List<Widget> tabs = [];
     int index = 0;
 
     _currentUser.tabs.where((tab) => tab.apiCall != null).map((tab) {
@@ -646,7 +646,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         },
       ),
       title: widget.isLoading
-          ? SizedBox.shrink()
+          ? const SizedBox.shrink()
           : userNameWithVerifiedIcon(
               name: searchedUser?.displayName()!,
               isVerified: searchedUser?.isVerified),
@@ -681,7 +681,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       });
 
       // Define the UserTabView using the created userTabs list
-      UserTabView businessView = UserTabView(
+      final UserTabView businessView = UserTabView(
         name: "business",
         tabs: userTabs,
       );
@@ -725,7 +725,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     });
 
     // Define the UserTabView using the created userTabs list
-    UserTabView businessView = UserTabView(
+    final UserTabView businessView = UserTabView(
       name: "business",
       tabs: userTabs,
     );
@@ -751,7 +751,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     if (flashTagString != "") {
       return Container(
         color: Colors.black,
-        padding: EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 14),
         child: TextScroll(
           flashTagString.length <= 90
               ? "$flashTagString".padRight(90, " ")
@@ -761,6 +761,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         ),
       );
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 }

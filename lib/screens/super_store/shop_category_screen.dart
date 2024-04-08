@@ -56,7 +56,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
         isProductLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await ShoppingAuthService()
+        final Map<String, dynamic>? result = await ShoppingAuthService()
             .listOfProduct(productNext, productPrevious,
                 widget.productCategories!.name, false,
                 otherDeals: true);
@@ -74,7 +74,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
-        var tempList = result['results'];
+        final tempList = result['results'];
         if (mounted) {
           setState(() {
             noProductInList = false;
@@ -99,22 +99,22 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
     }
   }
 
-  Future<UsersCategories?> getUserCategories() async {
-    // Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
-    // setState(() {
-    //   usersCategory = result!['results'];
-    // });
-    // return usersCategory!;
-  }
+  // Future<UsersCategories?> getUserCategories() async {
+  // Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
+  // setState(() {
+  //   usersCategory = result!['results'];
+  // });
+  // return usersCategory!;
+  // }
 
-  Future<UsersCategories?> saveUserCategories(String categoryId) async {
-    // Map<String, dynamic>? result =
-    // await YarnAuth().saveUsersSingleCategories(categoryId);
-    // setState(() {
-    //   usersCategory = result!['results'];
-    // });
-    // return usersCategory!;
-  }
+  // Future<UsersCategories?> saveUserCategories(String categoryId) async {
+  // Map<String, dynamic>? result =
+  // await YarnAuth().saveUsersSingleCategories(categoryId);
+  // setState(() {
+  //   usersCategory = result!['results'];
+  // });
+  // return usersCategory!;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +131,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(50.0),
+      preferredSize: const Size.fromHeight(50.0),
       child: AppBar(
         backgroundColor: Colors.white,
         titleSpacing: 0,
@@ -249,7 +249,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
       },
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           _buildCategoryAndTabs(),
@@ -273,7 +273,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
             firstTab: 'Latest',
             secondTab: 'Trending',
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Divider(
@@ -331,7 +331,7 @@ class _ShopCategoryScreenState extends State<ShopCategoryScreen> {
     return InkWell(
       onTap: () => onPageTap!(),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,

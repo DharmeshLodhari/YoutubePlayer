@@ -63,7 +63,7 @@ class ExploreMomentsModel {
     this.ownerName,
   });
   factory ExploreMomentsModel.fromJson(Map<String, dynamic> json) {
-    List moments = json['moments'];
+    final List moments = json['moments'];
 
     return ExploreMomentsModel(
       owner: json['owner'],

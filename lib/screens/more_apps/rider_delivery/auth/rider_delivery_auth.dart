@@ -111,9 +111,6 @@ class RiderDeliveryAuthService extends AuthService {
       final response = await httpGet(url, headers: headers);
       debugPrint('Fetch Job URL BODY ---> ${response.body}');
 
-      if (kDebugMode) {
-        print(response.statusCode);
-      }
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
         return DeliveryModel.fromJson(jsonData);
@@ -126,9 +123,7 @@ class RiderDeliveryAuthService extends AuthService {
       debugPrint("Error: $e");
     } catch (err) {
       showToast(message: err.toString());
-      if (kDebugMode) {
-        print(err);
-      }
+      debugPrint("Error: $err");
     }
     return null;
   }

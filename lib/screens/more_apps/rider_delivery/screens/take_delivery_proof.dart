@@ -68,9 +68,7 @@ class _TakeDeliveryProofState extends State<TakeDeliveryProof> {
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenied':
-            if (kDebugMode) {
-              print('User denied camera access.');
-            }
+            debugPrint('User denied camera access.');
             break;
           default:
             break;

@@ -72,7 +72,7 @@ class _ResetDeviceState extends State<ResetDevice> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: <Widget>[
                 Form(
@@ -82,9 +82,9 @@ class _ResetDeviceState extends State<ResetDevice> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         appIcon(),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         titleText(),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
 
                         // isReasonIsSelected ? getDeviceData() : Container()
                         getDeviceData()
@@ -120,7 +120,7 @@ class _ResetDeviceState extends State<ResetDevice> {
             style: TextStyle(
                 fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Text(
@@ -159,7 +159,8 @@ class _ResetDeviceState extends State<ResetDevice> {
         barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               contentPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -230,10 +231,10 @@ class _ResetDeviceState extends State<ResetDevice> {
     return Column(
       children: [
         phoneNumberField(),
-        isPhoneNumberIsVerified ? getPasswordField() : Container(),
-        SizedBox(height: 20),
+        if (isPhoneNumberIsVerified) getPasswordField() else Container(),
+        const SizedBox(height: 20),
         getSubmitButton(),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -241,9 +242,9 @@ class _ResetDeviceState extends State<ResetDevice> {
   Widget getPasswordField() {
     return Column(
       children: [
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         passwordPinFiled(),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         getResetDeviceReason(),
       ],
     );
@@ -258,7 +259,7 @@ class _ResetDeviceState extends State<ResetDevice> {
             child: IgnorePointer(
                 ignoring: isPhoneNumberIsVerified,
                 child: getCountryDropdown())),
-        SizedBox(
+        const SizedBox(
           width: 8,
         ),
         Expanded(
@@ -288,7 +289,7 @@ class _ResetDeviceState extends State<ResetDevice> {
           "Phone number",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
+        const SizedBox(
           height: 6,
         ),
         Card(
@@ -297,11 +298,11 @@ class _ResetDeviceState extends State<ResetDevice> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
+          margin: const EdgeInsets.all(0),
           borderOnForeground: true,
           child: ListTile(
             dense: true,
-            contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            contentPadding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
             onTap: () {
               _openCountryPickerDialog(isForLogin: true);
             },
@@ -315,9 +316,9 @@ class _ResetDeviceState extends State<ResetDevice> {
   Widget _buildDialogItem(Country country) {
     return Row(
       children: <Widget>[
-        SizedBox(width: 4.0),
+        const SizedBox(width: 4.0),
         CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Expanded(
           child: Text(
             "+${country.phoneCode}",
@@ -334,7 +335,7 @@ class _ResetDeviceState extends State<ResetDevice> {
           Icons.keyboard_arrow_down,
           color: blackFont,
         ),
-        SizedBox(width: 4.0),
+        const SizedBox(width: 4.0),
       ],
     );
   }
@@ -343,7 +344,7 @@ class _ResetDeviceState extends State<ResetDevice> {
     return Row(
       children: <Widget>[
         CountryPickerUtils.getDefaultFlagImage(country),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Text(
           "+${country.phoneCode}",
           style: TextStyle(
@@ -352,7 +353,7 @@ class _ResetDeviceState extends State<ResetDevice> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Expanded(
           child: Text(
             "(" + country.name! + ")",
@@ -374,7 +375,7 @@ class _ResetDeviceState extends State<ResetDevice> {
         builder: (context) => Theme(
           data: Theme.of(context).copyWith(primaryColor: navyBlue),
           child: CountryPickerDialog(
-            titlePadding: EdgeInsets.all(8.0),
+            titlePadding: const EdgeInsets.all(8.0),
             isForLogin: isForLogin,
             searchCursorColor: navyBlue,
             searchInputDecoration: InputDecoration(
@@ -402,10 +403,10 @@ class _ResetDeviceState extends State<ResetDevice> {
       );
 
   Widget passwordPinFiled() {
-    BoxDecoration pinPutDecoration = BoxDecoration(
+    final BoxDecoration pinPutDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: greyBorderColor));
-    BoxDecoration selectedDecoration = BoxDecoration(
+    final BoxDecoration selectedDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: navyBlue));
     return Container(
@@ -416,7 +417,7 @@ class _ResetDeviceState extends State<ResetDevice> {
             "Password",
             style: TextStyle(fontSize: 14, color: darkGrey),
           ),
-          SizedBox(
+          const SizedBox(
             height: 6.0,
           ),
           PinPut(
@@ -467,7 +468,7 @@ class _ResetDeviceState extends State<ResetDevice> {
             "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
         password = passwordController!.text.trim();
 
-        var data = {};
+        final data = {};
         data["phone_number"] = phoneNumber;
         data["password"] = password;
         data["reason"] = selectedReason;
@@ -512,9 +513,9 @@ class _ResetDeviceState extends State<ResetDevice> {
         Navigator.pop(context);
 
         if (result != null) {
-          String otp = result;
+          final String otp = result;
 
-          var navigationResult = await Navigator.of(context).pushNamed(
+          final navigationResult = await Navigator.of(context).pushNamed(
               "/verify-reset-device-otp",
               arguments: {"phone_number": phoneNumber, "otp": otp});
           if (navigationResult != null) {
@@ -534,13 +535,14 @@ class _ResetDeviceState extends State<ResetDevice> {
   }
 
   void showAlertDialogForInformation() async {
-    var result = await showDialog<bool>(
+    final result = await showDialog<bool>(
       barrierDismissible: false,
       context: context,
       builder: (context) =>
           StatefulBuilder(builder: (context, rentDurationStateSetter) {
         return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           contentPadding: EdgeInsets.zero,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -559,13 +561,13 @@ class _ResetDeviceState extends State<ResetDevice> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: EdgeInsets.only(top: 16, bottom: 8),
+                      padding: const EdgeInsets.only(top: 16, bottom: 8),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 16,
                             ),
                             child: Column(
@@ -584,7 +586,7 @@ class _ResetDeviceState extends State<ResetDevice> {
                                         fontWeight: FontWeight.w700),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 12,
                                 ),
                                 Container(
