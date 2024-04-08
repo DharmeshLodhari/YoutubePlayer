@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' show atan2, cos, sin, sqrt;
 import 'dart:typed_data';
 
@@ -13,6 +14,7 @@ import 'package:Slydo/screens/more_apps/rider_delivery/utils.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +56,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   late UserBloc userBloc;
   late RiderDeliveryBloc riderDeliveryBloc;
   String? username;
+  String? _mapStyle;
+  String? _mapStyleIos;
 
   bool isLoading = false;
 
@@ -78,6 +82,14 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
 
       localData = await getCurrentLocation();
       _currentP = localData;
+
+      rootBundle.loadString('assets/map_style').then((string) {
+        _mapStyle = string;
+      });
+
+      rootBundle.loadString('assets/map_style.json').then((string) {
+        _mapStyleIos = string;
+      });
 
       getPolylinePoints().then((coordinates) => {
             generatePolyLineFromPoints(coordinates),
@@ -181,8 +193,14 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     return isLoading
         ? Center(child: CircularProgressIndicator())
         : GoogleMap(
-            onMapCreated: ((GoogleMapController controller) =>
-                _mapController.complete(controller)),
+            // onMapCreated: ((GoogleMapController controller) =>
+            //     _mapController.complete(controller)),
+            onMapCreated: (GoogleMapController controller) {
+              controller = controller;
+              Platform.isAndroid
+                  ? controller.setMapStyle(_mapStyle)
+                  : controller.setMapStyle(_mapStyleIos);
+            },
             initialCameraPosition: CameraPosition(
               target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
                   deliveryModel?.pickupAddress?.longitude ?? 0.0),
