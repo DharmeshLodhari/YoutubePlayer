@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -12,6 +14,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/company_name.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -23,6 +26,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
@@ -50,6 +54,7 @@ class _UserLoginState extends State<UserLogin> {
   String? countryFromPref;
   String? phoneNumberFromPref;
   String? passwordFromPref;
+  String? companyFromPref;
   TextEditingController? phoneNumberController;
   TextEditingController? passwordController;
   late SharedPreferences _sharedPreferences;
@@ -60,6 +65,10 @@ class _UserLoginState extends State<UserLogin> {
   final FocusNode _pinPutFocusNode = FocusNode();
 
   late Country _selectedDialogCountry;
+  int currentIndex = 0;
+
+  List<CompanyName>? companyList = [];
+  String companyName = "";
 
   @override
   void initState() {
@@ -67,6 +76,8 @@ class _UserLoginState extends State<UserLogin> {
     getSharedPreference();
     phoneNumberController = TextEditingController();
     passwordController = TextEditingController();
+
+    searchCompanyName("");
     super.initState();
   }
 
@@ -86,14 +97,19 @@ class _UserLoginState extends State<UserLogin> {
       SecureUser secureUser = await SecureStorage().getUser();
       phoneNumberFromPref = secureUser.phoneNumber;
       passwordFromPref = secureUser.password;
+      companyFromPref = secureUser.company;
 
       //setting fetched userdata into screen
       if (phoneNumberFromPref != null) {
-        phoneNumberController!.text = phoneNumberFromPref!;
+        phoneNumberController?.text = phoneNumberFromPref!;
       }
       if (passwordFromPref != null) {
-        passwordController!.text = passwordFromPref!;
+        passwordController?.text = passwordFromPref!;
       }
+      if (companyFromPref != null) {
+        companyName = companyFromPref!;
+      }
+
       if (phoneNumberFromPref != null) {
         phoneNumber =
             "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromPref!;
@@ -119,57 +135,64 @@ class _UserLoginState extends State<UserLogin> {
       },
       child: Scaffold(
         backgroundColor: whiteBackground,
-        appBar: AppBar(
-          backgroundColor: whiteBackground,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.keyboard_arrow_left,
-              color: navyBlue,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+        appBar: _buildAppbar(),
+        body: _buildBody(),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppbar() {
+    return AppBar(
+      backgroundColor: whiteBackground,
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height -
-                (AppBar().preferredSize.height +
-                    MediaQuery.of(context).padding.top),
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  flex: 7,
-                  child: Form(
-                    key: _loginFormKey,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          appIcon(),
-                          flexibleSpace(flex: 1),
-                          loginTitle(),
-                          flexibleSpace(flex: 4),
-                          phoneNumberField(),
-                          flexibleSpace(flex: 1),
-                          passwordPinFiled(),
-                          flexibleSpace(flex: 1),
-                          rememberMeAndForgotPasswordField(),
-                          flexibleSpace(flex: 4),
-                          loginBtn(),
-                          flexibleSpace(flex: 2),
-                        ],
-                      ),
-                    ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        height: MediaQuery.of(context).size.height -
+            (AppBar().preferredSize.height +
+                MediaQuery.of(context).padding.top),
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 8,
+              child: Form(
+                key: _loginFormKey,
+                child: DefaultTabController(
+                  length: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      appIcon(),
+                      flexibleSpace(flex: 1),
+                      loginTitle(),
+                      flexibleSpace(flex: 3),
+                      _buildTabs(),
+                      flexibleSpace(flex: 3),
+                      _buildPageView(),
+                      flexibleSpace(flex: 3),
+                      loginBtn(),
+                      flexibleSpace(flex: 1),
+                    ],
                   ),
                 ),
-                flexibleSpace(flex: 3),
-              ],
+              ),
             ),
-          ),
+            flexibleSpace(flex: 2),
+          ],
         ),
       ),
     );
@@ -179,7 +202,7 @@ class _UserLoginState extends State<UserLogin> {
     return Container(
       child: Image.asset(
         "assets/images/app_logo_navyBlue.png",
-        height: MediaQuery.of(context).size.height / 16,
+        height: MediaQuery.of(context).size.height / 22,
         frameBuilder: imageFrameBuilder,
       ),
     );
@@ -190,16 +213,215 @@ class _UserLoginState extends State<UserLogin> {
       child: Row(
         children: <Widget>[
           Text(
-            "Log in to ",
+            currentIndex == 0 ? "Log in to Slydo" : 'Staff Login',
             style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-          ),
-          Text(
-            "Slydo",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: blackFont,
+              fontFamily: "Inter",
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTabs() {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(80),
+      child: Container(
+        decoration: BoxDecoration(
+            color: greyBackground, borderRadius: BorderRadius.circular(30)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: buildTabItem(
+                onTap: (int index) {
+                  currentIndex = index;
+                  setState(() {});
+                },
+                tabIndex: 0,
+                title: 'User',
+                currentIndex: currentIndex,
+              ),
+            ),
+            Expanded(
+              child: buildTabItem(
+                onTap: (int index) {
+                  currentIndex = index;
+                  setState(() {});
+                },
+                tabIndex: 1,
+                title: 'Staff Admin',
+                currentIndex: currentIndex,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPageView() {
+    return IndexedStack(
+      index: currentIndex,
+      children: [userLogin(), staffLogin()],
+    );
+  }
+
+  Widget userLogin() {
+    return Column(
+      children: [
+        phoneNumberField(),
+        SizedBox(height: 20),
+        passwordPinFiled(),
+        SizedBox(height: 20),
+        rememberMeAndForgotPasswordField(),
+      ],
+    );
+  }
+
+  Widget staffLogin() {
+    return Column(
+      children: [
+        companyNameField(),
+        SizedBox(height: 20),
+        phoneNumberField(),
+        SizedBox(height: 20),
+        passwordPinFiled(),
+        SizedBox(height: 20),
+        rememberMeAndForgotPasswordField(),
+      ],
+    );
+  }
+
+  Widget companyNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          "Company Name",
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        dropdownCountrySearch(),
+      ],
+    );
+  }
+
+  Widget dropdownCountrySearch() {
+    return Container(
+      height: 50,
+      child: DropdownSearch<String>(
+        popupProps: PopupProps.menu(
+            showSearchBox: true,
+            searchFieldProps: TextFieldProps(
+              cursorColor: navyBlue,
+              decoration: InputDecoration(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                    width: 1.0,
+                  ),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                    width: 1.0,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: navyBlue,
+                    width: 1.0,
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                    width: 1.0,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: greyBorderColor,
+                    width: 1.0,
+                  ),
+                ),
+              ),
+            )),
+        items: companyList?.map((CompanyName item) {
+              return item.businessName ?? "";
+            }).toList() ??
+            [],
+        dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownSearchDecoration: InputDecoration(
+            isDense: true,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: greyBorderColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+          baseStyle: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        onChanged: (String? value) async {
+          setState(() {
+            companyName = companyList
+                    ?.firstWhere((element) => element.businessName == value)
+                    .username ??
+                "";
+            // companyName = value!;
+          });
+        },
+        validator: (String? value) {
+          if (currentIndex == 1) {
+            if (value != null && value.isNotEmpty) {
+              return null;
+            } else {
+              return 'Pick a company name';
+            }
+          } else {
+            return null;
+          }
+        },
+        selectedItem: companyName,
       ),
     );
   }
@@ -235,12 +457,21 @@ class _UserLoginState extends State<UserLogin> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "Phone number",
-          style: TextStyle(color: darkGrey, fontSize: 14),
-        ),
-        SizedBox(
-          height: 6,
+        Column(
+          children: [
+            Text(
+              "Phone number",
+              style: TextStyle(
+                color: darkGrey,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              ),
+            ),
+            SizedBox(
+              height: 6,
+            ),
+          ],
         ),
         Card(
           color: whiteBackground,
@@ -365,7 +596,12 @@ class _UserLoginState extends State<UserLogin> {
         children: <Widget>[
           Text(
             "Password",
-            style: TextStyle(fontSize: 14, color: darkGrey),
+            style: TextStyle(
+              fontSize: 14,
+              color: darkGrey,
+              fontWeight: FontWeight.w400,
+              fontFamily: "Inter",
+            ),
           ),
           SizedBox(
             height: 6.0,
@@ -482,7 +718,11 @@ class _UserLoginState extends State<UserLogin> {
         child: Text(
           AppLocalization.of(context)!.forgotPassword,
           style: TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w600, color: navyBlue),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: navyBlue,
+            fontFamily: "Inter",
+          ),
         ),
       ),
     );
@@ -524,14 +764,23 @@ class _UserLoginState extends State<UserLogin> {
       phoneNumber =
           "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
       password = passwordController!.text.trim();
-      await _auth.authenticate(phoneNumber, password).then((value) async {
+      bool isStaffLogin;
+      if (currentIndex == 1) {
+        isStaffLogin = true;
+      } else {
+        isStaffLogin = false;
+      }
+      await _auth
+          .authenticate(phoneNumber, password,
+              isStaffLogin: isStaffLogin, company: companyName)
+          .then((value) async {
         _user = value;
         if (_user.fullName != null) {
           //method call for storing user info into shared preference
           isRememberChecked();
 
           /// storeUser data in to the secure storage
-          storeUserData();
+          storeUserData(isStaffLogin);
 
           userBloc.user = _user;
 
@@ -620,7 +869,7 @@ class _UserLoginState extends State<UserLogin> {
     }
   }
 
-  void storeUserData() async {
+  void storeUserData(bool isStaffLogin) async {
     await SecureStorage().clear();
 
     var phoneNumberFromTextField = phoneNumberController!.text.trim();
@@ -629,8 +878,12 @@ class _UserLoginState extends State<UserLogin> {
       phoneNumberFromTextField = phoneNumberFromTextField.replaceFirst("0", "");
     }
 
-    SecureUser secureUser =
-        SecureUser(phoneNumber: phoneNumberFromTextField, password: password);
+    SecureUser secureUser = SecureUser(
+      phoneNumber: phoneNumberFromTextField,
+      password: password,
+      company: companyName,
+      isStaffLogin: isStaffLogin,
+    );
     await SecureStorage().storeUser(user: secureUser);
   }
 
@@ -646,6 +899,44 @@ class _UserLoginState extends State<UserLogin> {
           withApiCall: false);
     });
     await sharedCartBloc.refreshAllCart(context);
+  }
+
+  Future<void> searchCompanyName(String query) async {
+    if (mounted) setState(() {});
+    companyList = await ShoppingAuthService().listOfCompanyName(query);
+    if (mounted) setState(() {});
+  }
+
+  Widget buildTabItem({
+    required int tabIndex,
+    required String title,
+    required Function(int) onTap,
+    int? currentIndex,
+  }) {
+    return InkWell(
+      onTap: () => onTap(tabIndex),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(60),
+          shape: BoxShape.rectangle,
+          color: currentIndex == tabIndex ? navyBlue : Colors.transparent,
+        ),
+        child: Center(
+          child: Text(
+            title,
+            style: TextStyle(
+              color: currentIndex == tabIndex ? white : yarnBlack,
+              fontSize: 14,
+              fontFamily: "Inter",
+              fontWeight:
+                  currentIndex == tabIndex ? FontWeight.w600 : FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> clearDBMessages() async {

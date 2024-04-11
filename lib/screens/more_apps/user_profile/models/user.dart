@@ -7,6 +7,387 @@ import 'package:Slydo/utils/util.dart';
 
 import '../../payment_and_banking/models/FinancialInstitution.dart';
 
+enum UserStatus { ACTIVE, AWAY, UNKNOWN }
+
+class User {
+  String? uuid;
+  String? url;
+  String? phoneNumber;
+  String? fullName;
+  String? userName;
+  String? nickName;
+  String? type;
+  String? avatar;
+  String? qrCode;
+  String? password;
+  String? currency;
+  bool? isVerified;
+  String conversationId;
+  UserStatus status;
+  double? rating;
+  String? bio;
+  String? wallpaper;
+  String? chatWallpaper;
+  UserAbout? userAbout;
+  RiderModel? rider;
+  Staff? staff;
+  Permissions? permissions;
+
+  // Pass in as named parameter in constructor
+  User({
+    this.bio = "",
+    this.uuid = "",
+    this.url = "",
+    this.wallpaper = "",
+    this.chatWallpaper = "",
+    this.phoneNumber = "",
+    this.fullName = "",
+    this.userName = "",
+    this.nickName = "==>",
+    this.type = "",
+    this.avatar = "",
+    this.qrCode = "",
+    this.password = "",
+    this.currency = "₦",
+    this.isVerified = false,
+    this.conversationId = "",
+    this.rating = 0.0,
+    this.userAbout,
+    this.status = UserStatus.UNKNOWN,
+    this.rider,
+    this.staff,
+    this.permissions,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json,
+      {Map<String, dynamic>? staff, Map<String, dynamic>? permissions}) {
+    // debugPrint('IS-VERIFIED --> ${json['is_verified']}');
+    User user = User(
+      nickName: json['nickname'] ?? "",
+      type: json['account_type'],
+      avatar: json['avatar'] ?? defaultImage,
+      currency: json['default_currency'],
+      fullName: json['full_name'],
+      isVerified: json['is_verified'],
+      password: json['password'],
+      phoneNumber: json['phone_number'],
+      qrCode: json['qr_code'],
+      url: json['url'],
+      bio: json['bio'] ?? '',
+      userAbout: UserAbout.fromJson(json["profile"]),
+      chatWallpaper: json['chat_wallpaper'],
+      wallpaper: json['wallpaper'],
+      rating: formatRating(json['rating']),
+      userName: json['username'],
+      uuid: json['uuid'],
+      rider: (json["rider"] != null && (json["rider"] as Map).isNotEmpty)
+          ? RiderModel.fromJson(json["rider"])
+          : null,
+      staff: staff != null ? Staff.fromJson(staff) : null,
+      permissions:
+          permissions != null ? Permissions.fromJson(permissions) : null,
+    );
+    // userAbout.bio = user.bio == null ? '' : user.bio!;
+    // user.userAbout = userAbout;
+
+    return user;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['account_type'] = type;
+    data['avatar'] = avatar;
+    data['default_currency'] = currency;
+    data['full_name'] = fullName;
+    data['nickname'] = nickName;
+    data['is_verified'] = isVerified;
+    data['password'] = password;
+    data['phone_number'] = phoneNumber;
+    data['qr_code'] = qrCode;
+    data['url'] = url;
+    data['rating'] = rating;
+    data['username'] = userName;
+    data['uuid'] = uuid;
+    data['rider'] = rider;
+    data['staff'] = staff;
+    data['permissions'] = permissions;
+    return data;
+  }
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{};
+    map["uuid"] = uuid;
+    map["fullName"] = fullName;
+    map["nickname"] = nickName;
+    map["userName"] = userName;
+    map["phoneNumber"] = phoneNumber;
+    map["password"] = password;
+    map["avatar"] = avatar;
+    map["qrCode"] = qrCode;
+    map["url"] = url;
+    map["rating"] = rating;
+    return map;
+  }
+
+  UserFollowers toUserFollowerModel() {
+    UserFollowers userFollowers = UserFollowers();
+    userFollowers.avatar = avatar;
+    return userFollowers;
+  }
+
+  SharedCartMemberModel convertToUser() {
+    SharedCartMemberModel user = SharedCartMemberModel();
+
+    user.userName = userName;
+    user.avatar = avatar;
+    user.fullName = fullName;
+    return user;
+  }
+
+  String? displayName() {
+    if (nickName != "" && nickName != null) {
+      if (type != null &&
+          type != "" &&
+          type != "Business" &&
+          type != "Developer") {
+        return nickName;
+      }
+    }
+
+    if (fullName != null && fullName != "") {
+      return fullName;
+    }
+    return userName;
+  }
+
+  bool checkAccountPermission(String title) {
+    if (staff != null && permissions != null) {
+      switch (title) {
+        case "Product":
+          return (permissions?.product == null) ? false : true;
+        case "Service":
+          return (permissions?.service == null) ? false : true;
+        case "Payment Links":
+          return (permissions?.payment == null) ? false : true;
+        case "Blog":
+          return (permissions?.blog == null) ? false : true;
+        case "Yarn":
+          return (permissions?.yarn == null) ? false : true;
+        case "Moment":
+          return (permissions?.moment == null) ? false : true;
+        case "Order":
+          return (permissions?.order == null) ? false : true;
+        case "Chat":
+          return (permissions?.chat == null) ? false : true;
+        default:
+          return true;
+      }
+    } else if ((type!.toLowerCase() == 'user' && title == 'Product') ||
+        (type!.toLowerCase() == 'user' && title == 'Services')) {
+      return false;
+    }
+    return true;
+  }
+}
+
+class Staff {
+  String? employerUsername;
+  String? userUsername;
+  String? userAvatar;
+  String? employerAvatar;
+  int? employer;
+  String? user;
+  String? status;
+  String? role;
+  DateTime? updatedAt;
+  DateTime? createdAt;
+  int? id;
+  String? userFullName;
+  String? employerFullName;
+  bool? userIsVerified;
+  bool? employerIsVerified;
+  String? nickname;
+  String? phoneNumber;
+  String? fullName;
+  String? username;
+  String? avatar;
+  String? qrCode;
+  String? uuid;
+  String? defaultCurrency;
+  String? accountType;
+  String? type;
+  String? conversationId;
+  double? rating;
+  String? bio;
+  bool? isVerified;
+  String? chatWallpaper;
+  String? wallpaper;
+  DateTime? dateJoined;
+  int? followers;
+  int? following;
+
+  Staff({
+    this.employerUsername,
+    this.userUsername,
+    this.userAvatar,
+    this.employerAvatar,
+    this.employer,
+    this.user,
+    this.status,
+    this.role,
+    this.updatedAt,
+    this.createdAt,
+    this.id,
+    this.userFullName,
+    this.employerFullName,
+    this.userIsVerified,
+    this.employerIsVerified,
+    this.nickname,
+    this.phoneNumber,
+    this.fullName,
+    this.username,
+    this.avatar,
+    this.qrCode,
+    this.uuid,
+    this.defaultCurrency,
+    this.accountType,
+    this.type,
+    this.conversationId,
+    this.rating,
+    this.bio,
+    this.isVerified,
+    this.chatWallpaper,
+    this.wallpaper,
+    this.dateJoined,
+    this.followers,
+    this.following,
+  });
+
+  factory Staff.fromJson(Map<String, dynamic> json) => Staff(
+        employerUsername: json["employer_username"],
+        userUsername: json["user_username"],
+        userAvatar: json["user_avatar"],
+        employerAvatar: json["employer_avatar"],
+        employer: json["employer"],
+        user: json["user"],
+        status: json["status"],
+        role: json["role"],
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        id: json["id"],
+        userFullName: json["user_full_name"],
+        employerFullName: json["employer_full_name"],
+        userIsVerified: json["user_is_verified"],
+        employerIsVerified: json["employer_is_verified"],
+        nickname: json["nickname"],
+        phoneNumber: json["phone_number"],
+        fullName: json["full_name"],
+        username: json["username"],
+        avatar: json["avatar"],
+        qrCode: json["qr_code"],
+        uuid: json["uuid"],
+        defaultCurrency: json["default_currency"],
+        accountType: json["account_type"],
+        type: json["type"],
+        conversationId: json["conversation_id"],
+        rating: json["rating"],
+        bio: json["bio"],
+        isVerified: json["is_verified"],
+        chatWallpaper: json["chat_wallpaper"],
+        wallpaper: json["wallpaper"],
+        dateJoined: json["date_joined"] == null
+            ? null
+            : DateTime.parse(json["date_joined"]),
+        followers: json["followers"],
+        following: json["following"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "employer_username": employerUsername,
+        "user_username": userUsername,
+        "user_avatar": userAvatar,
+        "employer_avatar": employerAvatar,
+        "employer": employer,
+        "user": user,
+        "status": status,
+        "role": role,
+        "updated_at": updatedAt?.toIso8601String(),
+        "created_at": createdAt?.toIso8601String(),
+        "id": id,
+        "user_full_name": userFullName,
+        "employer_full_name": employerFullName,
+        "user_is_verified": userIsVerified,
+        "employer_is_verified": employerIsVerified,
+        "nickname": nickname,
+        "phone_number": phoneNumber,
+        "full_name": fullName,
+        "username": username,
+        "avatar": avatar,
+        "qr_code": qrCode,
+        "uuid": uuid,
+        "default_currency": defaultCurrency,
+        "account_type": accountType,
+        "type": type,
+        "conversation_id": conversationId,
+        "rating": rating,
+        "bio": bio,
+        "is_verified": isVerified,
+        "chat_wallpaper": chatWallpaper,
+        "wallpaper": wallpaper,
+        "date_joined": dateJoined?.toIso8601String(),
+        "followers": followers,
+        "following": following,
+      };
+}
+
+class Permissions {
+  String? payment;
+  String? product;
+  String? service;
+  String? blog;
+  String? yarn;
+  String? moment;
+  String? order;
+  String? chat;
+
+  Permissions({
+    this.payment,
+    this.product,
+    this.service,
+    this.blog,
+    this.yarn,
+    this.moment,
+    this.order,
+    this.chat,
+  });
+
+  factory Permissions.fromJson(Map<String, dynamic> json) => Permissions(
+        payment: json["payment"],
+        product: json["product"],
+        service: json["service"],
+        blog: json["blog"],
+        yarn: json["yarn"],
+        moment: json["moment"],
+        order: json["order"],
+        chat: json["chat"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "payment": payment,
+        "product": product,
+        "service": service,
+        "blog": blog,
+        "yarn": yarn,
+        "moment": moment,
+        "order": order,
+        "chat": chat,
+      };
+}
+
 class ShippingAddress {
   String? id;
   String? addressLineOne;
@@ -183,150 +564,6 @@ class ShippingAddress {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
     );
-  }
-}
-
-enum UserStatus { ACTIVE, AWAY, UNKNOWN }
-
-class User {
-  String? uuid;
-  String? url;
-  String? phoneNumber;
-  String? fullName;
-  String? userName;
-  String? nickName;
-  String? type;
-  String? avatar;
-  String? qrCode;
-  String? password;
-  String? currency;
-  bool? isVerified;
-  String conversationId;
-  UserStatus status;
-  double? rating;
-  String? bio;
-  String? wallpaper;
-  String? chatWallpaper;
-  UserAbout? userAbout;
-  RiderModel? rider;
-
-  // Pass in as named parameter in constructor
-  User({
-    this.bio = "",
-    this.uuid = "",
-    this.url = "",
-    this.wallpaper = "",
-    this.chatWallpaper = "",
-    this.phoneNumber = "",
-    this.fullName = "",
-    this.userName = "",
-    this.nickName = "==>",
-    this.type = "",
-    this.avatar = "",
-    this.qrCode = "",
-    this.password = "",
-    this.currency = "₦",
-    this.isVerified = false,
-    this.conversationId = "",
-    this.rating = 0.0,
-    this.userAbout,
-    this.status = UserStatus.UNKNOWN,
-    this.rider,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    // debugPrint('IS-VERIFIED --> ${json['is_verified']}');
-    User user = User(
-      nickName: json['nickname'] ?? "",
-      type: json['account_type'],
-      avatar: json['avatar'] ?? defaultImage,
-      currency: json['default_currency'],
-      fullName: json['full_name'],
-      isVerified: json['is_verified'],
-      password: json['password'],
-      phoneNumber: json['phone_number'],
-      qrCode: json['qr_code'],
-      url: json['url'],
-      bio: json['bio'] ?? '',
-      userAbout: UserAbout.fromJson(json["profile"]),
-      chatWallpaper: json['chat_wallpaper'],
-      wallpaper: json['wallpaper'],
-      rating: formatRating(json['rating']),
-      userName: json['username'],
-      uuid: json['uuid'],
-      rider: (json["rider"] != null && (json["rider"] as Map).isNotEmpty)
-          ? RiderModel.fromJson(json["rider"])
-          : null,
-    );
-    // userAbout.bio = user.bio == null ? '' : user.bio!;
-    // user.userAbout = userAbout;
-
-    return user;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['account_type'] = type;
-    data['avatar'] = avatar;
-    data['default_currency'] = currency;
-    data['full_name'] = fullName;
-    data['nickname'] = nickName;
-    data['is_verified'] = isVerified;
-    data['password'] = password;
-    data['phone_number'] = phoneNumber;
-    data['qr_code'] = qrCode;
-    data['url'] = url;
-    data['rating'] = rating;
-    data['username'] = userName;
-    data['uuid'] = uuid;
-    data['rider'] = rider;
-    return data;
-  }
-
-  Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{};
-    map["uuid"] = uuid;
-    map["fullName"] = fullName;
-    map["nickname"] = nickName;
-    map["userName"] = userName;
-    map["phoneNumber"] = phoneNumber;
-    map["password"] = password;
-    map["avatar"] = avatar;
-    map["qrCode"] = qrCode;
-    map["url"] = url;
-    map["rating"] = rating;
-    return map;
-  }
-
-  UserFollowers toUserFollowerModel() {
-    UserFollowers userFollowers = UserFollowers();
-    userFollowers.avatar = avatar;
-    return userFollowers;
-  }
-
-  SharedCartMemberModel convertToUser() {
-    SharedCartMemberModel user = SharedCartMemberModel();
-
-    user.userName = userName;
-    user.avatar = avatar;
-    user.fullName = fullName;
-    return user;
-  }
-
-  String? displayName() {
-    if (nickName != "" && nickName != null) {
-      if (type != null &&
-          type != "" &&
-          type != "Business" &&
-          type != "Developer") {
-        return nickName;
-      }
-    }
-
-    if (fullName != null && fullName != "") {
-      return fullName;
-    }
-    return userName;
   }
 }
 

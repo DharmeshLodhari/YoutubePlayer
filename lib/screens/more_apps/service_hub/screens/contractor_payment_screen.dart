@@ -343,29 +343,33 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   }
 
   void onSubmit() async {
-    if (FocusScope.of(context).hasFocus) {
-      FocusScope.of(context).unfocus();
-    }
-    await Future.delayed(const Duration(milliseconds: 500));
-    try {
-      BottomSheetPassCode(
-          context: context,
-          isValidCallback: () async {
-            showDialog(
-                context: context,
-                builder: (context) => const Center(child: SizedBox()));
-            makePayment();
-            // endJob();
-          },
-          cancelCallBack: () {
-            Navigator.pop(context);
-            _sendPaymentScaffoldMessenger.currentState?.showSnackBar(SnackBar(
-              content: Text(AppLocalization.of(context)!.invalidPassword),
-            ));
-          });
-    } catch (e) {
-      debugPrint(e.toString());
-      showToast(message: e.toString());
+    if (userBloc.user.staff != null) {
+      showToast(message: AppLocalization.of(context)?.doNotPermission);
+    } else {
+      if (FocusScope.of(context).hasFocus) {
+        FocusScope.of(context).unfocus();
+      }
+      await Future.delayed(const Duration(milliseconds: 500));
+      try {
+        BottomSheetPassCode(
+            context: context,
+            isValidCallback: () async {
+              showDialog(
+                  context: context,
+                  builder: (context) => const Center(child: SizedBox()));
+              makePayment();
+              // endJob();
+            },
+            cancelCallBack: () {
+              Navigator.pop(context);
+              _sendPaymentScaffoldMessenger.currentState?.showSnackBar(SnackBar(
+                content: Text(AppLocalization.of(context)!.invalidPassword),
+              ));
+            });
+      } catch (e) {
+        debugPrint(e.toString());
+        showToast(message: e.toString());
+      }
     }
   }
 

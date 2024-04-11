@@ -27,7 +27,7 @@ class _DeliveryCompletedState extends State<DeliveryCompleted> {
   late RiderDeliveryBloc riderDeliveryBloc;
   late UserBloc userBloc;
   String? journeyId;
-  bool isLoading = true;
+  bool isLoading = false;
 
   @override
   void initState() {

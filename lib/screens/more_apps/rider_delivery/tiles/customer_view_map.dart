@@ -11,8 +11,8 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class CustomerViewMap extends StatefulWidget {
   CustomerViewMap({
@@ -31,12 +31,11 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
       Completer<GoogleMapController>();
 
   String rideMarkerImage = "assets/images/bike_top.png";
-  GoogleMapController? controller;
-  Location _locationController = new Location();
   bool isLoading = false;
 
   Map<PolylineId, Polyline> polylines = {};
   Uint8List? _markerImageData;
+  String? _mapStyle;
 
   RiderLocation? riderLocation;
   Timer? _timer;
@@ -58,6 +57,10 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
         });
       }
 
+      rootBundle.loadString('assets/map_style.json').then((string) {
+        _mapStyle = string;
+      });
+
       Map<String, dynamic>? location;
       _timer = Timer.periodic(Duration(seconds: 2), (timer) async {
         location = await RiderDeliveryAuthService()
@@ -70,8 +73,6 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
             latitude: latLng.latitude,
             longitude: latLng.longitude,
             dispatcherHeading: location?["dispatcher_heading"]);
-
-        _cameraToPosition(latLng);
 
         if (mounted) setState(() {});
       });
@@ -105,8 +106,10 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
     return isLoading
         ? Center(child: CircularProgressIndicator())
         : GoogleMap(
-            onMapCreated: ((GoogleMapController controller) =>
-                _mapController.complete(controller)),
+            onMapCreated: ((GoogleMapController controller) {
+              controller.setMapStyle(_mapStyle);
+              _mapController.complete(controller);
+            }),
             initialCameraPosition: CameraPosition(
               target: LatLng(
                   widget.journeyDetail?.pickupAddress?.latitude ?? 0.0,
@@ -117,10 +120,13 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
               Marker(
                 markerId: MarkerId("_riderLocation"),
                 icon: BitmapDescriptor.fromBytes(_markerImageData!),
-                rotation: riderLocation?.getHeading() ?? 0.0,
+                rotation: (riderLocation?.getHeading() ?? 0) + 12,
                 position: LatLng(riderLocation?.latitude ?? 0.0,
                     riderLocation?.longitude ?? 0.0),
                 anchor: Offset(0.5, 0.5),
+                draggable: false,
+                zIndex: 2,
+                flat: true,
               ),
               Marker(
                 markerId: MarkerId("_sourceLocation"),
@@ -139,54 +145,6 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
             },
             polylines: Set<Polyline>.of(polylines.values),
           );
-  }
-
-  Future<void> _cameraToPosition(LatLng pos) async {
-    controller = await _mapController.future;
-    double zoomLevel = await controller?.getZoomLevel() ?? 13;
-    CameraPosition _newCameraPosition = CameraPosition(
-      target: pos,
-      zoom: zoomLevel,
-    );
-    // await controller?.animateCamera(
-    //   CameraUpdate.newCameraPosition(_newCameraPosition),
-    // );
-  }
-
-  Future<void> getLocationUpdates() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-
-    _serviceEnabled = await _locationController.serviceEnabled();
-    if (_serviceEnabled) {
-      _serviceEnabled = await _locationController.requestService();
-    } else {
-      return;
-    }
-
-    _permissionGranted = await _locationController.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _locationController.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    //   if (riderDeliveryBloc.deliveryDetails?.isInProgress == true) {
-    //     _locationController.onLocationChanged
-    //         .listen((LocationData currentLocation) {
-    //       if (currentLocation.latitude != null &&
-    //           currentLocation.longitude != null) {
-    if (mounted)
-      setState(() {
-        // _currentP =
-        //     LatLng(currentLocation.latitude!, currentLocation.longitude!);
-        _cameraToPosition(LatLng(
-            riderLocation?.longitude ?? 0.0, riderLocation?.longitude ?? 0.0));
-      });
-    // }
-    //     });
-    //   }
   }
 
   Future<List<LatLng>> getPolylinePoints() async {
@@ -216,7 +174,11 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
-        polylineId: id, color: navyBlue, points: polylineCoordinates, width: 3);
+      polylineId: id,
+      color: navyBlue,
+      points: polylineCoordinates,
+      width: 9,
+    );
     if (mounted)
       setState(() {
         polylines[id] = polyline;
@@ -225,7 +187,6 @@ class _CustomerViewMapState extends State<CustomerViewMap> {
 
   @override
   void dispose() {
-    controller?.dispose();
     _timer?.cancel();
     super.dispose();
   }

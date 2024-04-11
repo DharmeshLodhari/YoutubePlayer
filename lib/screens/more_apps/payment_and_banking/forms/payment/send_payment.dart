@@ -1,8 +1,8 @@
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/other_bank_transfer.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/slydo_slydo_transfer.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/tab_selection.dart';
 import 'package:flutter/material.dart';
-import '../../tiles/payment_tab_selection.dart';
 
 class SendPayment extends StatefulWidget {
   var arguments;
@@ -87,7 +87,7 @@ class _SendPaymentState extends State<SendPayment> {
   Widget _buildTabs() {
     return Column(
       children: [
-        PaymentTabSelection(
+        TabSelection(
           onTap: (index) {
             currentAskTapOnHome = index;
             _pageViewController.jumpToPage(currentAskTapOnHome);
@@ -95,8 +95,8 @@ class _SendPaymentState extends State<SendPayment> {
             if (mounted) setState(() {});
           },
           currentIndex: currentAskTapOnHome,
-          tabOne: 'Slydo Account',
-          tabTwo: 'Bank Transfer',
+          firstTab: 'Slydo Account',
+          secondTab: 'Bank Transfer',
         ),
         SizedBox(
           height: 10,

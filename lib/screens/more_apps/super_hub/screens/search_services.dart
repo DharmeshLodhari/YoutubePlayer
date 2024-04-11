@@ -54,7 +54,6 @@ class _SearchServicesState extends State<SearchServices> {
   ScrollController _scrollController = new ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  String autoCompleteSearchText = "";
   ServiceCategory? pressedCategory;
   ServiceCategory? selectedServicesCategory;
   List<ServiceCategory>? servicesCategories;

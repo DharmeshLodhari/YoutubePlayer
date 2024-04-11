@@ -609,7 +609,7 @@ class _HomeState extends State<Home> {
               child: GestureDetector(
                   // key: showTutorial(shortcut['title']),
                   onTap: () {
-                    onClickShortcut(shortcut['title']);
+                    onClickShortcut(shortcut['title'] ?? "");
                   },
                   child:
                       shortcutView(shortcut['imagePath']!, shortcut['title']!)),
@@ -620,6 +620,24 @@ class _HomeState extends State<Home> {
   }
 
   Widget shortcutView(String imagePath, String title) {
+    return !userBloc.user.checkAccountPermission(title)
+        ? Stack(
+            children: [
+              _buildIconAndText(imagePath, title),
+              Positioned(
+                top: 0, // Adjust the top value as needed
+                right: -3, // Adjust the right value as needed
+                child: SvgPicture.asset(
+                  'home/padlock'.toSVG(),
+                  color: darkGreyYarn,
+                ),
+              ),
+            ],
+          )
+        : _buildIconAndText(imagePath, title);
+  }
+
+  Widget _buildIconAndText(String imagePath, String title) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -637,54 +655,83 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void onClickShortcut(String? shortcut) {
+  void onClickShortcut(String shortcut) {
     switch (shortcut) {
       case 'Send':
-        hideBalance();
-        Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-            arguments: <String, bool>{'isFromProfile': true});
+        if (!userBloc.user.checkAccountPermission(shortcut)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          hideBalance();
+          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+              arguments: <String, bool>{'isFromProfile': true});
+        }
         break;
       case 'Transaction':
-        hideBalance();
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () {
-              Navigator.of(context)
-                  .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-            });
+        if (!userBloc.user.checkAccountPermission(shortcut)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          hideBalance();
+          BottomSheetPassCode(
+              context: context,
+              isValidCallback: () {
+                Navigator.of(context)
+                    .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+              });
+        }
         break;
       case 'Request':
-        hideBalance();
-        Navigator.pushNamed(context, Routes.ACCOUNTS);
+        if (!userBloc.user.checkAccountPermission(shortcut)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          hideBalance();
+          Navigator.pushNamed(context, Routes.ACCOUNTS);
+        }
         break;
       // case 'Dispatch':
       //   hideBalance();
       //   Navigator.pushNamed(context, Routes.DISPATCH);
       //   break;
       case 'Yarn':
-        hideBalance();
-        NavigationUtil.push(context, screen: YarnDashboard());
+        if (!userBloc.user.checkAccountPermission(shortcut)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          hideBalance();
+          NavigationUtil.push(context, screen: YarnDashboard());
+        }
         break;
       case 'Moment':
-        hideBalance();
-        NavigationUtil.push(context, screen: MomentsScreen());
+        if (!userBloc.user.checkAccountPermission(shortcut)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          hideBalance();
+          NavigationUtil.push(context, screen: MomentsScreen());
+        }
         break;
       case 'Services':
-        hideBalance();
-        Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
+        if (!userBloc.user.checkAccountPermission(shortcut)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          hideBalance();
+          Navigator.pushNamed(context, Routes.SUPER_HUB,
+              arguments: {'page': 0});
+        }
         break;
       case 'Blog':
-        hideBalance();
-        if (appConfigurationModel?.enableSuperBlog == true) {
-          NavigationUtil.push(
-            context,
-            screen: const SuperBlog(),
-          );
+        if (!userBloc.user.checkAccountPermission(shortcut)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
         } else {
-          showToast(message: 'Feature not available at the moment');
+          hideBalance();
+          if (appConfigurationModel?.enableSuperBlog == true) {
+            NavigationUtil.push(
+              context,
+              screen: const SuperBlog(),
+            );
+          } else {
+            showToast(message: 'Feature not available at the moment');
+          }
         }
         break;
       default:
@@ -1158,7 +1205,7 @@ class _HomeState extends State<Home> {
       icon: badges.Badge(
         badgeContent: getBadgeContent(),
         position: badges.BadgePosition.topEnd(
-            end: getBadgeCount().length == 1 ? -5 : 0, top: 0),
+            end: getBadgeCount().length == 1 ? -2 : 0, top: 0),
         badgeAnimation: const badges.BadgeAnimation.rotation(
           animationDuration: Duration(seconds: 1),
           colorChangeAnimationDuration: Duration(seconds: 1),
@@ -1171,11 +1218,7 @@ class _HomeState extends State<Home> {
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
-              : EdgeInsets.only(
-                  left: getBadgeCount().length == 1 ? 6 : 8,
-                  right: 6,
-                  top: 4,
-                  bottom: 4),
+              : EdgeInsets.all(4),
           elevation: 0,
         ),
         child: Center(
@@ -1911,6 +1954,8 @@ class _HomeState extends State<Home> {
         SecureUser secureUser = await SecureStorage().getUser();
         String phoneNumber = secureUser.phoneNumber ?? "";
         String password = secureUser.password ?? "";
+        String company = secureUser.company ?? "";
+        bool isStaffLogin = secureUser.isStaffLogin ?? false;
 
         if (phoneNumber != "") {
           phoneNumber = "+" + country.phoneCode! + phoneNumber;
@@ -1919,6 +1964,10 @@ class _HomeState extends State<Home> {
         if (phoneNumber == "" || password == "") {
           phoneNumber = _user?.phoneNumber ?? "";
           password = _user?.password ?? "";
+          company = _user?.staff?.employerUsername ?? "";
+          if (company.isNotEmpty) {
+            isStaffLogin = true;
+          }
         }
 
         if (phoneNumber == "" || password == "") {
@@ -1931,7 +1980,10 @@ class _HomeState extends State<Home> {
         await UserAuth().updateUserAvatar(File(croppedImage));
 
         // Get new updated user data and set new user data to userBloc.
-        await _auth.authenticate(phoneNumber, password).then((value) {
+        await _auth
+            .authenticate(phoneNumber, password,
+                isStaffLogin: isStaffLogin, company: company)
+            .then((value) {
           userBloc.user = value;
           isLoading = false;
           if (mounted) setState(() {});

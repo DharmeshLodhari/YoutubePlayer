@@ -35,8 +35,6 @@ class RiderDeliveryMap extends StatefulWidget {
 }
 
 class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
-  Location _locationController = new Location();
-
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
 
@@ -49,7 +47,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
 
   Map<PolylineId, Polyline> polylines = {};
   Uint8List? _markerImageData;
-  Location _locationTracker = Location();
+  final Location _locationTracker = Location();
   late LocationData localData;
 
   late UserBloc userBloc;
@@ -100,19 +98,19 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   }
 
   Future<LocationData> getCurrentLocation() async {
-    LocationData location = await _locationTracker.getLocation();
+    final LocationData location = await _locationTracker.getLocation();
     return location;
   }
 
   Future<Uint8List> getRiderMarker() async {
     debugPrint("rider => $rideMarkerImage");
-    ByteData byteData =
+    final ByteData byteData =
         await DefaultAssetBundle.of(context).load(rideMarkerImage);
     return byteData.buffer.asUint8List();
   }
 
   Future<Uint8List> getMarkerImage() async {
-    Uint8List imageData = await getRiderMarker();
+    final Uint8List imageData = await getRiderMarker();
     return imageData;
   }
 
@@ -135,20 +133,20 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
 
   Marker _buildRiderMarker() {
     return Marker(
-      markerId: MarkerId("_currentLocation"),
+      markerId: const MarkerId("_currentLocation"),
       icon: BitmapDescriptor.fromBytes(_markerImageData!),
       rotation: (_currentP?.heading ?? 0) + 12,
       draggable: false,
       zIndex: 2,
       flat: true,
       position: LatLng(_currentP!.latitude!, _currentP!.longitude!),
-      anchor: Offset(0.5, 0.5),
+      anchor: const Offset(0.5, 0.5),
     );
   }
 
   Marker _buildPickupMarker() {
     return Marker(
-      markerId: MarkerId("_sourceLocation"),
+      markerId: const MarkerId("_sourceLocation"),
       icon: BitmapDescriptor.defaultMarkerWithHue(0),
       position: LatLng(
         riderDeliveryBloc.deliveryDetails?.pickupAddress?.latitude ?? 0.0,
@@ -159,7 +157,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
 
   Marker _buildDestinationMarker() {
     return Marker(
-      markerId: MarkerId("_destinationLocation"),
+      markerId: const MarkerId("_destinationLocation"),
       icon: BitmapDescriptor.defaultMarkerWithHue(250),
       position: LatLng(
         riderDeliveryBloc.deliveryDetails?.deliveryAddress?.latitude ?? 0.0,
@@ -183,19 +181,15 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   }
 
   Widget _buildShowRoute() {
-    DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
+    final DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
     return isLoading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : GoogleMap(
             onMapCreated: ((GoogleMapController controller) {
               controller.setMapStyle(_mapStyle);
               _mapController.complete(controller);
             }),
-            initialCameraPosition: CameraPosition(
-              target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
-                  deliveryModel?.pickupAddress?.longitude ?? 0.0),
-              zoom: 13,
-            ),
+            initialCameraPosition: _buildInitialCameraPosition(),
             markers: _buildMarkerData(),
             polylines: Set<Polyline>.of(polylines.values),
             circles: {
@@ -207,9 +201,26 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
           );
   }
 
+  CameraPosition _buildInitialCameraPosition() {
+    final DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
+    if (deliveryModel?.isOfferEnded(username) == true) {
+      return CameraPosition(
+        target: LatLng(deliveryModel?.deliveryAddress?.latitude ?? 0.0,
+            deliveryModel?.deliveryAddress?.longitude ?? 0.0),
+        zoom: 13,
+      );
+    } else {
+      return CameraPosition(
+        target: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
+            deliveryModel?.pickupAddress?.longitude ?? 0.0),
+        zoom: 13,
+      );
+    }
+  }
+
   Set<Marker> _buildMarkerData() {
     Set<Marker> marker = <Marker>{};
-    DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
+    final DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
     if (deliveryModel?.isOfferAccepted(username) == false) {
       marker = {
         if (_currentP != null && _markerImageData != null) _buildRiderMarker(),
@@ -244,8 +255,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
 
   Future<void> _cameraToPosition(LocationData pos) async {
     controller = await _mapController.future;
-    double zoomLevel = await controller?.getZoomLevel() ?? 13;
-    CameraPosition _newCameraPosition = CameraPosition(
+    final double zoomLevel = await controller?.getZoomLevel() ?? 13;
+    final CameraPosition _newCameraPosition = CameraPosition(
       target: LatLng(pos.latitude!, pos.longitude!),
       zoom: zoomLevel,
     );
@@ -257,16 +268,16 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   // Function to calculate distance between two LatLng points for a given radius
   double distanceBetween(LocationData pos1, LatLng pos2) {
     const double radius = 6371000; // Earth's radius in meters
-    double lat1 = pos1.latitude! * (3.141592653589793 / 180);
-    double lon1 = pos1.longitude! * (3.141592653589793 / 180);
-    double lat2 = pos2.latitude * (3.141592653589793 / 180);
-    double lon2 = pos2.longitude * (3.141592653589793 / 180);
-    double dLat = lat2 - lat1;
-    double dLon = lon2 - lon1;
-    double a = sin(dLat / 2) * sin(dLat / 2) +
+    final double lat1 = pos1.latitude! * (3.141592653589793 / 180);
+    final double lon1 = pos1.longitude! * (3.141592653589793 / 180);
+    final double lat2 = pos2.latitude * (3.141592653589793 / 180);
+    final double lon2 = pos2.longitude * (3.141592653589793 / 180);
+    final double dLat = lat2 - lat1;
+    final double dLon = lon2 - lon1;
+    final double a = sin(dLat / 2) * sin(dLat / 2) +
         cos(lat1) * cos(lat2) * sin(dLon / 2) * sin(dLon / 2);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    double distance = radius * c;
+    final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    final double distance = radius * c;
     return distance;
   }
 
@@ -286,7 +297,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   }
 
   Circle _buildPickupCircle() {
-    DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
+    final DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
     return Circle(
       center: LatLng(deliveryModel?.pickupAddress?.latitude ?? 0.0,
           deliveryModel?.pickupAddress?.longitude ?? 0.0),
@@ -294,12 +305,12 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
       fillColor: navyBlue.withAlpha(50),
       strokeColor: navyBlue.withAlpha(100),
       strokeWidth: 1,
-      circleId: CircleId("_sourceLocation"),
+      circleId: const CircleId("_sourceLocation"),
     );
   }
 
   Circle _buildDestinationCircle() {
-    DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
+    final DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
     return Circle(
       center: LatLng(deliveryModel?.deliveryAddress?.latitude ?? 0.0,
           deliveryModel?.deliveryAddress?.longitude ?? 0.0),
@@ -307,7 +318,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
       fillColor: navyBlue.withAlpha(50),
       strokeColor: navyBlue.withAlpha(100),
       strokeWidth: 1,
-      circleId: CircleId("_destinationLocation"),
+      circleId: const CircleId("_destinationLocation"),
     );
   }
 
@@ -315,23 +326,22 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
 
-    _serviceEnabled = await _locationController.serviceEnabled();
+    _serviceEnabled = await _locationTracker.serviceEnabled();
     if (_serviceEnabled) {
-      _serviceEnabled = await _locationController.requestService();
+      _serviceEnabled = await _locationTracker.requestService();
     } else {
       return;
     }
 
-    _permissionGranted = await _locationController.hasPermission();
+    _permissionGranted = await _locationTracker.hasPermission();
     if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _locationController.requestPermission();
+      _permissionGranted = await _locationTracker.requestPermission();
       if (_permissionGranted != PermissionStatus.granted) {
         return;
       }
     }
 
-    _locationController.onLocationChanged
-        .listen((LocationData currentLocation) {
+    _locationTracker.onLocationChanged.listen((LocationData currentLocation) {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
         if (mounted)
@@ -340,7 +350,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
 
             _cameraToPosition(currentLocation);
 
-            double pickupDistance = distanceBetween(
+            final double pickupDistance = distanceBetween(
                 currentLocation,
                 LatLng(
                     riderDeliveryBloc
@@ -357,7 +367,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
                 calculateDurationInMinutes(
                     pickupDistance, currentLocation.speed ?? 0);
 
-            double destiDistance = distanceBetween(
+            final double destiDistance = distanceBetween(
                 currentLocation,
                 LatLng(
                     riderDeliveryBloc
@@ -375,16 +385,12 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
               updateCurrentLocation(currentLocation);
 
               if (pickupDistance <= 50) {
-                RiderDeliveryAuthService().atPickupLocation(
-                    riderDeliveryBloc.deliveryDetails?.orderId);
                 riderDeliveryBloc.isRiderNearbyPickupLocation(true);
               } else {
                 riderDeliveryBloc.isRiderNearbyPickupLocation(false);
               }
 
               if (destiDistance <= 50) {
-                RiderDeliveryAuthService().atDeliveryLocation(
-                    riderDeliveryBloc.deliveryDetails?.orderId);
                 riderDeliveryBloc.isRiderNearbyDestinationLocation(true);
               } else {
                 riderDeliveryBloc.isRiderNearbyDestinationLocation(false);
@@ -411,11 +417,12 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   }
 
   Future<List<LatLng>> getPolylinePoints() async {
-    DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
-    List<LatLng> polylineCoordinates = [];
-    PolylinePoints polylinePoints = PolylinePoints();
+    final DeliveryModel? deliveryModel = riderDeliveryBloc.deliveryDetails;
+    final List<LatLng> polylineCoordinates = [];
+    final PolylinePoints polylinePoints = PolylinePoints();
     PolylineResult result = PolylineResult();
     TravelMode mode = TravelMode.driving;
+    int counter = 0;
 
     do {
       if (deliveryModel != null) {
@@ -438,6 +445,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
             travelMode: mode,
           );
         }
+        counter++;
       }
 
       if (result.points.isNotEmpty) {
@@ -451,7 +459,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
         debugPrint("${result.errorMessage}");
         mode = TravelMode.walking;
       }
-    } while (result.points.isEmpty && mode == TravelMode.walking);
+    } while (
+        result.points.isEmpty && mode == TravelMode.walking && counter < 5);
 
     return polylineCoordinates;
 
@@ -485,8 +494,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   }
 
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
-    PolylineId id = PolylineId("poly");
-    Polyline polyline = Polyline(
+    final PolylineId id = const PolylineId("poly");
+    final Polyline polyline = Polyline(
       polylineId: id,
       color: navyBlue,
       points: polylineCoordinates,

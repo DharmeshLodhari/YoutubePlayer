@@ -477,10 +477,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
                   ),
                 ),
               ),
-              if (userBloc.user.type!.toLowerCase() == 'user' &&
-                      title == 'Product' ||
-                  userBloc.user.type!.toLowerCase() == 'user' &&
-                      title == 'Services') ...[
+              if (!userBloc.user.checkAccountPermission(title)) ...[
                 const SizedBox(width: 10),
                 SvgPicture.asset(
                   'home/padlock'.toSVG(),
@@ -497,108 +494,190 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   void onClickShortcut(String title) {
     switch (title) {
       case 'Transaction':
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () {
-              Navigator.of(context)
-                  .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-            });
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          BottomSheetPassCode(
+              context: context,
+              isValidCallback: () {
+                Navigator.of(context)
+                    .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+              });
+        }
         break;
       case 'Send money':
-        Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-            arguments: <String, bool>{'isFromProfile': true});
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+              arguments: <String, bool>{'isFromProfile': true});
+        }
         break;
       case 'Request money':
-        Navigator.pushNamed(context, Routes.ACCOUNTS);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.pushNamed(context, Routes.ACCOUNTS);
+        }
         break;
       case 'Payment Links':
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () {
-              NavigationUtil.push(context, screen: PaymentLink());
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-            });
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          BottomSheetPassCode(
+              context: context,
+              isValidCallback: () {
+                NavigationUtil.push(context, screen: PaymentLink());
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+              });
+        }
         break;
       case 'Wallet':
-        Navigator.of(context).pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.of(context).pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE);
+        }
         break;
       case 'Credit card':
-        if (appConfigurationModel?.enableAddUserCreditCard == true) {
-          Navigator.of(context).pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
         } else {
-          showToast(message: 'Coming soon.');
+          if (appConfigurationModel?.enableAddUserCreditCard == true) {
+            Navigator.of(context)
+                .pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
+          } else {
+            showToast(message: 'Coming soon.');
+          }
         }
         break;
       case 'Utility':
-        if (appConfigurationModel?.enableUtility == true) {
-          Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
         } else {
-          showToast(message: 'Coming soon.');
+          if (appConfigurationModel?.enableUtility == true) {
+            Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
+          } else {
+            showToast(message: 'Coming soon.');
+          }
         }
         break;
       case 'Product':
-        NavigationUtil.push(context, screen: const MyProducts());
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          NavigationUtil.push(context, screen: const MyProducts());
+        }
         break;
       case 'Services':
-        NavigationUtil.push(context, screen: const MyServices());
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          NavigationUtil.push(context, screen: const MyServices());
+        }
         break;
       case 'Invoice':
-        if (appConfigurationModel?.enableInvoice == true) {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
         } else {
-          showToast(message: 'Coming soon');
+          if (appConfigurationModel?.enableInvoice == true) {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
+          } else {
+            showToast(message: 'Coming soon');
+          }
         }
         break;
       case 'Contract':
-        if (appConfigurationModel?.enableContract == true) {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
         } else {
-          showToast(message: 'Coming soon');
+          if (appConfigurationModel?.enableContract == true) {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
+          } else {
+            showToast(message: 'Coming soon');
+          }
         }
         break;
       case 'Chat':
-        NavigationUtil.push(context, screen: ConnectionDashboard());
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          NavigationUtil.push(context, screen: ConnectionDashboard());
+        }
         break;
       case 'Inbox':
-        Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+        }
         break;
       case 'Yarn':
-        NavigationUtil.push(context, screen: YarnDashboard());
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          NavigationUtil.push(context, screen: YarnDashboard());
+        }
         break;
       case 'Moment':
-        NavigationUtil.push(context, screen: MomentsScreen());
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          NavigationUtil.push(context, screen: MomentsScreen());
+        }
         break;
       case 'Blog':
-        // if (appConfigurationModel?.enableSuperBlog == true) {
-        NavigationUtil.push(
-          context,
-          screen: const SuperBlog(),
-        );
-        // } else {
-        //   showToast(message: 'Feature not available at the moment');
-        // }
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          // if (appConfigurationModel?.enableSuperBlog == true) {
+          NavigationUtil.push(
+            context,
+            screen: const SuperBlog(),
+          );
+          // } else {
+          //   showToast(message: 'Feature not available at the moment');
+          // }
+        }
         break;
       case 'Channel':
-        NavigationUtil.push(
-          context,
-          screen: ChannelsList(),
-        );
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          NavigationUtil.push(
+            context,
+            screen: ChannelsList(),
+          );
+        }
         break;
       case 'Order':
-        Navigator.pushNamed(context, Routes.ORDERS_LIST);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.pushNamed(context, Routes.ORDERS_LIST);
+        }
         break;
       case 'Super store':
-        NavigationUtil.push(context, screen: SuperStoreHome());
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          NavigationUtil.push(context, screen: SuperStoreHome());
+        }
         break;
       case 'Services Hub':
-        Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.pushNamed(context, Routes.SUPER_HUB,
+              arguments: {'page': 0});
+        }
         break;
       default:
         // Handle the default case (if any)
@@ -609,71 +688,105 @@ class _HomeQuickViewState extends State<HomeQuickView> {
   void onClickShortcutCreate(String title) {
     switch (title) {
       case 'Yarn':
-        NavigationUtil.push(context,
-            screen: AddOrEditYarn(
-              askCategories: yarnDashboardBloc.yarnCategories,
-              shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-              isYarn: true,
-              passedCategory: '',
-            ));
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          NavigationUtil.push(context,
+              screen: AddOrEditYarn(
+                askCategories: yarnDashboardBloc.yarnCategories,
+                shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                isYarn: true,
+                passedCategory: '',
+              ));
+        }
         break;
       case 'Moment':
-        NavigationUtil.push(context, screen: CreateMediaMomentScreen());
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          NavigationUtil.push(context, screen: CreateMediaMomentScreen());
+        }
+
         break;
       case 'Product':
         if (userBloc.user.type!.toLowerCase() == 'user') {
           showUpgradeDialog(context);
+        } else if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
         } else {
           Navigator.pushNamed(context, Routes.ADD_PRODUCT,
               arguments: {"channelUsername": ""});
         }
-
         break;
       case 'Services':
         if (userBloc.user.type!.toLowerCase() == 'user') {
           showUpgradeDialog(context);
+        } else if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
         } else {
           Navigator.pushNamed(context, Routes.ADD_SERVICE);
         }
-
         break;
       case 'Inbox':
-        Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+        }
         break;
-
       case 'Blog':
-        Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
-        // showToast(message: 'Coming soon');
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
+          // showToast(message: 'Coming soon');
+        }
         break;
       case 'Invoice':
-        if (appConfigurationModel?.enableInvoice == true) {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
         } else {
-          showToast(message: 'Coming soon');
+          if (appConfigurationModel?.enableInvoice == true) {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
+          } else {
+            showToast(message: 'Coming soon');
+          }
         }
         break;
       case 'Contract':
-        if (appConfigurationModel?.enableContract == true) {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
         } else {
-          showToast(message: 'Coming soon');
+          if (appConfigurationModel?.enableContract == true) {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
+          } else {
+            showToast(message: 'Coming soon');
+          }
         }
         break;
       case 'Channel':
-        // if (appConfigurationModel != null &&
-        //     appConfigurationModel!.enableGroupChat == true) {
-        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
-            arguments: {"create": "channel"});
-        // }
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          // if (appConfigurationModel != null &&
+          //     appConfigurationModel!.enableGroupChat == true) {
+          Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+              arguments: {"create": "channel"});
+          // }
+        }
         break;
       case 'Group':
-        // if (appConfigurationModel != null &&
-        //     appConfigurationModel!.enableGroupChat == true) {
-        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
-            arguments: {"create": "group"});
-        // }
+        if (!userBloc.user.checkAccountPermission(title)) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          // if (appConfigurationModel != null &&
+          //     appConfigurationModel!.enableGroupChat == true) {
+          Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
+              arguments: {"create": "group"});
+          // }
+        }
         break;
       default:
         // Handle the default case (if any)

@@ -1,12 +1,11 @@
 import 'dart:io';
 
-import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
-import 'package:Slydo/screens/more_apps/rider_delivery/models/near_by_location.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/tiles/delivery_order_tile.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/tiles/rider_delivery_map.dart';
 import 'package:Slydo/utils/util.dart';
@@ -33,21 +32,21 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   String? journeyId;
   bool isRejectAPILoading = false;
   bool isAcceptAPILoading = false;
-  bool isPickupLocationAPILoading = false;
-  bool isDeliveryLocationAPILoading = false;
   bool isStartAPILoading = false;
   bool isEndedAPILoading = false;
   bool isCancelAPILoading = false;
+  // double _initialSheetChildSize = 0.0;
 
-  Key key = const Key("map");
+  // bool startRide = false;
+  // bool isMapLoading = false;
+
+  Key key = Key("map");
   bool? isDeliveryCancel = false;
-  bool? isRiderAtPickupLocation = false;
-  bool? isRiderAtDeliveryLocation = false;
   bool? isChecked = false;
   late UserBloc userBloc;
   late RiderDeliveryBloc riderDeliveryBloc;
   String? username = "";
-  DatabaseHelper _db = DatabaseHelper();
+  // Location _locationTracker = Location();
 
   List<String> reasons = [
     "Wrong destination",
@@ -67,7 +66,35 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   void initState() {
     journeyId = widget.arguments['journeyId'];
 
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
     fetchJobData();
+    // });
+
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   riderDeliveryBloc.deliveryDetails = deliveryDetails;
+    // });
+
+    // deliveryDetails?.isShowDetails = widget.arguments['showDetails'];
+    // if (deliveryDetails?.isShowDetails != null &&
+    //     deliveryDetails?.isShowDetails == true) {
+    //   deliveryDetails?.isDeliveryAccepted = false;
+    //   _initialSheetChildSize = 0.38;
+    // } else {
+    //   deliveryDetails?.isDeliveryAccepted = true;
+    //   _initialSheetChildSize = 0.45;
+    // }
+
+    // Future.delayed(Duration(seconds: 5)).then((value) {
+    //   getExistingMapStatus();
+    //   getDriverToStartingMapStatus();
+    //   // isDriverStartedMoving = false;
+    //   // isDriverArrived = false;
+    //   // isTripStarted = false;
+    //   // isNavigationStarted = true;
+    //   // startRide = true;
+    //   // if (mounted) setState(() {});
+    //   // debugPrint("startRide :- $startRide");
+    // });
     super.initState();
   }
 
@@ -142,9 +169,23 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildBody() {
     return isLoading
-        ? const Center(child: CircularProgressIndicator())
+        ? Center(child: CircularProgressIndicator())
         : Stack(
             children: [
+              // MapUI(),
+              // Image.asset(
+              //   "assets/images/map.png",
+              //   height: double.infinity,
+              //   width: double.infinity,
+              //   fit: BoxFit.fill,
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.all(50.0),
+              //   child: Image.asset(
+              //     "assets/images/taxi/route_map_image.png",
+              //     fit: BoxFit.fill,
+              //   ),
+              // ),
               Column(
                 children: [
                   Expanded(
@@ -179,6 +220,46 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       return Container();
     }
   }
+
+  // void getExistingMapStatus() {
+  //   RiderDeliveryBloc riderDeliveryBloc =
+  //       Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
+  //   TaxiAuth()
+  //       .getDirections(
+  //     origin: LatLng((deliveryDetails?.pickupAddress?.latitude ?? 0.0) - 0.0015,
+  //         (deliveryDetails?.pickupAddress?.longitude ?? 0.0)),
+  //     destination: LatLng((deliveryDetails?.deliveryAddress?.latitude ?? 0.0),
+  //         (deliveryDetails?.deliveryAddress?.longitude ?? 0.0)),
+  //   )
+  //       .then((value) {
+  //     riderDeliveryBloc.driverToStartingPointDirections = value;
+  //     isMapLoading = false;
+  //     if (mounted) setState(() {});
+  //   }).catchError((error) {
+  //     isMapLoading = false;
+  //     if (mounted) setState(() {});
+  //   });
+  // }
+  //
+  // Future<void> getDriverToStartingMapStatus() async {
+  //   RiderDeliveryBloc riderDeliveryBloc =
+  //       Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
+  //   LocationData location = await _locationTracker.getLocation();
+  //   TaxiAuth()
+  //       .getDirections(
+  //     origin: LatLng(location.latitude! - 0.0015, location.longitude!),
+  //     destination: LatLng((deliveryDetails?.deliveryAddress?.latitude ?? 0.0),
+  //         (deliveryDetails?.deliveryAddress?.longitude ?? 0.0)),
+  //   )
+  //       .then((value) {
+  //     riderDeliveryBloc.startingPointToDestinationDirections = value;
+  //     isMapLoading = false;
+  //     if (mounted) setState(() {});
+  //   }).catchError((error) {
+  //     isMapLoading = false;
+  //     if (mounted) setState(() {});
+  //   });
+  // }
 
   Widget _buildShowDetails() {
     return DraggableScrollableSheet(
@@ -302,7 +383,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget getDeliveryDetails() {
     return Container(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+        padding: EdgeInsets.only(left: 16, right: 16, top: 8),
         child: Column(
           children: [
             Container(
@@ -313,15 +394,20 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 color: greyBorderColor,
               ),
             ),
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // _buildLogoAndDeliveryAndAmount(),
+                // _buildItemsAndKg(),
+                // SizedBox(height: 10.0),
+                // _buildIconAndAddressAndPickup(),
+
                 DeliveryOrderTile(
                     jobListing: riderDeliveryBloc.deliveryDetails),
-                const SizedBox(height: 10.0),
+                SizedBox(height: 10.0),
                 _buildButtonAcceptReject(),
               ],
             ),
@@ -331,7 +417,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget startDelivery() {
     return Container(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+        padding: EdgeInsets.only(left: 16, right: 16, top: 8),
         child: Column(
           children: [
             Container(
@@ -342,33 +428,25 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 color: greyBorderColor,
               ),
             ),
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildDrivingToPickupLocation(),
-                const SizedBox(height: 15.0),
+                SizedBox(height: 15.0),
                 _buildDistanceAndHoursAndImageAndAddress(
                   pickupAddress: "Your Current Location",
                   deliveryAddress:
                       '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
                 ),
-                const SizedBox(height: 10.0),
-                if (riderDeliveryBloc
-                        .deliveryDetails?.riderAtLocation?.atPickupLocation ==
-                    true)
-                  _buildCheckBoxAndItems(),
-                if (riderDeliveryBloc
-                        .deliveryDetails?.riderAtLocation?.atPickupLocation ==
-                    true)
-                  _buildStartDelivery()
-                else
-                  _buildAtPickupLocation(),
-                const SizedBox(height: 15.0),
+                SizedBox(height: 10.0),
+                _buildCheckBoxAndItems(),
+                _buildStartDelivery(),
+                SizedBox(height: 15.0),
                 _buildCancelDelivery(),
-                const SizedBox(height: 15.0),
+                SizedBox(height: 15.0),
                 _buildCallSender(),
               ],
             ),
@@ -378,51 +456,45 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget endDelivery() {
     return Container(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
-      child: Column(
-        children: [
-          Container(
-            height: 2,
-            width: 12.0.w,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              color: greyBorderColor,
+        padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+        child: Column(
+          children: [
+            Container(
+              height: 2,
+              width: 12.0.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: greyBorderColor,
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDrivingToDestination(),
-              const SizedBox(height: 10.0),
-              _buildDistanceAndHoursAndImageAndAddress(
-                  pickupAddress:
-                      '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
-                  deliveryAddress:
-                      '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}'),
-              const SizedBox(height: 10.0),
-              _buildItems(),
-              const SizedBox(height: 15.0),
-              if (riderDeliveryBloc
-                      .deliveryDetails?.riderAtLocation?.atDeliveryLocation ==
-                  true)
-                _buildEndDelivery()
-              else
-                _buildAtDeliveryLocation(),
-              const SizedBox(height: 15.0),
-              _buildCallReceiver(),
-            ],
-          ),
-        ],
-      ),
-    );
+            SizedBox(
+              height: 20,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDrivingToDestination(),
+                SizedBox(height: 10.0),
+                _buildDistanceAndHoursAndImageAndAddress(
+                    pickupAddress:
+                        '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
+                    deliveryAddress:
+                        '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}'),
+                SizedBox(height: 10.0),
+                _buildItems(),
+                SizedBox(height: 15.0),
+                _buildEndDelivery(),
+                SizedBox(height: 15.0),
+                _buildCallReceiver(),
+              ],
+            ),
+          ],
+        ));
   }
 
   Widget deliveryProof() {
     return Container(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: [
           Container(
@@ -433,16 +505,16 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               color: greyBorderColor,
             ),
           ),
-          const SizedBox(
+          SizedBox(
             height: 20,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _buildDeliveryProofTitle(),
-              const SizedBox(height: 20.0),
+              SizedBox(height: 20.0),
               _buildQRCode(),
-              const SizedBox(height: 20.0),
+              SizedBox(height: 20.0),
               _buildTakePicture(),
             ],
           ),
@@ -455,7 +527,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     return Form(
       key: _formKey,
       child: Container(
-          padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+          padding: EdgeInsets.only(left: 16, right: 16, top: 8),
           child: Column(
             children: [
               Container(
@@ -466,16 +538,16 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                   color: greyBorderColor,
                 ),
               ),
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTitle(),
-                  const SizedBox(height: 10.0),
+                  SizedBox(height: 10.0),
                   _buildCancelDeliveryReason(),
-                  const SizedBox(height: 10.0),
+                  SizedBox(height: 10.0),
                   _buildSubmitButton(),
                 ],
               ),
@@ -484,9 +556,195 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     );
   }
 
+  Widget _buildLogoAndDeliveryAndAmount() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            _buildLogo(),
+            _buildVerticalDivider(),
+            _buildDelivery(),
+          ],
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildCurrencySymbols(),
+            _buildAmount(),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _buildLogo() {
+    return Image.network(
+      riderDeliveryBloc.deliveryDetails?.merchantAvatar ?? "",
+      height: 24,
+      width: 24,
+      fit: BoxFit.fill,
+      filterQuality: FilterQuality.high,
+      cacheHeight: 24,
+      cacheWidth: 24,
+      frameBuilder: imageFrameBuilder,
+      errorBuilder: (context, error, stackTrace) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.network(
+            defaultImage,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildVerticalDivider() {
+    return Container(
+      height: 55,
+      child: VerticalDivider(
+        color: greySecondaryYarn,
+        thickness: 1,
+        indent: 10,
+        endIndent: 10,
+        width: 20,
+      ),
+    );
+  }
+
+  Widget _buildDelivery() {
+    return Text(
+      riderDeliveryBloc.deliveryDetails?.merchantFullName ?? "",
+      style: TextStyle(
+        color: black,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildCurrencySymbols() {
+    return Text(
+      worldCurrencies[riderDeliveryBloc.deliveryDetails?.currency]!,
+      style: TextStyle(
+        color: yarnBlack,
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildAmount() {
+    return Text(
+      "0",
+      style: TextStyle(
+        color: yarnBlack,
+        fontSize: 26,
+        fontWeight: FontWeight.w700,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildItemsAndKg() {
+    return Text(
+      "${riderDeliveryBloc.deliveryDetails?.totalNoOfItems} Items (${riderDeliveryBloc.deliveryDetails?.totalWeight}Kg)",
+      style: TextStyle(
+        color: black,
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildIconAndAddressAndPickup() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildIconImage(),
+        SizedBox(width: MediaQuery.of(context).size.width * 0.02),
+        Expanded(child: _buildMainAddressColumn())
+      ],
+    );
+  }
+
+  Widget _buildIconImage() {
+    return SvgPicture.asset(
+      'assets/images/rider/ic_route.svg',
+      height: 65,
+    );
+  }
+
+  Widget _buildMainAddressColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.pickupAddress?.addressLineTwo}',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontSize: 12,
+                fontFamily: "Inter",
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              riderDeliveryBloc.deliveryDetails?.expectedPickupTime
+                      .toString() ??
+                  "",
+              style: TextStyle(
+                color: navyBlue,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 19),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineOne}, ${riderDeliveryBloc.deliveryDetails?.deliveryAddress?.addressLineTwo}',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontSize: 12,
+                fontFamily: "Inter",
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              riderDeliveryBloc.deliveryDetails?.expectedDeliveryTime
+                      .toString() ??
+                  "",
+              style: TextStyle(
+                color: navyBlue,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildButtonAcceptReject() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: Row(
         children: [
           Expanded(
@@ -508,7 +766,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
               isLoading: isRejectAPILoading,
             ),
           ),
-          const SizedBox(width: 20),
+          SizedBox(width: 20),
           Expanded(
             child: CurvedButton(
               text: 'Accept',
@@ -539,7 +797,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         .rejectOffer(riderDeliveryBloc.deliveryDetails?.id)
         .then((value) {
       if (value == true) {
-        Future.delayed(const Duration(seconds: 2)).then((value) => () {
+        Future.delayed(Duration(seconds: 2)).then((value) => () {
               showToast(
                   message: AppLocalization.of(context)!.jobRemovedFromListing);
               Navigator.pop(context, 'HomeScreen');
@@ -609,7 +867,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildDistanceAndHours(),
-        const SizedBox(width: 15.0),
+        SizedBox(width: 15.0),
         _buildRouteIconImage(),
         _buildAddressColumn(pickupAddress, deliveryAddress),
       ],
@@ -631,7 +889,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             fontFamily: "Inter",
           ),
         ),
-        const SizedBox(
+        SizedBox(
           height: 8,
         ),
         Row(
@@ -645,7 +903,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                 fontFamily: "Inter",
               ),
             ),
-            const SizedBox(width: 5),
+            SizedBox(width: 5),
             Text(
               'minutes to your\nPickup location',
               style: TextStyle(
@@ -688,7 +946,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 25),
+          SizedBox(height: 25),
           Text(
             deliveryAddress ?? "",
             style: TextStyle(
@@ -713,7 +971,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     return Row(
       children: [
         Checkbox(
-            shape: const RoundedRectangleBorder(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -761,54 +1019,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
     );
   }
 
-  Widget _buildAtPickupLocation() {
-    return CurvedButton(
-      text: 'I am at pickup location',
-      backgroundColor: riderDeliveryBloc.isNearbyPickupLocation == true
-          ? navyBlue
-          : greyBorderColor,
-      textColor: white,
-      onPressed: riderDeliveryBloc.isNearbyPickupLocation == true
-          ? () async {
-              if (isPickupLocationAPILoading == false) {
-                FocusScope.of(context).unfocus();
-                isPickupLocationAPILoading = true;
-                if (mounted) setState(() {});
-                await riderAtPickupLocation();
-                mapKey = GlobalKey();
-                isPickupLocationAPILoading = false;
-                if (mounted) setState(() {});
-              }
-            }
-          : null,
-      isLoading: isPickupLocationAPILoading,
-    );
-  }
-
-  Widget _buildAtDeliveryLocation() {
-    return CurvedButton(
-      text: 'I am at destination location',
-      backgroundColor: riderDeliveryBloc.isNearbyDestinationLocation == true
-          ? navyBlue
-          : greyBorderColor,
-      textColor: white,
-      onPressed: riderDeliveryBloc.isNearbyDestinationLocation == true
-          ? () async {
-              if (isDeliveryLocationAPILoading == false) {
-                FocusScope.of(context).unfocus();
-                isDeliveryLocationAPILoading = true;
-                if (mounted) setState(() {});
-                await riderAtDeliveryLocation();
-                mapKey = GlobalKey();
-                isDeliveryLocationAPILoading = false;
-                if (mounted) setState(() {});
-              }
-            }
-          : null,
-      isLoading: isDeliveryLocationAPILoading,
-    );
-  }
-
   Widget _buildStartDelivery() {
     return CurvedButton(
       text: 'Start Delivery',
@@ -853,11 +1063,11 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.phone_in_talk_outlined,
             size: 25,
           ),
-          const SizedBox(width: 10.0),
+          SizedBox(width: 10.0),
           Text(
             "Tap to call package sender",
             style: TextStyle(
@@ -881,11 +1091,11 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.phone_in_talk_outlined,
             size: 25,
           ),
-          const SizedBox(width: 10.0),
+          SizedBox(width: 10.0),
           Text(
             "Tap to call package receiver",
             style: TextStyle(
@@ -906,59 +1116,6 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
       path: phone ?? "",
     );
     await launchUrl(launchUri);
-  }
-
-  Future<void> riderAtPickupLocation() async {
-    await RiderDeliveryAuthService()
-        .atPickupLocation(riderDeliveryBloc.deliveryDetails?.orderId)
-        .then((value) async {
-      if (value == true) {
-        showToast(message: 'You have arrived at the pickup location');
-        // riderDeliveryBloc.deliveryDetails?.isDeliveryAccepted = false;
-        // riderDeliveryBloc.deliveryDetails?.isDeliveryStarted = true;
-        // _initialSheetChildSize = 0.35;
-        Map<String, dynamic> data = {
-          "order_id": riderDeliveryBloc.deliveryDetails?.orderId,
-          "at_pickup_location": true,
-          "at_delivery_location": false,
-        };
-        NearByLocation atLocation = NearByLocation.fromJson(data);
-        await _db.insertRiderAtLocation(atLocation);
-
-        await riderDeliveryBloc
-            .refreshJobDetail(riderDeliveryBloc.deliveryDetails?.id);
-        setState(() {});
-      }
-    }).catchError((error) {
-      debugPrint(error.toString());
-    });
-  }
-
-  Future<void> riderAtDeliveryLocation() async {
-    await RiderDeliveryAuthService()
-        .atDeliveryLocation(riderDeliveryBloc.deliveryDetails?.orderId)
-        .then((value) async {
-      if (value == true) {
-        showToast(message: 'You have arrived at the destination location');
-        // riderDeliveryBloc.deliveryDetails?.isDeliveryAccepted = false;
-        // riderDeliveryBloc.deliveryDetails?.isDeliveryStarted = true;
-        // _initialSheetChildSize = 0.35;
-        // Map<String, dynamic> data = {
-        //   "orderId": riderDeliveryBloc.deliveryDetails?.orderId,
-        //   "at_pickup_location": false,
-        //   "at_delivery_location": true,
-        // };
-        // NearByLocation atLocation = NearByLocation.fromJson(data);
-        await _db.updateRiderAtLocation(
-            riderDeliveryBloc.deliveryDetails?.orderId, true);
-
-        await riderDeliveryBloc
-            .refreshJobDetail(riderDeliveryBloc.deliveryDetails?.id);
-        setState(() {});
-      }
-    }).catchError((error) {
-      debugPrint(error.toString());
-    });
   }
 
   Future<void> startOffer() async {
@@ -1032,7 +1189,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildCancelDeliveryReason() {
     return ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: reasons.length,
         itemBuilder: (context, i) {
@@ -1106,7 +1263,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
         .cancelJourney(riderDeliveryBloc.deliveryDetails?.id, userChecked)
         .then((value) {
       if (value == true) {
-        Future.delayed(const Duration(seconds: 2)).then((value) => () {
+        Future.delayed(Duration(seconds: 2)).then((value) => () {
               showToast(
                   message: AppLocalization.of(context)!
                       .cancelledApplicactionForJobSuccessfully);
@@ -1121,7 +1278,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
 
   Widget _buildDeliveryProofTitle() {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: EdgeInsets.all(15.0),
       child: Text(
         "Kindly take a picture of the receiver and the package for proof of delivery.",
         style: TextStyle(
@@ -1153,7 +1310,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             height: 22,
             fit: BoxFit.fill,
           ),
-          const SizedBox(width: 15.0),
+          SizedBox(width: 15.0),
           Text(
             "Scan QRCode",
             style: TextStyle(
@@ -1182,7 +1339,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             width: 22,
             height: 22,
           ),
-          const SizedBox(width: 15.0),
+          SizedBox(width: 15.0),
           Text(
             "Tap to take a picture",
             style: TextStyle(
