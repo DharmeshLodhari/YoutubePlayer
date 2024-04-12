@@ -15,6 +15,7 @@ import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
@@ -391,7 +392,8 @@ class _ConnectionListState extends State<ConnectionList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessengerContactsListKey.currentState?.showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessengerContactsListKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {
@@ -633,11 +635,16 @@ class _VerticalListItemState extends State<VerticalListItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        ChatUserManager().clearChatUserMessageCount(
-            conversationId: widget.user.conversationId);
+        UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+        if (userBloc.user.staff != null) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          ChatUserManager().clearChatUserMessageCount(
+              conversationId: widget.user.conversationId);
 
-        await Navigator.pushNamed(context, Routes.CHAT_SCREEN,
-            arguments: {"searchedUser": widget.user});
+          await Navigator.pushNamed(context, Routes.CHAT_SCREEN,
+              arguments: {"searchedUser": widget.user});
+        }
 
         if (mounted) setState(() {});
       },

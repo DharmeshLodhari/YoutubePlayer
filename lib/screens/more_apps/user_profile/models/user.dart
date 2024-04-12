@@ -1,3 +1,4 @@
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/rider_registration/models/rider_model.dart';
@@ -160,33 +161,15 @@ class User {
     return userName;
   }
 
-  bool checkAccountPermission(String title) {
+  bool hasWritePermission(String title) {
     if (staff != null && permissions != null) {
-      switch (title) {
-        case "Product":
-          return (permissions?.product == null) ? false : true;
-        case "Service":
-          return (permissions?.service == null) ? false : true;
-        case "Payment Links":
-          return (permissions?.payment == null) ? false : true;
-        case "Blog":
-          return (permissions?.blog == null) ? false : true;
-        case "Yarn":
-          return (permissions?.yarn == null) ? false : true;
-        case "Moment":
-          return (permissions?.moment == null) ? false : true;
-        case "Order":
-          return (permissions?.order == null) ? false : true;
-        case "Chat":
-          return (permissions?.chat == null) ? false : true;
-        default:
-          return true;
-      }
+      return permissions?.hasWritePermissionForStaff(title) ?? false;
     } else if ((type!.toLowerCase() == 'user' && title == 'Product') ||
         (type!.toLowerCase() == 'user' && title == 'Services')) {
       return false;
+    } else {
+      return true;
     }
-    return true;
   }
 }
 
@@ -352,7 +335,11 @@ class Permissions {
   String? yarn;
   String? moment;
   String? order;
-  String? chat;
+  String? message;
+  String? staff;
+  String? paymentRequest;
+  String? invoice;
+  String? contract;
 
   Permissions({
     this.payment,
@@ -362,7 +349,11 @@ class Permissions {
     this.yarn,
     this.moment,
     this.order,
-    this.chat,
+    this.message,
+    this.staff,
+    this.paymentRequest,
+    this.invoice,
+    this.contract,
   });
 
   factory Permissions.fromJson(Map<String, dynamic> json) => Permissions(
@@ -373,7 +364,11 @@ class Permissions {
         yarn: json["yarn"],
         moment: json["moment"],
         order: json["order"],
-        chat: json["chat"],
+        message: json["message"],
+        staff: json["staff"],
+        paymentRequest: json["payment-request"],
+        invoice: json["invoice"],
+        contract: json["contract"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -384,8 +379,68 @@ class Permissions {
         "yarn": yarn,
         "moment": moment,
         "order": order,
-        "chat": chat,
+        "message": message,
+        "staff": staff,
+        "payment-request": paymentRequest,
+        "invoice": invoice,
+        "contract": contract,
       };
+
+  bool hasWritePermissionForStaff(String permissionName) {
+    switch (permissionName) {
+      case ProtectionPermission.yarn:
+        return (yarn == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.moment:
+        return (moment == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.product:
+        return (product == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.services:
+        return (service == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.inbox:
+        return (message == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.blog:
+        return (blog == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.invoice:
+        return (invoice == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.contract:
+        return (contract == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.channel:
+        return (message == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.group:
+        return (message == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.transaction:
+        return (payment == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.sendMoney:
+        return (payment == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.requestMoney:
+        return (paymentRequest == ProtectionPermissionType.write)
+            ? true
+            : false;
+      case ProtectionPermission.paymentLinks:
+        return (payment == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.wallet:
+        return (payment == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.creditCard:
+        return (payment == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.utility:
+        return (payment == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.chat:
+        return (message == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.order:
+        return (order == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.superStore:
+        return (product == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.servicesHub:
+        return (service == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.send:
+        return (payment == ProtectionPermissionType.write) ? true : false;
+      case ProtectionPermission.request:
+        return (paymentRequest == ProtectionPermissionType.write)
+            ? true
+            : false;
+    }
+    return false;
+  }
 }
 
 class ShippingAddress {

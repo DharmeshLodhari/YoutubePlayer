@@ -20,7 +20,7 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildOrderId(),
+          // _buildOrderId(),
           _buildLogoAndDeliveryAndAmount(),
           _buildItemsAndKg(),
           SizedBox(height: 10.0),

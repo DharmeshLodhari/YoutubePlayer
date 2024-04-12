@@ -94,10 +94,7 @@ class _DashboardState extends State<Dashboard> {
       _pages = [
         KeepAlivePage(wantKeepAlive: false, child: Home()),
         SuperStoreHome(),
-        if (userBloc.user.staff == null)
-          KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard())
-        else
-          SizedBox(),
+        KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
         GeneralSettingScreen(),
       ];
     });
@@ -297,9 +294,13 @@ class _DashboardState extends State<Dashboard> {
 
         Navigator.of(MyGlobals().navigationKey.currentContext!)
             .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-        Navigator.pushNamed(
-            MyGlobals().navigationKey.currentContext!, Routes.CHAT_SCREEN,
-            arguments: {"searchedUser": chatConversation});
+        if (userBloc.user.staff != null) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.pushNamed(
+              MyGlobals().navigationKey.currentContext!, Routes.CHAT_SCREEN,
+              arguments: {"searchedUser": chatConversation});
+        }
       }
     } else if (notification['type'] == "request-payment") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
@@ -318,13 +319,21 @@ class _DashboardState extends State<Dashboard> {
     } else if (notification['type'] == "connection-request") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-      Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 1});
+      if (userBloc.user.staff != null) {
+        showToast(message: AppLocalization.of(context)?.doNotPermission);
+      } else {
+        Navigator.of(MyGlobals().navigationKey.currentContext!)
+            .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 1});
+      }
     } else if (notification['type'] == "friends-dashboard") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-      Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
+      if (userBloc.user.staff != null) {
+        showToast(message: AppLocalization.of(context)?.doNotPermission);
+      } else {
+        Navigator.of(MyGlobals().navigationKey.currentContext!)
+            .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
+      }
     } else if (notification['type'] == "detail_message") {
       //this variable will fetch the id of message from the response
       String? idOfMessage =
@@ -669,7 +678,12 @@ class _DashboardState extends State<Dashboard> {
           setState(() {
             // Unfocus the keyboard
             FocusScope.of(context).requestFocus(new FocusNode());
-            _bottomNavIndex = index;
+            if (userBloc.user.staff != null && index == 2) {
+              showToast(message: AppLocalization.of(context)?.doNotPermission);
+              return;
+            } else {
+              _bottomNavIndex = index;
+            }
           });
         },
         shadow: BoxShadow(

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -21,6 +22,7 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -449,55 +451,56 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   SizedBox(height: 15),
-                  (nextContactMoments == '' && isExploreMomentsLoading)
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: SizedBox(
-                            height: 180,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: 4,
-                              itemBuilder: (context, index) {
-                                return SizedBox(
-                                  width: 120,
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        )
-                      : SizedBox(
-                          height: 180,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            controller: _myConnectionsScrollController,
-                            scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.symmetric(vertical: 4),
-                            itemCount: momentsList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index == momentsList.length) {
-                                return Container();
-                                // buildIndicator(
-                                //     isLoading: isContactMomentsLoading);
-                              } else {
-                                return ContactMomentsCard(
-                                  index: index,
-                                  nextPageUrl: nextContactMoments,
-                                  userMomentModel: momentsList[index],
-                                  listOfConnectionsNames:
-                                      momentsList.map((e) => e.owner!).toList(),
-                                );
-                              }
-                            },
-                          ),
+                  if (nextContactMoments == '' && isExploreMomentsLoading)
+                    Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: SizedBox(
+                        height: 180,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: 4,
+                          itemBuilder: (context, index) {
+                            return SizedBox(
+                              width: 120,
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                            );
+                          },
                         ),
+                      ),
+                    )
+                  else
+                    SizedBox(
+                      height: 180,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        controller: _myConnectionsScrollController,
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        itemCount: momentsList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == momentsList.length) {
+                            return Container();
+                            // buildIndicator(
+                            //     isLoading: isContactMomentsLoading);
+                          } else {
+                            return ContactMomentsCard(
+                              index: index,
+                              nextPageUrl: nextContactMoments,
+                              userMomentModel: momentsList[index],
+                              listOfConnectionsNames:
+                                  momentsList.map((e) => e.owner!).toList(),
+                            );
+                          }
+                        },
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -565,15 +568,15 @@ class _HomeState extends State<Home> {
     final List<Map<String, String>> shortcuts = [
       {
         'imagePath': 'home/transaction',
-        'title': 'Transaction',
+        'title': ProtectionPermission.transaction,
       },
       {
         'imagePath': 'home/send',
-        'title': 'Send',
+        'title': ProtectionPermission.send,
       },
       {
         'imagePath': 'home/request',
-        'title': 'Request',
+        'title': ProtectionPermission.request,
       },
       // {
       //   'imagePath': 'home/request',
@@ -581,19 +584,19 @@ class _HomeState extends State<Home> {
       // },
       {
         'imagePath': 'home/yarn',
-        'title': 'Yarn',
+        'title': ProtectionPermission.yarn,
       },
       {
         'imagePath': 'home/moment',
-        'title': 'Moment',
+        'title': ProtectionPermission.moment,
       },
       {
         'imagePath': 'home/service',
-        'title': 'Services',
+        'title': ProtectionPermission.services,
       },
       {
         'imagePath': 'home/blog',
-        'title': 'Blog',
+        'title': ProtectionPermission.blog,
       },
     ];
 
@@ -620,21 +623,26 @@ class _HomeState extends State<Home> {
   }
 
   Widget shortcutView(String imagePath, String title) {
-    return !userBloc.user.checkAccountPermission(title)
-        ? Stack(
-            children: [
-              _buildIconAndText(imagePath, title),
-              Positioned(
-                top: 0, // Adjust the top value as needed
-                right: -3, // Adjust the right value as needed
-                child: SvgPicture.asset(
-                  'home/padlock'.toSVG(),
-                  color: darkGreyYarn,
-                ),
-              ),
-            ],
-          )
-        : _buildIconAndText(imagePath, title);
+    // return !userBloc.user.hasWritePermission(title)
+    //     ? Stack(
+    //         children: [
+    //           _buildIconAndText(imagePath, title),
+    //           Positioned(
+    //             top: 0, // Adjust the top value as needed
+    //             right: -3, // Adjust the right value as needed
+    //             child: SvgPicture.asset(
+    //               'home/padlock'.toSVG(),
+    //               color: darkGreyYarn,
+    //             ),
+    //           ),
+    //         ],
+    //       )
+    //     : _buildIconAndText(imagePath, title);
+    return PermissionProtectionWidget(
+      permissionName: title,
+      child: _buildIconAndText(imagePath, title),
+      alignment: Alignment.topRight,
+    );
   }
 
   Widget _buildIconAndText(String imagePath, String title) {
@@ -657,19 +665,12 @@ class _HomeState extends State<Home> {
 
   void onClickShortcut(String shortcut) {
     switch (shortcut) {
-      case 'Send':
-        if (!userBloc.user.checkAccountPermission(shortcut)) {
-          showToast(message: AppLocalization.of(context)?.doNotPermission);
-        } else {
+      case ProtectionPermission.send:
           hideBalance();
           Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
               arguments: <String, bool>{'isFromProfile': true});
-        }
         break;
-      case 'Transaction':
-        if (!userBloc.user.checkAccountPermission(shortcut)) {
-          showToast(message: AppLocalization.of(context)?.doNotPermission);
-        } else {
+      case ProtectionPermission.transaction:
           hideBalance();
           BottomSheetPassCode(
               context: context,
@@ -680,49 +681,29 @@ class _HomeState extends State<Home> {
               cancelCallBack: () {
                 Navigator.pop(context);
               });
-        }
         break;
-      case 'Request':
-        if (!userBloc.user.checkAccountPermission(shortcut)) {
-          showToast(message: AppLocalization.of(context)?.doNotPermission);
-        } else {
+      case ProtectionPermission.request:
           hideBalance();
           Navigator.pushNamed(context, Routes.ACCOUNTS);
-        }
         break;
       // case 'Dispatch':
       //   hideBalance();
       //   Navigator.pushNamed(context, Routes.DISPATCH);
       //   break;
-      case 'Yarn':
-        if (!userBloc.user.checkAccountPermission(shortcut)) {
-          showToast(message: AppLocalization.of(context)?.doNotPermission);
-        } else {
+      case ProtectionPermission.yarn:
           hideBalance();
           NavigationUtil.push(context, screen: YarnDashboard());
-        }
         break;
-      case 'Moment':
-        if (!userBloc.user.checkAccountPermission(shortcut)) {
-          showToast(message: AppLocalization.of(context)?.doNotPermission);
-        } else {
+      case ProtectionPermission.moment:
           hideBalance();
           NavigationUtil.push(context, screen: MomentsScreen());
-        }
         break;
-      case 'Services':
-        if (!userBloc.user.checkAccountPermission(shortcut)) {
-          showToast(message: AppLocalization.of(context)?.doNotPermission);
-        } else {
+      case ProtectionPermission.services:
           hideBalance();
           Navigator.pushNamed(context, Routes.SUPER_HUB,
               arguments: {'page': 0});
-        }
         break;
-      case 'Blog':
-        if (!userBloc.user.checkAccountPermission(shortcut)) {
-          showToast(message: AppLocalization.of(context)?.doNotPermission);
-        } else {
+      case ProtectionPermission.blog:
           hideBalance();
           if (appConfigurationModel?.enableSuperBlog == true) {
             NavigationUtil.push(
@@ -732,7 +713,6 @@ class _HomeState extends State<Home> {
           } else {
             showToast(message: 'Feature not available at the moment');
           }
-        }
         break;
       default:
         // Handle the default case (if any)
@@ -1384,20 +1364,21 @@ class _HomeState extends State<Home> {
         : Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              isBalanceHidden
-                  ? Container()
-                  : Padding(
-                      padding: const EdgeInsets.only(bottom: 2.0),
-                      child: Text(
-                        worldCurrencies[userBloc.user.currency!]!,
-                        style: TextStyle(
-                          color: white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 22,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
+              if (isBalanceHidden)
+                Container()
+              else
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0),
+                  child: Text(
+                    worldCurrencies[userBloc.user.currency!]!,
+                    style: TextStyle(
+                      color: white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 22,
+                      fontFamily: 'Inter',
                     ),
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 2.0),
                 child: Text(

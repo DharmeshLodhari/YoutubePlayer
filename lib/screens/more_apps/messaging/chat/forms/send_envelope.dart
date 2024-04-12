@@ -417,8 +417,12 @@ class _SendEnvelopeState extends State<SendEnvelope> {
               showToast(message: "ERROR:- $error");
             });
 
-            Navigator.popUntil(
-                context, ModalRoute.withName(Routes.CHAT_SCREEN));
+            if (userBloc.user.staff != null) {
+              showToast(message: AppLocalization.of(context)?.doNotPermission);
+            } else {
+              Navigator.popUntil(
+                  context, ModalRoute.withName(Routes.CHAT_SCREEN));
+            }
           },
           cancelCallBack: () {
             _sendEnvelopeScaffoldMessenger.currentState?.showSnackBar(SnackBar(

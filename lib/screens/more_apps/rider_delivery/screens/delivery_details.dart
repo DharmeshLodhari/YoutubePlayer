@@ -723,12 +723,10 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
             value: isChecked,
             onChanged: (bool? val) {
               setState(() {
-                if (riderDeliveryBloc.isNearbyPickupLocation == true) {
-                  isChecked = val!;
-                  if (isChecked == true) {
-                    RiderDeliveryAuthService().riderPickupOrder(
-                        riderDeliveryBloc.deliveryDetails?.orderId);
-                  }
+                isChecked = val!;
+                if (isChecked == true) {
+                  RiderDeliveryAuthService().riderPickupOrder(
+                      riderDeliveryBloc.deliveryDetails?.orderId);
                 }
               });
             }),
@@ -764,47 +762,39 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   Widget _buildAtPickupLocation() {
     return CurvedButton(
       text: 'I am at pickup location',
-      backgroundColor: riderDeliveryBloc.isNearbyPickupLocation == true
-          ? navyBlue
-          : greyBorderColor,
+      backgroundColor: navyBlue,
       textColor: white,
-      onPressed: riderDeliveryBloc.isNearbyPickupLocation == true
-          ? () async {
-              if (isPickupLocationAPILoading == false) {
-                FocusScope.of(context).unfocus();
-                isPickupLocationAPILoading = true;
-                if (mounted) setState(() {});
-                await riderAtPickupLocation();
-                mapKey = GlobalKey();
-                isPickupLocationAPILoading = false;
-                if (mounted) setState(() {});
-              }
-            }
-          : null,
+      onPressed: () async {
+        if (isPickupLocationAPILoading == false) {
+          FocusScope.of(context).unfocus();
+          isPickupLocationAPILoading = true;
+          if (mounted) setState(() {});
+          await riderAtPickupLocation();
+          mapKey = GlobalKey();
+          isPickupLocationAPILoading = false;
+          if (mounted) setState(() {});
+        }
+      },
       isLoading: isPickupLocationAPILoading,
     );
   }
 
   Widget _buildAtDeliveryLocation() {
     return CurvedButton(
-      text: 'I am at destination location',
-      backgroundColor: riderDeliveryBloc.isNearbyDestinationLocation == true
-          ? navyBlue
-          : greyBorderColor,
+      text: 'I am at drop off location',
+      backgroundColor: navyBlue,
       textColor: white,
-      onPressed: riderDeliveryBloc.isNearbyDestinationLocation == true
-          ? () async {
-              if (isDeliveryLocationAPILoading == false) {
-                FocusScope.of(context).unfocus();
-                isDeliveryLocationAPILoading = true;
-                if (mounted) setState(() {});
-                await riderAtDeliveryLocation();
-                mapKey = GlobalKey();
-                isDeliveryLocationAPILoading = false;
-                if (mounted) setState(() {});
-              }
-            }
-          : null,
+      onPressed: () async {
+        if (isDeliveryLocationAPILoading == false) {
+          FocusScope.of(context).unfocus();
+          isDeliveryLocationAPILoading = true;
+          if (mounted) setState(() {});
+          await riderAtDeliveryLocation();
+          mapKey = GlobalKey();
+          isDeliveryLocationAPILoading = false;
+          if (mounted) setState(() {});
+        }
+      },
       isLoading: isDeliveryLocationAPILoading,
     );
   }
