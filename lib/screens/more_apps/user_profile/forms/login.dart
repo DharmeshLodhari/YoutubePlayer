@@ -57,6 +57,7 @@ class _UserLoginState extends State<UserLogin> {
   String? companyFromPref;
   TextEditingController? phoneNumberController;
   TextEditingController? passwordController;
+  TextEditingController? companyController;
   late SharedPreferences _sharedPreferences;
   late BasketBloc basketBloc;
   late SharedCartBloc sharedCartBloc;
@@ -68,6 +69,8 @@ class _UserLoginState extends State<UserLogin> {
   int currentIndex = 0;
 
   List<CompanyName>? companyList = [];
+  // String businessName = "";
+  bool _showDropdown = false;
   String companyName = "";
 
   @override
@@ -314,9 +317,35 @@ class _UserLoginState extends State<UserLogin> {
           height: 6,
         ),
         dropdownCountrySearch(),
+        // _buildCompanyTextField(),
       ],
     );
   }
+
+  // Widget _buildCompanyTextField() {
+  //   return CustomizedTextFormField(
+  //     labelColor: darkGrey,
+  //     keyboardType: TextInputType.text,
+  //     hintText: "Enter company username",
+  //     controller: companyController,
+  //     onChanged: (String val) {
+  //       setState(() {
+  //         if (val != null && val.length >= 3) {
+  //           searchCompanyName(val);
+  //           if (companyList?.isNotEmpty) {
+  //             _showDropdown = val.length > 3;
+  //           }
+  //         }
+  //       });
+  //     },
+  //     validator: (val) {
+  //       if (val.isNotEmpty && val.length >= 9) {
+  //         return null;
+  //       }
+  //       return AppLocalization.of(context)!.invalidCompanyName;
+  //     },
+  //   );
+  // }
 
   Widget dropdownCountrySearch() {
     return Container(
@@ -403,6 +432,10 @@ class _UserLoginState extends State<UserLogin> {
         ),
         onChanged: (String? value) async {
           setState(() {
+            // businessName = companyList
+            //         ?.firstWhere((element) => element.businessName == value)
+            //         .businessName ??
+            "";
             companyName = companyList
                     ?.firstWhere((element) => element.businessName == value)
                     .username ??

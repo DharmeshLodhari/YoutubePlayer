@@ -306,6 +306,13 @@ class AppLocalization {
     );
   }
 
+  String get invalidCompanyName {
+    return Intl.message(
+      "Invalid company name",
+      name: "invalidCompanyName",
+    );
+  }
+
   String get enterCompanyName {
     return Intl.message(
       "Enter Company Name",

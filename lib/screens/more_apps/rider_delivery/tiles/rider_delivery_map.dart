@@ -48,7 +48,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
   Map<PolylineId, Polyline> polylines = {};
   Uint8List? _markerImageData;
   final Location _locationTracker = Location();
-  late LocationData localData;
+  late LocationData? localData;
 
   late UserBloc userBloc;
   late RiderDeliveryBloc riderDeliveryBloc;
@@ -76,6 +76,7 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
       }
       username = userBloc.user.userName;
 
+      enableAGNSS();
       localData = await getCurrentLocation();
       _currentP = localData;
 
@@ -97,9 +98,24 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
     });
   }
 
-  Future<LocationData> getCurrentLocation() async {
-    final LocationData location = await _locationTracker.getLocation();
-    return location;
+  void enableAGNSS() {
+    // Configure A-GNSS settings (specific to the platform)
+    // For Android, you might use a method like this:
+    _locationTracker.changeSettings(accuracy: LocationAccuracy.navigation);
+    // For iOS, A-GNSS is typically enabled by default.
+  }
+
+  Future<LocationData?> getCurrentLocation() async {
+    LocationData? currentLocation;
+    try {
+      currentLocation = await _locationTracker.getLocation();
+      double? accuracy = currentLocation.accuracy;
+      print('Location Accuracy: $accuracy meters');
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+    // final LocationData location = await _locationTracker.getLocation();
+    return currentLocation;
   }
 
   Future<Uint8List> getRiderMarker() async {
@@ -439,7 +455,8 @@ class _RiderDeliveryMapState extends State<RiderDeliveryMap> {
         } else if (deliveryModel.isAfterOfferAccepted(username)) {
           result = await polylinePoints.getRouteBetweenCoordinates(
             GOOGLE_MAPS_API_KEY,
-            PointLatLng(localData.latitude!, localData.longitude!),
+            PointLatLng(
+                localData?.latitude ?? 0.0, localData?.longitude ?? 0.0),
             PointLatLng(deliveryModel.pickupAddress?.latitude ?? 0.0,
                 deliveryModel.pickupAddress?.longitude ?? 0.0),
             travelMode: mode,

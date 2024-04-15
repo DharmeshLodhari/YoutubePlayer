@@ -13,6 +13,7 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class ConfirmOrder extends StatefulWidget {
@@ -223,6 +224,10 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
               SizedBox(
                 height: 10,
               ),
+              _buildServiceCharge(),
+              SizedBox(
+                height: 10,
+              ),
               _buildInsurance(),
               SizedBox(
                 height: 10,
@@ -383,6 +388,54 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
             color: darkGrey,
             fontFamily: "Inter",
           ),
+        ),
+        Row(
+          children: [
+            Text(
+              "${worldCurrencies[userBloc.user.currency]}",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontFamily: "Inter",
+              ),
+            ),
+            Text(
+              moneyDisplayNormalizer(shippingProcessBloc.getTotalShipping()),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: darkGrey,
+                fontFamily: "Inter",
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildServiceCharge() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Text(
+              "Service Charge ",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: darkGrey,
+                fontFamily: "Inter",
+              ),
+            ),
+            SvgPicture.asset(
+              'assets/images/info_circle.svg',
+              height: 16,
+              width: 16,
+            ),
+          ],
         ),
         Row(
           children: [

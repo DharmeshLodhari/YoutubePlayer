@@ -508,8 +508,8 @@ class _HomeState extends State<Home> {
 
           InkWell(
             onTap: () {
-              // showSnackbar(context, message: "Coming soon");
-              // return;
+              showSnackbar(context, message: "Coming soon");
+              return;
               if (userBloc.user.rider == null) {
                 Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
               } else {
@@ -638,81 +638,80 @@ class _HomeState extends State<Home> {
     //         ],
     //       )
     //     : _buildIconAndText(imagePath, title);
-    return PermissionProtectionWidget(
-      permissionName: title,
-      child: _buildIconAndText(imagePath, title),
-      alignment: Alignment.topRight,
-    );
+    return _buildIconAndText(imagePath, title);
   }
 
   Widget _buildIconAndText(String imagePath, String title) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        SvgPicture.asset(
-          imagePath.toSVG(),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          title,
-          style: const TextStyle(
-              fontSize: 13, fontWeight: FontWeight.w600, fontFamily: "Inter"),
-        ),
-      ],
+    return PermissionProtectionWidget(
+      permissionName: title,
+      position: 0,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          SvgPicture.asset(
+            imagePath.toSVG(),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            style: const TextStyle(
+                fontSize: 13, fontWeight: FontWeight.w600, fontFamily: "Inter"),
+          ),
+        ],
+      ),
     );
   }
 
   void onClickShortcut(String shortcut) {
     switch (shortcut) {
       case ProtectionPermission.send:
-          hideBalance();
-          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-              arguments: <String, bool>{'isFromProfile': true});
+        hideBalance();
+        Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+            arguments: <String, bool>{'isFromProfile': true});
         break;
       case ProtectionPermission.transaction:
-          hideBalance();
-          BottomSheetPassCode(
-              context: context,
-              isValidCallback: () {
-                Navigator.of(context)
-                    .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
-              },
-              cancelCallBack: () {
-                Navigator.pop(context);
-              });
+        hideBalance();
+        BottomSheetPassCode(
+            context: context,
+            isValidCallback: () {
+              Navigator.of(context)
+                  .pushNamed(Routes.TRANSACTIONS, arguments: {'page': 0});
+            },
+            cancelCallBack: () {
+              Navigator.pop(context);
+            });
         break;
       case ProtectionPermission.request:
-          hideBalance();
-          Navigator.pushNamed(context, Routes.ACCOUNTS);
+        hideBalance();
+        Navigator.pushNamed(context, Routes.ACCOUNTS);
         break;
       // case 'Dispatch':
       //   hideBalance();
       //   Navigator.pushNamed(context, Routes.DISPATCH);
       //   break;
       case ProtectionPermission.yarn:
-          hideBalance();
-          NavigationUtil.push(context, screen: YarnDashboard());
+        hideBalance();
+        NavigationUtil.push(context, screen: YarnDashboard());
         break;
       case ProtectionPermission.moment:
-          hideBalance();
-          NavigationUtil.push(context, screen: MomentsScreen());
+        hideBalance();
+        NavigationUtil.push(context, screen: MomentsScreen());
         break;
       case ProtectionPermission.services:
-          hideBalance();
-          Navigator.pushNamed(context, Routes.SUPER_HUB,
-              arguments: {'page': 0});
+        hideBalance();
+        Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
         break;
       case ProtectionPermission.blog:
-          hideBalance();
-          if (appConfigurationModel?.enableSuperBlog == true) {
-            NavigationUtil.push(
-              context,
-              screen: const SuperBlog(),
-            );
-          } else {
-            showToast(message: 'Feature not available at the moment');
-          }
+        hideBalance();
+        if (appConfigurationModel?.enableSuperBlog == true) {
+          NavigationUtil.push(
+            context,
+            screen: const SuperBlog(),
+          );
+        } else {
+          showToast(message: 'Feature not available at the moment');
+        }
         break;
       default:
         // Handle the default case (if any)
@@ -1033,28 +1032,86 @@ class _HomeState extends State<Home> {
         ],
       ),
       actions: <Widget>[
-        RoundedBackgroundIcon(
-            backgroundColor: Colors.transparent,
-            onTap: () {
-              Navigator.of(context).pushNamed(
-                Routes.SEARCH_MODULE,
-              );
-              // arguments: {"industry": {"discount": widget.discount!.id}
-            },
-            height: 15,
-            width: 15,
-            icon: SvgPicture.asset(
-              "yarn/search".toSVG(),
-              height: 12,
-              width: 12,
-            )),
-        // _searchBtn(),
-        // const SizedBox(width: 4.0),
+        _searchBtn(),
+        SizedBox(width: 15),
         _cartBtn(),
-        // const SizedBox(width: 8.0),
-        // _settingBtn(),
-        const SizedBox(width: 5.0),
+        SizedBox(width: 5),
       ],
+    );
+  }
+
+  Widget _searchBtn() {
+    return RoundedBackgroundIcon(
+      backgroundColor: Colors.transparent,
+      onTap: () {
+        Navigator.of(context).pushNamed(
+          Routes.SEARCH_MODULE,
+        );
+        // arguments: {"industry": {"discount": widget.discount!.id}
+      },
+      height: 18,
+      width: 18,
+      icon: SvgPicture.asset(
+        "yarn/search".toSVG(),
+        height: 12,
+        width: 12,
+      ),
+    );
+  }
+
+  Widget _cartBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      key: tutorialShoppingCartKey,
+      icon: badges.Badge(
+        badgeContent: getBadgeContent(),
+        position: badges.BadgePosition.topEnd(
+            end: getBadgeCount().length == 1 ? -2 : 0, top: 0),
+        badgeAnimation: const badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+          shape: badges.BadgeShape.circle,
+          badgeColor: naturalGreen,
+          padding: basketBloc.basketItems.length == 0
+              ? const EdgeInsets.all(0)
+              : EdgeInsets.all(4),
+          elevation: 0,
+        ),
+        child: SizedBox(
+          child: Card(
+            color: Colors.white,
+            elevation: 0,
+            margin: EdgeInsets.symmetric(vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: IconButton(
+              icon: Icon(
+                SlydoAppIconNew.cart,
+                color: Colors.black,
+                size: 17,
+              ),
+              onPressed: () async {
+                // Navigator.of(context).pushNamed(Routes.SIGN_UP, arguments: {
+                //   'phoneNumber': "+000000000000",
+                //   'otpCode': "123456",
+                //   'accountType': "Business"
+                // });
+
+                hideBalance();
+                NavigationUtil.pushNamed(context,
+                    routeName: Routes.SHOPPING_CART);
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1175,53 +1232,6 @@ class _HomeState extends State<Home> {
         defaultAddress = tempList.firstWhere((element) => element.is_default!);
       });
     }
-  }
-
-  Widget _cartBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      key: tutorialShoppingCartKey,
-      icon: badges.Badge(
-        badgeContent: getBadgeContent(),
-        position: badges.BadgePosition.topEnd(
-            end: getBadgeCount().length == 1 ? -2 : 0, top: 0),
-        badgeAnimation: const badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-          shape: badges.BadgeShape.circle,
-          badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
-              ? const EdgeInsets.all(0)
-              : EdgeInsets.all(4),
-          elevation: 0,
-        ),
-        child: Center(
-          child: Icon(
-            SlydoAppIconNew.cart,
-            size: 16,
-            color: HexColor("#151515"),
-          ),
-        ),
-      ),
-      onTap: () {
-        // Navigator.of(context).pushNamed(Routes.SIGN_UP, arguments: {
-        //   'phoneNumber': "+000000000000",
-        //   'otpCode': "123456",
-        //   'accountType': "Business"
-        // });
-
-        hideBalance();
-        NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
-      },
-      backgroundColor: lightGrey.withOpacity(0.1),
-      enableMargin: true,
-    );
   }
 
   Widget? getBadgeContent() {

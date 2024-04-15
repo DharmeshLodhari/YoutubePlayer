@@ -150,7 +150,8 @@ class _VerifyRegistrationOTPScreenState
                                 flexibleSpace(flex: 1),
                                 expirationNote(),
                                 flexibleSpace(flex: 3),
-                                if (phoneNumber!.isEmpty) ...[
+                                if (phoneNumber == null ||
+                                    phoneNumber == "") ...[
                                   selectCountryField(),
                                   SizedBox(height: 12),
                                   phoneNumberField(),
@@ -158,7 +159,7 @@ class _VerifyRegistrationOTPScreenState
                                 ],
                                 otpFillUpField(),
                                 flexibleSpace(flex: 1),
-                                if (phoneNumber!.isNotEmpty) ...[
+                                if (phoneNumber != null) ...[
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: resendOtp(),
@@ -200,7 +201,7 @@ class _VerifyRegistrationOTPScreenState
             "Please enter the code sent to your phone number.",
             style: TextStyle(fontSize: 14, color: darkGrey),
           ),
-          if (phoneNumber!.isNotEmpty) ...[
+          if (phoneNumber != null) ...[
             Row(
               children: <Widget>[
                 Text(
@@ -294,17 +295,18 @@ class _VerifyRegistrationOTPScreenState
 
   Widget verifyBtn() {
     return CurvedButton(
-      onPressed: widget.arguments['phoneNumber'] != null
-          ? verifyOTP
-          : verifyCreditCardOtp,
+      onPressed: verifyOTP,
+      // onPressed: widget.arguments['phoneNumber'] != null
+      //     ? verifyOTP
+      //     : verifyCreditCardOtp,
       text: "Verify",
       textColor: Colors.white,
       backgroundColor: navyBlue,
     );
   }
 
-  void verifyOTP() {
-    if (phoneNumber!.isEmpty) {
+  Future<void> verifyOTP() async {
+    if (phoneNumber == null || phoneNumber == "") {
       var phoneNumberFromTextField = phoneNumberController.text.trim();
 
       if (phoneNumberController.text.trim().length <= 9) {
@@ -320,6 +322,8 @@ class _VerifyRegistrationOTPScreenState
       //adding country code and '+' sign to phoneNumber
       phoneNumberWithCountryCode =
           "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+
+      phoneNumber = phoneNumberWithCountryCode;
     }
 
     debugPrint('Phone number fola -> $phoneNumberWithCountryCode');
@@ -329,9 +333,7 @@ class _VerifyRegistrationOTPScreenState
       String passwordToken = "false";
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
-      phoneNumber = phoneNumberWithCountryCode;
-
-      UserAuth()
+      await UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
           .then((verified) {
         Navigator.pop(context);
@@ -350,11 +352,13 @@ class _VerifyRegistrationOTPScreenState
     }
   }
 
-  void verifyCreditCardOtp() {
+  Future<void> verifyCreditCardOtp() async {
     if (_verifyOtpFormKey.currentState!.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
-      PaymentAndBankingAuth().verifyCreditCardOtp(otpController!.text).then(
+      await PaymentAndBankingAuth()
+          .verifyCreditCardOtp(otpController!.text)
+          .then(
         (cardVerifiedResponse) {
           _processVerifyCreditCardOtp(context, cardVerifiedResponse);
         },

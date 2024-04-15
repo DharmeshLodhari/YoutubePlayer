@@ -117,25 +117,25 @@ class _ShoppingCartState extends State<ShoppingCart> {
               }
             },
           ),
-          SharedCartScreen(
-            key: sharedStateKey,
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-          ),
-          // Center(
-          //   child: Container(
-          //     child: Text(
-          //       "Coming Soon",
-          //       style: TextStyle(
-          //           fontSize: 18,
-          //           fontFamily: "Inter",
-          //           fontWeight: FontWeight.bold),
-          //     ),
-          //   ),
-          // )
+          // SharedCartScreen(
+          //   key: sharedStateKey,
+          //   onPageRefresh: (bool data) {
+          //     if (data == true) {
+          //       _showTabs(true);
+          //     }
+          //   },
+          // ),
+          Center(
+            child: Container(
+              child: Text(
+                "Coming Soon",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "Inter",
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -178,6 +178,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
             color: blackFont,
           ),
           onTap: () async {
+            showToast(message: 'Coming Soon');
+            return;
             var result = await Navigator.of(context).pushNamed(
                 Routes.SELECT_USER_FOR_GROUP,
                 arguments: {"create": "basket"});

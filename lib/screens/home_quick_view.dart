@@ -418,23 +418,10 @@ class _HomeQuickViewState extends State<HomeQuickView> {
                   } else {
                     return Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            if (appBarTitle == 'Create') {
-                              onClickShortcutCreate(shortcut['title']!);
-                            } else {
-                              onClickShortcut(shortcut['title']!);
-                            }
-                          },
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: shortcutView(
-                              shortcut['imagePath']!,
-                              shortcut['title']!,
-                            ),
-                          ),
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: shortcutView(
+                          shortcut['imagePath']!,
+                          shortcut['title']!,
                         ),
                       ),
                     );
@@ -456,33 +443,42 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         border: Border.all(color: greyBorderColor),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          PermissionProtectionWidget(
-            permissionName: title,
-            alignment: Alignment.centerRight,
-            child: Row(
-              children: [
-                SvgPicture.asset(
-                  imagePath.toSVG(),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    title,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: black,
+      child: GestureDetector(
+        onTap: () {
+          if (appBarTitle == 'Create') {
+            onClickShortcutCreate(title);
+          } else {
+            onClickShortcut(title);
+          }
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            PermissionProtectionWidget(
+              permissionName: title,
+              position: 8,
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    imagePath.toSVG(),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      title,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: black,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

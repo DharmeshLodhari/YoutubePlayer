@@ -142,6 +142,7 @@ class _RegistrationState extends State<Registration> {
       hintText: "08023000000",
       isNumberOnlyInput: true,
       keyboardType: TextInputType.phone,
+      textInputAction: TextInputAction.done,
       controller: phoneNumberController,
       validator: validatePhoneNumber,
       onChanged: (value) {

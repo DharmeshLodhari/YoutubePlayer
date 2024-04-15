@@ -338,7 +338,7 @@ class _TransactionListState extends State<TransactionList> {
           },
           currentIndex: currentAskTapOnHome,
           firstTab: 'Slydo',
-          secondTab: 'Cashout',
+          secondTab: 'Bank Transfer',
         ),
         SizedBox(
           height: 10,

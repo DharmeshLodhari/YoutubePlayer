@@ -55,12 +55,29 @@ class _ShareExperienceState extends State<ShareExperience> {
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: lightGrey,
+            appBar: _buildAppbar(),
             body: _buildBody(context),
             floatingActionButton: _buildSubmitButton(),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
           ),
         ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppbar() {
+    return AppBar(
+      backgroundColor: whiteBackground,
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
       ),
     );
   }
@@ -121,6 +138,7 @@ class _ShareExperienceState extends State<ShareExperience> {
     return TextField(
       controller: feedbackController,
       focusNode: _nodeText1,
+      textInputAction: TextInputAction.done,
       maxLines: 10,
       decoration: InputDecoration(
         hintText: "Type here",

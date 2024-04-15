@@ -188,16 +188,6 @@ final initialDBSchema = [
           );
     ''',
 
-  // Create the rider at pickup location table
-  '''CREATE TABLE $RIDER_AT_LOCATION (     
-            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-            "order_id" INTEGER,
-            "at_pickup_location" BOOLEAN,
-            "at_delivery_location" BOOLEAN
-           
-          );
-    ''',
-
   // Create the Fee Structure table
   '''CREATE TABLE $FEE_STRUCTURE (     
           "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -223,5 +213,14 @@ List<String> dbMigrations = [
           "user_id" TEXT,
           "categories" TEXT
         );
+    ''',
+
+  // Create the rider at pickup location table
+  '''CREATE TABLE $RIDER_AT_LOCATION (     
+            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+            "order_id" INTEGER,
+            "at_pickup_location" BOOLEAN,
+            "at_delivery_location" BOOLEAN
+          );
     ''',
 ];
