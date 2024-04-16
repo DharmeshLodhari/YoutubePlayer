@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/rider_delivery/models/near_by_location.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:intl/intl.dart';
 
@@ -35,8 +36,12 @@ class DeliveryModel {
   int? totalNoOfItems;
   String? deliveryEvidence;
   int? orderId;
-  int? distanceTravel;
+  String? travelDistance;
+  Duration? travelDuration;
   String? dispatcherNumber;
+  String? totalDistance;
+  String? totalDuration;
+  NearByLocation? riderAtLocation;
   // bool? isShowDetails;
   // bool? isDeliveryAccepted;
   // bool? isDeliveryStarted;
@@ -78,8 +83,10 @@ class DeliveryModel {
     this.totalNoOfItems,
     this.deliveryEvidence,
     this.orderId,
-    this.distanceTravel,
+    this.travelDistance,
+    this.travelDuration,
     this.dispatcherNumber,
+    this.riderAtLocation,
     // this.isShowDetails = true,
     // this.isDeliveryAccepted = false,
     // this.isDeliveryStarted = false,
@@ -142,8 +149,8 @@ class DeliveryModel {
         totalNoOfItems: json["total_no_of_items"],
         deliveryEvidence: json["delivery_evidence"],
         orderId: json["order_id"],
-        distanceTravel: json["distance_travel"],
         dispatcherNumber: json["dispatcher_number"],
+        riderAtLocation: json["rider_at_location"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -172,7 +179,6 @@ class DeliveryModel {
         "tip": tip,
         "rider_payment": riderPayment,
         "currency": currency,
-        "route": route,
         "accepted_by": acceptedBy,
         "customer": customer,
         "is_in_progress": isInProgress,
@@ -180,10 +186,9 @@ class DeliveryModel {
         "total_weight": totalWeight,
         "delivery_evidence": deliveryEvidence,
         "total_no_of_items": totalNoOfItems,
-        "delivery_evidence": deliveryEvidence,
         "order_id": orderId,
-        "distance_travel": distanceTravel,
         "dispatcher_number": dispatcherNumber,
+        "rider_at_location": riderAtLocation,
       };
 
   bool isOfferAccepted(String? userName) {
@@ -232,23 +237,27 @@ class RiderLocation {
   double? longitude;
   double? latitude;
   String? dispatcherHeading;
+  String? dispatcherSpeed;
 
   RiderLocation({
     this.longitude,
     this.latitude,
     this.dispatcherHeading,
+    this.dispatcherSpeed,
   });
 
   factory RiderLocation.fromJson(Map<String, dynamic> json) => RiderLocation(
         longitude: json["longitude"]?.toDouble(),
         latitude: json["latitude"]?.toDouble(),
         dispatcherHeading: json["dispatcher_heading"],
+        dispatcherSpeed: json["dispatcher_speed"],
       );
 
   Map<String, dynamic> toJson() => {
         "longitude": longitude,
         "latitude": latitude,
         "dispatcher_heading": dispatcherHeading,
+        "dispatcher_speed": dispatcherSpeed,
       };
 
   double getHeading() {

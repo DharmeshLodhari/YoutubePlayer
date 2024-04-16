@@ -306,6 +306,20 @@ class AppLocalization {
     );
   }
 
+  String get invalidCompanyName {
+    return Intl.message(
+      "Invalid company name",
+      name: "invalidCompanyName",
+    );
+  }
+
+  String get enterCompanyName {
+    return Intl.message(
+      "Enter Company Name",
+      name: "enterCompanyName",
+    );
+  }
+
   String get enterYourOtpHere {
     return Intl.message(
       "Enter Your OTP Here",
@@ -1931,6 +1945,13 @@ class AppLocalization {
     return Intl.message(
       "Pay Now",
       name: "payNow",
+    );
+  }
+
+  String get doNotPermission {
+    return Intl.message(
+      "You don\'t have permission.",
+      name: "doNotPermission",
     );
   }
 

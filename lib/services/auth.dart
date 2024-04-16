@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/company_name.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/super_store/models/product_industry_model.dart';
@@ -34,12 +35,14 @@ class AuthService {
   static const int API_CALL_RETRY_COUNT = 5;
 
   // This function creates a user object from named args passed in
-  Future<User> createUser(Map<String, dynamic> userData) async {
+  Future<User> createUser(Map<String, dynamic> userData,
+      {Map<String, dynamic>? staff, Map<String, dynamic>? permissions}) async {
     //delete old user if exist
     await _db.deleteUsers();
 
     // Create user instance
-    User _user = User.fromJson(userData);
+    User _user =
+        User.fromJson(userData, staff: staff, permissions: permissions);
 
     await _db.saveUser(_user);
     return Future.value(_user);
@@ -129,14 +132,39 @@ class AuthService {
   //   }
   // }
 
-  Future<User> authenticate(String? phoneNumber, String? password) async {
+  Future<List<CompanyName>?> listOfCompanyName(String query) async {
+    String url = AppConfig.baseUrl + "/api/v1/user/merchant-search/?q=$query";
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body) as List<dynamic>;
+      List<CompanyName> result =
+          jsonData.map((e) => CompanyName.fromJson(e)).toList();
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  Future<User> authenticate(String? phoneNumber, String? password,
+      {bool isStaffLogin = false, String? company}) async {
     // This method will pass the user name and password to the backend server
     // and if credentials are correct will receive payload with jwt and user info
     // which will be saved to the user table and jwt table then create
     // a user instance which we should pass around throughout the application as
     // the auth user.
+    var uri = "";
+    if (!isStaffLogin) {
+      uri = AppConfig.baseUrl + "/api/v1/user/auth/get-token/";
+    } else {
+      uri = AppConfig.baseUrl + "/api/v1/user/auth/get-staff-token/";
+    }
 
-    var uri = AppConfig.baseUrl + "/api/v1/user/auth/get-token/";
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
@@ -155,7 +183,17 @@ class AuthService {
     int expirationTime =
         getEpochTime(now.add(Duration(seconds: 220))); // 3.66667 Minute
 
-    Map _body = {"password": password, "phone_number": phoneNumber};
+    Map _body;
+    if (isStaffLogin) {
+      _body = {
+        "password": password,
+        "phone_number": phoneNumber,
+        "company": company
+      };
+    } else {
+      _body = {"password": password, "phone_number": phoneNumber};
+    }
+
     var data = await getDeviceInfo();
     // data['device_id'] = "CB52C6A6-4C0E-4FE0-A753-C9A936AEA8BB";
     _body.addAll(data);
@@ -183,7 +221,9 @@ class AuthService {
       jsonData["password"] = password;
       jsonData["url"] =
           AppConfig.baseUrl + "/api/v1/user/customer/" + jsonData["username"];
-      User user = await createUser(jsonData);
+      User user = await createUser(jsonData,
+          staff: jsonResponse["staff"],
+          permissions: jsonResponse["permissions"]);
 
       return Future.value(user);
     }

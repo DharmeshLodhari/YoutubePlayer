@@ -4,10 +4,10 @@ import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/tab_selection.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -258,7 +258,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
     return Column(
       children: [
         if (_tabsVisible) ...[
-          YarnTabSelection(
+          TabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
               _pageViewCtrl.jumpToPage(currentAskTapOnHome);

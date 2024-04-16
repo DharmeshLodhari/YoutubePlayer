@@ -1,5 +1,7 @@
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/screens/super_store/super_store_home.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -75,131 +77,128 @@ class _HomeQuickViewState extends State<HomeQuickView> {
     final List<Map<String, String>> payment = [
       {
         'imagePath': 'home/transaction',
-        'title': 'Transaction',
+        'title': ProtectionPermission.transaction,
       },
       {
         'imagePath': 'home/send',
-        'title': 'Send money',
+        'title': ProtectionPermission.sendMoney,
       },
       {
         'imagePath': 'home/request',
-        'title': 'Request money',
+        'title': ProtectionPermission.requestMoney,
       },
       {
         'imagePath': 'home/payment_link',
-        'title': 'Payment Links',
+        'title': ProtectionPermission.paymentLinks,
       },
       {
         'imagePath': 'home/wallet',
-        'title': 'Wallet',
+        'title': ProtectionPermission.wallet,
       },
       {
         'imagePath': 'home/credit_card',
-        'title': 'Credit card',
+        'title': ProtectionPermission.creditCard,
       },
       {
         'imagePath': 'home/utility',
-        'title': 'Utility',
+        'title': ProtectionPermission.utility,
       },
     ];
     final List<Map<String, String>> business = [
       {
         'imagePath': 'home/product',
-        'title': 'Product',
+        'title': ProtectionPermission.product,
       },
       {
         'imagePath': 'home/service',
-        'title': 'Services',
+        'title': ProtectionPermission.services,
       },
       {
         'imagePath': 'home/invoice',
-        'title': 'Invoice',
+        'title': ProtectionPermission.invoice,
       },
       {
         'imagePath': 'home/contract',
-        'title': 'Contract',
+        'title': ProtectionPermission.contract,
       },
     ];
     final List<Map<String, String>> socials = [
       {
         'imagePath': 'home/chat_social',
-        'title': 'Chat',
+        'title': ProtectionPermission.chat,
       },
       {
         'imagePath': 'home/inbox_social',
-        'title': 'Inbox',
+        'title': ProtectionPermission.inbox,
       },
       {
         'imagePath': 'home/yarn',
-        'title': 'Yarn',
+        'title': ProtectionPermission.yarn,
       },
       {
         'imagePath': 'home/moment',
-        'title': 'Moment',
+        'title': ProtectionPermission.moment,
       },
       {
         'imagePath': 'home/blog',
-        'title': 'Blog',
+        'title': ProtectionPermission.blog,
       },
       {
         'imagePath': 'home/channel',
-        'title': 'Channel',
+        'title': ProtectionPermission.channel,
       },
     ];
     final List<Map<String, String>> lifestyle = [
       {
         'imagePath': 'home/order',
-        'title': 'Order',
+        'title': ProtectionPermission.order,
       },
       {
         'imagePath': 'home/super_store',
-        'title': 'Super store',
+        'title': ProtectionPermission.superStore,
       },
       {
         'imagePath': 'home/service',
-        'title': 'Services Hub',
+        'title': ProtectionPermission.servicesHub,
       },
     ];
     final List<Map<String, String>> create = [
       {
         'imagePath': 'home/yarn',
-        'title': 'Yarn',
+        'title': ProtectionPermission.yarn,
       },
       {
         'imagePath': 'home/moment',
-        'title': 'Moment',
+        'title': ProtectionPermission.moment,
       },
       {
         'imagePath': 'home/product',
-        'title': 'Product',
+        'title': ProtectionPermission.product,
       },
       {
         'imagePath': 'home/service',
-        'title': 'Services',
+        'title': ProtectionPermission.services,
       },
       {
         'imagePath': 'home/inbox',
-        'title': 'Inbox',
+        'title': ProtectionPermission.inbox,
       },
-      {
-        'imagePath': 'home/blog',
-        'title': 'Blog',
-      },
+      {'imagePath': 'home/blog', 'title': ProtectionPermission.blog},
       {
         'imagePath': 'home/contract',
-        'title': 'Contract',
+        'title': ProtectionPermission.contract,
       },
       {
         'imagePath': 'home/invoice',
-        'title': 'Invoice',
+        'title': ProtectionPermission.invoice,
       },
       {
         'imagePath': 'home/channel',
-        'title': 'Channel',
+        'title': ProtectionPermission.channel,
       },
       {
         'imagePath': 'home/group',
-        'title': 'Group',
+        'title': ProtectionPermission.group,
       },
     ];
 
@@ -419,23 +418,10 @@ class _HomeQuickViewState extends State<HomeQuickView> {
                   } else {
                     return Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            if (appBarTitle == 'Create') {
-                              onClickShortcutCreate(shortcut['title']!);
-                            } else {
-                              onClickShortcut(shortcut['title']!);
-                            }
-                          },
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: shortcutView(
-                              shortcut['imagePath']!,
-                              shortcut['title']!,
-                            ),
-                          ),
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: shortcutView(
+                          shortcut['imagePath']!,
+                          shortcut['title']!,
                         ),
                       ),
                     );
@@ -457,46 +443,49 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         border: Border.all(color: greyBorderColor),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Row(
-            children: [
-              SvgPicture.asset(
-                imagePath.toSVG(),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  title,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: black,
+      child: GestureDetector(
+        onTap: () {
+          if (appBarTitle == 'Create') {
+            onClickShortcutCreate(title);
+          } else {
+            onClickShortcut(title);
+          }
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            PermissionProtectionWidget(
+              permissionName: title,
+              position: 10,
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    imagePath.toSVG(),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      title,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: black,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              if (userBloc.user.type!.toLowerCase() == 'user' &&
-                      title == 'Product' ||
-                  userBloc.user.type!.toLowerCase() == 'user' &&
-                      title == 'Services') ...[
-                const SizedBox(width: 10),
-                SvgPicture.asset(
-                  'home/padlock'.toSVG(),
-                  color: darkGreyYarn,
-                ),
-              ]
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   void onClickShortcut(String title) {
     switch (title) {
-      case 'Transaction':
+      case ProtectionPermission.transaction:
         BottomSheetPassCode(
             context: context,
             isValidCallback: () {
@@ -507,14 +496,14 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               Navigator.pop(context);
             });
         break;
-      case 'Send money':
+      case ProtectionPermission.sendMoney:
         Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
             arguments: <String, bool>{'isFromProfile': true});
         break;
-      case 'Request money':
+      case ProtectionPermission.requestMoney:
         Navigator.pushNamed(context, Routes.ACCOUNTS);
         break;
-      case 'Payment Links':
+      case ProtectionPermission.paymentLinks:
         BottomSheetPassCode(
             context: context,
             isValidCallback: () {
@@ -524,30 +513,30 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               Navigator.pop(context);
             });
         break;
-      case 'Wallet':
+      case ProtectionPermission.wallet:
         Navigator.of(context).pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE);
         break;
-      case 'Credit card':
+      case ProtectionPermission.creditCard:
         if (appConfigurationModel?.enableAddUserCreditCard == true) {
           Navigator.of(context).pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
         } else {
           showToast(message: 'Coming soon.');
         }
         break;
-      case 'Utility':
+      case ProtectionPermission.utility:
         if (appConfigurationModel?.enableUtility == true) {
           Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
         } else {
           showToast(message: 'Coming soon.');
         }
         break;
-      case 'Product':
+      case ProtectionPermission.product:
         NavigationUtil.push(context, screen: const MyProducts());
         break;
-      case 'Services':
+      case ProtectionPermission.services:
         NavigationUtil.push(context, screen: const MyServices());
         break;
-      case 'Invoice':
+      case ProtectionPermission.invoice:
         if (appConfigurationModel?.enableInvoice == true) {
           Navigator.pop(context);
           Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
@@ -555,7 +544,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           showToast(message: 'Coming soon');
         }
         break;
-      case 'Contract':
+      case ProtectionPermission.contract:
         if (appConfigurationModel?.enableContract == true) {
           Navigator.pop(context);
           Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
@@ -563,19 +552,19 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           showToast(message: 'Coming soon');
         }
         break;
-      case 'Chat':
+      case ProtectionPermission.chat:
         NavigationUtil.push(context, screen: ConnectionDashboard());
         break;
-      case 'Inbox':
+      case ProtectionPermission.inbox:
         Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
         break;
-      case 'Yarn':
+      case ProtectionPermission.yarn:
         NavigationUtil.push(context, screen: YarnDashboard());
         break;
-      case 'Moment':
+      case ProtectionPermission.moment:
         NavigationUtil.push(context, screen: MomentsScreen());
         break;
-      case 'Blog':
+      case ProtectionPermission.blog:
         // if (appConfigurationModel?.enableSuperBlog == true) {
         NavigationUtil.push(
           context,
@@ -585,19 +574,19 @@ class _HomeQuickViewState extends State<HomeQuickView> {
         //   showToast(message: 'Feature not available at the moment');
         // }
         break;
-      case 'Channel':
+      case ProtectionPermission.channel:
         NavigationUtil.push(
           context,
           screen: ChannelsList(),
         );
         break;
-      case 'Order':
+      case ProtectionPermission.order:
         Navigator.pushNamed(context, Routes.ORDERS_LIST);
         break;
-      case 'Super store':
+      case ProtectionPermission.superStore:
         NavigationUtil.push(context, screen: SuperStoreHome());
         break;
-      case 'Services Hub':
+      case ProtectionPermission.servicesHub:
         Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
         break;
       default:
@@ -608,7 +597,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
 
   void onClickShortcutCreate(String title) {
     switch (title) {
-      case 'Yarn':
+      case ProtectionPermission.yarn:
         NavigationUtil.push(context,
             screen: AddOrEditYarn(
               askCategories: yarnDashboardBloc.yarnCategories,
@@ -617,35 +606,33 @@ class _HomeQuickViewState extends State<HomeQuickView> {
               passedCategory: '',
             ));
         break;
-      case 'Moment':
+      case ProtectionPermission.moment:
         NavigationUtil.push(context, screen: CreateMediaMomentScreen());
         break;
-      case 'Product':
+      case ProtectionPermission.product:
         if (userBloc.user.type!.toLowerCase() == 'user') {
           showUpgradeDialog(context);
         } else {
           Navigator.pushNamed(context, Routes.ADD_PRODUCT,
               arguments: {"channelUsername": ""});
         }
-
         break;
-      case 'Services':
+      case ProtectionPermission.services:
         if (userBloc.user.type!.toLowerCase() == 'user') {
           showUpgradeDialog(context);
         } else {
           Navigator.pushNamed(context, Routes.ADD_SERVICE);
         }
-
         break;
-      case 'Inbox':
+      case ProtectionPermission.inbox:
         Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
-        break;
 
-      case 'Blog':
+        break;
+      case ProtectionPermission.blog:
         Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
         // showToast(message: 'Coming soon');
         break;
-      case 'Invoice':
+      case ProtectionPermission.invoice:
         if (appConfigurationModel?.enableInvoice == true) {
           Navigator.pop(context);
           Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
@@ -653,7 +640,7 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           showToast(message: 'Coming soon');
         }
         break;
-      case 'Contract':
+      case ProtectionPermission.contract:
         if (appConfigurationModel?.enableContract == true) {
           Navigator.pop(context);
           Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
@@ -661,14 +648,14 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           showToast(message: 'Coming soon');
         }
         break;
-      case 'Channel':
+      case ProtectionPermission.channel:
         // if (appConfigurationModel != null &&
         //     appConfigurationModel!.enableGroupChat == true) {
         Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,
             arguments: {"create": "channel"});
         // }
         break;
-      case 'Group':
+      case ProtectionPermission.group:
         // if (appConfigurationModel != null &&
         //     appConfigurationModel!.enableGroupChat == true) {
         Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP,

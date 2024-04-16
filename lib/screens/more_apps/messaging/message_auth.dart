@@ -1214,7 +1214,6 @@ class MessageAuth extends AuthService {
     } else {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
-      return null;
       return Future.error("ERROR:- ${response.body}");
     }
   }

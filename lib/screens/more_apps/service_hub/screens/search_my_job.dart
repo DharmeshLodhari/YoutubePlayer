@@ -33,7 +33,6 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
   final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  String autoCompleteSearchText = "";
   String username = "";
 
   TextEditingController searchController = TextEditingController();
@@ -129,7 +128,7 @@ class _SearchMyJobsState extends State<SearchMyJobs> {
           setState(() {});
         }
       } else if (next == null && searchMyJobListing.length > 6) {
-        _scaffoldMessengerSearchKey.currentState!.showSnackBar(
+        _scaffoldMessengerSearchKey.currentState?.showSnackBar(
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),

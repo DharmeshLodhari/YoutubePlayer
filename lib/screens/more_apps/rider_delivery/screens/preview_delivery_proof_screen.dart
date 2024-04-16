@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifiers/rider_delivery_bloc.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -38,6 +39,7 @@ class _PreviewDeliveryProofScreenState
   VideoPlayerController? videoPlayerController;
   String? generatedVideoThumbnail;
   bool isLoading = false;
+  DatabaseHelper _db = DatabaseHelper();
 
   @override
   void initState() {
@@ -212,11 +214,15 @@ class _PreviewDeliveryProofScreenState
     await RiderDeliveryAuthService()
         .sendDeliveryEvidence(riderDeliveryBloc.deliveryDetails?.id,
             widget.arguments["filePath"], context)
-        .then((value) {
+        .then((value) async {
       if (value == true) {
         showToast(
             message: AppLocalization.of(context)!.fileUploadedSuccessfully);
-        Navigator.popAndPushNamed(context, Routes.DELIVERY_COMPLETED);
+        await _db.deleteSingleJob(riderDeliveryBloc.deliveryDetails?.orderId);
+        Navigator.popAndPushNamed(context, Routes.DELIVERY_COMPLETED,
+            arguments: {
+              'isCallAPI': false,
+            });
       }
     }).catchError((error) {
       debugPrint(error.toString());

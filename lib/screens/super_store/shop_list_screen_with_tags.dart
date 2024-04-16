@@ -228,7 +228,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
         //     setState(() {});
         //   }
         // } else if (next == null && itemList.length > 6) {
-        //   _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        //   _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
         //     content: Text(
         //         AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //     duration: Duration(milliseconds: 500),
@@ -278,7 +278,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   //         setState(() {});
   //       }
   //     } else if (next == null && itemList.length > 6) {
-  //       _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+  //       _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
   //         content:
   //             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
   //         duration: Duration(milliseconds: 500),
@@ -375,7 +375,7 @@ class ShopListScreenState extends State<ShopListScreenWithTags> {
   //         setState(() {});
   //       }
   //     } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
-  //       // _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+  //       // _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
   //       //   content:
   //       //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
   //       //   duration: const Duration(milliseconds: 500),

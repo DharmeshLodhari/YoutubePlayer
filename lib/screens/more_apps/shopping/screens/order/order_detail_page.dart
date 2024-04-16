@@ -1501,7 +1501,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         ];
       case 'Rider Assigned':
         return [
-          'Tolani has been assigned to your order and he is on his way to pickup.',
+          '${deliveryModel?.acceptedBy} has been assigned to your order and he is on his way to pickup.',
           track.StepState.complete
         ];
       default:

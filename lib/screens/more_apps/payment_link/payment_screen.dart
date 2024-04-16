@@ -6,6 +6,7 @@ import 'package:Slydo/utils/extensions.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +14,6 @@ import '../../../data/currency.dart';
 import '../../../data/database_helper.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
-
-import 'package:http/http.dart' as http;
 import '../../../services/app_tutorial_controller.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
@@ -27,7 +26,6 @@ import '../../../widget/rounded_background_icon.dart';
 import '../payment_and_banking/models/VirtualAccount.dart';
 import '../payment_and_banking/payment_and_banking_auth.dart';
 import '../shopping/models/store.dart';
-import '../user_profile/models/user.dart';
 
 class PaymentLinkScreen extends StatefulWidget {
   const PaymentLinkScreen({Key? key}) : super(key: key);
@@ -37,10 +35,8 @@ class PaymentLinkScreen extends StatefulWidget {
 }
 
 class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
-  TextEditingController _recipientController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   late TextEditingController _referenceController = TextEditingController();
-  FocusNode _recipientFocus = FocusNode();
 
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
   final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
@@ -52,7 +48,6 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
   bool isBalanceHidden = true;
 
   bool? isFromProfile = false;
-  CustomerProfile? _payee;
   String? recipient;
 
   String reference = "";
@@ -428,7 +423,7 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
             },
             cancelCallBack: () {
               Navigator.pop(context);
-              _sendPaymentScaffoldMessenger.currentState!.showSnackBar(SnackBar(
+              _sendPaymentScaffoldMessenger.currentState?.showSnackBar(SnackBar(
                 content: Text(AppLocalization.of(context)!.invalidPassword),
               ));
             });
@@ -677,16 +672,15 @@ class _PaymentLinkScreenState extends State<PaymentLinkScreen> {
         if (val.isNotEmpty) {
           try {
             double amount = double.parse(val.replaceAll(',', ''));
-            if ( amount <= 200000.0) {
+            if (amount <= 200000.0) {
               return null;
             }
-            if ( amount > 200000.0) {
+            if (amount > 200000.0) {
               return AppLocalization.of(context)!.dailyPaymentLinkLimit;
             }
             if (amount > 0.0 && amount <= 200000.0) {
               return null;
-            }
-            else {
+            } else {
               throw Exception("Invalid amount");
             }
           } catch (e) {

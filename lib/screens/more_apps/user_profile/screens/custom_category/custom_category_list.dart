@@ -128,7 +128,7 @@ class _CustomCategoryListState extends State<CustomCategoryList> {
           });
         }
       } else if (next == null && itemList.length > 6) {
-        _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

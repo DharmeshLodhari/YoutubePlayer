@@ -186,7 +186,7 @@ class _OrderSummaryProductServiceState
         },
         cancelCallBack: () {
           Navigator.pop(context);
-          _orderSummaryScaffoldMessenger.currentState!.showSnackBar(SnackBar(
+          _orderSummaryScaffoldMessenger.currentState?.showSnackBar(SnackBar(
             content: Text(AppLocalization.of(context)!.invalidPassword),
           ));
         });

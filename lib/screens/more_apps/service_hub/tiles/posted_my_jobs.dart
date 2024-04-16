@@ -6,7 +6,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/service_hub/auth/service_hub_auth.dart';
 import 'package:Slydo/screens/more_apps/service_hub/models/jobs.dart';
 import 'package:Slydo/screens/more_apps/service_hub/tiles/jos_description_card.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +78,7 @@ class _PostedMyJobsState extends State<PostedMyJobs> {
           });
         }
       } else if (listNext == null && postedMyJobListing.length > 6) {
-        _myJobsScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _myJobsScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),

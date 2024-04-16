@@ -140,7 +140,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
           });
         }
       } else if (nearByNext == null && customerProfileListNearBy.length > 6) {
-        _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
@@ -193,7 +193,7 @@ class FindBusinessListScreenState extends State<FindBusinessListScreen> {
           });
         }
       } else if (findBusinessNext == null && customerProfileList.length > 6) {
-        _findBusinessScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _findBusinessScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),

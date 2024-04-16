@@ -1,6 +1,5 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,11 +20,24 @@ class _DeliveryOrderTileState extends State<DeliveryOrderTile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // _buildOrderId(),
           _buildLogoAndDeliveryAndAmount(),
           _buildItemsAndKg(),
           SizedBox(height: 10.0),
           _buildIconAndAddressAndPickup(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildOrderId() {
+    return Text(
+      'Ride #${widget.jobListing?.orderId.toString() ?? ""}',
+      style: TextStyle(
+        color: black,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        fontFamily: "Inter",
       ),
     );
   }

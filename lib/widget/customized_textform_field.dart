@@ -112,51 +112,56 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = Provider.of<UserBloc>(context);
+    final UserBloc userBloc = Provider.of<UserBloc>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        widget.showLabelOrPassword
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  widget.hasLabel
-                      ? Text(
-                          widget.labelText,
-                          style: TextStyle(
-                            color: widget.labelColor != null
-                                ? widget.labelColor
-                                : darkGrey,
-                            fontSize: widget.fontSize,
-                            fontWeight: widget.fontWeight,
-                            fontFamily: "Inter",
-                          ),
-                        )
-                      : SizedBox.shrink(),
-                  widget.hasLabel
-                      ? SizedBox(
-                          height: 6,
-                        )
-                      : SizedBox.shrink(),
-                  widget.isPassword
-                      ? Text(
-                          "${widget.controller!.text.toString().length}/6",
-                          style: TextStyle(
-                            color: widget.labelColor != null
-                                ? widget.labelColor
-                                : darkGrey,
-                            fontSize: 14,
-                          ),
-                        )
-                      : Container(),
-                ],
-              )
-            : SizedBox.shrink(),
-        widget.hasLabel
-            ? SizedBox(
-                height: 6,
-              )
-            : SizedBox.shrink(),
+        if (widget.showLabelOrPassword)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              if (widget.hasLabel)
+                Text(
+                  widget.labelText,
+                  style: TextStyle(
+                    color: widget.labelColor != null
+                        ? widget.labelColor
+                        : darkGrey,
+                    fontSize: widget.fontSize,
+                    fontWeight: widget.fontWeight,
+                    fontFamily: "Inter",
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
+              if (widget.hasLabel)
+                const SizedBox(
+                  height: 6,
+                )
+              else
+                const SizedBox.shrink(),
+              if (widget.isPassword)
+                Text(
+                  "${widget.controller!.text.toString().length}/6",
+                  style: TextStyle(
+                    color: widget.labelColor != null
+                        ? widget.labelColor
+                        : darkGrey,
+                    fontSize: 14,
+                  ),
+                )
+              else
+                Container(),
+            ],
+          )
+        else
+          const SizedBox.shrink(),
+        if (widget.hasLabel)
+          const SizedBox(
+            height: 6,
+          )
+        else
+          const SizedBox.shrink(),
         TextFormField(
           initialValue: widget.initialValue,
           autofocus: widget.autoFocus,
@@ -199,7 +204,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                       Padding(
                         padding: const EdgeInsets.only(left: 10, right: 12),
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: darkGrey.withOpacity(.12)),
@@ -325,7 +330,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
 
   TextInputType getKeyBoardType(TextInputType textInputType) {
     TextInputType numberInputType = Platform.isIOS
-        ? TextInputType.numberWithOptions(decimal: true)
+        ? const TextInputType.numberWithOptions(decimal: true)
         : TextInputType.number;
     if (widget.isAmountField == true) {
       return numberInputType;
@@ -373,7 +378,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
 
   Widget? _getSuffixIcon() {
     if (showSuffixIconWhenTryingToValidateInputFromServer == false) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     if (widget.suffixIcon != null) {
       return widget.suffixIcon;
@@ -400,14 +405,14 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           child: CircleAvatar(
             radius: 14,
             backgroundColor: navyBlue,
-            child: Icon(Icons.check, size: 20, color: Colors.white),
+            child: const Icon(Icons.check, size: 20, color: Colors.white),
           ),
         );
       } else {
-        return Icon(Icons.cancel, color: Colors.red);
+        return const Icon(Icons.cancel, color: Colors.red);
       }
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 

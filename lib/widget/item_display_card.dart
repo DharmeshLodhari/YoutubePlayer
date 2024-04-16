@@ -52,7 +52,6 @@ class _DisplayProductState extends State<DisplayProduct> {
   late UserBloc userBloc;
   late SharedCartBloc sharedCartBloc;
   bool showAddToCartButton = true;
-  final _auth = ShoppingAuthService();
   late YarnDashboardBloc yarnDashboardBloc;
 
   @override
@@ -571,7 +570,6 @@ class _DisplayProductState extends State<DisplayProduct> {
                   AppLocalization.of(context)!.cantPurchaseYourOwnServices);
         }
         if (widget.product.isProductAvailableNow()) {
-          String type = "product";
           if (widget.product.variantModels?.isNotEmpty ?? false) {
             showToast(
                 message: AppLocalization.of(context)!.selectVariantColorSize);

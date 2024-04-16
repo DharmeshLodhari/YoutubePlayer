@@ -34,6 +34,8 @@ import 'package:Slydo/services/route_provider.dart';
 import 'package:Slydo/services/timer_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/uni_links_service.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -65,6 +67,7 @@ void main() async {
   HttpOverrides.global = new MyHttpOverrides();
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
+  await UniLinksService.init();
 
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   appVersion = packageInfo.version;
@@ -177,6 +180,7 @@ class _MyAppState extends State<MyApp> {
         return OrientationBuilder(builder: (context, orientation) {
           SizerUtil.setScreenSize(constraints, orientation);
           return GetMaterialApp(
+            // navigatorKey: ContextUtility.navigatorKey,
             navigatorKey: MyGlobals().navigationKey,
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,

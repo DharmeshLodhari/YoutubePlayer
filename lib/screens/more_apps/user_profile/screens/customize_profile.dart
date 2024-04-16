@@ -3,6 +3,7 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../locale/app_localization.dart';
 import '../../../../widget/curved_btn.dart';
 import '../../../../widget/customized_textform_field.dart';
@@ -12,8 +13,7 @@ import '../user_auth.dart';
 class CustomizeProfileScreen extends StatefulWidget {
   final arguments;
 
-  CustomizeProfileScreen({required this.arguments,
-    Key? key}) : super(key: key);
+  CustomizeProfileScreen({required this.arguments, Key? key}) : super(key: key);
 
   @override
   CustomizeProfileScreenState createState() => CustomizeProfileScreenState();
@@ -21,7 +21,7 @@ class CustomizeProfileScreen extends StatefulWidget {
 
 class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   final GlobalKey<ScaffoldState> _scaffoldGeneralSettingKey =
-  GlobalKey<ScaffoldState>();
+      GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
 
   late UserBloc userBloc;
@@ -41,17 +41,14 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
   Map<String, bool> reorderedBoolMap = {};
   Function(Map<String, dynamic>)? callbackProductService;
 
-
   @protected
   void initState() {
-
     isLoading = true;
     getCustomizeProfile();
     callbackProductService = widget.arguments['callbackProductService'];
 
     super.initState();
   }
-
 
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -124,8 +121,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
                 });
               },
             ),
-
-            if(widget.arguments['business'] == 'yes')...[
+            if (widget.arguments['business'] == 'yes') ...[
               Form(
                 key: _formKey,
                 child: Container(
@@ -145,7 +141,6 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
                     )),
               ),
             ],
-
           ],
         ),
       ),
@@ -175,10 +170,9 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        if(saveRequired)...[
+        if (saveRequired) ...[
           saveBtn(),
         ],
-
       ],
     );
   }
@@ -210,7 +204,8 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
           trailing: Container(
             width: 80,
             child: Switch(
-              value: switchValue, // Set the Switch value based on the boolean parameter
+              value:
+                  switchValue, // Set the Switch value based on the boolean parameter
               onChanged: onTapCallback, // Use the passed onTap function
               activeTrackColor: navyBlueLight,
               activeColor: navyBlue,
@@ -220,14 +215,14 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
           onTap: () {
             // Handle the onTap behavior here, if needed
             if (onTapCallback != null) {
-              onTapCallback(!switchValue); // You can also toggle the boolean value
+              onTapCallback(
+                  !switchValue); // You can also toggle the boolean value
             }
           },
         ),
       ),
     );
   }
-
 
   Widget addProductLabelField() {
     return Container(
@@ -300,22 +295,27 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
     });
 
     // Create a list of keys not in 'ordering'
-    var remainingKeys = boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
+    var remainingKeys =
+        boolMap.keys.where((key) => !orderedKeys.contains(key)).toList();
 
     // Add the remaining keys to orderedKeys to ensure they are at the end
     orderedKeys.addAll(remainingKeys);
 
     // Create a new map with the ordered keys
-    reorderedBoolMap = Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
+    reorderedBoolMap =
+        Map.fromEntries(orderedKeys.map((key) => MapEntry(key, boolMap[key]!)));
 
-
-    if(widget.arguments['business'] == 'no'){
-      List<String> keysToRemove = ['product', 'service', 'reviews', 'opening_hours'];
+    if (widget.arguments['business'] == 'no') {
+      List<String> keysToRemove = [
+        'product',
+        'service',
+        'reviews',
+        'opening_hours'
+      ];
 
       for (var key in keysToRemove) {
         reorderedBoolMap.remove(key);
       }
-
     }
 
     isLoading = false;
@@ -338,7 +338,6 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
       productLabel = newValue;
       saveRequired = true;
     });
-
   }
 
   // Callback for text field changes
@@ -347,17 +346,17 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
       serviceLabel = newValue;
       saveRequired = true;
     });
-
   }
 
   Future<void> updateCustomizeProfile() async {
-
-    if(widget.arguments['business'] == 'no'){
+    if (widget.arguments['business'] == 'no') {
       isLoading = true;
       if (mounted) setState(() {});
 
       Map<String, bool> currentArrangement = getCurrentBoolArrangement();
-      List<String> orderingList = currentArrangement.keys.where((key) => key != 'reviews' && key != 'opening_hours').toList();
+      List<String> orderingList = currentArrangement.keys
+          .where((key) => key != 'reviews' && key != 'opening_hours')
+          .toList();
 
       Map<String, dynamic> result = {
         "ordering": orderingList,
@@ -371,17 +370,15 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
       });
 
       await _auth.updateCustomizeProfile(result).then((value) {
-        if(value == true){
-
+        if (value == true) {
           reloadPreviousPage = true;
           saveRequired = false;
           showToast(message: "Profile Customization Updated");
           return true;
-        }else{
+        } else {
           showToast(message: "Profile Customization Failed");
           return true;
         }
-
       }).catchError((error) {
         debugPrint(error.toString());
         showToast(message: error.toString());
@@ -398,7 +395,9 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
       if (mounted) setState(() {});
 
       Map<String, bool> currentArrangement = getCurrentBoolArrangement();
-      List<String> orderingList = currentArrangement.keys.where((key) => key != 'reviews' && key != 'opening_hours').toList();
+      List<String> orderingList = currentArrangement.keys
+          .where((key) => key != 'reviews' && key != 'opening_hours')
+          .toList();
 
       Map<String, dynamic> result = {
         "ordering": orderingList,
@@ -414,8 +413,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
       // debugPrint('Fola bool result::: ${result}');
 
       await _auth.updateCustomizeProfile(result).then((value) {
-        if(value == true){
-
+        if (value == true) {
           reloadPreviousPage = true;
           saveRequired = false;
           if (callbackProductService != null) {
@@ -424,11 +422,10 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
           showToast(message: "Profile Customization Updated");
           return true;
-        }else{
+        } else {
           showToast(message: "Profile Customization Failed");
           return true;
         }
-
       }).catchError((error) {
         debugPrint(error.toString());
         showToast(message: error.toString());
@@ -436,9 +433,7 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
 
       isLoading = false;
       if (mounted) setState(() {});
-
     }
-
   }
 
   Map<String, bool> getCurrentBoolArrangement() {
@@ -449,8 +444,8 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 34),
-      constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - 240),
+      constraints:
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 240),
       child: CurvedButton(
         height: 32,
         textColor: Colors.white,
@@ -462,15 +457,14 @@ class CustomizeProfileScreenState extends State<CustomizeProfileScreen> {
         onPressed: isAPILoading
             ? () {}
             : () async {
-          isAPILoading = true;
-          if (mounted) setState(() {});
-          updateCustomizeProfile();
+                isAPILoading = true;
+                if (mounted) setState(() {});
+                updateCustomizeProfile();
 
-          isAPILoading = false;
-          if (mounted) setState(() {});
-        },
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
       ),
     );
   }
-
 }

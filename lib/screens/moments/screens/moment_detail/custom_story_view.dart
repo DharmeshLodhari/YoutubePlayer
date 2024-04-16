@@ -1,17 +1,11 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:story_view/story_view.dart';
 
 import '../../models/moments_model.dart';
-
-// import '../controller/story_controller.dart';
-// import '../utils.dart';
-// import 'story_image.dart';
-// import 'story_video.dart';
 
 /// Indicates where the progress indicators should be placed.
 enum ProgressPosition { top, bottom, none }
@@ -21,7 +15,7 @@ enum ProgressPosition { top, bottom, none }
 enum IndicatorHeight { small, large }
 
 /// This is a representation of a story item (or page).
-class Shiddo  extends StoryItem{
+class Shiddo extends StoryItem {
   /// Specifies how long the page should be displayed. It should be a reasonable
   /// amount of time greater than 0 milliseconds.
   final Duration duration;
@@ -436,7 +430,8 @@ class StoryViewShiddo extends StatefulWidget {
   }
 }
 
-class StoryViewShiddoState extends State<StoryViewShiddo> with TickerProviderStateMixin {
+class StoryViewShiddoState extends State<StoryViewShiddo>
+    with TickerProviderStateMixin {
   AnimationController? _animationController;
   Animation<double>? _currentAnimation;
   Timer? _nextDebouncer;

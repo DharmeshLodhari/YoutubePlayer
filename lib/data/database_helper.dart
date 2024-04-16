@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/Chat
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/models/near_by_location.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
@@ -20,7 +21,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_migration/sqflite_migration.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper _instance = new DatabaseHelper.internal();
+  static final DatabaseHelper _instance = DatabaseHelper.internal();
 
   factory DatabaseHelper() => _instance;
 
@@ -50,7 +51,7 @@ class DatabaseHelper {
 
   // Save user to the db
   Future<int> saveUser(User user) async {
-    var dbClient = await db;
+    final dbClient = await db;
     int res;
     try {
       res = await dbClient.insert(USER_TABLE, user.toMap());
@@ -64,7 +65,7 @@ class DatabaseHelper {
   }
 
   Future<int> updateUserPassword(String password) async {
-    var dbClient = await db;
+    final dbClient = await db;
     int res;
     res = await dbClient.update(USER_TABLE, {"password": password});
     debugPrint("DATABASE:- $USER_TABLE Password Updated to db");
@@ -73,28 +74,28 @@ class DatabaseHelper {
 
   // Delete user from db
   Future<int> deleteUsers() async {
-    var dbClient = await db;
-    int res = await dbClient.delete(USER_TABLE);
+    final dbClient = await db;
+    final int res = await dbClient.delete(USER_TABLE);
     debugPrint("DATABASE:- $USER_TABLE deleted from db");
     return res;
   }
 
   // check if the current user is logged in
   Future<bool> isLoggedIn() async {
-    var dbClient = await db;
-    var res = await dbClient.query(USER_TABLE);
+    final dbClient = await db;
+    final res = await dbClient.query(USER_TABLE);
     return res.length > 0 ? true : false;
   }
 
   // Get the current user
   Future<User?> getUser() async {
     // Get the user
-    var dbClient = await db;
-    List<Map<String, dynamic>> res = await dbClient.query(USER_TABLE);
+    final dbClient = await db;
+    final List<Map<String, dynamic>> res = await dbClient.query(USER_TABLE);
 
     User? user;
     if (res.length > 0) {
-      var obj = res.first;
+      final obj = res.first;
 
       user = User(
         uuid: obj["uuid"],
@@ -118,7 +119,7 @@ class DatabaseHelper {
 
   // save user's jwt to the db
   Future<int> saveJwt(Jwt jwt) async {
-    var dbClient = await db;
+    final dbClient = await db;
     // await deleteJwt();
     int? res;
     if (jwt.access != null &&
@@ -136,16 +137,16 @@ class DatabaseHelper {
 
   // Delete the jwt from the db
   Future<int> deleteJwt() async {
-    var dbClient = await db;
-    int res = await dbClient.delete(JWT_TABLE);
+    final dbClient = await db;
+    final int res = await dbClient.delete(JWT_TABLE);
     debugPrint("DATABASE:- $JWT_TABLE deleted from db");
     return res;
   }
 
   // Get current user's jwt from db
   Future<Jwt?> getJwt() async {
-    var dbClient = await db;
-    List<Map<String, dynamic>> res = await dbClient.query(JWT_TABLE);
+    final dbClient = await db;
+    final List<Map<String, dynamic>> res = await dbClient.query(JWT_TABLE);
     Jwt? jwt;
     if (res.length > 0) {
       jwt = Jwt.fromDBJson(res.last);
@@ -157,8 +158,8 @@ class DatabaseHelper {
 
   // get device information
   Future<Map<String, dynamic>?> getDevice() async {
-    var dbClient = await db;
-    List<Map<String, dynamic>> res = await dbClient.query(DEVICE_TABLE);
+    final dbClient = await db;
+    final List<Map<String, dynamic>> res = await dbClient.query(DEVICE_TABLE);
 
     Map<String, dynamic>? deviceData;
     if (res.length > 0) {
@@ -169,9 +170,9 @@ class DatabaseHelper {
 
   // delete device
   Future<int> deleteDevice() async {
-    var dbClient = await db;
+    final dbClient = await db;
     try {
-      int res = await dbClient.delete(DEVICE_TABLE);
+      final int res = await dbClient.delete(DEVICE_TABLE);
       return res;
     } catch (e) {
       debugPrint(e.toString());
@@ -182,21 +183,23 @@ class DatabaseHelper {
 
   // save user's Device data to the db
   Future<int> saveDevice(Map<String, dynamic> data) async {
-    var dbClient = await db;
+    final dbClient = await db;
     try {
       await dbClient.delete(DEVICE_TABLE);
     } catch (e) {}
-    int res = await dbClient.insert(DEVICE_TABLE, data);
+    final int res = await dbClient.insert(DEVICE_TABLE, data);
     return res;
   }
 
   /// ChatUser Operation
 
   Future<Map<String, dynamic>?> getChatUser(String? conversationId) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> result = await dbClient.query(CHAT_USER_TABLE,
-        where: "conversationId = ?", whereArgs: [conversationId]);
+    final List<Map<String, dynamic>> result = await dbClient.query(
+        CHAT_USER_TABLE,
+        where: "conversationId = ?",
+        whereArgs: [conversationId]);
 
     if (result.isNotEmpty) {
       return result.first;
@@ -205,9 +208,9 @@ class DatabaseHelper {
   }
 
   void saveChatUserCount(List<ChatUserModel> users) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    Batch insertUserBatch = dbClient.batch();
+    final Batch insertUserBatch = dbClient.batch();
 
     users.forEach((user) {
       insertUserBatch.insert(CHAT_USER_TABLE, user.toJson(),
@@ -218,9 +221,9 @@ class DatabaseHelper {
   }
 
   Future<int> saveChatUser(ChatUserModel user) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    int res = await dbClient.insert(CHAT_USER_TABLE, user.toJson(),
+    final int res = await dbClient.insert(CHAT_USER_TABLE, user.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
     debugPrint("DATABASE:- Save $CHAT_USER_TABLE !!");
@@ -230,15 +233,15 @@ class DatabaseHelper {
 
   // delete chatUsers
   Future<int> deleteChatUsers() async {
-    var dbClient = await db;
-    int res = await dbClient.delete(CHAT_USER_TABLE);
+    final dbClient = await db;
+    final int res = await dbClient.delete(CHAT_USER_TABLE);
     debugPrint("DATABASE:- $CHAT_USER_TABLE deleted from db");
     return res;
   }
 
   Future<int> deleteSingleChatUsers({String? conversationId}) async {
-    var dbClient = await db;
-    int res = await dbClient.delete(CHAT_USER_TABLE,
+    final dbClient = await db;
+    final int res = await dbClient.delete(CHAT_USER_TABLE,
         where: "conversationId = ?", whereArgs: [conversationId]);
     debugPrint("DATABASE:- ChatUser $conversationId is Deleted !!");
     return res;
@@ -246,7 +249,7 @@ class DatabaseHelper {
 
   Future<void> updateChatUserMessageCount(
       {String? conversationId, String? hashedMessage}) async {
-    var dbClient = await db;
+    final dbClient = await db;
     try {
       // List<Map<String, dynamic>> oldMessages = await dbClient.query(
       //     CHAT_USER_TABLE,
@@ -267,7 +270,7 @@ class DatabaseHelper {
   }
 
   Future<int?> clearChatUserMessageCount({String? conversationId}) async {
-    var dbClient = await db;
+    final dbClient = await db;
     int? result;
     try {
       result = await dbClient.update(CHAT_USER_TABLE, {"messageCount": 0},
@@ -282,22 +285,23 @@ class DatabaseHelper {
   }
 
   Future<int> getChatMessageCount() async {
-    var dbClient = await db;
-    List<Map<String, dynamic>> result = await dbClient
+    final dbClient = await db;
+    final List<Map<String, dynamic>> result = await dbClient
         .rawQuery("SELECT SUM(messageCount) as Total FROM $CHAT_USER_TABLE");
 
-    int? count = result.first["Total"];
+    final int? count = result.first["Total"];
     return Future.value(count ?? 0);
   }
 
   /// SocketQueueChatMessage
 
   Future<List<SocketQueueChatMessage>> getSocketQueueChatMessages() async {
-    var dbClient = await db;
-    List<Map<String, dynamic>> res = await dbClient.query(SOCKET_QUEUE_TABLE);
+    final dbClient = await db;
+    final List<Map<String, dynamic>> res =
+        await dbClient.query(SOCKET_QUEUE_TABLE);
 
     if (res.length > 0) {
-      List<SocketQueueChatMessage> socketQueueChatMessages = res
+      final List<SocketQueueChatMessage> socketQueueChatMessages = res
           .map((element) => SocketQueueChatMessage.fromJson(element))
           .toList();
       return socketQueueChatMessages;
@@ -307,9 +311,9 @@ class DatabaseHelper {
 
   Future<int> saveSocketQueueChatMessage(
       {required SocketQueueChatMessage message}) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    int res = await dbClient.insert(SOCKET_QUEUE_TABLE, message.toJson(),
+    final int res = await dbClient.insert(SOCKET_QUEUE_TABLE, message.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
     debugPrint("DATABASE:- <<<<< SocketQueueChatMessage Added !! $res");
@@ -319,8 +323,8 @@ class DatabaseHelper {
 
   Future<int> deleteSocketQueueChatMessage(
       {required SocketQueueChatMessage message}) async {
-    var dbClient = await db;
-    int res = await dbClient.delete(SOCKET_QUEUE_TABLE,
+    final dbClient = await db;
+    final int res = await dbClient.delete(SOCKET_QUEUE_TABLE,
         where: "check_id = ?", whereArgs: [message.checkId]);
     debugPrint("DATABASE:- >>>> SocketQueueChatMessage deleted !!");
     return res;
@@ -328,8 +332,8 @@ class DatabaseHelper {
 
   Future<int> deleteSocketQueueForSpecificConversation(
       {String? conversationId}) async {
-    var dbClient = await db;
-    int res = await dbClient.delete(SOCKET_QUEUE_TABLE,
+    final dbClient = await db;
+    final int res = await dbClient.delete(SOCKET_QUEUE_TABLE,
         where: "conversation_id = ?", whereArgs: [conversationId]);
     debugPrint(
         "DATABASE:- >>>> SocketQueueChatMessage deleted for Conversation $conversationId !!");
@@ -337,8 +341,8 @@ class DatabaseHelper {
   }
 
   Future<int> clearSocketQueueChatMessage() async {
-    var dbClient = await db;
-    int res = await dbClient.delete(SOCKET_QUEUE_TABLE);
+    final dbClient = await db;
+    final int res = await dbClient.delete(SOCKET_QUEUE_TABLE);
     debugPrint("DATABASE:- SocketQueueChatMessage Cleared !!");
     return res;
   }
@@ -346,15 +350,15 @@ class DatabaseHelper {
   ///UserConnection operations
   Future<dynamic> saveUserConnections(
       List<ChatConversation> chatConversations) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<ChatConversation> existingChatConversation =
+    final List<ChatConversation> existingChatConversation =
         await getUserConnections();
 
-    Batch insertUserBatch = dbClient.batch();
+    final Batch insertUserBatch = dbClient.batch();
 
     chatConversations.forEach((user) {
-      Map<String, dynamic> data = user.toDBJson();
+      final Map<String, dynamic> data = user.toDBJson();
 
       /// for checking if the chatConversation is already stored in the db
       bool isChatConversationIsExist = false;
@@ -379,15 +383,15 @@ class DatabaseHelper {
 
   Future<dynamic> saveMissedUserConnections(
       List<ChatConversation> chatConversations) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<ChatConversation> existingChatConversation =
+    final List<ChatConversation> existingChatConversation =
         await getUserConnections();
 
-    Batch insertUserBatch = dbClient.batch();
+    final Batch insertUserBatch = dbClient.batch();
 
     chatConversations.forEach((user) {
-      Map<String, dynamic> data = user.toDBJson();
+      final Map<String, dynamic> data = user.toDBJson();
 
       /// for checking if the chatConversation is already stored in the db
       bool isChatConversationIsExist = false;
@@ -407,7 +411,7 @@ class DatabaseHelper {
           conflictAlgorithm: ConflictAlgorithm.ignore);
     });
 
-    var result = await insertUserBatch.commit();
+    final result = await insertUserBatch.commit();
     debugPrint("Result From Batch:- $result");
 
     return result;
@@ -415,12 +419,12 @@ class DatabaseHelper {
 
   Future<int> addUserConnection(
       {required ChatConversation chatConversation}) async {
-    Database? dbClient = await db;
+    final Database? dbClient = await db;
 
-    List<ChatConversation> existingChatConversation =
+    final List<ChatConversation> existingChatConversation =
         await getUserConnections();
 
-    Map<String, dynamic> data = chatConversation.toDBJson();
+    final Map<String, dynamic> data = chatConversation.toDBJson();
 
     /// for checking if the chatConversation is already stored in the db
     bool isChatConversationIsExist = false;
@@ -434,23 +438,24 @@ class DatabaseHelper {
 
     /// if ChatConversation is new then we will set last_message_time as 0
     if (!isChatConversationIsExist) {
-      DateTime dateTime = DateTime.now();
+      final DateTime dateTime = DateTime.now();
       data["last_message_time"] = dateTime.millisecondsSinceEpoch;
     }
 
-    return await dbClient.insert(USER_CONNECTION_TABLE, data,
+    final int? result = await dbClient?.insert(USER_CONNECTION_TABLE, data,
         conflictAlgorithm: ConflictAlgorithm.ignore);
+    return result ?? 0;
   }
 
   /*Returns a list of all your user's connection name.*/
   Future<List<String>> listUserConnections() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> result =
+    final List<Map<String, dynamic>> result =
         await dbClient.query(USER_CONNECTION_TABLE);
 
     if (result.length > 0) {
-      List<String> connectionList = [];
+      final List<String> connectionList = [];
       for (int i = 0; i < result.length; i++) {
         connectionList.add(result[i]['username']);
       }
@@ -463,9 +468,9 @@ class DatabaseHelper {
   }
 
   Future<bool> checkUserNameInDB(String userName) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> result = await dbClient.query(
+    final List<Map<String, dynamic>> result = await dbClient.query(
         USER_CONNECTION_TABLE,
         where: "username = ?",
         whereArgs: ['$userName'],
@@ -477,13 +482,13 @@ class DatabaseHelper {
   }
 
   Future<List<ChatConversation>> getUserConnections() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> res = await dbClient.query(USER_CONNECTION_TABLE,
-        orderBy: "last_message_time DESC");
+    final List<Map<String, dynamic>> res = await dbClient
+        .query(USER_CONNECTION_TABLE, orderBy: "last_message_time DESC");
 
     if (res.length > 0) {
-      List<ChatConversation> connectionList =
+      final List<ChatConversation> connectionList =
           res.map((element) => ChatConversation.fromDBJson(element)).toList();
 
       debugPrint('CONNECTION LIST ---> ${connectionList[0].isVerified}');
@@ -493,9 +498,9 @@ class DatabaseHelper {
   }
 
   Future<bool> checkUserInConnection({required String searchedText}) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> result = await dbClient.query(
+    final List<Map<String, dynamic>> result = await dbClient.query(
         USER_CONNECTION_TABLE,
         where: "username = ?",
         whereArgs: [searchedText]);
@@ -508,15 +513,15 @@ class DatabaseHelper {
 
   Future<List<ChatConversation>> getSearchedUserConnections(
       {String? searchedText}) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> result = await dbClient.query(
+    final List<Map<String, dynamic>> result = await dbClient.query(
         USER_CONNECTION_TABLE,
         where: "username LIKE ? OR full_name LIKE ?",
         whereArgs: ['%$searchedText%', '%$searchedText%']);
 
     if (result.length > 0) {
-      List<ChatConversation> connectionList = result
+      final List<ChatConversation> connectionList = result
           .map((element) => ChatConversation.fromDBJson(element))
           .toList();
       return connectionList;
@@ -525,9 +530,9 @@ class DatabaseHelper {
   }
 
   Future<int> getUserConnectionsCount() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> res =
+    final List<Map<String, dynamic>> res =
         await dbClient.query(USER_CONNECTION_TABLE);
     if (res.length > 0) {
       return res.length;
@@ -537,7 +542,7 @@ class DatabaseHelper {
 
   Future<int> updateConnectionListLastMessageTime(
       {String? conversationId, int? time}) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
     return await dbClient.update(
         USER_CONNECTION_TABLE, {"last_message_time": time},
@@ -545,8 +550,8 @@ class DatabaseHelper {
   }
 
   Future<int> clearUserConnections() async {
-    var dbClient = await db;
-    int res = await dbClient.delete(USER_CONNECTION_TABLE);
+    final dbClient = await db;
+    final int res = await dbClient.delete(USER_CONNECTION_TABLE);
 
     // await deleteChatMessagePagination();
     // await deleteChatMessage();
@@ -556,7 +561,7 @@ class DatabaseHelper {
 
   Future<int> updateChatConversation(
       {required ChatConversation chatConversation}) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
     return await dbClient.update(
         USER_CONNECTION_TABLE, chatConversation.toDBJson(),
@@ -565,8 +570,8 @@ class DatabaseHelper {
   }
 
   Future<int> deleteChatConversation({String? conversationId}) async {
-    var dbClient = await db;
-    int res = await dbClient.delete(USER_CONNECTION_TABLE,
+    final dbClient = await db;
+    final int res = await dbClient.delete(USER_CONNECTION_TABLE,
         where: "conversation_id = ?", whereArgs: [conversationId]);
     debugPrint("UserConnection $conversationId is Deleted !!");
     await deleteSingleChatUsers(conversationId: conversationId);
@@ -576,13 +581,13 @@ class DatabaseHelper {
 
   Future<ChatConversation?> getLastChatConversation(
       {String? conversationId}) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> res = await dbClient.query(USER_CONNECTION_TABLE,
-        orderBy: "created_at DESC", limit: 1);
+    final List<Map<String, dynamic>> res = await dbClient
+        .query(USER_CONNECTION_TABLE, orderBy: "created_at DESC", limit: 1);
 
     if (res.length > 0) {
-      ChatConversation chatConversation =
+      final ChatConversation chatConversation =
           ChatConversation.fromDBJson(res.first);
       return chatConversation;
     }
@@ -592,37 +597,38 @@ class DatabaseHelper {
   /// ChatMessage Operations
   Future<List<ChatMessage>> saveChatMessage(
       List<ChatMessage> chatMessages) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    Batch insertUserBatch = dbClient.batch();
+    final Batch insertUserBatch = dbClient.batch();
 
     chatMessages.forEach((chatMessage) {
-      Map<String, dynamic> data = chatMessage.toDBJson();
+      final Map<String, dynamic> data = chatMessage.toDBJson();
 
       insertUserBatch.insert(CHAT_MESSAGE_TABLE, data,
           conflictAlgorithm: ConflictAlgorithm.ignore);
     });
 
-    List<dynamic> result = await insertUserBatch.commit();
+    final List<dynamic> result = await insertUserBatch.commit();
 
-    List<ChatMessage> insertedMessages = await getInsertedChatMessages(result);
+    final List<ChatMessage> insertedMessages =
+        await getInsertedChatMessages(result);
     debugPrint("Batch Result:- $result");
     return insertedMessages;
   }
 
   Future<List<ChatMessage>> getInsertedChatMessages(
       List<dynamic> idList) async {
-    Database dbClient = await db;
-    String idListString = idList.toString();
+    final Database dbClient = await db;
+    final String idListString = idList.toString();
 
-    String firstRemove = idListString.replaceFirst("[", "(");
-    String secondRemove = firstRemove.replaceFirst("]", ")");
+    final String firstRemove = idListString.replaceFirst("[", "(");
+    final String secondRemove = firstRemove.replaceFirst("]", ")");
 
-    List<Map<String, dynamic>> result = await dbClient.rawQuery(
+    final List<Map<String, dynamic>> result = await dbClient.rawQuery(
         "SELECT * FROM $CHAT_MESSAGE_TABLE WHERE id IN $secondRemove ORDER BY created_at DESC");
 
     if (result.length > 0) {
-      List<ChatMessage> chatMessages = result.map((element) {
+      final List<ChatMessage> chatMessages = result.map((element) {
         // debugPrint(
         //     "ELEMENT ID:- ${element['id']} TEXT ${element['text']} CREATED AT:- ${convertMillisecondsSinceEpochToString(element['created_at'])}");
         return ChatMessage.fromDBJson(element);
@@ -633,18 +639,18 @@ class DatabaseHelper {
   }
 
   Future<List> insertMissedMessages(List<ChatMessage> chatMessages) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    Batch insertUserBatch = dbClient.batch();
+    final Batch insertUserBatch = dbClient.batch();
 
     chatMessages.forEach((chatMessage) {
-      Map<String, dynamic> data = chatMessage.toDBJson();
+      final Map<String, dynamic> data = chatMessage.toDBJson();
 
       insertUserBatch.insert(CHAT_MESSAGE_TABLE, data,
           conflictAlgorithm: ConflictAlgorithm.replace);
     });
 
-    List<dynamic> result = await insertUserBatch.commit();
+    final List<dynamic> result = await insertUserBatch.commit();
 
     debugPrint("Batch Result:- $result");
 
@@ -652,21 +658,22 @@ class DatabaseHelper {
   }
 
   Future<int> insertMissedMessage(ChatMessage chatMessage) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> res = await dbClient.query(CHAT_MESSAGE_TABLE,
+    final List<Map<String, dynamic>> res = await dbClient.query(
+        CHAT_MESSAGE_TABLE,
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
 
     if (res.length > 0) {
-      int result = await dbClient.update(
+      final int result = await dbClient.update(
           CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
           where: "conversation_id = ? AND check_id = ?",
           whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
       debugPrint("MISSED MESSAGE UPDATED $result");
       return 0;
     } else {
-      int result =
+      final int result =
           await dbClient.insert(CHAT_MESSAGE_TABLE, chatMessage.toDBJson());
       debugPrint("MISSED MESSAGE INSERTED $result");
       return 1;
@@ -675,15 +682,16 @@ class DatabaseHelper {
 
   Future<List<ChatMessage>> getChatMessages(
       {required ChatConversation chatConversation}) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> res = await dbClient.query(CHAT_MESSAGE_TABLE,
+    final List<Map<String, dynamic>> res = await dbClient.query(
+        CHAT_MESSAGE_TABLE,
         orderBy: "created_at DESC",
         where: "conversation_id = ?",
         whereArgs: [chatConversation.conversationId]);
 
     if (res.length > 0) {
-      List<ChatMessage> chatMessages = res.map((element) {
+      final List<ChatMessage> chatMessages = res.map((element) {
         return ChatMessage.fromDBJson(element);
       }).toList();
       return chatMessages;
@@ -693,14 +701,15 @@ class DatabaseHelper {
 
   Future<List<ChatMessage>> getChatMessagesByConversationIdAndCheckId(
       {required String conversationId, required String checkId}) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> res = await dbClient.query(CHAT_MESSAGE_TABLE,
+    final List<Map<String, dynamic>> res = await dbClient.query(
+        CHAT_MESSAGE_TABLE,
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [conversationId, checkId]);
 
     if (res.length > 0) {
-      List<ChatMessage> chatMessages = res.map((element) {
+      final List<ChatMessage> chatMessages = res.map((element) {
         return ChatMessage.fromDBJson(element);
       }).toList();
       return chatMessages;
@@ -710,16 +719,17 @@ class DatabaseHelper {
 
   Future<List<ChatMessage>> getLimitedChatMessages(
       {String? conversationId, int? limit = 10}) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> res = await dbClient.query(CHAT_MESSAGE_TABLE,
+    final List<Map<String, dynamic>> res = await dbClient.query(
+        CHAT_MESSAGE_TABLE,
         orderBy: "created_at DESC",
         where: "conversation_id = ? AND delivered = ?",
         whereArgs: [conversationId, 1],
         limit: limit);
 
     if (res.length > 0) {
-      List<ChatMessage> chatMessages = res.map((element) {
+      final List<ChatMessage> chatMessages = res.map((element) {
         return ChatMessage.fromDBJson(element);
       }).toList();
       return chatMessages;
@@ -728,15 +738,15 @@ class DatabaseHelper {
   }
 
   Future<int> deleteChatMessages() async {
-    Database dbClient = await db;
-    int res = await dbClient.delete(CHAT_MESSAGE_TABLE);
+    final Database dbClient = await db;
+    final int res = await dbClient.delete(CHAT_MESSAGE_TABLE);
     await deleteChatMessagePagination();
     return res;
   }
 
   Future<int> deleteChatMessage(String? checkId, String? conversationId) async {
-    Database dbClient = await db;
-    int res = await dbClient.delete(CHAT_MESSAGE_TABLE,
+    final Database dbClient = await db;
+    final int res = await dbClient.delete(CHAT_MESSAGE_TABLE,
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [conversationId, checkId]);
     return res;
@@ -744,8 +754,8 @@ class DatabaseHelper {
 
   Future<int> updateEditedChatMessage(String? checkId, String? conversationId,
       bool? wasEdited, String? text) async {
-    Database dbClient = await db;
-    var result = await dbClient.update(CHAT_MESSAGE_TABLE,
+    final Database dbClient = await db;
+    final result = await dbClient.update(CHAT_MESSAGE_TABLE,
         {"was_edited": wasEdited == true ? 1 : 0, "text": text},
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [conversationId, checkId]);
@@ -753,8 +763,8 @@ class DatabaseHelper {
   }
 
   Future<int> deleteSingleUserChatMessage({String? conversationId}) async {
-    var dbClient = await db;
-    int res = await dbClient.delete(CHAT_MESSAGE_TABLE,
+    final dbClient = await db;
+    final int res = await dbClient.delete(CHAT_MESSAGE_TABLE,
         where: "conversation_id = ?", whereArgs: [conversationId]);
     debugPrint("DATABASE:- ChatMessage $conversationId is Deleted !!");
 
@@ -764,8 +774,8 @@ class DatabaseHelper {
 
   Future<int> updateChatMessageReadByRecipient(
       String? checkId, String? conversationId) async {
-    Database dbClient = await db;
-    var result = await dbClient.update(
+    final Database dbClient = await db;
+    final result = await dbClient.update(
         CHAT_MESSAGE_TABLE, {"read_by_recipient": 1, "delivered": 1},
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [conversationId, checkId]);
@@ -776,8 +786,8 @@ class DatabaseHelper {
   Future<int> updateChatMessageDeliverStatus(
       String? checkId, String? conversationId) async {
     if (checkId == null || conversationId == null) return 0;
-    Database dbClient = await db;
-    var result = await dbClient.update(CHAT_MESSAGE_TABLE, {"delivered": 1},
+    final Database dbClient = await db;
+    final result = await dbClient.update(CHAT_MESSAGE_TABLE, {"delivered": 1},
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [conversationId, checkId]);
 
@@ -785,21 +795,22 @@ class DatabaseHelper {
   }
 
   Future<int> insertSingleChatMessage(ChatMessage chatMessage) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> res = await dbClient.query(CHAT_MESSAGE_TABLE,
+    final List<Map<String, dynamic>> res = await dbClient.query(
+        CHAT_MESSAGE_TABLE,
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
 
     if (res.length > 0) {
-      int result = await dbClient.update(
+      final int result = await dbClient.update(
           CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
           where: "conversation_id = ? AND check_id = ?",
           whereArgs: [chatMessage.conversationId, chatMessage.checkId]);
       debugPrint("MISSED MESSAGE UPDATED $result");
       return 0;
     } else {
-      int result =
+      final int result =
           await dbClient.insert(CHAT_MESSAGE_TABLE, chatMessage.toDBJson());
       debugPrint("MISSED MESSAGE INSERTED $result");
       return 1;
@@ -807,7 +818,7 @@ class DatabaseHelper {
   }
 
   Future<List<ChatMessage>?> getLastChatMessage() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
     // List<Map<String, dynamic>> res = await dbClient.query(
     //   "ChatMessage",
@@ -817,19 +828,19 @@ class DatabaseHelper {
     //   groupBy: "conversation_id",
     // );
 
-    List<Map<String, dynamic>> res = await dbClient.rawQuery(
+    final List<Map<String, dynamic>> res = await dbClient.rawQuery(
         "SELECT * FROM $CHAT_MESSAGE_TABLE where delivered=? order by created_at DESC;",
         [1]);
 
     if (res.length > 0) {
-      var newMap = groupBy(res, (dynamic obj) => obj['conversation_id']);
+      final newMap = groupBy(res, (dynamic obj) => obj['conversation_id']);
       // debugPrint("==> $newMap");
-      List<Map<String, dynamic>> messages = [];
+      final List<Map<String, dynamic>> messages = [];
       newMap.forEach((key, value) {
         messages.add(value[0]);
       });
 
-      List<ChatMessage> chatMessages = [];
+      final List<ChatMessage> chatMessages = [];
       messages.forEach((message) {
         chatMessages.add(ChatMessage.fromDBJson(message));
       });
@@ -841,8 +852,8 @@ class DatabaseHelper {
 
   Future<int> updateSingleChatMessage(ChatMessage chatMessage) async {
     debugPrint('UPDATE CHAT MESSAGE --->');
-    Database dbClient = await db;
-    var result = await dbClient.update(
+    final Database dbClient = await db;
+    final result = await dbClient.update(
         CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [chatMessage.conversationId, chatMessage.checkId],
@@ -864,9 +875,9 @@ class DatabaseHelper {
 
   Future<int> saveChatMessagePagination(
       ChatMessagePagination chatMessagePagination) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    int res = await dbClient.insert(
+    final int res = await dbClient.insert(
         CHAT_MESSAGE_PAGINATION_TABLE, chatMessagePagination.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
@@ -877,15 +888,15 @@ class DatabaseHelper {
 
   Future<ChatMessagePagination> getChatMessagePagination(
       String? conversationId) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> result = await dbClient.query(
+    final List<Map<String, dynamic>> result = await dbClient.query(
         CHAT_MESSAGE_PAGINATION_TABLE,
         where: "conversation_id = ?",
         whereArgs: [conversationId]);
 
     if (result.length > 0) {
-      ChatMessagePagination chatMessagePagination =
+      final ChatMessagePagination chatMessagePagination =
           ChatMessagePagination.fromJson(result.first);
       return chatMessagePagination;
     }
@@ -895,7 +906,7 @@ class DatabaseHelper {
 
   Future<int> updateChatMessagePagination(
       ChatMessagePagination chatMessagePagination) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
     return await dbClient.update(
         CHAT_MESSAGE_PAGINATION_TABLE, chatMessagePagination.toJson(),
@@ -904,15 +915,15 @@ class DatabaseHelper {
   }
 
   Future<int> deleteChatMessagePagination() async {
-    Database dbClient = await db;
-    int res = await dbClient.delete(CHAT_MESSAGE_PAGINATION_TABLE);
+    final Database dbClient = await db;
+    final int res = await dbClient.delete(CHAT_MESSAGE_PAGINATION_TABLE);
     return res;
   }
 
   Future<int> deleteSingleChatMessagePagination(
       {String? conversationId}) async {
-    var dbClient = await db;
-    int res = await dbClient.delete(CHAT_MESSAGE_PAGINATION_TABLE,
+    final dbClient = await db;
+    final int res = await dbClient.delete(CHAT_MESSAGE_PAGINATION_TABLE,
         where: "conversation_id = ?", whereArgs: [conversationId]);
     debugPrint(
         "DATABASE:- ChatMessagePagination $conversationId is Deleted !!");
@@ -922,9 +933,9 @@ class DatabaseHelper {
   /// VirtualAccount OPERATION
 
   Future<int?> saveVirtualAccount(VirtualAccount virtualAccount) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    int res = await dbClient.insert(
+    final int res = await dbClient.insert(
         VIRTUAL_ACCOUNT_TABLE, virtualAccount.toDBJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
@@ -934,9 +945,9 @@ class DatabaseHelper {
   }
 
   Future<VirtualAccount?> getVirtualAccount() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> virtualAccounts =
+    final List<Map<String, dynamic>> virtualAccounts =
         await dbClient.query(VIRTUAL_ACCOUNT_TABLE);
     if (virtualAccounts.length > 0)
       return VirtualAccount.fromDBJson(virtualAccounts.first);
@@ -944,9 +955,9 @@ class DatabaseHelper {
   }
 
   Future<int?> deleteVirtualAccount() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    int res = await dbClient.delete(VIRTUAL_ACCOUNT_TABLE);
+    final int res = await dbClient.delete(VIRTUAL_ACCOUNT_TABLE);
 
     debugPrint("DATABASE:- DELETE VirtualAccount !!");
     return res;
@@ -955,9 +966,9 @@ class DatabaseHelper {
   /// GeneralSettings OPERATION
 
   Future<int?> saveGeneralSettings(Map<String, dynamic> data) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    int res = await dbClient.insert(APP_SETTING_TABLE, data,
+    final int res = await dbClient.insert(APP_SETTING_TABLE, data,
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
     debugPrint("DATABASE:- Saved GeneralSettings !!");
@@ -965,18 +976,18 @@ class DatabaseHelper {
   }
 
   Future<int?> updateGeneralSettings(Map<String, dynamic> data) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    int res = await dbClient.update(APP_SETTING_TABLE, data);
+    final int res = await dbClient.update(APP_SETTING_TABLE, data);
 
     debugPrint("DATABASE:- Update GeneralSettings !!");
     return res;
   }
 
   Future<Map<String, dynamic>> getGeneralSettings() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> generalSettings =
+    final List<Map<String, dynamic>> generalSettings =
         await dbClient.query(APP_SETTING_TABLE);
     if (generalSettings.length > 0) {
       return generalSettings.first;
@@ -985,9 +996,9 @@ class DatabaseHelper {
   }
 
   Future<int?> deleteGeneralSettings() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    int res = await dbClient.delete(APP_SETTING_TABLE);
+    final int res = await dbClient.delete(APP_SETTING_TABLE);
 
     debugPrint("DATABASE:- DELETE GeneralSettings !!");
     return res;
@@ -997,9 +1008,9 @@ class DatabaseHelper {
 
   // save user's fee structure to the db
   Future<int> saveFeeStructure(FeeStructure feeStructure) async {
-    var dbClient = await db;
+    final dbClient = await db;
     await deleteFeeStructure();
-    int res = await dbClient.insert(FEE_STRUCTURE, feeStructure.toJson(),
+    final int res = await dbClient.insert(FEE_STRUCTURE, feeStructure.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     debugPrint("DATABASE:- $FEE_STRUCTURE saved to db");
     return res;
@@ -1007,17 +1018,17 @@ class DatabaseHelper {
 
   // Delete the fee structure from the db
   Future<int> deleteFeeStructure() async {
-    var dbClient = await db;
-    int res = await dbClient.delete(FEE_STRUCTURE);
+    final dbClient = await db;
+    final int res = await dbClient.delete(FEE_STRUCTURE);
     debugPrint("DATABASE:- $FEE_STRUCTURE deleted from db");
     return res;
   }
 
   // Get current user's fee structure from db
   Future<FeeStructure?> getFeeStructure() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> feeStructure =
+    final List<Map<String, dynamic>> feeStructure =
         await dbClient.query(FEE_STRUCTURE);
     if (feeStructure.length > 0)
       return FeeStructure.fromJson(feeStructure.first);
@@ -1029,9 +1040,9 @@ class DatabaseHelper {
   // save user's fee structure to the db
   Future<int> saveUserSelectedYarnCategories(
       UserCategoriesStructure userCategoriesStructure) async {
-    var dbClient = await db;
+    final dbClient = await db;
     await deleteUserSelectedYarnCategories();
-    int res = await dbClient.insert(
+    final int res = await dbClient.insert(
         YARN_CATEGORY, userCategoriesStructure.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     debugPrint("DATABASE:- $YARN_CATEGORY saved to db");
@@ -1040,17 +1051,17 @@ class DatabaseHelper {
 
   // Delete the fee structure from the db
   Future<int> deleteUserSelectedYarnCategories() async {
-    var dbClient = await db;
-    int res = await dbClient.delete(YARN_CATEGORY);
+    final dbClient = await db;
+    final int res = await dbClient.delete(YARN_CATEGORY);
     debugPrint("DATABASE:- $YARN_CATEGORY deleted from db");
     return res;
   }
 
   // Get current user's fee structure from db
   Future<UserCategoriesStructure?> getUserSelectedYarnCategories() async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> userCategoriesStructure =
+    final List<Map<String, dynamic>> userCategoriesStructure =
         await dbClient.query(YARN_CATEGORY);
     if (userCategoriesStructure.length > 0)
       return UserCategoriesStructure.fromJson(userCategoriesStructure.first);
@@ -1059,9 +1070,9 @@ class DatabaseHelper {
 
   Future<int> saveDocumentFileInChatFromDb(
       DocumentFileInChatDownloadModel model) async {
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    int res = await dbClient.insert(
+    final int res = await dbClient.insert(
         DOWNLOAD_FILE_IN_CHAT_TABLE, model.toDBJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
@@ -1075,9 +1086,10 @@ class DatabaseHelper {
   Future<String?> checkIfFileExistsInDB(
       {required DocumentFileInChatDownloadModel model}) async {
     String? filePathInOs;
-    Database dbClient = await db;
+    final Database dbClient = await db;
 
-    List<Map<String, dynamic>> downloadedFileInChatTable = await dbClient.query(
+    final List<Map<String, dynamic>> downloadedFileInChatTable =
+        await dbClient.query(
       DOWNLOAD_FILE_IN_CHAT_TABLE,
       where: "conversation_id = ? AND check_id = ?",
       whereArgs: [model.conversationID, model.checkID],
@@ -1099,8 +1111,8 @@ class DatabaseHelper {
 
   Future<int> deleteDocumentFileInChatFromDb(
       {required DocumentFileInChatDownloadModel model}) async {
-    var dbClient = await db;
-    int res = await dbClient.delete(
+    final dbClient = await db;
+    final int res = await dbClient.delete(
       DOWNLOAD_FILE_IN_CHAT_TABLE,
       where: "check_id = ? AND conversation_id = ?",
       whereArgs: [model.checkID, model.conversationID],
@@ -1114,7 +1126,7 @@ class DatabaseHelper {
 
   Future deleteMessagesFromThirtyDaysAgo() async {}
 
-  updateUserAvatars() async {
+  void updateUserAvatars() async {
     // await updateContactAvatar();
     // await updateConversationUserAvatar();
   }
@@ -1123,7 +1135,7 @@ class DatabaseHelper {
       {required String userName, required String newAvatar}) async {
     // update user avatar where recipient (or author) name == $userName
 
-    var dbClient = await db;
+    final dbClient = await db;
 
     return await dbClient.update(
       USER_CONNECTION_TABLE,
@@ -1135,4 +1147,45 @@ class DatabaseHelper {
 
   Future updateConversationUserAvatar(
       {required String userName, required String newAvatar}) async {}
+
+  /// check rider at location
+  Future<int?> insertRiderAtLocation(NearByLocation atPickupLocation) async {
+    final Database dbClient = await db;
+
+    final int res = await dbClient.insert(
+        RIDER_AT_LOCATION, atPickupLocation.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    debugPrint('SAVE Location :: $res');
+    return res;
+  }
+
+  Future updateRiderAtLocation(int? orderId, bool atDeliveryLocation) async {
+    final Database dbClient = await db;
+
+    return await dbClient.update(
+      RIDER_AT_LOCATION,
+      {"at_delivery_location": atDeliveryLocation},
+      where: "order_id = ?",
+      whereArgs: [orderId],
+    );
+  }
+
+  Future<NearByLocation?> getRiderAtLocation(int? orderId) async {
+    final Database dbClient = await db;
+
+    final List<Map<String, dynamic>> atPickupLocation = await dbClient
+        .query(RIDER_AT_LOCATION, where: "order_id = ?", whereArgs: [orderId]);
+    if (atPickupLocation.length > 0)
+      return NearByLocation.fromDBJson(atPickupLocation.first);
+    return null;
+  }
+
+  Future<int> deleteSingleJob(int? orderId) async {
+    final Database dbClient = await db;
+
+    final int res = await dbClient
+        .delete(RIDER_AT_LOCATION, where: "order_id = ?", whereArgs: [orderId]);
+    debugPrint("DATABASE:- Job $orderId is Deleted !!");
+    return res;
+  }
 }

@@ -456,8 +456,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
             Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
           },
           cancelCallBack: () {
-            _putMoneyInEnvelopeScaffoldMessenger.currentState!
-                .showSnackBar(SnackBar(
+            _putMoneyInEnvelopeScaffoldMessenger.currentState?.showSnackBar(SnackBar(
               content: Text(AppLocalization.of(context)!.invalidPassword),
             ));
           });

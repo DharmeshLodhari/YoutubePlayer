@@ -2341,7 +2341,7 @@ class _EditJobState extends State<EditJob> {
           });
         }
       } else if (locationNext == null && locationsList.length > 6) {
-        _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _jobScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

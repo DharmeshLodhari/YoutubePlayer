@@ -2,26 +2,27 @@ import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/tab_selection.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:neat_periodic_task/neat_periodic_task.dart';
 import 'package:provider/provider.dart';
+
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import '../messaging/message_auth.dart';
 import 'add_or_edit_yarn_screen.dart';
-import 'yarn_search_screen.dart';
 import 'trending_list_screen.dart';
 import 'yarn_dashboard_bloc.dart';
 import 'yarn_list_screen.dart';
+import 'yarn_search_screen.dart';
 import 'yarn_setting_screen.dart';
-import 'package:badges/badges.dart' as badges;
 
 class YarnDashboard extends StatefulWidget {
   @override
@@ -268,7 +269,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           SizedBox(height: 8),
         ],
         if (_tabsVisible) ...[
-          YarnTabSelection(
+          TabSelection(
             onTap: (index) {
               currentAskTapOnHome = index;
               _pageViewController.jumpToPage(currentAskTapOnHome);

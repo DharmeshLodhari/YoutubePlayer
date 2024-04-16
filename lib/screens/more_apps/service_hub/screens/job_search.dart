@@ -26,10 +26,8 @@ class _JobsSearchState extends State<JobsSearch> {
   int? count = 0;
   String? next = "";
   String? previous = "";
-  ScrollController _scrollController = new ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  String autoCompleteSearchText = "";
   List<ActiveListingData> jobsList = [];
   final TextEditingController searchController = TextEditingController();
   int counter = 0;
@@ -93,7 +91,7 @@ class _JobsSearchState extends State<JobsSearch> {
           });
         }
       } else if (next == null && jobsList.length > 6) {
-        // _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        // _productScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
         //   content:
         //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         //   duration: Duration(milliseconds: 500),

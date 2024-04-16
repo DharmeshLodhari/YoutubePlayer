@@ -145,7 +145,7 @@ class _UserReviewListState extends State<UserReviewList> {
         });
       }
     } else if (reviewNext == null && reviewList.length > 6) {
-      _reviewMessengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+      _reviewMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         duration: Duration(milliseconds: 500),

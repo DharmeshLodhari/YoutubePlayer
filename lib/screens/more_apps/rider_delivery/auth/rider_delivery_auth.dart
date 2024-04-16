@@ -18,7 +18,7 @@ class RiderDeliveryAuthService extends AuthService {
     }
     if (next == "") {
       url =
-          "${AppConfig.baseUrl}/api/v1/shipping/journeys/active-jobs/?user_current_location=6.6616402,3.6470794";
+          "${AppConfig.baseUrl}/api/v1/shipping/journeys/active-jobs/?user_current_location=3.6470794,6.6616402";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -102,7 +102,7 @@ class RiderDeliveryAuthService extends AuthService {
   Future<DeliveryModel?> fetchJob(String? journeyId) async {
     try {
       String url =
-          "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/?user_current_location=6.6616402,3.6470794";
+          "${AppConfig.baseUrl}/api/v1/shipping/journeys/$journeyId/?user_current_location=3.6470794,6.6616402";
 
       debugPrint('Fetch Job URL ---> $url');
 
@@ -120,7 +120,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
-      print(e);
+      debugPrint("Error: $e");
     } catch (err) {
       showToast(message: err.toString());
       print(err);
@@ -151,7 +151,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -179,7 +179,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -207,7 +207,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -235,7 +235,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -270,7 +270,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -308,7 +308,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -343,7 +343,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -388,7 +388,7 @@ class RiderDeliveryAuthService extends AuthService {
       }
       return false;
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
       return false;
     }
   }
@@ -439,11 +439,95 @@ class RiderDeliveryAuthService extends AuthService {
       }
     } on Exception catch (e) {
       showToast(message: e.toString());
-      print(e);
+      debugPrint("Error: $e");
     } catch (err) {
       showToast(message: err.toString());
-      print(err);
+      debugPrint("Error: $err");
     }
     return null;
+  }
+
+  // Rider at pickup location
+  Future<bool> atPickupLocation(int? orderId) async {
+    if (orderId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/order/$orderId/set-rider-in-pickup-location/";
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
+      }
+      return false;
+    } catch (e) {
+      debugPrint("Error: $e");
+      return false;
+    }
+  }
+
+// Rider at Delivery location
+  Future<bool> atDeliveryLocation(int? orderId) async {
+    if (orderId == null) {
+      return false;
+    }
+    String url = AppConfig.baseUrl +
+        "/api/v1/order/$orderId/set-rider-in-delivery-location/";
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
+      }
+      return false;
+    } catch (e) {
+      debugPrint("Error: $e");
+      return false;
+    }
+  }
+
+// Rider pickup order
+  Future<bool> riderPickupOrder(int? orderId) async {
+    if (orderId == null) {
+      return false;
+    }
+    String url =
+        AppConfig.baseUrl + "/api/v1/order/$orderId/set-rider-picked-up-order/";
+    var headers = await getAuthHeaders();
+
+    try {
+      var response = await httpPatch(url, headers: headers);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else if (response.statusCode == 400) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey("error")) {
+          showToast(message: jsonResponse['error']);
+          return false;
+        }
+      }
+      return false;
+    } catch (e) {
+      debugPrint("Error: $e");
+      return false;
+    }
   }
 }

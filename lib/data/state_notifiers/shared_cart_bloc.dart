@@ -147,9 +147,6 @@ class SharedCartBloc extends ChangeNotifier {
     Map<String, dynamic>? result =
         await SharedCartAuthService().getSharedCartList("", "");
 
-    int? listCount = result?['count'];
-    String? listNext = result?['next'];
-    String? listPrevious = result?['previous'];
     var tempList = result?['results'];
 
     if (tempList != null && (tempList as List).isNotEmpty) {
@@ -170,9 +167,6 @@ class SharedCartBloc extends ChangeNotifier {
     Map<String, dynamic>? result =
         await SharedCartAuthService().getCartItemDetails(cart.id, "", "");
 
-    int? count = result?['count'];
-    String? next = result?['next'];
-    String? previous = result?['previous'];
     var tempList = result?['results'];
 
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);

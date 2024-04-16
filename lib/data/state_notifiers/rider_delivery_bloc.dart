@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
+import 'package:Slydo/screens/more_apps/rider_delivery/models/near_by_location.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:flutter/material.dart';
 
@@ -41,8 +43,11 @@ class RiderDeliveryBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateDeliveryModel(DeliveryModel data) {
+  Future<void> updateDeliveryModel(DeliveryModel data) async {
     deliveryDetails = data;
+    NearByLocation? rideAtLocation =
+        await DatabaseHelper().getRiderAtLocation(data.orderId);
+    deliveryDetails?.riderAtLocation = rideAtLocation;
     notifyListeners();
   }
 

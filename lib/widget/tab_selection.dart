@@ -1,13 +1,13 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-class YarnTabSelection extends StatefulWidget {
+class TabSelection extends StatefulWidget {
   final Function(int) onTap;
   final int currentIndex;
   String firstTab = '';
   String secondTab = '';
 
-  YarnTabSelection(
+  TabSelection(
       {required this.onTap,
       this.currentIndex = 0,
       required this.firstTab,
@@ -15,10 +15,10 @@ class YarnTabSelection extends StatefulWidget {
       Key? key})
       : super(key: key);
   @override
-  State<YarnTabSelection> createState() => _YarnTabSelectionState();
+  State<TabSelection> createState() => _TabSelectionState();
 }
 
-class _YarnTabSelectionState extends State<YarnTabSelection> {
+class _TabSelectionState extends State<TabSelection> {
   @override
   Widget build(BuildContext context) {
     return _buildMain();

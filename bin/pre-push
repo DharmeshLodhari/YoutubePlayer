@@ -1,0 +1,7 @@
+
+#!/usr/bin/env bash
+
+fvm flutter analyze
+if [ $? -ne 0 ]; then
+  exit 1
+fi

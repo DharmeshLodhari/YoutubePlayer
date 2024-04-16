@@ -178,7 +178,7 @@ class _AddProductState extends State<AddProduct> {
           });
         }
       } else if (discountNext == null && discountList.length > 6) {
-        _messengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+        _messengerScaffoldKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

@@ -12,9 +12,9 @@ import 'package:provider/provider.dart';
 
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
+import '../../../../../widget/tab_selection.dart';
 import '../../../../search_user.dart';
 import '../../../user_profile/models/user.dart';
-import '../../tiles/payment_tab_selection.dart';
 
 class TransactionList extends StatefulWidget {
   var arguments;
@@ -330,15 +330,15 @@ class _TransactionListState extends State<TransactionList> {
   Widget _buildTabs() {
     return Column(
       children: [
-        PaymentTabSelection(
+        TabSelection(
           onTap: (index) {
             currentAskTapOnHome = index;
             _pageViewController.jumpToPage(currentAskTapOnHome);
             if (mounted) setState(() {});
           },
           currentIndex: currentAskTapOnHome,
-          tabOne: 'Slydo',
-          tabTwo: 'Cashout',
+          firstTab: 'Slydo',
+          secondTab: 'Bank Transfer',
         ),
         SizedBox(
           height: 10,

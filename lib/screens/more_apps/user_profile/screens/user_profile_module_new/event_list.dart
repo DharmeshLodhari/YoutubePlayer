@@ -144,7 +144,7 @@ class _EventListState extends State<EventList> {
       }
     }
     // else if (eventNext == null && eventList.length > 6) {
-    //   _eventMessengerScaffoldKey.currentState!.showSnackBar(SnackBar(
+    //   _eventMessengerScaffoldKey.currentState?.showSnackBar(SnackBar(
     //     content:
     //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
     //     duration: Duration(milliseconds: 500),

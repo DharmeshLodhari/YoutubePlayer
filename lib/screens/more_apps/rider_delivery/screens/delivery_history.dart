@@ -5,7 +5,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/auth/rider_delivery_auth.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/models/delivery_model.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/tiles/delivery_order_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
@@ -93,7 +92,7 @@ class _DeliveryHistoryState extends State<DeliveryHistory> {
           });
         }
       } else if (listNext == null && jobListing.length > 6) {
-        _historyScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _historyScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),

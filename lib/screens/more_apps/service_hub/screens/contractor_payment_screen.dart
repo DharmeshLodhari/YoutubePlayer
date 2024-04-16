@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../services/location_service.dart';
@@ -341,29 +343,33 @@ class _ContractorPaymentScreenState extends State<ContractorPaymentScreen> {
   }
 
   void onSubmit() async {
-    if (FocusScope.of(context).hasFocus) {
-      FocusScope.of(context).unfocus();
-    }
-    await Future.delayed(const Duration(milliseconds: 500));
-    try {
-      BottomSheetPassCode(
-          context: context,
-          isValidCallback: () async {
-            showDialog(
-                context: context,
-                builder: (context) => const Center(child: SizedBox()));
-            makePayment();
-            // endJob();
-          },
-          cancelCallBack: () {
-            Navigator.pop(context);
-            _sendPaymentScaffoldMessenger.currentState!.showSnackBar(SnackBar(
-              content: Text(AppLocalization.of(context)!.invalidPassword),
-            ));
-          });
-    } catch (e) {
-      debugPrint(e.toString());
-      showToast(message: e.toString());
+    if (userBloc.user.staff != null) {
+      showToast(message: AppLocalization.of(context)?.doNotPermission);
+    } else {
+      if (FocusScope.of(context).hasFocus) {
+        FocusScope.of(context).unfocus();
+      }
+      await Future.delayed(const Duration(milliseconds: 500));
+      try {
+        BottomSheetPassCode(
+            context: context,
+            isValidCallback: () async {
+              showDialog(
+                  context: context,
+                  builder: (context) => const Center(child: SizedBox()));
+              makePayment();
+              // endJob();
+            },
+            cancelCallBack: () {
+              Navigator.pop(context);
+              _sendPaymentScaffoldMessenger.currentState?.showSnackBar(SnackBar(
+                content: Text(AppLocalization.of(context)!.invalidPassword),
+              ));
+            });
+      } catch (e) {
+        debugPrint(e.toString());
+        showToast(message: e.toString());
+      }
     }
   }
 

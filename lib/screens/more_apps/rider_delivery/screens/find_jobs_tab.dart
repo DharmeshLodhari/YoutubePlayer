@@ -11,6 +11,7 @@ import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -109,7 +110,7 @@ class FindJobsTabState extends State<FindJobsTab> {
           });
         }
       } else if (listNext == null && jobListing.length > 6) {
-        _findJobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _findJobScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: const Duration(milliseconds: 500),
@@ -226,6 +227,11 @@ class FindJobsTabState extends State<FindJobsTab> {
                             ),
                             child: Column(
                               children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 10.0, right: 10.0, top: 12.0),
+                                  child: _buildDateAndWaitingButton(index),
+                                ),
                                 DeliveryOrderTile(
                                     jobListing: jobListing[index]),
                                 _buildJobAction(index),
@@ -247,6 +253,68 @@ class FindJobsTabState extends State<FindJobsTab> {
       return NoItemInList(
         msg: AppLocalization.of(context)!.noResultFound,
       );
+    }
+  }
+
+  Widget _buildDateAndWaitingButton(int index) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(child: _buildDate(index)),
+        _buildWaitingButton(index),
+      ],
+    );
+  }
+
+  Widget _buildDate(int index) {
+    String date =
+        DateFormat("dd MMMM,yyyy").format(jobListing[index].createdAt!);
+    return Text(
+      date,
+      style: TextStyle(
+        fontWeight: FontWeight.w700,
+        color: darkGrey,
+        fontSize: 12,
+        fontFamily: "Inter",
+      ),
+    );
+  }
+
+  Widget _buildWaitingButton(int index) {
+    Color color = getStatusColor(index);
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: color.withOpacity(0.1),
+      ),
+      child: Text(
+        jobListing[index].status ?? "",
+        style: TextStyle(
+          color: color,
+          fontSize: 8,
+          fontWeight: FontWeight.w600,
+          fontFamily: "Inter",
+        ),
+      ),
+    );
+  }
+
+  getStatusColor(int index) {
+    switch (jobListing[index].status) {
+      case 'Awaiting Pickup':
+        return starYellow;
+      case 'Pending':
+        return darkGrey;
+      case 'Ongoing':
+        return navyBlue;
+      case 'Completed':
+        return naturalGreen;
+      case 'Canceled':
+        return mateRed;
+      default:
+        return navyBlue;
     }
   }
 
@@ -341,7 +409,10 @@ class FindJobsTabState extends State<FindJobsTab> {
         showToast(message: AppLocalization.of(context)!.jobAcceptedFromListing);
         // jobListing.isShowDetails = false;
         // jobListing.isDeliveryAccepted = true;
-        _onRefresh();
+        Navigator.of(context).pushNamed(Routes.RIDER_JOB_DETAILS, arguments: {
+          // 'showDetails': true,
+          'journeyId': jobListing.id
+        }).whenComplete(() => _onRefresh());
         setState(() {});
       } else {
         showToast(message: 'Offer already accepted by a dispatcher');

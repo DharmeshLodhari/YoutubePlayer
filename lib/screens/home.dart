@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -21,6 +22,7 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -248,7 +250,7 @@ class _HomeState extends State<Home> {
         });
       }
     } else if (next == null && yarnTopicList.length > 6) {
-      // _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+      // _askCategoriesScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
       //   content:
       //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
       //   duration: Duration(milliseconds: 500),
@@ -449,55 +451,56 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   SizedBox(height: 15),
-                  (nextContactMoments == '' && isExploreMomentsLoading)
-                      ? Shimmer.fromColors(
-                          baseColor: Colors.white,
-                          highlightColor: greyBorderColor,
-                          child: SizedBox(
-                            height: 180,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: 4,
-                              itemBuilder: (context, index) {
-                                return SizedBox(
-                                  width: 120,
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        )
-                      : SizedBox(
-                          height: 180,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            controller: _myConnectionsScrollController,
-                            scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.symmetric(vertical: 4),
-                            itemCount: momentsList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index == momentsList.length) {
-                                return Container();
-                                // buildIndicator(
-                                //     isLoading: isContactMomentsLoading);
-                              } else {
-                                return ContactMomentsCard(
-                                  index: index,
-                                  nextPageUrl: nextContactMoments,
-                                  userMomentModel: momentsList[index],
-                                  listOfConnectionsNames:
-                                      momentsList.map((e) => e.owner!).toList(),
-                                );
-                              }
-                            },
-                          ),
+                  if (nextContactMoments == '' && isExploreMomentsLoading)
+                    Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: SizedBox(
+                        height: 180,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: 4,
+                          itemBuilder: (context, index) {
+                            return SizedBox(
+                              width: 120,
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                            );
+                          },
                         ),
+                      ),
+                    )
+                  else
+                    SizedBox(
+                      height: 180,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        controller: _myConnectionsScrollController,
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        itemCount: momentsList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == momentsList.length) {
+                            return Container();
+                            // buildIndicator(
+                            //     isLoading: isContactMomentsLoading);
+                          } else {
+                            return ContactMomentsCard(
+                              index: index,
+                              nextPageUrl: nextContactMoments,
+                              userMomentModel: momentsList[index],
+                              listOfConnectionsNames:
+                                  momentsList.map((e) => e.owner!).toList(),
+                            );
+                          }
+                        },
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -505,8 +508,8 @@ class _HomeState extends State<Home> {
 
           InkWell(
             onTap: () {
-              // showSnackbar(context, message: "Coming soon");
-              // return;
+              showSnackbar(context, message: "Coming soon");
+              return;
               if (userBloc.user.rider == null) {
                 Navigator.of(context).pushNamed(Routes.RIDE_TYPE);
               } else {
@@ -565,15 +568,15 @@ class _HomeState extends State<Home> {
     final List<Map<String, String>> shortcuts = [
       {
         'imagePath': 'home/transaction',
-        'title': 'Transaction',
+        'title': ProtectionPermission.transaction,
       },
       {
         'imagePath': 'home/send',
-        'title': 'Send',
+        'title': ProtectionPermission.send,
       },
       {
         'imagePath': 'home/request',
-        'title': 'Request',
+        'title': ProtectionPermission.request,
       },
       // {
       //   'imagePath': 'home/request',
@@ -581,19 +584,19 @@ class _HomeState extends State<Home> {
       // },
       {
         'imagePath': 'home/yarn',
-        'title': 'Yarn',
+        'title': ProtectionPermission.yarn,
       },
       {
         'imagePath': 'home/moment',
-        'title': 'Moment',
+        'title': ProtectionPermission.moment,
       },
       {
         'imagePath': 'home/service',
-        'title': 'Services',
+        'title': ProtectionPermission.services,
       },
       {
         'imagePath': 'home/blog',
-        'title': 'Blog',
+        'title': ProtectionPermission.blog,
       },
     ];
 
@@ -609,7 +612,7 @@ class _HomeState extends State<Home> {
               child: GestureDetector(
                   // key: showTutorial(shortcut['title']),
                   onTap: () {
-                    onClickShortcut(shortcut['title']);
+                    onClickShortcut(shortcut['title'] ?? "");
                   },
                   child:
                       shortcutView(shortcut['imagePath']!, shortcut['title']!)),
@@ -620,31 +623,54 @@ class _HomeState extends State<Home> {
   }
 
   Widget shortcutView(String imagePath, String title) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        SvgPicture.asset(
-          imagePath.toSVG(),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          title,
-          style: const TextStyle(
-              fontSize: 13, fontWeight: FontWeight.w600, fontFamily: "Inter"),
-        ),
-      ],
+    // return !userBloc.user.hasWritePermission(title)
+    //     ? Stack(
+    //         children: [
+    //           _buildIconAndText(imagePath, title),
+    //           Positioned(
+    //             top: 0, // Adjust the top value as needed
+    //             right: -3, // Adjust the right value as needed
+    //             child: SvgPicture.asset(
+    //               'home/padlock'.toSVG(),
+    //               color: darkGreyYarn,
+    //             ),
+    //           ),
+    //         ],
+    //       )
+    //     : _buildIconAndText(imagePath, title);
+    return _buildIconAndText(imagePath, title);
+  }
+
+  Widget _buildIconAndText(String imagePath, String title) {
+    return PermissionProtectionWidget(
+      permissionName: title,
+      position: 0,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          SvgPicture.asset(
+            imagePath.toSVG(),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            style: const TextStyle(
+                fontSize: 13, fontWeight: FontWeight.w600, fontFamily: "Inter"),
+          ),
+        ],
+      ),
     );
   }
 
-  void onClickShortcut(String? shortcut) {
+  void onClickShortcut(String shortcut) {
     switch (shortcut) {
-      case 'Send':
+      case ProtectionPermission.send:
         hideBalance();
         Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
             arguments: <String, bool>{'isFromProfile': true});
         break;
-      case 'Transaction':
+      case ProtectionPermission.transaction:
         hideBalance();
         BottomSheetPassCode(
             context: context,
@@ -656,7 +682,7 @@ class _HomeState extends State<Home> {
               Navigator.pop(context);
             });
         break;
-      case 'Request':
+      case ProtectionPermission.request:
         hideBalance();
         Navigator.pushNamed(context, Routes.ACCOUNTS);
         break;
@@ -664,19 +690,19 @@ class _HomeState extends State<Home> {
       //   hideBalance();
       //   Navigator.pushNamed(context, Routes.DISPATCH);
       //   break;
-      case 'Yarn':
+      case ProtectionPermission.yarn:
         hideBalance();
         NavigationUtil.push(context, screen: YarnDashboard());
         break;
-      case 'Moment':
+      case ProtectionPermission.moment:
         hideBalance();
         NavigationUtil.push(context, screen: MomentsScreen());
         break;
-      case 'Services':
+      case ProtectionPermission.services:
         hideBalance();
         Navigator.pushNamed(context, Routes.SUPER_HUB, arguments: {'page': 0});
         break;
-      case 'Blog':
+      case ProtectionPermission.blog:
         hideBalance();
         if (appConfigurationModel?.enableSuperBlog == true) {
           NavigationUtil.push(
@@ -1006,28 +1032,86 @@ class _HomeState extends State<Home> {
         ],
       ),
       actions: <Widget>[
-        RoundedBackgroundIcon(
-            backgroundColor: Colors.transparent,
-            onTap: () {
-              Navigator.of(context).pushNamed(
-                Routes.SEARCH_MODULE,
-              );
-              // arguments: {"industry": {"discount": widget.discount!.id}
-            },
-            height: 15,
-            width: 15,
-            icon: SvgPicture.asset(
-              "yarn/search".toSVG(),
-              height: 12,
-              width: 12,
-            )),
-        // _searchBtn(),
-        // const SizedBox(width: 4.0),
+        _searchBtn(),
+        SizedBox(width: 15),
         _cartBtn(),
-        // const SizedBox(width: 8.0),
-        // _settingBtn(),
-        const SizedBox(width: 5.0),
+        SizedBox(width: 5),
       ],
+    );
+  }
+
+  Widget _searchBtn() {
+    return RoundedBackgroundIcon(
+      backgroundColor: Colors.transparent,
+      onTap: () {
+        Navigator.of(context).pushNamed(
+          Routes.SEARCH_MODULE,
+        );
+        // arguments: {"industry": {"discount": widget.discount!.id}
+      },
+      height: 18,
+      width: 18,
+      icon: SvgPicture.asset(
+        "yarn/search".toSVG(),
+        height: 12,
+        width: 12,
+      ),
+    );
+  }
+
+  Widget _cartBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      key: tutorialShoppingCartKey,
+      icon: badges.Badge(
+        badgeContent: getBadgeContent(),
+        position: badges.BadgePosition.topEnd(
+            end: getBadgeCount().length == 1 ? -2 : 0, top: 0),
+        badgeAnimation: const badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+          shape: badges.BadgeShape.circle,
+          badgeColor: naturalGreen,
+          padding: basketBloc.basketItems.length == 0
+              ? const EdgeInsets.all(0)
+              : EdgeInsets.all(4),
+          elevation: 0,
+        ),
+        child: SizedBox(
+          child: Card(
+            color: Colors.white,
+            elevation: 0,
+            margin: EdgeInsets.symmetric(vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: IconButton(
+              icon: Icon(
+                SlydoAppIconNew.cart,
+                color: Colors.black,
+                size: 17,
+              ),
+              onPressed: () async {
+                // Navigator.of(context).pushNamed(Routes.SIGN_UP, arguments: {
+                //   'phoneNumber': "+000000000000",
+                //   'otpCode': "123456",
+                //   'accountType': "Business"
+                // });
+
+                hideBalance();
+                NavigationUtil.pushNamed(context,
+                    routeName: Routes.SHOPPING_CART);
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1148,57 +1232,6 @@ class _HomeState extends State<Home> {
         defaultAddress = tempList.firstWhere((element) => element.is_default!);
       });
     }
-  }
-
-  Widget _cartBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      key: tutorialShoppingCartKey,
-      icon: badges.Badge(
-        badgeContent: getBadgeContent(),
-        position: badges.BadgePosition.topEnd(
-            end: getBadgeCount().length == 1 ? -5 : 0, top: 0),
-        badgeAnimation: const badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-          shape: badges.BadgeShape.circle,
-          badgeColor: naturalGreen,
-          padding: basketBloc.basketItems.length == 0
-              ? const EdgeInsets.all(0)
-              : EdgeInsets.only(
-                  left: getBadgeCount().length == 1 ? 6 : 8,
-                  right: 6,
-                  top: 4,
-                  bottom: 4),
-          elevation: 0,
-        ),
-        child: Center(
-          child: Icon(
-            SlydoAppIconNew.cart,
-            size: 16,
-            color: HexColor("#151515"),
-          ),
-        ),
-      ),
-      onTap: () {
-        // Navigator.of(context).pushNamed(Routes.SIGN_UP, arguments: {
-        //   'phoneNumber': "+000000000000",
-        //   'otpCode': "123456",
-        //   'accountType': "Business"
-        // });
-
-        hideBalance();
-        NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
-      },
-      backgroundColor: lightGrey.withOpacity(0.1),
-      enableMargin: true,
-    );
   }
 
   Widget? getBadgeContent() {
@@ -1341,20 +1374,21 @@ class _HomeState extends State<Home> {
         : Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              isBalanceHidden
-                  ? Container()
-                  : Padding(
-                      padding: const EdgeInsets.only(bottom: 2.0),
-                      child: Text(
-                        worldCurrencies[userBloc.user.currency!]!,
-                        style: TextStyle(
-                          color: white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 22,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
+              if (isBalanceHidden)
+                Container()
+              else
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0),
+                  child: Text(
+                    worldCurrencies[userBloc.user.currency!]!,
+                    style: TextStyle(
+                      color: white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 22,
+                      fontFamily: 'Inter',
                     ),
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 2.0),
                 child: Text(
@@ -1911,6 +1945,8 @@ class _HomeState extends State<Home> {
         SecureUser secureUser = await SecureStorage().getUser();
         String phoneNumber = secureUser.phoneNumber ?? "";
         String password = secureUser.password ?? "";
+        String company = secureUser.company ?? "";
+        bool isStaffLogin = secureUser.isStaffLogin ?? false;
 
         if (phoneNumber != "") {
           phoneNumber = "+" + country.phoneCode! + phoneNumber;
@@ -1919,6 +1955,10 @@ class _HomeState extends State<Home> {
         if (phoneNumber == "" || password == "") {
           phoneNumber = _user?.phoneNumber ?? "";
           password = _user?.password ?? "";
+          company = _user?.staff?.employerUsername ?? "";
+          if (company.isNotEmpty) {
+            isStaffLogin = true;
+          }
         }
 
         if (phoneNumber == "" || password == "") {
@@ -1931,7 +1971,10 @@ class _HomeState extends State<Home> {
         await UserAuth().updateUserAvatar(File(croppedImage));
 
         // Get new updated user data and set new user data to userBloc.
-        await _auth.authenticate(phoneNumber, password).then((value) {
+        await _auth
+            .authenticate(phoneNumber, password,
+                isStaffLogin: isStaffLogin, company: company)
+            .then((value) {
           userBloc.user = value;
           isLoading = false;
           if (mounted) setState(() {});

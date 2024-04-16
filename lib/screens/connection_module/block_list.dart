@@ -173,7 +173,7 @@ class _BlockedListState extends State<BlockedList> {
 
         if (mounted) setState(() {});
       } else if (next == null && blockList.length > 6) {
-        _scaffoldBlockMessengerListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldBlockMessengerListKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -187,8 +187,8 @@ class _BlockedListState extends State<BlockedList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldBlockMessengerListKey.currentState!
-        .showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldBlockMessengerListKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user, int index) {
@@ -249,8 +249,6 @@ class _BlockedListState extends State<BlockedList> {
             getList();
           }
         });
-      } else {
-        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }

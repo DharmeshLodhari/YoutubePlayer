@@ -248,7 +248,6 @@ class _SharedCartPaymentState extends State<SharedCartPayment> {
         return AppLocalization.of(context)!.pleaseEnterValidAmout;
       },
     );
-    ;
   }
 
   Widget getCategoryDropDown() {

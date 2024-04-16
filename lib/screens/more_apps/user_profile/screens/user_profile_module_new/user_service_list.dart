@@ -228,7 +228,7 @@ class _UserServiceListState extends State<UserServiceList> {
           });
         }
       } else if (serviceNext == null && serviceList.length > 6) {
-        _serviceScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _serviceScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

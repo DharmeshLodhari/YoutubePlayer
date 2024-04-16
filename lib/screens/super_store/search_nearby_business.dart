@@ -40,7 +40,6 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
   final ScrollController _scrollController = ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
-  String autoCompleteSearchText = "";
   ProductCategory? pressedCategory;
   ProductCategory? selectedProductCategory;
   List<ProductCategory>? productCategories;
@@ -154,7 +153,7 @@ class _SearchNearByBusinessState extends State<SearchNearByBusiness> {
           setState(() {});
         }
       } else if (next == null && nearByBusiness.length > 6) {
-        _scaffoldMessengerSearchKey.currentState!.showSnackBar(
+        _scaffoldMessengerSearchKey.currentState?.showSnackBar(
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),

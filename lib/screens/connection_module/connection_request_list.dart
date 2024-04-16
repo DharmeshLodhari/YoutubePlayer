@@ -185,8 +185,8 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
           });
         }
       } else if (next == null && connectionRequestList.length > 6) {
-        _scaffoldMessengerContactRequestListKey.currentState!
-            .showSnackBar(SnackBar(
+        _scaffoldMessengerContactRequestListKey.currentState
+            ?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -200,8 +200,8 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessengerContactRequestListKey.currentState!
-        .showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessengerContactRequestListKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(Map data, int index) {
@@ -294,8 +294,6 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             getList();
           }
         });
-      } else {
-        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }

@@ -226,7 +226,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           length: 2,
           child: Scaffold(
             backgroundColor: Colors.white,
-            appBar: appBar() as PreferredSizeWidget?,
+            appBar: appBar(),
             body: tabViews(),
           ),
         ),

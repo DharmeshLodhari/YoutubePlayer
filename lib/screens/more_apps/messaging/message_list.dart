@@ -334,7 +334,7 @@ class _MessageListState extends State<MessageList> {
           });
         }
       } else if (next == null && messageList.length > 6) {
-        _scaffoldMessengerMessageKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerMessageKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -348,8 +348,7 @@ class _MessageListState extends State<MessageList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessengerMessageKey.currentState!
-        .showSnackBar(SnackBar(content: Text(text)));
+    _scaffoldMessengerMessageKey.currentState?.showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listActionSlideActions(

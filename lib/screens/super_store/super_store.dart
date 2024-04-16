@@ -18,7 +18,7 @@ import '../../routes/route_constants.dart';
 import '../../utils/navigation_util.dart';
 import '../../utils/util.dart';
 import '../../widget/rounded_background_icon.dart';
-import '../more_apps/yarn/widgets/yarn_tab_selection.dart';
+import '../../widget/tab_selection.dart';
 
 class SuperStore extends StatefulWidget {
   var arguments;
@@ -272,7 +272,7 @@ class _SuperStoreState extends State<SuperStore> {
         ),
         Column(
           children: [
-            YarnTabSelection(
+            TabSelection(
               onTap: (index) {
                 currentAskTapOnHome = index;
                 // _pageViewController.jumpToPage(currentAskTapOnHome);

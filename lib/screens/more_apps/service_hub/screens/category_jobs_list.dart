@@ -73,7 +73,7 @@ class _JobsCategoryJobsListState extends State<JobsCategoryJobsList> {
           });
         }
       } else if (listNext == null && activeListing.length > 6) {
-        _jobScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+        _jobScaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

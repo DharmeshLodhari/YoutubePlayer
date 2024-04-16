@@ -56,6 +56,8 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  _DashboardState({this.arguments});
+
   //newUI Variables
   late DashboardBloc _dashboardBloc;
   DatabaseHelper _db = DatabaseHelper();
@@ -63,6 +65,7 @@ class _DashboardState extends State<Dashboard> {
   int _currentIndex = 0;
   var arguments;
   List<Widget>? screens;
+  late UserBloc userBloc;
   late BasketBloc basketBloc;
   late YarnDashboardBloc yarnDashboardBloc;
 
@@ -81,21 +84,21 @@ class _DashboardState extends State<Dashboard> {
   ];
 
   var list = ['Home', 'Store', 'Chat', 'Settings'];
-
-  final List<Widget> _pages = [
-    KeepAlivePage(wantKeepAlive: false, child: Home()),
-    SuperStoreHome(),
-    KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
-    GeneralSettingScreen(),
-  ];
-
-  _DashboardState({this.arguments});
+  List<Widget> _pages = [Container(), Container(), Container(), Container()];
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ShareManager().initializeShareManager();
+
+      _pages = [
+        KeepAlivePage(wantKeepAlive: false, child: Home()),
+        SuperStoreHome(),
+        KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
+        GeneralSettingScreen(),
+      ];
     });
+
     if (mounted) MainSocketMessageHandler().dispose();
     if (mounted) {
       setState(() {
@@ -110,7 +113,6 @@ class _DashboardState extends State<Dashboard> {
         }
       });
     }
-    super.initState();
 
     getAllCategories();
     // getProductCategories(); // not in use
@@ -124,6 +126,8 @@ class _DashboardState extends State<Dashboard> {
     // checkNotificationToNavigate();
     MyGlobals.notificationStream?.cancel();
     listenNotificationTap();
+
+    super.initState();
   }
 
   /// Handles fetching of all categories
@@ -290,9 +294,13 @@ class _DashboardState extends State<Dashboard> {
 
         Navigator.of(MyGlobals().navigationKey.currentContext!)
             .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-        Navigator.pushNamed(
-            MyGlobals().navigationKey.currentContext!, Routes.CHAT_SCREEN,
-            arguments: {"searchedUser": chatConversation});
+        if (userBloc.user.staff != null) {
+          showToast(message: AppLocalization.of(context)?.doNotPermission);
+        } else {
+          Navigator.pushNamed(
+              MyGlobals().navigationKey.currentContext!, Routes.CHAT_SCREEN,
+              arguments: {"searchedUser": chatConversation});
+        }
       }
     } else if (notification['type'] == "request-payment") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
@@ -311,13 +319,21 @@ class _DashboardState extends State<Dashboard> {
     } else if (notification['type'] == "connection-request") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-      Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 1});
+      if (userBloc.user.staff != null) {
+        showToast(message: AppLocalization.of(context)?.doNotPermission);
+      } else {
+        Navigator.of(MyGlobals().navigationKey.currentContext!)
+            .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 1});
+      }
     } else if (notification['type'] == "friends-dashboard") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-      Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
+      if (userBloc.user.staff != null) {
+        showToast(message: AppLocalization.of(context)?.doNotPermission);
+      } else {
+        Navigator.of(MyGlobals().navigationKey.currentContext!)
+            .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
+      }
     } else if (notification['type'] == "detail_message") {
       //this variable will fetch the id of message from the response
       String? idOfMessage =
@@ -442,6 +458,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     _dashboardBloc = Provider.of<DashboardBloc>(context);
@@ -583,44 +600,49 @@ class _DashboardState extends State<Dashboard> {
                     Positioned(
                       top: 0, // Adjust the top value as needed
                       right: 0, // Adjust the right value as needed
-                      child: StreamBuilder(
-                        stream:
-                            ChatMessageSynchronizer().getChatMessageCountStream,
-                        builder: (context, snapshot) {
-                          return FutureBuilder(
-                            future:
-                                ChatUserManager().checkForChatMessagesCount(),
-                            initialData: false,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                if (snapshot.data == true) {
-                                  // debugPrint('fola chat:::: ${snapshot.data}');
+                      child: userBloc.user.staff != null
+                          ? SvgPicture.asset(
+                              'home/padlock'.toSVG(),
+                              color: darkGreyYarn,
+                            )
+                          : StreamBuilder(
+                              stream: ChatMessageSynchronizer()
+                                  .getChatMessageCountStream,
+                              builder: (context, snapshot) {
+                                return FutureBuilder(
+                                  future: ChatUserManager()
+                                      .checkForChatMessagesCount(),
+                                  initialData: false,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      if (snapshot.data == true) {
+                                        // debugPrint('fola chat:::: ${snapshot.data}');
 
-                                  return ClipOval(
-                                    child: Container(
-                                      height: 16,
-                                      width: 16,
-                                      color: naturalGreen,
-                                      // child: Center(
-                                      //   child: Text(
-                                      //     '410',
-                                      //     style: TextStyle(
-                                      //       color: Colors.white,
-                                      //       fontSize: 10,
-                                      //       fontWeight: FontWeight.bold,
-                                      //     ),
-                                      //   ),
-                                      // ),
-                                    ),
-                                  );
-                                }
-                                return Container();
-                              }
-                              return Container();
-                            },
-                          );
-                        },
-                      ),
+                                        return ClipOval(
+                                          child: Container(
+                                            height: 16,
+                                            width: 16,
+                                            color: naturalGreen,
+                                            // child: Center(
+                                            //   child: Text(
+                                            //     '410',
+                                            //     style: TextStyle(
+                                            //       color: Colors.white,
+                                            //       fontSize: 10,
+                                            //       fontWeight: FontWeight.bold,
+                                            //     ),
+                                            //   ),
+                                            // ),
+                                          ),
+                                        );
+                                      }
+                                      return Container();
+                                    }
+                                    return Container();
+                                  },
+                                );
+                              },
+                            ),
                     ),
                 ],
               ),
@@ -656,7 +678,12 @@ class _DashboardState extends State<Dashboard> {
           setState(() {
             // Unfocus the keyboard
             FocusScope.of(context).requestFocus(new FocusNode());
-            _bottomNavIndex = index;
+            if (userBloc.user.staff != null && index == 2) {
+              showToast(message: AppLocalization.of(context)?.doNotPermission);
+              return;
+            } else {
+              _bottomNavIndex = index;
+            }
           });
         },
         shadow: BoxShadow(

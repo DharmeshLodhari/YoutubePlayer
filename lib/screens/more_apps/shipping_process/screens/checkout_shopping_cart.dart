@@ -4,10 +4,10 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/normal_cart/normal_cart_screen.dart';
 import 'package:Slydo/screens/more_apps/shipping_process/screens/shared_cart/shared_cart_screen.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:Slydo/widget/tab_selection.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 
@@ -69,7 +69,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   Widget _buildTabs() {
     return Column(
       children: [
-        YarnTabSelection(
+        TabSelection(
           onTap: (index) {
             currentAskTapOnHome = index;
             _pageViewController.jumpToPage(currentAskTapOnHome);
@@ -117,25 +117,25 @@ class _ShoppingCartState extends State<ShoppingCart> {
               }
             },
           ),
-          SharedCartScreen(
-            key: sharedStateKey,
-            onPageRefresh: (bool data) {
-              if (data == true) {
-                _showTabs(true);
-              }
-            },
-          ),
-          // Center(
-          //   child: Container(
-          //     child: Text(
-          //       "Coming Soon",
-          //       style: TextStyle(
-          //           fontSize: 18,
-          //           fontFamily: "Inter",
-          //           fontWeight: FontWeight.bold),
-          //     ),
-          //   ),
-          // )
+          // SharedCartScreen(
+          //   key: sharedStateKey,
+          //   onPageRefresh: (bool data) {
+          //     if (data == true) {
+          //       _showTabs(true);
+          //     }
+          //   },
+          // ),
+          Center(
+            child: Container(
+              child: Text(
+                "Coming Soon",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "Inter",
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -178,6 +178,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
             color: blackFont,
           ),
           onTap: () async {
+            showToast(message: 'Coming Soon');
+            return;
             var result = await Navigator.of(context).pushNamed(
                 Routes.SELECT_USER_FOR_GROUP,
                 arguments: {"create": "basket"});

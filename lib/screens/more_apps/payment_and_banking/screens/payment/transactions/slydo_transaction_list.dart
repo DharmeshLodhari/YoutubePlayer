@@ -42,7 +42,6 @@ class _SlydoTransactionListState extends State<SlydoTransactionList> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-  RefreshBlocForTransaction? _refreshBloc;
   DateTimeRange? newDateTimeRange;
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 

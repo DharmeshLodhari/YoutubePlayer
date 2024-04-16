@@ -7,7 +7,6 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
-import 'package:Slydo/screens/moments/screens/moment_detail/custom_story_view.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/moment_comment_list.dart';
 import 'package:Slydo/screens/moments/screens/moment_detail/render_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';

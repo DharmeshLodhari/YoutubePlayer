@@ -6,8 +6,8 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/rider_delivery/screens/find_jobs_tab.dart';
 import 'package:Slydo/screens/more_apps/service_hub/screens/jobs_dashboard.dart';
 import 'package:Slydo/screens/more_apps/service_hub/service_hub.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/util.dart';
-import '../yarn/widgets/yarn_tab_selection.dart';
+import '../../../widget/tab_selection.dart';
 
 class ServiceHubDashboard extends StatefulWidget {
   var arguments;
@@ -238,7 +238,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           Divider(
             color: darkGrey.withOpacity(.5),
           ),
-          YarnTabSelection(
+          TabSelection(
             onTap: (index) {
               currentIndex = index;
               _pageViewController.jumpToPage(currentIndex);
@@ -281,18 +281,16 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
   }
 
   Widget _cartBtn() {
-    return GestureDetector(
-      child: badges.Badge(
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: badges.Badge(
         badgeStyle: badges.BadgeStyle(
           shape: badges.BadgeShape.circle,
           badgeColor: naturalGreen,
           padding: basketBloc.basketItems.length == 0
               ? const EdgeInsets.all(0)
-              : EdgeInsets.only(
-                  left: getBadgeCount().length == 1 ? 6 : 8,
-                  right: 6,
-                  top: 6,
-                  bottom: 4),
+              : EdgeInsets.all(4),
           elevation: 0,
         ),
         badgeAnimation: const badges.BadgeAnimation.rotation(
@@ -304,7 +302,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
         ),
         badgeContent: getBadgeContent(),
         position: badges.BadgePosition.topEnd(
-            end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
+            end: getBadgeCount().length == 1 ? -1 : 0, top: 0),
         child: Center(
           child: Icon(
             SlydoAppIcon.cart,
@@ -316,6 +314,8 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
       onTap: () {
         Navigator.pushNamed(context, Routes.SHOPPING_CART);
       },
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: true,
     );
   }
 
@@ -388,7 +388,7 @@ class _ServiceHubDashboardState extends State<ServiceHubDashboard> {
           length: 2,
           child: Scaffold(
             backgroundColor: Colors.white,
-            appBar: appBar() as PreferredSizeWidget?,
+            appBar: appBar(),
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
