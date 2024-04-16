@@ -457,13 +457,13 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           children: <Widget>[
             PermissionProtectionWidget(
               permissionName: title,
-              position: 8,
+              position: 10,
               child: Row(
                 children: [
                   SvgPicture.asset(
                     imagePath.toSVG(),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       title,

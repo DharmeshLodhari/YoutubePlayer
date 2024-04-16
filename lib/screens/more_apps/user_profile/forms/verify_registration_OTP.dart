@@ -205,7 +205,7 @@ class _VerifyRegistrationOTPScreenState
             Row(
               children: <Widget>[
                 Text(
-                  "This code will expire in",
+                  "This code will expire in ",
                   style: TextStyle(fontSize: 14, color: darkGrey),
                 ),
                 Text(
@@ -213,7 +213,7 @@ class _VerifyRegistrationOTPScreenState
                   style: TextStyle(fontSize: 14, color: Colors.red),
                 ),
                 Text(
-                  "minutes.",
+                  " minutes.",
                   style: TextStyle(fontSize: 14, color: darkGrey),
                 ),
               ],

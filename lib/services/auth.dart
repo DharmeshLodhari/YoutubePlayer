@@ -223,7 +223,7 @@ class AuthService {
           AppConfig.baseUrl + "/api/v1/user/customer/" + jsonData["username"];
       User user = await createUser(jsonData,
           staff: jsonResponse["staff"],
-          permissions: jsonResponse["permissions"][0]);
+          permissions: jsonResponse["permissions"]);
 
       return Future.value(user);
     }

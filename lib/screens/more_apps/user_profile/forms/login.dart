@@ -58,6 +58,7 @@ class _UserLoginState extends State<UserLogin> {
   TextEditingController? phoneNumberController;
   TextEditingController? passwordController;
   TextEditingController? companyController;
+  FocusNode? companyFocusNode;
   late SharedPreferences _sharedPreferences;
   late BasketBloc basketBloc;
   late SharedCartBloc sharedCartBloc;
@@ -68,10 +69,12 @@ class _UserLoginState extends State<UserLogin> {
   late Country _selectedDialogCountry;
   int currentIndex = 0;
 
-  List<CompanyName>? companyList = [];
+  List<CompanyName> companyList = [];
   // String businessName = "";
-  bool _showDropdown = false;
   String companyName = "";
+  List<String> _dropdownItems = [];
+
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -79,8 +82,9 @@ class _UserLoginState extends State<UserLogin> {
     getSharedPreference();
     phoneNumberController = TextEditingController();
     passwordController = TextEditingController();
+    companyController = TextEditingController();
 
-    searchCompanyName("");
+    // searchCompanyName("");
     super.initState();
   }
 
@@ -164,38 +168,23 @@ class _UserLoginState extends State<UserLogin> {
     return SingleChildScrollView(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height +
-                MediaQuery.of(context).padding.top),
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 8,
-              child: Form(
-                key: _loginFormKey,
-                child: DefaultTabController(
-                  length: 2,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      appIcon(),
-                      flexibleSpace(flex: 1),
-                      loginTitle(),
-                      flexibleSpace(flex: 3),
-                      _buildTabs(),
-                      flexibleSpace(flex: 3),
-                      _buildPageView(),
-                      flexibleSpace(flex: 3),
-                      loginBtn(),
-                      flexibleSpace(flex: 1),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            flexibleSpace(flex: 2),
-          ],
+        child: Form(
+          key: _loginFormKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              appIcon(),
+              SizedBox(height: 10),
+              loginTitle(),
+              SizedBox(height: 30),
+              _buildTabs(),
+              SizedBox(height: 30),
+              _buildPageView(),
+              SizedBox(height: 30),
+              loginBtn(),
+              SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -242,6 +231,8 @@ class _UserLoginState extends State<UserLogin> {
               child: buildTabItem(
                 onTap: (int index) {
                   currentIndex = index;
+                  _dropdownItems.clear();
+                  companyController?.clear();
                   setState(() {});
                 },
                 tabIndex: 0,
@@ -301,51 +292,78 @@ class _UserLoginState extends State<UserLogin> {
 
   Widget companyNameField() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          "Company Name",
-          style: TextStyle(
-            color: darkGrey,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            fontFamily: "Inter",
-          ),
+        CustomizedTextFormField(
+          labelText: 'Company Name',
+          labelColor: darkGrey,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          keyboardType: TextInputType.text,
+          hintText: "Enter company username",
+          controller: companyController,
+          focusNode: companyFocusNode,
+          onChanged: (String val) {
+            if (val != null && val.length >= 3) {
+              searchCompanyName(val);
+            } else {
+              setState(() {
+                _dropdownItems.clear();
+              });
+            }
+          },
+          validator: (val) {
+            if (currentIndex == 1) {
+              if (val.isNotEmpty) {
+                return null;
+              }
+              return AppLocalization.of(context)!.invalidCompanyName;
+            }
+          },
         ),
-        SizedBox(
-          height: 6,
-        ),
-        dropdownCountrySearch(),
-        // _buildCompanyTextField(),
+        if (_dropdownItems.isNotEmpty)
+          Card(
+            elevation: 4,
+            child: Container(
+              color: white,
+              constraints: const BoxConstraints(
+                maxHeight: 100,
+              ),
+              child: RawScrollbar(
+                controller: scrollController,
+                thumbVisibility: true,
+                thickness: 5,
+                trackVisibility: true,
+                thumbColor: navyBlue,
+                radius: Radius.circular(15),
+                child: Container(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    controller: scrollController,
+                    children: _dropdownItems.map((String value) {
+                      return Container(
+                        color: white,
+                        child: ListTile(
+                          dense: true,
+                          title: Text(value),
+                          onTap: () {
+                            companyController?.text = value;
+                            companyName = value;
+                            _dropdownItems.clear();
+                            setState(() {});
+                            companyFocusNode?.unfocus();
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
+          )
       ],
     );
   }
-
-  // Widget _buildCompanyTextField() {
-  //   return CustomizedTextFormField(
-  //     labelColor: darkGrey,
-  //     keyboardType: TextInputType.text,
-  //     hintText: "Enter company username",
-  //     controller: companyController,
-  //     onChanged: (String val) {
-  //       setState(() {
-  //         if (val != null && val.length >= 3) {
-  //           searchCompanyName(val);
-  //           if (companyList?.isNotEmpty) {
-  //             _showDropdown = val.length > 3;
-  //           }
-  //         }
-  //       });
-  //     },
-  //     validator: (val) {
-  //       if (val.isNotEmpty && val.length >= 9) {
-  //         return null;
-  //       }
-  //       return AppLocalization.of(context)!.invalidCompanyName;
-  //     },
-  //   );
-  // }
 
   Widget dropdownCountrySearch() {
     return Container(
@@ -395,7 +413,7 @@ class _UserLoginState extends State<UserLogin> {
                 ),
               ),
             )),
-        items: companyList?.map((CompanyName item) {
+        items: companyList.map((CompanyName item) {
               return item.businessName ?? "";
             }).toList() ??
             [],
@@ -435,9 +453,9 @@ class _UserLoginState extends State<UserLogin> {
             // businessName = companyList
             //         ?.firstWhere((element) => element.businessName == value)
             //         .businessName ??
-            "";
+            // "";
             companyName = companyList
-                    ?.firstWhere((element) => element.businessName == value)
+                    .firstWhere((element) => element.businessName == value)
                     .username ??
                 "";
             // companyName = value!;
@@ -490,21 +508,17 @@ class _UserLoginState extends State<UserLogin> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Column(
-          children: [
-            Text(
-              "Phone number",
-              style: TextStyle(
-                color: darkGrey,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                fontFamily: "Inter",
-              ),
-            ),
-            SizedBox(
-              height: 6,
-            ),
-          ],
+        Text(
+          "Phone number",
+          style: TextStyle(
+            color: darkGrey,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            fontFamily: "Inter",
+          ),
+        ),
+        SizedBox(
+          height: 6,
         ),
         Card(
           color: whiteBackground,
@@ -935,9 +949,27 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   Future<void> searchCompanyName(String query) async {
-    if (mounted) setState(() {});
-    companyList = await ShoppingAuthService().listOfCompanyName(query);
-    if (mounted) setState(() {});
+    try {
+      if (mounted) setState(() {});
+      companyList = await ShoppingAuthService().listOfCompanyName(query) ?? [];
+
+      // Clear the existing dropdown items
+      _dropdownItems.clear();
+
+      // Extract usernames and add them to the dropdown items
+
+      if (mounted)
+        setState(() {
+          for (var company in companyList) {
+            if (company.username != null) {
+              _dropdownItems.add(company.username!);
+            }
+          }
+        });
+    } catch (error) {
+      debugPrint('Error fetching data: $error');
+      if (mounted) setState(() {});
+    }
   }
 
   Widget buildTabItem({

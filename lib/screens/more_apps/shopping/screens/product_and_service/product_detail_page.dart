@@ -1266,71 +1266,80 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ),
                   )
                 : displayProductImages?.length == 1
-                    ? Stack(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 1.7,
-                            child: Container(
-                              child: Center(
-                                  child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(0)),
-                                child: Stack(
-                                  children: [
-                                    CachedNetworkImage(
-                                      placeholder: (context, url) => Center(
-                                          child: CircularLoadingIndicator()),
-                                      imageUrl: displayProductImages?[0] ?? "",
-                                      fit: BoxFit.cover,
-                                      height: double.infinity,
-                                      width: double.infinity,
-                                      errorWidget:
-                                          productAndServiceBigErrorWidget,
-                                    ),
-                                    if (checkDiscount(
-                                        product!.discountIsActive!,
-                                        product!.discountedPrice!,
-                                        product!.price!))
-                                      Positioned(
-                                        top: 20,
-                                        right: 10,
-                                        child: showDiscountValue(
-                                            product!.discountType!,
-                                            product!.discountValue!,
-                                            product!.currency),
+                    ? GestureDetector(
+                        onTap: () {
+                          if (displayProductImages?[0] != null) {
+                            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                                arguments: displayProductImages?[0]);
+                          }
+                        },
+                        child: Stack(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 1.7,
+                              child: Container(
+                                child: Center(
+                                    child: ClipRRect(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(0)),
+                                  child: Stack(
+                                    children: [
+                                      CachedNetworkImage(
+                                        placeholder: (context, url) => Center(
+                                            child: CircularLoadingIndicator()),
+                                        imageUrl:
+                                            displayProductImages?[0] ?? "",
+                                        fit: BoxFit.cover,
+                                        height: double.infinity,
+                                        width: double.infinity,
+                                        errorWidget:
+                                            productAndServiceBigErrorWidget,
                                       ),
-                                    if (product!.pricePercentageChange !=
-                                        0.0) ...[
-                                      Positioned(
-                                        top: 8,
-                                        right: 100,
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 6.0,
-                                              right: 6.0,
-                                              top: 4.0,
-                                              bottom: 4.0),
-                                          decoration: BoxDecoration(
-                                            color: naturalGreen,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(8)),
-                                          ),
-                                          child: Text(
-                                            "${product!.pricePercentageChange!.toInt()}% off",
-                                            style: TextStyle(
-                                              color: Colors.white,
+                                      if (checkDiscount(
+                                          product!.discountIsActive!,
+                                          product!.discountedPrice!,
+                                          product!.price!))
+                                        Positioned(
+                                          top: 20,
+                                          right: 10,
+                                          child: showDiscountValue(
+                                              product!.discountType!,
+                                              product!.discountValue!,
+                                              product!.currency),
+                                        ),
+                                      if (product!.pricePercentageChange !=
+                                          0.0) ...[
+                                        Positioned(
+                                          top: 8,
+                                          right: 100,
+                                          child: Container(
+                                            padding: EdgeInsets.only(
+                                                left: 6.0,
+                                                right: 6.0,
+                                                top: 4.0,
+                                                bottom: 4.0),
+                                            decoration: BoxDecoration(
+                                              color: naturalGreen,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(8)),
+                                            ),
+                                            child: Text(
+                                              "${product!.pricePercentageChange!.toInt()}% off",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ]
-                                  ],
-                                ),
-                              )),
+                                      ]
+                                    ],
+                                  ),
+                                )),
+                              ),
                             ),
-                          ),
-                          getOutOfStockTag(),
-                        ],
+                            getOutOfStockTag(),
+                          ],
+                        ),
                       )
                     : Column(
                         children: <Widget>[
@@ -1348,65 +1357,75 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                     }),
                                 items: displayProductImages!
                                     .map(
-                                      (item) => Stack(
-                                        children: [
-                                          Container(
-                                            child: Center(
-                                                child: ClipRRect(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
-                                              child: Stack(
-                                                children: [
-                                                  CachedNetworkImage(
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        Center(
-                                                            child:
-                                                                CircularLoadingIndicator()),
-                                                    imageUrl: item!,
-                                                    fit: BoxFit.cover,
-                                                    height: double.infinity,
-                                                    width: double.infinity,
-                                                    errorWidget:
-                                                        productAndServiceBigErrorWidget,
-                                                  ),
-                                                  if (product!
-                                                          .pricePercentageChange !=
-                                                      0.0) ...[
-                                                    Positioned(
-                                                      top: 8,
-                                                      right: 100,
-                                                      child: Container(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                left: 6.0,
-                                                                right: 6.0,
-                                                                top: 4.0,
-                                                                bottom: 4.0),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: naturalGreen,
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          8)),
-                                                        ),
-                                                        child: Text(
-                                                          "${product!.pricePercentageChange!.toInt()}% off",
-                                                          style: TextStyle(
-                                                            color: Colors.white,
+                                      (item) => GestureDetector(
+                                        onTap: () {
+                                          if (item != null) {
+                                            Navigator.of(context).pushNamed(
+                                                Routes.PHOTO_VIEWER,
+                                                arguments: item);
+                                          }
+                                        },
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              child: Center(
+                                                  child: ClipRRect(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10)),
+                                                child: Stack(
+                                                  children: [
+                                                    CachedNetworkImage(
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          Center(
+                                                              child:
+                                                                  CircularLoadingIndicator()),
+                                                      imageUrl: item!,
+                                                      fit: BoxFit.cover,
+                                                      height: double.infinity,
+                                                      width: double.infinity,
+                                                      errorWidget:
+                                                          productAndServiceBigErrorWidget,
+                                                    ),
+                                                    if (product!
+                                                            .pricePercentageChange !=
+                                                        0.0) ...[
+                                                      Positioned(
+                                                        top: 8,
+                                                        right: 100,
+                                                        child: Container(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 6.0,
+                                                                  right: 6.0,
+                                                                  top: 4.0,
+                                                                  bottom: 4.0),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: naturalGreen,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            8)),
+                                                          ),
+                                                          child: Text(
+                                                            "${product!.pricePercentageChange!.toInt()}% off",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ]
-                                                ],
-                                              ),
-                                            )),
-                                          ),
-                                          getOutOfStockTag(),
-                                        ],
+                                                    ]
+                                                  ],
+                                                ),
+                                              )),
+                                            ),
+                                            getOutOfStockTag(),
+                                          ],
+                                        ),
                                       ),
                                     )
                                     .toList(),

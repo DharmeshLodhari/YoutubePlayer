@@ -449,7 +449,9 @@ class _ConfirmOrderState extends State<ConfirmOrder> {
               ),
             ),
             Text(
-              moneyDisplayNormalizer(shippingProcessBloc.getTotalShipping()),
+              moneyDisplayNormalizer(shippingProcessBloc
+                  .getPackageDetailModel()
+                  .customerServiceFee),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,

@@ -280,6 +280,7 @@ class UserAuth extends AuthService {
     debugPrint('REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 205) {
+      var jsonData = json.decode(response.body);
       return true;
     } else {
       if (AppConfig.enableLogs.value) debugPrint("DATA SENT:- $data");
