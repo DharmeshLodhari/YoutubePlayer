@@ -136,20 +136,16 @@ class RiderDeliveryAuthService extends AuthService {
     String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/accept-offer/";
     var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers);
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      handleServerErrors(response);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -164,20 +160,16 @@ class RiderDeliveryAuthService extends AuthService {
     String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/reject-offer/";
     var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers);
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      handleServerErrors(response);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -192,20 +184,16 @@ class RiderDeliveryAuthService extends AuthService {
     String url = AppConfig.baseUrl +
         "/api/v1/shipping/journeys/$journeyId/start-journey/";
     var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers);
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      handleServerErrors(response);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -220,20 +208,16 @@ class RiderDeliveryAuthService extends AuthService {
     String url =
         AppConfig.baseUrl + "/api/v1/shipping/journeys/$journeyId/end-journey/";
     var headers = await getAuthHeaders();
+    var response = await httpPatch(url, headers: headers);
 
     try {
-      var response = await httpPatch(url, headers: headers);
+      handleServerErrors(response);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -258,17 +242,13 @@ class RiderDeliveryAuthService extends AuthService {
     var response = await request.send();
 
     try {
+      handleServerErrors(response);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var responseBody = await response.stream.bytesToString();
-        var jsonResponse = jsonDecode(responseBody);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -296,17 +276,13 @@ class RiderDeliveryAuthService extends AuthService {
     var response = await request.send();
 
     try {
+      handleServerErrors(response);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var responseBody = await response.stream.bytesToString();
-        var jsonResponse = jsonDecode(responseBody);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -331,17 +307,13 @@ class RiderDeliveryAuthService extends AuthService {
     var response = await request.send();
 
     try {
+      handleServerErrors(response);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var responseBody = await response.stream.bytesToString();
-        var jsonResponse = jsonDecode(responseBody);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -376,17 +348,13 @@ class RiderDeliveryAuthService extends AuthService {
     }
 
     try {
+      handleServerErrors(response);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var responseBody = await response.stream.bytesToString();
-        var jsonResponse = jsonDecode(responseBody);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -405,16 +373,19 @@ class RiderDeliveryAuthService extends AuthService {
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return true;
-    } else if (response.statusCode == 400) {
-      var jsonResponse = jsonDecode(response.body);
-      if (jsonResponse.containsKey("error")) {
-        showToast(message: jsonResponse['error']);
+
+    try {
+      handleServerErrors(response);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
         return false;
       }
+    } catch (e) {
+      debugPrint("Error : $e");
+      return false;
     }
-    return false;
   }
 
   // Fetch a rider location
@@ -459,16 +430,13 @@ class RiderDeliveryAuthService extends AuthService {
     try {
       var response = await httpPatch(url, headers: headers);
 
+      handleServerErrors(response);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -487,16 +455,13 @@ class RiderDeliveryAuthService extends AuthService {
     try {
       var response = await httpPatch(url, headers: headers);
 
+      handleServerErrors(response);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;
@@ -515,16 +480,13 @@ class RiderDeliveryAuthService extends AuthService {
     try {
       var response = await httpPatch(url, headers: headers);
 
+      handleServerErrors(response);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
-      } else if (response.statusCode == 400) {
-        var jsonResponse = jsonDecode(response.body);
-        if (jsonResponse.containsKey("error")) {
-          showToast(message: jsonResponse['error']);
-          return false;
-        }
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
       debugPrint("Error: $e");
       return false;

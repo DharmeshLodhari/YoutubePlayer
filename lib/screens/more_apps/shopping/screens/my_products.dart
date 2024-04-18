@@ -1,7 +1,9 @@
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -118,10 +120,14 @@ class _MyProductsState extends State<MyProducts> {
           },
           height: 15,
           width: 15,
-          icon: SvgPicture.asset(
-            "add_payment".toSVG(),
-            height: 12,
-            width: 12,
+          icon: PermissionProtectionWidget(
+            permissionName: ProtectionPermission.product,
+            isLockForRead: true,
+            child: SvgPicture.asset(
+              "add_payment".toSVG(),
+              height: 12,
+              width: 12,
+            ),
           )),
       SizedBox(width: 20),
     ];

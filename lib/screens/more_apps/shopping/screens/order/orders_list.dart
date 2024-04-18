@@ -88,7 +88,7 @@ class _OrdersListState extends State<OrdersList> {
       } else {
         showToast(
             message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)?.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });

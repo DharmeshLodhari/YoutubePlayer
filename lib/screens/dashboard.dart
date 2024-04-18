@@ -18,6 +18,7 @@ import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/services/share_manager.dart';
+import 'package:Slydo/utils/deep_link_service.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
@@ -26,6 +27,7 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -75,6 +77,7 @@ class _DashboardState extends State<Dashboard> {
   bool? isNFCPermissionAccepted;
   late AppLocalization appLocalization;
   var _bottomNavIndex = 0; //default index of a first screen
+  PendingDynamicLinkData? initialLink;
 
   final iconList = [
     'home/home',
@@ -88,7 +91,10 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+      print("=========dash board initialLink : ${initialLink?.asMap()}");
+
       ShareManager().initializeShareManager();
 
       _pages = [
@@ -97,6 +103,11 @@ class _DashboardState extends State<Dashboard> {
         KeepAlivePage(wantKeepAlive: true, child: ConnectionDashboard()),
         GeneralSettingScreen(),
       ];
+
+      if (initialLink != null) {
+        DeepLinkService.instance?.handleDynamicLinks(context);
+        print("widget.initialLink :==================== $initialLink");
+      }
     });
 
     if (mounted) MainSocketMessageHandler().dispose();
@@ -294,13 +305,9 @@ class _DashboardState extends State<Dashboard> {
 
         Navigator.of(MyGlobals().navigationKey.currentContext!)
             .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-        if (userBloc.user.staff != null) {
-          showToast(message: AppLocalization.of(context)?.doNotPermission);
-        } else {
-          Navigator.pushNamed(
-              MyGlobals().navigationKey.currentContext!, Routes.CHAT_SCREEN,
-              arguments: {"searchedUser": chatConversation});
-        }
+        Navigator.pushNamed(
+            MyGlobals().navigationKey.currentContext!, Routes.CHAT_SCREEN,
+            arguments: {"searchedUser": chatConversation});
       }
     } else if (notification['type'] == "request-payment") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
@@ -319,21 +326,14 @@ class _DashboardState extends State<Dashboard> {
     } else if (notification['type'] == "connection-request") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-      if (userBloc.user.staff != null) {
-        showToast(message: AppLocalization.of(context)?.doNotPermission);
-      } else {
-        Navigator.of(MyGlobals().navigationKey.currentContext!)
-            .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 1});
-      }
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
+          .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 1});
     } else if (notification['type'] == "friends-dashboard") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName(Routes.DASHBOARD));
-      if (userBloc.user.staff != null) {
-        showToast(message: AppLocalization.of(context)?.doNotPermission);
-      } else {
-        Navigator.of(MyGlobals().navigationKey.currentContext!)
-            .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
-      }
+
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
+          .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
     } else if (notification['type'] == "detail_message") {
       //this variable will fetch the id of message from the response
       String? idOfMessage =
@@ -600,49 +600,44 @@ class _DashboardState extends State<Dashboard> {
                     Positioned(
                       top: 0, // Adjust the top value as needed
                       right: 0, // Adjust the right value as needed
-                      child: userBloc.user.staff != null
-                          ? SvgPicture.asset(
-                              'home/padlock'.toSVG(),
-                              color: darkGreyYarn,
-                            )
-                          : StreamBuilder(
-                              stream: ChatMessageSynchronizer()
-                                  .getChatMessageCountStream,
-                              builder: (context, snapshot) {
-                                return FutureBuilder(
-                                  future: ChatUserManager()
-                                      .checkForChatMessagesCount(),
-                                  initialData: false,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      if (snapshot.data == true) {
-                                        // debugPrint('fola chat:::: ${snapshot.data}');
+                      child: StreamBuilder(
+                        stream:
+                            ChatMessageSynchronizer().getChatMessageCountStream,
+                        builder: (context, snapshot) {
+                          return FutureBuilder(
+                            future:
+                                ChatUserManager().checkForChatMessagesCount(),
+                            initialData: false,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.data == true) {
+                                  // debugPrint('fola chat:::: ${snapshot.data}');
 
-                                        return ClipOval(
-                                          child: Container(
-                                            height: 16,
-                                            width: 16,
-                                            color: naturalGreen,
-                                            // child: Center(
-                                            //   child: Text(
-                                            //     '410',
-                                            //     style: TextStyle(
-                                            //       color: Colors.white,
-                                            //       fontSize: 10,
-                                            //       fontWeight: FontWeight.bold,
-                                            //     ),
-                                            //   ),
-                                            // ),
-                                          ),
-                                        );
-                                      }
-                                      return Container();
-                                    }
-                                    return Container();
-                                  },
-                                );
-                              },
-                            ),
+                                  return ClipOval(
+                                    child: Container(
+                                      height: 16,
+                                      width: 16,
+                                      color: naturalGreen,
+                                      // child: Center(
+                                      //   child: Text(
+                                      //     '410',
+                                      //     style: TextStyle(
+                                      //       color: Colors.white,
+                                      //       fontSize: 10,
+                                      //       fontWeight: FontWeight.bold,
+                                      //     ),
+                                      //   ),
+                                      // ),
+                                    ),
+                                  );
+                                }
+                                return Container();
+                              }
+                              return Container();
+                            },
+                          );
+                        },
+                      ),
                     ),
                 ],
               ),

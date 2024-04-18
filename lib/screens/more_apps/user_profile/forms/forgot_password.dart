@@ -319,6 +319,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       UserAuth().passwordResetOtp(phoneNumber).then((value) {
         response = value;
 
+        try {
+          handleServerErrors(response);
+        } catch (e) {
+          return Future.error(response.body);
+        }
+
         isLoading = false;
 
         if (response.statusCode == 200) {

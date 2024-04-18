@@ -160,11 +160,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 showToast(message: 'Order placed successfully');
               } else if (response.statusCode == 500) {
                 Navigator.pop(context);
-                showToast(message: AppLocalization.of(context)!.serverError);
+                showToast(message: AppLocalization.of(context)?.serverError);
               } else {
                 debugPrint("MakePaymentForCartOrder Unsuccessful");
                 showToast(
-                    message: AppLocalization.of(context)!.somethingWentWrong);
+                    message: AppLocalization.of(context)?.somethingWentWrong);
                 Navigator.pop(context);
               }
             } else {
@@ -172,7 +172,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 "Could Not Place The Order",
               );
               showToast(
-                  message: AppLocalization.of(context)!.couldNotPlaceTheOrder);
+                  message: AppLocalization.of(context)?.couldNotPlaceTheOrder);
               Navigator.pop(context);
             }
           }

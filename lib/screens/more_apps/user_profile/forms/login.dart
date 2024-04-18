@@ -414,9 +414,8 @@ class _UserLoginState extends State<UserLogin> {
               ),
             )),
         items: companyList.map((CompanyName item) {
-              return item.businessName ?? "";
-            }).toList() ??
-            [],
+          return item.businessName ?? "";
+        }).toList(),
         dropdownDecoratorProps: DropDownDecoratorProps(
           dropdownSearchDecoration: InputDecoration(
             isDense: true,

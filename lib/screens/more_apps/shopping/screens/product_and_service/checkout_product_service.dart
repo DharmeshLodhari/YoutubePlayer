@@ -167,7 +167,7 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
                       amount: deliveryOption == 'Pickup'
                           ? '0.00'
                           : shippingOption != null
-                              ? moneyDisplayNormalizer(shippingOption!.price)
+                              ? moneyDisplayNormalizer(shippingOption?.price)
                               : '0.00'),
                   Divider(thickness: 0.3, color: blackFont),
                   priceRow(
@@ -461,9 +461,10 @@ class _CheckoutProductServiceState extends State<CheckoutProductService> {
       shippingOption = pickedShippingOption;
       // userSelectedShippingOption.clear();
       selectedShippingOptionName = shippingOption?.name;
-      userSelectedShippingOption[shippingOption!.owner] = shippingOption!.id;
-      debugPrint('OWNER -> ${shippingOption!.owner}');
-      debugPrint('OWNER ID -> ${shippingOption!.id}');
+      userSelectedShippingOption[shippingOption?.owner ?? ""] =
+          shippingOption?.id;
+      debugPrint('OWNER -> ${shippingOption?.owner}');
+      debugPrint('OWNER ID -> ${shippingOption?.id}');
       debugPrint('USER OWNER  -> $userSelectedShippingOption');
       if (mounted) setState(() {});
     }

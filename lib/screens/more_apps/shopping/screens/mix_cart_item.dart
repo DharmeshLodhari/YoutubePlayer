@@ -61,7 +61,7 @@ class _MixCartItemState extends State<MixCartItem> {
       } else {
         showToast(
             message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)?.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -335,7 +335,7 @@ class _MixCartItemState extends State<MixCartItem> {
                   } else {
                     showToast(
                       message:
-                          AppLocalization.of(context)!.pleaseAddSomeItemsFirst,
+                          AppLocalization.of(context)?.pleaseAddSomeItemsFirst,
                     );
                   }
                 },
@@ -628,7 +628,7 @@ class _MixCartItemState extends State<MixCartItem> {
                   } else if (response.statusCode == 500) {
                     Navigator.pop(context);
                     showToast(
-                        message: AppLocalization.of(context)!.serverError);
+                        message: AppLocalization.of(context)?.serverError);
                   }
                   // else if (response.statusCode == 800) {
                   //   Navigator.pop(context);

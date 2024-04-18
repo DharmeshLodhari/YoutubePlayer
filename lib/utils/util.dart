@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -2597,14 +2598,19 @@ Future<List<XFile>> selectMultipleImageVideo() async {
   return file;
 }
 
-class ContextUtility {
-  static final GlobalKey<NavigatorState> _navigatorKey =
-      GlobalKey<NavigatorState>(debugLabel: 'ContextUtilityNavigatorKey');
-  static GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
+Response handleServerErrors(dynamic response) {
+  var message = "Server Error";
 
-  static bool get hasNavigator => navigatorKey.currentState != null;
-  static NavigatorState? get navigator => navigatorKey.currentState;
-
-  static bool get hasContext => navigator?.overlay?.context != null;
-  static BuildContext? get context => navigator?.overlay?.context;
+  if (response.statusCode >= 200 || response.statusCode < 300) {
+    return response;
+  } else {
+    var jsonResponse = jsonDecode(response.body);
+    if (jsonResponse.containsKey('error')) {
+      message = jsonResponse['error'];
+    } else if (jsonResponse.containsKey('detail')) {
+      message = jsonResponse['detail'];
+    }
+    showToast(message: message);
+  }
+  throw message;
 }

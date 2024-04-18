@@ -170,7 +170,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 ? '0.00'
                                 : shippingOption != null
                                     ? moneyDisplayNormalizer(
-                                        shippingOption!.price)
+                                        shippingOption?.price)
                                     : '0.00'),
                         priceRow(
                           title: 'Order total',
@@ -204,7 +204,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ? basketBloc.merchantNameMapCopy[merchantFullName!]!
             : '',
         shippingOptionPrice:
-            shippingOption != null ? shippingOption!.price : 0);
+            shippingOption != null ? shippingOption?.price ?? 0 : 0);
   }
 
   getSubTotalPrice() {
@@ -293,7 +293,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   onNextClicked() {
     basketBloc.orderTotal += getOrderTotalPrice();
     basketBloc.totalShippingCost +=
-        shippingOption != null ? shippingOption!.price : 0;
+        shippingOption != null ? shippingOption?.price ?? 0 : 0;
 
     if (basketBloc.merchantData.length == 1) {
       basketBloc.userSelectedShippingOption = userSelectedShippingOption;
@@ -463,9 +463,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       shippingOption = pickedShippingOption;
       // userSelectedShippingOption.clear();
       selectedShippingOptionName = shippingOption?.name;
-      userSelectedShippingOption[shippingOption!.owner] = shippingOption!.id;
-      debugPrint('OWNER -> ${shippingOption!.owner}');
-      debugPrint('OWNER ID -> ${shippingOption!.id}');
+      userSelectedShippingOption[shippingOption?.owner ?? ""] =
+          shippingOption?.id;
+      debugPrint('OWNER -> ${shippingOption?.owner}');
+      debugPrint('OWNER ID -> ${shippingOption?.id}');
       debugPrint('USER OWNER  -> $userSelectedShippingOption');
       if (mounted) setState(() {});
     }

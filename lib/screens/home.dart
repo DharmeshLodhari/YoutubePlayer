@@ -644,7 +644,9 @@ class _HomeState extends State<Home> {
   Widget _buildIconAndText(String imagePath, String title) {
     return PermissionProtectionWidget(
       permissionName: title,
+      isShowLock: true,
       position: 0,
+      isLockForRead: false,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -1278,6 +1280,9 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 balanceRow(),
+                const SizedBox(
+                  height: 15.0,
+                ),
                 accountInfo(),
               ],
             ),
@@ -1328,6 +1333,9 @@ class _HomeState extends State<Home> {
               fontWeight: FontWeight.w500,
             ),
           ),
+        ),
+        const SizedBox(
+          height: 5.0,
         ),
         Row(
           children: [
@@ -1433,7 +1441,6 @@ class _HomeState extends State<Home> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 15.0),
           Text(
             bankName,
             style: TextStyle(
@@ -1442,6 +1449,9 @@ class _HomeState extends State<Home> {
               fontFamily: 'Inter',
               fontWeight: FontWeight.w600,
             ),
+          ),
+          const SizedBox(
+            height: 5.0,
           ),
           Row(
             children: [
@@ -1453,9 +1463,9 @@ class _HomeState extends State<Home> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(width: 4),
+              SizedBox(width: 5),
               GestureDetector(
-                onTap: copyAccountDetails,
+                onTap: copyAccountNumber,
                 child: SvgPicture.asset(
                   "ampersand".toSVG(),
                   width: 15,
@@ -1466,16 +1476,31 @@ class _HomeState extends State<Home> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                appendStringDot(accountName, 30),
-                style: TextStyle(
-                  fontSize: 14,
-                  color: white,
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                children: [
+                  Text(
+                    appendStringDot(accountName, 30),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  GestureDetector(
+                    onTap: copyAccountDetails,
+                    child: SvgPicture.asset(
+                      "ampersand".toSVG(),
+                      width: 15,
+                    ),
+                  ),
+                ],
               ),
               qrCodeIcon(),
             ],
+          ),
+          const SizedBox(
+            height: 5.0,
           ),
         ],
       );
@@ -1492,14 +1517,21 @@ class _HomeState extends State<Home> {
     showToast(message: "Account details copied !!");
   }
 
+  void copyAccountNumber() {
+    Clipboard.setData(ClipboardData(
+      text: "Account number: ${virtualAccount!.accountNumber}",
+    ));
+    showToast(message: "Account number copied !!");
+  }
+
   Widget qrCodeIcon() {
     return RoundedBackgroundIcon(
       key: tutorialScanQrCodeKey,
-      height: 34,
-      width: 34,
+      height: 30,
+      width: 30,
       icon: const Icon(
         SlydoAppIcon.qr_code,
-        size: 16,
+        size: 15,
         color: Colors.white,
       ),
       onTap: () async {

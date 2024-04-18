@@ -457,7 +457,9 @@ class _HomeQuickViewState extends State<HomeQuickView> {
           children: <Widget>[
             PermissionProtectionWidget(
               permissionName: title,
+              isShowLock: true,
               position: 10,
+              isLockForRead: false,
               child: Row(
                 children: [
                   SvgPicture.asset(

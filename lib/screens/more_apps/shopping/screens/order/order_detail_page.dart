@@ -76,22 +76,22 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   DeliveryModel? deliveryModel;
 
   String? getCustomerOrMerchant() {
-    var customerOrMerchant = order!.customerName == userBloc.user.userName
-        ? order!.merchant
-        : order!.customerName;
+    var customerOrMerchant = order?.customerName == userBloc.user.userName
+        ? order?.merchant
+        : order?.customerName;
     return customerOrMerchant;
   }
 
   String? getAvatar() {
-    return order!.customerName == userBloc.user.userName
-        ? order!.merchantAvatar
-        : order!.customerAvatar;
+    return order?.customerName == userBloc.user.userName
+        ? order?.merchantAvatar
+        : order?.customerAvatar;
   }
 
   String? getAvatarType() {
-    return order!.customerName == userBloc.user.userName
-        ? order!.merchantType
-        : order!.customerType;
+    return order?.customerName == userBloc.user.userName
+        ? order?.merchantType
+        : order?.customerType;
   }
 
   Widget getLeading() {
@@ -110,9 +110,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               myGlobals.navigationKey.currentContext!, Routes.USER_PROFILE,
               arguments: {
                 "searchedUserName":
-                    order!.customerName == userBloc.user.userName
-                        ? order!.merchant
-                        : order!.customerName
+                    order?.customerName == userBloc.user.userName
+                        ? order?.merchant
+                        : order?.customerName
               });
         },
         child: userImageUserInitialsPic(
@@ -130,7 +130,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-    fetchOrder(order!.id.toString());
+    fetchOrder(order?.id.toString() ?? "");
     if (order?.journeyId != null) {
       fetchJobData();
     }
@@ -192,7 +192,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   getCanceledOrderStatus(Order? order, String? status) {
     bool value = false;
-    for (var v in order!.statusTimeStamp!) {
+    for (var v in order?.statusTimeStamp ?? []) {
       if (v.containsKey('Canceled')) {
         value = true;
       }
@@ -202,7 +202,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   getOnHoldAndPendingOrderStatus(Order? order, String? status) {
     bool value = false;
-    for (var v in order!.statusTimeStamp!) {
+    for (var v in order?.statusTimeStamp ?? []) {
       if (v.containsKey('On Hold') || v.containsKey('Pending')) {
         value = true;
       }
@@ -227,7 +227,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void menuItemSelectionChange(String value, int index) {
-    if (userBloc.user.userName == order!.merchant) {
+    if (userBloc.user.userName == order?.merchant) {
       selectedMenuItemIndex = index;
       updateStatus(value);
       statusOfOrder = value;
@@ -325,7 +325,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         // showNoteAndroidSheet();
         NavigationUtil.push(
           context,
-          screen: UserAddress(customerName: order!.customerName),
+          screen: UserAddress(customerName: order?.customerName),
         );
       },
       backgroundColor: iconBtnGrey,
@@ -381,7 +381,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget changeOrderStatusSheetBtn() {
-    if (userBloc.user.userName == order!.merchant) {
+    if (userBloc.user.userName == order?.merchant) {
       return RoundedBackgroundIcon(
         height: 34,
         width: 34,
@@ -401,8 +401,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget _buildBody() {
-    bool canPay = order!.status == 'Awaiting Payment' &&
-        userBloc.user.userName != order!.merchant;
+    bool canPay = order?.status == 'Awaiting Payment' &&
+        userBloc.user.userName != order?.merchant;
 
     return isLoading
         ? Center(
@@ -441,9 +441,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         onTap: () => Navigator.pushNamed(
             myGlobals.navigationKey.currentContext!, Routes.USER_PROFILE,
             arguments: {
-              "searchedUserName": order!.customerName == userBloc.user.userName
-                  ? order!.merchant
-                  : order!.customerName
+              "searchedUserName": order?.customerName == userBloc.user.userName
+                  ? order?.merchant
+                  : order?.customerName
             }),
         child: Row(
           children: [
@@ -571,7 +571,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               //                             LoadingIndicator());
 
               //                 var data = {
-              //                   "orders": [order!.id]
+              //                   "orders": [order?.id]
               //                 };
               //                 PaymentAndBankingAuth()
               //                     .makePaymentForCartOrder(data)
@@ -758,7 +758,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget getBodyOfNoteBottomSheet() {
     bool result =
-        order!.note == "" && order!.customerName == userBloc.user.userName;
+        order?.note == "" && order?.customerName == userBloc.user.userName;
     if (!result) {
       return Expanded(
         child: SingleChildScrollView(
@@ -810,7 +810,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         cursorColor: blackFont,
         decoration: InputDecoration(
           isDense: true,
-          labelText: AppLocalization.of(context)!.enterYourNoteHere,
+          labelText: AppLocalization.of(context)?.enterYourNoteHere,
           labelStyle: TextStyle(color: darkGrey),
           alignLabelWithHint: true,
           focusedBorder: OutlineInputBorder(
@@ -838,10 +838,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void addNote() async {
-    await _auth.updateOrderNote(note, order!.id.toString()).then((value) {
+    await _auth.updateOrderNote(note, order?.id.toString() ?? "").then((value) {
       if (value) {
         setState(() {
-          order!.note = note;
+          order?.note = note;
           Navigator.pop(context);
         });
       }
@@ -849,10 +849,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   getOrderNote() {
-    if (order!.note == "") {
+    if (order?.note == "") {
       return AppLocalization.of(context)!.noSpecialNoteAttached + " !!";
     }
-    return order!.note;
+    return order?.note;
   }
 
   void showChangeStatusAndroidSheet() {
@@ -1009,7 +1009,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
       value: value,
       onChanged: (dynamic value) {
-        if (userBloc.user.userName == order!.merchant) {
+        if (userBloc.user.userName == order?.merchant) {
           setState!(() {
             updateStatus(value);
             statusOfOrder = value;
@@ -1051,7 +1051,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 Row(
                   children: [
                     Text(
-                      worldCurrencies[order!.currency!]!,
+                      worldCurrencies[order?.currency!]!,
                       style: TextStyle(
                           fontFamily: "Inter",
                           fontSize: 14.2,
@@ -1059,7 +1059,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           color: black),
                     ),
                     Text(
-                      moneyDisplayNormalizer(order!.totalPrice),
+                      moneyDisplayNormalizer(order?.totalPrice),
                       style: TextStyle(
                           fontSize: 14.2,
                           fontWeight: FontWeight.w600,
@@ -1083,7 +1083,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 Row(
                   children: [
                     Text(
-                      worldCurrencies[order!.currency!]!,
+                      worldCurrencies[order?.currency!]!,
                       style: TextStyle(
                           fontFamily: "Inter",
                           fontSize: 14.2,
@@ -1115,7 +1115,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 Row(
                   children: [
                     Text(
-                      worldCurrencies[order!.currency!]!,
+                      worldCurrencies[order?.currency!]!,
                       style: TextStyle(
                           fontFamily: "Inter",
                           fontSize: 14.2,
@@ -1148,7 +1148,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 Row(
                   children: [
                     Text(
-                      worldCurrencies[order!.currency!]!,
+                      worldCurrencies[order?.currency!]!,
                       style: TextStyle(
                           fontFamily: "Inter",
                           fontSize: 14.2,
@@ -1156,7 +1156,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           color: navyBlue),
                     ),
                     Text(
-                      moneyDisplayNormalizer(order!.totalPrice),
+                      moneyDisplayNormalizer(order?.totalPrice),
                       style: TextStyle(
                           fontSize: 14.2,
                           fontWeight: FontWeight.w600,
@@ -1268,7 +1268,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
 
-    _auth.updateOrderStatus(value, order!.id.toString()).then((updated) {
+    _auth.updateOrderStatus(value, order?.id.toString() ?? "").then((updated) {
       if (updated) {
         Navigator.pop(context); // Dismiss the loader.
         Navigator.pop(context); // Dismiss bottom-sheet.

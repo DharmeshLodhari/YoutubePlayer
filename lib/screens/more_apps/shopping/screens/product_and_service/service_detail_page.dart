@@ -88,7 +88,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   void initState() {
     service = arguments['service'];
     if (service != null) {
-      serviceId = service!.id;
+      serviceId = service?.id;
     } else {
       serviceId = arguments['serviceId'];
     }
@@ -118,7 +118,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     _auth.getService(serviceId).then((value) {
       if (mounted) {
         service = value;
-        imgList = service!.serverImages;
+        imgList = service?.serverImages;
         serviceIsLoading = false;
         if (mounted) setState(() {});
       }
@@ -135,10 +135,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   Future canReviewService() async {
     Map<String, String> data = {};
-    data['provider'] = service!.provider!;
+    data['provider'] = service?.provider ?? "";
     data['buyer'] = userBloc.user.userName!;
     data['type'] = 'services';
-    data['id'] = service!.id!;
+    data['id'] = service?.id ?? "";
 
     debugPrint('service data :: ${data}');
 
@@ -178,7 +178,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   void getOtherItems() {
     _auth
         .ownersOrderProductsAndServices(
-            type: "services", userId: service!.provider, exclude: service!.id)
+            type: "services", userId: service?.provider, exclude: service?.id)
         .then((value) {
       if (value.isNotEmpty) {
         if (mounted) {
@@ -211,7 +211,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-    isValidCustomer = userBloc.user.userName != service!.provider;
+    isValidCustomer = userBloc.user.userName != service?.provider;
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -362,7 +362,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         Navigator.pop(context);
 
         var shareBody =
-            "http://slydo.co/store/${service!.provider}/services/${service!.id}";
+            "http://slydo.co/store/${service?.provider}/services/${service?.id}";
         Share.share(
           shareBody,
           subject: messageDecoderWithEmoji(service?.name) ?? "",
@@ -433,7 +433,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
     String url = AppConfig.baseUrl +
         "/api/v1/${service is Product ? "products" : "services"}/" +
-        service!.id! +
+        (service?.id ?? "") +
         "/";
 
     Map<String, dynamic>? itemData =
@@ -508,7 +508,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           service!.providerAvatar!, service!.providerFullName!, 15, 35),
       onTap: () async {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {"searchedUserName": service!.provider});
+            arguments: {"searchedUserName": service?.provider});
       },
     );
   }
@@ -527,8 +527,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       onTap: () {
         if (isValidCustomer) {
           Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
-            'recipient': service!.provider,
-            'subject': service!.name,
+            'recipient': service?.provider,
+            'subject': service?.name,
           });
         } else {
           showToast(message: "You can not message yourself !!");
@@ -550,13 +550,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
         showSnackbar(context, message: "Coming soon");
-        // if (service!.isAvailable!) {
+        // if (service?.isAvailable!) {
         //   if (isValidCustomer) {
         //     String type = service is Product ? "product" : "service";
         //     basketBloc.addItemToCart(item: service, type: type);
         //     late var mapData;
         //     basketBloc.items.forEach((element) {
-        //       if (element["item"].id == service!.id) {
+        //       if (element["item"].id == service?.id) {
         //         mapData = element;
         //         return;
         //       }
@@ -819,7 +819,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           height: 8,
         ),
         Text(
-          messageDecoderWithEmoji(service!.description)!,
+          messageDecoderWithEmoji(service?.description)!,
           style: TextStyle(
             fontSize: 14,
             color: darkGrey,
@@ -873,7 +873,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildSellerInfoWidget() {
-    return service!.providerAvatar == null
+    return service?.providerAvatar == null
         ? Container()
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -894,7 +894,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 leading: GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: service!.providerAvatar);
+                        arguments: service?.providerAvatar);
                   },
                   child: Container(
                     height: 48,
@@ -910,7 +910,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ),
                 title: userNameWithVerifiedIcon(
-                  name: service!.providerFullName ?? '',
+                  name: service?.providerFullName ?? '',
                   isVerified: false,
                   textStyle: TextStyle(
                       fontSize: 14,
@@ -918,7 +918,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                       fontWeight: FontWeight.w600),
                 ),
                 subtitle: Text(
-                  service!.provider ?? "",
+                  service?.provider ?? "",
                   style: TextStyle(
                     fontSize: 12,
                     color: darkGrey,
@@ -927,7 +927,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 ),
                 onTap: () {
                   Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {"searchedUserName": service!.provider});
+                      arguments: {"searchedUserName": service?.provider});
                 },
               ),
             ],
@@ -937,14 +937,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   Widget _buildServiceImagesWidgets() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 4.0),
-      child: imgList!.length == 0
+      child: imgList?.length == 0
           ? AspectRatio(
               aspectRatio: 1.7,
               child: Center(
                 child: CircularLoadingIndicator(),
               ),
             )
-          : imgList!.length == 1
+          : imgList?.length == 1
               ? Stack(
                   children: [
                     AspectRatio(
@@ -1066,7 +1066,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             children: <Widget>[
               Text(
                 //name,
-                messageDecoderWithEmoji(service!.name)!,
+                messageDecoderWithEmoji(service?.name)!,
                 style: TextStyle(
                     fontSize: 16,
                     color: blackFont,
@@ -1078,7 +1078,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
-                      worldCurrencies[service!.currency!]!,
+                      worldCurrencies[service?.currency!]!,
                       style: TextStyle(
                           fontFamily: "Inter",
                           fontSize: 18.0,
@@ -1087,7 +1087,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     ),
                     Text(
                       moneyDisplayNormalizer(
-                          int.parse(service!.price.toString())),
+                          int.parse(service?.price.toString() ?? "")),
                       style: TextStyle(
                           fontSize: 18.0,
                           color: navyBlue,
@@ -1098,7 +1098,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ),
               SizedBox(height: 5),
               getRating(
-                numberOfRating: service?.rating!.toInt(),
+                numberOfRating: service?.rating?.toInt(),
               ),
             ],
           ),
@@ -1120,15 +1120,15 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             border: Border.all(color: dividerColor)),
         padding: EdgeInsets.all(10),
         child: InkWell(
-          child: service!.qrCode == ""
+          child: service?.qrCode == ""
               ? Center(child: CircularLoadingIndicator())
               : GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: service!.qrCode);
+                        arguments: service?.qrCode);
                   },
                   child: CachedNetworkImage(
-                    imageUrl: service!.qrCode!,
+                    imageUrl: service?.qrCode ?? "",
                     height: 40,
                     width: 40,
                     errorWidget: imageErrorWidget,
@@ -1139,7 +1139,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ),
           onTap: () {
-            Clipboard.setData(ClipboardData(text: service!.qrCode!));
+            Clipboard.setData(ClipboardData(text: service?.qrCode!));
             showToast(message: AppLocalization.of(context)!.copied);
           },
         ),
@@ -1205,7 +1205,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                 width: 8.0,
               ),
               Text(
-                "${service!.availableFrom!.day}/${service!.availableFrom!.month}/${service!.availableFrom!.year}",
+                "${service?.availableFrom!.day}/${service!.availableFrom!.month}/${service!.availableFrom!.year}",
                 style: TextStyle(
                   color: blackFont,
                   fontSize: 14,

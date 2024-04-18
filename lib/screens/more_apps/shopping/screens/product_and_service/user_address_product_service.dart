@@ -55,13 +55,13 @@ class _UserAddressProductServiceState extends State<UserAddressProductService> {
       addressBloc.address = value;
       isLoading = false;
 
-      addressLineOneController.text = addressBloc.address!.addressLineOne!;
-      addressLineTwoController.text = addressBloc.address!.addressLineTwo!;
-      pickedStateId = addressBloc.address!.userState?.id;
-      pickedStateValue = addressBloc.address!.userState?.name;
-      cityController.text = addressBloc.address!.city!;
+      addressLineOneController.text = addressBloc.address?.addressLineOne ?? "";
+      addressLineTwoController.text = addressBloc.address?.addressLineTwo ?? "";
+      pickedStateId = addressBloc.address?.userState?.id;
+      pickedStateValue = addressBloc.address?.userState?.name;
+      cityController.text = addressBloc.address?.city ?? "";
       selectedCountry = CountryPickerUtils.getCountryByIsoCode(
-          addressBloc.address!.countryIsoCode);
+          addressBloc.address?.countryIsoCode);
       debugPrint('STATE ID::: $pickedStateId');
 
       if (mounted) setState(() {});

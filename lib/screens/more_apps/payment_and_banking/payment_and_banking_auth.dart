@@ -117,7 +117,12 @@ class PaymentAndBankingAuth extends AuthService {
     var response = await httpPost(url, body: _data, headers: headers);
     print('OTP RESPONSE ----> ${response.body}');
 
-    print('OTP RESPONSE ----> ${response.statusCode}');
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
+    }
+
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
 
@@ -420,19 +425,16 @@ class PaymentAndBankingAuth extends AuthService {
     var response = await httpPost(url, headers: headers, body: _data);
 
     print('ADD CREDIT CARD RESPONSE ----> ${response.body}');
+
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
+    }
+
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['validationRequired'] == true) {
         responseString = 'otp';
-      }
-    } else if (response.statusCode == 400) {
-      if (response.body.toLowerCase().contains('too many connections')) {
-        responseString = 'too many connections';
-      } else if (response.body.toLowerCase().contains('pin')) {
-        responseString = 'invalid pin';
-      } else if (response.body.toLowerCase().contains('insufficient funds')) {
-        responseString = 'insufficient funds';
-      } else {
-        responseString = response.body;
       }
     } else {
       responseString = response.body;
@@ -456,19 +458,16 @@ class PaymentAndBankingAuth extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
     print('FUND WALLET ----> ${response.body}');
+
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return Future.error(response.body);
+    }
+
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['validationRequired'] == true) {
         responseString = 'otp';
-      }
-    } else if (response.statusCode == 400) {
-      if (response.body.toLowerCase().contains('too many connections')) {
-        responseString = 'too many connections';
-      } else if (response.body.toLowerCase().contains('pin')) {
-        responseString = 'invalid pin';
-      } else if (response.body.toLowerCase().contains('insufficient funds')) {
-        responseString = 'insufficient funds';
-      } else {
-        responseString = response.body;
       }
     } else {
       responseString = response.body;
@@ -772,21 +771,21 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     debugPrint("URL :::: $url");
 
-    var response = await httpGet(url, headers: headers);
+    Response response = await httpGet(url, headers: headers);
     debugPrint("URL resonspose :::: ${response.body}");
 
-    if (response.statusCode == 200 || response.statusCode == 400) {
+    try {
+      handleServerErrors(response);
+    } catch (e) {
+      return {"results": [], "count": 0, "previous": "", "next": ""};
+    }
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
       List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
       // var user = await getUser();
 
-      var jsonData;
-      if (response.statusCode == 400) {
-        jsonData = {"results": [], "count": 0, "previous": "", "next": ""};
-        return jsonData;
-      } else {
-        jsonData = json.decode(response.body);
-      }
+      var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
@@ -802,8 +801,6 @@ class PaymentAndBankingAuth extends AuthService {
         "results": transactions
       };
       return result;
-    } else if (response.statusCode == 500) {
-      throw "Server Error";
     } else {
       throw response.body;
     }
@@ -1169,12 +1166,17 @@ class PaymentAndBankingAuth extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
     debugPrint("Response ${response.statusCode}");
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return true;
-    } else if (response.statusCode == 400) {
-      return Future.error(jsonDecode(response.body)["error"]);
-    } else {
-      return Future.error(jsonDecode(response.body));
+
+    try {
+      handleServerErrors(response);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        return Future.error(jsonDecode(response.body));
+      }
+    } catch (e) {
+      return Future.error(response.body);
     }
   }
 
@@ -1185,12 +1187,17 @@ class PaymentAndBankingAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
     print('URL RESPONSE ----> ${response.statusCode}');
     print('URL RESPONSE ----> ${response.body}');
-    if (response.statusCode == 200) {
-      return KycModel.fromJson(jsonDecode(response.body));
-    } else if (response.statusCode == 404) {
-      return null;
-    } else {
-      return Future.error(jsonDecode(response.body));
+
+    try {
+      handleServerErrors(response);
+
+      if (response.statusCode == 200) {
+        return KycModel.fromJson(jsonDecode(response.body));
+      } else {
+        return Future.error(jsonDecode(response.body));
+      }
+    } catch (e) {
+      return Future.error(response.body);
     }
   }
 

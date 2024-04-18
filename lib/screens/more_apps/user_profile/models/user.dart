@@ -10,6 +10,8 @@ import '../../payment_and_banking/models/FinancialInstitution.dart';
 
 enum UserStatus { ACTIVE, AWAY, UNKNOWN }
 
+enum PermissionType { READ, WRITE }
+
 class User {
   String? uuid;
   String? url;
@@ -161,14 +163,14 @@ class User {
     return userName;
   }
 
-  bool hasWritePermission(String title) {
+  PermissionType? hasWritePermission(String title) {
     if (staff != null && permissions != null) {
-      return permissions?.hasWritePermissionForStaff(title) ?? false;
-    } else if ((type!.toLowerCase() == 'user' && title == 'Product') ||
-        (type!.toLowerCase() == 'user' && title == 'Services')) {
-      return false;
+      return permissions?.hasWritePermissionForStaff(title);
+    } else if ((type?.toLowerCase() == 'user' && title == 'Product') ||
+        (type?.toLowerCase() == 'user' && title == 'Services')) {
+      return null;
     } else {
-      return true;
+      return PermissionType.WRITE;
     }
   }
 }
@@ -386,60 +388,68 @@ class Permissions {
         "contract": contract,
       };
 
-  bool hasWritePermissionForStaff(String permissionName) {
+  PermissionType? getPermissionLevel(String? permission) {
+    switch (permission) {
+      case ProtectionPermissionType.read:
+        return PermissionType.READ;
+      case ProtectionPermissionType.write:
+        return PermissionType.WRITE;
+      default:
+        return null;
+    }
+  }
+
+  PermissionType? hasWritePermissionForStaff(String permissionName) {
     switch (permissionName) {
       case ProtectionPermission.yarn:
-        return (yarn == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(yarn);
+      // return (yarn == ProtectionPermissionType.write) ? true : false;
       case ProtectionPermission.moment:
-        return (moment == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(moment);
       case ProtectionPermission.product:
-        return (product == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(product);
       case ProtectionPermission.services:
-        return (service == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(service);
       case ProtectionPermission.inbox:
-        return (message == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(message);
       case ProtectionPermission.blog:
-        return (blog == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(blog);
       case ProtectionPermission.invoice:
-        return (invoice == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(invoice);
       case ProtectionPermission.contract:
-        return (contract == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(contract);
       case ProtectionPermission.channel:
-        return (message == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(message);
       case ProtectionPermission.group:
-        return (message == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(message);
       case ProtectionPermission.transaction:
-        return (payment == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(payment);
       case ProtectionPermission.sendMoney:
-        return (payment == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(payment);
       case ProtectionPermission.requestMoney:
-        return (paymentRequest == ProtectionPermissionType.write)
-            ? true
-            : false;
+        return getPermissionLevel(paymentRequest);
       case ProtectionPermission.paymentLinks:
-        return (payment == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(payment);
       case ProtectionPermission.wallet:
-        return (payment == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(payment);
       case ProtectionPermission.creditCard:
-        return (payment == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(payment);
       case ProtectionPermission.utility:
-        return (payment == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(payment);
       case ProtectionPermission.chat:
-        return (message == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(message);
       case ProtectionPermission.order:
-        return (order == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(order);
       case ProtectionPermission.superStore:
-        return (product == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(product);
       case ProtectionPermission.servicesHub:
-        return (service == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(service);
       case ProtectionPermission.send:
-        return (payment == ProtectionPermissionType.write) ? true : false;
+        return getPermissionLevel(payment);
       case ProtectionPermission.request:
-        return (paymentRequest == ProtectionPermissionType.write)
-            ? true
-            : false;
+        return getPermissionLevel(paymentRequest);
     }
-    return false;
+    return null;
   }
 }
 

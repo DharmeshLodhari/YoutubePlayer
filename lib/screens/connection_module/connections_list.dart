@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
@@ -19,6 +20,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/loading_indicator.dart';
 import 'package:Slydo/widget/no_item_in_list.dart';
+import 'package:Slydo/widget/permission_protection_widget.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -635,22 +637,21 @@ class _VerticalListItemState extends State<VerticalListItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-        if (userBloc.user.staff != null) {
-          showToast(message: AppLocalization.of(context)?.doNotPermission);
-        } else {
-          ChatUserManager().clearChatUserMessageCount(
-              conversationId: widget.user.conversationId);
+        ChatUserManager().clearChatUserMessageCount(
+            conversationId: widget.user.conversationId);
 
-          await Navigator.pushNamed(context, Routes.CHAT_SCREEN,
-              arguments: {"searchedUser": widget.user});
-        }
+        await Navigator.pushNamed(context, Routes.CHAT_SCREEN,
+            arguments: {"searchedUser": widget.user});
 
         if (mounted) setState(() {});
       },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
-        child: UserTileForConnection(user: widget.user),
+      child: PermissionProtectionWidget(
+        permissionName: ProtectionPermission.chat,
+        isLockForRead: true,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 2),
+          child: UserTileForConnection(user: widget.user),
+        ),
       ),
     );
   }
